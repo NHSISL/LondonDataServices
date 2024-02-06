@@ -5,6 +5,7 @@
 using System;
 using System.Linq.Expressions;
 using Azure.Security.KeyVault.Secrets;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.SecureData;
@@ -20,11 +21,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
         private readonly Mock<ISecureDataBroker> secureDataBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ISecureDataService secureDataService;
+        private readonly ICompareLogic compareLogic;
 
         public SecureDataServiceTests()
         {
             this.secureDataBrokerMock = new Mock<ISecureDataBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.compareLogic = new CompareLogic();
 
             this.secureDataService = new SecureDataService(
                 secureDataBroker: this.secureDataBrokerMock.Object,
@@ -68,6 +71,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             };
 
             return randomSecureData;
+        }
+
+        private Expression<Func<KeyVaultSecret, bool>> SameKeyVaultSecretAs(KeyVaultSecret expectedKeyVaultSecret)
+        {
+            return actualKeyVaultSecret =>
+                this.compareLogic.Compare(expectedKeyVaultSecret, actualKeyVaultSecret)
+                    .AreEqual;
         }
     }
 }

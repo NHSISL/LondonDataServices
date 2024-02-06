@@ -57,5 +57,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedSubscriberAgreementServiceException =
+                new FailedSubscriberAgreementServiceException(
+                    message: "Failed subscriberAgreement service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedSubscriberAgreementServiceException =
+                new SubscriberAgreementServiceException(
+                    message: "SubscriberAgreement service error occurred, contact support.",
+                    innerException: failedSubscriberAgreementServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<SubscriberAgreement> retrieveSubscriberAgreementByIdTask =
+                this.subscriberAgreementService.RetrieveSubscriberAgreementByIdAsync(someId);
+
+            SubscriberAgreementServiceException actualSubscriberAgreementServiceException =
+                await Assert.ThrowsAsync<SubscriberAgreementServiceException>(
+                    retrieveSubscriberAgreementByIdTask.AsTask);
+
+            // then
+            actualSubscriberAgreementServiceException.Should()
+                .BeEquivalentTo(expectedSubscriberAgreementServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedSubscriberAgreementServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

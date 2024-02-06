@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             var expectedSubscriberAgreementDependencyException =
                 new SubscriberAgreementDependencyException(
                     message: "SubscriberAgreement dependency error occurred, contact support.",
-                    innerException: failedSubscriberAgreementStorageException); 
+                    innerException: failedSubscriberAgreementStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllSubscriberAgreements())
@@ -52,6 +52,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomString();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedSubscriberAgreementServiceException =
+                new FailedSubscriberAgreementServiceException(
+                    message: "Failed subscriberAgreement service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedSubscriberAgreementServiceException =
+                new SubscriberAgreementServiceException(
+                    message: "SubscriberAgreement service error occurred, contact support.",
+                    innerException: failedSubscriberAgreementServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllSubscriberAgreements())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllSubscriberAgreementsAction = () =>
+                this.subscriberAgreementService.RetrieveAllSubscriberAgreements();
+
+            SubscriberAgreementServiceException actualSubscriberAgreementServiceException =
+                Assert.Throws<SubscriberAgreementServiceException>(retrieveAllSubscriberAgreementsAction);
+
+            // then
+            actualSubscriberAgreementServiceException.Should()
+                .BeEquivalentTo(expectedSubscriberAgreementServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllSubscriberAgreements(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriberAgreementServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

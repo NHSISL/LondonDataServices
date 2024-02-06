@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
@@ -33,6 +34,15 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
                 throw CreateAndLogCriticalDependencyException(failedSubscriberAgreementStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsSubscriberAgreementException =
+                    new AlreadyExistsSubscriberAgreementException(
+                        message: "SubscriberAgreement with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsSubscriberAgreementException);
+            }
         }
 
         private SubscriberAgreementValidationException CreateAndLogValidationException(Xeption exception)
@@ -57,6 +67,18 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             this.loggingBroker.LogCritical(subscriberAgreementDependencyException);
 
             return subscriberAgreementDependencyException;
+        }
+
+        private SubscriberAgreementDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var subscriberAgreementDependencyValidationException =
+                new SubscriberAgreementDependencyValidationException(
+                    message: "SubscriberAgreement dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(subscriberAgreementDependencyValidationException);
+
+            return subscriberAgreementDependencyValidationException;
         }
     }
 }

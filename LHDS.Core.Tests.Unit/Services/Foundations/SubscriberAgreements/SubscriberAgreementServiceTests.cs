@@ -1,0 +1,52 @@
+using System;
+using Moq;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
+using LHDS.Core.Services.Foundations.SubscriberAgreements;
+using Tynamix.ObjectFiller;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
+{
+    public partial class SubscriberAgreementServiceTests
+    {
+        private readonly Mock<IStorageBroker> storageBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly ISubscriberAgreementService subscriberAgreementService;
+
+        public SubscriberAgreementServiceTests()
+        {
+            this.storageBrokerMock = new Mock<IStorageBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
+
+            this.subscriberAgreementService = new SubscriberAgreementService(
+                storageBroker: this.storageBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object);
+        }
+
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static SubscriberAgreement CreateRandomSubscriberAgreement(DateTimeOffset dateTimeOffset) =>
+            CreateSubscriberAgreementFiller(dateTimeOffset).Create();
+
+        private static Filler<SubscriberAgreement> CreateSubscriberAgreementFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<SubscriberAgreement>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(user)
+                .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedBy).Use(user);
+
+            // TODO: Complete the filler setup e.g. ignore related properties etc...
+
+            return filler;
+        }
+    }
+}

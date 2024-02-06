@@ -3,12 +3,13 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
-using LHDS.Core.Models.Brokers.KeyVaults;
+using Azure.Security.KeyVault.Secrets;
+using LHDS.Core.Models.Brokers.SecureData;
 
 namespace LHDS.Core.Brokers.KeyVaults
 {
-    public interface IKeyVaultBroker
+    public interface ISecureDataBroker
     {
-        ValueTask<KeyVaultSecret> CreateOrUpdateKeyVaultSecretAsync(KeyVaultSecret keyVaultSecret);
+        ValueTask<KeyVaultSecret> CreateOrUpdateKeyVaultSecretAsync(SecureData secureData);
     }
 }

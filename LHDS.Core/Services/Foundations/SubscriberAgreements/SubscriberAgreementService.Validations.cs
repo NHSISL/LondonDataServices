@@ -27,10 +27,12 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 Parameter: nameof(SubscriberAgreement.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: subscriberAgreement.UpdatedBy,
-                    secondId: subscriberAgreement.CreatedBy,
-                    secondIdName: nameof(SubscriberAgreement.CreatedBy)),
-                Parameter: nameof(SubscriberAgreement.UpdatedBy)));
+                    first: subscriberAgreement.UpdatedBy,
+                    second: subscriberAgreement.CreatedBy,
+                    secondName: nameof(SubscriberAgreement.CreatedBy)),
+                Parameter: nameof(SubscriberAgreement.UpdatedBy)),
+
+                (Rule: IsNotRecent(subscriberAgreement.CreatedDate), Parameter: nameof(SubscriberAgreement.CreatedDate)));
         }
 
         private static void ValidateSubscriberAgreementIsNotNull(SubscriberAgreement subscriberAgreement)
@@ -85,6 +87,23 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                Condition = first != second,
                Message = $"Text is not the same as {secondName}"
            };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

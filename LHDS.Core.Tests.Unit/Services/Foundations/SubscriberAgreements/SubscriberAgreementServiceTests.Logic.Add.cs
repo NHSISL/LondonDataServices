@@ -22,6 +22,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             SubscriberAgreement storageSubscriberAgreement = inputSubscriberAgreement;
             SubscriberAgreement expectedSubscriberAgreement = storageSubscriberAgreement.DeepClone();
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertSubscriberAgreementAsync(inputSubscriberAgreement))
                     .ReturnsAsync(storageSubscriberAgreement);
@@ -33,13 +37,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             // then
             actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertSubscriberAgreementAsync(inputSubscriberAgreement),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

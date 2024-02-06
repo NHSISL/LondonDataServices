@@ -197,6 +197,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
             return jsonString;
         }
 
+        static string JoinValues(List<KeyValuePair<string, string>> keyValuePairs)
+        {
+            var joinedValues = string.Join(" ", keyValuePairs.Select(kv => kv.Value));
+            return joinedValues;
+        }
+
+        public static string ConvertToString(List<KeyValuePair<string, string>> keyValuePairs)
+        {
+            // Use LINQ to concatenate values with spaces
+            return string.Join(" ", keyValuePairs.Select(kvp => kvp.Value)).Trim();
+        }
+
         public static TheoryData AddressResolvingDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
@@ -215,6 +227,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
 
                 new AddressMatcherProcessingValidationException(
                     message: "Address matcher processing validation errors occured, please try again",
+                    innerException),
+
+                new AddressMatcherProcessingDependencyValidationException(
+                    message: "Address matcher processing dependency validation errors occured, please try again",
+                    innerException),
+
+                new ResolvedAddressProcessingValidationException(
+                    message: "Resolved Address validation errors occurred, please try again.",
                     innerException),
 
                 new ResolvedAddressProcessingDependencyValidationException(
@@ -239,12 +259,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
                     message: "Address processing service error occurred, contact support.",
                     innerException),
 
+                new AddressMatcherProcessingDependencyException(
+                    message: "Address matcher processing dependency error occurred, contact support.",
+                    innerException),
+
                 new AddressMatcherProcessingServiceException(
-                    message: "Address Normalisation processing service error occurred, contact support.",
+                    message: "Address matcher processing service error occurred, contact support.",
                     innerException),
 
                  new ResolvedAddressProcessingDependencyException(
-                    message: "Audit dependency error occurred, contact support.",
+                    message: "Resolved address dependency error occurred, contact support.",
+                    innerException),
+
+                 new ResolvedAddressProcessingServiceException(
+                    message: "Resolved address processing service error occurred, contact support.",
                     innerException),
             };
         }

@@ -41,9 +41,13 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
             {
                 throw CreateAndLogDependencyValidationException(addressMatcherProcessingValidationException);
             }
-            catch (ResolvedAddressValidationException resolvedAddressValidationException)
+            catch (AddressMatcherProcessingDependencyValidationException addressMatcherProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressValidationException);
+                throw CreateAndLogDependencyValidationException(addressMatcherProcessingDependencyValidationException);
+            }
+            catch (ResolvedAddressProcessingValidationException resolvedAddressProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressProcessingValidationException);
             }
             catch (ResolvedAddressProcessingDependencyValidationException resolvedAddressProcessingDependencyValidationException)
             {
@@ -56,6 +60,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
             catch (AddressProcessingServiceException addressProcessingServiceException)
             {
                 throw CreateAndLogDependencyException(addressProcessingServiceException);
+            }
+            catch (AddressMatcherProcessingDependencyException addressMatcherProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressMatcherProcessingDependencyException);
             }
             catch (AddressMatcherProcessingServiceException addressMatcherProcessingServiceException)
             {

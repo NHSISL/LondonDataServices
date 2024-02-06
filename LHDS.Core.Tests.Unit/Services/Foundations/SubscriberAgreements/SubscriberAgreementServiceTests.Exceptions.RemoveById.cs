@@ -119,5 +119,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someSubscriberAgreementId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedSubscriberAgreementStorageException =
+                new FailedSubscriberAgreementStorageException(
+                    message: "Failed subscriberAgreement storage error occurred, contact support.",
+                    innerException: sqlException);
+
+            var expectedSubscriberAgreementDependencyException =
+                new SubscriberAgreementDependencyException(
+                    message: "SubscriberAgreement dependency error occurred, contact support.",
+                    innerException: failedSubscriberAgreementStorageException); 
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<SubscriberAgreement> deleteSubscriberAgreementTask =
+                this.subscriberAgreementService.RemoveSubscriberAgreementByIdAsync(someSubscriberAgreementId);
+
+            SubscriberAgreementDependencyException actualSubscriberAgreementDependencyException =
+                await Assert.ThrowsAsync<SubscriberAgreementDependencyException>(
+                    deleteSubscriberAgreementTask.AsTask);
+
+            // then
+            actualSubscriberAgreementDependencyException.Should()
+                .BeEquivalentTo(expectedSubscriberAgreementDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedSubscriberAgreementDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

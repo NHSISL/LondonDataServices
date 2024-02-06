@@ -2,11 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Collections.Generic;
-
-namespace LHDS.Core.Models.Brokers.KeyVaults
+namespace LHDS.Core.Models.Foundations.SecureData
 {
-    public class KeyVaultSecret
+    public class SecureData
     {
         public string Name { get; set; }
         public string Value { get; set; }

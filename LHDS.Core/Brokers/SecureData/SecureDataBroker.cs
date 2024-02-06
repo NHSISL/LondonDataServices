@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
-using LHDS.Core.Models.Foundations.SecureData;
 
 namespace LHDS.Core.Brokers.KeyVaults
 {
@@ -19,7 +18,7 @@ namespace LHDS.Core.Brokers.KeyVaults
             secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
         }
 
-        public async ValueTask<KeyVaultSecret> CreateOrUpdateKeyVaultSecretAsync(SecureData keyVaultSecret) =>
+        public async ValueTask<KeyVaultSecret> CreateOrUpdateKeyVaultSecretAsync(KeyVaultSecret keyVaultSecret) =>
             await this.secretClient.SetSecretAsync(keyVaultSecret.Name, keyVaultSecret.Value);
 
         public async ValueTask<KeyVaultSecret> GetKeyVaultSecretAsync(string secretName) =>

@@ -91,6 +91,15 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
                 throw CreateAndLogCriticalDependencyException(failedSubscriberAgreementStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedSubscriberAgreementServiceException =
+                    new FailedSubscriberAgreementServiceException(
+                        message: "Failed subscriberAgreement service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedSubscriberAgreementServiceException);
+            }
         }
 
         private SubscriberAgreementValidationException CreateAndLogValidationException(Xeption exception)

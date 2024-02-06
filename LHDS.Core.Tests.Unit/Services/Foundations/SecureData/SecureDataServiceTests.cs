@@ -54,7 +54,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
 
         private static KeyVaultSecret CreateKeyVaultSecretFromRandomSecret(dynamic secret)
         {
-            KeyVaultSecret randomKeyVaultSecret = new KeyVaultSecret(secret.Name, secret.Value);
+            KeyVaultSecret randomKeyVaultSecret = new KeyVaultSecret(name: secret.Name, value: secret.Value);
+
             return randomKeyVaultSecret;
         }
 

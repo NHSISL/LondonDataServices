@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             invalidSubscriberAgreementException.AddData(
                 key: nameof(SubscriberAgreement.SupplierSharingAgreementGuid),
-                values: "SupplierSharingAgreementGuid is required");
+                values: "Id is required");
 
             var expectedSubscriberAgreementValidationException =
                 new SubscriberAgreementValidationException(

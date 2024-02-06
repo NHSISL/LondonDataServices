@@ -79,17 +79,18 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 return await this.storageBroker.DeleteSubscriberAgreementAsync(maybeSubscriberAgreement);
             });
 
-        public async ValueTask<SubscriberAgreement>
-            RetrieveSubscriberAgreementBySupplierSharingAgreementGuidAsync(Guid SupplierSharingAgreementGuid)
-        {
-            //ValidateSubscriberSupplierSharingAgreementGuid(SupplierSharingAgreementGuid);
+        public ValueTask<SubscriberAgreement>
+            RetrieveSubscriberAgreementBySupplierSharingAgreementGuidAsync(Guid SupplierSharingAgreementGuid) =>
+                TryCatch(async () =>
+                {
+                    ValidateSubscriberSupplierSharingAgreementGuid(SupplierSharingAgreementGuid);
 
-            SubscriberAgreement maybeSubscriberAgreement = await this.storageBroker
-                .SelectSubscriberAgreementBySupplierSharingAgreementGuidAsync(SupplierSharingAgreementGuid);
+                    SubscriberAgreement maybeSubscriberAgreement = await this.storageBroker
+                    .SelectSubscriberAgreementBySupplierSharingAgreementGuidAsync(SupplierSharingAgreementGuid);
 
-            //ValidateStorageSubscriberAgreement(maybeSubscriberAgreement, SupplierSharingAgreementGuid);
+                    //ValidateStorageSubscriberAgreement(maybeSubscriberAgreement, SupplierSharingAgreementGuid);
 
-            return maybeSubscriberAgreement;
-        }
+                    return maybeSubscriberAgreement;
+                });
     }
 }

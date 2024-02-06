@@ -2,9 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,5 +30,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public async ValueTask<SubscriberAgreement> DeleteSubscriberAgreementAsync(
             SubscriberAgreement subscriberAgreement) =>
                 await DeleteAsync(subscriberAgreement);
+
+        public async ValueTask<SubscriberAgreement>
+            SelectSubscriberAgreementBySupplierSharingAgreementGuidAsync(Guid SupplierSharingAgreementGuid) =>
+                await ReadAsync<SubscriberAgreement>(SupplierSharingAgreementGuid);
     }
 }

@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -74,5 +78,14 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
                 return await this.storageBroker.DeleteSubscriberAgreementAsync(maybeSubscriberAgreement);
             });
+
+        public async ValueTask<SubscriberAgreement>
+            RetrieveSubscriberAgreementBySupplierSharingAgreementGuidAsync(Guid SupplierSharingAgreementGuid)
+        {
+            SubscriberAgreement maybeSubscriberAgreement = await this.storageBroker
+                .SelectSubscriberAgreementBySupplierSharingAgreementGuidAsync(SupplierSharingAgreementGuid);
+
+            return maybeSubscriberAgreement;
+        }
     }
 }

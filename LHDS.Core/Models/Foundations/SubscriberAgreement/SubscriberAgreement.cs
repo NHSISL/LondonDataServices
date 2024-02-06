@@ -11,7 +11,7 @@ namespace LHDS.Core.Models.Foundations.SubscriberAgreements
     {
         public Guid Id { get; set; }
         public string SupplierSharingAgreementShortName { get; set; }
-        public Guid? SupplierSharingAgreementGuid { get; set; }
+        public Guid SupplierSharingAgreementGuid { get; set; }
         public string FtpUserName { get; set; }
         public string FtpPublicKey { get; set; }
         public string GpgPublicKey { get; set; }

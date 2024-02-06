@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,5 +16,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
         ValueTask<SubscriberAgreement> RetrieveSubscriberAgreementByIdAsync(Guid subscriberAgreementId);
         ValueTask<SubscriberAgreement> ModifySubscriberAgreementAsync(SubscriberAgreement subscriberAgreement);
         ValueTask<SubscriberAgreement> RemoveSubscriberAgreementByIdAsync(Guid subscriberAgreementId);
+        ValueTask<SubscriberAgreement> RetrieveSubscriberAgreementBySupplierSharingAgreementGuidAsync(
+            Guid SupplierSharingAgreementGuid);
     }
 }

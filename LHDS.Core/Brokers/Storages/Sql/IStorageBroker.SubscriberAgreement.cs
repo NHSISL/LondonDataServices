@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -16,5 +16,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
         ValueTask<SubscriberAgreement> SelectSubscriberAgreementByIdAsync(Guid subscriberAgreementId);
         ValueTask<SubscriberAgreement> UpdateSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement);
         ValueTask<SubscriberAgreement> DeleteSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement);
+        ValueTask<SubscriberAgreement> SelectSubscriberAgreementBySupplierSharingAgreementGuidAsync(
+           Guid SupplierSharingAgreementGuid);
     }
 }

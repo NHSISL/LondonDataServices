@@ -4,20 +4,69 @@
 
 using System;
 using System.Threading.Tasks;
+using Azure;
 using Azure.Security.KeyVault.Secrets;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Foundations.SecureData.Exceptions;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
-using Xeptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
 {
     public partial class SecureDataServiceTests
     {
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddOrModifyIfSecureDataErrorOccursAndLogItAsync()
+        {
+            // given
+            dynamic randomSecret = CreateRandomSecret();
+            SecureData inputSecureData = CreateSecureDataFromRandomSecret(randomSecret);
+
+            var requestFailedException =
+                new RequestFailedException(message: "Failed secure data request error occurred, contact support.");
+
+            var failedSecureDataException =
+                new FailedSecureDataException(
+                    message: "Failed secure data error occurred, contact support.",
+                    innerException: requestFailedException);
+
+            var expectedSecureDataDependencyException =
+                new SecureDataDependencyException(
+                    message: "Secure data dependency error occurred, contact support.",
+                    innerException: failedSecureDataException);
+
+            this.secureDataBrokerMock.Setup(service =>
+                service.CreateOrUpdateKeyVaultSecretAsync(It.IsAny<KeyVaultSecret>()))
+                    .ThrowsAsync(requestFailedException);
+
+            // when
+            ValueTask<SecureData> addSecureDataTask =
+                this.secureDataService.AddOrModifySecureData(inputSecureData);
+
+            SecureDataDependencyException actualException =
+                await Assert.ThrowsAsync<SecureDataDependencyException>(
+                    addSecureDataTask.AsTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedSecureDataDependencyException);
+
+            this.secureDataBrokerMock.Verify(broker =>
+                broker.CreateOrUpdateKeyVaultSecretAsync(It.IsAny<KeyVaultSecret>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedSecureDataDependencyException))),
+                       Times.Once);
+
+            this.secureDataBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
         [Theory]
         [MemberData(nameof(ExternalDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationOnSecureDataIfDependencyValidationOccursAndLogItAsync(

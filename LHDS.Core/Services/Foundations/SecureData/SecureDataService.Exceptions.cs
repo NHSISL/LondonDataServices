@@ -30,7 +30,12 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             }
             catch (ArgumentException argumentException)
             {
-                throw CreateAndLogDependencyValidationException(argumentException);
+                var failedSecureDataException =
+                    new FailedSecureDataException(
+                        message: "Failed secure data error occurred, contact support.",
+                        innerException: argumentException);
+
+                throw CreateAndLogDependencyValidationException(failedSecureDataException);
             }
             catch (Exception exception)
             {
@@ -53,7 +58,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             return secureDataValidationException;
         }
 
-        private SecureDataDependencyValidationException CreateAndLogDependencyValidationException(Exception exception)
+        private SecureDataDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
             var secureDataDependencyValidationException = new SecureDataDependencyValidationException(
                 message: "Secure data dependency validation errors occurred, fix the errors and try again.",

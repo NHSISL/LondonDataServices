@@ -2,13 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
+using Xeptions;
 
 namespace LHDS.Core.Models.Foundations.SecureData.Exceptions
 {
-    public class SecureDataDependencyValidationException : Exception
+    public class SecureDataDependencyValidationException : Xeption
     {
-        public SecureDataDependencyValidationException(string message, Exception innerException)
+        public SecureDataDependencyValidationException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

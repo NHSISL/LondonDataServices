@@ -44,7 +44,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
         public ValueTask<SecureData> RetrieveSecretDataByNameAsync(string secretName) =>
             TryCatch(async () =>
             {
-                ValidateSecureDataOnRetrieve(secretName);
+                ValidateArgumentOnRetrieve(secretName);
 
                 KeyVaultSecret returnedKeyVaultSecret =
                         await this.secureDataBroker.GetKeyVaultSecretAsync(secretName);

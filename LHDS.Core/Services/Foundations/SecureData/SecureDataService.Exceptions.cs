@@ -29,6 +29,10 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             {
                 throw CreateAndLogValidationException(invalidSecureDataException);
             }
+            catch (InvalidArgumentSecureDataException invalidArgumentSecureDataException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentSecureDataException);
+            }
             catch (ArgumentException argumentException)
             {
                 var failedSecureDataException =

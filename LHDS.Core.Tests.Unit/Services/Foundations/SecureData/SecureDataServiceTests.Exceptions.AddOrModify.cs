@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Security.KeyVault.Secrets;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Foundations.SecureData.Exceptions;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
 

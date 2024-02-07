@@ -4,7 +4,6 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Foundations.SecureData.Exceptions;
 using Moq;

@@ -2,8 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Foundations.SecureData.Exceptions;
 using Xeptions;
@@ -28,6 +28,14 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             {
                 throw CreateAndLogValidationException(invalidSecureDataException);
             }
+            catch (Exception exception)
+            {
+                var failedSecureDataServiceException = new FailedSecureDataServiceException(
+                    message: "Failed secure data service occurred, please contact support",
+                    innerException: exception);
+
+                throw CreateAndLogServiceException(failedSecureDataServiceException);
+            }
         }
 
         private SecureDataValidationException CreateAndLogValidationException(Xeption exception)
@@ -39,6 +47,18 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             this.loggingBroker.LogError(secureDataValidationException);
 
             return secureDataValidationException;
+        }
+
+        private SecureDataServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var secureDataServiceException = new SecureDataServiceException(
+                message: "Secure data service error occurred, contact support.",
+                innerException: exception);
+
+            this.loggingBroker.LogError(secureDataServiceException);
+
+            return secureDataServiceException;
         }
     }
 }

@@ -41,7 +41,18 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 return returnedSecureData;
             });
 
-        public ValueTask<SecureData> RetrieveSecretDataByName(string secretName) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<SecureData> RetrieveSecretDataByNameAsync(string secretName)
+        {
+            KeyVaultSecret returnedKeyVaultSecret =
+                    await this.secureDataBroker.GetKeyVaultSecretAsync(secretName);
+
+            SecureData returnedSecureData = new SecureData
+            {
+                Name = returnedKeyVaultSecret.Name,
+                Value = returnedKeyVaultSecret.Value,
+            };
+
+            return returnedSecureData;
+        }
     }
 }

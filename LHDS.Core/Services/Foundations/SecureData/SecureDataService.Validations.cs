@@ -19,6 +19,13 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 (Rule: IsInvalid(secureData.Value), Parameter: nameof(SecureData.Value)));
         }
 
+        private void ValidateSecureDataOnRetrieve(string secretName)
+        {
+
+            Validate(
+                (Rule: IsInvalid(secretName), Parameter: "secretName"));
+        }
+
         private static void ValidateSecureDataIsNotNull(SecureData secureData)
         {
             if (secureData is null)

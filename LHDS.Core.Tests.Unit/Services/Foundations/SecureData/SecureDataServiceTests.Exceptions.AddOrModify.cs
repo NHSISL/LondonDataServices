@@ -9,12 +9,56 @@ using FluentAssertions;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Foundations.SecureData.Exceptions;
 using Moq;
+using Xeptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
 {
     public partial class SecureDataServiceTests
     {
+        [Theory]
+        [MemberData(nameof(SecureDataDependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationOnSecureDataIfDependencyValidationOccursAndLogItAsync(
+            Xeption dependencyValidationException)
+        {
+            // given
+            dynamic randomSecret = CreateRandomSecret();
+            SecureData inputSecureData = CreateSecureDataFromRandomSecret(randomSecret);
+
+            var expectedDependencyValidationException =
+                new SecureDataDependencyValidationException(
+                    message: "Secure data dependency validation error occurred, fix the errors and try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
+
+            this.secureDataBrokerMock.Setup(service =>
+                service.CreateOrUpdateKeyVaultSecretAsync(It.IsAny<KeyVaultSecret>()))
+                    .ThrowsAsync(dependencyValidationException);
+
+            // when
+            ValueTask<SecureData> addSecureDataTask =
+                this.secureDataService.AddOrModifySecureData(inputSecureData);
+
+            SecureDataDependencyValidationException actualException =
+                await Assert.ThrowsAsync<SecureDataDependencyValidationException>(
+                    addSecureDataTask.AsTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedDependencyValidationException);
+
+            this.secureDataBrokerMock.Verify(broker =>
+                broker.CreateOrUpdateKeyVaultSecretAsync(It.IsAny<KeyVaultSecret>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedDependencyValidationException))),
+                       Times.Once);
+
+            this.secureDataBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
         [Fact]
         public async Task ShouldThrowServiceExceptionOnAddOrModifyIfServiceErrorOccursAndLogItAsync()
         {

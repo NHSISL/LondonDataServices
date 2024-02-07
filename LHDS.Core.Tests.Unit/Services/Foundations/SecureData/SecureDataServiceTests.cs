@@ -8,11 +8,17 @@ using Azure.Security.KeyVault.Secrets;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.SecureData;
+using LHDS.Core.Models.Processings.Addresses.Exceptions;
+using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
+using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using LHDS.Core.Services.Foundations.SecureDatas;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
 {
@@ -78,6 +84,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             return actualKeyVaultSecret =>
                 this.compareLogic.Compare(expectedKeyVaultSecret, actualKeyVaultSecret)
                     .AreEqual;
+        }
+
+        public static TheoryData SecureDataDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            return new TheoryData<Exception>
+            {
+                new ArgumentException(message: "Key vault secret client validation errors occurred, please try again"),
+
+                new ArgumentNullException(
+                    paramName: "Name",
+                    message: "Address normalisation processing dependency validation occurred, please try again.")
+            };
         }
     }
 }

@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Azure;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Foundations.SecureData.Exceptions;
 using Xeptions;
@@ -37,6 +38,15 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
 
                 throw CreateAndLogDependencyValidationException(failedSecureDataException);
             }
+            catch (RequestFailedException requestFailedException)
+            {
+                var failedSecureDataException =
+                    new FailedSecureDataException(
+                        message: "Failed secure data error occurred, contact support.",
+                        innerException: requestFailedException);
+
+                throw CreateAndLogDependencyException(failedSecureDataException);
+            }
             catch (Exception exception)
             {
                 var failedSecureDataServiceException = new FailedSecureDataServiceException(
@@ -67,6 +77,17 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             this.loggingBroker.LogError(secureDataDependencyValidationException);
 
             return secureDataDependencyValidationException;
+        }
+
+        private SecureDataDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var secureDataDependencyException = new SecureDataDependencyException(
+                message: "Secure data dependency errors occurred, contact support.",
+                innerException: exception);
+
+            this.loggingBroker.LogError(secureDataDependencyException);
+
+            return secureDataDependencyException;
         }
 
         private SecureDataServiceException CreateAndLogServiceException(

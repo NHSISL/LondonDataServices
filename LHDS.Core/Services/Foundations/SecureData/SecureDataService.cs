@@ -40,5 +40,8 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
 
                 return returnedSecureData;
             });
+
+        public ValueTask<SecureData> RetrieveSecretDataByName(string secretName) =>
+            throw new System.NotImplementedException();
     }
 }

@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
 
             var invalidArgumentSecureDataException =
                 new InvalidArgumentSecureDataException(
-                    message: "Invalid argument secure data. Please correct the errors and try again.");
+                    message: "Invalid secure data argument. Please correct the errors and try again.");
 
             invalidArgumentSecureDataException.AddData(
                 key: "secretName",

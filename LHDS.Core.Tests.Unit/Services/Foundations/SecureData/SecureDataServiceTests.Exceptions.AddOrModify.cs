@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
         [Theory]
         [MemberData(nameof(SecureDataDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationOnSecureDataIfDependencyValidationOccursAndLogItAsync(
-            Xeption dependencyValidationException)
+            Exception dependencyValidationException)
         {
             // given
             dynamic randomSecret = CreateRandomSecret();
@@ -27,8 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
 
             var expectedDependencyValidationException =
                 new SecureDataDependencyValidationException(
-                    message: "Secure data dependency validation error occurred, fix the errors and try again.",
-                    innerException: dependencyValidationException.InnerException as Xeption);
+                    message: "Secure data dependency validation errors occurred, fix the errors and try again.",
+                    innerException: dependencyValidationException.InnerException);
 
             this.secureDataBrokerMock.Setup(service =>
                 service.CreateOrUpdateKeyVaultSecretAsync(It.IsAny<KeyVaultSecret>()))

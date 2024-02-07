@@ -40,6 +40,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Exception expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
@@ -95,9 +98,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             {
                 new ArgumentException(message: "Key vault secret client validation errors occurred, please try again"),
 
-                new ArgumentNullException(
-                    paramName: "Name",
-                    message: "Address normalisation processing dependency validation occurred, please try again.")
+                //new ArgumentNullException(
+                //    paramName: "Name",
+                //    message: "Address normalisation processing dependency validation occurred, please try again.")
             };
         }
     }

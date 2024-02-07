@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
 
             var expectedSecureDataDependencyException =
                 new SecureDataDependencyException(
-                    message: "Secure data dependency error occurred, contact support.",
+                    message: "Secure data dependency errors occurred, contact support.",
                     innerException: failedSecureDataException);
 
             this.secureDataBrokerMock.Setup(service =>

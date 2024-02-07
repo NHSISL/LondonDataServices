@@ -27,8 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                     .ReturnsAsync(outputKeyVaultSecret);
 
             // when
-            SecureData actualSecureData = await this.secureDataService
-                .RetrieveSecretDataByName(secretName);
+            SecureData actualSecureData = await this.secureDataService.RetrieveSecretDataByNameAsync(secretName);
 
             // then
             actualSecureData.Should().BeEquivalentTo(expectedSecureData);

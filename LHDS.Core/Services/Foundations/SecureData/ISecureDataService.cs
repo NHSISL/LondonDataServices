@@ -10,6 +10,6 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
     public interface ISecureDataService
     {
         ValueTask<SecureData> AddOrModifySecureData(SecureData secureData);
-        ValueTask<SecureData> RetrieveSecretDataByName(string secretName);
+        ValueTask<SecureData> RetrieveSecretDataByNameAsync(string secretName);
     }
 }

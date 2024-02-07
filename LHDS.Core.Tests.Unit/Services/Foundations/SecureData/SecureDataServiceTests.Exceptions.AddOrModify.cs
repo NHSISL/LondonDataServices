@@ -6,8 +6,10 @@ using System;
 using System.Threading.Tasks;
 using Azure.Security.KeyVault.Secrets;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Foundations.SecureData.Exceptions;
+using Microsoft.Data.SqlClient;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -17,7 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
     public partial class SecureDataServiceTests
     {
         [Theory]
-        [MemberData(nameof(SecureDataDependencyValidationExceptions))]
+        [MemberData(nameof(ExternalDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationOnSecureDataIfDependencyValidationOccursAndLogItAsync(
             Exception dependencyValidationException)
         {
@@ -25,10 +27,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             dynamic randomSecret = CreateRandomSecret();
             SecureData inputSecureData = CreateSecureDataFromRandomSecret(randomSecret);
 
+            var failedSecureDataException =
+                new FailedSecureDataException(
+                    message: "Failed secure data error occurred, contact support.",
+                    innerException: dependencyValidationException);
+
             var expectedDependencyValidationException =
                 new SecureDataDependencyValidationException(
                     message: "Secure data dependency validation errors occurred, fix the errors and try again.",
-                    innerException: dependencyValidationException.InnerException);
+                    innerException: failedSecureDataException);
 
             this.secureDataBrokerMock.Setup(service =>
                 service.CreateOrUpdateKeyVaultSecretAsync(It.IsAny<KeyVaultSecret>()))

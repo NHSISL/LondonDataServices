@@ -89,18 +89,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                     .AreEqual;
         }
 
-        public static TheoryData SecureDataDependencyValidationExceptions()
+        public static TheoryData ExternalDependencyValidationExceptions()
         {
-            string randomMessage = GetRandomString();
-            string exceptionMessage = randomMessage;
-
             return new TheoryData<Exception>
             {
-                new ArgumentException(message: "Key vault secret client validation errors occurred, please try again"),
+                new ArgumentException(message: "Key vault secret validation errors occurred, please try again"),
 
-                //new ArgumentNullException(
-                //    paramName: "Name",
-                //    message: "Address normalisation processing dependency validation occurred, please try again.")
+                new ArgumentNullException(
+                    paramName: "Name",
+                    message: "Address normalisation processing dependency validation occurred, please try again.")
             };
         }
     }

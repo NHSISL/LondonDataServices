@@ -41,18 +41,21 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 return returnedSecureData;
             });
 
-        public async ValueTask<SecureData> RetrieveSecretDataByNameAsync(string secretName)
-        {
-            KeyVaultSecret returnedKeyVaultSecret =
-                    await this.secureDataBroker.GetKeyVaultSecretAsync(secretName);
-
-            SecureData returnedSecureData = new SecureData
+        public ValueTask<SecureData> RetrieveSecretDataByNameAsync(string secretName) =>
+            TryCatch(async () =>
             {
-                Name = returnedKeyVaultSecret.Name,
-                Value = returnedKeyVaultSecret.Value,
-            };
+                ValidateSecureDataOnRetrieve(secretName);
 
-            return returnedSecureData;
-        }
+                KeyVaultSecret returnedKeyVaultSecret =
+                        await this.secureDataBroker.GetKeyVaultSecretAsync(secretName);
+
+                SecureData returnedSecureData = new SecureData
+                {
+                    Name = returnedKeyVaultSecret.Name,
+                    Value = returnedKeyVaultSecret.Value,
+                };
+
+                return returnedSecureData;
+            });
     }
 }

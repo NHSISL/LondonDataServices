@@ -1,12 +1,14 @@
-using System;
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System.Threading.Tasks;
+using Azure.Security.KeyVault.Secrets;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
-using LHDS.Core.Models.Foundations.Addresses;
-using Xunit;
-using Azure.Security.KeyVault.Secrets;
 using LHDS.Core.Models.Foundations.SecureData;
+using Moq;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
 {

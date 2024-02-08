@@ -3,8 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Foundations.SecureData.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.SecureDatas
 {
@@ -14,9 +16,17 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
         {
             ValidateSecureDataIsNotNull(secureData);
 
-            Validate(
+            Validate<InvalidSecureDataException> (
+                message: "Invalid secure data errors occured. Please correct the errors and try again.",
                 (Rule: IsInvalid(secureData.Name), Parameter: nameof(SecureData.Name)),
                 (Rule: IsInvalid(secureData.Value), Parameter: nameof(SecureData.Value)));
+        }
+
+        private void ValidateArgumentOnRetrieve(string secretName)
+        {
+            Validate<InvalidArgumentSecureDataException>(
+                message: "Invalid secure data argument. Please correct the errors and try again.",
+                    (Rule: IsInvalid(secretName), Parameter: "secretName"));
         }
 
         private static void ValidateSecureDataIsNotNull(SecureData secureData)
@@ -33,22 +43,22 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             Message = "Text is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
+             where T : Xeption
         {
-            var invalidSecureDataException = new InvalidSecureDataException(
-                message: "Invalid secure data. Please correct the errors and try again.");
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidSecureDataException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidSecureDataException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

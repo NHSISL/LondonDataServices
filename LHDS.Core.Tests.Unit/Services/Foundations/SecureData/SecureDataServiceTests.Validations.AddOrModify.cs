@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
 
             var invalidAddressException =
                 new InvalidSecureDataException(
-                    message: "Invalid secure data. Please correct the errors and try again.");
+                    message: "Invalid secure data errors occured. Please correct the errors and try again.");
 
             invalidAddressException.AddData(
                 key: nameof(SecureData.Name),

@@ -47,7 +47,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 ValidateArgumentOnRetrieve(secretName);
 
                 KeyVaultSecret returnedKeyVaultSecret =
-                        await this.secureDataBroker.GetKeyVaultSecretAsync(secretName);
+                    await this.secureDataBroker.GetKeyVaultSecretAsync(secretName);
 
                 SecureData returnedSecureData = new SecureData
                 {

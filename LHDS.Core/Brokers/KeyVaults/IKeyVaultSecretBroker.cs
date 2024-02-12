@@ -7,7 +7,7 @@ using Azure.Security.KeyVault.Secrets;
 
 namespace LHDS.Core.Brokers.KeyVaults
 {
-    public interface ISecureDataBroker
+    public interface IKeyVaultSecretBroker
     {
         ValueTask<KeyVaultSecret> CreateOrUpdateKeyVaultSecretAsync(KeyVaultSecret keyVaultSecret);
         ValueTask<KeyVaultSecret> GetKeyVaultSecretAsync(string secretName);

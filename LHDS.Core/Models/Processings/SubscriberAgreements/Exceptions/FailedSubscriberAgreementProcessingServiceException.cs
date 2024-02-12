@@ -5,11 +5,11 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Processings.DataSets.Exceptions
+namespace LHDS.Core.Models.Processings.SubscriberAgreements.Exceptions
 {
-    public class FailedDataSetProcessingServiceException : Xeption
+    public class FailedSubscriberAgreementProcessingServiceException : Xeption
     {
-        public FailedDataSetProcessingServiceException(string message, Exception innerException)
+        public FailedSubscriberAgreementProcessingServiceException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

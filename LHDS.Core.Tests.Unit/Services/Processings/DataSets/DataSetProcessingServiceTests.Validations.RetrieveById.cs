@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -34,11 +34,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     innerException: invalidArgumentDataSetProcessingException);
 
             // when
-            ValueTask<DataSet> RetrieveDataSetTask =
+            ValueTask<DataSet> dataSetRetrieveByIdTask =
                 this.dataSetProcessingService.RetrieveDataSetByIdAsync(invalidId);
 
             DataSetProcessingValidationException actualDataSetProcessingValidationException =
-                await Assert.ThrowsAsync<DataSetProcessingValidationException>(RetrieveDataSetTask.AsTask);
+                await Assert.ThrowsAsync<DataSetProcessingValidationException>(dataSetRetrieveByIdTask.AsTask);
 
             //then
             actualDataSetProcessingValidationException.Should()

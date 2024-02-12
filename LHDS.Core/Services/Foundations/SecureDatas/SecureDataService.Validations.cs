@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Foundations.SecureData.Exceptions;
 using Xeptions;
@@ -16,7 +15,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
         {
             ValidateSecureDataIsNotNull(secureData);
 
-            Validate<InvalidSecureDataException> (
+            Validate<InvalidSecureDataException>(
                 message: "Invalid secure data errors occured. Please correct the errors and try again.",
                 (Rule: IsInvalid(secureData.Name), Parameter: nameof(SecureData.Name)),
                 (Rule: IsInvalid(secureData.Value), Parameter: nameof(SecureData.Value)));

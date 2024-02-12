@@ -5,7 +5,7 @@
 using System;
 using LHDS.Core.Models.Bases;
 
-namespace LHDS.Core.Models.Foundations.SubscriberAgreements
+namespace LHDS.Core.Models.Processings.SubscriberCredentials
 {
     public class SubscriberCredential : IKey
     {

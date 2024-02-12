@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                     message: "Secure data dependency errors occurred, contact support.",
                     innerException: failedSecureDataException);
 
-            this.secureDataBrokerMock.Setup(service =>
+            this.keyVaultSecretBrokerMock.Setup(service =>
                 service.CreateOrUpdateKeyVaultSecretAsync(It.IsAny<KeyVaultSecret>()))
                     .ThrowsAsync(requestFailedException);
 
@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             actualException.Should()
                  .BeEquivalentTo(expectedSecureDataDependencyException);
 
-            this.secureDataBrokerMock.Verify(broker =>
+            this.keyVaultSecretBrokerMock.Verify(broker =>
                 broker.CreateOrUpdateKeyVaultSecretAsync(It.IsAny<KeyVaultSecret>()),
                     Times.Once);
 
@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                    expectedSecureDataDependencyException))),
                        Times.Once);
 
-            this.secureDataBrokerMock.VerifyNoOtherCalls();
+            this.keyVaultSecretBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                     message: "Secure data dependency validation errors occurred, fix the errors and try again.",
                     innerException: failedSecureDataException);
 
-            this.secureDataBrokerMock.Setup(service =>
+            this.keyVaultSecretBrokerMock.Setup(service =>
                 service.CreateOrUpdateKeyVaultSecretAsync(It.IsAny<KeyVaultSecret>()))
                     .ThrowsAsync(dependencyValidationException);
 
@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyValidationException);
 
-            this.secureDataBrokerMock.Verify(broker =>
+            this.keyVaultSecretBrokerMock.Verify(broker =>
                 broker.CreateOrUpdateKeyVaultSecretAsync(It.IsAny<KeyVaultSecret>()),
                     Times.Once);
 
@@ -109,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                    expectedDependencyValidationException))),
                        Times.Once);
 
-            this.secureDataBrokerMock.VerifyNoOtherCalls();
+            this.keyVaultSecretBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -131,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                     message: "Secure data service error occurred, contact support.",
                     innerException: failedSecureDataServiceException);
 
-            this.secureDataBrokerMock.Setup(broker =>
+            this.keyVaultSecretBrokerMock.Setup(broker =>
                 broker.CreateOrUpdateKeyVaultSecretAsync(It.IsAny<KeyVaultSecret>()))
                     .ThrowsAsync(serviceException);
 
@@ -147,7 +147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             actualSecureDataServiceException.Should()
                 .BeEquivalentTo(expectedSecureDataServiceException);
 
-            this.secureDataBrokerMock.Verify(broker =>
+            this.keyVaultSecretBrokerMock.Verify(broker =>
                 broker.CreateOrUpdateKeyVaultSecretAsync(It.IsAny<KeyVaultSecret>()),
                     Times.Once);
 
@@ -156,7 +156,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                    expectedSecureDataServiceException))),
                         Times.Once);
 
-            this.secureDataBrokerMock.VerifyNoOtherCalls();
+            this.keyVaultSecretBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

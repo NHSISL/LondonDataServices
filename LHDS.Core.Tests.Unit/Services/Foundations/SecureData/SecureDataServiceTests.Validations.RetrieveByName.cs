@@ -53,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.secureDataBrokerMock.VerifyNoOtherCalls();
+            this.keyVaultSecretBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

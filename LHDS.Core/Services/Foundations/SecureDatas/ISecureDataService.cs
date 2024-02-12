@@ -11,6 +11,6 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
     {
         ValueTask<SecureData> AddOrModifySecureData(SecureData secureData);
         ValueTask<SecureData> RetrieveSecretDataByNameAsync(string secretName);
-        ValueTask RemoveSecureData(string secretName);
+        ValueTask RemoveSecureDataAsync(string secretName);
     }
 }

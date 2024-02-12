@@ -59,7 +59,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 return returnedSecureData;
             });
 
-        public ValueTask RemoveSecureData(string secretName) =>
-            throw new NotImplementedException();
+        public async ValueTask RemoveSecureDataAsync(string secretName) =>
+            await this.keyVaultSecretBroker.DeleteKeyVaultSecretAsync(secretName);
     }
 }

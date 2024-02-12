@@ -14,6 +14,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
     public partial class SecureDataService
     {
         private delegate ValueTask<SecureData> ReturningSecureDataFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<SecureData> TryCatch(ReturningSecureDataFunction returningSecureDataFunction)
         {
@@ -58,6 +59,18 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                     innerException: exception);
 
                 throw CreateAndLogServiceException(failedSecureDataServiceException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (InvalidArgumentSecureDataException invalidArgumentSecureDataException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentSecureDataException);
             }
         }
 

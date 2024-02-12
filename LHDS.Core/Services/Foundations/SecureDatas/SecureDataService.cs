@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using Azure.Security.KeyVault.Secrets;
 using LHDS.Core.Brokers.KeyVaults;
@@ -59,7 +58,11 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 return returnedSecureData;
             });
 
-        public ValueTask<SecureData> RemoveSecureData(SecureData secureData) =>
-            throw new NotImplementedException();
+        public ValueTask RemoveSecureDataAsync(string secretName) =>
+            TryCatch(async () =>
+            {
+                ValidateArgumentOnRemove(secretName);
+                await this.keyVaultSecretBroker.DeleteKeyVaultSecretAsync(secretName);
+            });
     }
 }

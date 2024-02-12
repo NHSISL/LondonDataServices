@@ -28,6 +28,13 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                     (Rule: IsInvalid(secretName), Parameter: "secretName"));
         }
 
+        private void ValidateArgumentOnRemove(string secretName)
+        {
+            Validate<InvalidArgumentSecureDataException>(
+                message: "Invalid secure data argument. Please correct the errors and try again.",
+                    (Rule: IsInvalid(secretName), Parameter: "secretName"));
+        }
+
         private static void ValidateSecureDataIsNotNull(SecureData secureData)
         {
             if (secureData is null)

@@ -14,6 +14,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
     public partial class SecureDataService
     {
         private delegate ValueTask<SecureData> ReturningSecureDataFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<SecureData> TryCatch(ReturningSecureDataFunction returningSecureDataFunction)
         {
@@ -41,6 +42,35 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                         innerException: argumentException);
 
                 throw CreateAndLogDependencyValidationException(failedSecureDataException);
+            }
+            catch (RequestFailedException requestFailedException)
+            {
+                var failedSecureDataException =
+                    new FailedSecureDataException(
+                        message: "Failed secure data error occurred, contact support.",
+                        innerException: requestFailedException);
+
+                throw CreateAndLogDependencyException(failedSecureDataException);
+            }
+            catch (Exception exception)
+            {
+                var failedSecureDataServiceException = new FailedSecureDataServiceException(
+                    message: "Failed secure data service occurred, please contact support",
+                    innerException: exception);
+
+                throw CreateAndLogServiceException(failedSecureDataServiceException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (InvalidArgumentSecureDataException invalidArgumentSecureDataException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentSecureDataException);
             }
             catch (RequestFailedException requestFailedException)
             {

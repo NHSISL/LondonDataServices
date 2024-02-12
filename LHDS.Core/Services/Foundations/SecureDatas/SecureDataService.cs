@@ -59,7 +59,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 return returnedSecureData;
             });
 
-        public ValueTask<SecureData> RemoveSecureData(SecureData secureData) =>
+        public ValueTask RemoveSecureData(string secretName) =>
             throw new NotImplementedException();
     }
 }

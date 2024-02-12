@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             KeyVaultSecret outputKeyVaultSecret = CreateKeyVaultSecretFromRandomSecret(randomSecret);
             SecureData expectedSecureData = CreateSecureDataFromRandomSecret(randomSecret);
 
-            this.secureDataBrokerMock.Setup(broker =>
+            this.keyVaultSecretBrokerMock.Setup(broker =>
                 broker.GetKeyVaultSecretAsync(secretName))
                     .ReturnsAsync(outputKeyVaultSecret);
 
@@ -32,11 +32,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             // then
             actualSecureData.Should().BeEquivalentTo(expectedSecureData);
 
-            this.secureDataBrokerMock.Verify(broker =>
+            this.keyVaultSecretBrokerMock.Verify(broker =>
                 broker.GetKeyVaultSecretAsync(secretName),
                     Times.Once());
 
-            this.secureDataBrokerMock.VerifyNoOtherCalls();
+            this.keyVaultSecretBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

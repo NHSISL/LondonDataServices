@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -28,11 +28,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     innerException: nullDataSetProcessingException);
 
             // when
-            ValueTask<DataSet> AddDataSetTask =
+            ValueTask<DataSet> dataSetModifyOrAddTask =
                 this.dataSetProcessingService.ModifyOrAddDataSetAsync(nullDataSet);
 
             DataSetProcessingValidationException actualDataSetProcessingValidationException =
-                await Assert.ThrowsAsync<DataSetProcessingValidationException>(AddDataSetTask.AsTask);
+                await Assert.ThrowsAsync<DataSetProcessingValidationException>(dataSetModifyOrAddTask.AsTask);
 
             //then
             actualDataSetProcessingValidationException.Should()
@@ -67,11 +67,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     innerException: invalidArgumentDataSetProcessingException);
 
             // when
-            ValueTask<DataSet> AddDataSetTask =
+            ValueTask<DataSet> dataSetModifyOrAddTask =
                 this.dataSetProcessingService.ModifyOrAddDataSetAsync(emptyDataSet);
 
             DataSetProcessingValidationException actualDataSetProcessingValidationException =
-                await Assert.ThrowsAsync<DataSetProcessingValidationException>(AddDataSetTask.AsTask);
+                await Assert.ThrowsAsync<DataSetProcessingValidationException>(dataSetModifyOrAddTask.AsTask);
 
             //then
             actualDataSetProcessingValidationException.Should()

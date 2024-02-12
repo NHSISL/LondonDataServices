@@ -8,12 +8,7 @@ using Azure.Security.KeyVault.Secrets;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
-using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.SecureData;
-using LHDS.Core.Models.Processings.Addresses.Exceptions;
-using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
-using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using LHDS.Core.Services.Foundations.SecureDatas;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -24,19 +19,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
 {
     public partial class SecureDataServiceTests
     {
-        private readonly Mock<ISecureDataBroker> secureDataBrokerMock;
+        private readonly Mock<IKeyVaultSecretBroker> keyVaultSecretBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ISecureDataService secureDataService;
         private readonly ICompareLogic compareLogic;
 
         public SecureDataServiceTests()
         {
-            this.secureDataBrokerMock = new Mock<ISecureDataBroker>();
+            this.keyVaultSecretBrokerMock = new Mock<IKeyVaultSecretBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
             this.secureDataService = new SecureDataService(
-                secureDataBroker: this.secureDataBrokerMock.Object,
+                keyVaultSecretBroker: this.keyVaultSecretBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 

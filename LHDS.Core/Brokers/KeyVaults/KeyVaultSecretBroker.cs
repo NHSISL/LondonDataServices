@@ -9,11 +9,11 @@ using Azure.Security.KeyVault.Secrets;
 
 namespace LHDS.Core.Brokers.KeyVaults
 {
-    public class SecureDataBroker : ISecureDataBroker
+    public class KeyVaultSecretBroker : IKeyVaultSecretBroker
     {
         private readonly SecretClient secretClient;
 
-        public SecureDataBroker(string keyVaultUri)
+        public KeyVaultSecretBroker(string keyVaultUri)
         {
             secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
         }

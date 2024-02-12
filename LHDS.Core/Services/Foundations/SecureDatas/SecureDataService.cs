@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using Azure.Security.KeyVault.Secrets;
 using LHDS.Core.Brokers.KeyVaults;
@@ -12,14 +13,14 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
 {
     public partial class SecureDataService : ISecureDataService
     {
-        private readonly ISecureDataBroker secureDataBroker;
+        private readonly IKeyVaultSecretBroker keyVaultSecretBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public SecureDataService(
-            ISecureDataBroker secureDataBroker,
+            IKeyVaultSecretBroker keyVaultSecretBroker,
             ILoggingBroker loggingBroker)
         {
-            this.secureDataBroker = secureDataBroker;
+            this.keyVaultSecretBroker = keyVaultSecretBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -30,7 +31,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 KeyVaultSecret keyVaultSecret = new KeyVaultSecret(name: secureData.Name, value: secureData.Value);
 
                 KeyVaultSecret returnedKeyVaultSecret =
-                    await this.secureDataBroker.CreateOrUpdateKeyVaultSecretAsync(keyVaultSecret);
+                    await this.keyVaultSecretBroker.CreateOrUpdateKeyVaultSecretAsync(keyVaultSecret);
 
                 SecureData returnedSecureData = new SecureData
                 {
@@ -47,7 +48,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 ValidateArgumentOnRetrieve(secretName);
 
                 KeyVaultSecret returnedKeyVaultSecret =
-                    await this.secureDataBroker.GetKeyVaultSecretAsync(secretName);
+                    await this.keyVaultSecretBroker.GetKeyVaultSecretAsync(secretName);
 
                 SecureData returnedSecureData = new SecureData
                 {
@@ -57,5 +58,8 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
 
                 return returnedSecureData;
             });
+
+        public ValueTask<SecureData> RemoveSecureData(SecureData secureData) =>
+            throw new NotImplementedException();
     }
 }

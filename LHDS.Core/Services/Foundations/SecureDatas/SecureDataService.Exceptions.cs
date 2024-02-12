@@ -72,6 +72,23 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             {
                 throw CreateAndLogValidationException(invalidArgumentSecureDataException);
             }
+            catch (RequestFailedException requestFailedException)
+            {
+                var failedSecureDataException =
+                    new FailedSecureDataException(
+                        message: "Failed secure data error occurred, contact support.",
+                        innerException: requestFailedException);
+
+                throw CreateAndLogDependencyException(failedSecureDataException);
+            }
+            catch (Exception exception)
+            {
+                var failedSecureDataServiceException = new FailedSecureDataServiceException(
+                    message: "Failed secure data service occurred, please contact support",
+                    innerException: exception);
+
+                throw CreateAndLogServiceException(failedSecureDataServiceException);
+            }
         }
 
         private SecureDataValidationException CreateAndLogValidationException(Xeption exception)

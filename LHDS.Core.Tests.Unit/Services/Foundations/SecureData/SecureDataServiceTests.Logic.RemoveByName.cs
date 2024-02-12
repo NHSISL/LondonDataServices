@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             string secretName = GetRandomString();
 
             // when
-            await this.secureDataService.RemoveSecureData(secretName);
+            await this.secureDataService.RemoveSecureDataAsync(secretName);
 
             // then
             this.keyVaultSecretBrokerMock.Verify(broker =>

@@ -2,14 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Processings.DataSets.Exceptions
+namespace LHDS.Core.Models.Processings.SubscriberAgreements.Exceptions
 {
-    public class FailedDataSetProcessingServiceException : Xeption
+    public class SubscriberAgreementProcessingServiceException : Xeption
     {
-        public FailedDataSetProcessingServiceException(string message, Exception innerException)
+        public SubscriberAgreementProcessingServiceException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

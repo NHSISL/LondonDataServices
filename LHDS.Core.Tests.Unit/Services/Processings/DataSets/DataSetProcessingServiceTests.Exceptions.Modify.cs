@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -34,11 +34,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<DataSet> dataSetAddTask =
+            ValueTask<DataSet> dataSetModifyTask =
                 this.dataSetProcessingService.ModifyDataSetAsync(inputDataSet);
 
             DataSetProcessingDependencyValidationException actualException =
-                await Assert.ThrowsAsync<DataSetProcessingDependencyValidationException>(dataSetAddTask.AsTask);
+                await Assert.ThrowsAsync<DataSetProcessingDependencyValidationException>(dataSetModifyTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetProcessingDependencyValidationException);
@@ -75,11 +75,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     .Throws(dependencyException);
 
             // when
-            ValueTask<DataSet> dataSetAddTask =
+            ValueTask<DataSet> dataSetModifyTask =
                 this.dataSetProcessingService.ModifyDataSetAsync(inputDataSet);
 
             DataSetProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<DataSetProcessingDependencyException>(dataSetAddTask.AsTask);
+                await Assert.ThrowsAsync<DataSetProcessingDependencyException>(dataSetModifyTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetProcessingDependencyException);
@@ -121,11 +121,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     .Throws(serviceException);
 
             // when
-            ValueTask<DataSet> addDataSetTask =
+            ValueTask<DataSet> dataSetModifyTask =
                 this.dataSetProcessingService.ModifyDataSetAsync(inputDataSet);
 
             DataSetProcessingServiceException actualException =
-                await Assert.ThrowsAsync<DataSetProcessingServiceException>(addDataSetTask.AsTask);
+                await Assert.ThrowsAsync<DataSetProcessingServiceException>(dataSetModifyTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetProcessingServiveException);

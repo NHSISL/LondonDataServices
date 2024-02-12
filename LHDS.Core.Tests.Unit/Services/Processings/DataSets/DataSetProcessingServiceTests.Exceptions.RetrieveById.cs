@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -119,11 +119,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     .Throws(serviceException);
 
             // when
-            ValueTask<DataSet> addDataSetTask =
+            ValueTask<DataSet> dataSetRetrieveByIdTask =
                 this.dataSetProcessingService.RetrieveDataSetByIdAsync(someId);
 
             DataSetProcessingServiceException actualException =
-                await Assert.ThrowsAsync<DataSetProcessingServiceException>(addDataSetTask.AsTask);
+                await Assert.ThrowsAsync<DataSetProcessingServiceException>(dataSetRetrieveByIdTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetProcessingServiveException);

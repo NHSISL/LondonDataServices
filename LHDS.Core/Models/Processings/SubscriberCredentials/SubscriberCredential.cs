@@ -22,5 +22,9 @@ namespace LHDS.Core.Models.Processings.SubscriberCredentials
         public bool IsActive { get; set; }
         public DateTimeOffset? LastPollStartDate { get; set; }
         public DateTimeOffset? LastPollEndDate { get; set; }
+        public string CreatedBy { get; set; } = string.Empty;
+        public string UpdatedBy { get; set; } = string.Empty;
+        public DateTimeOffset UpdatedDate { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
     }
 }

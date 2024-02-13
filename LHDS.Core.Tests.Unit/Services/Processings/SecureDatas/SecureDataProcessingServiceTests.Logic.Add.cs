@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             // when
             SubscriberCredential actualSubscriberCredential =
-                await this.secureDataProcessingService.AddOrModifySecureData(inputSubscriberCredential);
+                await this.secureDataProcessingService.AddOrModifySecureDataAsync(inputSubscriberCredential);
 
             // then
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);

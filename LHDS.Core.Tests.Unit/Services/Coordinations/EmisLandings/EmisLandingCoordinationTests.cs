@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
@@ -15,6 +16,7 @@ using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 {
@@ -86,6 +88,36 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .OnProperty(subscriberCredential => subscriberCredential.Id).Use(() => subscriberAgreementId);
 
             return filler;
+        }
+
+        public static TheoryData DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new SubscriberCredentialValidationOrchestrationException(
+                    message: "Subscriber credential orchestration validation error occured, please try again",
+                    innerException),
+
+                //new SubscriberCredentialOrchestrationDependencyValidationException(
+                //    message: "Subscriber credential orchestration dependency validation error occurred, " +
+                //        "please try again.",
+
+                //    innerException),
+
+                //new EmisLandingOrchestrationValidationException(
+                //    message: "EMIS landing orchestration validation error occured, please try again",
+                //    innerException),
+
+                //new EmisLandingOrchestrationDependencyValidationException(
+                //    message: "EMIS landing orchestration dependency validation error occurred, " +
+                //        "please try again.",
+
+                //    innerException),
+            };
         }
     }
 }

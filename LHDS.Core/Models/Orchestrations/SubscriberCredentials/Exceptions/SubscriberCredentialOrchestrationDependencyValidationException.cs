@@ -4,11 +4,11 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Coordinations.EmisLandings.Exceptions
+namespace LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions
 {
-    public class EmisLandingCoordinationValidationException : Xeption
+    public class SubscriberCredentialOrchestrationDependencyValidationException : Xeption
     {
-        public EmisLandingCoordinationValidationException(string message, Xeption innerException)
+        public SubscriberCredentialOrchestrationDependencyValidationException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

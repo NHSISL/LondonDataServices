@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Extensions.Exceptions;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -50,6 +51,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
+
+        private static Expression<Func<Xeption, bool>> IsSameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.IsSameExceptionAs(expectedException);
 
         private static List<Guid> CreateRandomActiveSubscriberAgreementIds(int number)
         {

@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
@@ -13,13 +14,16 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
     {
         private readonly ISecureDataService secureDataService;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IIdentifierBroker identifierBroker;
 
         public SecureDataProcessingService(
             ISecureDataService secureDataService,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            IIdentifierBroker identifierBroker)
         {
             this.secureDataService = secureDataService;
             this.loggingBroker = loggingBroker;
+            this.identifierBroker = identifierBroker;
         }
 
         public ValueTask<SubscriberCredential> AddOrModifySecureData(SubscriberCredential secureData) =>

@@ -1,0 +1,75 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.SecureData;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
+using Moq;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
+{
+    public partial class SecureDataProcessingServiceTests
+    {
+        [Fact]
+        public async Task ShouldAddOrModifySecureData()
+        {
+            // given
+            dynamic randomCredential = CreateRandomExpectedObject();
+
+            List<string> keyTypes = new List<string>
+            {
+                "FtpPassPhrase",
+                "FtpPrivateKey",
+                "GpgPassPhrase",
+                "GpgPrivateKe",
+            };
+
+            SubscriberCredential inputSubscriberCredential = new SubscriberCredential
+            {
+                Id = randomCredential.Id,
+                SupplierSharingAgreementShortName = randomCredential.SupplierSharingAgreementShortName,
+                SupplierSharingAgreementGuid = randomCredential.SupplierSharingAgreementGuid
+            };
+
+            SubscriberCredential expectedSubscriberCredential =
+                CreateSubscriberCredentialFromRandomObject(credential: randomCredential);
+
+            foreach (string keyType in keyTypes)
+            {
+                SecureData inputSecureData =
+                    CreateKeyVaultSecretFromRandomObject(credential: randomCredential, property: keyType);
+
+                SecureData outputSecureData = inputSecureData.DeepClone();
+
+                this.secureDataServiceMock.Setup(service =>
+                    service.AddOrModifySecureData(inputSecureData))
+                        .ReturnsAsync(outputSecureData);
+            }
+
+            // when
+            SubscriberCredential actualSubscriberCredential =
+                await this.secureDataProcessingService.AddOrModifySecureData(inputSubscriberCredential);
+
+            // then
+            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+
+            foreach (string keyType in keyTypes)
+            {
+                SecureData inputSecureData =
+                    CreateKeyVaultSecretFromRandomObject(credential: randomCredential, property: keyType);
+
+                this.secureDataServiceMock.Verify(service =>
+                    service.AddOrModifySecureData(inputSecureData), 
+                        Times.Exactly(4));
+            }
+
+            this.secureDataServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

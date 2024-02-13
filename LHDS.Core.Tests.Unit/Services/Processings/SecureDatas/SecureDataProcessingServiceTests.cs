@@ -1,0 +1,123 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Linq.Expressions;
+using System.Reflection;
+using Azure.Security.KeyVault.Secrets;
+using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Services.Foundations.SecureDatas;
+using Moq;
+using Tynamix.ObjectFiller;
+using Xeptions;
+
+namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
+{
+    public partial class SecureDataProcessingServiceTests
+    {
+        private readonly Mock<ISecureDataService> secureDataServiceMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly ISecureDataProcessingService secureDataProcessingService;
+        private readonly ICompareLogic compareLogic;
+
+        public SecureDataProcessingServiceTests()
+        {
+            this.secureDataServiceMock = new Mock<ISecureDataService>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
+            compareLogic = new CompareLogic();
+
+            this.secureDataProcessingService = new SecureDataProcessingService(
+                secureDataService: this.secureDataServiceMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object,
+                identifierBroker: identifierBrokerMock.Object);
+        }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
+
+        private static string GetRandomString() =>
+            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
+        private static dynamic CreateRandomExpectedObject()
+        {
+            Guid id = Guid.NewGuid();
+            Guid supplierSharingAgreementGuid = Guid.NewGuid();
+            DateTimeOffset randomDate = GetRandomDateTimeOffset();
+            return new
+            {
+                Id = id,
+                SupplierSharingAgreementShortName = GetRandomString(),
+                SupplierSharingAgreementGuid = supplierSharingAgreementGuid,
+                FtpUserName = GetRandomString(),
+                FtpPassPhrase = GetRandomString(),
+                FtpPrivateKey = GetRandomString(),
+                FtpPublicKey = GetRandomString(),
+                GpgPassPhrase = GetRandomString(),
+                GpgPrivateKey = GetRandomString(),
+                GpgPublicKey = GetRandomString(),
+                IsActive = false,
+                LastPollStartDate = randomDate,
+                LastPollEndDate = randomDate.AddMinutes(1),
+            };
+        }
+
+        private static KeyVaultSecret CreateKeyVaultSecretFromRandomObject(dynamic credential, string property)
+        {
+            string secretName = $"{credential.Id}-{property}";
+            string secretValue = GetDynamicPropertyValue(credential, property);
+            KeyVaultSecret randomKeyVaultSecret = new KeyVaultSecret(name: secretName, value: secretValue);
+
+            return randomKeyVaultSecret;
+        }
+
+        private static string GetDynamicPropertyValue(dynamic obj, string propertyName)
+        {
+            PropertyInfo propertyInfo = obj.GetType().GetProperty(propertyName);
+            if (propertyInfo != null)
+            {
+                object value = propertyInfo.GetValue(obj);
+                return value?.ToString() ?? string.Empty;
+            }
+            else
+            {
+                throw new ArgumentException($"Property '{propertyName}' not found on object.");
+            }
+        }
+
+        private static SubscriberCredential CreateSubscriberCredentialFromRandomObject(dynamic credential)
+        {
+            SubscriberCredential randomSubscriberCredential = new SubscriberCredential
+            {
+                Id = credential.Id,
+                SupplierSharingAgreementShortName = credential.SupplierSharingAgreementShortName,
+                SupplierSharingAgreementGuid = credential.SupplierSharingAgreementGuid,
+                FtpUserName = credential.FtpUserName,
+                FtpPassPhrase = credential.FtpPassPhrase,
+                FtpPrivateKey = credential.FtpPrivateKey,
+                FtpPublicKey = credential.FtpPublicKey,
+                GpgPassPhrase = credential.GpgPassPhrase,
+                GpgPrivateKey = credential.GpgPrivateKey,
+                GpgPublicKey = credential.GpgPublicKey,
+                IsActive = credential.IsActive,
+                LastPollStartDate = credential.LastPollStartDate,
+                LastPollEndDate = credential.LastPollEndDate
+            };
+
+            return randomSubscriberCredential;
+        }
+    }
+}

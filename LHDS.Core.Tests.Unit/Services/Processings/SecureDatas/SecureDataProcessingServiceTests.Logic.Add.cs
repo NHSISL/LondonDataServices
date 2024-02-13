@@ -29,15 +29,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                 "GpgPrivateKe",
             };
 
-            SubscriberCredential inputSubscriberCredential = new SubscriberCredential
-            {
-                Id = randomCredential.Id,
-                SupplierSharingAgreementShortName = randomCredential.SupplierSharingAgreementShortName,
-                SupplierSharingAgreementGuid = randomCredential.SupplierSharingAgreementGuid
-            };
-
-            SubscriberCredential expectedSubscriberCredential =
+            SubscriberCredential inputSubscriberCredential = 
                 CreateSubscriberCredentialFromRandomObject(credential: randomCredential);
+
+            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
 
             foreach (string keyType in keyTypes)
             {

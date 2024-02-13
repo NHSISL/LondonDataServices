@@ -29,7 +29,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             this.identifierBroker = identifierBroker;
         }
 
-        public ValueTask<SubscriberCredential> AddOrModifySecureData(SubscriberCredential subscriberCredential)
+        public async ValueTask<SubscriberCredential> AddOrModifySecureDataAsync(SubscriberCredential subscriberCredential)
         {
             List<string> keyTypes = new List<string>
                 {
@@ -39,8 +39,22 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                     "GpgPrivateKe",
                 };
 
+            SubscriberCredential returnedSubscriberCredential = new SubscriberCredential
+            {
+                Id = subscriberCredential.Id,
+                SupplierSharingAgreementShortName = subscriberCredential.SupplierSharingAgreementShortName,
+                SupplierSharingAgreementGuid = subscriberCredential.SupplierSharingAgreementGuid,
+                FtpUserName = subscriberCredential.FtpUserName,
+                FtpPublicKey = subscriberCredential.FtpPublicKey,
+                GpgPublicKey = subscriberCredential.GpgPublicKey,
+                IsActive = subscriberCredential.IsActive,
+                LastPollEndDate = subscriberCredential.LastPollEndDate,
+                LastPollStartDate = subscriberCredential.LastPollStartDate
+            };
+
             foreach (string keyType in keyTypes)
             {
+                
                 string secretName = $"{subscriberCredential.Id}-{keyType}";
                 string secretValue = GetDynamicPropertyValue(subscriberCredential, keyType);
 
@@ -50,8 +64,12 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                     Value = secretValue
                 };
 
-                this.secureDataService.AddOrModifySecureData(secureData);
+                SecureData returnedSecureData =  await this.secureDataService.AddOrModifySecureData(secureData);
+
+                SetDynamicPropertyValue(returnedSubscriberCredential, keyType, returnedSecureData.Value);
             }
+
+            return returnedSubscriberCredential;
         }
 
         public ValueTask<SubscriberCredential> RetrieveSecretsBySubscriberAgreementNameAsync(
@@ -68,6 +86,19 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             {
                 object value = propertyInfo.GetValue(obj);
                 return value?.ToString() ?? string.Empty;
+            }
+            else
+            {
+                throw new ArgumentException($"Property '{propertyName}' not found on object.");
+            }
+        }
+
+        private static void SetDynamicPropertyValue(dynamic obj, string propertyName, string propertyValue)
+        {
+            PropertyInfo propertyInfo = obj.GetType().GetProperty(propertyName);
+            if (propertyInfo != null)
+            {
+                propertyInfo.SetValue(obj, propertyValue);
             }
             else
             {

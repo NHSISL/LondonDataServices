@@ -68,8 +68,17 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 var failedEmisLandingCoordinationServiceException =
                     new FailedEmisLandingCoordinationServiceException(
-                        message: "Failed EMIS landing coordination service occurred, please contact support.",
+                        message: "Failed EMIS landing aggregate coordination service occurred, please contact support.",
                         innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedEmisLandingCoordinationServiceException =
+                    new FailedEmisLandingCoordinationServiceException(
+                        message: "Failed EMIS landing coordination service occurred, please contact support.",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
             }

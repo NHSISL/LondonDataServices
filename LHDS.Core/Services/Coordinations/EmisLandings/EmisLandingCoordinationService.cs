@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 
@@ -27,8 +28,26 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<string>> ProcessAsync() =>
-            throw new NotImplementedException();
+        public async ValueTask<List<string>> ProcessAsync()
+        {
+            List<Guid> subscriberAgreementIds = await this.subscriberCredentialOrchestration
+                .RetrieveAllActiveSubscriberCredentialIds();
+
+            List<string> processedPaths = new List<string>();
+
+            foreach (Guid subscriberAgreementId in subscriberAgreementIds)
+            {
+                SubscriberCredential subscriberCredential = await this.subscriberCredentialOrchestration
+                    .RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId);
+
+                List<string> processedItems = await this.emisLandingOrchestrationService
+                    .ProcessAsync(subscriberCredential);
+
+                processedPaths.AddRange(processedItems);
+            }
+
+            return processedPaths;
+        }
 
         public async ValueTask<string> ProcessAsync(string fileName) =>
             throw new NotImplementedException();

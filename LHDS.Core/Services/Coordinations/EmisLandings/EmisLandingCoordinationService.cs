@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -28,26 +29,47 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<List<string>> ProcessAsync()
-        {
-            List<Guid> subscriberAgreementIds = await this.subscriberCredentialOrchestration
-                .RetrieveAllActiveSubscriberCredentialIds();
-
-            List<string> processedPaths = new List<string>();
-
-            foreach (Guid subscriberAgreementId in subscriberAgreementIds)
+        public ValueTask<List<string>> ProcessAsync() =>
+            TryCatch(async () =>
             {
-                SubscriberCredential subscriberCredential = await this.subscriberCredentialOrchestration
-                    .RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId);
+                List<Guid> subscriberAgreementIds = await this.subscriberCredentialOrchestration
+                    .RetrieveAllActiveSubscriberCredentialIds();
 
-                List<string> processedItems = await this.emisLandingOrchestrationService
-                    .ProcessAsync(subscriberCredential);
+                List<string> processedPaths = new List<string>();
+                var exceptions = new List<Exception>();
 
-                processedPaths.AddRange(processedItems);
-            }
+                foreach (Guid subscriberAgreementId in subscriberAgreementIds)
+                {
+                    try
+                    {
+                        List<string> processedFiles = await TryCatch(async () =>
+                        {
+                            SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
+                                .RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId);
 
-            return processedPaths;
-        }
+                            List<string> processedItems = await this.emisLandingOrchestrationService
+                                .ProcessAsync(maybeSubscriberCredential);
+
+                            return processedItems;
+                        });
+
+                        processedPaths.AddRange(processedFiles);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to process files for {exceptions.Count} subscriber agreements",
+                        exceptions);
+                }
+
+                return processedPaths;
+            });
 
         public async ValueTask<string> ProcessAsync(string fileName) =>
             throw new NotImplementedException();

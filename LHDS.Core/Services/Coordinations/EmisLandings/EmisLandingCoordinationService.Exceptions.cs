@@ -1,0 +1,83 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
+using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
+using LHDS.Core.Services.Orchestrations.EmisLandings;
+using Xeptions;
+
+namespace LHDS.Core.Services.Orchestrations.Downloads
+{
+    public partial class EmisLandingCoordinationService : IEmisLandingCoordinationService
+    {
+        private delegate ValueTask<List<string>> ReturningStringListFunction();
+
+        private async ValueTask<List<string>> TryCatch(ReturningStringListFunction returningStringListFunction)
+        {
+            try
+            {
+                return await returningStringListFunction();
+            }
+            catch (SubscriberCredentialValidationOrchestrationException
+                subscriberCredentialValidationOrchestrationException)
+            {
+                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationOrchestrationException);
+            }
+            catch (SubscriberCredentialOrchestrationDependencyValidationException
+                subscriberCredentialOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    subscriberCredentialOrchestrationDependencyValidationException);
+            }
+            catch (EmisLandingOrchestrationValidationException
+                emisLandingOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationValidationException);
+            }
+            catch (EmisLandingOrchestrationDependencyValidationException
+                emisLandingOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationDependencyValidationException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedEmisLandingCoordinationServiceException =
+                    new FailedEmisLandingCoordinationServiceException(
+                        message: "Failed EMIS landing coordination service occurred, please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
+            }
+        }
+
+        private EmisLandingCoordinationDependencyValidationException CreateAndLogDependencyValidationException(
+            Xeption exception)
+        {
+            var emisLandingCoordinationDependencyValidationException =
+                new EmisLandingCoordinationDependencyValidationException(
+                    message: "EMIS landing coordination dependency validation error occurred, please try again.",
+                    exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(emisLandingCoordinationDependencyValidationException);
+
+            return emisLandingCoordinationDependencyValidationException;
+        }
+
+        private EmisLandingCoordinationServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var emisLandingCoordinationServiceException =
+                new EmisLandingCoordinationServiceException(
+                    message: "EMIS landing coordination service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(emisLandingCoordinationServiceException);
+
+            return emisLandingCoordinationServiceException;
+        }
+    }
+}

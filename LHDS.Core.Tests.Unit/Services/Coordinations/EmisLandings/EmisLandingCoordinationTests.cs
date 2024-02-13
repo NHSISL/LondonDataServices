@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Downloads;
@@ -102,21 +103,47 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     message: "Subscriber credential orchestration validation error occured, please try again",
                     innerException),
 
-                //new SubscriberCredentialOrchestrationDependencyValidationException(
-                //    message: "Subscriber credential orchestration dependency validation error occurred, " +
-                //        "please try again.",
+                new SubscriberCredentialOrchestrationDependencyValidationException(
+                    message: "Subscriber credential orchestration dependency validation error occurred, " +
+                        "please try again.",
 
-                //    innerException),
+                    innerException),
 
-                //new EmisLandingOrchestrationValidationException(
-                //    message: "EMIS landing orchestration validation error occured, please try again",
-                //    innerException),
+                new EmisLandingOrchestrationValidationException(
+                    message: "EMIS landing orchestration validation error occured, please try again.",
+                    innerException),
 
-                //new EmisLandingOrchestrationDependencyValidationException(
-                //    message: "EMIS landing orchestration dependency validation error occurred, " +
-                //        "please try again.",
+                new EmisLandingOrchestrationDependencyValidationException(
+                    message: "EMIS landing orchestration dependency validation error occurred, " +
+                        "please try again.",
 
-                //    innerException),
+                    innerException),
+            };
+        }
+
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new SubscriberCredentialDependencyOrchestrationException(
+                    message: "Subscriber credential orchestration dependency error occured, please try again.",
+                    innerException),
+
+                new SubscriberCredentialOrchestrationServiceException(
+                    message: "Subscriber credential orchestration service error occurred, contact support.",
+                    innerException),
+
+                new EmisLandingOrchestrationDependencyException(
+                    message: "EMIS landing orchestration dependency error occured, please try again.",
+                    innerException),
+
+                new EmisLandingOrchestrationServiceException(
+                    message: "EMIS landing orchestration service error occurred, contact support.",
+                    innerException)
             };
         }
     }

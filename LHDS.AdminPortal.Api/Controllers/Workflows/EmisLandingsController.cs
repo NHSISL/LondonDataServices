@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
@@ -17,10 +17,10 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
     [Route("api/[controller]")]
     public class EmisLandingsController : RESTFulController
     {
-        private readonly IEmisLandingOrchestrationService emisLandingOrchestrationService;
+        private readonly IEmisLandingCoordinationService emisLandingCoordinationService;
 
-        public EmisLandingsController(IEmisLandingOrchestrationService emisLandingOrchestrationService) =>
-            this.emisLandingOrchestrationService = emisLandingOrchestrationService;
+        public EmisLandingsController(IEmisLandingCoordinationService emisLandingCoordinationService) =>
+            this.emisLandingCoordinationService = emisLandingCoordinationService;
 
         [HttpPost]
 #if RELEASE
@@ -30,7 +30,7 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
         {
             try
             {
-                var returnFilePath = await emisLandingOrchestrationService.ProcessAsync();
+                var returnFilePath = await emisLandingCoordinationService.ProcessAsync();
 
                 return Ok(returnFilePath);
             }
@@ -56,7 +56,7 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
         {
             try
             {
-                var returnFilePath = await emisLandingOrchestrationService
+                var returnFilePath = await emisLandingCoordinationService
                     .ProcessAsync(fileName);
 
                 return Ok(returnFilePath);

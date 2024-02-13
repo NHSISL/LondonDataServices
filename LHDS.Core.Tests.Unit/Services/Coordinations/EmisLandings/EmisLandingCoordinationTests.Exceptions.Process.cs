@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowAggregateExceptionOnProcessIfErrorsInLoopAndLogItAsync(
+        public async Task ShouldThrowAggregateDependencyValidationExceptionOnProcessIfErrorsInLoopAndLogItAsync(
             Xeption dependancyValidationException)
         {
             // Given
@@ -91,6 +91,94 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      emisLandingCoordinationDependencyValidationLoggingException))),
+                         Times.Exactly(randomActiveSubscriberAgreementIds.Count));
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedEmisLandingCoordinationServiceException))),
+                         Times.Once);
+
+            this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
+            this.emisLandingExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowAggregateDependencyExceptionOnProcessIfErrorsInLoopAndLogItAsync(
+            Xeption dependancyValidationException)
+        {
+            // Given
+            int randomNumber = GetRandomNumber();
+            List<Guid> randomActiveSubscriberAgreementIds =
+                CreateRandomActiveSubscriberAgreementIds(number: randomNumber);
+
+            List<string> randomEmisLandingPaths = CreateRandomLandingPaths(number: GetRandomNumber());
+            List<Exception> exceptions = new List<Exception>();
+
+            this.subscriberCredentialOrchestrationMock.Setup(service =>
+                service.RetrieveAllActiveSubscriberCredentialIds())
+                    .ReturnsAsync(randomActiveSubscriberAgreementIds);
+
+            foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
+            {
+                this.subscriberCredentialOrchestrationMock.Setup(service =>
+                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId))
+                        .ThrowsAsync(dependancyValidationException);
+
+                var emisLandingCoordinationDependencyException =
+                    new EmisLandingCoordinationDependencyException(
+                        message: "EMIS landing coordination dependency error occurred, fix the errors and try again.",
+                        innerException: dependancyValidationException.InnerException as Xeption);
+
+                exceptions.Add(emisLandingCoordinationDependencyException);
+            }
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to process files for {exceptions.Count} subscriber agreements",
+                    exceptions);
+
+            var failedEmisLandingCoordinationServiceException =
+                new FailedEmisLandingCoordinationServiceException(
+                    message: "Failed EMIS landing coordination service occurred, please contact support.",
+                    innerException: aggregateException);
+
+            var expectedEmisLandingCoordinationServiceException =
+                new EmisLandingCoordinationServiceException(
+                    message: "EMIS landing coordination service error occurred, contact support.",
+                    innerException: failedEmisLandingCoordinationServiceException);
+
+            // When
+            ValueTask<List<string>> processDataTask = this.emisLandingCoordinationService.ProcessAsync();
+
+            EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
+                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
+                    await processDataTask);
+
+            // Then
+            actualEmisLandingCoordinationValidationException.Should()
+                .BeEquivalentTo(expectedEmisLandingCoordinationServiceException);
+
+            this.subscriberCredentialOrchestrationMock.Verify(service =>
+                service.RetrieveAllActiveSubscriberCredentialIds(),
+                    Times.Once);
+
+            foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
+            {
+                this.subscriberCredentialOrchestrationMock.Verify(service =>
+                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId),
+                        Times.Once);
+            }
+
+            var emisLandingCoordinationDependencyLoggingException =
+                new EmisLandingCoordinationDependencyException(
+                    message: "EMIS landing coordination dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyValidationException.InnerException as Xeption);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     emisLandingCoordinationDependencyLoggingException))),
                          Times.Exactly(randomActiveSubscriberAgreementIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>

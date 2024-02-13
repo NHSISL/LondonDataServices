@@ -44,6 +44,26 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw CreateAndLogDependencyValidationException(emisLandingOrchestrationDependencyValidationException);
             }
+            catch (SubscriberCredentialDependencyOrchestrationException
+                subscriberCredentialDependencyOrchestrationException)
+            {
+                throw CreateAndLogDependencyException(subscriberCredentialDependencyOrchestrationException);
+            }
+            catch (SubscriberCredentialOrchestrationServiceException
+                subscriberCredentialOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(subscriberCredentialOrchestrationServiceException);
+            }
+            catch (EmisLandingOrchestrationDependencyException
+                emisLandingOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(emisLandingOrchestrationDependencyException);
+            }
+            catch (EmisLandingOrchestrationServiceException
+                emisLandingOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(emisLandingOrchestrationServiceException);
+            }
             catch (AggregateException aggregateException)
             {
                 var failedEmisLandingCoordinationServiceException =
@@ -66,6 +86,18 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.loggingBroker.LogError(emisLandingCoordinationDependencyValidationException);
 
             return emisLandingCoordinationDependencyValidationException;
+        }
+
+        private EmisLandingCoordinationDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var emisLandingCoordinationDependencyException =
+                new EmisLandingCoordinationDependencyException(
+                    message: "EMIS landing coordination dependency error occurred, fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(emisLandingCoordinationDependencyException);
+
+            return emisLandingCoordinationDependencyException;
         }
 
         private EmisLandingCoordinationServiceException CreateAndLogServiceException(Xeption exception)

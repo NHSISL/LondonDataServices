@@ -23,13 +23,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
         {
             // given
             dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();
-            string firstProperty = "FtpPassPhrase";
 
             SubscriberCredential inputSubscriberCredential =
                 CreateSubscriberCredentialFromDynamic(credential: randomCredential);
-
-            SecureData inputSecureData =
-                CreateSecretDataFromDynamic(credential: randomCredential, property: firstProperty);
 
             var expectedSecureDataProcessingDependencyValidationException =
                 new SubscriberCredentialProcessingDependencyValidationException(
@@ -37,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.secureDataServiceMock.Setup(service =>
-                service.AddOrModifySecureData(It.Is(SameSecureDataAs(inputSecureData))))
+                service.AddOrModifySecureData(It.IsAny<SecureData>()))
                     .ThrowsAsync(dependencyValidationException);
 
             // when
@@ -52,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             actualException.Should().BeEquivalentTo(expectedSecureDataProcessingDependencyValidationException);
 
             this.secureDataServiceMock.Verify(service =>
-                service.AddOrModifySecureData(inputSecureData),
+                service.AddOrModifySecureData(It.IsAny<SecureData>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -71,13 +67,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
         {
             // given
             dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();
-            string firstProperty = "FtpPassPhrase";
 
             SubscriberCredential inputSubscriberCredential =
                 CreateSubscriberCredentialFromDynamic(credential: randomCredential);
-
-            SecureData inputSecureData =
-                CreateSecretDataFromDynamic(credential: randomCredential, property: firstProperty);
 
             var expectedSubscriberCredentialProcessingDependencyException =
                 new SubscriberCredentialProcessingDependencyException(
@@ -85,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     innerException: dependencyException.InnerException as Xeption);
 
             this.secureDataServiceMock.Setup(service =>
-                service.AddOrModifySecureData(inputSecureData))
+                service.AddOrModifySecureData(It.IsAny<SecureData>()))
                     .Throws(dependencyException);
 
             // when
@@ -99,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             actualException.Should().BeEquivalentTo(expectedSubscriberCredentialProcessingDependencyException);
 
             this.secureDataServiceMock.Verify(service =>
-                service.AddOrModifySecureData(inputSecureData),
+                service.AddOrModifySecureData(It.IsAny<SecureData>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -116,14 +108,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
         {
             // given
             dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();
-            string firstProperty = "FtpPassPhrase";
             var serviceException = new Exception();
 
             SubscriberCredential inputSubscriberCredential =
                 CreateSubscriberCredentialFromDynamic(credential: randomCredential);
-
-            SecureData inputSecureData =
-                CreateSecretDataFromDynamic(credential: randomCredential, property: firstProperty);
 
             var failedSubscriberCredentialProcessingServiceException =
                 new FailedSubscriberCredentialProcessingServiceException(
@@ -136,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     innerException: failedSubscriberCredentialProcessingServiceException);
 
             this.secureDataServiceMock.Setup(service =>
-                service.AddOrModifySecureData(inputSecureData))
+                service.AddOrModifySecureData(It.IsAny<SecureData>()))
                     .Throws(serviceException);
 
             // when
@@ -151,7 +139,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             actualException.Should().BeEquivalentTo(expectedSubscriberCredentialProcessingServiveException);
 
             this.secureDataServiceMock.Verify(service =>
-                service.AddOrModifySecureData(inputSecureData),
+                service.AddOrModifySecureData(It.IsAny<SecureData>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
@@ -66,7 +67,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.landingConfiguration = landingConfiguration;
         }
 
-        public ValueTask<List<string>> ProcessAsync() =>
+        public ValueTask<List<string>> ProcessAsync(SubscriberCredential subscriberCredential) =>
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
@@ -84,7 +85,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     {
                         string decryptedFile = await TryCatch(async () =>
                         {
-                            IngestionTracking maybeIngestionTracking =
+                            IngestionTracking? maybeIngestionTracking =
                                 this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
                                     .FirstOrDefault(ingestionTracking =>
                                         ingestionTracking.FileName == document.FileName);
@@ -201,10 +202,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 return files;
             });
 
-        public async ValueTask<string> ProcessAsync(string fileName) =>
+        public async ValueTask<string> ProcessAsync(string fileName, SubscriberCredential subscriberCredential) =>
             await TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
+                ValidateSubscriberCredentials(subscriberCredential);
                 ValidateFileName(fileName);
 
                 Document externalDocument =
@@ -212,7 +214,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                 ValidateStorageDownload(externalDocument, fileName);
 
-                IngestionTracking maybeIngestionTracking =
+                IngestionTracking? maybeIngestionTracking =
                     this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
                         .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
 

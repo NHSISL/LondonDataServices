@@ -3,18 +3,20 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
 namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
 {
-    internal interface ISubscriberCredentialOrchestration
+    public interface ISubscriberCredentialOrchestration
     {
-        ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(SubscriberCredential address);
+        ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(SubscriberCredential subscriberCredential);
         IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials();
+        ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds();
         ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(Guid subscriberCredentialId);
         ValueTask<SubscriberCredential> RetrieveOrAddSubscriberByNameAsync(string subscriberAgreementName);
-        ValueTask<SubscriberCredential> RemoveSubscriberCredentialByIdAsync(Guid addressId);
+        ValueTask<SubscriberCredential> RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId);
     }
 }

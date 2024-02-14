@@ -1,6 +1,7 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xunit;
 
@@ -22,6 +24,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         public async Task ShouldProcessNewDocumentsAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Guid randomGuid = Guid.NewGuid();
             Guid supplierId = landingConfiguration.LandingSupplierId;
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
@@ -107,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             }
 
             // when
-            await this.emisLandingOrchestrationService.ProcessAsync();
+            await this.emisLandingOrchestrationService.ProcessAsync(subscriberCredential: inputSubscriberCredential);
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>
@@ -204,6 +208,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         public async Task ShouldNotProcessExistingDocumentsAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
@@ -232,7 +238,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             }
 
             // when
-            await this.emisLandingOrchestrationService.ProcessAsync();
+            await this.emisLandingOrchestrationService.ProcessAsync(subscriberCredential: inputSubscriberCredential);
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>
@@ -272,6 +278,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         public async Task ShouldProcessExistingNamedDocumentsAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             Document randomDocument = CreateRandomDocument();
             Document externalDocument = randomDocument;
@@ -302,7 +310,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .ReturnsAsync(outputIngestionTracking);
 
             // when
-            await this.emisLandingOrchestrationService.ProcessAsync(externalIngestionTracking.FileName);
+            await this.emisLandingOrchestrationService
+                .ProcessAsync(
+                    fileName: externalIngestionTracking.FileName,
+                    subscriberCredential: inputSubscriberCredential);
 
             // then
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
@@ -356,6 +367,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         public async Task ShouldProcessNewNamedDocumentsAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Guid supplierId = landingConfiguration.LandingSupplierId;
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             Guid randomIdentifier = Guid.NewGuid();
@@ -434,7 +447,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .ReturnsAsync(outputIngestionTracking);
 
             // when
-            await this.emisLandingOrchestrationService.ProcessAsync(newIngestionTracking.FileName);
+            await this.emisLandingOrchestrationService.ProcessAsync(
+                fileName: newIngestionTracking.FileName,
+                subscriberCredential: inputSubscriberCredential);
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>
@@ -490,6 +505,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         public async Task ShouldMarkUnavailableFilesAsDeletedAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Guid randomGuid = Guid.NewGuid();
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             List<Document> externalDocuments = new List<Document>();
@@ -526,7 +543,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(externalIngestionTrackingsFound.AsQueryable());
 
             // when
-            await this.emisLandingOrchestrationService.ProcessAsync();
+            await this.emisLandingOrchestrationService.ProcessAsync(subscriberCredential: inputSubscriberCredential);
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>

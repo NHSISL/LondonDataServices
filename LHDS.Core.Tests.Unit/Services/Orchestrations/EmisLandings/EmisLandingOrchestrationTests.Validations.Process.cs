@@ -1,12 +1,13 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using Moq;
 using Xunit;
@@ -19,6 +20,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         public async Task ShouldThrowValidationExceptionIfConfigurationIsNullAndLogItAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            var somefileName = GetRandomMessage();
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
             LandingConfiguration invalidLandingConfiguration = null;
@@ -38,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             var nullLandingConfigurationDownloadOrchestrationException =
                 new NullLandingConfigurationEmisLandingOrchestrationException(
-                    message: "Null landing configuration download orchestration exception, " +
+                    message: "Null landing configuration EMIS landing orchestration exception, " +
                         "please correct the errors and try again.");
 
             var expectedEmisLandingOrchestrationValidationException =
@@ -47,7 +51,51 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     innerException: nullLandingConfigurationDownloadOrchestrationException);
 
             // when
-            ValueTask<string> processTask = invalidDownloadOrchestrationService.ProcessAsync(inputFileName);
+            ValueTask<string> processTask = invalidDownloadOrchestrationService
+                .ProcessAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
+
+            EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
+                await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
+
+            // then
+            actualEmisLandingOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedEmisLandingOrchestrationValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionIfSubscriptionCredentialIsNullAndLogItAsync()
+        {
+            // given
+            SubscriberCredential inputSubscriberCredential = null;
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+
+            var nullSubscriberCredentialEmisLandingOrchestrationException =
+                new NullSubscriberCredentialEmisLandingOrchestrationException(
+                    message: "Null subscriber credential EMIS landing orchestration exception, " +
+                        "please correct the errors and try again.");
+
+            var expectedEmisLandingOrchestrationValidationException =
+                new EmisLandingOrchestrationValidationException(
+                    message: "EMIS landing orchestration validation errors occurred, please try again.",
+                    innerException: nullSubscriberCredentialEmisLandingOrchestrationException);
+
+            // when
+            ValueTask<string> processTask =
+                this.emisLandingOrchestrationService
+                    .ProcessAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
@@ -73,6 +121,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         public async Task ShouldThrowValidationExceptionIfBlobContainersIsNullAndLogItAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
             BlobContainers invalidBlobContainers = null;
@@ -92,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             var nullBlobContainersEmisLandingOrchestrationException =
                 new NullBlobContainersEmisLandingOrchestrationException(
-                    message: "Null blob container download orchestration exception, " +
+                    message: "Null blob container EMIS landing orchestration exception, " +
                         "please correct the errors and try again.");
 
             var expectedEmisLandingOrchestrationValidationException =
@@ -101,7 +151,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     innerException: nullBlobContainersEmisLandingOrchestrationException);
 
             // when
-            ValueTask<string> DownloadTask = invalidDownloadOrchestrationService.ProcessAsync(inputFileName);
+            ValueTask<string> DownloadTask = invalidDownloadOrchestrationService
+                .ProcessAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(DownloadTask.AsTask);
@@ -131,6 +182,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         public async Task ShouldThrowValidationExceptionOnDownloadIfFileNameIsNullAndLogItAsync(string invalidText)
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            string inputFileName = invalidText;
+
             var invalidArgumentEmisLandingOrchestrationException =
                 new InvalidArgumentEmisLandingOrchestrationException(
                     message: "Invalid EMIS landing orchestration argument(s), please correct the errors and try again.");
@@ -146,7 +201,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<string> processTask =
-                this.emisLandingOrchestrationService.ProcessAsync(invalidText);
+                this.emisLandingOrchestrationService
+                    .ProcessAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
@@ -173,6 +229,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         public async Task ShouldNotProcessNamedDocumentsIfDownloadIsNullAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
 
@@ -190,7 +248,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                       .Returns(null);
 
             // when
-            ValueTask<string> processTask = this.emisLandingOrchestrationService.ProcessAsync(inputFileName);
+            ValueTask<string> processTask = this.emisLandingOrchestrationService
+                .ProcessAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);

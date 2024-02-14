@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections;
@@ -14,6 +14,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
+using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
@@ -26,15 +27,19 @@ using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.SecureDatas;
+using LHDS.Core.Services.Foundations.SubscriberAgreements;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
+using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Downloads;
 using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.OptOuts;
+using LHDS.Core.Services.Processings.SubscriberAgreements;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -68,6 +73,7 @@ namespace LHDS.Core.Clients.Extensions
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
+            AddCoordinations(services);
             AddClients(services);
 
             return services;
@@ -99,6 +105,7 @@ namespace LHDS.Core.Clients.Extensions
             {
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
                 services.AddTransient<IDownloadBroker, DownloadBroker>();
+                services.AddTransient<IKeyVaultSecretBroker, KeyVaultSecretBroker>();
 
 
                 var blobServiceClientOptions = new BlobClientOptions()
@@ -130,6 +137,8 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
             services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
+            services.AddTransient<ISubscriberAgreementService, SubscriberAgreementService>();
+            services.AddTransient<ISecureDataService, SecureDataService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
@@ -140,16 +149,25 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDownloadProcessingService, DownloadProcessingService>();
             services.AddTransient<IIngestionTrackingProcessingService, IngestionTrackingProcessingService>();
             services.AddTransient<IIngestionTrackingAuditProcessingService, IngestionTrackingAuditProcessingService>();
+            services.AddTransient<ISubscriberAgreementProcessingService, SubscriberAgreementProcessingService>();
+            services.AddTransient<ISecureDataProcessingService, SecureDataProcessingService>();
         }
 
         private static void AddOrchestrations(IServiceCollection services)
         {
             services.AddTransient<IEmisLandingOrchestrationService, EmisLandingOrchestrationService>();
+            services.AddTransient<ISubscriberCredentialOrchestration, SubscriberCredentialOrchestration>();
+
+        }
+
+        private static void AddCoordinations(IServiceCollection services)
+        {
+            services.AddTransient<IEmisLandingCoordinationService, EmisLandingCoordinationService>();
         }
 
         private static void AddClients(IServiceCollection services)
         {
-            services.AddTransient<ILandingClient, LandingClient>();
+            services.AddTransient<IEmisLandingClient, EmisLandingClient>();
         }
 
         private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)

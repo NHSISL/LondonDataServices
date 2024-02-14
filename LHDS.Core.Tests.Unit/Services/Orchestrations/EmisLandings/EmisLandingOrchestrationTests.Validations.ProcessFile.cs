@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -18,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
     public partial class EmisLandingOrchestrationTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnProcessIfConfigurationIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnProcessFileIfConfigurationIsNullAndLogItAsync()
         {
             // given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
@@ -52,8 +51,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     innerException: nullLandingConfigurationDownloadOrchestrationException);
 
             // when
-            ValueTask<List<string>> processTask = invalidDownloadOrchestrationService
-                .ProcessAsync(subscriberCredential: inputSubscriberCredential);
+            ValueTask<string> processTask = invalidDownloadOrchestrationService
+                .ProcessFileAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
@@ -76,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnProcessIfSubscriptionCredentialIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnProcessFileIfSubscriptionCredentialIsNullAndLogItAsync()
         {
             // given
             SubscriberCredential inputSubscriberCredential = null;
@@ -94,9 +93,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     innerException: nullSubscriberCredentialEmisLandingOrchestrationException);
 
             // when
-            ValueTask<List<string>> processTask =
+            ValueTask<string> processTask =
                 this.emisLandingOrchestrationService
-                    .ProcessAsync(subscriberCredential: inputSubscriberCredential);
+                    .ProcessFileAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
@@ -119,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnProcessIfBlobContainersIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnProcessFileIfBlobContainersIsNullAndLogItAsync()
         {
             // given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
@@ -152,8 +151,106 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     innerException: nullBlobContainersEmisLandingOrchestrationException);
 
             // when
-            ValueTask<List<string>> processTask = invalidDownloadOrchestrationService
-                .ProcessAsync(subscriberCredential: inputSubscriberCredential);
+            ValueTask<string> DownloadTask = invalidDownloadOrchestrationService
+                .ProcessFileAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
+
+            EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
+                await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(DownloadTask.AsTask);
+
+            // then
+            actualEmisLandingOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedEmisLandingOrchestrationValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnProcessFileIfFileNameIsNullAndLogItAsync(string invalidText)
+        {
+            // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            string inputFileName = invalidText;
+
+            var invalidArgumentEmisLandingOrchestrationException =
+                new InvalidArgumentEmisLandingOrchestrationException(
+                    message: "Invalid EMIS landing orchestration argument(s), " +
+                        "please correct the errors and try again.");
+
+            invalidArgumentEmisLandingOrchestrationException.AddData(
+               key: "FileName",
+               values: "Text is required");
+
+            var expectedDownloadOrchestrationValidationException =
+                new EmisLandingOrchestrationValidationException(
+                    message: "EMIS landing orchestration validation errors occurred, please try again.",
+                    innerException: invalidArgumentEmisLandingOrchestrationException);
+
+            // when
+            ValueTask<string> processTask =
+                this.emisLandingOrchestrationService
+                    .ProcessFileAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
+
+            EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
+                await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
+
+            // then
+            actualEmisLandingOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedDownloadOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDownloadOrchestrationValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldNotProcessNamedDocumentOnProcessFileIfDownloadIsNullAsync()
+        {
+            // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+
+            var notFoundEmisLandingOrchestrationException =
+                new NotFoundEmisLandingOrchestrationException(
+                message: $"Couldn't find download with file name: {inputFileName}.");
+
+            var expectedEmisLandingOrchestrationValidationException =
+                new EmisLandingOrchestrationValidationException(
+                    message: "EMIS landing orchestration validation errors occurred, please try again.",
+                    innerException: notFoundEmisLandingOrchestrationException);
+
+            this.downloadProcessingServiceMock.Setup(service =>
+                  service.RetrieveDownloadByFileNameAsync(inputFileName))
+                      .Returns(null);
+
+            // when
+            ValueTask<string> processTask = this.emisLandingOrchestrationService
+                .ProcessFileAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
@@ -161,6 +258,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // then
             actualEmisLandingOrchestrationValidationException.Should()
                 .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
+
+            this.downloadProcessingServiceMock.Verify(service =>
+                service.RetrieveDownloadByFileNameAsync(inputFileName),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

@@ -71,7 +71,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
-
+                ValidateSubscriberCredentials(subscriberCredential);
                 var exceptions = new List<Exception>();
 
                 List<Document> retrievedDocuments =
@@ -202,7 +202,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 return files;
             });
 
-        public async ValueTask<string> ProcessAsync(string fileName, SubscriberCredential subscriberCredential) =>
+        public async ValueTask<string> ProcessFileAsync(string fileName, SubscriberCredential subscriberCredential) =>
             await TryCatch(async () =>
             {
                 ValidateConfigurationSettings();

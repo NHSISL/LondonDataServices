@@ -32,7 +32,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             try
             {
                 var returnFilePath = await this.emisLandingCoordinationService
-                    .ProcessAsync(HttpUtility.UrlDecode(fileName));
+                    .ProcessFileAsync(HttpUtility.UrlDecode(fileName));
 
                 return Ok(returnFilePath);
             }

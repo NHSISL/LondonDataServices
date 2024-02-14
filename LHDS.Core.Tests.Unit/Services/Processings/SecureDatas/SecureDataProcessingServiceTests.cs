@@ -10,13 +10,16 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Models.Foundations.SecureData;
+using LHDS.Core.Models.Foundations.SecureData.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.SecureDatas;
 using LHDS.Core.Services.Processings.SecureDatas;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 {
@@ -132,6 +135,38 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             };
 
             return randomSubscriberCredential;
+        }
+
+        public static TheoryData DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new SecureDataValidationException(
+                    message: "Secure data validation errors occurred, please try again.", innerException),
+
+                new SecureDataDependencyValidationException(
+                    message: "Secure data dependency validation occurred, please try again.", innerException)
+            };
+        }
+
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new SecureDataDependencyException(
+                    message: "Secure data validation errors occurred, please try again.", innerException),
+
+                new SecureDataServiceException(
+                    message : "Secure data service error occurred, contact support.", innerException)
+            };
         }
     }
 }

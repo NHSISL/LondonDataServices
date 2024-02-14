@@ -5,14 +5,14 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Services.Foundations.SecureDatas;
 
-namespace LHDS.Core.Services.Foundations.SecureDatas
+namespace LHDS.Core.Services.Processings.SecureDatas
 {
     public partial class SecureDataProcessingService : ISecureDataProcessingService
     {
@@ -30,17 +30,20 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             this.identifierBroker = identifierBroker;
         }
 
-        public async ValueTask<SubscriberCredential> AddOrModifySecureDataAsync(SubscriberCredential subscriberCredential)
-        {
-            List<SecureData> secureData = GetSecureDataItems(subscriberCredential);  
+        public ValueTask<SubscriberCredential> AddOrModifySecureDataAsync(
+            SubscriberCredential subscriberCredential) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberCredentialOnAdd(subscriberCredential);
+                List<SecureData> secureData = GetSecureDataItems(subscriberCredential);
 
-            foreach (var data in secureData)  
-            {  
-                await this.secureDataService.AddOrModifySecureData(data);  
-            }
+                foreach (var data in secureData)
+                {
+                    await this.secureDataService.AddOrModifySecureData(data);
+                }
 
-            return subscriberCredential;
-        }
+                return subscriberCredential;
+            });
 
         public ValueTask<SubscriberCredential> RetrieveSecretsBySubscriberAgreementNameAsync(
             string subscriberAgreementName) =>
@@ -84,7 +87,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             PropertyInfo propertyInfo = typeof(SubscriberCredential).GetProperty(propertyName);
             if (propertyInfo != null)
             {
-                var value = propertyInfo.GetValue(subscriberCredential); 
+                var value = propertyInfo.GetValue(subscriberCredential);
                 return value?.ToString() ?? string.Empty;
             }
             else

@@ -34,6 +34,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw CreateAndLogValidationException(nullLandingConfigurationEmisLandingOrchestrationException);
             }
+            catch (NullSubscriberCredentialEmisLandingOrchestrationException
+                nullSubscriberCredentialEmisLandingOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullSubscriberCredentialEmisLandingOrchestrationException);
+            }
             catch (NullBlobContainersEmisLandingOrchestrationException
                 nullBlobContainersEmisLandingOrchestrationException)
             {

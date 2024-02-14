@@ -10,6 +10,6 @@ namespace LHDS.Core.Services.Orchestrations.EmisLandings
     public interface IEmisLandingCoordinationService
     {
         ValueTask<List<string>> ProcessAsync();
-        ValueTask<string> ProcessAsync(string fileName);
+        ValueTask<string> ProcessFileAsync(string fileName);
     }
 }

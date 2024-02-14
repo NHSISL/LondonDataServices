@@ -11,6 +11,6 @@ namespace LHDS.Core.Services.Orchestrations.EmisLandings
     public interface IEmisLandingOrchestrationService
     {
         ValueTask<List<string>> ProcessAsync(SubscriberCredential subscriberCredential);
-        ValueTask<string> ProcessAsync(string fileName, SubscriberCredential subscriberCredential);
+        ValueTask<string> ProcessFileAsync(string fileName, SubscriberCredential subscriberCredential);
     }
 }

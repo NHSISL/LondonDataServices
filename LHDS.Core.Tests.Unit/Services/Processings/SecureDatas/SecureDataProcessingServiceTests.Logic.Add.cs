@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Hl7.FhirPath.Sprache;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
@@ -30,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                 "GpgPrivateKey",
             };
 
-            SubscriberCredential inputSubscriberCredential = 
+            SubscriberCredential inputSubscriberCredential =
                 CreateSubscriberCredentialFromDynamic(credential: randomCredential);
 
             SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
@@ -60,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     CreateSecretDataFromDynamic(credential: randomCredential, property: keyType);
 
                 this.secureDataServiceMock.Verify(service =>
-                    service.AddOrModifySecureData(It.Is(SameSecureDataAs(inputSecureData))), 
+                    service.AddOrModifySecureData(It.Is(SameSecureDataAs(inputSecureData))),
                         Times.Once);
             }
 

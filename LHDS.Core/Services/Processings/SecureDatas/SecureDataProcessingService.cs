@@ -31,13 +31,12 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
 
         public async ValueTask<SubscriberCredential> AddOrModifySecureDataAsync(SubscriberCredential subscriberCredential)
         {
-            List<string> keyTypes = new List<string>
-                {
-                    "FtpPassPhrase",
-                    "FtpPrivateKey",
-                    "GpgPassPhrase",
-                    "GpgPrivateKe",
-                };
+            List<SecureData> secureData = GetSecureDataItems();  
+
+        foreach (var data in secureData)  
+        {  
+            await this.secureDataService.AddOrModifySecureData(data);  
+        }
 
             SubscriberCredential returnedSubscriberCredential = new SubscriberCredential
             {
@@ -79,26 +78,13 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
         public ValueTask<SubscriberCredential> RemoveSecureData(SubscriberCredential subscriberCredential) =>
             throw new NotImplementedException();
 
-        private static string GetDynamicPropertyValue(dynamic obj, string propertyName)
+        private static string GetPropertyValue(SubscriberCredential subscriberCredential, string propertyName)
         {
-            PropertyInfo propertyInfo = obj.GetType().GetProperty(propertyName);
+            PropertyInfo propertyInfo = typeof(SubscriberCredential).GetProperty(propName);
             if (propertyInfo != null)
             {
-                object value = propertyInfo.GetValue(obj);
+                var value = propertyInfo.GetValue(subscriberCredential); 
                 return value?.ToString() ?? string.Empty;
-            }
-            else
-            {
-                throw new ArgumentException($"Property '{propertyName}' not found on object.");
-            }
-        }
-
-        private static void SetDynamicPropertyValue(dynamic obj, string propertyName, string propertyValue)
-        {
-            PropertyInfo propertyInfo = obj.GetType().GetProperty(propertyName);
-            if (propertyInfo != null)
-            {
-                propertyInfo.SetValue(obj, propertyValue);
             }
             else
             {

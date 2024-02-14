@@ -57,7 +57,7 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
             try
             {
                 var returnFilePath = await emisLandingCoordinationService
-                    .ProcessAsync(fileName);
+                    .ProcessFileAsync(fileName);
 
                 return Ok(returnFilePath);
             }

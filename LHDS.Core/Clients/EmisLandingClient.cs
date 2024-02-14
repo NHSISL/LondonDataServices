@@ -59,7 +59,7 @@ namespace LHDS.Core.Clients
         {
             try
             {
-                return await this.emisLandingCoordinationService.ProcessAsync(fileName);
+                return await this.emisLandingCoordinationService.ProcessFileAsync(fileName);
             }
             catch (DecryptionOrchestrationValidationException downloadOrchestrationValidationException)
             {

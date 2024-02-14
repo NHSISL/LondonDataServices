@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
@@ -18,11 +17,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
     {
         [Theory]
         [MemberData(nameof(DownloadDependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationOnProcessIfDependencyValidationOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationOnProcessFileIfDependencyValidationOccursAndLogItAsync(
             Xeption dependancyValidationException)
         {
             // given
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
+            var someFileName = GetRandomMessage();
 
             var expectedDependencyException =
                 new EmisLandingOrchestrationDependencyValidationException(
@@ -32,12 +32,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     dependancyValidationException.InnerException as Xeption);
 
             this.downloadProcessingServiceMock.Setup(service =>
-              service.RetrieveListOfDocumentsToProcessAsync())
-                  .ThrowsAsync(dependancyValidationException);
+                service.RetrieveDownloadByFileNameAsync(someFileName))
+                    .Throws(dependancyValidationException);
 
             // when
-            ValueTask<List<string>> processTask = this.emisLandingOrchestrationService
-                .ProcessAsync(subscriberCredential: someSubscriberCredential);
+            ValueTask<string> processTask = this.emisLandingOrchestrationService
+                .ProcessFileAsync(fileName: someFileName, subscriberCredential: someSubscriberCredential);
 
             EmisLandingOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyValidationException>(processTask.AsTask);
@@ -46,8 +46,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.downloadProcessingServiceMock.Verify(service =>
-              service.RetrieveListOfDocumentsToProcessAsync(),
-                Times.Once);
+                service.RetrieveDownloadByFileNameAsync(someFileName),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
@@ -65,11 +65,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
         [Theory]
         [MemberData(nameof(DownloadDependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnProcessIfDependencyExceptionOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnProcessFileIfDependencyExceptionOccursAndLogItAsync(
            Xeption dependancyException)
         {
             // given
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
+            string someFileName = GetRandomMessage();
 
             var expectedDependencyException =
                 new EmisLandingOrchestrationDependencyException(
@@ -77,12 +78,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     innerException: dependancyException.InnerException as Xeption);
 
             this.downloadProcessingServiceMock.Setup(service =>
-              service.RetrieveListOfDocumentsToProcessAsync())
-                  .ThrowsAsync(dependancyException);
+                service.RetrieveDownloadByFileNameAsync(someFileName))
+                    .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask<List<string>> processTask = this.emisLandingOrchestrationService
-                .ProcessAsync(subscriberCredential: someSubscriberCredential);
+            ValueTask<string> processTask = this.emisLandingOrchestrationService
+                .ProcessFileAsync(fileName: someFileName, subscriberCredential: someSubscriberCredential);
 
             EmisLandingOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyException>(processTask.AsTask);
@@ -91,8 +92,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.downloadProcessingServiceMock.Verify(service =>
-              service.RetrieveListOfDocumentsToProcessAsync(),
-                Times.Once);
+                service.RetrieveDownloadByFileNameAsync(someFileName),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
@@ -109,10 +110,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnProcessIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnProcessFileIfServiceErrorOccursAndLogItAsync()
         {
             //Given
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
+            var someFileName = GetRandomMessage();
             var serviceException = new Exception();
 
             var failedEmisLandingOrchestrationServiceException =
@@ -126,12 +128,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     failedEmisLandingOrchestrationServiceException);
 
             this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveListOfDocumentsToProcessAsync())
-                    .ThrowsAsync(serviceException);
+                service.RetrieveDownloadByFileNameAsync(someFileName))
+                    .Throws(serviceException);
 
             // when
-            ValueTask<List<string>> processTask = this.emisLandingOrchestrationService
-                .ProcessAsync(subscriberCredential: someSubscriberCredential);
+            ValueTask<string> processTask = this.emisLandingOrchestrationService
+                .ProcessFileAsync(fileName: someFileName, subscriberCredential: someSubscriberCredential);
 
             EmisLandingOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationServiceException>(processTask.AsTask);
@@ -140,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             actualException.Should().BeEquivalentTo(expectedEmisLandingOrchestrationServiceException);
 
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(),
+                service.RetrieveDownloadByFileNameAsync(someFileName),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

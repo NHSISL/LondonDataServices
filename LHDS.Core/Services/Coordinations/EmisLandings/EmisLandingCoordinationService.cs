@@ -71,7 +71,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 return processedPaths;
             });
 
-        public async ValueTask<string> ProcessAsync(string fileName) =>
+        public async ValueTask<string> ProcessFileAsync(string fileName) =>
             throw new NotImplementedException();
     }
 }

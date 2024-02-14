@@ -45,7 +45,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace LHDS.Core.Clients.Extensions
 {
-    public static class LandingClientServiceCollectionExtensions
+    public static class EmisLandingClientServiceCollectionExtensions
     {
         public static IServiceCollection AddLandingClient(
             this IServiceCollection services,

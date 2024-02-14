@@ -13,6 +13,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.SecureDatas;
+using LHDS.Core.Services.Processings.SecureDatas;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;

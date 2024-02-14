@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
-namespace LHDS.Core.Services.Foundations.SecureDatas
+namespace LHDS.Core.Services.Processings.SecureDatas
 {
     public interface ISecureDataProcessingService
     {

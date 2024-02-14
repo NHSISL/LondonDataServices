@@ -10,6 +10,7 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.SecureDatas;
 using Moq;
@@ -75,13 +76,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             };
         }
 
-        private static KeyVaultSecret CreateSecretDataFromDynamic(dynamic credential, string property)
+        private static SecureData CreateSecretDataFromDynamic(dynamic credential, string property)
         {
             string secretName = $"{credential.Id}-{property}";
             string secretValue = GetDynamicPropertyValue(credential, property);
-            KeyVaultSecret randomKeyVaultSecret = new KeyVaultSecret(name: secretName, value: secretValue);
 
-            return randomKeyVaultSecret;
+            SecureData secureData = new SecureData
+            {
+                Name = secretName,
+                Value = secretValue
+            };
+
+            return secureData;
         }
 
         private static string GetDynamicPropertyValue(dynamic obj, string propertyName)

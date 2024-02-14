@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -31,44 +32,14 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
 
         public async ValueTask<SubscriberCredential> AddOrModifySecureDataAsync(SubscriberCredential subscriberCredential)
         {
-            List<SecureData> secureData = GetSecureDataItems();  
+            List<SecureData> secureData = GetSecureDataItems(subscriberCredential);  
 
-        foreach (var data in secureData)  
-        {  
-            await this.secureDataService.AddOrModifySecureData(data);  
-        }
-
-            SubscriberCredential returnedSubscriberCredential = new SubscriberCredential
-            {
-                Id = subscriberCredential.Id,
-                SupplierSharingAgreementShortName = subscriberCredential.SupplierSharingAgreementShortName,
-                SupplierSharingAgreementGuid = subscriberCredential.SupplierSharingAgreementGuid,
-                FtpUserName = subscriberCredential.FtpUserName,
-                FtpPublicKey = subscriberCredential.FtpPublicKey,
-                GpgPublicKey = subscriberCredential.GpgPublicKey,
-                IsActive = subscriberCredential.IsActive,
-                LastPollEndDate = subscriberCredential.LastPollEndDate,
-                LastPollStartDate = subscriberCredential.LastPollStartDate
-            };
-
-            foreach (string keyType in keyTypes)
-            {
-                
-                string secretName = $"{subscriberCredential.Id}-{keyType}";
-                string secretValue = GetDynamicPropertyValue(subscriberCredential, keyType);
-
-                SecureData secureData = new SecureData
-                {
-                    Name = secretName,
-                    Value = secretValue
-                };
-
-                SecureData returnedSecureData =  await this.secureDataService.AddOrModifySecureData(secureData);
-
-                SetDynamicPropertyValue(returnedSubscriberCredential, keyType, returnedSecureData.Value);
+            foreach (var data in secureData)  
+            {  
+                await this.secureDataService.AddOrModifySecureData(data);  
             }
 
-            return returnedSubscriberCredential;
+            return subscriberCredential;
         }
 
         public ValueTask<SubscriberCredential> RetrieveSecretsBySubscriberAgreementNameAsync(
@@ -78,9 +49,39 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
         public ValueTask<SubscriberCredential> RemoveSecureData(SubscriberCredential subscriberCredential) =>
             throw new NotImplementedException();
 
+        private static List<SecureData> GetSecureDataItems(SubscriberCredential subscriberCredential)
+        {
+            List<string> keyTypes = new List<string>
+            {
+                "FtpPassPhrase",
+                "FtpPrivateKey",
+                "GpgPassPhrase",
+                "GpgPrivateKey",
+            };
+
+            List<SecureData> secureDataList = new List<SecureData>();
+
+            foreach (string keyType in keyTypes)
+            {
+
+                string secretName = $"{subscriberCredential.Id}-{keyType}";
+                string secretValue = GetPropertyValue(subscriberCredential, keyType);
+
+                SecureData secureData = new SecureData
+                {
+                    Name = secretName,
+                    Value = secretValue
+                };
+
+                secureDataList.Add(secureData);
+            }
+
+            return secureDataList;
+        }
+
         private static string GetPropertyValue(SubscriberCredential subscriberCredential, string propertyName)
         {
-            PropertyInfo propertyInfo = typeof(SubscriberCredential).GetProperty(propName);
+            PropertyInfo propertyInfo = typeof(SubscriberCredential).GetProperty(propertyName);
             if (propertyInfo != null)
             {
                 var value = propertyInfo.GetValue(subscriberCredential); 

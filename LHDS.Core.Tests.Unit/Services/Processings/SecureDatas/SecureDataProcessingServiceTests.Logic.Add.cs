@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                 "FtpPassPhrase",
                 "FtpPrivateKey",
                 "GpgPassPhrase",
-                "GpgPrivateKe",
+                "GpgPrivateKey",
             };
 
             SubscriberCredential inputSubscriberCredential = 

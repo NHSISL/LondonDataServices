@@ -4,13 +4,12 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Processings.SubscriberCredentials;
 
 namespace LHDS.Core.Services.Orchestrations.EmisLandings
 {
-    public interface IEmisLandingOrchestrationService
+    public interface IEmisLandingCoordinationService
     {
-        ValueTask<List<string>> ProcessAsync(SubscriberCredential subscriberCredential);
-        ValueTask<string> ProcessAsync(string fileName, SubscriberCredential subscriberCredential);
+        ValueTask<List<string>> ProcessAsync();
+        ValueTask<string> ProcessAsync(string fileName);
     }
 }

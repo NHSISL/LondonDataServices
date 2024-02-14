@@ -2,16 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.SecureData.Exceptions;
-using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using Moq;
 using Xunit;
-using System;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 {

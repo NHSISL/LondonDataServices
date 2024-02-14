@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -24,19 +25,20 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             this.secureDataProcessingService = secureDataProcessingService;
         }
 
-        public ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(SubscriberCredential address) =>
-            throw new NotImplementedException();
+        public ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(
+            SubscriberCredential subscriberCredential) =>
+                throw new NotImplementedException();
 
         public IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials() =>
             throw new NotImplementedException();
 
-        public ValueTask<SubscriberCredential> RetrieveOrAddSubscriberByNameAsync(string subscriberAgreementName) =>
+        public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds() =>
             throw new NotImplementedException();
 
         public ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
             throw new NotImplementedException();
 
-        public ValueTask<SubscriberCredential> RemoveSubscriberCredentialByIdAsync(Guid addressId) =>
+        public ValueTask<SubscriberCredential> RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
             throw new NotImplementedException();
     }
 }

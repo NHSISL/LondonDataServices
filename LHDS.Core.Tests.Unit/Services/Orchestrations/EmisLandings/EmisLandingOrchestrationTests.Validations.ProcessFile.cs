@@ -5,6 +5,8 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -232,6 +234,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+
+            Download inputDownload = new Download
+            {
+                SubscriberCredential = inputSubscriberCredential,
+                Document = new Document { FileName = GetRandomString() }
+            };
+
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
 
@@ -245,7 +254,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     innerException: notFoundEmisLandingOrchestrationException);
 
             this.downloadProcessingServiceMock.Setup(service =>
-                  service.RetrieveDownloadByFileNameAsync(inputFileName))
+                  service.RetrieveDownloadByFileNameAsync(inputDownload))
                       .Returns(null);
 
             // when
@@ -260,7 +269,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
 
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(inputFileName),
+                service.RetrieveDownloadByFileNameAsync(inputDownload),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

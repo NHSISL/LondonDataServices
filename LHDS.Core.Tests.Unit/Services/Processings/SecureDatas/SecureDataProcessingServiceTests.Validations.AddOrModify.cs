@@ -77,6 +77,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     message: "Invalid subscriber credential errors occured. Please correct the errors and try again.");
 
             invalidSubscriberCredentialException.AddData(
+                key: nameof(SubscriberCredential.Id),
+                values: "Id is required");
+
+            invalidSubscriberCredentialException.AddData(
                 key: nameof(SubscriberCredential.SupplierSharingAgreementShortName),
                 values: "Text is required");
 

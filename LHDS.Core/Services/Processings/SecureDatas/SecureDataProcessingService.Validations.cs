@@ -14,6 +14,34 @@ namespace LHDS.Core.Services.Processings.SecureDatas
         private void ValidateSubscriberCredentialOnAdd(SubscriberCredential subscriberCredential)
         {
             ValidateSubscriberCredentialIsNotNull(subscriberCredential);
+
+            Validate<InvalidSubscriberCredentialException>(
+                message: "Invalid subscriber credential errors occured. Please correct the errors and try again.",
+                (Rule: IsInvalid(subscriberCredential.Id), Parameter: nameof(SubscriberCredential.Id)),
+
+                (Rule: IsInvalid(subscriberCredential.SupplierSharingAgreementShortName), Parameter: nameof(
+                    SubscriberCredential.SupplierSharingAgreementShortName)),
+
+                (Rule: IsInvalid(subscriberCredential.FtpUserName), Parameter: nameof(
+                    SubscriberCredential.FtpUserName)),
+
+                (Rule: IsInvalid(subscriberCredential.FtpPassPhrase), Parameter: nameof(
+                    SubscriberCredential.FtpPassPhrase)),
+
+                (Rule: IsInvalid(subscriberCredential.FtpPrivateKey), Parameter: nameof(
+                    SubscriberCredential.FtpPrivateKey)),
+
+                (Rule: IsInvalid(subscriberCredential.FtpPublicKey), Parameter: nameof(
+                    SubscriberCredential.FtpPublicKey)),
+
+                (Rule: IsInvalid(subscriberCredential.GpgPassPhrase), Parameter: nameof(
+                    SubscriberCredential.GpgPassPhrase)),
+
+                (Rule: IsInvalid(subscriberCredential.GpgPrivateKey), Parameter: nameof(
+                    SubscriberCredential.GpgPrivateKey)),
+
+                (Rule: IsInvalid(subscriberCredential.GpgPublicKey), Parameter: nameof(
+                    SubscriberCredential.GpgPublicKey)));
         }
 
         private static void ValidateSubscriberCredentialIsNotNull(SubscriberCredential subscriberCredential)
@@ -23,6 +51,18 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 throw new NullSubscriberCredentialException(message: "Subscriber credential is null.");
             }
         }
+
+        private static dynamic IsInvalid(Guid someId) => new
+        {
+            Condition = someId == Guid.Empty,
+            Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = String.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
+        };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
              where T : Xeption

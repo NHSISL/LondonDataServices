@@ -2,9 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
-using Azure;
 using LHDS.Core.Models.Foundations.SecureData.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
@@ -26,6 +24,10 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             catch (NullSubscriberCredentialException nullSubscriberCredentialException)
             {
                 throw CreateAndLogValidationException(nullSubscriberCredentialException);
+            }
+            catch (InvalidSubscriberCredentialException invalidSubscriberCredentialException)
+            {
+                throw CreateAndLogValidationException(invalidSubscriberCredentialException);
             }
         }
 

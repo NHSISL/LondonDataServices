@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static dynamic CreateRandomExpectedObject()
+        private static dynamic CreateRandomDynamicSharingAgreementCredential()
         {
             Guid id = Guid.NewGuid();
             Guid supplierSharingAgreementGuid = Guid.NewGuid();
@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             };
         }
 
-        private static KeyVaultSecret CreateKeyVaultSecretFromRandomObject(dynamic credential, string property)
+        private static KeyVaultSecret CreateSecretDataFromDynamic(dynamic credential, string property)
         {
             string secretName = $"{credential.Id}-{property}";
             string secretValue = GetDynamicPropertyValue(credential, property);
@@ -98,7 +98,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             }
         }
 
-        private static SubscriberCredential CreateSubscriberCredentialFromRandomObject(dynamic credential)
+        private static SubscriberCredential CreateSubscriberCredentialFromDynamic(dynamic credential)
         {
             SubscriberCredential randomSubscriberCredential = new SubscriberCredential
             {

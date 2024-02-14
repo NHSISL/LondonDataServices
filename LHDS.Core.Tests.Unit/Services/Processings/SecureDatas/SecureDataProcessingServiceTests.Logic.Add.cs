@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             foreach (string keyType in keyTypes)
             {
                 SecureData inputSecureData =
-                    CreateKeyVaultSecretFromDynamic(credential: randomCredential, property: keyType);
+                    CreateSecretDataFromDynamic(credential: randomCredential, property: keyType);
 
                 SecureData outputSecureData = inputSecureData.DeepClone();
 
@@ -56,11 +56,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             foreach (string keyType in keyTypes)
             {
                 SecureData inputSecureData =
-                    CreateKeyVaultSecretFromRandomObject(credential: randomCredential, property: keyType);
+                    CreateSecretDataFromDynamic(credential: randomCredential, property: keyType);
 
                 this.secureDataServiceMock.Verify(service =>
                     service.AddOrModifySecureData(inputSecureData), 
-                        Times.Exactly(4));
+                        Times.Once);
             }
 
             this.secureDataServiceMock.VerifyNoOtherCalls();

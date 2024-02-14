@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.SecureData.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -29,6 +30,31 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 throw CreateAndLogValidationException(invalidSubscriberCredentialException);
             }
+            catch (SecureDataDependencyValidationException secureDataDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(secureDataDependencyValidationException);
+            }
+            catch (SecureDataValidationException secureDataValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(secureDataValidationException);
+            }
+            catch (SecureDataDependencyException secureDataDependencyException)
+            {
+                throw CreateAndLogDependencyException(secureDataDependencyException);
+            }
+            catch (SecureDataServiceException secureDataServiceException)
+            {
+                throw CreateAndLogDependencyException(secureDataServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedSubscriberCredentialProcessingServiceException =
+                    new FailedSubscriberCredentialProcessingServiceException(
+                        message: "Failed subscriber credential processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedSubscriberCredentialProcessingServiceException);
+            }
         }
 
         private SubscriberCredentialValidationException CreateAndLogValidationException(Xeption exception)
@@ -40,6 +66,43 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             this.loggingBroker.LogError(subscriberCredentialValidationException);
 
             return subscriberCredentialValidationException;
+        }
+
+        private SubscriberCredentialProcessingDependencyValidationException CreateAndLogDependencyValidationException(
+            Xeption exception)
+        {
+            var subscriberCredentialProcessingDependencyValidationException =
+                new SubscriberCredentialProcessingDependencyValidationException(
+                    message: "Subscriber credential processing dependency validation error occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(subscriberCredentialProcessingDependencyValidationException);
+
+            return subscriberCredentialProcessingDependencyValidationException;
+        }
+
+        private SubscriberCredentialProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var subscriberCredentialProcessingDependencyException =
+                new SubscriberCredentialProcessingDependencyException(
+                    message: "Subscriber credential processing dependency error occurred, please try again.",
+                    innerException: exception?.InnerException as Xeption);
+
+            this.loggingBroker.LogError(subscriberCredentialProcessingDependencyException);
+
+            throw subscriberCredentialProcessingDependencyException;
+        }
+
+        private SubscriberCredentialProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var subscriberCredentialProcessingServiceException = new
+                SubscriberCredentialProcessingServiceException(
+                    message: "Subscriber credential processing service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(subscriberCredentialProcessingServiceException);
+
+            return subscriberCredentialProcessingServiceException;
         }
     }
 }

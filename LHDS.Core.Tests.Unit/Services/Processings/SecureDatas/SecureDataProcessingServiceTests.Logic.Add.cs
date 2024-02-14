@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
         public async Task ShouldAddOrModifySecureData()
         {
             // given
-            dynamic randomCredential = CreateRandomExpectedObject();
+            dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();
 
             List<string> keyTypes = new List<string>
             {
@@ -30,14 +30,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             };
 
             SubscriberCredential inputSubscriberCredential = 
-                CreateSubscriberCredentialFromRandomObject(credential: randomCredential);
+                CreateSubscriberCredentialFromDynamic(credential: randomCredential);
 
             SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
 
             foreach (string keyType in keyTypes)
             {
                 SecureData inputSecureData =
-                    CreateKeyVaultSecretFromRandomObject(credential: randomCredential, property: keyType);
+                    CreateKeyVaultSecretFromDynamic(credential: randomCredential, property: keyType);
 
                 SecureData outputSecureData = inputSecureData.DeepClone();
 

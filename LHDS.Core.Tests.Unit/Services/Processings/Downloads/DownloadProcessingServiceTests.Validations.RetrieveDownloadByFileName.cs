@@ -1,10 +1,11 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Processings.Downloads.Exceptions;
 using Moq;
 using Xunit;
@@ -13,15 +14,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
 {
     public partial class DownloadProcessingServiceTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnRetrieveByFileNameIfFileNameIsInvalidAndLogItAsync(
-            string invalidText)
+        // TODO: 
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnRetrieveByFileNameIfFileNameIsInvalidAndLogItAsync()
         {
             // given
-            string invalidFileName = invalidText;
+            Download invalidDownload = null;
 
             var invalidArgumentDownloadProcessingException =
                 new InvalidArgumentDownloadProcessingException(
@@ -37,8 +36,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                     innerException: invalidArgumentDownloadProcessingException);
 
             // when
-            ValueTask<Document> retrieveDownloadByFileNameTask =
-                this.downloadProcessingService.RetrieveDownloadByFileNameAsync(invalidFileName);
+            ValueTask<Download> retrieveDownloadByFileNameTask =
+                this.downloadProcessingService.RetrieveDownloadByFileNameAsync(invalidDownload);
 
             DownloadProcessingValidationException actualDownloadProcessingValidationException =
                 await Assert.ThrowsAsync<DownloadProcessingValidationException>(
@@ -54,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                         Times.Once);
 
             this.downloadServiceMock.Verify(broker =>
-                broker.RetrieveDownloadByFileNameAsync(It.IsAny<string>()),
+                broker.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

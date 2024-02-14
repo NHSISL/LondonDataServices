@@ -13,6 +13,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
@@ -73,13 +74,14 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 ValidateConfigurationSettings();
                 ValidateSubscriberCredentials(subscriberCredential);
                 var exceptions = new List<Exception>();
+                Download download = new Download { SubscriberCredential = subscriberCredential };
 
-                List<Document> retrievedDocuments =
-                    await this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync();
+                List<Download> retrievedDownloads =
+                    await this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync(download);
 
                 List<string> files = new List<string>();
 
-                foreach (var document in retrievedDocuments)
+                foreach (var downloadItem in retrievedDownloads)
                 {
                     try
                     {
@@ -88,16 +90,16 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                             IngestionTracking? maybeIngestionTracking =
                                 this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
                                     .FirstOrDefault(ingestionTracking =>
-                                        ingestionTracking.FileName == document.FileName);
+                                        ingestionTracking.FileName == downloadItem.Document.FileName);
 
                             if (maybeIngestionTracking == null)
                             {
-                                Document retrievedDocument =
+                                Download retrievedDownload =
                                     await this.downloadProcessingService
-                                        .RetrieveDownloadByFileNameAsync(document.FileName);
+                                        .RetrieveDownloadByFileNameAsync(downloadItem);
 
                                 string encryptedFileSha256Hash =
-                                    this.hashBroker.GenerateSha256Hash(retrievedDocument.DocumentData);
+                                    this.hashBroker.GenerateSha256Hash(retrievedDownload.Document.DocumentData);
 
                                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
@@ -105,15 +107,15 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                     this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
                                         landingConfiguration.LandingSupplierId);
 
-                                var filename = document.FileName.StartsWith('/')
-                                    ? document.FileName
-                                    : "/" + document.FileName;
+                                var filename = downloadItem.Document.FileName.StartsWith('/')
+                                    ? downloadItem.Document.FileName
+                                    : "/" + downloadItem.Document.FileName;
 
                                 IngestionTracking newIngestionTracking =
                                   new IngestionTracking
                                   {
                                       Id = this.identifierBroker.GetIdentifier(),
-                                      FileName = document.FileName,
+                                      FileName = downloadItem.Document.FileName,
                                       SupplierId = landingConfiguration.LandingSupplierId,
                                       EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
 
@@ -128,7 +130,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                       LastSeen = currentDateTime,
                                       FileDeleted = false,
                                       RecordCount = 0,
-                                      EncryptedFileSize = retrievedDocument.DocumentData.Length,
+                                      EncryptedFileSize = retrievedDownload.Document.DocumentData.Length,
                                       EncryptedFileSha256Hash = encryptedFileSha256Hash,
                                       DecryptedFileSize = 0,
                                       DecryptedFileSha256Hash = string.Empty,
@@ -138,19 +140,19 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                       UpdatedDate = currentDateTime
                                   };
 
-                                Document newBlobDocument = new Document
-                                {
-                                    DocumentData = retrievedDocument.DocumentData,
-                                    FileName = newIngestionTracking.EncryptedFileName
-                                };
-
                                 await this.ingestionTrackingProcessingService
                                     .AddIngestionTrackingAsync(newIngestionTracking);
+
+                                Document newBlobDocument = new Document
+                                {
+                                    DocumentData = retrievedDownload.Document.DocumentData,
+                                    FileName = newIngestionTracking.EncryptedFileName
+                                };
 
                                 await this.documentProcessingService
                                     .AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
 
-                                LogAudit(newIngestionTracking, document, "Landed");
+                                LogAudit(newIngestionTracking, newBlobDocument, "Landed");
 
                                 return newIngestionTracking.DecryptedFileName;
                             }
@@ -175,7 +177,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     catch (Exception ex)
                     {
                         this.loggingBroker.LogError(ex);
-                        Console.WriteLine($"Unable to land document: {document.FileName}");
+                        Console.WriteLine($"Unable to land document: {downloadItem.Document.FileName}");
                         exceptions.Add(ex);
                     }
                 }
@@ -209,10 +211,16 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 ValidateSubscriberCredentials(subscriberCredential);
                 ValidateFileName(fileName);
 
-                Document externalDocument =
-                        await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(fileName);
+                Download download = new Download
+                {
+                    Document = new Document { FileName = fileName },
+                    SubscriberCredential = subscriberCredential
+                };
 
-                ValidateStorageDownload(externalDocument, fileName);
+                Download externalDownload =
+                        await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
+
+                ValidateStorageDownload(externalDownload, fileName);
 
                 IngestionTracking? maybeIngestionTracking =
                     this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
@@ -223,7 +231,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
                     maybeIngestionTracking.UpdatedDate = currentDateTime;
                     maybeIngestionTracking.LastSeen = currentDateTime;
-                    maybeIngestionTracking.EncryptedFileSize = externalDocument.DocumentData.Length;
+                    maybeIngestionTracking.EncryptedFileSize = externalDownload.Document.DocumentData.Length;
 
                     try
                     {
@@ -239,7 +247,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                     Document newBlobDocument = new Document
                     {
-                        DocumentData = externalDocument.DocumentData,
+                        DocumentData = externalDownload.Document.DocumentData,
                         FileName = maybeIngestionTracking.EncryptedFileName
                     };
 
@@ -248,7 +256,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                     LogAudit(
                         ingestionTracking: maybeIngestionTracking,
-                        document: externalDocument,
+                        document: externalDownload.Document,
                         message: "Refreshed");
 
                     return maybeIngestionTracking.DecryptedFileName;
@@ -257,12 +265,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 {
                     var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-                    var filename = externalDocument.FileName.StartsWith('/')
-                        ? externalDocument.FileName
-                        : "/" + externalDocument.FileName;
+                    var filename = externalDownload.Document.FileName.StartsWith('/')
+                        ? externalDownload.Document.FileName
+                        : "/" + externalDownload.Document.FileName;
 
                     string encryptedFileSha256Hash =
-                        this.hashBroker.GenerateSha256Hash(externalDocument.DocumentData);
+                        this.hashBroker.GenerateSha256Hash(externalDownload.Document.DocumentData);
 
                     DataSetSpecification retrievedDataSetSpecification = await
                         this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
@@ -272,7 +280,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                       new IngestionTracking
                       {
                           Id = this.identifierBroker.GetIdentifier(),
-                          FileName = externalDocument.FileName,
+                          FileName = externalDownload.Document.FileName,
                           SupplierId = landingConfiguration.LandingSupplierId,
                           EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
 
@@ -287,7 +295,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                           LastSeen = currentDateTime,
                           FileDeleted = false,
                           RecordCount = 0,
-                          EncryptedFileSize = externalDocument.DocumentData.Length,
+                          EncryptedFileSize = externalDownload.Document.DocumentData.Length,
                           EncryptedFileSha256Hash = encryptedFileSha256Hash,
                           DecryptedFileSize = 0,
                           DecryptedFileSha256Hash = string.Empty,
@@ -299,13 +307,13 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                     Document newBlobDocument = new Document
                     {
-                        DocumentData = externalDocument.DocumentData,
+                        DocumentData = externalDownload.Document.DocumentData,
                         FileName = newIngestionTracking.EncryptedFileName
                     };
 
                     await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);
                     await this.documentProcessingService.AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
-                    LogAudit(newIngestionTracking, externalDocument, "Re-Landed");
+                    LogAudit(newIngestionTracking, externalDownload.Document, "Re-Landed");
 
                     return newIngestionTracking.DecryptedFileName;
                 }

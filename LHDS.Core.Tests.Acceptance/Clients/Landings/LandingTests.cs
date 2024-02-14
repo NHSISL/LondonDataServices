@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         private readonly ISupplierService supplierService;
         private readonly IDataSetService dataSetService;
         private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
-        private readonly ILandingClient landingClient;
+        private readonly IEmisLandingClient landingClient;
         private readonly LandingConfiguration landingConfiguration;
         private readonly IIngestionTrackingAuditService auditService;
 
@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
-            landingClient = serviceProvider.GetService<ILandingClient>();
+            landingClient = serviceProvider.GetService<IEmisLandingClient>();
         }
 
         private static string GetRandomString() =>

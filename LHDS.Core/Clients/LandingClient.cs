@@ -12,11 +12,11 @@ using Xeptions;
 
 namespace LHDS.Core.Clients
 {
-    public class LandingClient : ILandingClient
+    public class EmisLandingClient : IEmisLandingClient
     {
         private readonly IEmisLandingCoordinationService emisLandingCoordinationService;
 
-        public LandingClient(
+        public EmisLandingClient(
             IEmisLandingCoordinationService emisLandingCoordinationService)
         {
             this.emisLandingCoordinationService = emisLandingCoordinationService;

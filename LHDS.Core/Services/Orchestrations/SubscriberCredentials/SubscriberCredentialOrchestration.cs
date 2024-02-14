@@ -38,9 +38,6 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         public ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
             throw new NotImplementedException();
 
-        public ValueTask<SubscriberCredential> RetrieveOrAddSubscriberByNameAsync(string subscriberAgreementName) =>
-            throw new NotImplementedException();
-
         public ValueTask<SubscriberCredential> RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
             throw new NotImplementedException();
     }

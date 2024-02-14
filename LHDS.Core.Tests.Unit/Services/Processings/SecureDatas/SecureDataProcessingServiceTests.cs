@@ -53,6 +53,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private Expression<Func<SecureData, bool>> SameSecureDataAs(SecureData expectedSecureData)
+        {
+            return actualSecureData =>
+                this.compareLogic.Compare(expectedSecureData, actualSecureData)
+                    .AreEqual;
+        }
+
         private static dynamic CreateRandomDynamicSharingAgreementCredential()
         {
             Guid id = Guid.NewGuid();

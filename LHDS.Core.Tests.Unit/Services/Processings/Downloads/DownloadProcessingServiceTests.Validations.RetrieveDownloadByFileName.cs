@@ -4,7 +4,6 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Processings.Downloads.Exceptions;
 using Moq;
@@ -14,26 +13,20 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
 {
     public partial class DownloadProcessingServiceTests
     {
-        // TODO: 
-
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnRetrieveByFileNameIfFileNameIsInvalidAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnRetrieveDownloadIfNullAndLogItAsync()
         {
             // given
             Download invalidDownload = null;
 
-            var invalidArgumentDownloadProcessingException =
-                new InvalidArgumentDownloadProcessingException(
-                    message: "Invalid argument(s). Please correct the errors and try again.");
-
-            invalidArgumentDownloadProcessingException.AddData(
-                key: nameof(Document.FileName),
-                values: "Text is required");
+            var nullDownloadProcessingException =
+                new NullDownloadProcessingException(
+                    message: "Download is Null");
 
             var expectedDownloadProcessingValidationException =
                 new DownloadProcessingValidationException(
                     message: "Download validation errors occurred, please try again.",
-                    innerException: invalidArgumentDownloadProcessingException);
+                    innerException: nullDownloadProcessingException);
 
             // when
             ValueTask<Download> retrieveDownloadByFileNameTask =

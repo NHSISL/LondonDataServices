@@ -14,6 +14,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
     public partial class SecureDataProcessingService
     {
         private delegate ValueTask<SubscriberCredential> ReturningSubscriberCredentialFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<SubscriberCredential> TryCatch(
             ReturningSubscriberCredentialFunction returningSubscriberCredentialFunction)
@@ -21,6 +22,57 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             try
             {
                 return await returningSubscriberCredentialFunction();
+            }
+            catch (NullSubscriberCredentialException nullSubscriberCredentialException)
+            {
+                throw CreateAndLogValidationException(nullSubscriberCredentialException);
+            }
+            catch (InvalidSubscriberCredentialException invalidSubscriberCredentialException)
+            {
+                throw CreateAndLogValidationException(invalidSubscriberCredentialException);
+            }
+            catch (SecureDataDependencyValidationException secureDataDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(secureDataDependencyValidationException);
+            }
+            catch (SecureDataValidationException secureDataValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(secureDataValidationException);
+            }
+            catch (SecureDataDependencyException secureDataDependencyException)
+            {
+                throw CreateAndLogDependencyException(secureDataDependencyException);
+            }
+            catch (SecureDataServiceException secureDataServiceException)
+            {
+                throw CreateAndLogDependencyException(secureDataServiceException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedSubscriberCredentialProcessingServiceException =
+                    new FailedSubscriberCredentialProcessingServiceException(
+                        message: "Failed subscriber credential aggregate processing service error occurred, " +
+                        "contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedSubscriberCredentialProcessingServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedSubscriberCredentialProcessingServiceException =
+                    new FailedSubscriberCredentialProcessingServiceException(
+                        message: "Failed subscriber credential processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedSubscriberCredentialProcessingServiceException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
             }
             catch (NullSubscriberCredentialException nullSubscriberCredentialException)
             {

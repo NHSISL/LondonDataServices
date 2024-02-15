@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             };
 
             this.downloadProcessingServiceMock.Setup(service =>
-                  service.RetrieveDownloadByFileNameAsync(inputDownload))
+                  service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
                       .ReturnsAsync(storageDownload);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Times.Once);
 
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(inputDownload),
+                service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))),
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>

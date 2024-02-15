@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             List<Document> randomDocuments = CreateRandomDocuments();
 
-            List<Download> externalDownloads = randomDocuments.Select(document => 
+            List<Download> externalDownloads = randomDocuments.Select(document =>
                 new Download
                 {
                     SubscriberCredential = inputSubscriberCredential,
@@ -237,7 +237,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 CreateRandomIngestionTrackings(randomDateTime, randomDocuments);
 
             this.downloadProcessingServiceMock.Setup(service =>
-               service.RetrieveListOfDocumentsToProcessAsync(inputDownload))
+               service.RetrieveListOfDocumentsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
                    .ReturnsAsync(externalDownloads);
 
             this.hashBrokerMock.Setup(broker =>
@@ -260,7 +260,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(inputDownload),
+                service.RetrieveListOfDocumentsToProcessAsync(It.Is(SameDownloadAs(inputDownload))),
                     Times.Once);
 
             foreach (var document in externalDocuments)

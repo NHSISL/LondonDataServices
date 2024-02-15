@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -73,8 +74,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
         public async ValueTask<string> ProcessFileAsync(string fileName)
         {
-            //Validate fileName
+            // Validate fileName
             Guid SupplierSharingAgreementGuid = GetLastRandomGuid(fileName);
+            // Validate Guid is not null
 
             SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
                 .RetrieveSubscriberCredentialBySupplierSharingAgreementGuidAsync(SupplierSharingAgreementGuid);
@@ -85,23 +87,21 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             return processedItem;
         }
 
-        private static Guid GetLastRandomGuid(string filename)
+        private static Guid GetLastRandomGuid(string file)
         {
-            int underscoreIndex = filename.LastIndexOf('_');
-            int dotCsvIndex = filename.LastIndexOf(".csv.gpg");
 
-            if (underscoreIndex != -1 && dotCsvIndex != -1 && underscoreIndex < dotCsvIndex)
+            //emisnightingale-data-preprod-provider-extracts/IM1/sftp/6263EBC7-D8CC-4AA9-8849-60DCEDB63974/20240215/delta_105215_Coding_DrugCode_20240215043148_6263EBC7-D8CC-4AA9-8849-60DCEDB63974.csv.gpg
+
+            FileInfo fi = new FileInfo(file);
+            string fileName = fi.Name;
+
+            var elements = fileName.Split('_');
+            if (elements.Length < 5)
             {
-                int guidLength = dotCsvIndex - underscoreIndex - 1;
-                string guidString = filename.Substring(underscoreIndex + 1, guidLength);
-
-                if (Guid.TryParse(guidString, out Guid resultGuid))
-                {
-                    return resultGuid;
-                }
+                //throw Exception here 
             }
 
-            return Guid.Empty;
+            return Guid.Parse(elements[5].ToString());
         }
     }
 }

@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(randomGuid);
 
             this.downloadProcessingServiceMock.Setup(service =>
-               service.RetrieveListOfDocumentsToProcessAsync(inputDownload))
+               service.RetrieveListOfDocumentsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
                    .ReturnsAsync(externalDownloads);
 
             this.dataSetSpecificationProcessingServiceMock.Setup(service =>
@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(inputDownload),
+                service.RetrieveListOfDocumentsToProcessAsync(It.Is(SameDownloadAs(inputDownload))),
                     Times.Once);
 
             foreach (var downloadItem in externalDownloads)

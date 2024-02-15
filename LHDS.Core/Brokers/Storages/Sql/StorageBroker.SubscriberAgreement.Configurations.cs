@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using Microsoft.EntityFrameworkCore;
@@ -23,9 +23,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .HasIndex(subscriberAgreement => subscriberAgreement.SupplierSharingAgreementShortName)
                 .IsUnique();
 
-            modelBuilder.Entity<SubscriberAgreement>()
-                .Property(subscriberAgreement => subscriberAgreement.SupplierSharingAgreementGuid)
-                .IsRequired(false);
+            //modelBuilder.Entity<SubscriberAgreement>()
+            //    .Property(subscriberAgreement => subscriberAgreement.SupplierSharingAgreementGuid)
+            //    .IsRequired(false);
 
             modelBuilder.Entity<SubscriberAgreement>()
                 .Property(subscriberAgreement => subscriberAgreement.FtpUserName)

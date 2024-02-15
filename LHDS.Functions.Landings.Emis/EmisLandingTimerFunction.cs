@@ -14,12 +14,12 @@ namespace LHDS.Functions.Landings.Emis
     public class EmisLandingTimerFunction
     {
         private readonly ILoggingBroker loggingBroker;
-        private readonly ILandingClient landingClient;
+        private readonly IEmisLandingClient landingClient;
         private readonly ILogger logger;
 
         public EmisLandingTimerFunction(
             ILoggingBroker loggingBroker,
-            ILandingClient landingClient,
+            IEmisLandingClient landingClient,
             ILoggerFactory loggerFactory)
         {
             this.loggingBroker = loggingBroker;

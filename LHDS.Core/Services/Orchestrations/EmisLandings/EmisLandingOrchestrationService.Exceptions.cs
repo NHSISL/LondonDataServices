@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -33,6 +33,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 nullLandingConfigurationEmisLandingOrchestrationException)
             {
                 throw CreateAndLogValidationException(nullLandingConfigurationEmisLandingOrchestrationException);
+            }
+            catch (NullSubscriberCredentialEmisLandingOrchestrationException
+                nullSubscriberCredentialEmisLandingOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullSubscriberCredentialEmisLandingOrchestrationException);
             }
             catch (NullBlobContainersEmisLandingOrchestrationException
                 nullBlobContainersEmisLandingOrchestrationException)
@@ -128,6 +133,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 nullLandingConfigurationEmisLandingOrchestrationException)
             {
                 throw CreateAndLogValidationException(nullLandingConfigurationEmisLandingOrchestrationException);
+            }
+            catch (NullSubscriberCredentialEmisLandingOrchestrationException
+                nullSubscriberCredentialEmisLandingOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullSubscriberCredentialEmisLandingOrchestrationException);
             }
             catch (NullBlobContainersEmisLandingOrchestrationException nullBlobContainersEmisLandingOrchestrationException)
             {

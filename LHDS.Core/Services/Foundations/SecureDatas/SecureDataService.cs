@@ -12,14 +12,14 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
 {
     public partial class SecureDataService : ISecureDataService
     {
-        private readonly ISecureDataBroker secureDataBroker;
+        private readonly IKeyVaultSecretBroker keyVaultSecretBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public SecureDataService(
-            ISecureDataBroker secureDataBroker,
+            IKeyVaultSecretBroker keyVaultSecretBroker,
             ILoggingBroker loggingBroker)
         {
-            this.secureDataBroker = secureDataBroker;
+            this.keyVaultSecretBroker = keyVaultSecretBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -30,7 +30,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 KeyVaultSecret keyVaultSecret = new KeyVaultSecret(name: secureData.Name, value: secureData.Value);
 
                 KeyVaultSecret returnedKeyVaultSecret =
-                    await this.secureDataBroker.CreateOrUpdateKeyVaultSecretAsync(keyVaultSecret);
+                    await this.keyVaultSecretBroker.CreateOrUpdateKeyVaultSecretAsync(keyVaultSecret);
 
                 SecureData returnedSecureData = new SecureData
                 {
@@ -47,7 +47,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 ValidateArgumentOnRetrieve(secretName);
 
                 KeyVaultSecret returnedKeyVaultSecret =
-                    await this.secureDataBroker.GetKeyVaultSecretAsync(secretName);
+                    await this.keyVaultSecretBroker.GetKeyVaultSecretAsync(secretName);
 
                 SecureData returnedSecureData = new SecureData
                 {
@@ -56,6 +56,13 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 };
 
                 return returnedSecureData;
+            });
+
+        public ValueTask RemoveSecureDataAsync(string secretName) =>
+            TryCatch(async () =>
+            {
+                ValidateArgumentOnRemove(secretName);
+                await this.keyVaultSecretBroker.DeleteKeyVaultSecretAsync(secretName);
             });
     }
 }

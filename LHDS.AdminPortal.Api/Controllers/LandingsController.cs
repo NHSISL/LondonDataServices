@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using System.Web;
@@ -18,10 +18,10 @@ namespace LHDS.AdminPortal.Api.Controllers
     [Route("api/[controller]")]
     public class LandingsController : RESTFulController
     {
-        private readonly IEmisLandingOrchestrationService emisLandingOrchestrationService;
+        private readonly IEmisLandingCoordinationService emisLandingCoordinationService;
 
-        public LandingsController(IEmisLandingOrchestrationService emisLandingOrchestrationService) =>
-            this.emisLandingOrchestrationService = emisLandingOrchestrationService;
+        public LandingsController(IEmisLandingCoordinationService emisLandingCoordinationService) =>
+            this.emisLandingCoordinationService = emisLandingCoordinationService;
 
         [HttpGet("{fileName}")]
 #if RELEASE
@@ -31,8 +31,8 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                var returnFilePath = await this.emisLandingOrchestrationService
-                    .ProcessAsync(HttpUtility.UrlDecode(fileName));
+                var returnFilePath = await this.emisLandingCoordinationService
+                    .ProcessFileAsync(HttpUtility.UrlDecode(fileName));
 
                 return Ok(returnFilePath);
             }

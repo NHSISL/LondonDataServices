@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -20,7 +21,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
         {
             // given
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
-            Download someDownload = new Download { SubscriberCredential = someSubscriberCredential };
+
+            Download someDownload = new Download
+            {
+                SubscriberCredential = someSubscriberCredential,
+                Document = new Document { FileName = GetRandomString() }
+            };
+
             string someId = GetRandomString();
             var serviceException = new Exception();
 

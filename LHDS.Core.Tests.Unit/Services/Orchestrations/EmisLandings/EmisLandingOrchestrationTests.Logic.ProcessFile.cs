@@ -52,8 +52,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             };
 
             this.downloadProcessingServiceMock.Setup(service =>
-                  service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
-                      .ReturnsAsync(storageDownload);
+                    service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
+                        .ReturnsAsync(storageDownload);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -101,8 +101,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
                     Times.Exactly(2));
-
-
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(

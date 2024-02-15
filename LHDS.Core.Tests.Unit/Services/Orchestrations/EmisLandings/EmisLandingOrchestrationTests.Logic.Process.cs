@@ -72,8 +72,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                         .Returns(externalIngestionTrackingsFound.AsQueryable());
 
                 this.downloadProcessingServiceMock.Setup(service =>
-                  service.RetrieveDownloadByFileNameAsync(downloadItem))
-                      .ReturnsAsync(downloadItem);
+                    service.RetrieveDownloadByFileNameAsync(downloadItem))
+                        .ReturnsAsync(downloadItem);
 
                 this.hashBrokerMock.Setup(broker =>
                     broker.GenerateSha256Hash(downloadItem.Document.DocumentData))
@@ -334,8 +334,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(randomGuid);
 
             this.downloadProcessingServiceMock.Setup(service =>
-               service.RetrieveListOfDocumentsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
-                   .ReturnsAsync(externalDownloads);
+                service.RetrieveListOfDocumentsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
+                    .ReturnsAsync(externalDownloads);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())

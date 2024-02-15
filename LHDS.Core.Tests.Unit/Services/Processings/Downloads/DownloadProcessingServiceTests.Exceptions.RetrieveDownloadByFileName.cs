@@ -48,9 +48,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
-                     expectedDownloadProcessingDependencyValidationException))),
-                         Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDownloadProcessingDependencyValidationException))),
+                        Times.Once);
 
             this.downloadServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

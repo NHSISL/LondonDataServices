@@ -23,6 +23,10 @@ namespace LHDS.Core.Services.Processings.Downloads
             {
                 return await returningDownloadFunction();
             }
+            catch (NullDownloadProcessingException nullDownloadProcessingException)
+            {
+                throw CreateAndLogValidationException(nullDownloadProcessingException);
+            }
             catch (InvalidArgumentDownloadProcessingException invalidArgumentDownloadProcessingException)
             {
                 throw CreateAndLogValidationException(invalidArgumentDownloadProcessingException);

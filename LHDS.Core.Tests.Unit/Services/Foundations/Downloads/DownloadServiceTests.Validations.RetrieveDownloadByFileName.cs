@@ -67,11 +67,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
 
             var nullSubscriberCredentialException =
                 new NullSubscriberCredentialException(
-                    message: "Download is null.");
+                    message: "SubscriberCredential is null.");
 
             var expectedDownloadValidationException =
                 new DownloadValidationException(
-                    message: "SubscriberCredential is null.",
+                    message: "Download validation errors occurred, please try again.",
                     innerException: nullSubscriberCredentialException);
 
             // when

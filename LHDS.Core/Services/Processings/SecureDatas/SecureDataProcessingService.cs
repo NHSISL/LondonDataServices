@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Identifiers;
@@ -36,10 +37,26 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 ValidateSubscriberCredentialOnAdd(subscriberCredential);
                 List<SecureData> secureData = GetSecureDataItems(subscriberCredential);
+                var exceptions = new List<Exception>();
 
                 foreach (var data in secureData)
                 {
-                    await this.secureDataService.AddOrModifySecureData(data);
+                    try
+                    {
+                        ValidateSecureData(data);
+                        await this.secureDataService.AddOrModifySecureData(data);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to add or modify {exceptions.Count} secure data",
+                        exceptions);
                 }
 
                 return subscriberCredential;

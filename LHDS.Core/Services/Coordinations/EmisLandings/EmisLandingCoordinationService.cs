@@ -71,7 +71,37 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 return processedPaths;
             });
 
-        public async ValueTask<string> ProcessFileAsync(string fileName) =>
-            throw new NotImplementedException();
+        public async ValueTask<string> ProcessFileAsync(string fileName)
+        {
+            //Validate fileName
+            Guid SupplierSharingAgreementGuid = GetLastRandomGuid(fileName);
+
+            SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
+                .RetrieveSubscriberCredentialBySupplierSharingAgreementGuidAsync(SupplierSharingAgreementGuid);
+
+            string processedItem =
+                await this.emisLandingOrchestrationService.ProcessFileAsync(fileName, maybeSubscriberCredential);
+
+            return processedItem;
+        }
+
+        private static Guid GetLastRandomGuid(string filename)
+        {
+            int underscoreIndex = filename.LastIndexOf('_');
+            int dotCsvIndex = filename.LastIndexOf(".csv.gpg");
+
+            if (underscoreIndex != -1 && dotCsvIndex != -1 && underscoreIndex < dotCsvIndex)
+            {
+                int guidLength = dotCsvIndex - underscoreIndex - 1;
+                string guidString = filename.Substring(underscoreIndex + 1, guidLength);
+
+                if (Guid.TryParse(guidString, out Guid resultGuid))
+                {
+                    return resultGuid;
+                }
+            }
+
+            return Guid.Empty;
+        }
     }
 }

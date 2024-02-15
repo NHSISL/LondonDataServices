@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Integration.Landings
     public partial class LandingTests
     {
         private readonly ITestOutputHelper output;
-        private readonly ILandingClient landingClient;
+        private readonly IEmisLandingClient landingClient;
         private readonly ILoggingBroker loggingBroker;
         private readonly IBlobStorageBroker blobStorageBroker;
         private readonly LandingConfiguration landingConfiguration;
@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Integration.Landings
             supplierService = serviceProvider.GetService<ISupplierService>();
             dataSetService = serviceProvider.GetService<IDataSetService>();
             dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
-            landingClient = serviceProvider.GetService<ILandingClient>();
+            landingClient = serviceProvider.GetService<IEmisLandingClient>();
         }
 
         private async ValueTask<Supplier> SetupSupplier()

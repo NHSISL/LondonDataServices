@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,21 +12,21 @@ using Xeptions;
 
 namespace LHDS.Core.Clients
 {
-    public class LandingClient : ILandingClient
+    public class EmisLandingClient : IEmisLandingClient
     {
-        private readonly IEmisLandingOrchestrationService downloadOrchestrationService;
+        private readonly IEmisLandingCoordinationService emisLandingCoordinationService;
 
-        public LandingClient(
-            IEmisLandingOrchestrationService downloadOrchestrationService)
+        public EmisLandingClient(
+            IEmisLandingCoordinationService emisLandingCoordinationService)
         {
-            this.downloadOrchestrationService = downloadOrchestrationService;
+            this.emisLandingCoordinationService = emisLandingCoordinationService;
         }
 
         public async ValueTask<List<string>> ProcessAsync()
         {
             try
             {
-                return await this.downloadOrchestrationService.ProcessAsync();
+                return await this.emisLandingCoordinationService.ProcessAsync();
             }
             catch (EmisLandingOrchestrationValidationException emisLandingOrchestrationValidationException)
             {
@@ -59,7 +59,7 @@ namespace LHDS.Core.Clients
         {
             try
             {
-                return await this.downloadOrchestrationService.ProcessAsync(fileName);
+                return await this.emisLandingCoordinationService.ProcessFileAsync(fileName);
             }
             catch (DecryptionOrchestrationValidationException downloadOrchestrationValidationException)
             {

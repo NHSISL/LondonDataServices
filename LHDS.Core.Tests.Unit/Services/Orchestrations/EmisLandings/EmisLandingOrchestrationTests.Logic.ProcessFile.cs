@@ -200,7 +200,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(externalIngestionTrackingsFound.AsQueryable());
 
             this.downloadProcessingServiceMock.Setup(service =>
-                  service.RetrieveDownloadByFileNameAsync(inputDownload))
+                  service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
                       .ReturnsAsync(storageDownload);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -224,7 +224,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(inputDownload),
+                service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))),
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>

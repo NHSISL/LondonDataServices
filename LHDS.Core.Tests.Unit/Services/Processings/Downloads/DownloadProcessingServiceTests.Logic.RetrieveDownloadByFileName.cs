@@ -35,19 +35,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                 SubscriberCredential = inputSubscriberCredential
             };
 
-            Document storageDocument = randomDocument;
-            Document expectedDocument = storageDocument.DeepClone();
+            Download expectedDownload = storageDownload.DeepClone();
 
             this.downloadServiceMock.Setup(service =>
                 service.RetrieveDownloadByFileNameAsync(inputDownload))
                     .ReturnsAsync(storageDownload);
 
             // when
-            Download actualDocument =
+            Download actualDownload =
                 await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(inputDownload);
 
             // then
-            actualDocument.Should().BeEquivalentTo(expectedDocument);
+            actualDownload.Should().BeEquivalentTo(expectedDownload);
 
             this.downloadServiceMock.Verify(service =>
                 service.RetrieveDownloadByFileNameAsync(inputDownload),

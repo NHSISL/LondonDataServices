@@ -4,7 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xunit;
@@ -18,8 +17,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         {
             // Given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            IngestionTracking externalIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
-            Guid SupplierSharingAgreementGuid = GetLastRandomGuid(externalIngestionTracking.FileName);
+            Guid SupplierSharingAgreementGuid = Guid.NewGuid();
+
+            string filePath = CreateRandomFilePath(SupplierSharingAgreementGuid);
 
             SubscriberCredential randomActiveSubscriberCredential =
                 CreateRandomSubscriberCredential(SupplierSharingAgreementGuid);

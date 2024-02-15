@@ -137,12 +137,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .AreEqual;
         }
 
-        private static string GenerateFilename()
+        private static string GenerateFilename(Guid identifier)
         {
             Guid randomGuid = Guid.NewGuid();
 
             return $"/{GetRandomString()}/{GetRandomString()}/{randomGuid}/{GetRandomNumber}/" +
-                $"{GetRandomString()}_{GetRandomNumber}_{GetRandomString()}_{GetRandomString()}_{GetRandomNumber()}_{randomGuid}.csv.gpg;";
+                $"{GetRandomString()}_{GetRandomNumber}_{GetRandomString()}_{GetRandomString()}_{GetRandomNumber()}_{identifier}.csv.gpg;";
         }
 
         private static Guid GetLastRandomGuid(string filename)

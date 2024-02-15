@@ -5,6 +5,8 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -235,6 +237,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
 
+            Download inputDownload = new Download
+            {
+                SubscriberCredential = inputSubscriberCredential,
+                Document = new Document { FileName = inputFileName }
+            };
+
             var notFoundEmisLandingOrchestrationException =
                 new NotFoundEmisLandingOrchestrationException(
                 message: $"Couldn't find download with file name: {inputFileName}.");
@@ -245,8 +253,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     innerException: notFoundEmisLandingOrchestrationException);
 
             this.downloadProcessingServiceMock.Setup(service =>
-                  service.RetrieveDownloadByFileNameAsync(inputFileName))
-                      .Returns(null);
+                    service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
+                        .Returns(null);
 
             // when
             ValueTask<string> processTask = this.emisLandingOrchestrationService
@@ -260,7 +268,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
 
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(inputFileName),
+                service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

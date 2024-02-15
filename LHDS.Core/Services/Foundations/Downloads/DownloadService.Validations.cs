@@ -1,31 +1,63 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 
 namespace LHDS.Core.Services.Foundations.Downloads
 {
     public partial class DownloadService
     {
-        public void ValidateDownloadArgs(string fileName) =>
-            Validate((Rule: IsInvalid(fileName), Parameter: nameof(Document.FileName)));
-
-        private static void ValidateStorageDownload(Document maybeDocument, string fileName)
+        private void ValidateOnRetrieveListOfDocumentsToProcessAsync(Download download)
         {
-            if (maybeDocument is null)
+            ValidateDownloadIsNotNull(download);
+            ValidateSubscriberCredentialsIsNotNull(download.SubscriberCredential);
+        }
+
+        private void ValidateOnRetrieveDownloadByFileName(Download download)
+        {
+            ValidateDownloadIsNotNull(download);
+            ValidateSubscriberCredentialsIsNotNull(download.SubscriberCredential);
+            ValidateDocumentIsNotNull(download.Document);
+            ValidateDocument(download.Document);
+        }
+
+        private void ValidateDocument(Document document) =>
+            Validate((Rule: IsInvalid(document.FileName), Parameter: nameof(Document.FileName)));
+
+        private static void ValidateStorageDownload(Download maybeDownload, string fileName)
+        {
+            if (maybeDownload is null)
             {
                 throw new NotFoundDownloadException(message: $"Couldn't find download with file name: {fileName}.");
             }
         }
 
-        private static void ValidateDownloadIsNotNull(Document document)
+        private static void ValidateDownloadIsNotNull(Download download)
+        {
+            if (download is null)
+            {
+                throw new NullDownloadException(message: "Download is null.");
+            }
+        }
+
+        private static void ValidateSubscriberCredentialsIsNotNull(SubscriberCredential subscriberCredential)
+        {
+            if (subscriberCredential is null)
+            {
+                throw new NullSubscriberCredentialException(message: "SubscriberCredential is null.");
+            }
+        }
+
+        private static void ValidateDocumentIsNotNull(Document document)
         {
             if (document is null)
             {
-                throw new NullDownloadException(message: "Download is null.");
+                throw new NullDocumentException(message: "Document is null.");
             }
         }
 

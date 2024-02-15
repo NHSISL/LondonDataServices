@@ -1,9 +1,10 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Processings.Downloads.Exceptions;
 using Xeptions;
 
@@ -11,7 +12,16 @@ namespace LHDS.Core.Services.Processings.Downloads
 {
     public partial class DownloadProcessingService
     {
-        public void ValidateDownloadArgs(string fileName) =>
+        private static void ValidateDownloadIsNotNull(Download download)
+        {
+            if (download is null)
+            {
+                throw new NullDownloadProcessingException(
+                    message: $"Download is Null");
+            }
+        }
+
+        public void ValidateDownload(string fileName) =>
             Validate<InvalidArgumentDownloadProcessingException>(
                 message: "Invalid argument(s). Please correct the errors and try again.",
                 validations: (Rule: IsInvalid(fileName), Parameter: nameof(Document.FileName)));

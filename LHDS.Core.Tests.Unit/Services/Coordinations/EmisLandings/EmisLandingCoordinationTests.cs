@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Extensions.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -69,6 +70,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .ToList();
         }
 
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+           new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
         public static List<SubscriberCredential> CreateRandomSubscriberCredentials(
             List<Guid> subscriberAgreementIds)
         {
@@ -93,6 +97,71 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .OnProperty(subscriberCredential => subscriberCredential.Id).Use(() => subscriberAgreementId);
 
             return filler;
+        }
+
+        public static SubscriberCredential CreateRandomSubscriberCredential(Guid subscriberAgreementId)
+        {
+            DateTimeOffset dateTimeOffset = new DateTimeRange(earliestDate: new DateTime()).GetValue();
+            var filler = new Filler<SubscriberCredential>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(subscriberCredential => subscriberCredential.Id).Use(() => subscriberAgreementId);
+
+            return filler.Create();
+        }
+
+        private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
+        {
+            var filler = new Filler<IngestionTracking>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(() => GenerateFilename());
+
+            return filler;
+        }
+
+        private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
+            CreateIngestionTrackingFiller(dateTimeOffset).Create();
+
+        private Expression<Func<IngestionTracking, bool>> SameIngestionTrackingAs(
+            IngestionTracking expectedIngestionTracking)
+        {
+            return actualIngestionTracking =>
+                this.compareLogic.Compare(expectedIngestionTracking, actualIngestionTracking)
+                    .AreEqual;
+        }
+
+        private static string GenerateFilename()
+        {
+            Guid randomGuid = Guid.NewGuid();
+
+            return $"/{GetRandomString()}/{GetRandomString()}/{randomGuid}/{GetRandomNumber}/" +
+                $"{GetRandomString()}_{GetRandomNumber}_{GetRandomString()}_{GetRandomString()}_{GetRandomNumber()}_{randomGuid}.csv.gpg;";
+        }
+
+        private static Guid GetLastRandomGuid(string filename)
+        {
+            int underscoreIndex = filename.LastIndexOf('_');
+            int dotCsvIndex = filename.LastIndexOf(".csv.gpg");
+
+            if (underscoreIndex != -1 && dotCsvIndex != -1 && underscoreIndex < dotCsvIndex)
+            {
+                int guidLength = dotCsvIndex - underscoreIndex - 1;
+                string guidString = filename.Substring(underscoreIndex + 1, guidLength);
+
+                if (Guid.TryParse(guidString, out Guid resultGuid))
+                {
+                    return resultGuid;
+                }
+            }
+
+            return Guid.Empty;
         }
 
         public static TheoryData DependencyValidationExceptions()

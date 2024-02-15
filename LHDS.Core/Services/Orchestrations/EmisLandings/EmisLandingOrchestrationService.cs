@@ -218,7 +218,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 };
 
                 Download externalDownload =
-                        await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
+                    await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
 
                 ValidateStorageDownload(externalDownload, fileName);
 

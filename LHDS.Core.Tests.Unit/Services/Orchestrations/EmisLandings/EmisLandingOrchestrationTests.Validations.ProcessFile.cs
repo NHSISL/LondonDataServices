@@ -253,8 +253,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     innerException: notFoundEmisLandingOrchestrationException);
 
             this.downloadProcessingServiceMock.Setup(service =>
-                  service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
-                      .Returns(null);
+                    service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
+                        .Returns(null);
 
             // when
             ValueTask<string> processTask = this.emisLandingOrchestrationService

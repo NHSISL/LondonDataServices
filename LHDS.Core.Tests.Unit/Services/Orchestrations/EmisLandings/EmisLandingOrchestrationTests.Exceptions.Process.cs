@@ -80,8 +80,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     innerException: dependancyException.InnerException as Xeption);
 
             this.downloadProcessingServiceMock.Setup(service =>
-              service.RetrieveListOfDocumentsToProcessAsync(It.IsAny<Download>()))
-                  .ThrowsAsync(dependancyException);
+                service.RetrieveListOfDocumentsToProcessAsync(It.IsAny<Download>()))
+                    .ThrowsAsync(dependancyException);
 
             // when
             ValueTask<List<string>> processTask = this.emisLandingOrchestrationService
@@ -94,13 +94,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.downloadProcessingServiceMock.Verify(service =>
-              service.RetrieveListOfDocumentsToProcessAsync(It.IsAny<Download>()),
-                Times.Once);
+                service.RetrieveListOfDocumentsToProcessAsync(It.IsAny<Download>()),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedDependencyException))),
-                       Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
 
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

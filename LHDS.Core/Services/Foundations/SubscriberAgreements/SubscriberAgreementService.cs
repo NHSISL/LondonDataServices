@@ -86,7 +86,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     ValidateSubscriberSupplierSharingAgreementGuid(SupplierSharingAgreementGuid);
 
                     SubscriberAgreement maybeSubscriberAgreement = await this.storageBroker
-                    .SelectSubscriberAgreementBySupplierSharingAgreementGuidAsync(SupplierSharingAgreementGuid);
+                        .SelectSubscriberAgreementBySupplierSharingAgreementGuidAsync(SupplierSharingAgreementGuid);
 
                     ValidateStorageSubscriberAgreementBySupplierSharingAgreementGuid(
                         maybeSubscriberAgreement, SupplierSharingAgreementGuid);

@@ -16,6 +16,7 @@ using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -160,6 +161,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         {
             return actualIngestionTracking =>
                 this.compareLogic.Compare(expectedIngestionTracking, actualIngestionTracking)
+                    .AreEqual;
+        }
+
+        private Expression<Func<Download, bool>> SameDownloadAs(
+            Download expectedDownload)
+        {
+            return actualDownload =>
+                this.compareLogic.Compare(expectedDownload, actualDownload)
                     .AreEqual;
         }
 

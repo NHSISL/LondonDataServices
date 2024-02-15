@@ -234,15 +234,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
 
             Download inputDownload = new Download
             {
                 SubscriberCredential = inputSubscriberCredential,
-                Document = new Document { FileName = GetRandomString() }
+                Document = new Document { FileName = inputFileName }
             };
-
-            string randomFileName = GetRandomString();
-            string inputFileName = randomFileName;
 
             var notFoundEmisLandingOrchestrationException =
                 new NotFoundEmisLandingOrchestrationException(
@@ -254,7 +253,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     innerException: notFoundEmisLandingOrchestrationException);
 
             this.downloadProcessingServiceMock.Setup(service =>
-                  service.RetrieveDownloadByFileNameAsync(inputDownload))
+                  service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
                       .Returns(null);
 
             // when
@@ -269,7 +268,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
 
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(inputDownload),
+                service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

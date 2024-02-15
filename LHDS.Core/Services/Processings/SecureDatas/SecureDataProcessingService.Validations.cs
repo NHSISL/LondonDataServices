@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using LHDS.Core.Models.Foundations.SecureData.Exceptions;
+using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using Xeptions;
@@ -44,11 +46,29 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                     SubscriberCredential.GpgPublicKey)));
         }
 
+        private void ValidateSecureData(SecureData secureData)
+        {
+            ValidateSecureDataIsNotNull(secureData);
+
+            Validate<InvalidSecureDataException>(
+                message: "Invalid secure data errors occured. Please correct the errors and try again.",
+                (Rule: IsInvalid(secureData.Name), Parameter: nameof(SecureData.Name)),
+                (Rule: IsInvalid(secureData.Value), Parameter: nameof(SecureData.Value)));
+        }
+
         private static void ValidateSubscriberCredentialIsNotNull(SubscriberCredential subscriberCredential)
         {
             if (subscriberCredential is null)
             {
                 throw new NullSubscriberCredentialException(message: "Subscriber credential is null.");
+            }
+        }
+
+        private static void ValidateSecureDataIsNotNull(SecureData secureData)
+        {
+            if (secureData is null)
+            {
+                throw new NullSecureDataException(message: "Secure data is null.");
             }
         }
 

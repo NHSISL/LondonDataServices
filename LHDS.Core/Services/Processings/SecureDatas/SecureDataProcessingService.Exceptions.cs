@@ -46,6 +46,16 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 throw CreateAndLogDependencyException(secureDataServiceException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedSubscriberCredentialProcessingServiceException =
+                    new FailedSubscriberCredentialProcessingServiceException(
+                        message: "Failed subscriber credential aggregate coordination service occurred, " +
+                        "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedSubscriberCredentialProcessingServiceException);
+            }
             catch (Exception exception)
             {
                 var failedSubscriberCredentialProcessingServiceException =

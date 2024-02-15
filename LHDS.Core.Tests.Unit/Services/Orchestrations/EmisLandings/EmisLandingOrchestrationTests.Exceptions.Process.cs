@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     dependancyValidationException.InnerException as Xeption);
 
             this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(someDownload))
+                service.RetrieveListOfDocumentsToProcessAsync(It.IsAny<Download>()))
                     .ThrowsAsync(dependancyValidationException);
 
             // when
@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(someDownload),
+                service.RetrieveListOfDocumentsToProcessAsync(It.IsAny<Download>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     innerException: dependancyException.InnerException as Xeption);
 
             this.downloadProcessingServiceMock.Setup(service =>
-              service.RetrieveListOfDocumentsToProcessAsync(someDownload))
+              service.RetrieveListOfDocumentsToProcessAsync(It.IsAny<Download>()))
                   .ThrowsAsync(dependancyException);
 
             // when
@@ -94,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.downloadProcessingServiceMock.Verify(service =>
-              service.RetrieveListOfDocumentsToProcessAsync(someDownload),
+              service.RetrieveListOfDocumentsToProcessAsync(It.IsAny<Download>()),
                 Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -130,7 +130,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     failedEmisLandingOrchestrationServiceException);
 
             this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(someDownload))
+                service.RetrieveListOfDocumentsToProcessAsync(It.IsAny<Download>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -144,7 +144,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             actualException.Should().BeEquivalentTo(expectedEmisLandingOrchestrationServiceException);
 
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(someDownload),
+                service.RetrieveListOfDocumentsToProcessAsync(It.IsAny<Download>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

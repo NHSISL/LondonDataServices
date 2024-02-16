@@ -71,7 +71,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             string subscriberAgreementName) =>
                 throw new NotImplementedException();
 
-        public ValueTask<SubscriberCredential> RemoveSecureData(SubscriberCredential subscriberCredential) =>
+        public ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential subscriberCredential) =>
             throw new NotImplementedException();
 
         private static List<SecureData> GetSecureDataItems(SubscriberCredential subscriberCredential)

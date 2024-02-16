@@ -16,6 +16,7 @@ using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
@@ -109,20 +110,32 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                     ? document.FileName
                                     : "/" + document.FileName;
 
+                                string[] splitFileName = filename.Split('/');
+                                string newFileName = "";
+
+                                if (splitFileName.Length < 6)
+                                {
+                                    throw new InvalidDocumentProcessingFileNameException(filename);
+                                }
+                                else
+                                {
+                                    newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
+                                }
+
                                 IngestionTracking newIngestionTracking =
                                   new IngestionTracking
                                   {
                                       Id = this.identifierBroker.GetIdentifier(),
                                       FileName = document.FileName,
                                       SupplierId = landingConfiguration.LandingSupplierId,
-                                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+                                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
 
                                       DecryptedFileName =
                                         $"/{landingConfiguration.DecryptedFolder}" +
                                         $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
                                         $"/{retrievedDataSetSpecification.Id}" +
                                         $"/{filename.Split('_')[3]}" +
-                                        $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                                        $"{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                                       Decrypted = false,
                                       LastSeen = currentDateTime,
@@ -268,34 +281,46 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
                             landingConfiguration.LandingSupplierId);
 
+                    string[] splitFileName = filename.Split('/');
+                    string newFileName = "";
+
+                    if (splitFileName.Length < 6)
+                    {
+                        throw new InvalidDocumentProcessingFileNameException(filename);
+                    }
+                    else
+                    {
+                        newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
+                    }
+
                     IngestionTracking newIngestionTracking =
-                      new IngestionTracking
-                      {
-                          Id = this.identifierBroker.GetIdentifier(),
-                          FileName = externalDocument.FileName,
-                          SupplierId = landingConfiguration.LandingSupplierId,
-                          EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+                        new IngestionTracking
+                        {
+                            Id = this.identifierBroker.GetIdentifier(),
+                            FileName = externalDocument.FileName,
+                            SupplierId = landingConfiguration.LandingSupplierId,
+                            EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
 
-                          DecryptedFileName =
-                            $"/{landingConfiguration.DecryptedFolder}" +
-                            $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
-                            $"/{retrievedDataSetSpecification.Id}" +
-                            $"/{filename.Split('_')[3]}" +
-                            $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                            DecryptedFileName =
+                                $"/{landingConfiguration.DecryptedFolder}"
+                                + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
+                                + $"/{retrievedDataSetSpecification.Id}"
+                                + $"/{filename.Split('_')[3]}"
+                                + $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
-                          Decrypted = false,
-                          LastSeen = currentDateTime,
-                          FileDeleted = false,
-                          RecordCount = 0,
-                          EncryptedFileSize = externalDocument.DocumentData.Length,
-                          EncryptedFileSha256Hash = encryptedFileSha256Hash,
-                          DecryptedFileSize = 0,
-                          DecryptedFileSha256Hash = string.Empty,
-                          CreatedBy = "System",
-                          CreatedDate = currentDateTime,
-                          UpdatedBy = "System",
-                          UpdatedDate = currentDateTime
-                      };
+                            Decrypted = false,
+                            LastSeen = currentDateTime,
+                            FileDeleted = false,
+                            RecordCount = 0,
+                            EncryptedFileSize = externalDocument.DocumentData.Length,
+                            EncryptedFileSha256Hash = encryptedFileSha256Hash,
+                            DecryptedFileSize = 0,
+                            DecryptedFileSha256Hash = string.Empty,
+                            CreatedBy = "System",
+                            CreatedDate = currentDateTime,
+                            UpdatedBy = "System",
+                            UpdatedDate = currentDateTime
+                        };
 
                     Document newBlobDocument = new Document
                     {

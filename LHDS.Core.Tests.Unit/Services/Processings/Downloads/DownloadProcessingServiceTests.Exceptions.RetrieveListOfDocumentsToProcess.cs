@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
 
             // when
             ValueTask<List<Download>> downloadRetrieveListOfDocumentsTask =
-                this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync(inputDownload);
+                this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(inputDownload);
 
             DownloadProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DownloadProcessingDependencyValidationException>(
@@ -81,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
 
             // when
             ValueTask<List<Download>> downloadRetrieveListOfDocumentsTask =
-                this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync(inputDownload);
+                this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(inputDownload);
 
             DownloadProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<DownloadProcessingDependencyException>(
@@ -128,7 +128,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
 
             // when
             ValueTask<List<Download>> downloadRetrieveListOfDocumentsTask =
-                this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync(inputDownload);
+                this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(inputDownload);
 
             DownloadProcessingServiceException actualException =
                 await Assert.ThrowsAsync<DownloadProcessingServiceException>(

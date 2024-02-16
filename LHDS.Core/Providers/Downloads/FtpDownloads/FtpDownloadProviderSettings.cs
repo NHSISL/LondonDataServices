@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 namespace LHDS.Core.Providers.Downloads.FtpDownloads
 {
@@ -16,19 +16,16 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
         public int FtpPort { get; set; } = 22;
 
         /// <inheritdoc/>
-        public string FtpPassword { get; set; }
-
-        /// <inheritdoc/>
         public string FtpUserName { get; set; }
 
         /// <inheritdoc/>
-        public string TempFolder { get; set; }
-
-        /// <inheritdoc/>
-        public string FtpKey { get; set; }
+        public string FtpPassword { get; set; }
 
         /// <inheritdoc/>
         public string FtpPassPhrase { get; set; }
+
+        /// <inheritdoc/>
+        public string FtpPrivateKey { get; set; }
 
         /// <inheritdoc/>
         public string FtpRootFolder { get; set; } = "/";

@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(randomGuid);
 
             this.downloadProcessingServiceMock.Setup(service =>
-               service.RetrieveListOfDocumentsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
+               service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
                    .ReturnsAsync(externalDownloads);
 
             this.dataSetSpecificationProcessingServiceMock.Setup(service =>
@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(It.Is(SameDownloadAs(inputDownload))),
+                service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))),
                     Times.Once);
 
             foreach (var downloadItem in externalDownloads)
@@ -237,7 +237,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 CreateRandomIngestionTrackings(randomDateTime, randomDocuments);
 
             this.downloadProcessingServiceMock.Setup(service =>
-               service.RetrieveListOfDocumentsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
+               service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
                    .ReturnsAsync(externalDownloads);
 
             this.hashBrokerMock.Setup(broker =>
@@ -260,7 +260,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(It.Is(SameDownloadAs(inputDownload))),
+                service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))),
                     Times.Once);
 
             foreach (var document in externalDocuments)
@@ -334,7 +334,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(randomGuid);
 
             this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
+                service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
                     .ReturnsAsync(externalDownloads);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
@@ -346,7 +346,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(It.Is(SameDownloadAs(inputDownload))),
+                service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))),
                     Times.Once);
 
             DateTimeOffset expireTime = randomDateTime.AddMinutes(-15);

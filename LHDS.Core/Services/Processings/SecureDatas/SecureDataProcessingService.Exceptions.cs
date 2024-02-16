@@ -31,6 +31,11 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 throw CreateAndLogValidationException(invalidSubscriberCredentialException);
             }
+            catch (InvalidArgumentSubscriberCredentialProcessingException 
+                invalidArgumentSubscriberCredentialProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialProcessingException);
+            }
             catch (AggregateException aggregateException)
             {
                 var failedSubscriberCredentialProcessingServiceException =

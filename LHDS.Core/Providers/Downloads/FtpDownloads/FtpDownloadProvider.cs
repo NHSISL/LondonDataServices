@@ -87,12 +87,16 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
             {
                 this.EnsureClientIsConnected(client);
 
-                return await this.GetListOfDocumentsToProcessAsync(
+                var items = await this.GetListOfDocumentsToProcessAsync(
                     client,
                     download,
                     path: ftpDownloadProviderSettings.FtpRootFolder,
                     includeSubDirectories: ftpDownloadProviderSettings.IncludeSubDirectories);
 
+                client.Disconnect();
+                client.Dispose();
+
+                return items;
             }
         }
 

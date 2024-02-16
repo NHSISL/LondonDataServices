@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -16,22 +17,24 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
     public partial class SecureDataProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldRetrieveSecretsBySubscriberAgreementNameAsync()
+        public async Task ShouldRetrieveSecretsByKeyVaultKeyNameAsync()
         {
             // given
             dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();
 
             List<string> keyTypes = new List<string>
             {
+                "FtpPassword",
                 "FtpPassPhrase",
                 "FtpPrivateKey",
                 "GpgPassPhrase",
-                "GpgPrivateKey",
+                "GpgPrivateKey"
             };
 
             SubscriberCredential inputSubscriberCredential =
                 CreateSubscriberCredentialFromDynamic(credential: randomCredential);
 
+            inputSubscriberCredential.FtpPassword = string.Empty;
             inputSubscriberCredential.FtpPassPhrase = string.Empty;
             inputSubscriberCredential.GpgPassPhrase = string.Empty; 
             inputSubscriberCredential.FtpPrivateKey = string.Empty;
@@ -41,31 +44,34 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             foreach (string keyType in keyTypes)
             {
+                string secretName = $"{inputSubscriberCredential.Id}-{keyType}";
+
                 SecureData inputSecureData =
                     CreateSecretDataFromDynamic(credential: randomCredential, property: keyType);
 
                 SecureData outputSecureData = inputSecureData.DeepClone();
 
                 this.secureDataServiceMock.Setup(service =>
-                    service.RetrieveSecretDataByNameAsync(inputSecureData.Name))
+                    service.RetrieveSecretDataByNameAsync(secretName))
                         .ReturnsAsync(outputSecureData);
             }
 
             // when
             SubscriberCredential actualSubscriberCredential =
-                await this.secureDataProcessingService.RetrieveSecretsBySubscriberAgreementNameAsync(
-                    inputSubscriberCredential.SupplierSharingAgreementShortName);
+                await this.secureDataProcessingService.RetrieveSecretsByKeyVaultKeyNameAsync(inputSubscriberCredential);
 
             // then
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
 
             foreach (string keyType in keyTypes)
             {
+                string secretName = $"{inputSubscriberCredential.Id}-{keyType}";
+
                 SecureData inputSecureData =
                     CreateSecretDataFromDynamic(credential: randomCredential, property: keyType);
 
                 this.secureDataServiceMock.Verify(service =>
-                    service.RetrieveSecretDataByNameAsync(inputSecureData.Name),
+                    service.RetrieveSecretDataByNameAsync(secretName),
                         Times.Once);
             }
 

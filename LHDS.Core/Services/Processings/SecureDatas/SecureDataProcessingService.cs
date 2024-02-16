@@ -78,6 +78,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
         {
             List<string> keyTypes = new List<string>
             {
+                "FtpPassword",
                 "FtpPassPhrase",
                 "FtpPrivateKey",
                 "GpgPassPhrase",

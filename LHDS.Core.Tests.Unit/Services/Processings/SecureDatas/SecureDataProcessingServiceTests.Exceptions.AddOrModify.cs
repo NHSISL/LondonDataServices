@@ -25,10 +25,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             // Given
             List<string> keyTypes = new List<string>
             {
+                "FtpPassword",
                 "FtpPassPhrase",
                 "FtpPrivateKey",
                 "GpgPassPhrase",
-                "GpgPrivateKey",
+                "GpgPrivateKey"
             };
 
             dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();
@@ -112,10 +113,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             // Given
             List<string> keyTypes = new List<string>
             {
+                "FtpPassword",
                 "FtpPassPhrase",
                 "FtpPrivateKey",
                 "GpgPassPhrase",
-                "GpgPrivateKey",
+                "GpgPrivateKey"
             };
 
             dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();
@@ -197,10 +199,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             // Given
             List<string> keyTypes = new List<string>
                 {
+                    "FtpPassword",
                     "FtpPassPhrase",
                     "FtpPrivateKey",
                     "GpgPassPhrase",
-                    "GpgPrivateKey",
+                    "GpgPrivateKey"
                 };
 
             dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();

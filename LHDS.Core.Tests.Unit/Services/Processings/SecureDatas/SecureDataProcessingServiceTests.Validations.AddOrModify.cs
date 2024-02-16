@@ -61,6 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                 Id = Guid.Empty,
                 SupplierSharingAgreementShortName = invalidText,
                 FtpUserName = invalidText,
+                FtpPassword = invalidText,
                 FtpPassPhrase = invalidText,
                 FtpPrivateKey = invalidText,
                 FtpPublicKey = invalidText,
@@ -83,6 +84,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             invalidSubscriberCredentialException.AddData(
                 key: nameof(SubscriberCredential.FtpUserName),
+                values: "Text is required");
+
+            invalidSubscriberCredentialException.AddData(
+                key: nameof(SubscriberCredential.FtpPassword),
                 values: "Text is required");
 
             invalidSubscriberCredentialException.AddData(

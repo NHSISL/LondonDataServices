@@ -27,6 +27,9 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 (Rule: IsInvalid(subscriberCredential.FtpUserName), Parameter: nameof(
                     SubscriberCredential.FtpUserName)),
 
+                (Rule: IsInvalid(subscriberCredential.FtpPassword), Parameter: nameof(
+                    SubscriberCredential.FtpPassword)),
+
                 (Rule: IsInvalid(subscriberCredential.FtpPassPhrase), Parameter: nameof(
                     SubscriberCredential.FtpPassPhrase)),
 

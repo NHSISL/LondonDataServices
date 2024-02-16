@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions
     public class SubscriberCredentialProcessingServiceException : Xeption
     {
         public SubscriberCredentialProcessingServiceException(string message, Xeption innerException)
-          : base(message, innerException)
+            : base(message, innerException)
         { }
     }
 }

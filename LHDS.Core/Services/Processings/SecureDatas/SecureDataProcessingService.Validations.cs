@@ -49,6 +49,27 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                     SubscriberCredential.GpgPublicKey)));
         }
 
+        private void ValidateSubscriberCredentialOnRetrieve(SubscriberCredential subscriberCredential)
+        {
+            ValidateSubscriberCredentialIsNotNull(subscriberCredential);
+
+            Validate<InvalidSubscriberCredentialException>(
+                message: "Invalid subscriber credential errors occurred. Please correct the errors and try again.",
+                (Rule: IsInvalid(subscriberCredential.Id), Parameter: nameof(SubscriberCredential.Id)),
+
+                (Rule: IsInvalid(subscriberCredential.SupplierSharingAgreementShortName), Parameter: nameof(
+                    SubscriberCredential.SupplierSharingAgreementShortName)),
+
+                (Rule: IsInvalid(subscriberCredential.FtpUserName), Parameter: nameof(
+                    SubscriberCredential.FtpUserName)),
+
+                (Rule: IsInvalid(subscriberCredential.FtpPublicKey), Parameter: nameof(
+                    SubscriberCredential.FtpPublicKey)),
+
+                (Rule: IsInvalid(subscriberCredential.GpgPublicKey), Parameter: nameof(
+                    SubscriberCredential.GpgPublicKey)));
+        }
+
         private void ValidateSecureData(SecureData secureData)
         {
             ValidateSecureDataIsNotNull(secureData);

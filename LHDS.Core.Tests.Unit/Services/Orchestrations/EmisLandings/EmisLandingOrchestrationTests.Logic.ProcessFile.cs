@@ -195,7 +195,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             Download inputDownload = new Download
             {
                 SubscriberCredential = inputSubscriberCredential,
-                Document = new Document { FileName = newIngestionTracking.FileName }
+                Document = new Document { FileName = newRandomIngestionTracking.FileName }
             };
 
             Download storageDownload = new Download

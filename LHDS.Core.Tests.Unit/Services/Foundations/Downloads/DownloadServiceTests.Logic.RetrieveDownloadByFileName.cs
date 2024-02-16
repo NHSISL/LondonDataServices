@@ -1,11 +1,13 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xunit;
 
@@ -17,24 +19,40 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
         public async Task ShouldRetrieveDownloadByIdAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Document randomDocument = CreateRandomDocument();
+
+            Download inputDownload = new Download
+            {
+                SubscriberCredential = inputSubscriberCredential,
+                Document = new Document { FileName = randomDocument.FileName }
+            };
+
             Document inputDocument = randomDocument;
             Document storageDocument = randomDocument;
-            Document expectedDocument = storageDocument.DeepClone();
+
+            Download storageDownload = new Download
+            {
+                SubscriberCredential = inputSubscriberCredential,
+                Document = storageDocument
+            };
+
+            Download expectedDownload = storageDownload.DeepClone();
 
             this.downloadBrokerMock.Setup(broker =>
-                broker.GetDocumentByFileNameAsync(inputDocument.FileName))
-                    .ReturnsAsync(storageDocument);
+                broker.GetDownloadByFileNameAsync(inputDownload))
+                    .ReturnsAsync(storageDownload);
 
             // when
-            Document actualDocument =
-                await this.downloadService.RetrieveDownloadByFileNameAsync(inputDocument.FileName);
+            Download actualDownload =
+                await this.downloadService.RetrieveDownloadByFileNameAsync(inputDownload);
 
             // then
-            actualDocument.Should().BeEquivalentTo(expectedDocument);
+            actualDownload.Should().BeEquivalentTo(expectedDownload);
 
             this.downloadBrokerMock.Verify(broker =>
-                broker.GetDocumentByFileNameAsync(inputDocument.FileName),
+                broker.GetDownloadByFileNameAsync(inputDownload),
                     Times.Once);
 
             this.downloadBrokerMock.VerifyNoOtherCalls();

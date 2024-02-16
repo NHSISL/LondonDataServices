@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
-using LHDS.Core.Services.Foundations.SecureDatas;
+using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
 
 namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials

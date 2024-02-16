@@ -77,7 +77,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 Download download = new Download { SubscriberCredential = subscriberCredential };
 
                 List<Download> retrievedDownloads =
-                    await this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync(download);
+                    await this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(download);
 
                 List<string> files = new List<string>();
 

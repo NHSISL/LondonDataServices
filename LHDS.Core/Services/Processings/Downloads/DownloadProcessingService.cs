@@ -23,7 +23,7 @@ namespace LHDS.Core.Services.Processings.Downloads
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<Download>> RetrieveListOfDocumentsToProcessAsync(Download download) =>
+        public ValueTask<List<Download>> RetrieveListOfDownloadsToProcessAsync(Download download) =>
             TryCatch(async () =>
             {
                 ValidateDownloadIsNotNull(download);

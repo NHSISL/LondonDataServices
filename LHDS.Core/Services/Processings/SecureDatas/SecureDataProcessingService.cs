@@ -11,6 +11,7 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using LHDS.Core.Services.Foundations.SecureDatas;
 
 namespace LHDS.Core.Services.Processings.SecureDatas
@@ -116,7 +117,8 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             }
             else
             {
-                throw new ArgumentException($"Property '{propertyName}' not found on object.");
+                throw new InvalidArgumentSubscriberCredentialProcessingException(
+                    message: $"Property '{propertyName}' not found on object.");
             }
         }
     }

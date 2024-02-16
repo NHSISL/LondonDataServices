@@ -68,28 +68,33 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             });
 
         public async ValueTask<SubscriberCredential> RetrieveSecretsByKeyVaultKeyNameAsync(
-            SubscriberCredential subscriberCredential) =>
-            throw new NotImplementedException();
+            SubscriberCredential subscriberCredential)
+        {
+            List<string> keyTypes = GetPropertyList();
+
+            foreach (var keyType in keyTypes)
+            {
+                string secretName = $"{subscriberCredential.Id}-{keyType}";
+
+                SecureData retrievedSecureData = await this.secureDataService.RetrieveSecretDataByNameAsync(secretName);
+
+                SetPropertyValue(subscriberCredential, propertyName: keyType, value: retrievedSecureData.Value);
+            }
+
+            return subscriberCredential;
+        }
 
         public ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential subscriberCredential) =>
             throw new NotImplementedException();
 
         private static List<SecureData> GetSecureDataItems(SubscriberCredential subscriberCredential)
         {
-            List<string> keyTypes = new List<string>
-            {
-                "FtpPassword",
-                "FtpPassPhrase",
-                "FtpPrivateKey",
-                "GpgPassPhrase",
-                "GpgPrivateKey",
-            };
+            List<string> keyTypes = GetPropertyList();
 
             List<SecureData> secureDataList = new List<SecureData>();
 
             foreach (string keyType in keyTypes)
             {
-
                 string secretName = $"{subscriberCredential.Id}-{keyType}";
 
                 string secretValue = GetPropertyValue(
@@ -107,6 +112,17 @@ namespace LHDS.Core.Services.Processings.SecureDatas
 
             return secureDataList;
         }
+        private static List<string> GetPropertyList()
+        {
+            return new List<string>
+                {
+                    "FtpPassword",
+                    "FtpPassPhrase",
+                    "FtpPrivateKey",
+                    "GpgPassPhrase",
+                    "GpgPrivateKey"
+                };
+        }
 
         private static string GetPropertyValue(SubscriberCredential subscriberCredential, string propertyName)
         {
@@ -115,6 +131,24 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 var value = propertyInfo.GetValue(subscriberCredential);
                 return value?.ToString() ?? string.Empty;
+            }
+            else
+            {
+                throw new InvalidArgumentSubscriberCredentialProcessingException(
+                    message: $"Property '{propertyName}' not found on object.");
+            }
+        }
+
+        private static void SetPropertyValue(
+            SubscriberCredential subscriberCredential, 
+            string propertyName, 
+            object value)
+        {
+            PropertyInfo propertyInfo = typeof(SubscriberCredential).GetProperty(propertyName);
+
+            if (propertyInfo != null && propertyInfo.CanWrite)
+            {
+                propertyInfo.SetValue(subscriberCredential, value);
             }
             else
             {

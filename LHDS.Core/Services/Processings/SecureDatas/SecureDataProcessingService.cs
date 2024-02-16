@@ -67,9 +67,9 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 return subscriberCredential;
             });
 
-        public ValueTask<SubscriberCredential> RetrieveSecretsBySubscriberAgreementNameAsync(
-            string subscriberAgreementName) =>
-                throw new NotImplementedException();
+        public async ValueTask<SubscriberCredential> RetrieveSecretsByKeyVaultKeyNameAsync(
+            SubscriberCredential subscriberCredential) =>
+            throw new NotImplementedException();
 
         public ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential subscriberCredential) =>
             throw new NotImplementedException();

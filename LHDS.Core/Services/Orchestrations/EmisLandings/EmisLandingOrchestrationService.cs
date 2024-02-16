@@ -307,9 +307,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                           Id = this.identifierBroker.GetIdentifier(),
                           FileName = externalDownload.Document.FileName,
                           SupplierId = landingConfiguration.LandingSupplierId,
-                          EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+                          EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
 
-                            DecryptedFileName =
+                          DecryptedFileName =
                                 $"/{landingConfiguration.DecryptedFolder}"
                                 + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
                                 + $"/{retrievedDataSetSpecification.Id}"

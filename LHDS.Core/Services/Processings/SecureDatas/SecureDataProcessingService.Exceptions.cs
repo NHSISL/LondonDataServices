@@ -31,21 +31,10 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 throw CreateAndLogValidationException(invalidSubscriberCredentialException);
             }
-            catch (SecureDataDependencyValidationException secureDataDependencyValidationException)
+            catch (InvalidArgumentSubscriberCredentialProcessingException 
+                invalidArgumentSubscriberCredentialProcessingException)
             {
-                throw CreateAndLogDependencyValidationException(secureDataDependencyValidationException);
-            }
-            catch (SecureDataValidationException secureDataValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(secureDataValidationException);
-            }
-            catch (SecureDataDependencyException secureDataDependencyException)
-            {
-                throw CreateAndLogDependencyException(secureDataDependencyException);
-            }
-            catch (SecureDataServiceException secureDataServiceException)
-            {
-                throw CreateAndLogDependencyException(secureDataServiceException);
+                throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialProcessingException);
             }
             catch (AggregateException aggregateException)
             {

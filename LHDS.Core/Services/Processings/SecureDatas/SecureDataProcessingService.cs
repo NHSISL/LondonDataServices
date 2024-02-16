@@ -89,7 +89,10 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
 
                 string secretName = $"{subscriberCredential.Id}-{keyType}";
-                string secretValue = GetPropertyValue(subscriberCredential, keyType);
+
+                string secretValue = GetPropertyValue(
+                    subscriberCredential: subscriberCredential, 
+                    propertyName: keyType);
 
                 SecureData secureData = new SecureData
                 {

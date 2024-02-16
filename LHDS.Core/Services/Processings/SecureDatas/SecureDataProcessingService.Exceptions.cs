@@ -31,22 +31,6 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 throw CreateAndLogValidationException(invalidSubscriberCredentialException);
             }
-            catch (SecureDataDependencyValidationException secureDataDependencyValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(secureDataDependencyValidationException);
-            }
-            catch (SecureDataValidationException secureDataValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(secureDataValidationException);
-            }
-            catch (SecureDataDependencyException secureDataDependencyException)
-            {
-                throw CreateAndLogDependencyException(secureDataDependencyException);
-            }
-            catch (SecureDataServiceException secureDataServiceException)
-            {
-                throw CreateAndLogDependencyException(secureDataServiceException);
-            }
             catch (AggregateException aggregateException)
             {
                 var failedSubscriberCredentialProcessingServiceException =

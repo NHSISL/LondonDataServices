@@ -1,7 +1,8 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
@@ -40,10 +41,12 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                List<Document> retrievedDocuments =
-                    await downloadService.RetrieveListOfDocumentsToProcessAsync();
+                // TODO: Fix this once stack has been converted
+                throw new NotImplementedException();
+                //List<Document> retrievedDocuments =
+                //    await downloadService.RetrieveListOfDocumentsToProcessAsync();
 
-                return Ok(retrievedDocuments);
+                //return Ok(retrievedDocuments);
             }
             catch (DownloadDependencyException downloadDependencyException)
             {
@@ -63,9 +66,12 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                Document document = await downloadService.RetrieveDownloadByFileNameAsync(fileName);
+                // TODO: Fix this once stack is up to date
+                throw new NotImplementedException();
 
-                return Ok(document);
+                //Document document = await downloadService.RetrieveDownloadByFileNameAsync(fileName);
+
+                //return Ok(document);
             }
             catch (DownloadValidationException downloadValidationException)
                 when (downloadValidationException.InnerException is NotFoundDocumentException)

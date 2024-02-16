@@ -3,7 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
@@ -55,9 +55,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
-        private static void ValidateStorageDownload(Document maybeDocument, string fileName)
+        private static void ValidateStorageDownload(Download maybeDownload, string fileName)
         {
-            if (maybeDocument is null)
+            if (maybeDownload is null)
             {
                 throw new NotFoundEmisLandingOrchestrationException(
                     message: $"Couldn't find download with file name: {fileName}.");

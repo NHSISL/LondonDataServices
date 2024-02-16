@@ -1,13 +1,14 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Processings.Downloads.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -22,18 +23,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
             Xeption dependencyValidationException)
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
+
             var expectedDownloadProcessingDependencyValidationException =
                 new DownloadProcessingDependencyValidationException(
                     message: "Download processing dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.downloadServiceMock.Setup(service =>
-                service.RetrieveListOfDocumentsToProcessAsync())
+                service.RetrieveListOfDocumentsToProcessAsync(inputDownload))
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<List<Document>> downloadRetrieveListOfDocumentsTask =
-                this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync();
+            ValueTask<List<Download>> downloadRetrieveListOfDocumentsTask =
+                this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync(inputDownload);
 
             DownloadProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DownloadProcessingDependencyValidationException>(
@@ -43,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
             actualException.Should().BeEquivalentTo(expectedDownloadProcessingDependencyValidationException);
 
             this.downloadServiceMock.Verify(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(),
+                service.RetrieveListOfDocumentsToProcessAsync(inputDownload),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -61,18 +66,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
             Xeption dependencyException)
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
+
             var expectedDownloadProcessingDependencyException =
                 new DownloadProcessingDependencyException(
                     message: "Download processing dependency error occurred, please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.downloadServiceMock.Setup(service =>
-                service.RetrieveListOfDocumentsToProcessAsync())
+                service.RetrieveListOfDocumentsToProcessAsync(inputDownload))
                     .Throws(dependencyException);
 
             // when
-            ValueTask<List<Document>> downloadRetrieveListOfDocumentsTask =
-                this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync();
+            ValueTask<List<Download>> downloadRetrieveListOfDocumentsTask =
+                this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync(inputDownload);
 
             DownloadProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<DownloadProcessingDependencyException>(
@@ -82,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
             actualException.Should().BeEquivalentTo(expectedDownloadProcessingDependencyException);
 
             this.downloadServiceMock.Verify(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(),
+                service.RetrieveListOfDocumentsToProcessAsync(inputDownload),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -98,6 +107,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
         public async Task ShouldThrowServiceExceptionOnRetrieveListOfDocumentsIfServiceErrorOccursAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
             var serviceException = new Exception();
 
             var failedDownloadProcessingServiceException =
@@ -111,12 +123,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                     innerException: failedDownloadProcessingServiceException);
 
             this.downloadServiceMock.Setup(service =>
-                service.RetrieveListOfDocumentsToProcessAsync())
+                service.RetrieveListOfDocumentsToProcessAsync(inputDownload))
                     .Throws(serviceException);
 
             // when
-            ValueTask<List<Document>> downloadRetrieveListOfDocumentsTask =
-                this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync();
+            ValueTask<List<Download>> downloadRetrieveListOfDocumentsTask =
+                this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync(inputDownload);
 
             DownloadProcessingServiceException actualException =
                 await Assert.ThrowsAsync<DownloadProcessingServiceException>(
@@ -126,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
             actualException.Should().BeEquivalentTo(expectedDownloadProcessingServiveException);
 
             this.downloadServiceMock.Verify(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(),
+                service.RetrieveListOfDocumentsToProcessAsync(inputDownload),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

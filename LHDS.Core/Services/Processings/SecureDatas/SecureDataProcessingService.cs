@@ -11,6 +11,7 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using LHDS.Core.Services.Foundations.SecureDatas;
 
 namespace LHDS.Core.Services.Processings.SecureDatas
@@ -47,7 +48,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
 
                         await TryCatch(async () =>
                         {
-                            await this.secureDataService.AddOrModifySecureData(data);
+                            await this.secureDataService.AddOrModifySecureData(secureData: data);
                         });
                     }
                     catch (Exception ex)
@@ -70,13 +71,14 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             string subscriberAgreementName) =>
                 throw new NotImplementedException();
 
-        public ValueTask<SubscriberCredential> RemoveSecureData(SubscriberCredential subscriberCredential) =>
+        public ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential subscriberCredential) =>
             throw new NotImplementedException();
 
         private static List<SecureData> GetSecureDataItems(SubscriberCredential subscriberCredential)
         {
             List<string> keyTypes = new List<string>
             {
+                "FtpPassword",
                 "FtpPassPhrase",
                 "FtpPrivateKey",
                 "GpgPassPhrase",
@@ -89,7 +91,10 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
 
                 string secretName = $"{subscriberCredential.Id}-{keyType}";
-                string secretValue = GetPropertyValue(subscriberCredential, keyType);
+
+                string secretValue = GetPropertyValue(
+                    subscriberCredential: subscriberCredential, 
+                    propertyName: keyType);
 
                 SecureData secureData = new SecureData
                 {
@@ -113,7 +118,8 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             }
             else
             {
-                throw new ArgumentException($"Property '{propertyName}' not found on object.");
+                throw new InvalidArgumentSubscriberCredentialProcessingException(
+                    message: $"Property '{propertyName}' not found on object.");
             }
         }
     }

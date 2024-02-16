@@ -11,6 +11,6 @@ namespace LHDS.Core.Services.Processings.SecureDatas
     {
         ValueTask<SubscriberCredential> AddOrModifySecureDataAsync(SubscriberCredential secureData);
         ValueTask<SubscriberCredential> RetrieveSecretsBySubscriberAgreementNameAsync(string subscriberAgreementName);
-        ValueTask<SubscriberCredential> RemoveSecureData(SubscriberCredential secureData);
+        ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential secureData);
     }
 }

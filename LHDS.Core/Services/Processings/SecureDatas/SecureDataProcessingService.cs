@@ -67,22 +67,25 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 return subscriberCredential;
             });
 
-        public async ValueTask<SubscriberCredential> RetrieveSecretsByKeyVaultKeyNameAsync(
-            SubscriberCredential subscriberCredential)
-        {
-            List<string> keyTypes = GetPropertyList();
-
-            foreach (var keyType in keyTypes)
+        public ValueTask<SubscriberCredential> RetrieveSecretsByKeyVaultKeyNameAsync(
+            SubscriberCredential subscriberCredential) =>
+            TryCatch(async () =>
             {
-                string secretName = $"{subscriberCredential.Id}-{keyType}";
+                ValidateSubscriberCredentialOnRetrieve(subscriberCredential);
+                List<string> keyTypes = GetPropertyList();
 
-                SecureData retrievedSecureData = await this.secureDataService.RetrieveSecretDataByNameAsync(secretName);
+                foreach (var keyType in keyTypes)
+                {
+                    string secretName = $"{subscriberCredential.Id}-{keyType}";
 
-                SetPropertyValue(subscriberCredential, propertyName: keyType, value: retrievedSecureData.Value);
-            }
+                    SecureData retrievedSecureData = 
+                        await this.secureDataService.RetrieveSecretDataByNameAsync(secretName);
 
-            return subscriberCredential;
-        }
+                    SetPropertyValue(subscriberCredential, propertyName: keyType, value: retrievedSecureData.Value);
+                }
+
+                return subscriberCredential;
+            });
 
         public ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential subscriberCredential) =>
             throw new NotImplementedException();

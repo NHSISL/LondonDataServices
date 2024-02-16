@@ -73,15 +73,36 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 ValidateSubscriberCredentialOnRetrieve(subscriberCredential);
                 List<string> keyTypes = GetPropertyList();
+                var exceptions = new List<Exception>();
 
                 foreach (var keyType in keyTypes)
                 {
-                    string secretName = $"{subscriberCredential.Id}-{keyType}";
+                    try
+                    {
+                        string secretName = $"{subscriberCredential.Id}-{keyType}";
 
-                    SecureData retrievedSecureData = 
-                        await this.secureDataService.RetrieveSecretDataByNameAsync(secretName);
+                        await TryCatch(async () =>
+                        {
+                            SecureData retrievedSecureData = 
+                                await this.secureDataService.RetrieveSecretDataByNameAsync(secretName);
 
-                    SetPropertyValue(subscriberCredential, propertyName: keyType, value: retrievedSecureData.Value);
+                            SetPropertyValue(
+                                subscriberCredential, 
+                                propertyName: keyType, 
+                                value: retrievedSecureData.Value);
+                        });
+
+                        if (exceptions.Any())
+                        {
+                            throw new AggregateException(
+                                $"Unable to retrieve {exceptions.Count} secure data",
+                                exceptions);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
                 }
 
                 return subscriberCredential;

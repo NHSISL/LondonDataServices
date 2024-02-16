@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
@@ -32,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     dependancyValidationException.InnerException as Xeption);
 
             this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveDownloadByFileNameAsync(someFileName))
+                service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()))
                     .Throws(dependancyValidationException);
 
             // when
@@ -46,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(someFileName),
+                service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -78,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     innerException: dependancyException.InnerException as Xeption);
 
             this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveDownloadByFileNameAsync(someFileName))
+                service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()))
                     .ThrowsAsync(dependancyException);
 
             // when
@@ -92,7 +93,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(someFileName),
+                service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -128,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     failedEmisLandingOrchestrationServiceException);
 
             this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveDownloadByFileNameAsync(someFileName))
+                service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()))
                     .Throws(serviceException);
 
             // when
@@ -142,7 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             actualException.Should().BeEquivalentTo(expectedEmisLandingOrchestrationServiceException);
 
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(someFileName),
+                service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

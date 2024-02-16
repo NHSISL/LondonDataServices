@@ -1,13 +1,13 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 
 namespace LHDS.Core.Services.Foundations.Downloads
 {
@@ -27,20 +27,22 @@ namespace LHDS.Core.Services.Foundations.Downloads
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<Document>> RetrieveListOfDocumentsToProcessAsync() =>
+        public ValueTask<List<Download>> RetrieveListOfDocumentsToProcessAsync(Download download) =>
             TryCatch(async () =>
             {
-                return await this.downloadBroker.GetListOfDocumentsToProcessAsync();
+                ValidateOnRetrieveListOfDocumentsToProcessAsync(download);
+
+                return await this.downloadBroker.GetListOfDownloadsToProcessAsync(download);
             });
 
-        public ValueTask<Document> RetrieveDownloadByFileNameAsync(string fileName) =>
+        public ValueTask<Download> RetrieveDownloadByFileNameAsync(Download download) =>
             TryCatch(async () =>
             {
-                ValidateDownloadArgs(fileName);
-                Document maybeDocument = await this.downloadBroker.GetDocumentByFileNameAsync(fileName);
-                ValidateStorageDownload(maybeDocument, fileName);
+                ValidateOnRetrieveDownloadByFileName(download);
+                Download maybeDownload = await this.downloadBroker.GetDownloadByFileNameAsync(download);
+                ValidateStorageDownload(maybeDownload, download.Document.FileName);
 
-                return maybeDocument;
+                return maybeDownload;
             });
     }
 }

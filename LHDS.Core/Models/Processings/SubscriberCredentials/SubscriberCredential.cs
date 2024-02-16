@@ -13,6 +13,7 @@ namespace LHDS.Core.Models.Processings.SubscriberCredentials
         public string SupplierSharingAgreementShortName { get; set; }
         public Guid? SupplierSharingAgreementGuid { get; set; }
         public string FtpUserName { get; set; }
+        public string FtpPassword { get; set; }
         public string FtpPassPhrase { get; set; }
         public string FtpPrivateKey { get; set; }
         public string FtpPublicKey { get; set; }

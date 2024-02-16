@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -34,13 +33,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             SubscriberCredential inputSubscriberCredential =
                 CreateSubscriberCredentialFromDynamic(credential: randomCredential);
 
+            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
+
             inputSubscriberCredential.FtpPassword = string.Empty;
             inputSubscriberCredential.FtpPassPhrase = string.Empty;
-            inputSubscriberCredential.GpgPassPhrase = string.Empty; 
+            inputSubscriberCredential.GpgPassPhrase = string.Empty;
             inputSubscriberCredential.FtpPrivateKey = string.Empty;
             inputSubscriberCredential.GpgPrivateKey = string.Empty;
 
-            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
 
             foreach (string keyType in keyTypes)
             {

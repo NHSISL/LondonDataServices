@@ -48,7 +48,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
 
                         await TryCatch(async () =>
                         {
-                            await this.secureDataService.AddOrModifySecureData(data);
+                            await this.secureDataService.AddOrModifySecureData(secureData: data);
                         });
                     }
                     catch (Exception ex)

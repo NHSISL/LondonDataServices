@@ -118,7 +118,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             for (int i = 0; i < 6; i++)
             {
-                filename = $"{filename}_{GetRandomString(10)}";
+                filename = $"{GetRandomString()}/" +
+                    $"{GetRandomString()}/" +
+                    $"{GetRandomString()}/" +
+                    $"{GetRandomString()}/" +
+                    $"{0122235}/{GetRandomString(10)}_{GetRandomString(10)}_{GetRandomString(10)}_{GetRandomString(10)}";
             }
 
             filler.Setup()

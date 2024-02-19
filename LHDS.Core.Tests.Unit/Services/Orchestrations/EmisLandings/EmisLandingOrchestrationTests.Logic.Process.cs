@@ -13,6 +13,7 @@ using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xunit;
@@ -83,20 +84,32 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     ? downloadItem.Document.FileName
                     : "/" + downloadItem.Document.FileName;
 
+                string[] splitFileName = filename.Split('/');
+                string newFileName = "";
+
+                if (splitFileName.Length < 6)
+                {
+                    throw new InvalidDocumentProcessingFileNameException(filename);
+                }
+                else
+                {
+                    newFileName = $"{inputSubscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
+                }
+
                 IngestionTracking newIngestionTracking =
                     new IngestionTracking
                     {
                         Id = randomGuid,
                         FileName = downloadItem.Document.FileName,
                         SupplierId = landingConfiguration.LandingSupplierId,
-                        EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+                        EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{filename}",
 
                         DecryptedFileName =
                         $"/{landingConfiguration.DecryptedFolder}"
                             + $"/{randomDataSet.DataSetName}"
                             + $"/{randomDataSetSpecification.Id}"
                             + $"/{filename.Split('_')[3]}"
-                            + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                            + $"{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                         Decrypted = false,
                         LastSeen = randomDateTime,
@@ -145,20 +158,32 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     ? downloadItem.Document.FileName
                     : "/" + downloadItem.Document.FileName;
 
+                string[] splitFileName = filename.Split('/');
+                string newFileName = "";
+
+                if (splitFileName.Length < 6)
+                {
+                    throw new InvalidDocumentProcessingFileNameException(filename);
+                }
+                else
+                {
+                    newFileName = $"{inputSubscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
+                }
+
                 IngestionTracking newIngestionTracking =
                   new IngestionTracking
                   {
                       Id = randomGuid,
                       FileName = downloadItem.Document.FileName,
                       SupplierId = landingConfiguration.LandingSupplierId,
-                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
 
                       DecryptedFileName =
                         $"/{landingConfiguration.DecryptedFolder}"
                             + $"/{randomDataSet.DataSetName}"
                             + $"/{randomDataSetSpecification.Id}"
                             + $"/{filename.Split('_')[3]}"
-                            + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                            + $"{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                       Decrypted = false,
                       LastSeen = randomDateTime,

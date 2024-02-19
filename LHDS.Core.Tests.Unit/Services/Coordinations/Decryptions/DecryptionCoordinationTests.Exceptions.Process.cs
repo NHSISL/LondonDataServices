@@ -14,7 +14,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 {
     public partial class DecryptionCoordinationServiceTests
     {
-
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationExceptionOnProcessIfErrorsAndLogItAsync(
@@ -22,31 +21,32 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
         {
             // Given
             Guid SubscriberCredentialId = Guid.NewGuid();
-            string filePath = GetRandomString();
-
-            this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId))
-                    .ThrowsAsync(dependancyValidationException);
+            string filePath = CreateRandomFilePath(SubscriberCredentialId);
 
             var expectedDecryptionCoordinationDependencyValidationException =
                 new DecryptionCoordinationDependencyValidationException(
                     message: "Decryption coordination dependency validation error occurred, please try again.",
                     innerException: dependancyValidationException.InnerException as Xeption);
 
+            this.subscriberCredentialOrchestrationMock.Setup(service =>
+                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId))
+                    .ThrowsAsync(dependancyValidationException);
+
             // When
-            ValueTask<string> processDataTask = this.decryptionCoordinationService.DecryptAsync(filePath);
+            ValueTask<string> processDataTask =
+                this.decryptionCoordinationService.DecryptAsync(filePath);
 
             DecryptionCoordinationDependencyValidationException
                 actualDecryptionCoordinationDependencyValidationException =
-                    await Assert.ThrowsAsync<DecryptionCoordinationDependencyValidationException>(async () =>
-                        await processDataTask);
+                    await Assert.ThrowsAsync<DecryptionCoordinationDependencyValidationException>(
+                        processDataTask.AsTask);
 
             // Then
             actualDecryptionCoordinationDependencyValidationException.Should()
                 .BeEquivalentTo(expectedDecryptionCoordinationDependencyValidationException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId),
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

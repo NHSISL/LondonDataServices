@@ -58,6 +58,49 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             this.decryptionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnProcessIfErrorsAndLogItAsync(
+           Xeption dependancyValidationException)
+        {
+            // Given
+            Guid SubscriberCredentialId = Guid.NewGuid();
+            string filePath = CreateRandomFilePath(SubscriberCredentialId);
+
+            this.subscriberCredentialOrchestrationMock.Setup(service =>
+                service.RemoveSubscriberCredentialByIdAsync(SubscriberCredentialId))
+                    .ThrowsAsync(dependancyValidationException);
+
+            var expectedDecryptionCoordinationDependencyException =
+                new DecryptionCoordinationDependencyException(
+                    message: "Decryption coordination dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyValidationException.InnerException as Xeption);
+
+            // When
+            ValueTask<string> processDataTask = this.decryptionCoordinationService.DecryptAsync(filePath);
+
+            DecryptionCoordinationDependencyException actualEmisLandingCoordinationDependencyException =
+                await Assert.ThrowsAsync<DecryptionCoordinationDependencyException>(async () =>
+                    await processDataTask);
+
+            // Then
+            actualEmisLandingCoordinationDependencyException.Should()
+                .BeEquivalentTo(expectedDecryptionCoordinationDependencyException);
+
+            this.subscriberCredentialOrchestrationMock.Verify(service =>
+                service.RetrieveAllActiveSubscriberCredentialIds(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(IsSameExceptionAs(
+                     expectedDecryptionCoordinationDependencyException))),
+                         Times.Once);
+
+            this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
+            this.decryptionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
 

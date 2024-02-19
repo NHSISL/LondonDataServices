@@ -130,5 +130,31 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     innerException),
             };
         }
+
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new SubscriberCredentialDependencyOrchestrationException(
+                    message: "Subscriber credential orchestration dependency error occured, please try again.",
+                    innerException),
+
+                new SubscriberCredentialOrchestrationServiceException(
+                    message: "Subscriber credential orchestration service error occurred, contact support.",
+                    innerException),
+
+                new DecryptionOrchestrationDependencyException(
+                    message: "Decryption orchestration dependency error occured, please try again.",
+                    innerException),
+
+                new DecryptionOrchestrationServiceException(
+                    message: "Decryption orchestration service error occurred, contact support.",
+                    innerException)
+            };
+        }
     }
 }

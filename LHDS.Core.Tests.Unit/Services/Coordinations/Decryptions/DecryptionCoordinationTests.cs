@@ -98,7 +98,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
         private static string CreateRandomFilePath(Guid identifier)
         {
-            return $"{identifier}/0122235/{GetRandomNumber}_{GetRandomString()}_{GetRandomString()}_{GetRandomNumber()}_{identifier}.csv.gpg;";
+            return $"{identifier}/0122235/{GetRandomNumber}" +
+                $"_{GetRandomString()}_{GetRandomString()}" +
+                $"_{GetRandomNumber()}_{identifier}.csv.gpg;";
         }
 
         public static TheoryData DependencyValidationExceptions()
@@ -116,7 +118,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 new SubscriberCredentialOrchestrationDependencyValidationException(
                     message: "Subscriber credential orchestration dependency validation error occurred, " +
                         "please try again.",
-
                     innerException),
 
                 new DecryptionOrchestrationValidationException(
@@ -126,7 +127,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 new DecryptionOrchestrationDependencyValidationException(
                     message: "Decryption orchestration dependency validation error occurred, " +
                         "please try again.",
-
                     innerException),
             };
         }

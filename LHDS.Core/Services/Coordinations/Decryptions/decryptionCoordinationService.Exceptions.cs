@@ -4,6 +4,8 @@
 
 using System.Threading.Tasks;
 using LHDS.Core.Models.Coordinations.Decryptions.Exceptions;
+using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Coordinations.Decryptions
@@ -22,6 +24,27 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             {
                 throw CreateAndLogValidationException(invalidArgumentDecryptionCoordinationException);
             }
+            catch (SubscriberCredentialValidationOrchestrationException
+                subscriberCredentialValidationOrchestrationException)
+            {
+                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationOrchestrationException);
+            }
+            catch (SubscriberCredentialOrchestrationDependencyValidationException
+                subscriberCredentialOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    subscriberCredentialOrchestrationDependencyValidationException);
+            }
+            catch (DecryptionOrchestrationValidationException
+                decryptionOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(decryptionOrchestrationValidationException);
+            }
+            catch (DecryptionOrchestrationDependencyValidationException
+                decryptionOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(decryptionOrchestrationDependencyValidationException);
+            }
         }
 
         private DecryptionCoordinationValidationException CreateAndLogValidationException(Xeption exception)
@@ -34,6 +57,19 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             this.loggingBroker.LogError(decryptionCoordinationValidationException);
 
             return decryptionCoordinationValidationException;
+        }
+
+        private DecryptionCoordinationDependencyValidationException CreateAndLogDependencyValidationException(
+            Xeption exception)
+        {
+            var decryptionCoordinationDependencyValidationException =
+                new DecryptionCoordinationDependencyValidationException(
+                    message: "Decryption coordination dependency validation error occurred, please try again.",
+                    exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(decryptionCoordinationDependencyValidationException);
+
+            return decryptionCoordinationDependencyValidationException;
         }
     }
 }

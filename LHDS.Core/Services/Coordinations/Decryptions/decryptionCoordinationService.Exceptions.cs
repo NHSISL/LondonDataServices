@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Coordinations.Decryptions.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
@@ -65,6 +66,15 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             {
                 throw CreateAndLogDependencyException(decryptionOrchestrationServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedDecryptionCoordinationServiceException =
+                    new FailedDecryptionCoordinationServiceException(
+                        message: "Failed decryption coordination service occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDecryptionCoordinationServiceException);
+            }
         }
 
         private DecryptionCoordinationValidationException CreateAndLogValidationException(Xeption exception)
@@ -102,6 +112,18 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             this.loggingBroker.LogError(decryptionCoordinationDependencyException);
 
             return decryptionCoordinationDependencyException;
+        }
+
+        private DecryptionCoordinationServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var decryptionCoordinationServiceException =
+                new DecryptionCoordinationServiceException(
+                    message: "Decryption coordination service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(decryptionCoordinationServiceException);
+
+            return decryptionCoordinationServiceException;
         }
     }
 }

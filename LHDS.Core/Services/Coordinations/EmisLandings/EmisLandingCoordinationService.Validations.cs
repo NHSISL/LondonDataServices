@@ -2,10 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using LHDS.Core.Services.Orchestrations.EmisLandings;
-
-namespace LHDS.Core.Services.Orchestrations.Downloads
+namespace LHDS.Core.Services.Coordinations.DecryptIons
 {
-    public partial class EmisLandingCoordinationService : IEmisLandingCoordinationService
-    { }
 }

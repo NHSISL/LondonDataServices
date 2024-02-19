@@ -104,7 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnProcessIfErrorsInLoopAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnProcessIfErrorsAndLogItAsync()
         {
             // Given
             var serviceException = new Exception();

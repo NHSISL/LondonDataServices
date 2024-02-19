@@ -11,7 +11,7 @@ using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 
-namespace LHDS.Core.Services.Coordinations.Downloads
+namespace LHDS.Core.Services.Orchestrations.Downloads
 {
     public partial class EmisLandingCoordinationService : IEmisLandingCoordinationService
     {

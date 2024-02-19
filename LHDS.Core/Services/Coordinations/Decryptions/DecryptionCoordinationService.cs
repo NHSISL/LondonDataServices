@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Coordinations.Decryptions.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Decryptions;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
@@ -27,19 +28,27 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             this.loggingBroker = loggingBroker;
         }
         public ValueTask<string> DecryptAsync(string fileName) =>
-            TryCatch(async () =>
-            {
-                ValidateFileNameOnDecrypt(fileName);
-                Guid subscriberCredentialId = new Guid(fileName.Split("/")[0]);
-                // Validate Guid is not null
+             TryCatch(async () =>
+             {
+                 ValidateFileNameOnDecrypt(fileName);
+                 string[] parts = fileName.Split("/");
 
-                SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
-                    .RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId);
+                 if (parts.Length > 0)
+                 {
+                     string extractSubscriberCredentialIdString = parts[0];
 
-                string decryptItem =
-                    await this.decryptionOrchestrationService.DecryptAsync(fileName);
+                     SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
+                         .RetrieveSubscriberCredentialByIdAsync(new Guid(extractSubscriberCredentialIdString));
 
-                return decryptItem;
-            });
+                     string decryptItem =
+                         await this.decryptionOrchestrationService.DecryptAsync(fileName);
+
+                     return decryptItem;
+                 }
+                 else
+                 {
+                     throw new InvalidArgumentDecryptionCoordinationException("Invalid file name format.");
+                 }
+             });
     }
 }

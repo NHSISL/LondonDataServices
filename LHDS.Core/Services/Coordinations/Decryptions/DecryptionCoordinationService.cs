@@ -27,28 +27,29 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             this.subscriberCredentialOrchestration = subscriberCredentialOrchestration;
             this.loggingBroker = loggingBroker;
         }
+
         public ValueTask<string> DecryptAsync(string fileName) =>
-             TryCatch(async () =>
-             {
-                 ValidateFileNameOnDecrypt(fileName);
-                 string[] parts = fileName.Split("/");
+            TryCatch(async () =>
+            {
+                ValidateFileNameOnDecrypt(fileName);
+                string[] parts = fileName.Split("/");
 
-                 if (parts.Length > 0)
-                 {
-                     string extractSubscriberCredentialIdString = parts[0];
+                if (parts.Length > 0)
+                {
+                    string extractSubscriberCredentialIdString = parts[0];
 
-                     SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
-                         .RetrieveSubscriberCredentialByIdAsync(new Guid(extractSubscriberCredentialIdString));
+                    SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
+                        .RetrieveSubscriberCredentialByIdAsync(new Guid(extractSubscriberCredentialIdString));
 
-                     string decryptItem =
-                         await this.decryptionOrchestrationService.DecryptAsync(fileName);
+                    string decryptItem =
+                        await this.decryptionOrchestrationService.DecryptAsync(fileName);
 
-                     return decryptItem;
-                 }
-                 else
-                 {
-                     throw new InvalidArgumentDecryptionCoordinationException("Invalid file name format.");
-                 }
-             });
+                    return decryptItem;
+                }
+                else
+                {
+                    throw new InvalidArgumentDecryptionCoordinationException("Invalid file name format.");
+                }
+            });
     }
 }

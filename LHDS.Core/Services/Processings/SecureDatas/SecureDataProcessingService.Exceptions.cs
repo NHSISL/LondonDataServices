@@ -23,6 +23,14 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 return await returningSubscriberCredentialFunction();
             }
+            catch (SecureDataDependencyValidationException secureDataDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(secureDataDependencyValidationException);
+            }
+            catch (SecureDataValidationException secureDataValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(secureDataValidationException);
+            }
             catch (NullSubscriberCredentialException nullSubscriberCredentialException)
             {
                 throw CreateAndLogValidationException(nullSubscriberCredentialException);
@@ -35,14 +43,6 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 invalidArgumentSubscriberCredentialProcessingException)
             {
                 throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialProcessingException);
-            }
-            catch (SecureDataDependencyValidationException secureDataDependencyValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(secureDataDependencyValidationException);
-            }
-            catch (SecureDataValidationException secureDataValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(secureDataValidationException);
             }
             catch (SecureDataDependencyException secureDataDependencyException)
             {

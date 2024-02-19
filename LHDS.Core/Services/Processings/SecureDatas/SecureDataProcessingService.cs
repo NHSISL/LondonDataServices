@@ -136,6 +136,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
 
             return secureDataList;
         }
+        
         private static List<string> GetPropertyList()
         {
             return new List<string>

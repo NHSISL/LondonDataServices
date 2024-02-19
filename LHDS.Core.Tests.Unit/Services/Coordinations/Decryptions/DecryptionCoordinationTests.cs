@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Extensions.Exceptions;
+using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Coordinations.Decryptions;
 using LHDS.Core.Services.Orchestrations.Decryptions;
@@ -15,6 +17,7 @@ using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 {
@@ -51,6 +54,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
          actualException => actualException.SameExceptionAs(expectedException);
 
+        private static Expression<Func<Xeption, bool>> IsSameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.IsSameExceptionAs(expectedException);
 
         public static List<SubscriberCredential> CreateRandomSubscriberCredentials(
             List<Guid> subscriberAgreementIds)
@@ -91,53 +96,39 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             return filler.Create();
         }
 
-        //private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
-        //{
-        //    var filler = new Filler<IngestionTracking>();
-
-        //    filler.Setup()
-        //        .OnType<DateTimeOffset>().Use(dateTimeOffset)
-        //        .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-        //        .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
-        //        .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
-        //        .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(() => GenerateFilename());
-
-        //    return filler;
-        //}
-
-        //private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
-        //    CreateIngestionTrackingFiller(dateTimeOffset).Create();
-
-        private Expression<Func<IngestionTracking, bool>> SameIngestionTrackingAs(
-            IngestionTracking expectedIngestionTracking)
-        {
-            return actualIngestionTracking =>
-                this.compareLogic.Compare(expectedIngestionTracking, actualIngestionTracking)
-                    .AreEqual;
-        }
-
         private static string CreateRandomFilePath(Guid identifier)
         {
             return $"{identifier}/0122235/{GetRandomNumber}_{GetRandomString()}_{GetRandomString()}_{GetRandomNumber()}_{identifier}.csv.gpg;";
         }
 
-        private static Guid GetLastRandomGuid(string filename)
+        public static TheoryData DependencyValidationExceptions()
         {
-            int underscoreIndex = filename.LastIndexOf('_');
-            int dotCsvIndex = filename.LastIndexOf(".csv.gpg");
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
 
-            if (underscoreIndex != -1 && dotCsvIndex != -1 && underscoreIndex < dotCsvIndex)
+            return new TheoryData<Xeption>
             {
-                int guidLength = dotCsvIndex - underscoreIndex - 1;
-                string guidString = filename.Substring(underscoreIndex + 1, guidLength);
+                new SubscriberCredentialValidationOrchestrationException(
+                    message: "Subscriber credential orchestration validation error occured, please try again",
+                    innerException),
 
-                if (Guid.TryParse(guidString, out Guid resultGuid))
-                {
-                    return resultGuid;
-                }
-            }
+                new SubscriberCredentialOrchestrationDependencyValidationException(
+                    message: "Subscriber credential orchestration dependency validation error occurred, " +
+                        "please try again.",
 
-            return Guid.Empty;
+                    innerException),
+
+                new DecryptionOrchestrationValidationException(
+                    message: "Decryption orchestration validation error occured, please try again.",
+                    innerException),
+
+                new DecryptionOrchestrationDependencyValidationException(
+                    message: "Decryption orchestration dependency validation error occurred, " +
+                        "please try again.",
+
+                    innerException),
+            };
         }
     }
 }

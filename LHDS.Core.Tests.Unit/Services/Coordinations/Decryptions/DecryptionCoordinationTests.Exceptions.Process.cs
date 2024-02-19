@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.Decryptions.Exceptions;
@@ -95,6 +96,54 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(IsSameExceptionAs(
                      expectedDecryptionCoordinationDependencyException))),
+                         Times.Once);
+
+            this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
+            this.decryptionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnProcessIfErrorsInLoopAndLogItAsync()
+        {
+            // Given
+            var serviceException = new Exception();
+            Guid SubscriberCredentialId = Guid.NewGuid();
+            string filePath = CreateRandomFilePath(SubscriberCredentialId);
+            List<Exception> exceptions = new List<Exception>();
+
+            this.subscriberCredentialOrchestrationMock.Setup(service =>
+                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId))
+                    .ThrowsAsync(serviceException);
+
+            var failedDecryptionCoordinationServiceException =
+                new FailedDecryptionCoordinationServiceException(
+                    message: "Failed decryption coordination service occurred, please contact support.",
+                    innerException: serviceException);
+
+            var expectedDecryptionCoordinationServiceException =
+                new DecryptionCoordinationServiceException(
+                    message: "Decryption coordination service error occurred, contact support.",
+                    innerException: failedDecryptionCoordinationServiceException);
+
+            // When
+            ValueTask<string> processDataTask = this.decryptionCoordinationService.DecryptAsync(filePath);
+
+            DecryptionCoordinationServiceException actualDecryptionCoordinationServiceException =
+                await Assert.ThrowsAsync<DecryptionCoordinationServiceException>(async () =>
+                    await processDataTask);
+
+            // Then
+            actualDecryptionCoordinationServiceException.Should()
+                .BeEquivalentTo(expectedDecryptionCoordinationServiceException);
+
+            this.subscriberCredentialOrchestrationMock.Verify(service =>
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(IsSameExceptionAs(
+                     expectedDecryptionCoordinationServiceException))),
                          Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();

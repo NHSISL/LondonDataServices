@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             string filePath = CreateRandomFilePath(SubscriberCredentialId);
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RemoveSubscriberCredentialByIdAsync(SubscriberCredentialId))
+                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId))
                     .ThrowsAsync(dependancyValidationException);
 
             var expectedDecryptionCoordinationDependencyException =
@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 .BeEquivalentTo(expectedDecryptionCoordinationDependencyException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds(),
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

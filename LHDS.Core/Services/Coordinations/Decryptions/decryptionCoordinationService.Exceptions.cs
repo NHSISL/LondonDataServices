@@ -45,6 +45,26 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             {
                 throw CreateAndLogDependencyValidationException(decryptionOrchestrationDependencyValidationException);
             }
+            catch (SubscriberCredentialDependencyOrchestrationException
+                subscriberCredentialDependencyOrchestrationException)
+            {
+                throw CreateAndLogDependencyException(subscriberCredentialDependencyOrchestrationException);
+            }
+            catch (SubscriberCredentialOrchestrationServiceException
+                subscriberCredentialOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(subscriberCredentialOrchestrationServiceException);
+            }
+            catch (DecryptionOrchestrationDependencyException
+                decryptionOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(decryptionOrchestrationDependencyException);
+            }
+            catch (DecryptionOrchestrationServiceException
+                decryptionOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(decryptionOrchestrationServiceException);
+            }
         }
 
         private DecryptionCoordinationValidationException CreateAndLogValidationException(Xeption exception)
@@ -70,6 +90,18 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             this.loggingBroker.LogError(decryptionCoordinationDependencyValidationException);
 
             return decryptionCoordinationDependencyValidationException;
+        }
+
+        private DecryptionCoordinationDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var decryptionCoordinationDependencyException =
+                new DecryptionCoordinationDependencyException(
+                    message: "Decryption coordination dependency error occurred, fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(decryptionCoordinationDependencyException);
+
+            return decryptionCoordinationDependencyException;
         }
     }
 }

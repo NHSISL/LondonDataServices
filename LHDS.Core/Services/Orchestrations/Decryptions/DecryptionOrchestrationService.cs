@@ -11,7 +11,6 @@ using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
@@ -50,12 +49,11 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             this.hashBroker = hashBroker;
         }
 
-        public ValueTask<string> DecryptAsync(string fileName, SubscriberCredential subscriberCredential) =>
+        public ValueTask<string> DecryptAsync(string fileName) =>
             TryCatch(async () =>
             {
                 ValidateBlobContainersIsNotNull();
                 ValidateFileNameIsNotNull(fileName);
-                //ValidateSubscriberCredentials(subscriberCredential);
 
                 var ingestionTracking = await this.ingestionTrackingService
                     .RetrieveIngestionTrackingByFileNameAsync(fileName);

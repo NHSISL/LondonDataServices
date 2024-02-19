@@ -19,10 +19,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             Guid SubscriberCredentialId = Guid.NewGuid();
 
-            string filePath = CreateRandomFilePath(SupplierSharingAgreementGuid);
+            string filePath = CreateRandomFilePath(SubscriberCredentialId);
 
             SubscriberCredential randomActiveSubscriberCredential =
-                CreateRandomSubscriberCredential(SupplierSharingAgreementGuid);
+                CreateRandomSubscriberCredential(SubscriberCredentialId);
 
             SubscriberCredential storageSubscriberCredential = randomActiveSubscriberCredential;
             string randomEmisLandingPath = GetRandomString();
@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     .ReturnsAsync(randomActiveSubscriberCredential);
 
             this.decryptionOrchestrationServiceMock.Setup(service =>
-                    service.DecryptAsync(filePath, storageSubscriberCredential))
+                    service.DecryptAsync(filePath))
                         .ReturnsAsync(randomEmisLandingPath);
 
             // When
@@ -40,15 +40,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
             // Then
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialBySupplierSharingAgreementGuidAsync(SupplierSharingAgreementGuid),
+                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId),
                     Times.Once);
 
-            this.emisLandingExtractionOrchestrationServiceMock.Verify(service =>
-                    service.ProcessFileAsync(externalIngestionTracking.FileName, storageSubscriberCredential),
+            this.decryptionOrchestrationServiceMock.Verify(service =>
+                    service.DecryptAsync(filePath),
                         Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
-            this.emisLandingExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.decryptionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

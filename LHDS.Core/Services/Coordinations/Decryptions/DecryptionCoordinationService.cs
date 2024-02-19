@@ -6,9 +6,10 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Services.Orchestrations.Decryptions;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 
-namespace LHDS.Core.Services.Orchestrations.Decryptions
+namespace LHDS.Core.Services.Coordinations.Decryptions
 {
     public partial class DecryptionCoordinationService : IDecryptionCoordinationService
     {
@@ -25,19 +26,20 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             this.subscriberCredentialOrchestration = subscriberCredentialOrchestration;
             this.loggingBroker = loggingBroker;
         }
-        public async ValueTask<string> DecryptAsync(string fileName)
-        {
-            // Validate fileName
-            Guid subscriberCredentialId = new Guid(fileName.Split("/")[0]);
-            // Validate Guid is not null
+        public ValueTask<string> DecryptAsync(string fileName) =>
+            TryCatch(async () =>
+            {
+                ValidateFileNameOnDecrypt(fileName);
+                Guid subscriberCredentialId = new Guid(fileName.Split("/")[0]);
+                // Validate Guid is not null
 
-            SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
-                .RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId);
+                SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
+                    .RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId);
 
-            string decryptItem =
-                await this.decryptionOrchestrationService.DecryptAsync(fileName);
+                string decryptItem =
+                    await this.decryptionOrchestrationService.DecryptAsync(fileName);
 
-            return decryptItem;
-        }
+                return decryptItem;
+            });
     }
 }

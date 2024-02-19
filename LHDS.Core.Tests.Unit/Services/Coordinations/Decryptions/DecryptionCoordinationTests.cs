@@ -9,10 +9,12 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Services.Coordinations.Decryptions;
 using LHDS.Core.Services.Orchestrations.Decryptions;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 {
@@ -45,6 +47,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
           new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+         actualException => actualException.SameExceptionAs(expectedException);
+
 
         public static List<SubscriberCredential> CreateRandomSubscriberCredentials(
             List<Guid> subscriberAgreementIds)

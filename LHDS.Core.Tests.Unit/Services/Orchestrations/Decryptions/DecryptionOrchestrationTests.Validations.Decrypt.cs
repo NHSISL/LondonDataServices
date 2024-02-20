@@ -1,11 +1,12 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Decryptions;
 using Moq;
 using Xunit;
@@ -18,6 +19,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         public async Task ShouldThrowValidationExceptionOnDecryptIfBlobContainerIsNullAndLogItAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string someFileName = GetRandomString();
 
             var nullBlobContainersDecryptionOrchestrationException =
@@ -34,6 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             var invalidDecryptionOrchestrationService = new DecryptionOrchestrationService(
                 documentService: documentServiceMock.Object,
+                downloadProcessingService: downloadProcessingServiceMock.Object,
                 cryptographyService: cryptographyServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
                 auditService: auditServiceMock.Object,
@@ -45,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             // when
             ValueTask<string> decryptTask =
-                invalidDecryptionOrchestrationService.DecryptAsync(someFileName);
+                invalidDecryptionOrchestrationService.DecryptAsync(someFileName, inputSubscriberCredential);
 
             DecryptionOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(decryptTask.AsTask);
@@ -73,6 +77,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         public async Task ShouldThrowValidationExceptionOnDecryptIfFileNameIsNullAndLogItAsync(string invalidText)
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+
             var invalidArgumentDecryptionOrchestrationException =
                 new InvalidArgumentDecryptionOrchestrationException(
                     message: "Invalid decryption orchestration argument(s), please correct the errors and try again.");
@@ -88,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             // when
             ValueTask<string> decryptTask =
-                this.decryptionOrchestrationService.DecryptAsync(invalidText);
+                this.decryptionOrchestrationService.DecryptAsync(invalidText, inputSubscriberCredential);
 
             DecryptionOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(decryptTask.AsTask);

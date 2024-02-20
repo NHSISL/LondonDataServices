@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     .ReturnsAsync(randomActiveSubscriberCredential);
 
             this.decryptionOrchestrationServiceMock.Setup(service =>
-                    service.DecryptAsync(filePath))
+                    service.DecryptAsync(filePath, randomActiveSubscriberCredential))
                         .ReturnsAsync(randomEmisLandingPath);
 
             // When
@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     Times.Once);
 
             this.decryptionOrchestrationServiceMock.Verify(service =>
-                    service.DecryptAsync(filePath),
+                    service.DecryptAsync(filePath, randomActiveSubscriberCredential),
                         Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();

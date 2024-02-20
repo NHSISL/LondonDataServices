@@ -74,6 +74,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 Download externalDownload =
                     await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
 
+                //ValidateStorageDownload(externalDownload, fileName);
+
                 byte[] decryptedData = await this.cryptographyService.DecryptAsync(
                     externalDownload.Document.DocumentData);
 

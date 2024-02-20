@@ -83,12 +83,12 @@ namespace LHDS.Core.Services.Processings.SecureDatas
 
                         await TryCatch(async () =>
                         {
-                            SecureData retrievedSecureData = 
+                            SecureData retrievedSecureData =
                                 await this.secureDataService.RetrieveSecretDataByNameAsync(secretName);
 
                             SetPropertyValue(
-                                subscriberCredential, 
-                                propertyName: keyType, 
+                                subscriberCredential,
+                                propertyName: keyType,
                                 value: retrievedSecureData.Value);
                         });
 
@@ -111,10 +111,10 @@ namespace LHDS.Core.Services.Processings.SecureDatas
         public ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential subscriberCredential) =>
             throw new NotImplementedException();
 
-        private static List<SecureData> GetSecureDataItems(SubscriberCredential subscriberCredential)
+        virtual internal List<SecureData> GetSecureDataItems(SubscriberCredential subscriberCredential)
         {
+            
             List<string> keyTypes = GetPropertyList();
-
             List<SecureData> secureDataList = new List<SecureData>();
 
             foreach (string keyType in keyTypes)
@@ -122,7 +122,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 string secretName = $"{subscriberCredential.Id}-{keyType}";
 
                 string secretValue = GetPropertyValue(
-                    subscriberCredential: subscriberCredential, 
+                    subscriberCredential: subscriberCredential,
                     propertyName: keyType);
 
                 SecureData secureData = new SecureData
@@ -136,8 +136,8 @@ namespace LHDS.Core.Services.Processings.SecureDatas
 
             return secureDataList;
         }
-        
-        private static List<string> GetPropertyList()
+
+        virtual internal List<string> GetPropertyList()
         {
             return new List<string>
                 {
@@ -165,8 +165,8 @@ namespace LHDS.Core.Services.Processings.SecureDatas
         }
 
         private static void SetPropertyValue(
-            SubscriberCredential subscriberCredential, 
-            string propertyName, 
+            SubscriberCredential subscriberCredential,
+            string propertyName,
             object value)
         {
             PropertyInfo propertyInfo = typeof(SubscriberCredential).GetProperty(propertyName);

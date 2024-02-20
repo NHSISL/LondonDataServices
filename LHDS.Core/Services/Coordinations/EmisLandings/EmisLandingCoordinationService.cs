@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
@@ -74,23 +75,28 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
         public async ValueTask<string> ProcessFileAsync(string fileName)
         {
-            // Validate fileName
-            Guid SupplierSharingAgreementGuid = GetLastRandomGuid(fileName);
-            // Validate Guid is not null
+            string[] parts = fileName.Split("/");
 
-            SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
-                .RetrieveSubscriberCredentialBySupplierSharingAgreementGuidAsync(SupplierSharingAgreementGuid);
+            if (parts.Length > 0)
+            {
+                string extractSubscriberCredentialIdString = parts[5];
 
-            string processedItem =
-                await this.emisLandingOrchestrationService.ProcessFileAsync(fileName, maybeSubscriberCredential);
+                SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
+                    .RetrieveSubscriberCredentialByIdAsync(new Guid(extractSubscriberCredentialIdString));
 
-            return processedItem;
+                string processedItem =
+                    await this.emisLandingOrchestrationService.ProcessFileAsync(fileName, maybeSubscriberCredential);
+
+                return processedItem;
+            }
+            else
+            {
+                throw new InvalidArgumentEmisLandingCoordinationException("Invalid file name format.");
+            }
         }
 
         private static Guid GetLastRandomGuid(string file)
         {
-
-            //emisnightingale-data-preprod-provider-extracts/IM1/sftp/6263EBC7-D8CC-4AA9-8849-60DCEDB63974/20240215/delta_105215_Coding_DrugCode_20240215043148_6263EBC7-D8CC-4AA9-8849-60DCEDB63974.csv.gpg
 
             FileInfo fi = new FileInfo(file);
             string fileName = fi.Name;

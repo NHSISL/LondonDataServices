@@ -112,7 +112,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             return filler.Create();
         }
 
-        private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
+            DateTimeOffset dateTimeOffset,
+            Guid subscriberAgreementId)
         {
             var filler = new Filler<IngestionTracking>();
 
@@ -121,13 +123,16 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
                 .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(() => GenerateFilename());
+                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(() =>
+                    GenerateFilename(subscriberAgreementId));
 
             return filler;
         }
 
-        private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
-            CreateIngestionTrackingFiller(dateTimeOffset).Create();
+        private static IngestionTracking CreateRandomIngestionTracking(
+            DateTimeOffset dateTimeOffset,
+            Guid subscriberAgreementId) =>
+            CreateIngestionTrackingFiller(dateTimeOffset, subscriberAgreementId).Create();
 
         private Expression<Func<IngestionTracking, bool>> SameIngestionTrackingAs(
             IngestionTracking expectedIngestionTracking)
@@ -143,6 +148,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             return $"/{GetRandomString()}/{GetRandomString()}/{randomGuid}/{GetRandomNumber}/" +
                 $"{GetRandomString()}_{GetRandomNumber}_{GetRandomString()}_{GetRandomString()}_{GetRandomNumber()}_{identifier}.csv.gpg;";
+        }
+
+        private static string CreateRandomFilePath(Guid identifier)
+        {
+            return $"{GetRandomString()}/{GetRandomString()}" +
+                $"/{GetRandomString()}/{GetRandomString()}/{GetRandomString()}" +
+                $"/{identifier}/0122235/{GetRandomNumber}" +
+                $"_{GetRandomString()}_{GetRandomString()}" +
+                $"_{GetRandomNumber()}_{identifier}.csv.gpg;";
         }
 
         private static Guid GetLastRandomGuid(string filename)

@@ -1,8 +1,9 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 
 namespace LHDS.Core.Services.Orchestrations.Decryptions
 {
@@ -18,6 +19,15 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             }
         }
 
+        private void ValidateSubscriberCredentials(SubscriberCredential subscriberCredential)
+        {
+            if (subscriberCredential is null)
+            {
+                throw new NullSubscriberCredentialDecryptionOrchestrationException(
+                    message: "Null subscriber credential decryption orchestration exception, " +
+                        "please correct the errors and try again.");
+            }
+        }
         private static void ValidateFileNameIsNotNull(string fileName)
         {
             Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));

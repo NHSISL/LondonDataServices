@@ -3,14 +3,13 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using Azure.Security.KeyVault.Secrets;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Foundations.SecureData.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -50,6 +49,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+
+        private static List<string> GetRandomProperties()
+        {
+            int randomNumber = GetRandomNumber();
+            List<string> properties = new List<string>();
+
+            for (int i = 0; i < randomNumber; i++)
+            {
+                properties.Add(GetRandomString());
+            }
+
+            return properties;
+        }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();

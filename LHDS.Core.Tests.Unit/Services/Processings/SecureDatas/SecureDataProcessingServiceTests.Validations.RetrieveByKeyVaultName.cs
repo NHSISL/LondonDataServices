@@ -3,10 +3,14 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
+using LHDS.Core.Services.Foundations.AddressMatchers;
+using LHDS.Core.Services.Processings.SecureDatas;
 using Moq;
 using Xunit;
 
@@ -109,6 +113,56 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedSubscriberCredentialValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.secureDataServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionRetrieveIfSubscriberCredentialPropertyIsInvlaidAsync()
+        {
+            // given
+            dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();
+            List<string> invalidProperties = GetRandomProperties();
+
+            SubscriberCredential inputSubscriberCredential =
+                CreateSubscriberCredentialFromDynamic(credential: randomCredential);
+
+            var mock = new Mock<SecureDataProcessingService>(
+                secureDataServiceMock.Object,
+                loggingBrokerMock.Object,
+                identifierBrokerMock.Object)
+            { CallBase = true };
+
+            mock.Setup(x => x.GetPropertyList()).Returns(invalidProperties);
+
+            foreach (string invalidPropertyName in invalidProperties)
+            {
+                var invalidArgumentSubscriberCredentialProcessingException =
+                    new InvalidArgumentSubscriberCredentialProcessingException(
+                        message: $"Property '{invalidPropertyName}' not found on object.");
+
+                var expectedSubscriberCredentialValidationException =
+                    new SubscriberCredentialValidationException(
+                        message: "Subscriber credential validation errors occurred, please try again.",
+                        innerException: invalidArgumentSubscriberCredentialProcessingException);
+            }
+
+            // when
+            ValueTask<SubscriberCredential> addSubscriberCredentialTask =
+                this.secureDataProcessingService.RetrieveSecretsByKeyVaultKeyNameAsync(inputSubscriberCredential);
+
+            SubscriberCredentialValidationException actualSubscriberCredentialValidationException =
+                await Assert.ThrowsAsync<SubscriberCredentialValidationException>(() =>
+                    addSubscriberCredentialTask.AsTask());
+
+            // then
+            actualSubscriberCredentialValidationException.Should().BeEquivalentTo(
+                expectedSubscriberCredentialValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedSubscriberCredentialValidationException))),
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

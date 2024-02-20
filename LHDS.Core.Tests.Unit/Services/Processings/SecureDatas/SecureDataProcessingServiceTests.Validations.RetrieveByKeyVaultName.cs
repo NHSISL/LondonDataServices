@@ -137,17 +137,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             mock.Setup(x => x.GetPropertyList()).Returns(invalidProperties);
 
+            var invalidArgumentSubscriberCredentialProcessingException =
+                new InvalidArgumentSubscriberCredentialProcessingException(
+                    message: $"Invalid argument subscriber credential processing error occurred, contact support.");
+
             foreach (string invalidPropertyName in invalidProperties)
             {
-                var invalidArgumentSubscriberCredentialProcessingException =
-                    new InvalidArgumentSubscriberCredentialProcessingException(
-                        message: $"Property '{invalidPropertyName}' not found on object.");
-
-                var expectedSubscriberCredentialValidationException =
-                    new SubscriberCredentialValidationException(
-                        message: "Subscriber credential validation errors occurred, please try again.",
-                        innerException: invalidArgumentSubscriberCredentialProcessingException);
+                invalidArgumentSubscriberCredentialProcessingException.AddData(
+                    key: nameof(invalidPropertyName),
+                    values: "Invalid property");
             }
+
+            var expectedSubscriberCredentialValidationException =
+                new SubscriberCredentialValidationException(
+                    message: "Subscriber credential validation errors occurred, please try again.",
+                    innerException: invalidArgumentSubscriberCredentialProcessingException);
 
             // when
             ValueTask<SubscriberCredential> addSubscriberCredentialTask =

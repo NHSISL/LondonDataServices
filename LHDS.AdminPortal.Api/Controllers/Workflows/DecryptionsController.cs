@@ -1,12 +1,12 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using System.Web;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
-using LHDS.Core.Services.Orchestrations.Decryptions;
+using LHDS.Core.Services.Coordinations.Decryptions;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 #if RELEASE
@@ -19,10 +19,10 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
     [Route("api/[controller]")]
     public class DecryptionsController : RESTFulController
     {
-        private readonly IDecryptionOrchestrationService decryptionOrchestrationService;
+        private readonly IDecryptionCoordinationService decryptionCoordinationService;
 
-        public DecryptionsController(IDecryptionOrchestrationService decryptionOrchestrationService) =>
-            this.decryptionOrchestrationService = decryptionOrchestrationService;
+        public DecryptionsController(IDecryptionCoordinationService decryptionCoordinationService) =>
+            this.decryptionCoordinationService = decryptionCoordinationService;
 
         [HttpPut()]
 #if RELEASE
@@ -33,7 +33,7 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
         {
             try
             {
-                await decryptionOrchestrationService.DecryptAsync(fileName);
+                await decryptionCoordinationService.DecryptAsync(fileName);
 
                 return Ok();
             }
@@ -60,7 +60,7 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
         {
             try
             {
-                await decryptionOrchestrationService.DecryptAsync(HttpUtility.UrlDecode(fileName));
+                await decryptionCoordinationService.DecryptAsync(HttpUtility.UrlDecode(fileName));
 
                 return Ok();
             }

@@ -3,13 +3,13 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Keys;
+using LHDS.Core.Models.Foundations.CryptographicKeys;
 
 namespace LHDS.Core.Brokers.CryptographyKeys
 {
     public interface ICryptographyKeyBroker
     {
-        ValueTask<Key> GenerateKeys(string publicKeyComment);
-        ValueTask<Key> GenerateKeys();
+        ValueTask<CryptographicKey> GenerateKeys(string publicKeyComment);
+        ValueTask<CryptographicKey> GenerateKeys();
     }
 }

@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Keys;
+using LHDS.Core.Models.Foundations.CryptographicKeys;
 using Org.BouncyCastle.Bcpg;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using Org.BouncyCastle.Crypto;
@@ -17,10 +17,8 @@ namespace LHDS.Core.Brokers.CryptographyKeys
 {
     public class GpgKeyBroker : ICryptographyKeyBroker
     {
-        public ValueTask<Key> GenerateKeys(string publicKeyComment)
+        public ValueTask<CryptographicKey> GenerateKeys(string publicKeyComment)
         {
-            var publicKeyPath = @"C:\Users\d_cun\OneDrive\Desktop\AZ SSH Files\pub.asc";
-            var privateKeyPath = @"C:\Users\d_cun\OneDrive\Desktop\AZ SSH Files\priv.asc";
             RsaKeyPairGenerator rsaKeyPairGenerator = new RsaKeyPairGenerator();
             rsaKeyPairGenerator.Init(new KeyGenerationParameters(new SecureRandom(), 2048));
             AsymmetricCipherKeyPair keyPair = rsaKeyPairGenerator.GenerateKeyPair();
@@ -39,9 +37,15 @@ namespace LHDS.Core.Brokers.CryptographyKeys
             PgpSignatureSubpacketVector subpacketVector = subpacketGenerator.Generate();
 
             PgpKeyRingGenerator keyRingGenerator = new PgpKeyRingGenerator(
-                PgpSignature.DefaultCertification, 
-                pgpKeyPair, "test", SymmetricKeyAlgorithmTag.Aes256, "test".ToCharArray(), true, 
-                subpacketVector, null, new SecureRandom());
+                certificationLevel: PgpSignature.DefaultCertification, 
+                masterKey: pgpKeyPair, 
+                id: "test", 
+                SymmetricKeyAlgorithmTag.Aes256, 
+                "test".ToCharArray(), 
+                true, 
+                subpacketVector, 
+                null, 
+                new SecureRandom());
 
             PgpPublicKeyRing publicKeyRing = keyRingGenerator.GeneratePublicKeyRing();
             PgpSecretKeyRing secretKeyRing = keyRingGenerator.GenerateSecretKeyRing();
@@ -67,7 +71,7 @@ namespace LHDS.Core.Brokers.CryptographyKeys
                 privateKey = Encoding.UTF8.GetString(outputStream.ToArray());
             }
 
-            Key returnedKey =  new Key
+            CryptographicKey returnedKey =  new CryptographicKey
             {
                 Base64PrivateKey = publicKey,
                 Base64PublicKey = privateKey
@@ -76,9 +80,7 @@ namespace LHDS.Core.Brokers.CryptographyKeys
             return ValueTask.FromResult(returnedKey);
         }
 
-        public ValueTask<Key> GenerateKeys() =>
+        public ValueTask<CryptographicKey> GenerateKeys() =>
             this.GenerateKeys("");
-
-
     }
 }

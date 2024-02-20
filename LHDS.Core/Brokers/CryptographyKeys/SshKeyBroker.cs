@@ -4,19 +4,19 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Keys;
+using LHDS.Core.Models.Foundations.CryptographicKeys;
 
 namespace LHDS.Core.Brokers.CryptographyKeys
 {
     public class SSHKeys : ICryptographyKeyBroker
     {
-        public ValueTask<Key> GenerateKeys(string publicKeyComment)
+        public ValueTask<CryptographicKey> GenerateKeys(string publicKeyComment)
         {
             int keyBits = 2048;
 
             var keygen = new SshKeyGenerator.SshKeyGenerator(keyBits);
 
-            Key key = new Key
+            CryptographicKey key = new CryptographicKey
             {
                 Base64PublicKey = keygen.ToRfcPublicKey(publicKeyComment),
                 Base64PrivateKey = keygen.ToPrivateKey(),
@@ -25,7 +25,7 @@ namespace LHDS.Core.Brokers.CryptographyKeys
             return ValueTask.FromResult(key);
         }
 
-        public ValueTask<Key> GenerateKeys() =>
+        public ValueTask<CryptographicKey> GenerateKeys() =>
             this.GenerateKeys($"Auto Generated Comment {DateTimeOffset.UtcNow} ");
     }
 }

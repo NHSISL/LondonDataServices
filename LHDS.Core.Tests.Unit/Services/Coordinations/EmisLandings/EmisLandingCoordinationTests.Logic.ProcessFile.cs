@@ -17,35 +17,35 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         {
             // Given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            Guid SupplierSharingAgreementGuid = Guid.NewGuid();
+            Guid SubscriberCredentialId = Guid.NewGuid();
 
-            string filePath = CreateRandomFilePath(SupplierSharingAgreementGuid);
+            string filePath = CreateRandomFilePath(SubscriberCredentialId);
 
             SubscriberCredential randomActiveSubscriberCredential =
-                CreateRandomSubscriberCredential(SupplierSharingAgreementGuid);
+                CreateRandomSubscriberCredential(SubscriberCredentialId);
 
             SubscriberCredential storageSubscriberCredential = randomActiveSubscriberCredential;
             string randomEmisLandingPath = GetRandomString();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialBySupplierSharingAgreementGuidAsync(SupplierSharingAgreementGuid))
+                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId))
                     .ReturnsAsync(randomActiveSubscriberCredential);
 
             this.emisLandingExtractionOrchestrationServiceMock.Setup(service =>
-                    service.ProcessFileAsync(externalIngestionTracking.FileName, storageSubscriberCredential))
+                    service.ProcessFileAsync(filePath, storageSubscriberCredential))
                         .ReturnsAsync(randomEmisLandingPath);
 
             // When
             string actualPath = await this.emisLandingCoordinationService.
-                ProcessFileAsync(externalIngestionTracking.FileName);
+                ProcessFileAsync(filePath);
 
             // Then
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialBySupplierSharingAgreementGuidAsync(SupplierSharingAgreementGuid),
+                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId),
                     Times.Once);
 
             this.emisLandingExtractionOrchestrationServiceMock.Verify(service =>
-                    service.ProcessFileAsync(externalIngestionTracking.FileName, storageSubscriberCredential),
+                    service.ProcessFileAsync(filePath, storageSubscriberCredential),
                         Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();

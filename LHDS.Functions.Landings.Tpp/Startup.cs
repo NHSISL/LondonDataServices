@@ -1,10 +1,9 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.IO;
 using LHDS.Core.Clients.Extensions;
-using LHDS.Core.Providers.Downloads.Extensions;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,8 +44,7 @@ namespace LHDS.Functions.Landings.Tpp
                     setup.AddApplicationInsights();
                     setup.AddConsole();
                 })
-                .AddLandingClient(configuration)
-                .UseRestDownloadProvider(builder => builder.AddRestDownloadProvider());
+                .AddLandingClient(configuration);
         }
     }
 }

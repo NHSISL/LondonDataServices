@@ -1,16 +1,16 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 
 namespace LHDS.Core.Providers.Downloads
 {
     public interface IDownloadAbstractionProvider
     {
-        ValueTask<List<Document>> GetListOfDocumentsToProcessAsync();
-        ValueTask<Document> GetDocumentByFileNameAsync(string fileName);
+        ValueTask<List<Download>> GetListOfDownloadsToProcessAsync(Download download);
+        ValueTask<Download> GetDownloadByFileNameAsync(Download download);
     }
 }

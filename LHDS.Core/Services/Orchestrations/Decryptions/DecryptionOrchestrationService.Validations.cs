@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
 namespace LHDS.Core.Services.Orchestrations.Decryptions
@@ -28,6 +30,16 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                         "please correct the errors and try again.");
             }
         }
+
+        private static void ValidateStorageDownload(Download maybeDownload, string fileName)
+        {
+            if (maybeDownload is null)
+            {
+                throw new NotFoundDecryptionOrchestrationException(
+                    message: $"Couldn't find download with file name: {fileName}.");
+            }
+        }
+
         private static void ValidateFileNameIsNotNull(string fileName)
         {
             Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));

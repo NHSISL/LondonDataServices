@@ -188,20 +188,28 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     message: "Decryption orchestration validation errors occurred, please try again.",
                     innerException: notFoundDecryptionOrchestrationException);
 
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
+                    .Returns(null);
+
             this.downloadProcessingServiceMock.Setup(service =>
-                    service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
-                        .Returns(null);
+                service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
+                    .Returns(null);
 
             // when
             ValueTask<string> processTask = this.decryptionOrchestrationService
                 .DecryptAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
 
-            EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
-                await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
+            DecryptionOrchestrationValidationException actualDecryptionOrchestrationValidationExceptionn =
+                await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(processTask.AsTask);
 
             // then
-            actualEmisLandingOrchestrationValidationException.Should()
+            actualDecryptionOrchestrationValidationExceptionn.Should()
                 .BeEquivalentTo(expectedDecryptionOrchestrationValidationException);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RetrieveIngestionTrackingByFileNameAsync(It.IsAny<string>()),
+                    Times.Once);
 
             this.downloadProcessingServiceMock.Verify(service =>
                 service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))),

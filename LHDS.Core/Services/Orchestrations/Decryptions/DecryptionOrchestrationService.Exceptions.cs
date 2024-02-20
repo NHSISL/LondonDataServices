@@ -9,6 +9,7 @@ using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.Decryptions
@@ -36,6 +37,10 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 nullSubscriberCredentialDecryptionOrchestrationException)
             {
                 throw CreateAndLogValidationException(nullSubscriberCredentialDecryptionOrchestrationException);
+            }
+            catch (NotFoundDecryptionOrchestrationException notFoundDecryptionOrchestrationException)
+            {
+                throw CreateAndLogValidationException(notFoundDecryptionOrchestrationException);
             }
             catch (DocumentValidationException documentValidationException)
             {

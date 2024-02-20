@@ -60,6 +60,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             {
                 ValidateBlobContainersIsNotNull();
                 ValidateFileNameIsNotNull(fileName);
+                ValidateSubscriberCredentials(subscriberCredential);
 
                 var ingestionTracking = await this.ingestionTrackingService
                     .RetrieveIngestionTrackingByFileNameAsync(fileName);

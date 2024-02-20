@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
-using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Decryptions;
 using Moq;
@@ -140,11 +139,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 this.decryptionOrchestrationService
                     .DecryptAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
 
-            EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
-                await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
+            DecryptionOrchestrationValidationException actualDecryptionOrchestrationValidationException =
+                await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(processTask.AsTask);
 
             // then
-            actualEmisLandingOrchestrationValidationException.Should()
+            actualDecryptionOrchestrationValidationException.Should()
                 .BeEquivalentTo(expectedDecryptionOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>

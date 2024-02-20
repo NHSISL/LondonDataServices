@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -31,6 +31,11 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 nullBlobContainersDecryptionOrchestrationException)
             {
                 throw CreateAndLogValidationException(nullBlobContainersDecryptionOrchestrationException);
+            }
+            catch (NullSubscriberCredentialDecryptionOrchestrationException
+                nullSubscriberCredentialDecryptionOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullSubscriberCredentialDecryptionOrchestrationException);
             }
             catch (DocumentValidationException documentValidationException)
             {

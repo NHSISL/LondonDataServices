@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Keys;
 
-namespace LHDS.Core.Brokers.Decryptions
+namespace LHDS.Core.Brokers.CryptographyKeys
 {
     public interface ICryptographyKeyBroker
     {

@@ -5,12 +5,12 @@
 using System.Threading.Tasks;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
-namespace LHDS.Core.Services.Foundations.SecureDatas
+namespace LHDS.Core.Services.Processings.SecureDatas
 {
     public interface ISecureDataProcessingService
     {
-        ValueTask<SubscriberCredential> AddOrModifySecureData(SubscriberCredential secureData);
+        ValueTask<SubscriberCredential> AddOrModifySecureDataAsync(SubscriberCredential secureData);
         ValueTask<SubscriberCredential> RetrieveSecretsBySubscriberAgreementNameAsync(string subscriberAgreementName);
-        ValueTask<SubscriberCredential> RemoveSecureData(SubscriberCredential secureData);
+        ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential secureData);
     }
 }

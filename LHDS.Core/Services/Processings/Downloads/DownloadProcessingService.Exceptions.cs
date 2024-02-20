@@ -1,11 +1,11 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Processings.Downloads.Exceptions;
 using Xeptions;
@@ -14,14 +14,18 @@ namespace LHDS.Core.Services.Processings.Downloads
 {
     public partial class DownloadProcessingService
     {
-        private delegate ValueTask<Document> ReturningDownloadFunction();
-        private delegate ValueTask<List<Document>> ReturningDownloadsFunction();
+        private delegate ValueTask<Download> ReturningDownloadFunction();
+        private delegate ValueTask<List<Download>> ReturningDownloadsFunction();
 
-        private async ValueTask<Document> TryCatch(ReturningDownloadFunction returningDownloadFunction)
+        private async ValueTask<Download> TryCatch(ReturningDownloadFunction returningDownloadFunction)
         {
             try
             {
                 return await returningDownloadFunction();
+            }
+            catch (NullDownloadProcessingException nullDownloadProcessingException)
+            {
+                throw CreateAndLogValidationException(nullDownloadProcessingException);
             }
             catch (InvalidArgumentDownloadProcessingException invalidArgumentDownloadProcessingException)
             {
@@ -54,7 +58,7 @@ namespace LHDS.Core.Services.Processings.Downloads
             }
         }
 
-        private async ValueTask<List<Document>> TryCatch(ReturningDownloadsFunction returningDownloadsFunction)
+        private async ValueTask<List<Download>> TryCatch(ReturningDownloadsFunction returningDownloadsFunction)
         {
             try
             {

@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -13,7 +12,7 @@ using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 
-namespace LHDS.Core.Services.Orchestrations.Downloads
+namespace LHDS.Core.Services.Coordinations.EmisLandings
 {
     public partial class EmisLandingCoordinationService : IEmisLandingCoordinationService
     {
@@ -73,41 +72,28 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 return processedPaths;
             });
 
-        public async ValueTask<string> ProcessFileAsync(string fileName)
-        {
-            string[] parts = fileName.Split("/");
-
-            if (parts.Length > 0)
+        public ValueTask<string> ProcessFileAsync(string fileName) =>
+            TryCatch(async () =>
             {
-                string extractSubscriberCredentialIdString = parts[5];
+                ValidateFileNameOnLand(fileName);
+                string[] parts = fileName.Split("/");
 
-                SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
-                    .RetrieveSubscriberCredentialByIdAsync(new Guid(extractSubscriberCredentialIdString));
+                if (parts.Length > 0)
+                {
+                    string extractSubscriberCredentialIdString = parts[5];
 
-                string processedItem =
-                    await this.emisLandingOrchestrationService.ProcessFileAsync(fileName, maybeSubscriberCredential);
+                    SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
+                        .RetrieveSubscriberCredentialByIdAsync(new Guid(extractSubscriberCredentialIdString));
 
-                return processedItem;
-            }
-            else
-            {
-                throw new InvalidArgumentEmisLandingCoordinationException("Invalid file name format.");
-            }
-        }
+                    string processedItem =
+                        await this.emisLandingOrchestrationService.ProcessFileAsync(fileName, maybeSubscriberCredential);
 
-        private static Guid GetLastRandomGuid(string file)
-        {
-
-            FileInfo fi = new FileInfo(file);
-            string fileName = fi.Name;
-
-            var elements = fileName.Split('_');
-            if (elements.Length < 5)
-            {
-                //throw Exception here 
-            }
-
-            return Guid.Parse(elements[5].ToString());
-        }
+                    return processedItem;
+                }
+                else
+                {
+                    throw new InvalidArgumentEmisLandingCoordinationException("Invalid file name format.");
+                }
+            });
     }
 }

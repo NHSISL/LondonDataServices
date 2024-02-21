@@ -156,7 +156,6 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             }
         }
 
-
         private EmisLandingCoordinationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var emisLandingCoordinationValidationException =

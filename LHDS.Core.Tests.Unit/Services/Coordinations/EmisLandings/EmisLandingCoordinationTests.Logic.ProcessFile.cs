@@ -32,8 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .ReturnsAsync(randomActiveSubscriberCredential);
 
             this.emisLandingExtractionOrchestrationServiceMock.Setup(service =>
-                    service.ProcessFileAsync(filePath, storageSubscriberCredential))
-                        .ReturnsAsync(randomEmisLandingPath);
+                service.ProcessFileAsync(filePath, storageSubscriberCredential))
+                    .ReturnsAsync(randomEmisLandingPath);
 
             // When
             string actualPath = await this.emisLandingCoordinationService.
@@ -45,8 +45,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     Times.Once);
 
             this.emisLandingExtractionOrchestrationServiceMock.Verify(service =>
-                    service.ProcessFileAsync(filePath, storageSubscriberCredential),
-                        Times.Once);
+                service.ProcessFileAsync(filePath, storageSubscriberCredential),
+                    Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
             this.emisLandingExtractionOrchestrationServiceMock.VerifyNoOtherCalls();

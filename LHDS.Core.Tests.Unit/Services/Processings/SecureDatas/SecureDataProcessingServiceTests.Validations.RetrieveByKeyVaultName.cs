@@ -141,12 +141,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                 new InvalidArgumentSubscriberCredentialProcessingException(
                     message: $"Invalid argument subscriber credential processing error occurred, contact support.");
 
-            foreach (string invalidPropertyName in invalidProperties)
-            {
-                invalidArgumentSubscriberCredentialProcessingException.AddData(
-                    key: nameof(invalidPropertyName),
-                    values: "Invalid property");
-            }
+            string combinedProperties = String.Join(", ", invalidProperties);
+
+            invalidArgumentSubscriberCredentialProcessingException.AddData(
+                key: "invalidPropertyName",
+                values: combinedProperties);
 
             var expectedSubscriberCredentialValidationException =
                 new SubscriberCredentialValidationException(

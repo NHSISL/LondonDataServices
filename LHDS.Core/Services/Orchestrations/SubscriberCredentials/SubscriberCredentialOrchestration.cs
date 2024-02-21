@@ -43,6 +43,6 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
 
         public ValueTask<SubscriberCredential>
             RetrieveSubscriberCredentialBySupplierSharingAgreementGuidAsync(Guid SupplierSharingAgreementGuid) =>
-            throw new NotImplementedException();
+                throw new NotImplementedException();
     }
 }

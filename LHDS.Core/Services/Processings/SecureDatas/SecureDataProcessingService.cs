@@ -83,6 +83,8 @@ namespace LHDS.Core.Services.Processings.SecureDatas
 
                         await TryCatch(async () =>
                         {
+                            //ValidateSecureDataProperty(keyType);
+
                             SecureData retrievedSecureData =
                                 await this.secureDataService.RetrieveSecretDataByNameAsync(secretName);
 
@@ -169,6 +171,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             string propertyName,
             object value)
         {
+            //ValidateSecureDataProperty(propertyName);
             PropertyInfo propertyInfo = typeof(SubscriberCredential).GetProperty(propertyName);
 
             if (propertyInfo != null && propertyInfo.CanWrite)

@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
-using LHDS.Core.Services.Foundations.AddressMatchers;
 using LHDS.Core.Services.Processings.SecureDatas;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Moq;
 using Xunit;
 
@@ -139,13 +140,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             var invalidArgumentSubscriberCredentialProcessingException =
                 new InvalidArgumentSubscriberCredentialProcessingException(
-                    message: $"Invalid argument subscriber credential processing error occurred, contact support.");
+                    message: "Invalid argument subscriber credential processing error occurred, contact support.");
 
-            string combinedProperties = String.Join(", ", invalidProperties);
-
-            invalidArgumentSubscriberCredentialProcessingException.AddData(
-                key: "invalidPropertyName",
-                values: combinedProperties);
+            foreach (string keyType in invalidProperties)
+            {
+                invalidArgumentSubscriberCredentialProcessingException.AddData(
+                    key: keyType,
+                    values: "Invalid property");
+            }
 
             var expectedSubscriberCredentialValidationException =
                 new SubscriberCredentialValidationException(

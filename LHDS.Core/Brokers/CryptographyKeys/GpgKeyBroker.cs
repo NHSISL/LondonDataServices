@@ -17,7 +17,7 @@ namespace LHDS.Core.Brokers.CryptographyKeys
 {
     public class GpgKeyBroker : ICryptographyKeyBroker
     {
-        public ValueTask<CryptographicKey> GenerateKeys(string publicKeyComment)
+        public async ValueTask<CryptographicKey> GenerateKeys(string? publicKeyComment = "")
         {
             RsaKeyPairGenerator rsaKeyPairGenerator = new RsaKeyPairGenerator();
             rsaKeyPairGenerator.Init(new KeyGenerationParameters(new SecureRandom(), 2048));
@@ -37,20 +37,20 @@ namespace LHDS.Core.Brokers.CryptographyKeys
             PgpSignatureSubpacketVector subpacketVector = subpacketGenerator.Generate();
 
             PgpKeyRingGenerator keyRingGenerator = new PgpKeyRingGenerator(
-                certificationLevel: PgpSignature.DefaultCertification, 
-                masterKey: pgpKeyPair, 
-                id: "test", 
-                SymmetricKeyAlgorithmTag.Aes256, 
-                "test".ToCharArray(), 
-                true, 
-                subpacketVector, 
-                null, 
+                certificationLevel: PgpSignature.DefaultCertification,
+                masterKey: pgpKeyPair,
+                id: "test",
+                SymmetricKeyAlgorithmTag.Aes256,
+                "test".ToCharArray(),
+                true,
+                subpacketVector,
+                null,
                 new SecureRandom());
 
             PgpPublicKeyRing publicKeyRing = keyRingGenerator.GeneratePublicKeyRing();
             PgpSecretKeyRing secretKeyRing = keyRingGenerator.GenerateSecretKeyRing();
-
             string publicKey;
+
             using (MemoryStream outputStream = new MemoryStream())
             {
                 using (ArmoredOutputStream armoredStream = new ArmoredOutputStream(outputStream))
@@ -62,6 +62,7 @@ namespace LHDS.Core.Brokers.CryptographyKeys
 
             // Write the private key to a string
             string privateKey;
+
             using (MemoryStream outputStream = new MemoryStream())
             {
                 using (ArmoredOutputStream armoredStream = new ArmoredOutputStream(outputStream))
@@ -71,16 +72,13 @@ namespace LHDS.Core.Brokers.CryptographyKeys
                 privateKey = Encoding.UTF8.GetString(outputStream.ToArray());
             }
 
-            CryptographicKey returnedKey =  new CryptographicKey
+            CryptographicKey returnedKey = new CryptographicKey
             {
                 Base64PrivateKey = publicKey,
                 Base64PublicKey = privateKey
             };
 
-            return ValueTask.FromResult(returnedKey);
+            return await ValueTask.FromResult(returnedKey);
         }
-
-        public ValueTask<CryptographicKey> GenerateKeys() =>
-            this.GenerateKeys("");
     }
 }

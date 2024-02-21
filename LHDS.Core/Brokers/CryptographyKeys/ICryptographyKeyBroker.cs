@@ -9,7 +9,6 @@ namespace LHDS.Core.Brokers.CryptographyKeys
 {
     public interface ICryptographyKeyBroker
     {
-        ValueTask<CryptographicKey> GenerateKeys(string publicKeyComment);
-        ValueTask<CryptographicKey> GenerateKeys();
+        ValueTask<CryptographicKey> GenerateKeys(string? publicKeyComment = "");
     }
 }

@@ -4,9 +4,9 @@
 
 using System.Threading.Tasks;
 
-namespace LHDS.Core.Services.Orchestrations.Decryptions
+namespace LHDS.Core.Services.Coordinations.Decryptions
 {
-    public interface IDecryptionOrchestrationService
+    public interface IDecryptionCoordinationService
     {
         ValueTask<string> DecryptAsync(string fileName);
     }

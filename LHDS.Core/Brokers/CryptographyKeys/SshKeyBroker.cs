@@ -10,7 +10,7 @@ namespace LHDS.Core.Brokers.CryptographyKeys
 {
     public class SshKeyBroker : ICryptographyKeyBroker
     {
-        public ValueTask<CryptographicKey> GenerateKeys(string publicKeyComment)
+        public async ValueTask<CryptographicKey> GenerateKeys(string? publicKeyComment = "")
         {
             int keyBits = 2048;
 
@@ -24,8 +24,5 @@ namespace LHDS.Core.Brokers.CryptographyKeys
 
             return await ValueTask.FromResult(key);
         }
-
-        public ValueTask<CryptographicKey> GenerateKeys() =>
-            this.GenerateKeys($"Auto Generated Comment {DateTimeOffset.UtcNow} ");
     }
 }

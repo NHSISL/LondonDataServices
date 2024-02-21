@@ -23,6 +23,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 new InvalidArgumentEmisLandingCoordinationException(
                     message: "Invalid Emis Landing coordination argument, please correct the errors and try again.");
 
+            invalidArgumentEmisLandingCoordinationException.AddData(
+                key: "FileName",
+                values: "Text is required");
+
             var expectedEmisLandingCoordinationValidationException =
                 new EmisLandingCoordinationValidationException(
                     message: "Emis Landing coordination validation error occurred, please try again.",

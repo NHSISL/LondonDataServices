@@ -146,17 +146,32 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         {
             Guid randomGuid = Guid.NewGuid();
 
-            return $"/{GetRandomString()}/{GetRandomString()}/{randomGuid}/{GetRandomNumber}/" +
-                $"{GetRandomString()}_{GetRandomNumber}_{GetRandomString()}_{GetRandomString()}_{GetRandomNumber()}_{identifier}.csv.gpg;";
+            return $"/{GetRandomString()}" +
+                $"/{GetRandomString()}" +
+                $"/{randomGuid}" +
+                $"/{GetRandomNumber}" +
+                $"/{GetRandomString()}" +
+                $"_{GetRandomNumber}" +
+                $"_{GetRandomString()}" +
+                $"_{GetRandomString()}" +
+                $"_{GetRandomNumber()}" +
+                $"_{identifier}.csv.gpg;";
         }
 
         private static string CreateRandomFilePath(Guid identifier)
         {
-            return $"{GetRandomString()}/{GetRandomString()}" +
-                $"/{GetRandomString()}/{GetRandomString()}/{GetRandomString()}" +
-                $"/{identifier}/0122235/{GetRandomNumber}" +
-                $"_{GetRandomString()}_{GetRandomString()}" +
-                $"_{GetRandomNumber()}_{identifier}.csv.gpg;";
+            return $"{GetRandomString()}" +
+                $"/{GetRandomString()}" +
+                $"/{GetRandomString()}" +
+                $"/{GetRandomString()}" +
+                $"/{GetRandomString()}" +
+                $"/{identifier}" +
+                $"/0122235" +
+                $"/{GetRandomNumber}" +
+                $"_{GetRandomString()}" +
+                $"_{GetRandomString()}" +
+                $"_{GetRandomNumber()}" +
+                $"_{identifier}.csv.gpg;";
         }
 
         private static Guid GetLastRandomGuid(string filename)

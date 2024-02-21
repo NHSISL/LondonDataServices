@@ -80,13 +80,15 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
 
                 if (parts.Length > 0)
                 {
-                    string extractSubscriberCredentialIdString = parts[5];
+                    string extractSubscriberCredentialId = parts[5];
 
                     SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
-                        .RetrieveSubscriberCredentialByIdAsync(new Guid(extractSubscriberCredentialIdString));
+                        .RetrieveSubscriberCredentialByIdAsync(new Guid(extractSubscriberCredentialId));
 
                     string processedItem =
-                        await this.emisLandingOrchestrationService.ProcessFileAsync(fileName, maybeSubscriberCredential);
+                        await this.emisLandingOrchestrationService.ProcessFileAsync(
+                            fileName: fileName,
+                            subscriberCredential: maybeSubscriberCredential);
 
                     return processedItem;
                 }

@@ -8,7 +8,7 @@ using LHDS.Core.Models.Foundations.CryptographicKeys;
 
 namespace LHDS.Core.Brokers.CryptographyKeys
 {
-    public class SSHKeys : ICryptographyKeyBroker
+    public class SshKeyBroker : ICryptographyKeyBroker
     {
         public ValueTask<CryptographicKey> GenerateKeys(string publicKeyComment)
         {
@@ -22,7 +22,7 @@ namespace LHDS.Core.Brokers.CryptographyKeys
                 Base64PrivateKey = keygen.ToPrivateKey(),
             };
 
-            return ValueTask.FromResult(key);
+            return await ValueTask.FromResult(key);
         }
 
         public ValueTask<CryptographicKey> GenerateKeys() =>

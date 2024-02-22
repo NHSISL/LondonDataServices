@@ -2,14 +2,14 @@ import { Guid } from 'guid-typescript';
 
 export class SubscriberAgreement {
     public id: Guid;
-    public SupplierSharingAgreementShortName: string;
-    public FtpUserName: string;
-    public FtpPublicKey: string;
-    public GpgPublicKey: string;
-    public IsActive: boolean;
-    public SupplierSharingAgreementGuid?: Guid;
-    public LastPollStartDate?: Date;
-    public LastPollEndDate?: Date;
+    public supplierSharingAgreementShortName: string;
+    public ftpUserName: string;
+    public ftpPublicKey: string;
+    public gpgPublicKey: string;
+    public isActive: boolean;
+    public supplierSharingAgreementGuid?: Guid;
+    public lastPollStartDate?: Date;
+    public lastPollEndDate?: Date;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -17,19 +17,19 @@ export class SubscriberAgreement {
 
     constructor(SubscriberAgreement: any) {
         this.id = SubscriberAgreement.id ? Guid.parse(SubscriberAgreement.id) : Guid.parse(Guid.EMPTY);
-        this.SupplierSharingAgreementShortName = SubscriberAgreement.SupplierSharingAgreementShortName || "";
-        this.FtpUserName = SubscriberAgreement.FtpUserName || "";
-        this.FtpPublicKey = SubscriberAgreement.FtpPublicKey || "";
-        this.GpgPublicKey = SubscriberAgreement.GpgPublicKey || "";
-        this.IsActive = SubscriberAgreement.IsActive === true ? true : false;
+        this.supplierSharingAgreementShortName = SubscriberAgreement.supplierSharingAgreementShortName || "";
+        this.ftpUserName = SubscriberAgreement.ftpUserName || "";
+        this.ftpPublicKey = SubscriberAgreement.ftpPublicKey || "";
+        this.gpgPublicKey = SubscriberAgreement.gpgPublicKey || "";
+        this.isActive = SubscriberAgreement.iIsActive === true ? true : false;
 
-        this.SupplierSharingAgreementGuid =
-            SubscriberAgreement.SupplierSharingAgreementGuid
-                ? Guid.parse(SubscriberAgreement.SupplierSharingAgreementGuid)
+        this.supplierSharingAgreementGuid =
+            SubscriberAgreement.supplierSharingAgreementGuid
+                ? Guid.parse(SubscriberAgreement.supplierSharingAgreementGuid)
                 : Guid.parse(Guid.EMPTY);
 
-        this.LastPollStartDate = SubscriberAgreement.LastPollStartDate;
-        this.LastPollEndDate = SubscriberAgreement.LastPollEndDate;
+        this.lastPollStartDate = SubscriberAgreement.lastPollStartDate;
+        this.lastPollEndDate = SubscriberAgreement.lastPollEndDate;
         this.createdDate = SubscriberAgreement.createdDate;
         this.createdBy = SubscriberAgreement.createdBy;
         this.createdDate = new Date(SubscriberAgreement.createdDate);

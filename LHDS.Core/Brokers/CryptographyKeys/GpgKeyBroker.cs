@@ -22,11 +22,7 @@ namespace LHDS.Core.Brokers.CryptographyKeys
             RsaKeyPairGenerator rsaKeyPairGenerator = new RsaKeyPairGenerator();
             rsaKeyPairGenerator.Init(new KeyGenerationParameters(new SecureRandom(), 2048));
             AsymmetricCipherKeyPair keyPair = rsaKeyPairGenerator.GenerateKeyPair();
-
-            // Create the PGP key pair
             PgpKeyPair pgpKeyPair = new PgpKeyPair(PublicKeyAlgorithmTag.RsaGeneral, keyPair, DateTime.UtcNow);
-
-            // Create the PGP key ring generator
             PgpSignatureSubpacketGenerator subpacketGenerator = new PgpSignatureSubpacketGenerator();
 
             subpacketGenerator.SetKeyFlags(
@@ -50,6 +46,7 @@ namespace LHDS.Core.Brokers.CryptographyKeys
             PgpPublicKeyRing publicKeyRing = keyRingGenerator.GeneratePublicKeyRing();
             PgpSecretKeyRing secretKeyRing = keyRingGenerator.GenerateSecretKeyRing();
             string publicKey;
+            string privateKey;
 
             using (MemoryStream outputStream = new MemoryStream())
             {
@@ -59,9 +56,6 @@ namespace LHDS.Core.Brokers.CryptographyKeys
                 }
                 publicKey = Encoding.UTF8.GetString(outputStream.ToArray());
             }
-
-            // Write the private key to a string
-            string privateKey;
 
             using (MemoryStream outputStream = new MemoryStream())
             {

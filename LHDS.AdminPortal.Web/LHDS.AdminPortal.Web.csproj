@@ -130,6 +130,12 @@
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectValidations.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierErrors.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowAdd.tsx" />
@@ -163,6 +169,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\pds\pds.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\pds\pdsHomeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\specificationObjects\specificationObject.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\subscriberAgreements\subscriberAgreementHomeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\subscriberAgreements\subscriberAgreements.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\terminologyArtifacts\terminologyArtifact.ts" />

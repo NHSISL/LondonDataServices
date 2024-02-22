@@ -196,6 +196,8 @@
     <TypeScriptCompile Remove="ClientApp\src\pages\ownershipsPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\PdsSearch.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\PdsUpload.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\subscriberAgreementDetailPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\subscriberAgreementPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactDetailPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\documentService.ts" />

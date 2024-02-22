@@ -3,5 +3,6 @@ export enum FeatureDefinitions {
     IngestionTracking,
     IngestionTrackingSearch,
     Pds,
-    TerminologyArtifact
+    TerminologyArtifact,
+    subscriberAgreement
 }

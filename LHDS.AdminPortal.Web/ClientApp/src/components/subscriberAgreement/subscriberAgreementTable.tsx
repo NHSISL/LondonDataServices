@@ -18,15 +18,17 @@ import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import { faPlusCircle, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import SubscriberAgreementAdd from "./subscriberAgreementAdd";
 import { Link } from "react-router-dom";
+import { Row } from "react-bootstrap";
 
 type SubscriberAgreementTableProps = {};
 
 const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps> = (props) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
+    const [showSpinner, setShowSpinner] = useState(false);
 
     const {
         mappedSubscriberAgreements: subscriberAgreementRetrieved,
@@ -35,6 +37,7 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
         isFetchingNextPage,
         hasNextPage,
         data,
+        refetch
     } = subscriberAgreementViewService.useGetAllSubscriberAgreements(
         debouncedTerm
     );
@@ -56,6 +59,16 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
         return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
     };
 
+    const refreshData = () => {
+        setShowSpinner(true);
+        setTimeout(() => {
+            refetch();
+            setTimeout(() => {
+                setShowSpinner(false);
+            }, 200);
+        }, 200);
+    };
+
     return (
         <div className="infiniteScrollContainer">
             <CardBase>
@@ -64,22 +77,48 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
                         Subscriber Agreements
                     </CardBaseTitle>
                     <CardBaseContent>
-                        <Link to="/subscriberAgreement/new" className="btn btn-primary">
-                            <ButtonBase onClick={() => {  }} add><FontAwesomeIcon icon={faPlusCircle} />&nbsp;New</ButtonBase>
-                        </Link>
+                        {/*<Link to="/subscriberAgreement/new" className="btn btn-primary">*/}
+                        {/*    <ButtonBase onClick={() => {  }} add><FontAwesomeIcon icon={faPlusCircle} />&nbsp;New</ButtonBase>*/}
+                        {/*</Link>*/}
                         <InfiniteScroll loading={isLoading} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
-                            <div className="filter-container">
-                                <div className="filter-item">
+                            {/*<div className="filter-container">*/}
+                            {/*    <div className="filter-item">*/}
+                            {/*        <SearchBase*/}
+                            {/*            id="search"*/}
+                            {/*            label="Search Subscriber Agreements"*/}
+                            {/*            placeholder="Search Subscriber Agreements..."*/}
+                            {/*            value={searchTerm}*/}
+                            {/*            onChange={(e) => {*/}
+                            {/*                handleSearchChange(e.currentTarget.value);*/}
+                            {/*            }} />*/}
+                            {/*    </div>*/}
+                            {/*</div>*/}
+
+                            <Row>
+                                <div className="input-group mb-3">
                                     <SearchBase
                                         id="search"
-                                        label="Search Subscriber Agreements"
-                                        placeholder="Search Subscriber Agreements..."
                                         value={searchTerm}
-                                        onChange={(e) => {
-                                            handleSearchChange(e.currentTarget.value);
-                                        }} />
+                                        placeholder="Search for Subscriber Agreements...."
+                                        onChange={(e) => { handleSearchChange(e.currentTarget.value) }} />
+
+                                    <div className="input-group-append">
+                                        <Link to="/subscriberAgreement/new">
+                                            <button onClick={() => { }} className="btn btn-primary"><FontAwesomeIcon icon={faPlusCircle} />&nbsp;New</button>
+                                        </Link>
+                                    </div>
+
+                                    {showSpinner ? (
+                                        <SpinnerBase />
+                                    ) : (
+                                        <div className="input-group-append">
+                                            <button className="btn btn-outline-secondary" id="refreshButton" onClick={refreshData}>
+                                                <FontAwesomeIcon icon={faRefresh} />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
+                            </Row>
 
                             <TableBase>
                                 <TableBaseThead>

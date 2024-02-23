@@ -61,12 +61,15 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
                     <CardBaseTitle>Subscriber Agreement Search</CardBaseTitle>
                     <CardBaseContent>
                         <ButtonBase onClick={() => { }} add><FontAwesomeIcon icon={faPlusCircle} /> New</ButtonBase>
+                        <br />
+                        <br />
                         <InfiniteScroll loading={isLoading} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
                             <div className="filter-container">
                                 <div className="filter-item">
                                     <SearchBase
                                         id="search"
                                         label="Search Subscriber Agreements"
+                                        placeholder="Search Subscriber Agreements..."
                                         value={searchTerm}
                                         onChange={(e) => {
                                             handleSearchChange(e.currentTarget.value);
@@ -77,8 +80,9 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
                             <TableBase>
                                 <TableBaseThead>
                                     <TableBaseRow>
-                                        <TableBaseHeader>Col 1</TableBaseHeader>
-                                        <TableBaseHeader>Col 2</TableBaseHeader>
+                                        <TableBaseHeader>Supplier Sharing Agreement ShortName</TableBaseHeader>
+                                        <TableBaseHeader>Supplier Sharing Agreement Guid</TableBaseHeader>
+                                        <TableBaseHeader></TableBaseHeader>
                                     </TableBaseRow>
                                 </TableBaseThead>
                                 <TableBaseTbody>

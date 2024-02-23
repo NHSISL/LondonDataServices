@@ -73,6 +73,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 ValidateSubscriberCredentialOnRetrieve(subscriberCredential);
                 List<string> keyTypes = GetPropertyList();
+                ValidateSecureData(keyTypes, subscriberCredential);
                 var exceptions = new List<Exception>();
 
                 foreach (var keyType in keyTypes)
@@ -83,7 +84,6 @@ namespace LHDS.Core.Services.Processings.SecureDatas
 
                         await TryCatch(async () =>
                         {
-                            //ValidateSecureDataProperty(keyType);
 
                             SecureData retrievedSecureData =
                                 await this.secureDataService.RetrieveSecretDataByNameAsync(secretName);

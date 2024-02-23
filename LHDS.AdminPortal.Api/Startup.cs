@@ -13,7 +13,6 @@ using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
-using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
@@ -45,7 +44,6 @@ using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.PdsAudits;
-using LHDS.Core.Services.Foundations.SecureDatas;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
@@ -205,14 +203,14 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
 
-            services.AddTransient<IKeyVaultSecretBroker>(provider =>
-            {
-                string keyVaultUri = configuration["YourKeyVaultUriConfigurationKey"];
+            //services.AddTransient<IKeyVaultSecretBroker>(provider =>
+            //{
+            //    string keyVaultUri = configuration["YourKeyVaultUriConfigurationKey"];
 
-                return new KeyVaultSecretBroker(keyVaultUri);
-            });
+            //    return new KeyVaultSecretBroker(keyVaultUri);
+            //});
 
-            services.AddTransient<ISecureDataService, SecureDataService>();
+            //services.AddTransient<ISecureDataService, SecureDataService>();
         }
 
         private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)

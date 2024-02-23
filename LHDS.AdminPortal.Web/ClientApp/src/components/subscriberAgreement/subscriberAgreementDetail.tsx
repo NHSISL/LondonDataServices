@@ -2,11 +2,13 @@ import React, { FunctionComponent } from "react";
 import SubscriberAgreementDetailCard from "./subscriberAgreementDetailCard";
 
 interface SubscriberAgreementDetailProps {
+    subscriberAgreementId?: string;
     children?: React.ReactNode;
 }
 
 const SubscriberAgreementDetail: FunctionComponent<SubscriberAgreementDetailProps> = (props) => {
     const {
+        subscriberAgreementId,
         children
     } = props;
 

@@ -58,7 +58,7 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
         <div className="infiniteScrollContainer">
             <CardBase>
                 <CardBaseBody>
-                    <CardBaseTitle>Subscriber Agreement Search</CardBaseTitle>
+                    <CardBaseTitle>Subscriber Agreements</CardBaseTitle>
                     <CardBaseContent>
                         <ButtonBase onClick={() => { }} add><FontAwesomeIcon icon={faPlusCircle} /> New</ButtonBase>
                         <br />

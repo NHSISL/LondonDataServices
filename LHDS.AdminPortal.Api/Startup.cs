@@ -30,6 +30,7 @@ using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Providers.Downloads;
@@ -334,6 +335,7 @@ namespace LHDS.AdminPortal.Api
             builder.EntitySet<PdsAudit>("PdsAudits");
             builder.EntitySet<Supplier>("Suppliers");
             builder.EntitySet<TerminologyArtifact>("TerminologyArtifacts");
+            builder.EntitySet<SubscriberAgreement>("SubscriberAgreements");
             builder.EnableLowerCamelCase();
 
             return builder.GetEdmModel();
@@ -358,3 +360,4 @@ namespace LHDS.AdminPortal.Api
         }
     }
 }
+

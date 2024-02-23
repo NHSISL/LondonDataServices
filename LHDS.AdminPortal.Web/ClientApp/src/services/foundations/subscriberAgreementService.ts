@@ -13,7 +13,7 @@ export const subscriberAgreementService = {
         return useMutation((subscriberAgreement: SubscriberAgreement) => {
             const date = new Date();
             subscriberAgreement.createdDate = subscriberAgreement.updatedDate = date;
-            v.createdBy = subscriberAgreement.updatedBy = msal.accounts[0].username;
+            subscriberAgreement.createdBy = subscriberAgreement.updatedBy = msal.accounts[0].username;
 
             return broker.PostSubscriberAgreementAsync(subscriberAgreement);
         },

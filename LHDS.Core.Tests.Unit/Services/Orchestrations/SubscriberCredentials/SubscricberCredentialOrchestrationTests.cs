@@ -9,13 +9,17 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
+using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
+using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 {
@@ -76,6 +80,42 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
             return filler;
+        }
+
+        public static TheoryData SubscriberCredentialOrchestrationDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new SubscriberCredentialValidationException(
+                    message: "Subscriber credential processing validation error occured, please try again",
+                    innerException),
+
+                new SubscriberCredentialProcessingDependencyValidationException(
+                    message: "Subscriber credential processing dependency validation error occurred, please try again.",
+                    innerException),
+            };
+        }
+
+        public static TheoryData SubscriberCredentialOrchestrationDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new SubscriberCredentialProcessingDependencyException(
+                    message: "Subscriber credential processing dependency error occurred, contact support.",
+                    innerException),
+
+                new SubscriberCredentialProcessingServiceException(
+                    message: "Subscriber credential processing service error occurred, contact support.",
+                    innerException),
+            };
         }
     }
 }

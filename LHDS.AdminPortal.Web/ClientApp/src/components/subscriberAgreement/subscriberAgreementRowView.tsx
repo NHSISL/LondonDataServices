@@ -27,11 +27,10 @@ const SubscriberRowView: FunctionComponent<SubscriberAgreementRowProps> = (props
             <TableBaseData>
                 <Link to={`/subscriberAgreementDetail/${subscriberAgreement.id}`}>
                     <ButtonBase onClick={() => { }} add>
-                        Details
+                        View/Edit
                     </ButtonBase>
                 </Link>
             </TableBaseData>
-            
         </TableBaseRow>
     </>
     );

@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
@@ -16,18 +18,26 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
     {
         private readonly ISubscriberAgreementProcessingService subscriberAgreementProcessingService;
         private readonly ISecureDataProcessingService secureDataProcessingService;
+        private readonly ILoggingBroker loggingBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
 
         public SubscriberCredentialOrchestration(
             ISubscriberAgreementProcessingService subscriberAgreementProcessingService,
-            ISecureDataProcessingService secureDataProcessingService)
+            ISecureDataProcessingService secureDataProcessingService,
+            ILoggingBroker loggingBroker,
+            IDateTimeBroker dateTimeBroker)
         {
             this.subscriberAgreementProcessingService = subscriberAgreementProcessingService;
             this.secureDataProcessingService = secureDataProcessingService;
+            this.loggingBroker = loggingBroker;
+            this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(
-            SubscriberCredential subscriberCredential) =>
-                throw new NotImplementedException();
+        public async ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(
+            SubscriberCredential subscriberCredential)
+        {
+            return await this.secureDataProcessingService.AddOrModifySecureDataAsync(subscriberCredential);
+        }
 
         public IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials() =>
             throw new NotImplementedException();

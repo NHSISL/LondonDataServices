@@ -1,7 +1,7 @@
 import React, { FunctionComponent, HTMLProps } from "react";
-import {Button } from 'nhsuk-react-components'
 import classNames from 'classnames';
 import "./ButtonBaseStyle.scss"
+import { Button } from "react-bootstrap";
 
 interface ButtonBaseProps extends HTMLProps<HTMLButtonElement> {
     id?: string;
@@ -49,7 +49,6 @@ const ButtonBase: FunctionComponent<ButtonBaseProps> = (
                     { 'nhsuk-buttonGreen': view },
                     className,
                 )}
-                {...rest}
             >
                 {children}
             </Button >

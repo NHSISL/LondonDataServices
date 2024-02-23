@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using Microsoft.Extensions.Configuration;
 
 namespace LHDS.Core.Brokers.KeyVaults
 {
@@ -13,8 +14,12 @@ namespace LHDS.Core.Brokers.KeyVaults
     {
         private readonly SecretClient secretClient;
 
-        public KeyVaultSecretBroker(string keyVaultUri)
+        public IConfiguration Configuration { get; }
+
+        public KeyVaultSecretBroker(IConfiguration configuration)
         {
+            this.Configuration = configuration;
+            var keyVaultUri = this.Configuration["KeyVaultUri"];
             secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
         }
 

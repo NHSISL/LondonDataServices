@@ -1,33 +1,19 @@
-import { Guid } from 'guid-typescript';
-
-export class SubscriberAgreement {
-    public id: Guid;
-    public supplierSharingAgreementShortName: string;
-    public ftpUserName: string;
-    public ftpPublicKey: string;
-    public gpgPublicKey: string;
-    public isActive: boolean;
-    public supplierSharingAgreementGuid?: Guid;
-    public lastPollStartDate?: Date;
-    public lastPollEndDate?: Date;
-    public createdBy?: string;
-    public createdDate?: Date;
-    public updatedBy?: string;
-    public updatedDate?: Date;
-
-    constructor(SubscriberAgreement: any) {
-        this.id = SubscriberAgreement.id ? Guid.parse(SubscriberAgreement.id) : Guid.parse(Guid.EMPTY);
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SubscriberAgreement = void 0;
+var guid_typescript_1 = require("guid-typescript");
+var SubscriberAgreement = /** @class */ (function () {
+    function SubscriberAgreement(SubscriberAgreement) {
+        this.id = SubscriberAgreement.id ? guid_typescript_1.Guid.parse(SubscriberAgreement.id) : guid_typescript_1.Guid.parse(guid_typescript_1.Guid.EMPTY);
         this.supplierSharingAgreementShortName = SubscriberAgreement.supplierSharingAgreementShortName || "";
         this.ftpUserName = SubscriberAgreement.ftpUserName || "";
         this.ftpPublicKey = SubscriberAgreement.ftpPublicKey || "";
         this.gpgPublicKey = SubscriberAgreement.gpgPublicKey || "";
         this.isActive = SubscriberAgreement.iIsActive === true ? true : false;
-
         this.supplierSharingAgreementGuid =
             SubscriberAgreement.supplierSharingAgreementGuid
-                ? Guid.parse(SubscriberAgreement.supplierSharingAgreementGuid)
-                : Guid.parse(Guid.EMPTY);
-
+                ? guid_typescript_1.Guid.parse(SubscriberAgreement.supplierSharingAgreementGuid)
+                : guid_typescript_1.Guid.parse(guid_typescript_1.Guid.EMPTY);
         this.lastPollStartDate = SubscriberAgreement.lastPollStartDate ? new Date(SubscriberAgreement.lastPollStartDate) : undefined;
         this.lastPollEndDate = SubscriberAgreement.lastPollEndDate ? new Date(SubscriberAgreement.lastPollEndDate) : undefined;
         this.createdDate = SubscriberAgreement.createdDate;
@@ -36,4 +22,7 @@ export class SubscriberAgreement {
         this.updatedBy = SubscriberAgreement.updatedBy;
         this.updatedDate = new Date(SubscriberAgreement.updatedDate);
     }
-}
+    return SubscriberAgreement;
+}());
+exports.SubscriberAgreement = SubscriberAgreement;
+//# sourceMappingURL=subscriberAgreements.js.map

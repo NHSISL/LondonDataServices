@@ -133,10 +133,13 @@
     <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetail - Copy.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCardEdit.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementErrors.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementValidation.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierErrors.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowAdd.tsx" />

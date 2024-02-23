@@ -9,6 +9,7 @@ using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
@@ -29,6 +30,35 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             {
                 throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialOrchestrationException);
             }
+            catch (SubscriberCredentialValidationException
+                invalidArgumentSubscriberCredentialOrchestrationException)
+            {
+                throw CreateAndLogDependencyValidationException(invalidArgumentSubscriberCredentialOrchestrationException);
+            }
+            catch (SubscriberCredentialProcessingDependencyValidationException
+                invalidArgumentSubscriberCredentialOrchestrationException)
+            {
+                throw CreateAndLogDependencyValidationException(invalidArgumentSubscriberCredentialOrchestrationException);
+            }
+            catch (SubscriberCredentialProcessingDependencyException
+                invalidArgumentSubscriberCredentialOrchestrationException)
+            {
+                throw CreateAndLogDependencyException(invalidArgumentSubscriberCredentialOrchestrationException);
+            }
+            catch (SubscriberCredentialProcessingServiceException
+                invalidArgumentSubscriberCredentialOrchestrationException)
+            {
+                throw CreateAndLogDependencyException(invalidArgumentSubscriberCredentialOrchestrationException);
+            }
+            catch (Exception exception)
+            {
+                var failedSubscriberCredentialOrchestrationServiceException =
+                    new FailedSubscriberCredentialOrchestrationServiceException(
+                        message: "Failed subscriber credential orchestration service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedSubscriberCredentialOrchestrationServiceException);
+            }
         }
 
         private SubscriberCredentialValidationOrchestrationException CreateAndLogValidationException(Xeption exception)
@@ -48,7 +78,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         {
             var subscriberCredentialOrchestrationDependencyValidationException =
                 new SubscriberCredentialOrchestrationDependencyValidationException(
-                    message: "Subscriber credential orchestration validation errors occurred, please try again.",
+                    message: "Subscriber credential orchestration dependency validation error occurred, fix the errors and try again.",
                     exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(subscriberCredentialOrchestrationDependencyValidationException);
@@ -75,7 +105,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         {
             var subscriberCredentialOrchestrationServiceException =
                 new SubscriberCredentialOrchestrationServiceException(
-                    message: " orchestration service error occurred, contact support.",
+                    message: "Subscriber credential orchestration service error occurred, fix the errors and try again.",
                     innerException: exception);
 
             this.loggingBroker.LogError(subscriberCredentialOrchestrationServiceException);

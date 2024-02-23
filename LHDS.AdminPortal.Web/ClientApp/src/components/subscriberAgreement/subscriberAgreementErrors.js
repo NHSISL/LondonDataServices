@@ -5,5 +5,7 @@ exports.subscriberAgreementErrors = {
     hasErrors: false,
     SupplierSharingAgreementShortName: "",
     ftpUserName: "",
+    ftpPublicKey: "",
+    gpgPublicKey: "",
 };
 //# sourceMappingURL=subscriberAgreementErrors.js.map

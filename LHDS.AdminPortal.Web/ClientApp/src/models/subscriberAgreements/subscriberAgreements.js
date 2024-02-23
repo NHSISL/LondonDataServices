@@ -9,7 +9,7 @@ var SubscriberAgreement = /** @class */ (function () {
         this.ftpUserName = SubscriberAgreement.ftpUserName || "";
         this.ftpPublicKey = SubscriberAgreement.ftpPublicKey || "";
         this.gpgPublicKey = SubscriberAgreement.gpgPublicKey || "";
-        this.isActive = SubscriberAgreement.iIsActive === true ? true : false;
+        this.isActive = SubscriberAgreement.isActive === true ? true : false;
         this.supplierSharingAgreementGuid =
             SubscriberAgreement.supplierSharingAgreementGuid
                 ? guid_typescript_1.Guid.parse(SubscriberAgreement.supplierSharingAgreementGuid)

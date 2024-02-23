@@ -11,6 +11,7 @@ import TextInputBase from "../bases/inputs/TextInputBase";
 import { SubscriberAgreementView } from "../../models/views/components/subscriberAgreements/subscriberAgreement";
 import { subscriberAgreementErrors } from "./subscriberAgreementErrors";
 import { subscriberAgreementValidation } from "./subscriberAgreementValidation";
+import CheckboxBase from "../bases/inputs/CheckboxBase";
 
 interface SubscriberAgreementDetailCardEditProps {
     subscriberAgreement: SubscriberAgreementView;
@@ -82,23 +83,78 @@ const SubscriberAgreementDetailCardEdit: FunctionComponent<SubscriberAgreementDe
                             error={errors.SupplierSharingAgreementShortName}
                             onChange={handleChange} />
                     </SummaryListBaseValue>
-
-                    <SummaryListBaseRow>
-                        <SummaryListBaseKey>FTP User Name</SummaryListBaseKey>
-                        <SummaryListBaseValue>
-                            <TextInputBase
-                                id="FtpUserName"
-                                name="FtpUserName"
-                                placeholder="Ftp User Name"
-                                required={true}
-                                value={editSubscriberAgreement.ftpUserName}
-                                error={errors.ftpUserName}
-                                onChange={handleChange} />
-                        </SummaryListBaseValue>
-                    </SummaryListBaseRow>
-
                 </SummaryListBaseRow>
-            </SummaryListBase>
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>FTP User Name</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        <TextInputBase
+                            id="FtpUserName"
+                            name="FtpUserName"
+                            placeholder="Ftp User Name"
+                            required={true}
+                            value={editSubscriberAgreement.ftpUserName}
+                            error={errors.ftpUserName}
+                            onChange={handleChange} />
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>FTP User Name</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        <TextInputBase
+                            id="FtpUserName"
+                            name="FtpUserName"
+                            placeholder="Ftp User Name"
+                            required={true}
+                            value={editSubscriberAgreement.ftpUserName}
+                            error={errors.ftpUserName}
+                            onChange={handleChange} />
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>FTP Public Key</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        <TextInputBase
+                            id="FtpPublicKey"
+                            name="FtpPublicKey"
+                            placeholder="Ftp Public Key"
+                            required={true}
+                            value={editSubscriberAgreement.ftpPublicKey}
+                            error={errors.ftpPublicKey}
+                            onChange={handleChange} />
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>GPG Public Key</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        <TextInputBase
+                            id="FpgPublicKey"
+                            name="GpgPublicKey"
+                            placeholder="Gpg Public Key"
+                            required={true}
+                            value={editSubscriberAgreement.gpgPublicKey}
+                            error={errors.gpgPublicKey}
+                            onChange={handleChange} />
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Is Active</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        <CheckboxBase
+                            id="IsActive"
+                            name="isActive"
+                            label=""
+                            checked={editSubscriberAgreement.isActive}
+                            onChange={handleChange}
+                        />
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+
+        </SummaryListBase>
 
             <div>
                 <ButtonBase onClick={() => handleCancel()} cancel>Cancel</ButtonBase>

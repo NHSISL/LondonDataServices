@@ -16,6 +16,9 @@ import TableBaseHeader from "../bases/components/Table/TableBase.Header";
 import TableBaseTbody from "../bases/components/Table/TableBase.Tbody";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
+import ButtonBase from "../bases/buttons/ButtonBase";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 
 type SubscriberAgreementTableProps = {};
 
@@ -57,6 +60,7 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
                 <CardBaseBody>
                     <CardBaseTitle>Subscriber Agreement Search</CardBaseTitle>
                     <CardBaseContent>
+                        <ButtonBase onClick={() => { }} add><FontAwesomeIcon icon={faPlusCircle} /> New</ButtonBase>
                         <InfiniteScroll loading={isLoading} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
                             <div className="filter-container">
                                 <div className="filter-item">

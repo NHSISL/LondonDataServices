@@ -14,7 +14,7 @@ using LHDS.Core.Services.Processings.SubscriberAgreements;
 
 namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
 {
-    internal class SubscriberCredentialOrchestration : ISubscriberCredentialOrchestration
+    public partial class SubscriberCredentialOrchestration : ISubscriberCredentialOrchestration
     {
         private readonly ISubscriberAgreementProcessingService subscriberAgreementProcessingService;
         private readonly ISecureDataProcessingService secureDataProcessingService;
@@ -33,11 +33,14 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(
-            SubscriberCredential subscriberCredential)
-        {
-            return await this.secureDataProcessingService.AddOrModifySecureDataAsync(subscriberCredential);
-        }
+        public ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(
+            SubscriberCredential subscriberCredential) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberCredential(subscriberCredential);
+
+                return await this.secureDataProcessingService.AddOrModifySecureDataAsync(subscriberCredential);
+            });
 
         public IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials() =>
             throw new NotImplementedException();

@@ -72,7 +72,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             var filler = new Filler<SubscriberCredential>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
             return filler;
         }

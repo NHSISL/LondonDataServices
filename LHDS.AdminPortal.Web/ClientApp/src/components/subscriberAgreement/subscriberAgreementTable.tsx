@@ -19,6 +19,8 @@ import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import SubscriberAgreementAdd from "./subscriberAgreementAdd";
+import { Link } from "react-router-dom";
 
 type SubscriberAgreementTableProps = {};
 
@@ -58,9 +60,13 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
         <div className="infiniteScrollContainer">
             <CardBase>
                 <CardBaseBody>
-                    <CardBaseTitle>Subscriber Agreement Search</CardBaseTitle>
+                    <CardBaseTitle>
+                        Subscriber Agreements
+                    </CardBaseTitle>
                     <CardBaseContent>
-                        <ButtonBase onClick={() => { }} add><FontAwesomeIcon icon={faPlusCircle} /> New</ButtonBase>
+                        <Link to="/subscriberAgreement/new" className="btn btn-primary">
+                            <ButtonBase onClick={() => {  }} add><FontAwesomeIcon icon={faPlusCircle} />&nbsp;New</ButtonBase>
+                        </Link>
                         <InfiniteScroll loading={isLoading} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
                             <div className="filter-container">
                                 <div className="filter-item">

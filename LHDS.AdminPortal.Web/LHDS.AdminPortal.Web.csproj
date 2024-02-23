@@ -130,6 +130,7 @@
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectValidations.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetail - Copy.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCardView.tsx" />
@@ -244,6 +245,21 @@
     <Folder Include="ClientApp\dependencies\guid-typescript\node_modules\%40types\" />
     <Folder Include="ClientApp\src\components\bases\layouts\Navigation\" />
     <Folder Include="ClientApp\src\models\features\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

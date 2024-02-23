@@ -107,6 +107,11 @@ export const NavigationBar: FunctionComponent = () => {
                         <SecuredLink icon="" to="/terminologyArtifact">Terminology Artifacts</SecuredLink>
                     </SecuredComponents>
                 </li>
+                <li className="">
+                    <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.view}>
+                        <SecuredLink icon="subscriberAgreement" to="/subscriberAgreement">Subscriber Agreement</SecuredLink>
+                    </SecuredComponents>
+                </li>
             </ul>
         </>
     );

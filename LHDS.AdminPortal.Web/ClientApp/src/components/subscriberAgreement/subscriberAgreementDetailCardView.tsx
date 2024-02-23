@@ -3,7 +3,8 @@ import React from "react";
 const SubscriberAgreementDetailCardView = () => {
     return (
         <>
-            <h1>SubscriberAgreement</h1>
+            <h1>Subscriber Agreement</h1>
+            <h2>POW</h2>
         </>
     );
 }

@@ -2,6 +2,7 @@ import React from "react"
 import { useParams } from 'react-router-dom';
 import { PageLayout } from '../components/pageLayout';
 import BreadCrumbBase from "../components/bases/layouts/BreadCrumb/BreadCrumbBase";
+import SubscriberAgreementDetail from "../components/subscriberAgreement/subscriberAgreementDetail";
 
 export const SubscriberAgreementDetailPage = () => {
 
@@ -18,7 +19,10 @@ export const SubscriberAgreementDetailPage = () => {
                         currentLink="Subscriber Agreement Detail">
                     </BreadCrumbBase>
 
-                    <h1>Subscriber Agreement Detail</h1>
+                    {
+                        subscriberAgreementId &&
+                        <SubscriberAgreementDetail subscriberAgreementId={subscriberAgreementId} />
+                    }
                     <br />
                 </main>
             </div>

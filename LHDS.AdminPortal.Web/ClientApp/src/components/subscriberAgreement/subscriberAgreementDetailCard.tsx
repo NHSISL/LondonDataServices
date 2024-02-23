@@ -19,7 +19,7 @@ const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetail
             <CardBase>
                 <CardBaseBody>
                     <CardBaseTitle>
-                        Subscriber Agreement
+                        Subscriber Agreementsss
                     </CardBaseTitle>
                     <CardBaseContent>
                         <SubscriberAgreementDetailCardView/>

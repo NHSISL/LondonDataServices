@@ -73,6 +73,7 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
                                     <SearchBase
                                         id="search"
                                         label="Search Subscriber Agreements"
+                                        placeholder="Search Subscriber Agreements..."
                                         value={searchTerm}
                                         onChange={(e) => {
                                             handleSearchChange(e.currentTarget.value);
@@ -83,8 +84,9 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
                             <TableBase>
                                 <TableBaseThead>
                                     <TableBaseRow>
-                                        <TableBaseHeader>Col 1</TableBaseHeader>
-                                        <TableBaseHeader>Col 2</TableBaseHeader>
+                                        <TableBaseHeader>Supplier Sharing Agreement ShortName</TableBaseHeader>
+                                        <TableBaseHeader>Supplier Sharing Agreement Guid</TableBaseHeader>
+                                        <TableBaseHeader></TableBaseHeader>
                                     </TableBaseRow>
                                 </TableBaseThead>
                                 <TableBaseTbody>

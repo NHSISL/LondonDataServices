@@ -1,5 +1,8 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import SubscriberAgreementDetailCard from "./subscriberAgreementDetailCard";
+import { SubscriberAgreementView } from "../../models/views/components/subscriberAgreements/subscriberAgreement";
+import { Guid } from "guid-typescript";
+import { subscriberAgreementViewService } from "../../services/views/subscriberAgreements/subscriberAgreementViewService";
 
 interface SubscriberAgreementDetailProps {
     subscriberAgreementId?: string;
@@ -12,13 +15,50 @@ const SubscriberAgreementDetail: FunctionComponent<SubscriberAgreementDetailProp
         children
     } = props;
 
+    let subscriberAgreementRetrieved: SubscriberAgreementView | undefined
+
+    if (subscriberAgreementId !== "" && subscriberAgreementId !== undefined) {
+        let { mappedSubscriberAgreement } =
+            subscriberAgreementViewService.useGetSubscriberAgreementById(Guid.parse(subscriberAgreementId ?? Guid.EMPTY));
+
+        subscriberAgreementRetrieved = mappedSubscriberAgreement;
+    }
+
+    const [subscriberAgreement, setSubscriberAgreement] = useState<SubscriberAgreementView>();
+    const [mode, setMode] = useState<string>('VIEW');
+    const updateSubscriberAgreement = subscriberAgreementViewService.useUpdateSubscriberAgreement();
+
+    const handleUpdate = async (subscriberAgreement:SubscriberAgreementView) => {
+        return updateSubscriberAgreement.mutateAsync(subscriberAgreement);
+    }
+
+    const handleDelete = async (subscriberAgreement: SubscriberAgreementView) => {
+        subscriberAgreement.isActive = false;
+        return updateSubscriberAgreement.mutateAsync(subscriberAgreement);
+    }
+
+    useEffect(() => {
+        if (subscriberAgreementId !== "" && subscriberAgreementRetrieved !== undefined) {
+            setSubscriberAgreement(subscriberAgreementRetrieved);
+            setMode('VIEW');
+        }
+    }, [subscriberAgreementId, subscriberAgreementRetrieved]);
+    
+
     return (
         <div>
-            <div>
-                <SubscriberAgreementDetailCard>
-                    {children}
-                </SubscriberAgreementDetailCard>
-            </div>
+            {subscriberAgreement !== undefined && (
+                <div>
+                    <SubscriberAgreementDetailCard
+                        key={subscriberAgreement.id.toString()}
+                        subscriberAgreement={subscriberAgreement}
+                        mode={mode}
+                        onUpdate={handleUpdate}
+                        onDelete={handleDelete}>
+                        {children}
+                    </SubscriberAgreementDetailCard>
+                </div>
+            )}
         </div>
     );
 }

@@ -111,7 +111,7 @@ export const subscriberAgreementViewService = {
         }
     },
 
-    useUpdateSubscriberAgreementt: () => {
+    useUpdateSubscriberAgreement: () => {
         return subscriberAgreementService.useModifySubscriberAgreement();
     },
 

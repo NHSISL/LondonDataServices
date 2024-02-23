@@ -1,16 +1,11 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
-using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using Moq;
 using Xunit;
 
@@ -24,15 +19,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             // given
             SubscriberCredential nullSubscriberCredential = null;
 
-            var invalidArgumentSubscriberCredentialProcessingException =
-                new InvalidArgumentSubscriberCredentialProcessingException(
+            var invalidArgumentSubscriberCredentialOrchestrationException =
+                new InvalidArgumentSubscriberCredentialOrchestrationException(
                     message: "Invalid argument subscriber credential orchestration exception, " +
                         "please correct the errors and try again.");
 
             var expectedSubscriberCredentialValidationOrchestrationException =
                 new SubscriberCredentialValidationOrchestrationException(
                     message: "Subscriber credential orchestration validation error occurred, please try again.",
-                    innerException: invalidArgumentSubscriberCredentialProcessingException);
+                    innerException: invalidArgumentSubscriberCredentialOrchestrationException);
 
             // when
             ValueTask<SubscriberCredential> addOrModifySubscriberCredentialTask =

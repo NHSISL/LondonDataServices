@@ -3,16 +3,13 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
-using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
@@ -59,27 +56,77 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        private Expression<Func<AddressExtractionAudit, bool>> SameAddressExtractionAuditAs(
-            AddressExtractionAudit expectedAddressExtractionAudit)
+        private static dynamic CreateRandomDynamicSubscriberAgreementCredential()
         {
-            return actualAddressExtractionAudit =>
-                this.compareLogic.Compare(expectedAddressExtractionAudit, actualAddressExtractionAudit)
-                    .AreEqual;
+            Guid id = Guid.NewGuid();
+            Guid supplierSharingAgreementGuid = Guid.NewGuid();
+            DateTimeOffset randomDate = GetRandomDateTimeOffset();
+            return new
+            {
+                Id = id,
+                SupplierSharingAgreementShortName = GetRandomString(),
+                SupplierSharingAgreementGuid = supplierSharingAgreementGuid,
+                FtpUserName = GetRandomString(),
+                FtpPassword = GetRandomString(),
+                FtpPassPhrase = GetRandomString(),
+                FtpPrivateKey = GetRandomString(),
+                FtpPublicKey = GetRandomString(),
+                GpgPassPhrase = GetRandomString(),
+                GpgPrivateKey = GetRandomString(),
+                GpgPublicKey = GetRandomString(),
+                IsActive = false,
+                LastPollStartDate = randomDate,
+                LastPollEndDate = randomDate.AddMinutes(1),
+                CreatedBy = "System",
+                UpdatedBy = "System",
+                UpdatedDate = randomDate,
+                CreatedDate = randomDate
+            };
         }
 
-        private static SubscriberCredential CreateRandomCreateSubscriberCredential(DateTimeOffset dateTimeOffset) =>
-            CreateSubscriberCredentialFiller(dateTimeOffset).Create();
-
-        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller(DateTimeOffset dateTimeOffset)
+        private static SubscriberCredential CreateSubscriberCredentialFromDynamic(dynamic credential)
         {
-            string user = Guid.NewGuid().ToString();
-            var filler = new Filler<SubscriberCredential>();
+            SubscriberCredential randomSubscriberCredential = new SubscriberCredential
+            {
+                Id = credential.Id,
+                SupplierSharingAgreementShortName = credential.SupplierSharingAgreementShortName,
+                SupplierSharingAgreementGuid = credential.SupplierSharingAgreementGuid,
+                FtpUserName = credential.FtpUserName,
+                FtpPassword = credential.FtpPassword,
+                FtpPassPhrase = credential.FtpPassPhrase,
+                FtpPrivateKey = credential.FtpPrivateKey,
+                FtpPublicKey = credential.FtpPublicKey,
+                GpgPassPhrase = credential.GpgPassPhrase,
+                GpgPrivateKey = credential.GpgPrivateKey,
+                GpgPublicKey = credential.GpgPublicKey,
+                IsActive = credential.IsActive,
+                LastPollStartDate = credential.LastPollStartDate,
+                LastPollEndDate = credential.LastPollEndDate
+            };
 
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+            return randomSubscriberCredential;
+        }
 
-            return filler;
+        private static SubscriberAgreement CreateSubscriberAgreementFromDynamic(dynamic credential)
+        {
+            SubscriberAgreement randomSubscriberAgreement = new SubscriberAgreement
+            {
+                Id = credential.Id,
+                SupplierSharingAgreementShortName = credential.SupplierSharingAgreementShortName,
+                SupplierSharingAgreementGuid = credential.SupplierSharingAgreementGuid,
+                FtpUserName = credential.FtpUserName,
+                FtpPublicKey = credential.FtpPublicKey,
+                GpgPublicKey = credential.GpgPublicKey,
+                IsActive = credential.IsActive,
+                LastPollStartDate = credential.LastPollStartDate,
+                LastPollEndDate = credential.LastPollEndDate,
+                CreatedBy = credential.CreatedBy,
+                UpdatedBy = credential.UpdatedBy,
+                UpdatedDate = credential.UpdatedDate,
+                CreatedDate = credential.CreatedDate
+            };
+
+            return randomSubscriberAgreement;
         }
 
         public static TheoryData SubscriberCredentialOrchestrationDependencyValidationExceptions()

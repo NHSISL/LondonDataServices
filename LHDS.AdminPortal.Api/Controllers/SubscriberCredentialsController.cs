@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace LHDS.AdminPortal.Api.Controllers
                     this.subscriberCredentialService.RetrieveAllSubscriberCredentials();
 
                 return Ok(retrievedSubscriberCredentials);
+            }
+            catch (SubscriberCredentialDependencyException subscriberCredentialDependencyException)
+            {
+                return InternalServerError(subscriberCredentialDependencyException);
+            }
+            catch (SubscriberCredentialServiceException subscriberCredentialServiceException)
+            {
+                return InternalServerError(subscriberCredentialServiceException);
+            }
+        }
+
+        [HttpGet("{subscriberCredentialId}")]
+        public async ValueTask<ActionResult<SubscriberCredential>> GetSubscriberCredentialByIdAsync(Guid subscriberCredentialId)
+        {
+            try
+            {
+                SubscriberCredential subscriberCredential = await this.subscriberCredentialService.RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId);
+
+                return Ok(subscriberCredential);
+            }
+            catch (SubscriberCredentialValidationException subscriberCredentialValidationException)
+                when (subscriberCredentialValidationException.InnerException is NotFoundSubscriberCredentialException)
+            {
+                return NotFound(subscriberCredentialValidationException.InnerException);
+            }
+            catch (SubscriberCredentialValidationException subscriberCredentialValidationException)
+            {
+                return BadRequest(subscriberCredentialValidationException.InnerException);
             }
             catch (SubscriberCredentialDependencyException subscriberCredentialDependencyException)
             {

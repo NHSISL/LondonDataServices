@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -19,9 +19,13 @@ namespace LHDS.Core.Services.Foundations.Cryptographies
             {
                 return await returningCryptographyFunction();
             }
-            catch (NullCryptographyException nullCryptographyException)
+            catch (NullDataCryptographyException nullCryptographyException)
             {
                 throw CreateAndLogValidationException(nullCryptographyException);
+            }
+            catch (NullSubscriberCredentialCryptographyException nullSubscriberCredentialCryptographyException)
+            {
+                throw CreateAndLogValidationException(nullSubscriberCredentialCryptographyException);
             }
             catch (Exception exception)
             {

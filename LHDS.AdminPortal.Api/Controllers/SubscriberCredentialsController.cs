@@ -1,11 +1,16 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
+using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
-using LHDS.AdminPortal.Api.Models.Foundations.SubscriberCredentials;
-using LHDS.AdminPortal.Api.Models.Foundations.SubscriberCredentials.Exceptions;
-using LHDS.AdminPortal.Api.Services.Foundations.SubscriberCredentials;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
@@ -13,42 +18,42 @@ namespace LHDS.AdminPortal.Api.Controllers
     [Route("api/[controller]")]
     public class SubscriberCredentialsController : RESTFulController
     {
-        private readonly ISubscriberCredentialService subscriberCredentialService;
+        private readonly ISubscriberCredentialOrchestration subscriberCredentialOrchestration;
 
-        public SubscriberCredentialsController(ISubscriberCredentialService subscriberCredentialService) =>
-            this.subscriberCredentialService = subscriberCredentialService;
+        public SubscriberCredentialsController(ISubscriberCredentialOrchestration subscriberCredentialOrchestration) =>
+            this.subscriberCredentialOrchestration = subscriberCredentialOrchestration;
 
         [HttpPost]
-        public async ValueTask<ActionResult<SubscriberCredential>> PostSubscriberCredentialAsync(SubscriberCredential subscriberCredential)
+        public async ValueTask<ActionResult<SubscriberCredential>> PostSubscriberCredentialAsync(
+            SubscriberCredential subscriberCredential)
         {
             try
             {
                 SubscriberCredential addedSubscriberCredential =
-                    await this.subscriberCredentialService.AddSubscriberCredentialAsync(subscriberCredential);
+                    await this.subscriberCredentialOrchestration
+                        .ModifyOrAddSubscriberCredentialAsync(subscriberCredential);
 
                 return Created(addedSubscriberCredential);
             }
-            catch (SubscriberCredentialValidationException subscriberCredentialValidationException)
+            catch (SubscriberCredentialValidationOrchestrationException
+                subscriberCredentialValidationOrchestrationException)
             {
-                return BadRequest(subscriberCredentialValidationException.InnerException);
+                return BadRequest(subscriberCredentialValidationOrchestrationException.InnerException);
             }
-            catch (SubscriberCredentialDependencyValidationException subscriberCredentialValidationException)
-                when (subscriberCredentialValidationException.InnerException is InvalidSubscriberCredentialReferenceException)
+            catch (SubscriberCredentialOrchestrationDependencyValidationException
+                subscriberCredentialOrchestrationDependencyValidationException)
             {
-                return FailedDependency(subscriberCredentialValidationException.InnerException);
+                return FailedDependency(subscriberCredentialOrchestrationDependencyValidationException.InnerException);
             }
-            catch (SubscriberCredentialDependencyValidationException subscriberCredentialDependencyValidationException)
-               when (subscriberCredentialDependencyValidationException.InnerException is AlreadyExistsSubscriberCredentialException)
+            catch (SubscriberCredentialDependencyOrchestrationException
+                subscriberCredentialDependencyOrchestrationException)
             {
-                return Conflict(subscriberCredentialDependencyValidationException.InnerException);
+                return InternalServerError(subscriberCredentialDependencyOrchestrationException);
             }
-            catch (SubscriberCredentialDependencyException subscriberCredentialDependencyException)
+            catch (SubscriberCredentialOrchestrationServiceException
+                subscriberCredentialOrchestrationServiceException)
             {
-                return InternalServerError(subscriberCredentialDependencyException);
-            }
-            catch (SubscriberCredentialServiceException subscriberCredentialServiceException)
-            {
-                return InternalServerError(subscriberCredentialServiceException);
+                return InternalServerError(subscriberCredentialOrchestrationServiceException);
             }
         }
 
@@ -58,122 +63,130 @@ namespace LHDS.AdminPortal.Api.Controllers
             try
             {
                 IQueryable<SubscriberCredential> retrievedSubscriberCredentials =
-                    this.subscriberCredentialService.RetrieveAllSubscriberCredentials();
+                    this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentials();
 
                 return Ok(retrievedSubscriberCredentials);
             }
-            catch (SubscriberCredentialDependencyException subscriberCredentialDependencyException)
+            catch (SubscriberCredentialDependencyOrchestrationException
+                subscriberCredentialDependencyOrchestrationException)
             {
-                return InternalServerError(subscriberCredentialDependencyException);
+                return InternalServerError(subscriberCredentialDependencyOrchestrationException);
             }
-            catch (SubscriberCredentialServiceException subscriberCredentialServiceException)
+            catch (SubscriberCredentialOrchestrationServiceException
+                subscriberCredentialOrchestrationServiceException)
             {
-                return InternalServerError(subscriberCredentialServiceException);
+                return InternalServerError(subscriberCredentialOrchestrationServiceException);
             }
         }
 
         [HttpGet("{subscriberCredentialId}")]
-        public async ValueTask<ActionResult<SubscriberCredential>> GetSubscriberCredentialByIdAsync(Guid subscriberCredentialId)
+        public async ValueTask<ActionResult<SubscriberCredential>> GetSubscriberCredentialByIdAsync(
+            Guid subscriberCredentialId)
         {
             try
             {
-                SubscriberCredential subscriberCredential = await this.subscriberCredentialService.RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId);
+                SubscriberCredential subscriberCredential = await this.subscriberCredentialOrchestration
+                    .RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId);
 
                 return Ok(subscriberCredential);
             }
-            catch (SubscriberCredentialValidationException subscriberCredentialValidationException)
-                when (subscriberCredentialValidationException.InnerException is NotFoundSubscriberCredentialException)
+            catch (SubscriberCredentialValidationOrchestrationException subscriberCredentialValidationException)
+                when (subscriberCredentialValidationException.InnerException is NotFoundSubscriberAgreementException)
             {
                 return NotFound(subscriberCredentialValidationException.InnerException);
             }
-            catch (SubscriberCredentialValidationException subscriberCredentialValidationException)
+            catch (SubscriberCredentialValidationOrchestrationException
+                subscriberCredentialValidationOrchestrationException)
             {
-                return BadRequest(subscriberCredentialValidationException.InnerException);
+                return BadRequest(subscriberCredentialValidationOrchestrationException.InnerException);
             }
-            catch (SubscriberCredentialDependencyException subscriberCredentialDependencyException)
+            catch (SubscriberCredentialDependencyOrchestrationException
+                subscriberCredentialDependencyOrchestrationException)
             {
-                return InternalServerError(subscriberCredentialDependencyException);
+                return InternalServerError(subscriberCredentialDependencyOrchestrationException);
             }
-            catch (SubscriberCredentialServiceException subscriberCredentialServiceException)
+            catch (SubscriberCredentialOrchestrationServiceException
+                subscriberCredentialOrchestrationServiceException)
             {
-                return InternalServerError(subscriberCredentialServiceException);
+                return InternalServerError(subscriberCredentialOrchestrationServiceException);
             }
         }
 
         [HttpPut]
-        public async ValueTask<ActionResult<SubscriberCredential>> PutSubscriberCredentialAsync(SubscriberCredential subscriberCredential)
+        public async ValueTask<ActionResult<SubscriberCredential>> PutSubscriberCredentialAsync(
+            SubscriberCredential subscriberCredential)
         {
             try
             {
                 SubscriberCredential modifiedSubscriberCredential =
-                    await this.subscriberCredentialService.ModifySubscriberCredentialAsync(subscriberCredential);
+                    await this.subscriberCredentialOrchestration
+                        .ModifyOrAddSubscriberCredentialAsync(subscriberCredential);
 
                 return Ok(modifiedSubscriberCredential);
             }
-            catch (SubscriberCredentialValidationException subscriberCredentialValidationException)
-                when (subscriberCredentialValidationException.InnerException is NotFoundSubscriberCredentialException)
+            catch (SubscriberCredentialValidationOrchestrationException subscriberCredentialValidationException)
+                when (subscriberCredentialValidationException.InnerException is NotFoundSubscriberAgreementException)
             {
                 return NotFound(subscriberCredentialValidationException.InnerException);
             }
-            catch (SubscriberCredentialValidationException subscriberCredentialValidationException)
+            catch (SubscriberCredentialValidationOrchestrationException
+                subscriberCredentialValidationOrchestrationException)
             {
-                return BadRequest(subscriberCredentialValidationException.InnerException);
+                return BadRequest(subscriberCredentialValidationOrchestrationException.InnerException);
             }
-            catch (SubscriberCredentialDependencyValidationException subscriberCredentialValidationException)
-                when (subscriberCredentialValidationException.InnerException is InvalidSubscriberCredentialReferenceException)
+            catch (SubscriberCredentialOrchestrationDependencyValidationException
+                subscriberCredentialOrchestrationDependencyValidationException)
             {
-                return FailedDependency(subscriberCredentialValidationException.InnerException);
+                return FailedDependency(subscriberCredentialOrchestrationDependencyValidationException.InnerException);
             }
-            catch (SubscriberCredentialDependencyValidationException subscriberCredentialDependencyValidationException)
-               when (subscriberCredentialDependencyValidationException.InnerException is AlreadyExistsSubscriberCredentialException)
+            catch (SubscriberCredentialDependencyOrchestrationException
+                subscriberCredentialDependencyOrchestrationException)
             {
-                return Conflict(subscriberCredentialDependencyValidationException.InnerException);
+                return InternalServerError(subscriberCredentialDependencyOrchestrationException);
             }
-            catch (SubscriberCredentialDependencyException subscriberCredentialDependencyException)
+            catch (SubscriberCredentialOrchestrationServiceException
+                subscriberCredentialOrchestrationServiceException)
             {
-                return InternalServerError(subscriberCredentialDependencyException);
-            }
-            catch (SubscriberCredentialServiceException subscriberCredentialServiceException)
-            {
-                return InternalServerError(subscriberCredentialServiceException);
+                return InternalServerError(subscriberCredentialOrchestrationServiceException);
             }
         }
 
         [HttpDelete("{subscriberCredentialId}")]
-        public async ValueTask<ActionResult<SubscriberCredential>> DeleteSubscriberCredentialByIdAsync(Guid subscriberCredentialId)
+        public async ValueTask<ActionResult<SubscriberCredential>> DeleteSubscriberCredentialByIdAsync(
+            Guid subscriberCredentialId)
         {
             try
             {
                 SubscriberCredential deletedSubscriberCredential =
-                    await this.subscriberCredentialService.RemoveSubscriberCredentialByIdAsync(subscriberCredentialId);
+                    await this.subscriberCredentialOrchestration
+                        .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId);
 
                 return Ok(deletedSubscriberCredential);
             }
-            catch (SubscriberCredentialValidationException subscriberCredentialValidationException)
-                when (subscriberCredentialValidationException.InnerException is NotFoundSubscriberCredentialException)
+            catch (SubscriberCredentialValidationOrchestrationException subscriberCredentialValidationException)
+                when (subscriberCredentialValidationException.InnerException is NotFoundSubscriberAgreementException)
             {
                 return NotFound(subscriberCredentialValidationException.InnerException);
             }
-            catch (SubscriberCredentialValidationException subscriberCredentialValidationException)
+            catch (SubscriberCredentialValidationOrchestrationException
+                subscriberCredentialValidationOrchestrationException)
             {
-                return BadRequest(subscriberCredentialValidationException.InnerException);
+                return BadRequest(subscriberCredentialValidationOrchestrationException.InnerException);
             }
-            catch (SubscriberCredentialDependencyValidationException subscriberCredentialDependencyValidationException)
-                when (subscriberCredentialDependencyValidationException.InnerException is LockedSubscriberCredentialException)
+            catch (SubscriberCredentialOrchestrationDependencyValidationException
+                subscriberCredentialOrchestrationDependencyValidationException)
             {
-                return Locked(subscriberCredentialDependencyValidationException.InnerException);
+                return FailedDependency(subscriberCredentialOrchestrationDependencyValidationException.InnerException);
             }
-            catch (SubscriberCredentialDependencyValidationException subscriberCredentialDependencyValidationException)
+            catch (SubscriberCredentialDependencyOrchestrationException
+                subscriberCredentialDependencyOrchestrationException)
             {
-                return BadRequest(subscriberCredentialDependencyValidationException);
+                return InternalServerError(subscriberCredentialDependencyOrchestrationException);
             }
-            catch (SubscriberCredentialDependencyException subscriberCredentialDependencyException)
+            catch (SubscriberCredentialOrchestrationServiceException
+                subscriberCredentialOrchestrationServiceException)
             {
-                return InternalServerError(subscriberCredentialDependencyException);
-            }
-            catch (SubscriberCredentialServiceException subscriberCredentialServiceException)
-            {
-                return InternalServerError(subscriberCredentialServiceException);
+                return InternalServerError(subscriberCredentialOrchestrationServiceException);
             }
         }
     }

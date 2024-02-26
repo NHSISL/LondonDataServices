@@ -138,5 +138,43 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(subscriberCredentialServiceException);
             }
         }
+
+        [HttpDelete("{subscriberCredentialId}")]
+        public async ValueTask<ActionResult<SubscriberCredential>> DeleteSubscriberCredentialByIdAsync(Guid subscriberCredentialId)
+        {
+            try
+            {
+                SubscriberCredential deletedSubscriberCredential =
+                    await this.subscriberCredentialService.RemoveSubscriberCredentialByIdAsync(subscriberCredentialId);
+
+                return Ok(deletedSubscriberCredential);
+            }
+            catch (SubscriberCredentialValidationException subscriberCredentialValidationException)
+                when (subscriberCredentialValidationException.InnerException is NotFoundSubscriberCredentialException)
+            {
+                return NotFound(subscriberCredentialValidationException.InnerException);
+            }
+            catch (SubscriberCredentialValidationException subscriberCredentialValidationException)
+            {
+                return BadRequest(subscriberCredentialValidationException.InnerException);
+            }
+            catch (SubscriberCredentialDependencyValidationException subscriberCredentialDependencyValidationException)
+                when (subscriberCredentialDependencyValidationException.InnerException is LockedSubscriberCredentialException)
+            {
+                return Locked(subscriberCredentialDependencyValidationException.InnerException);
+            }
+            catch (SubscriberCredentialDependencyValidationException subscriberCredentialDependencyValidationException)
+            {
+                return BadRequest(subscriberCredentialDependencyValidationException);
+            }
+            catch (SubscriberCredentialDependencyException subscriberCredentialDependencyException)
+            {
+                return InternalServerError(subscriberCredentialDependencyException);
+            }
+            catch (SubscriberCredentialServiceException subscriberCredentialServiceException)
+            {
+                return InternalServerError(subscriberCredentialServiceException);
+            }
+        }
     }
 }

@@ -1,11 +1,12 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -20,6 +21,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             Xeption dependancyValidationException)
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string randomFileName = GetRandomMessage();
 
             var expectedDependencyException =
@@ -32,7 +35,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                    .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask<string> decryptTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
+            ValueTask<string> decryptTask = this.decryptionOrchestrationService.DecryptAsync(
+                randomFileName,
+                inputSubscriberCredential);
 
             DecryptionOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationDependencyValidationException>(decryptTask.AsTask);
@@ -64,6 +69,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             Xeption dependancyException)
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string randomFileName = GetRandomMessage();
 
             var expectedDependencyException =
@@ -76,7 +83,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                   .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask<string> decryptTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
+            ValueTask<string> decryptTask = this.decryptionOrchestrationService.DecryptAsync(
+                randomFileName,
+                inputSubscriberCredential);
 
             DecryptionOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationDependencyException>(decryptTask.AsTask);
@@ -104,6 +113,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         public async Task ShouldThrowServiceExceptionOnProcessIfServiceErrorOccursAndLogItAsync()
         {
             //Given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string randomFileName = GetRandomMessage();
             var serviceException = new Exception();
 
@@ -122,7 +133,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<string> processTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
+            ValueTask<string> processTask = this.decryptionOrchestrationService.DecryptAsync(
+                randomFileName,
+                inputSubscriberCredential);
 
             DecryptionOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationServiceException>(processTask.AsTask);

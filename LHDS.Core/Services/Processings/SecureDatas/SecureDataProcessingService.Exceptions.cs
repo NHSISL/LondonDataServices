@@ -23,6 +23,10 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 return await returningSubscriberCredentialFunction();
             }
+            catch (InvalidSecureDataException invalidSecureDataException)
+            {
+                throw CreateAndLogValidationException(invalidSecureDataException);
+            }
             catch (SecureDataDependencyValidationException secureDataDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(secureDataDependencyValidationException);

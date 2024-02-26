@@ -130,13 +130,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             SubscriberCredential inputSubscriberCredential =
                 CreateSubscriberCredentialFromDynamic(credential: randomCredential);
 
-            var mock = new Mock<SecureDataProcessingService>(
+            var secureDataProcessingServiceMock = new Mock<SecureDataProcessingService>(
                 secureDataServiceMock.Object,
                 loggingBrokerMock.Object,
                 identifierBrokerMock.Object)
             { CallBase = true };
 
-            mock.Setup(x => x.GetPropertyList()).Returns(invalidProperties);
+            secureDataProcessingServiceMock.Setup(x => x.GetPropertyList()).Returns(invalidProperties);
 
             var invalidArgumentSubscriberCredentialProcessingException =
                 new InvalidArgumentSubscriberCredentialProcessingException(
@@ -156,7 +156,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             // when
             ValueTask<SubscriberCredential> addSubscriberCredentialTask =
-                this.secureDataProcessingService.RetrieveSecretsByKeyVaultKeyNameAsync(inputSubscriberCredential);
+                secureDataProcessingServiceMock.Object.RetrieveSecretsByKeyVaultKeyNameAsync(inputSubscriberCredential);
 
             SubscriberCredentialValidationException actualSubscriberCredentialValidationException =
                 await Assert.ThrowsAsync<SubscriberCredentialValidationException>(() =>

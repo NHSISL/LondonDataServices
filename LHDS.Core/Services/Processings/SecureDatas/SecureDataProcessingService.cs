@@ -171,18 +171,8 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             string propertyName,
             object value)
         {
-            //ValidateSecureDataProperty(propertyName);
             PropertyInfo propertyInfo = typeof(SubscriberCredential).GetProperty(propertyName);
-
-            if (propertyInfo != null && propertyInfo.CanWrite)
-            {
-                propertyInfo.SetValue(subscriberCredential, value);
-            }
-            else
-            {
-                throw new InvalidArgumentSubscriberCredentialProcessingException(
-                    message: $"Property '{propertyName}' not found on object.");
-            }
+            propertyInfo.SetValue(subscriberCredential, value);
         }
     }
 }

@@ -6,7 +6,7 @@ import SubscriberAgreementDetail from "../components/subscriberAgreement/subscri
 
 export const SubscriberAgreementDetailPage = () => {
 
-    const { subscriberAgreementId } = useParams();
+    const {subscriberAgreementId} = useParams();
 
     return <PageLayout>
         <section>

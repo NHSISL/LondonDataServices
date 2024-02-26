@@ -50,9 +50,7 @@ export const PublicLink = ({ to, children, className }: PublicLinkParameters): R
 }
 
 export const SecuredLink = ({ to, children, icon, allowedRoles = [], deniedRoles = [] }: SecuredLinkParameters): ReactElement => {
-    console.log(icon);
     const iconProp = icon ? iconMapping[icon] : undefined;
-    console.log('iconProp:', iconProp);
 
     const { accounts } = useMsal();
     const isAuthenticated = useIsAuthenticated();

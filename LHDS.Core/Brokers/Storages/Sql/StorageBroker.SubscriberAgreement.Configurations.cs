@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using Microsoft.EntityFrameworkCore;
@@ -34,12 +34,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<SubscriberAgreement>()
                 .Property(subscriberAgreement => subscriberAgreement.FtpPublicKey)
-                .HasMaxLength(128)
+                .HasMaxLength(500)
                 .IsRequired();
 
             modelBuilder.Entity<SubscriberAgreement>()
                 .Property(subscriberAgreement => subscriberAgreement.GpgPublicKey)
-                .HasMaxLength(128)
+                .HasMaxLength(2500)
                 .IsRequired();
 
             modelBuilder.Entity<SubscriberAgreement>()

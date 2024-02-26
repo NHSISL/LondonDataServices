@@ -43,7 +43,6 @@ const SubscriberAgreementDetail: FunctionComponent<SubscriberAgreementDetailProp
             setMode('VIEW');
         }
     }, [subscriberAgreementId, subscriberAgreementRetrieved]);
-    
 
     return (
         <div>

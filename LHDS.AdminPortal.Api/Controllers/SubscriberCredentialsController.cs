@@ -99,5 +99,44 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(subscriberCredentialServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<SubscriberCredential>> PutSubscriberCredentialAsync(SubscriberCredential subscriberCredential)
+        {
+            try
+            {
+                SubscriberCredential modifiedSubscriberCredential =
+                    await this.subscriberCredentialService.ModifySubscriberCredentialAsync(subscriberCredential);
+
+                return Ok(modifiedSubscriberCredential);
+            }
+            catch (SubscriberCredentialValidationException subscriberCredentialValidationException)
+                when (subscriberCredentialValidationException.InnerException is NotFoundSubscriberCredentialException)
+            {
+                return NotFound(subscriberCredentialValidationException.InnerException);
+            }
+            catch (SubscriberCredentialValidationException subscriberCredentialValidationException)
+            {
+                return BadRequest(subscriberCredentialValidationException.InnerException);
+            }
+            catch (SubscriberCredentialDependencyValidationException subscriberCredentialValidationException)
+                when (subscriberCredentialValidationException.InnerException is InvalidSubscriberCredentialReferenceException)
+            {
+                return FailedDependency(subscriberCredentialValidationException.InnerException);
+            }
+            catch (SubscriberCredentialDependencyValidationException subscriberCredentialDependencyValidationException)
+               when (subscriberCredentialDependencyValidationException.InnerException is AlreadyExistsSubscriberCredentialException)
+            {
+                return Conflict(subscriberCredentialDependencyValidationException.InnerException);
+            }
+            catch (SubscriberCredentialDependencyException subscriberCredentialDependencyException)
+            {
+                return InternalServerError(subscriberCredentialDependencyException);
+            }
+            catch (SubscriberCredentialServiceException subscriberCredentialServiceException)
+            {
+                return InternalServerError(subscriberCredentialServiceException);
+            }
+        }
     }
 }

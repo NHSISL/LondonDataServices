@@ -119,6 +119,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             
             List<string> keyTypes = GetPropertyList();
             List<SecureData> secureDataList = new List<SecureData>();
+            ValidateSecureData(keyTypes, subscriberCredential);
 
             foreach (string keyType in keyTypes)
             {

@@ -94,17 +94,18 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                                 value: retrievedSecureData.Value);
                         });
 
-                        if (exceptions.Any())
-                        {
-                            throw new AggregateException(
-                                $"Unable to retrieve {exceptions.Count} secure data",
-                                exceptions);
-                        }
                     }
                     catch (Exception ex)
                     {
                         exceptions.Add(ex);
                     }
+                }
+
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to retrieve {exceptions.Count} secure data",
+                        exceptions);
                 }
 
                 return subscriberCredential;

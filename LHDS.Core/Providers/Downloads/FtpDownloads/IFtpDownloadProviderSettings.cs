@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 namespace LHDS.Core.Providers.Downloads.FtpDownloads
 {
@@ -17,7 +17,7 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
         /// <summary>
         /// Gets the ftp key.
         /// </summary>
-        string FtpKey { get; }
+        string FtpPrivateKey { get; }
 
         /// <summary>
         /// Gets the ftp pass phrase.
@@ -38,7 +38,6 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
         /// Gets the ftp server password.
         /// </summary>
         string FtpPassword { get; }
-
 
         /// <summary>
         /// Gets the root folder for the FTP server.

@@ -17,6 +17,7 @@ using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
@@ -77,7 +78,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 Download download = new Download { SubscriberCredential = subscriberCredential };
 
                 List<Download> retrievedDownloads =
-                    await this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync(download);
+                    await this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(download);
 
                 List<string> files = new List<string>();
 
@@ -111,20 +112,32 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                     ? downloadItem.Document.FileName
                                     : "/" + downloadItem.Document.FileName;
 
+                                string[] splitFileName = filename.Split('/');
+                                string newFileName = "";
+
+                                if (splitFileName.Length < 6)
+                                {
+                                    throw new InvalidDocumentProcessingFileNameException(filename);
+                                }
+                                else
+                                {
+                                    newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
+                                }
+
                                 IngestionTracking newIngestionTracking =
                                   new IngestionTracking
                                   {
                                       Id = this.identifierBroker.GetIdentifier(),
                                       FileName = downloadItem.Document.FileName,
                                       SupplierId = landingConfiguration.LandingSupplierId,
-                                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+                                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
 
                                       DecryptedFileName =
                                         $"/{landingConfiguration.DecryptedFolder}" +
                                         $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
                                         $"/{retrievedDataSetSpecification.Id}" +
                                         $"/{filename.Split('_')[3]}" +
-                                        $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                                        $"{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                                       Decrypted = false,
                                       LastSeen = currentDateTime,
@@ -276,20 +289,32 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
                             landingConfiguration.LandingSupplierId);
 
+                    string[] splitFileName = filename.Split('/');
+                    string newFileName = "";
+
+                    if (splitFileName.Length < 6)
+                    {
+                        throw new InvalidDocumentProcessingFileNameException(filename);
+                    }
+                    else
+                    {
+                        newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
+                    }
+
                     IngestionTracking newIngestionTracking =
                       new IngestionTracking
                       {
                           Id = this.identifierBroker.GetIdentifier(),
                           FileName = externalDownload.Document.FileName,
                           SupplierId = landingConfiguration.LandingSupplierId,
-                          EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+                          EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
 
                           DecryptedFileName =
-                            $"/{landingConfiguration.DecryptedFolder}" +
-                            $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
-                            $"/{retrievedDataSetSpecification.Id}" +
-                            $"/{filename.Split('_')[3]}" +
-                            $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                                $"/{landingConfiguration.DecryptedFolder}"
+                                + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
+                                + $"/{retrievedDataSetSpecification.Id}"
+                                + $"/{filename.Split('_')[3]}"
+                                + $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                           Decrypted = false,
                           LastSeen = currentDateTime,

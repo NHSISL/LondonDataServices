@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
 
             // when
             List<Download> actualDownloads =
-                await this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync(inputDownload);
+                await this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(inputDownload);
 
             // then
             actualDownloads.Should().BeEquivalentTo(expectedDownloads);

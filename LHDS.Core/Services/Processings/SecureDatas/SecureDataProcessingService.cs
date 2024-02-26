@@ -93,7 +93,6 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                                 propertyName: keyType,
                                 value: retrievedSecureData.Value);
                         });
-
                     }
                     catch (Exception ex)
                     {

@@ -5,12 +5,10 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using Azure.Security.KeyVault.Secrets;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Foundations.SecureData.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;

@@ -250,7 +250,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             // when
             ValueTask<SubscriberCredential> secureDataAddTask =
-                this.secureDataProcessingService.AddOrModifySecureDataAsync(inputSubscriberCredential);
+               this.secureDataProcessingService.RetrieveSecretsByKeyVaultKeyNameAsync(inputSubscriberCredential);
 
             SubscriberCredentialProcessingServiceException actualException =
                 await Assert.ThrowsAsync<SubscriberCredentialProcessingServiceException>(

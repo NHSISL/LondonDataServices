@@ -10,6 +10,7 @@ using LHDS.Core.Models.Foundations.SecureData.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using Xeptions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LHDS.Core.Services.Processings.SecureDatas
 {
@@ -90,10 +91,11 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             foreach (var keyType in keyTypes)
             {
                 var rule = (Rule: IsInvalidProperty(keyType, subscriberCredential), Parameter: keyType);
+                rules.Add(rule);
             }
 
-            Validate<InvalidSecureDataException>(
-                message: "Invalid secure data errors occured. Please correct the errors and try again.",
+            Validate<InvalidArgumentSubscriberCredentialProcessingException>(
+                message: "Invalid argument subscriber credential processing error occurred, contact support.",
                 rules.ToArray());
         }
 
@@ -130,7 +132,11 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             Type type = subscriberCredential.GetType();
             PropertyInfo property = type.GetProperty(keyType);
             
-            return property == null;
+            return new
+            {
+                Condition = property == null,
+                Message = "Invalid property"
+            };
         }
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)

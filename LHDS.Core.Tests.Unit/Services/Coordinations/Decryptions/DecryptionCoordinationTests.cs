@@ -4,43 +4,41 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Extensions.Exceptions;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
+using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
-using LHDS.Core.Services.Coordinations.EmisLandings;
-using LHDS.Core.Services.Orchestrations.EmisLandings;
+using LHDS.Core.Services.Coordinations.Decryptions;
+using LHDS.Core.Services.Orchestrations.Decryptions;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 {
-    public partial class EmisLandingCoordinationServiceTests
+    public partial class DecryptionCoordinationServiceTests
     {
         private readonly Mock<ISubscriberCredentialOrchestration> subscriberCredentialOrchestrationMock;
-        private readonly Mock<IEmisLandingOrchestrationService> emisLandingExtractionOrchestrationServiceMock;
+        private readonly Mock<IDecryptionOrchestrationService> decryptionOrchestrationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ICompareLogic compareLogic;
-        private readonly IEmisLandingCoordinationService emisLandingCoordinationService;
+        private readonly IDecryptionCoordinationService decryptionCoordinationService;
 
-        public EmisLandingCoordinationServiceTests()
+        public DecryptionCoordinationServiceTests()
         {
             this.subscriberCredentialOrchestrationMock = new Mock<ISubscriberCredentialOrchestration>();
-            this.emisLandingExtractionOrchestrationServiceMock = new Mock<IEmisLandingOrchestrationService>();
+            this.decryptionOrchestrationServiceMock = new Mock<IDecryptionOrchestrationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
-            this.emisLandingCoordinationService = new EmisLandingCoordinationService(
+            this.decryptionCoordinationService = new DecryptionCoordinationService(
                 subscriberCredentialOrchestration: subscriberCredentialOrchestrationMock.Object,
-                emisLandingOrchestrationService: emisLandingExtractionOrchestrationServiceMock.Object,
+                decryptionOrchestrationService: decryptionOrchestrationServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
         }
 
@@ -50,28 +48,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+          new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
-          actualException => actualException.SameExceptionAs(expectedException);
+         actualException => actualException.SameExceptionAs(expectedException);
 
         private static Expression<Func<Xeption, bool>> IsSameExceptionAs(Xeption expectedException) =>
             actualException => actualException.IsSameExceptionAs(expectedException);
-
-        private static List<Guid> CreateRandomActiveSubscriberAgreementIds(int number)
-        {
-            return Enumerable.Range(0, number)
-                .Select(_ => Guid.NewGuid())
-                .ToList();
-        }
-
-        private static List<string> CreateRandomLandingPaths(int number)
-        {
-            return Enumerable.Range(0, number)
-                .Select(_ => GetRandomString())
-                .ToList();
-        }
-
-        private static DateTimeOffset GetRandomDateTimeOffset() =>
-           new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         public static List<SubscriberCredential> CreateRandomSubscriberCredentials(
             List<Guid> subscriberAgreementIds)
@@ -112,85 +96,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             return filler.Create();
         }
 
-        private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset,
-            Guid subscriberAgreementId)
-        {
-            var filler = new Filler<IngestionTracking>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
-                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(() =>
-                    GenerateFilename(subscriberAgreementId));
-
-            return filler;
-        }
-
-        private static IngestionTracking CreateRandomIngestionTracking(
-            DateTimeOffset dateTimeOffset,
-            Guid subscriberAgreementId) =>
-            CreateIngestionTrackingFiller(dateTimeOffset, subscriberAgreementId).Create();
-
-        private Expression<Func<IngestionTracking, bool>> SameIngestionTrackingAs(
-            IngestionTracking expectedIngestionTracking)
-        {
-            return actualIngestionTracking =>
-                this.compareLogic.Compare(expectedIngestionTracking, actualIngestionTracking)
-                    .AreEqual;
-        }
-
-        private static string GenerateFilename(Guid identifier)
-        {
-            Guid randomGuid = Guid.NewGuid();
-
-            return $"/{GetRandomString()}" +
-                $"/{GetRandomString()}" +
-                $"/{randomGuid}" +
-                $"/{GetRandomNumber}" +
-                $"/{GetRandomString()}" +
-                $"_{GetRandomNumber}" +
-                $"_{GetRandomString()}" +
-                $"_{GetRandomString()}" +
-                $"_{GetRandomNumber()}" +
-                $"_{identifier}.csv.gpg;";
-        }
-
         private static string CreateRandomFilePath(Guid identifier)
         {
-            return $"{GetRandomString()}" +
-                $"/{GetRandomString()}" +
-                $"/{GetRandomString()}" +
-                $"/{GetRandomString()}" +
-                $"/{GetRandomString()}" +
-                $"/{identifier}" +
-                $"/0122235" +
-                $"/{GetRandomNumber}" +
-                $"_{GetRandomString()}" +
-                $"_{GetRandomString()}" +
-                $"_{GetRandomNumber()}" +
-                $"_{identifier}.csv.gpg;";
-        }
-
-        private static Guid GetLastRandomGuid(string filename)
-        {
-            int underscoreIndex = filename.LastIndexOf('_');
-            int dotCsvIndex = filename.LastIndexOf(".csv.gpg");
-
-            if (underscoreIndex != -1 && dotCsvIndex != -1 && underscoreIndex < dotCsvIndex)
-            {
-                int guidLength = dotCsvIndex - underscoreIndex - 1;
-                string guidString = filename.Substring(underscoreIndex + 1, guidLength);
-
-                if (Guid.TryParse(guidString, out Guid resultGuid))
-                {
-                    return resultGuid;
-                }
-            }
-
-            return Guid.Empty;
+            return $"{GetRandomString()}/{GetRandomString()}" +
+                $"/{GetRandomString()}/{GetRandomString()}/{GetRandomString()}" +
+                $"/{identifier}/0122235/{GetRandomNumber}" +
+                $"_{GetRandomString()}_{GetRandomString()}" +
+                $"_{GetRandomNumber()}_{identifier}.csv.gpg;";
         }
 
         public static TheoryData DependencyValidationExceptions()
@@ -208,17 +120,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 new SubscriberCredentialOrchestrationDependencyValidationException(
                     message: "Subscriber credential orchestration dependency validation error occurred, " +
                         "please try again.",
-
                     innerException),
 
-                new EmisLandingOrchestrationValidationException(
-                    message: "EMIS landing orchestration validation error occured, please try again.",
+                new DecryptionOrchestrationValidationException(
+                    message: "Decryption orchestration validation error occured, please try again.",
                     innerException),
 
-                new EmisLandingOrchestrationDependencyValidationException(
-                    message: "EMIS landing orchestration dependency validation error occurred, " +
+                new DecryptionOrchestrationDependencyValidationException(
+                    message: "Decryption orchestration dependency validation error occurred, " +
                         "please try again.",
-
                     innerException),
             };
         }
@@ -239,14 +149,32 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     message: "Subscriber credential orchestration service error occurred, contact support.",
                     innerException),
 
-                new EmisLandingOrchestrationDependencyException(
-                    message: "EMIS landing orchestration dependency error occured, please try again.",
+                new DecryptionOrchestrationDependencyException(
+                    message: "Decryption orchestration dependency error occured, please try again.",
                     innerException),
 
-                new EmisLandingOrchestrationServiceException(
-                    message: "EMIS landing orchestration service error occurred, contact support.",
+                new DecryptionOrchestrationServiceException(
+                    message: "Decryption orchestration service error occurred, contact support.",
                     innerException)
             };
+        }
+
+        private static SubscriberCredential CreateRandomSubscriberCredential() =>
+            CreateSubscriberCredentialFiller().Create();
+
+        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller()
+        {
+            var filler = new Filler<SubscriberCredential>();
+            string user = Guid.NewGuid().ToString();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
+
+            return filler;
         }
     }
 }

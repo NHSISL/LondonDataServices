@@ -1,11 +1,15 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Decryptions;
 using Moq;
 using Xunit;
@@ -18,6 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         public async Task ShouldThrowValidationExceptionOnDecryptIfBlobContainerIsNullAndLogItAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string someFileName = GetRandomString();
 
             var nullBlobContainersDecryptionOrchestrationException =
@@ -34,6 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             var invalidDecryptionOrchestrationService = new DecryptionOrchestrationService(
                 documentService: documentServiceMock.Object,
+                downloadProcessingService: downloadProcessingServiceMock.Object,
                 cryptographyService: cryptographyServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
                 auditService: auditServiceMock.Object,
@@ -45,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             // when
             ValueTask<string> decryptTask =
-                invalidDecryptionOrchestrationService.DecryptAsync(someFileName);
+                invalidDecryptionOrchestrationService.DecryptAsync(someFileName, inputSubscriberCredential);
 
             DecryptionOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(decryptTask.AsTask);
@@ -73,6 +80,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         public async Task ShouldThrowValidationExceptionOnDecryptIfFileNameIsNullAndLogItAsync(string invalidText)
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+
             var invalidArgumentDecryptionOrchestrationException =
                 new InvalidArgumentDecryptionOrchestrationException(
                     message: "Invalid decryption orchestration argument(s), please correct the errors and try again.");
@@ -88,7 +98,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             // when
             ValueTask<string> decryptTask =
-                this.decryptionOrchestrationService.DecryptAsync(invalidText);
+                this.decryptionOrchestrationService.DecryptAsync(invalidText, inputSubscriberCredential);
 
             DecryptionOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(decryptTask.AsTask);
@@ -106,6 +116,117 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnProcessFileIfSubscriptionCredentialIsNullAndLogItAsync()
+        {
+            // given
+            SubscriberCredential inputSubscriberCredential = null;
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+
+            var nullSubscriberCredentialDecryptionOrchestrationException =
+                new NullSubscriberCredentialDecryptionOrchestrationException(
+                    message: "Null subscriber credential decryption orchestration exception, " +
+                        "please correct the errors and try again.");
+
+            var expectedDecryptionOrchestrationValidationException =
+                new DecryptionOrchestrationValidationException(
+                    message: "Decryption orchestration validation errors occurred, please try again.",
+                    innerException: nullSubscriberCredentialDecryptionOrchestrationException);
+
+            // when
+            ValueTask<string> processTask =
+                this.decryptionOrchestrationService
+                    .DecryptAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
+
+            DecryptionOrchestrationValidationException actualDecryptionOrchestrationValidationException =
+                await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(processTask.AsTask);
+
+            // then
+            actualDecryptionOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedDecryptionOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDecryptionOrchestrationValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.cryptographyServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.auditServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldNotProcessNamedDocumentOnProcessFileIfDownloadIsNullAsync()
+        {
+            // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+
+            Download inputDownload = new Download
+            {
+                SubscriberCredential = inputSubscriberCredential,
+                Document = new Document { FileName = inputFileName }
+            };
+
+            var notFoundDecryptionOrchestrationException =
+                new NotFoundDecryptionOrchestrationException(
+                message: $"Couldn't find download with file name: {inputFileName}.");
+
+            var expectedDecryptionOrchestrationValidationException =
+                new DecryptionOrchestrationValidationException(
+                    message: "Decryption orchestration validation errors occurred, please try again.",
+                    innerException: notFoundDecryptionOrchestrationException);
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
+                    .Returns(null);
+
+            this.downloadProcessingServiceMock.Setup(service =>
+                service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
+                    .Returns(null);
+
+            // when
+            ValueTask<string> processTask = this.decryptionOrchestrationService
+                .DecryptAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
+
+            DecryptionOrchestrationValidationException actualDecryptionOrchestrationValidationExceptionn =
+                await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(processTask.AsTask);
+
+            // then
+            actualDecryptionOrchestrationValidationExceptionn.Should()
+                .BeEquivalentTo(expectedDecryptionOrchestrationValidationException);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RetrieveIngestionTrackingByFileNameAsync(It.IsAny<string>()),
+                    Times.Once);
+
+            this.downloadProcessingServiceMock.Verify(service =>
+                service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDecryptionOrchestrationValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.cryptographyServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.auditServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
         }
     }

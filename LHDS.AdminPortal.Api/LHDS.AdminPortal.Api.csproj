@@ -23,10 +23,11 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		  <PrivateAssets>all</PrivateAssets>
 	  </PackageReference>
-	  <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.1" />
+	  <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.2" />
 	  <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
 	  <PackageReference Include="Microsoft.Identity.Web" Version="2.17.0" />
 	  <PackageReference Include="RESTFulSense" Version="2.17.0" />
+	  <PackageReference Include="SshKeyGenerator" Version="1.1.51" />
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	  <PackageReference Include="Xeption" Version="2.6.0" />
 	  <PackageReference Include="xunit.extensibility.core" Version="2.6.6" />

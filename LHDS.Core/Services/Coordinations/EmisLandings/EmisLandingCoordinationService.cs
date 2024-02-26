@@ -7,11 +7,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 
-namespace LHDS.Core.Services.Orchestrations.Downloads
+namespace LHDS.Core.Services.Coordinations.EmisLandings
 {
     public partial class EmisLandingCoordinationService : IEmisLandingCoordinationService
     {
@@ -71,7 +72,30 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 return processedPaths;
             });
 
-        public async ValueTask<string> ProcessFileAsync(string fileName) =>
-            throw new NotImplementedException();
+        public ValueTask<string> ProcessFileAsync(string fileName) =>
+            TryCatch(async () =>
+            {
+                ValidateFileNameOnLand(fileName);
+                string[] parts = fileName.Split("/");
+
+                if (parts.Length > 0)
+                {
+                    string extractSubscriberCredentialId = parts[5];
+
+                    SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
+                        .RetrieveSubscriberCredentialByIdAsync(new Guid(extractSubscriberCredentialId));
+
+                    string processedItem =
+                        await this.emisLandingOrchestrationService.ProcessFileAsync(
+                            fileName: fileName,
+                            subscriberCredential: maybeSubscriberCredential);
+
+                    return processedItem;
+                }
+                else
+                {
+                    throw new InvalidArgumentEmisLandingCoordinationException("Invalid file name format.");
+                }
+            });
     }
 }

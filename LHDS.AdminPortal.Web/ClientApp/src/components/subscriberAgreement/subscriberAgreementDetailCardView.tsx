@@ -8,8 +8,9 @@ import { SecuredComponents } from "../links";
 import securityPoints from "../../securityMatrix";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCopy, faTimes } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
+import { Label } from "nhsuk-react-components";
 
 interface SubscriberAgreementDetailCardViewProps {
     subscriberAgreement: SubscriberAgreementView;
@@ -26,42 +27,69 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
         onModeChange
     } = props;
 
+    const [ftpKeyCopied, setFtpKeyCopied] = React.useState<boolean>(false);
+    const [gpgKeyCopied, setGpgKeyCopied] = React.useState<boolean>(false);
+
 
     return (
         <>
             <SummaryListBase>
                 <SummaryListBaseRow>
+                    <SummaryListBaseKey>Agreement Short Name:</SummaryListBaseKey>
+                    <div className="w-75">
+                        {subscriberAgreement.supplierSharingAgreementShortName}
+                    </div>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
                     <SummaryListBaseKey>Ftp UserName</SummaryListBaseKey>
-                    <SummaryListBaseValue>{subscriberAgreement.ftpUserName}</SummaryListBaseValue>
+                    <div className="w-75">
+                        {subscriberAgreement.ftpUserName}
+                    </div>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Ftp Public Key</SummaryListBaseKey>
-                    <SummaryListBaseValue>{subscriberAgreement.ftpPublicKey}</SummaryListBaseValue>
+                    <SummaryListBaseKey>Ftp Public Key&nbsp;
+                        {ftpKeyCopied ?
+                            <FontAwesomeIcon icon={faCheck} />
+                            : <FontAwesomeIcon icon={faCopy} onClick={() => { navigator.clipboard.writeText(subscriberAgreement.ftpPublicKey); setFtpKeyCopied(true); }} />
+                        }
+                    </SummaryListBaseKey>
+                    <div className="w-75">
+                        {subscriberAgreement.ftpPublicKey}
+                    </div>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Gpg Public Key</SummaryListBaseKey>
-                    <SummaryListBaseValue>{subscriberAgreement.gpgPublicKey}</SummaryListBaseValue>
+                    <SummaryListBaseKey>Gpg Public Key&nbsp;
+                        {gpgKeyCopied ?
+                            <FontAwesomeIcon icon={faCheck} />
+                            : <FontAwesomeIcon icon={faCopy} onClick={() => { navigator.clipboard.writeText(subscriberAgreement.gpgPublicKey); setGpgKeyCopied(true); }} />
+                        }
+                    </SummaryListBaseKey>
+                    <div className="w-75">
+                        {subscriberAgreement.gpgPublicKey}
+                    </div>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Is Active</SummaryListBaseKey>
-                    <SummaryListBaseValue>
+                    <div className="w-75">
                         {subscriberAgreement.isActive
-                        ? <FontAwesomeIcon icon={faCheck} className="text-success" />
-                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />}
-                    </SummaryListBaseValue>
+                            ? <FontAwesomeIcon icon={faCheck} className="text-success" />
+                            : <FontAwesomeIcon icon={faTimes} className="text-danger" />}
+                    </div>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Last Poll Start Date</SummaryListBaseKey>
-                    <SummaryListBaseValue>{moment(subscriberAgreement.lastPollStartDate?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
+                    <div>
+                        {subscriberAgreement.lastPollStartDate ? moment(subscriberAgreement.lastPollStartDate?.toString()).format("Do-MMM-yyyy"):"Never Started Polling"}
+                    </div>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Last Poll End Date</SummaryListBaseKey>
-                    <SummaryListBaseValue>{moment(subscriberAgreement.lastPollEndDate?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
+                    <div>{subscriberAgreement.lastPollEndDate ? moment(subscriberAgreement.lastPollEndDate?.toString()).format("Do-MMM-yyyy") : "Never Finished Polling"}</div>
                 </SummaryListBaseRow>
             </SummaryListBase>
 

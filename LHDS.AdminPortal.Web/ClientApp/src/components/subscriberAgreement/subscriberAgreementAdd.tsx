@@ -11,6 +11,7 @@ import TextInputBase from "../bases/inputs/TextInputBase";
 import { set } from "lodash";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faCopy, faTicket } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 interface SubscriberAgreementAddProps {
     children?: React.ReactNode;
@@ -27,11 +28,13 @@ const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (
     const [gpgPublicKey, setGpgPublicKey] = React.useState<string>("");
     const [sshKeyCopied, setSshKeyCopied] = React.useState<boolean>(false);
     const [gpgKeyCopied, setGpgKeyCopied] = React.useState<boolean>(false);
+    const navigate = useNavigate();
 
     const addSubscriberAgreement = () => { 
         setSshPublicKey("ssh public key");
         setGpgPublicKey("gpg public key");
         setAdded(true)
+        navigate('/subscriberAgreementDetail/TODO'); 
     }
 
     const copySSHKeyToClipboard = (event:any) => {
@@ -54,20 +57,8 @@ const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (
                 </CardBaseTitle>
                 <CardBaseContent>
                     <Form>
-                        
                         <TextInputBase  id="Subscriber Agreement Short Name" name="Subscriber Agreement Short Name" label="Subscriber Agreement Short Name"  onChange={(e) => { setSubscriberAgreementShortName(e.target.value)}} value={subscriberAgreementShortName} />
-                        {added && <> 
-                            <TextAreaInputBase id="SSH Public Key" name="SSH (FTP) Public Key" label="SSH Public Key" onChange={() => {}}  value={sshPublicKey} disabled={true} rows={10}/>
-                            <ButtonBase secondary onClick={copySSHKeyToClipboard}>
-                                {sshKeyCopied ? <FontAwesomeIcon icon={faCheck} /> : <FontAwesomeIcon icon={faCopy}/>}
-                            </ButtonBase>
-                            <TextAreaInputBase id="GPG Public Key" name="GPG (Decryption) Public Key" label="GPG (Decryption) Public Key" onChange={() => {}} value={gpgPublicKey} disabled rows={10}/>
-                            <ButtonBase secondary onClick={copyGPGKeyToClipboard}>
-                                {gpgKeyCopied ? <FontAwesomeIcon icon={faCheck}/> : <FontAwesomeIcon icon={faCopy}/>}
-                            </ButtonBase>
-                        </>}
-                        <br />
-                        {!added && <ButtonBase onClick={addSubscriberAgreement}>Create Subscriber Agreement and Generate Keys</ButtonBase>}
+                        <ButtonBase onClick={addSubscriberAgreement}>Create Subscriber Agreement and Generate Keys</ButtonBase>
                     </Form>
                 </CardBaseContent>
             </CardBaseBody>

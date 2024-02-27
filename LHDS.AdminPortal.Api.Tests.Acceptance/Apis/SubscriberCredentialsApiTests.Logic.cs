@@ -61,5 +61,21 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(actualSubscriberCredential.Id);
         }
+
+        [Fact]
+        public async Task ShouldPutSubscriberCredentialAsync()
+        {
+            // given
+            SubscriberCredential randomSubscriberCredential = await PostRandomSubscriberCredentialAsync();
+            SubscriberCredential modifiedSubscriberCredential = UpdateSubscriberCredentialWithRandomValues(randomSubscriberCredential);
+
+            // when
+            await this.apiBroker.PutSubscriberCredentialAsync(modifiedSubscriberCredential);
+            SubscriberCredential actualSubscriberCredential = await this.apiBroker.GetSubscriberCredentialByIdAsync(randomSubscriberCredential.Id);
+
+            // then
+            actualSubscriberCredential.Should().BeEquivalentTo(modifiedSubscriberCredential);
+            await this.apiBroker.DeleteSubscriberCredentialByIdAsync(actualSubscriberCredential.Id);
+        }
     }
 }

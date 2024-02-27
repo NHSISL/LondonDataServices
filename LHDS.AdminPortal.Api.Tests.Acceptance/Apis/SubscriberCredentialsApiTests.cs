@@ -19,6 +19,24 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
         private int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static DateTimeOffset GetRandomDateTime() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static SubscriberCredential UpdateSubscriberCredentialWithRandomValues(SubscriberCredential inputSubscriberCredential)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<SubscriberCredential>();
+
+            filler.Setup()
+                .OnProperty(subscriberCredential => subscriberCredential.Id).Use(inputSubscriberCredential.Id)
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedDate).Use(inputSubscriberCredential.CreatedDate)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(inputSubscriberCredential.CreatedBy)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedDate).Use(now);
+
+            return filler.Create();
+        }
+
         private async ValueTask<SubscriberCredential> PostRandomSubscriberCredentialAsync()
         {
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();

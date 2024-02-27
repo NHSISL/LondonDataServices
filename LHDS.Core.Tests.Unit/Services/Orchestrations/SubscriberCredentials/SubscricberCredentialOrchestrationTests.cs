@@ -56,6 +56,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
+        private Expression<Func<SubscriberAgreement, bool>> SameSubscriberAgreementAs(
+            SubscriberAgreement expectedSubscriberAgreement)
+        {
+            return actualSubscriberAgreement =>
+                this.compareLogic.Compare(expectedSubscriberAgreement, actualSubscriberAgreement)
+                    .AreEqual;
+        }
+
+        private Expression<Func<SubscriberCredential, bool>> SameSubscriberCredentialAs(
+            SubscriberCredential expectedSubscriberCredential)
+        {
+            return actualSubscriberCredential =>
+                this.compareLogic.Compare(expectedSubscriberCredential, actualSubscriberCredential)
+                    .AreEqual;
+        }
+
         private static dynamic CreateRandomDynamicSubscriberAgreementCredential()
         {
             Guid id = Guid.NewGuid();

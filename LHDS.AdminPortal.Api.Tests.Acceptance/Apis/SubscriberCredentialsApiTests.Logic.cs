@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using RESTFulSense.Exceptions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using Xunit;
 
@@ -76,6 +77,28 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             // then
             actualSubscriberCredential.Should().BeEquivalentTo(modifiedSubscriberCredential);
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(actualSubscriberCredential.Id);
+        }
+
+        [Fact]
+        public async Task ShouldDeleteSubscriberCredentialAsync()
+        {
+            // given
+            SubscriberCredential randomSubscriberCredential = await PostRandomSubscriberCredentialAsync();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential;
+
+            // when
+            SubscriberCredential deletedSubscriberCredential =
+                await this.apiBroker.DeleteSubscriberCredentialByIdAsync(inputSubscriberCredential.Id);
+
+            ValueTask<SubscriberCredential> getSubscriberCredentialbyIdTask =
+                this.apiBroker.GetSubscriberCredentialByIdAsync(inputSubscriberCredential.Id);
+
+            // then
+            deletedSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
+                getSubscriberCredentialbyIdTask.AsTask());
         }
     }
 }

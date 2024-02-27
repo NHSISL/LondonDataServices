@@ -4,9 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using LHDS.Core.Models.Foundations.Mesh.Exceptions;
-using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
@@ -25,7 +22,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             {
                 return await returningSubscriberCredentialFunction();
             }
-            catch (InvalidArgumentSubscriberCredentialOrchestrationException 
+            catch (InvalidArgumentSubscriberCredentialOrchestrationException
                 invalidArgumentSubscriberCredentialOrchestrationException)
             {
                 throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialOrchestrationException);
@@ -34,6 +31,11 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                 invalidSubscriberCredentialOrchestrationException)
             {
                 throw CreateAndLogValidationException(invalidSubscriberCredentialOrchestrationException);
+            }
+            catch (InvalidSubscriberAgreementOrchestrationException
+                invalidSubscriberAgreementOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidSubscriberAgreementOrchestrationException);
             }
             catch (SubscriberCredentialValidationException
                 invalidArgumentSubscriberCredentialOrchestrationException)

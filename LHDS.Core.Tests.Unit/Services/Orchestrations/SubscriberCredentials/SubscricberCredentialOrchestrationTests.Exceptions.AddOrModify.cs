@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -58,9 +57,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                    expectedDependencyException))),
                        Times.Once);
 
-            this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -104,10 +103,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                    expectedDependencyException))),
                        Times.Once);
 
-            this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -155,10 +153,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                    expectedDependencyException))),
                        Times.Once);
 
-            this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }

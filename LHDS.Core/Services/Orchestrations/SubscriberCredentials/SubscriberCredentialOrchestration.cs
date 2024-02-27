@@ -53,8 +53,9 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                     LastPollStartDate = subscriberCredential.LastPollStartDate
                 };
 
-                await this.subscriberAgreementProcessingService.ModifyOrAddSubscriberAgreementAsync(
-                    subscriberAgreement);
+                SubscriberAgreement storageSubscriberAgreement = 
+                    await this.subscriberAgreementProcessingService.ModifyOrAddSubscriberAgreementAsync(
+                        subscriberAgreement);
 
                 return await this.secureDataProcessingService.AddOrModifySecureDataAsync(subscriberCredential);
             });

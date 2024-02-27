@@ -24,15 +24,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             SubscriberAgreement inputSubscriberAgreement = CreateSubscriberAgreementFromDynamic(randomDynamic);
             SubscriberAgreement outputSubscriberAgreement = inputSubscriberAgreement;
             SubscriberCredential inputSubscriberCredential = CreateSubscriberCredentialFromDynamic(randomDynamic);
-            SubscriberCredential outputSubscriberCredential = inputSubscriberCredential;
+            SubscriberCredential storageSubscriberCredential = inputSubscriberCredential.DeepClone();
+            SubscriberCredential outputSubscriberCredential = storageSubscriberCredential;
             SubscriberCredential expectedSubscriberCredential = outputSubscriberCredential.DeepClone();
 
             this.subscriberAgreementProcessingServiceMock.Setup(service =>
-                service.ModifyOrAddSubscriberAgreementAsync(inputSubscriberAgreement))
+                service.ModifyOrAddSubscriberAgreementAsync(It.Is(SameSubscriberAgreementAs(inputSubscriberAgreement))))
                     .ReturnsAsync(outputSubscriberAgreement);
 
             this.secureDataProcessingServiceMock.Setup(service =>
-                service.AddOrModifySecureDataAsync(inputSubscriberCredential))
+                service.AddOrModifySecureDataAsync(It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))))
                     .ReturnsAsync(outputSubscriberCredential);
 
             // When
@@ -52,7 +53,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

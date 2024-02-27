@@ -1,7 +1,8 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
 using LHDS.Core.Services.Foundations.Cryptographies;
@@ -28,10 +29,14 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                byte[] encryptedData =
-                    await this.cryptographyService.EncryptAsync(data);
+                throw new NotImplementedException();
+                // Need to look into how to implement this.  Possibly the subscriber agreement id in the url so we can
+                // look up the subscriber credentials.
+                // out of scope for this change, so leaving this till we do the acceptance tests.
+                //byte[] encryptedData =
+                //    await this.cryptographyService.EncryptAsync(data);
 
-                return Created(encryptedData);
+                //return Created(encryptedData);
             }
             catch (CryptographyValidationException cryptographyValidationException)
             {
@@ -57,10 +62,16 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                byte[] encryptedData =
-                    await this.cryptographyService.DecryptAsync(data);
+                throw new NotImplementedException();
 
-                return Created(encryptedData);
+                // Need to look into how to implement this.  Possibly the subscriber agreement id in the url so we can
+                // look up the subscriber credentials.
+                // out of scope for this change, so leaving this till we do the acceptance tests.
+
+                //byte[] encryptedData =
+                //    await this.cryptographyService.DecryptAsync(data);
+
+                //return Created(encryptedData);
             }
             catch (CryptographyValidationException cryptographyValidationException)
             {

@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -9,6 +9,7 @@ using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.Decryptions
@@ -31,6 +32,15 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 nullBlobContainersDecryptionOrchestrationException)
             {
                 throw CreateAndLogValidationException(nullBlobContainersDecryptionOrchestrationException);
+            }
+            catch (NullSubscriberCredentialDecryptionOrchestrationException
+                nullSubscriberCredentialDecryptionOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullSubscriberCredentialDecryptionOrchestrationException);
+            }
+            catch (NotFoundDecryptionOrchestrationException notFoundDecryptionOrchestrationException)
+            {
+                throw CreateAndLogValidationException(notFoundDecryptionOrchestrationException);
             }
             catch (DocumentValidationException documentValidationException)
             {

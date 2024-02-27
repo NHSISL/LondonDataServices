@@ -6,9 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using LHDS.Core.Services.Processings.SecureDatas;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Moq;
 using Xunit;
 
@@ -17,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
     public partial class SecureDataProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionAddOrModifyIfSubscriberCredentialIsNullAsync()
+        public async Task ShouldThrowValidationExceptionRetrieveIfSubscriberCredentialIsNullAsync()
         {
             // given
             SubscriberCredential nullSubscriberCredential = null;
@@ -32,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             // when
             ValueTask<SubscriberCredential> addSubscriberCredentialTask =
-                this.secureDataProcessingService.AddOrModifySecureDataAsync(nullSubscriberCredential);
+                this.secureDataProcessingService.RetrieveSecretsByKeyVaultKeyNameAsync(nullSubscriberCredential);
 
             SubscriberCredentialValidationException actualSubscriberCredentialValidationException =
                 await Assert.ThrowsAsync<SubscriberCredentialValidationException>(() =>
@@ -54,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionAddOrModifyIfSubscriberCredentialIsInvalidAsync(
+        public async Task ShouldThrowValidationExceptionAddOrRetrieveIfSubscriberCredentialIsInvalidAsync(
             string invalidText)
         {
             // given
@@ -63,18 +66,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                 Id = Guid.Empty,
                 SupplierSharingAgreementShortName = invalidText,
                 FtpUserName = invalidText,
-                FtpPassword = invalidText,
-                FtpPassPhrase = invalidText,
-                FtpPrivateKey = invalidText,
                 FtpPublicKey = invalidText,
-                GpgPassPhrase = invalidText,
-                GpgPrivateKey = invalidText,
                 GpgPublicKey = invalidText,
             };
 
             var invalidSubscriberCredentialException =
                 new InvalidSubscriberCredentialException(
-                    message: "Invalid subscriber credential errors occured. Please correct the errors and try again.");
+                    message: "Invalid subscriber credential errors occurred. Please correct the errors and try again.");
 
             invalidSubscriberCredentialException.AddData(
                 key: nameof(SubscriberCredential.Id),
@@ -89,29 +87,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                 values: "Text is required");
 
             invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.FtpPassword),
-                values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.FtpPassPhrase),
-                values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.FtpPrivateKey),
-                values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
                 key: nameof(SubscriberCredential.FtpPublicKey),
                 values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.GpgPassPhrase),
-                values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.GpgPrivateKey),
-                values: "Text is required");
-
 
             invalidSubscriberCredentialException.AddData(
                 key: nameof(SubscriberCredential.GpgPublicKey),
@@ -124,7 +101,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             // when
             ValueTask<SubscriberCredential> addSubscriberCredentialTask =
-                this.secureDataProcessingService.AddOrModifySecureDataAsync(invalidSubscriberCredential);
+                this.secureDataProcessingService.RetrieveSecretsByKeyVaultKeyNameAsync(invalidSubscriberCredential);
 
             SubscriberCredentialValidationException actualSubscriberCredentialValidationException =
                 await Assert.ThrowsAsync<SubscriberCredentialValidationException>(() =>
@@ -144,7 +121,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionAddOrModifyIfSubscriberCredentialPropertyIsInvlaidAsync()
+        public async Task ShouldThrowValidationExceptionRetrieveIfSubscriberCredentialPropertyIsInvlaidAsync()
         {
             // given
             dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();
@@ -179,7 +156,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             // when
             ValueTask<SubscriberCredential> addSubscriberCredentialTask =
-                secureDataProcessingServiceMock.Object.AddOrModifySecureDataAsync(inputSubscriberCredential);
+                secureDataProcessingServiceMock.Object.RetrieveSecretsByKeyVaultKeyNameAsync(inputSubscriberCredential);
 
             SubscriberCredentialValidationException actualSubscriberCredentialValidationException =
                 await Assert.ThrowsAsync<SubscriberCredentialValidationException>(() =>

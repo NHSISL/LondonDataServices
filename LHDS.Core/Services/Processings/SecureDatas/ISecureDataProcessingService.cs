@@ -9,8 +9,11 @@ namespace LHDS.Core.Services.Processings.SecureDatas
 {
     public interface ISecureDataProcessingService
     {
-        ValueTask<SubscriberCredential> AddOrModifySecureDataAsync(SubscriberCredential secureData);
-        ValueTask<SubscriberCredential> RetrieveSecretsBySubscriberAgreementNameAsync(string subscriberAgreementName);
-        ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential secureData);
+        ValueTask<SubscriberCredential> AddOrModifySecureDataAsync(SubscriberCredential subscriberCredential);
+
+        ValueTask<SubscriberCredential> RetrieveSecretsByKeyVaultKeyNameAsync(
+            SubscriberCredential subscriberCredential);
+
+        ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential subscriberCredential);
     }
 }

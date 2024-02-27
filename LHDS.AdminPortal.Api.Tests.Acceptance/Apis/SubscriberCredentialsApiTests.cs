@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,16 +26,24 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static SubscriberCredential UpdateSubscriberCredentialWithRandomValues(SubscriberCredential inputSubscriberCredential)
+        private static SubscriberCredential UpdateSubscriberCredentialWithRandomValues(
+            SubscriberCredential inputSubscriberCredential)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
             var filler = new Filler<SubscriberCredential>();
 
             filler.Setup()
-                .OnProperty(subscriberCredential => subscriberCredential.Id).Use(inputSubscriberCredential.Id)
+                .OnProperty(subscriberCredential => subscriberCredential.Id)
+                    .Use(inputSubscriberCredential.Id)
+
                 .OnType<DateTimeOffset>().Use(GetRandomDateTime())
-                .OnProperty(subscriberCredential => subscriberCredential.CreatedDate).Use(inputSubscriberCredential.CreatedDate)
-                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(inputSubscriberCredential.CreatedBy)
+
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedDate)
+                    .Use(inputSubscriberCredential.CreatedDate)
+
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy)
+                    .Use(inputSubscriberCredential.CreatedBy)
+
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedDate).Use(now);
 
             return filler.Create();

@@ -1,9 +1,13 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using RESTFulSense.Exceptions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
+using RESTFulSense.Exceptions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
@@ -37,12 +41,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             List<SubscriberCredential> expectedSubscriberCredentials = randomSubscriberCredentials;
 
             // when
-            List<SubscriberCredential> actualSubscriberCredentials = await this.apiBroker.GetAllSubscriberCredentialsAsync();
+            List<SubscriberCredential> actualSubscriberCredentials = await this.apiBroker
+                .GetAllSubscriberCredentialsAsync();
 
             // then
             foreach (SubscriberCredential expectedSubscriberCredential in expectedSubscriberCredentials)
             {
-                SubscriberCredential actualSubscriberCredential = actualSubscriberCredentials.Single(approval => approval.Id == expectedSubscriberCredential.Id);
+                SubscriberCredential actualSubscriberCredential = actualSubscriberCredentials
+                    .Single(approval => approval.Id == expectedSubscriberCredential.Id);
+
                 actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
                 await this.apiBroker.DeleteSubscriberCredentialByIdAsync(actualSubscriberCredential.Id);
             }
@@ -56,7 +63,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             SubscriberCredential expectedSubscriberCredential = randomSubscriberCredential;
 
             // when
-            SubscriberCredential actualSubscriberCredential = await this.apiBroker.GetSubscriberCredentialByIdAsync(randomSubscriberCredential.Id);
+            SubscriberCredential actualSubscriberCredential = await this.apiBroker
+                .GetSubscriberCredentialByIdAsync(randomSubscriberCredential.Id);
 
             // then
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
@@ -68,11 +76,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
         {
             // given
             SubscriberCredential randomSubscriberCredential = await PostRandomSubscriberCredentialAsync();
-            SubscriberCredential modifiedSubscriberCredential = UpdateSubscriberCredentialWithRandomValues(randomSubscriberCredential);
+
+            SubscriberCredential modifiedSubscriberCredential =
+                UpdateSubscriberCredentialWithRandomValues(randomSubscriberCredential);
 
             // when
             await this.apiBroker.PutSubscriberCredentialAsync(modifiedSubscriberCredential);
-            SubscriberCredential actualSubscriberCredential = await this.apiBroker.GetSubscriberCredentialByIdAsync(randomSubscriberCredential.Id);
+
+            SubscriberCredential actualSubscriberCredential = await this.apiBroker
+                .GetSubscriberCredentialByIdAsync(randomSubscriberCredential.Id);
 
             // then
             actualSubscriberCredential.Should().BeEquivalentTo(modifiedSubscriberCredential);

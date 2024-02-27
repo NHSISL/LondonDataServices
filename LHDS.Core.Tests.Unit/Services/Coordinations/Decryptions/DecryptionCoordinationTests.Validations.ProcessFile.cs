@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.Decryptions.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xunit;
 
@@ -19,6 +20,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
         public async Task ShouldThrowValidationExceptionOnProcessFileIfFileNameIsNullAndLogItAsync(string invalidData)
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+
             var invalidArgumentDecryptionCoordinationException =
                 new InvalidArgumentDecryptionCoordinationException(
                     message: "Invalid decryption coordination argument, please correct the errors and try again.");
@@ -41,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 .BeEquivalentTo(expectedDecryptionCoordinationValidationException);
 
             this.decryptionOrchestrationServiceMock.Verify(service =>
-                service.DecryptAsync(invalidData),
+                service.DecryptAsync(invalidData, inputSubscriberCredential),
                     Times.Never());
 
             this.loggingBrokerMock.Verify(broker =>

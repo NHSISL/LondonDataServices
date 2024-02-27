@@ -76,11 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 GpgPublicKey = GetRandomString(),
                 IsActive = false,
                 LastPollStartDate = randomDate,
-                LastPollEndDate = randomDate.AddMinutes(1),
-                CreatedBy = "System",
-                UpdatedBy = "System",
-                UpdatedDate = randomDate,
-                CreatedDate = randomDate
+                LastPollEndDate = randomDate.AddMinutes(1)
             };
         }
 
@@ -119,11 +115,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 GpgPublicKey = credential.GpgPublicKey,
                 IsActive = credential.IsActive,
                 LastPollStartDate = credential.LastPollStartDate,
-                LastPollEndDate = credential.LastPollEndDate,
-                CreatedBy = credential.CreatedBy,
-                UpdatedBy = credential.UpdatedBy,
-                UpdatedDate = credential.UpdatedDate,
-                CreatedDate = credential.CreatedDate
+                LastPollEndDate = credential.LastPollEndDate
             };
 
             return randomSubscriberAgreement;

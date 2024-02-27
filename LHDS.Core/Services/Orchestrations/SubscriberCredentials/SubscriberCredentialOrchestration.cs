@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
@@ -38,6 +39,22 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             TryCatch(async () =>
             {
                 ValidateSubscriberCredential(subscriberCredential);
+
+                SubscriberAgreement subscriberAgreement = new SubscriberAgreement
+                {
+                    Id = subscriberCredential.Id,
+                    SupplierSharingAgreementShortName = subscriberCredential.SupplierSharingAgreementShortName,
+                    SupplierSharingAgreementGuid = subscriberCredential.SupplierSharingAgreementGuid,
+                    FtpUserName = subscriberCredential.FtpUserName,
+                    FtpPublicKey = subscriberCredential.FtpPublicKey,
+                    GpgPublicKey = subscriberCredential.GpgPublicKey,
+                    IsActive = subscriberCredential.IsActive,
+                    LastPollEndDate = subscriberCredential.LastPollEndDate,
+                    LastPollStartDate = subscriberCredential.LastPollStartDate
+                };
+
+                await this.subscriberAgreementProcessingService.ModifyOrAddSubscriberAgreementAsync(
+                    subscriberAgreement);
 
                 return await this.secureDataProcessingService.AddOrModifySecureDataAsync(subscriberCredential);
             });

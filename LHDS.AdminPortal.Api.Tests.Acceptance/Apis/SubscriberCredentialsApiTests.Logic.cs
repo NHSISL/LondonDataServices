@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
@@ -24,6 +26,25 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             // then
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(actualSubscriberCredential.Id);
+        }
+
+        [Fact]
+        public async Task ShouldGetAllSubscriberCredentialsAsync()
+        {
+            // given
+            List<SubscriberCredential> randomSubscriberCredentials = await PostRandomSubscriberCredentialsAsync();
+            List<SubscriberCredential> expectedSubscriberCredentials = randomSubscriberCredentials;
+
+            // when
+            List<SubscriberCredential> actualSubscriberCredentials = await this.apiBroker.GetAllSubscriberCredentialsAsync();
+
+            // then
+            foreach (SubscriberCredential expectedSubscriberCredential in expectedSubscriberCredentials)
+            {
+                SubscriberCredential actualSubscriberCredential = actualSubscriberCredentials.Single(approval => approval.Id == expectedSubscriberCredential.Id);
+                actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+                await this.apiBroker.DeleteSubscriberCredentialByIdAsync(actualSubscriberCredential.Id);
+            }
         }
     }
 }

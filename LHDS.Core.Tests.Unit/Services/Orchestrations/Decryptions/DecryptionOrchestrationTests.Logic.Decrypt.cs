@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                        .ReturnsAsync(storageDownload);
 
             this.cryptographyServiceMock.Setup(service =>
-                service.DecryptAsync(storageDownload.Document.DocumentData))
+                service.DecryptAsync(storageDownload.Document.DocumentData, randomSubscriberCredential))
                     .ReturnsAsync(randomDecryptedBytes);
 
             this.hashBrokerMock.Setup(broker =>
@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                      Times.Once);
 
             this.cryptographyServiceMock.Verify(service =>
-                service.DecryptAsync(encryptedDocument.DocumentData),
+                service.DecryptAsync(encryptedDocument.DocumentData, randomSubscriberCredential),
                     Times.Once);
 
             this.hashBrokerMock.Verify(broker =>

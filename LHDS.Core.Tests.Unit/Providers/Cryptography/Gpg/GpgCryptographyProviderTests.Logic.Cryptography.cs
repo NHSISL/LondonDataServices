@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Text;
 using System.Threading.Tasks;
@@ -20,8 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             string expectedString = randomString;
 
             // When
-            byte[] encryptedData = await this.cryptographyProvider.EncryptAsync(randomBytes);
-            byte[] decryptedData = await this.cryptographyProvider.DecryptAsync(encryptedData);
+            byte[] encryptedData = await this.cryptographyProvider.EncryptAsync(randomBytes, subscriberCredential);
+            byte[] decryptedData = await this.cryptographyProvider.DecryptAsync(encryptedData, subscriberCredential);
             string actualString = Encoding.UTF8.GetString(decryptedData);
 
             // Then

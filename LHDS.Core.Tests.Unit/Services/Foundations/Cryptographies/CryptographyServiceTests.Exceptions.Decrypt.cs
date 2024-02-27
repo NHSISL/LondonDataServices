@@ -1,11 +1,12 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xunit;
 
@@ -18,6 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
         {
             // given
             byte[] someId = CreateRandomData();
+            SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
             var serviceException = new Exception();
 
             var failedDecryptionServiceException =
@@ -31,12 +33,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
                     innerException: failedDecryptionServiceException);
 
             this.cryptographyBroker.Setup(broker =>
-                broker.DecryptAsync(It.IsAny<byte[]>()))
+                broker.DecryptAsync(It.IsAny<byte[]>(), It.IsAny<SubscriberCredential>()))
                     .ThrowsAsync(serviceException);
 
             // when
             Task<byte[]> decryptTask =
-                this.cryptographyService.DecryptAsync(someId);
+                this.cryptographyService.DecryptAsync(someId, someSubscriberCredential);
 
             CryptographyServiceException actualDecryptionServiceException =
                 await Assert.ThrowsAsync<CryptographyServiceException>(async () =>
@@ -47,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
                 .BeEquivalentTo(expectedDecryptionServiceException);
 
             this.cryptographyBroker.Verify(broker =>
-                broker.DecryptAsync(It.IsAny<byte[]>()),
+                broker.DecryptAsync(It.IsAny<byte[]>(), It.IsAny<SubscriberCredential>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -23,11 +23,6 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             {
                 return await returningSubscriberCredentialFunction();
             }
-            catch (InvalidArgumentSubscriberCredentialOrchestrationException
-                invalidArgumentSubscriberCredentialOrchestrationException)
-            {
-                throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialOrchestrationException);
-            }
             catch (InvalidSubscriberCredentialOrchestrationException
                 invalidSubscriberCredentialOrchestrationException)
             {

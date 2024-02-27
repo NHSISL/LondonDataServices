@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections;
@@ -21,34 +21,14 @@ namespace LHDS.Core.Providers.Cryptography.Extensions
             IConfiguration configuration,
             Action<GpgProviderRegistrationBuilder> builderAction)
         {
-            IGpgCryptographyProviderSettings gpgCryptographyProviderSettings =
-                configuration.GetSection("cryptography").Get<GpgCryptographyProviderSettings>();
-
-            ValidateCryptographyProviderSettings(gpgCryptographyProviderSettings);
-
             GpgProviderRegistrationBuilder builder =
-                new GpgProviderRegistrationBuilder(gpgCryptographyProviderSettings);
+                new GpgProviderRegistrationBuilder();
 
             builderAction(builder);
 
-            services.AddTransient<IGpgCryptographyProviderSettings>(_ => gpgCryptographyProviderSettings);
             services.AddTransient<ICryptographyProvider, GpgCryptographyProvider>();
 
             return services;
-        }
-
-        private static void ValidateCryptographyProviderSettings(
-            IGpgCryptographyProviderSettings cryptographyProviderSettings)
-        {
-            Validate(
-                (Rule: IsInvalid(cryptographyProviderSettings.PrivateKey),
-                    Parameter: "cryptography__privateKey"),
-
-                (Rule: IsInvalid(cryptographyProviderSettings.PublicKey),
-                    Parameter: "cryptography__publicKey"),
-
-                (Rule: IsInvalid(cryptographyProviderSettings.Passphrase),
-                    Parameter: "cryptography__passphrase"));
         }
 
         private static dynamic IsInvalid(string text) => new

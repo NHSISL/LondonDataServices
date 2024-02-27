@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -11,17 +11,15 @@ namespace LHDS.Core.Providers.Cryptography.Builders
     public class GpgProviderRegistrationBuilder
     {
         private readonly List<ICryptographyProvider> cryptographyProviderRegistrations;
-        private readonly IGpgCryptographyProviderSettings gpgCryptographyProviderSettings;
 
-        public GpgProviderRegistrationBuilder(IGpgCryptographyProviderSettings gpgCryptographyProviderSettings)
+        public GpgProviderRegistrationBuilder()
         {
             cryptographyProviderRegistrations = new List<ICryptographyProvider>();
-            this.gpgCryptographyProviderSettings = gpgCryptographyProviderSettings;
         }
 
         public void AddGpgCryptographyProvider()
         {
-            var gpgCryptographyProvider = new GpgCryptographyProvider(gpgCryptographyProviderSettings);
+            var gpgCryptographyProvider = new GpgCryptographyProvider();
 
             if (cryptographyProviderRegistrations.Count > 0)
             {

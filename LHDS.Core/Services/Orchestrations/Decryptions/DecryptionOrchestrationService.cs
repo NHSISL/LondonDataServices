@@ -77,7 +77,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 ValidateStorageDownload(externalDownload, fileName);
 
                 byte[] decryptedData = await this.cryptographyService.DecryptAsync(
-                    externalDownload.Document.DocumentData);
+                    data: externalDownload.Document.DocumentData,
+                    subscriberCredential);
 
                 string decryptedFileSha256Hash =
                     this.hashBroker.GenerateSha256Hash(decryptedData);

@@ -77,6 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             Guid id = Guid.NewGuid();
             Guid supplierSharingAgreementGuid = Guid.NewGuid();
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
+
             return new
             {
                 Id = id,

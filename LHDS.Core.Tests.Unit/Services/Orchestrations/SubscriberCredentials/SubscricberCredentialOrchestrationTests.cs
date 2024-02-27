@@ -7,9 +7,9 @@ using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
-using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
@@ -93,7 +93,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 GpgPublicKey = GetRandomString(),
                 IsActive = false,
                 LastPollStartDate = randomDate,
-                LastPollEndDate = randomDate.AddMinutes(1)
+                LastPollEndDate = randomDate.AddMinutes(1),
+                CreatedBy = GetRandomString(),
+                UpdatedBy = GetRandomString(),
+                UpdatedDate = randomDate,
+                CreatedDate = randomDate
+
             };
         }
 
@@ -114,7 +119,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 GpgPublicKey = credential.GpgPublicKey,
                 IsActive = credential.IsActive,
                 LastPollStartDate = credential.LastPollStartDate,
-                LastPollEndDate = credential.LastPollEndDate
+                LastPollEndDate = credential.LastPollEndDate,
+                CreatedBy = credential.CreatedBy,
+                UpdatedBy = credential.UpdatedBy,
+                UpdatedDate = credential.UpdatedDate,
+                CreatedDate = credential.CreatedDate
             };
 
             return randomSubscriberCredential;
@@ -132,7 +141,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 GpgPublicKey = credential.GpgPublicKey,
                 IsActive = credential.IsActive,
                 LastPollStartDate = credential.LastPollStartDate,
-                LastPollEndDate = credential.LastPollEndDate
+                LastPollEndDate = credential.LastPollEndDate,
+                CreatedBy = credential.CreatedBy,
+                UpdatedBy = credential.UpdatedBy,
+                UpdatedDate = credential.UpdatedDate,
+                CreatedDate = credential.CreatedDate
             };
 
             return randomSubscriberAgreement;

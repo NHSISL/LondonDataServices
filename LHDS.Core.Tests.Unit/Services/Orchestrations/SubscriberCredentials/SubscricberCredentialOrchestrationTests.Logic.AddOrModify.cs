@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             SubscriberAgreement outputSubscriberAgreement = inputSubscriberAgreement;
             SubscriberCredential inputSubscriberCredential = CreateSubscriberCredentialFromDynamic(randomDynamic);
             SubscriberCredential storageSubscriberCredential = inputSubscriberCredential.DeepClone();
-            SubscriberCredential outputSubscriberCredential = storageSubscriberCredential;
+            SubscriberCredential outputSubscriberCredential = storageSubscriberCredential.DeepClone();
             SubscriberCredential expectedSubscriberCredential = outputSubscriberCredential.DeepClone();
 
             this.subscriberAgreementProcessingServiceMock.Setup(service =>
@@ -44,11 +44,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
 
             this.subscriberAgreementProcessingServiceMock.Verify(service =>
-                service.ModifyOrAddSubscriberAgreementAsync(inputSubscriberAgreement),
+                service.ModifyOrAddSubscriberAgreementAsync(It.Is(SameSubscriberAgreementAs(inputSubscriberAgreement))),
                     Times.Once);
 
             this.secureDataProcessingServiceMock.Verify(service =>
-                service.AddOrModifySecureDataAsync(inputSubscriberCredential),
+                service.AddOrModifySecureDataAsync(It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))),
                     Times.Once);
 
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();

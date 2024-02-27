@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -50,14 +51,42 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                     GpgPublicKey = subscriberCredential.GpgPublicKey,
                     IsActive = subscriberCredential.IsActive,
                     LastPollEndDate = subscriberCredential.LastPollEndDate,
-                    LastPollStartDate = subscriberCredential.LastPollStartDate
+                    LastPollStartDate = subscriberCredential.LastPollStartDate,
+                    CreatedBy = subscriberCredential.CreatedBy,
+                    UpdatedBy = subscriberCredential.UpdatedBy,
+                    UpdatedDate = subscriberCredential.UpdatedDate,
+                    CreatedDate = subscriberCredential.CreatedDate,
                 };
 
                 SubscriberAgreement storageSubscriberAgreement = 
                     await this.subscriberAgreementProcessingService.ModifyOrAddSubscriberAgreementAsync(
                         subscriberAgreement);
 
-                return await this.secureDataProcessingService.AddOrModifySecureDataAsync(subscriberCredential);
+                ValidateSubscriberAgreementIsNotNull(storageSubscriberAgreement);
+
+                SubscriberCredential updatedSubcriberCredential = new SubscriberCredential
+                {
+                    Id = storageSubscriberAgreement.Id,
+                    SupplierSharingAgreementShortName = storageSubscriberAgreement.SupplierSharingAgreementShortName,
+                    SupplierSharingAgreementGuid = storageSubscriberAgreement.SupplierSharingAgreementGuid,
+                    FtpUserName = storageSubscriberAgreement.FtpUserName,
+                    FtpPassword = subscriberCredential.FtpPassword,
+                    FtpPublicKey = storageSubscriberAgreement.FtpPublicKey,
+                    FtpPassPhrase = subscriberCredential.FtpPassPhrase,
+                    FtpPrivateKey = subscriberCredential.FtpPrivateKey,
+                    GpgPublicKey = storageSubscriberAgreement.GpgPublicKey,
+                    GpgPassPhrase = subscriberCredential.GpgPassPhrase,
+                    GpgPrivateKey = subscriberCredential.GpgPrivateKey,
+                    IsActive = storageSubscriberAgreement.IsActive,
+                    LastPollEndDate = storageSubscriberAgreement.LastPollEndDate,
+                    LastPollStartDate = storageSubscriberAgreement.LastPollStartDate,
+                    CreatedBy = storageSubscriberAgreement.CreatedBy,
+                    UpdatedBy = storageSubscriberAgreement.UpdatedBy,
+                    UpdatedDate = storageSubscriberAgreement.UpdatedDate,
+                    CreatedDate = storageSubscriberAgreement.CreatedDate,
+                };
+
+                return await this.secureDataProcessingService.AddOrModifySecureDataAsync(updatedSubcriberCredential);
             });
 
         public IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials() =>

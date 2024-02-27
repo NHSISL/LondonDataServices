@@ -19,15 +19,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             // given
             SubscriberCredential nullSubscriberCredential = null;
 
-            var invalidArgumentSubscriberCredentialOrchestrationException =
-                new InvalidArgumentSubscriberCredentialOrchestrationException(
-                    message: "Invalid argument subscriber credential orchestration exception, " +
+            var invalidSubscriberCredentialOrchestrationException =
+                new InvalidSubscriberCredentialOrchestrationException(
+                    message: "Null subscriber credential orchestration exception, " +
                         "please correct the errors and try again.");
 
             var expectedSubscriberCredentialValidationOrchestrationException =
                 new SubscriberCredentialValidationOrchestrationException(
                     message: "Subscriber credential orchestration validation error occurred, please try again.",
-                    innerException: invalidArgumentSubscriberCredentialOrchestrationException);
+                    innerException: invalidSubscriberCredentialOrchestrationException);
 
             // when
             ValueTask<SubscriberCredential> addOrModifySubscriberCredentialTask =

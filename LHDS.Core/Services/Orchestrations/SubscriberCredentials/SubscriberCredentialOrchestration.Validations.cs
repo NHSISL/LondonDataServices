@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Xeptions;
@@ -20,11 +21,22 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         {
             if (subscriberCredential == null)
             {
-                throw new InvalidArgumentSubscriberCredentialOrchestrationException(
-                    message: "Invalid argument subscriber credential orchestration exception, " +
+                throw new InvalidSubscriberCredentialOrchestrationException(
+                    message: "Null subscriber credential orchestration exception, " +
                         "please correct the errors and try again.");
             }
         }
+
+        private static void ValidateSubscriberAgreementIsNotNull(SubscriberAgreement subscriberAgreement)
+        {
+            if (subscriberAgreement == null)
+            {
+                throw new InvalidSubscriberAgreementOrchestrationException(
+                    message: "Invalid subscriber agreement orchestration exception, " +
+                        "please correct the errors and try again.");
+            }
+        }
+
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {

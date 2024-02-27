@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -58,7 +57,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                     CreatedDate = subscriberCredential.CreatedDate,
                 };
 
-                SubscriberAgreement storageSubscriberAgreement = 
+                SubscriberAgreement storageSubscriberAgreement =
                     await this.subscriberAgreementProcessingService.ModifyOrAddSubscriberAgreementAsync(
                         subscriberAgreement);
 

@@ -8,6 +8,8 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
+using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberAgreements.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
@@ -159,8 +161,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             return new TheoryData<Xeption>
             {
+                 new SubscriberAgreementProcessingValidationException(
+                    message: "Subscriber agreement processing validation error occurred, please try again",
+                    innerException),
+
+                new SubscriberAgreementProcessingDependencyValidationException(
+                    message: "Subscriber agreement processing dependency validation error occurred, please try again.",
+                    innerException),
+
                 new SubscriberCredentialValidationException(
-                    message: "Subscriber credential processing validation error occured, please try again",
+                    message: "Subscriber credential processing validation error occurred, please try again",
                     innerException),
 
                 new SubscriberCredentialProcessingDependencyValidationException(
@@ -177,6 +187,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             return new TheoryData<Xeption>
             {
+                new SubscriberAgreementProcessingDependencyException(
+                    message: "Subscriber agreement processing dependency error occurred, contact support.",
+                    innerException),
+
+                new SubscriberAgreementProcessingServiceException(
+                    message: "Subscriber agreement processing service error occurred, contact support.",
+                    innerException),
+
                 new SubscriberCredentialProcessingDependencyException(
                     message: "Subscriber credential processing dependency error occurred, contact support.",
                     innerException),

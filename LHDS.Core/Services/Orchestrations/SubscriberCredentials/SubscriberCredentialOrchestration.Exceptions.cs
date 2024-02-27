@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberAgreements.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using Xeptions;
@@ -37,25 +38,46 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             {
                 throw CreateAndLogValidationException(invalidSubscriberAgreementOrchestrationException);
             }
-            catch (SubscriberCredentialValidationException
-                invalidArgumentSubscriberCredentialOrchestrationException)
+            catch (SubscriberAgreementProcessingValidationException
+                subscriberAgreementProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(invalidArgumentSubscriberCredentialOrchestrationException);
+                throw CreateAndLogDependencyValidationException(subscriberAgreementProcessingValidationException);
+            }
+            catch (SubscriberAgreementProcessingDependencyValidationException
+                subscriberAgreementProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(subscriberAgreementProcessingDependencyValidationException);
+            }
+            catch (SubscriberCredentialValidationException
+                subscriberCredentialValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationException);
             }
             catch (SubscriberCredentialProcessingDependencyValidationException
-                invalidArgumentSubscriberCredentialOrchestrationException)
+                subscriberCredentialProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(invalidArgumentSubscriberCredentialOrchestrationException);
+                throw CreateAndLogDependencyValidationException(
+                    subscriberCredentialProcessingDependencyValidationException);
+            }
+            catch (SubscriberAgreementProcessingDependencyException
+                subscriberAgreementProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(subscriberAgreementProcessingDependencyException);
+            }
+            catch (SubscriberAgreementProcessingServiceException
+                subscriberAgreementProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(subscriberAgreementProcessingServiceException);
             }
             catch (SubscriberCredentialProcessingDependencyException
-                invalidArgumentSubscriberCredentialOrchestrationException)
+                subscriberCredentialProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(invalidArgumentSubscriberCredentialOrchestrationException);
+                throw CreateAndLogDependencyException(subscriberCredentialProcessingDependencyException);
             }
             catch (SubscriberCredentialProcessingServiceException
-                invalidArgumentSubscriberCredentialOrchestrationException)
+                subscriberCredentialProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(invalidArgumentSubscriberCredentialOrchestrationException);
+                throw CreateAndLogDependencyException(subscriberCredentialProcessingServiceException);
             }
             catch (Exception exception)
             {

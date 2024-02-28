@@ -1,0 +1,1 @@
+{"version":3,"file":"featureService.js","sourceRoot":"","sources":["featureService.ts"],"names":[],"mappings":";;;AAAA,2CAAuC;AACvC,uEAA6D;AAGhD,QAAA,cAAc,GAAG;IAC1B,iBAAiB,EAAE;QACf,IAAM,aAAa,GAAG,IAAI,4BAAa,EAAE,CAAC;QAE1C,OAAO,IAAA,sBAAQ,EACX,CAAC,gBAAgB,CAAC,EAClB,cAAM,OAAA,aAAa,CAAC,kBAAkB,EAAE,EAAlC,CAAkC,EACxC,EAAE,SAAS,EAAE,QAAQ,EAAE,CAAC,CAAC;IACjC,CAAC;CACJ,CAAA"}

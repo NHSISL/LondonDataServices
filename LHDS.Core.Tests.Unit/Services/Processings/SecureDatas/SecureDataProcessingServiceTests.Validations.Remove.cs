@@ -53,7 +53,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             this.secureDataServiceMock.VerifyNoOtherCalls();
         }
 
-
         [Fact]
         public async Task ShouldThrowValidationExceptionRemoveIfSubscriberCredentialPropertyIsInvlaidAsync()
         {

@@ -115,6 +115,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 ValidateSubscriberCredentialOnRemove(subscriberCredential);
                 List<string> keyTypes = GetPropertyList();
+                ValidateSecureData(keyTypes, subscriberCredential);
 
                 foreach (string keyType in keyTypes)
                 {

@@ -35,7 +35,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
 
-
             // when
             SubscriberCredential actualSubscriberCredential =
                 await this.secureDataProcessingService.RemoveSecureDataAsync(inputSubscriberCredential);

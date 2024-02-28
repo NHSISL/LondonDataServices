@@ -110,8 +110,21 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 return subscriberCredential;
             });
 
-        public ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential subscriberCredential) =>
-            throw new NotImplementedException();
+        public async ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential subscriberCredential)
+        {
+            List<string> keyTypes = GetPropertyList();
+
+            foreach (string keyType in keyTypes)
+            {
+                string secretName = $"{subscriberCredential.Id}-{keyType}";
+
+                await this.secureDataService.RemoveSecureDataAsync(secretName);
+            }
+
+            return subscriberCredential;
+        }
+
+
 
         virtual internal List<SecureData> GetSecureDataItems(SubscriberCredential subscriberCredential)
         {

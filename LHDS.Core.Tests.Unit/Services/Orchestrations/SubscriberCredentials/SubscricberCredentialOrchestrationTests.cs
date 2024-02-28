@@ -3,10 +3,12 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberAgreements.Exceptions;
@@ -72,6 +74,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             return actualSubscriberCredential =>
                 this.compareLogic.Compare(expectedSubscriberCredential, actualSubscriberCredential)
                     .AreEqual;
+        }
+
+        private static IQueryable<dynamic> CreateRandomDynamicSubscriberAgreementCredentials()
+        {
+            return Enumerable.Range(1, GetRandomNumber())
+                .Select(item => CreateRandomDynamicSubscriberAgreementCredential())
+                    .AsQueryable<dynamic>();
+        }
+
+        private static IQueryable<SubscriberCredential> CreateSubscriberCredentialFromDynamic(
+            IQueryable<dynamic> credentials)
+        {
+            var enumerable = Enumerable.Range(1, GetRandomNumber())
+                .Select(item => CreateRandomDynamicSubscriberAgreementCredential());
+
+            return enumerable.AsQueryable();
         }
 
         private static dynamic CreateRandomDynamicSubscriberAgreementCredential()

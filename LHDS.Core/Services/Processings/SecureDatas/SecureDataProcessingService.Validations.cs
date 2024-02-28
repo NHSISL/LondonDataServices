@@ -88,7 +88,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 (Rule: IsInvalid(secureData.Value), Parameter: nameof(SecureData.Value)));
         }
 
-        private void ValidateSecureData(List<string> keyTypes, SubscriberCredential subscriberCredential)
+        private void ValidateKeysExist(List<string> keyTypes, SubscriberCredential subscriberCredential)
         {
             ValidateSubscriberCredentialIsNotNull(subscriberCredential);
             List<(dynamic Rule, string Parameter)> rules = new List<(dynamic Rule, string Parameter)>();

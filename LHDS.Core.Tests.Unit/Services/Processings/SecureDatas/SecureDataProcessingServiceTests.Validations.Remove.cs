@@ -53,93 +53,55 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             this.secureDataServiceMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionRemoveIfSubscriberCredentialIsInvalidAsync(
-           string invalidText)
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionRemoveIfSubscriberCredentialPropertyIsInvlaidAsync()
         {
             // given
-            var invalidSubscriberCredential = new SubscriberCredential
+            dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();
+            List<string> invalidProperties = GetRandomProperties();
+
+            SubscriberCredential inputSubscriberCredential =
+                CreateSubscriberCredentialFromDynamic(credential: randomCredential);
+
+            var secureDataProcessingServiceMock = new Mock<SecureDataProcessingService>(
+                secureDataServiceMock.Object,
+                loggingBrokerMock.Object,
+                identifierBrokerMock.Object)
+            { CallBase = true };
+
+            secureDataProcessingServiceMock.Setup(x => x.GetPropertyList()).Returns(invalidProperties);
+
+            var invalidArgumentSubscriberCredentialProcessingException =
+                new InvalidArgumentSubscriberCredentialProcessingException(
+                    message: "Invalid argument subscriber credential processing error occurred, contact support.");
+
+            foreach (string keyType in invalidProperties)
             {
-                Id = Guid.Empty,
-                SupplierSharingAgreementShortName = invalidText,
-                FtpUserName = invalidText,
-                FtpPassword = invalidText,
-                FtpPassPhrase = invalidText,
-                FtpPrivateKey = invalidText,
-                FtpPublicKey = invalidText,
-                GpgPassPhrase = invalidText,
-                GpgPrivateKey = invalidText,
-                GpgPublicKey = invalidText,
-            };
-
-            var invalidSubscriberCredentialException =
-                new InvalidSubscriberCredentialException(
-                    message: "Invalid subscriber credential errors occured. Please correct the errors and try again.");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.Id),
-                values: "Id is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.SupplierSharingAgreementShortName),
-                values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.FtpUserName),
-                values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.FtpPassword),
-                values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.FtpPassPhrase),
-                values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.FtpPrivateKey),
-                values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.FtpPublicKey),
-                values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.GpgPassPhrase),
-                values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.GpgPrivateKey),
-                values: "Text is required");
-
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.GpgPublicKey),
-                values: "Text is required");
+                invalidArgumentSubscriberCredentialProcessingException.AddData(
+                    key: keyType,
+                    values: "Invalid property");
+            }
 
             var expectedSubscriberCredentialValidationException =
-               new SubscriberCredentialValidationException(
-                   message: "Subscriber credential validation errors occurred, please try again.",
-                   innerException: invalidSubscriberCredentialException);
+                new SubscriberCredentialValidationException(
+                    message: "Subscriber credential validation errors occurred, please try again.",
+                    innerException: invalidArgumentSubscriberCredentialProcessingException);
 
             // when
             ValueTask<SubscriberCredential> removeSubscriberCredentialTask =
-                this.secureDataProcessingService.RemoveSecureDataAsync(invalidSubscriberCredential);
+                secureDataProcessingServiceMock.Object.RemoveSecureDataAsync(inputSubscriberCredential);
 
             SubscriberCredentialValidationException actualSubscriberCredentialValidationException =
                 await Assert.ThrowsAsync<SubscriberCredentialValidationException>(() =>
                     removeSubscriberCredentialTask.AsTask());
 
             // then
-            actualSubscriberCredentialValidationException.Should()
-                .BeEquivalentTo(expectedSubscriberCredentialValidationException);
+            actualSubscriberCredentialValidationException.Should().BeEquivalentTo(
+                expectedSubscriberCredentialValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedSubscriberCredentialValidationException))),
+                broker.LogError(It.Is(SameExceptionAs(expectedSubscriberCredentialValidationException))),
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

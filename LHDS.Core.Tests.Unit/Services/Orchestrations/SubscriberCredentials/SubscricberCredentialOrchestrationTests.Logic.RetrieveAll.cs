@@ -27,14 +27,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             IQueryable<SubscriberAgreement> inputSubscriberAgreements = 
                 CreateSubscriberAgreementsFromDynamic(randomDynamics);
 
-            IQueryable<SubscriberAgreement> outputSubscriberAgreement = inputSubscriberAgreements;
+            IQueryable<SubscriberAgreement> outputSubscriberAgreements = inputSubscriberAgreements;
 
             IQueryable<SubscriberCredential> expectedSubscriberCredential = 
                 CreateSubscriberCredentialsFromDynamic(randomDynamics);
 
             this.subscriberAgreementProcessingServiceMock.Setup(service =>
                 service.RetrieveAllSubscriberAgreements())
-                    .Returns(outputSubscriberAgreement);
+                    .Returns(outputSubscriberAgreements);
 
             // When
             IQueryable<SubscriberCredential> actualSubscriberCredentials = this.subscriberCredentialOrchestration
@@ -44,11 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             actualSubscriberCredentials.Should().BeEquivalentTo(expectedSubscriberCredential);
 
             this.subscriberAgreementProcessingServiceMock.Verify(service =>
-                service.ModifyOrAddSubscriberAgreementAsync(It.Is(SameSubscriberAgreementAs(inputSubscriberAgreement))),
-                    Times.Once);
-
-            this.secureDataProcessingServiceMock.Verify(service =>
-                service.AddOrModifySecureDataAsync(It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))),
+                service.RetrieveAllSubscriberAgreements(),
                     Times.Once);
 
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();

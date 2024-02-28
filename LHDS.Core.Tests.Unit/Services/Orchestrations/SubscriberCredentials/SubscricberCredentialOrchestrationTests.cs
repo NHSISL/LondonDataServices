@@ -92,6 +92,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             foreach (var credential in credentials)
             {
                 SubscriberCredential subscriberCredential = CreateSubscriberCredentialFromDynamic(credential);
+                subscriberCredential.FtpPassword = string.Empty;
+                subscriberCredential.FtpPrivateKey = string.Empty;
+                subscriberCredential.FtpPassPhrase = string.Empty;
+                subscriberCredential.GpgPassPhrase = string.Empty;
+                subscriberCredential.GpgPrivateKey = string.Empty;
 
                 subscriberCredentials.Add(subscriberCredential);
             }

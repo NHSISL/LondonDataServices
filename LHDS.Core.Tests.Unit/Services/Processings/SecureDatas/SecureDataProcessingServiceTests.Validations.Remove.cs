@@ -57,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionRemoveeIfSubscriberCredentialIsInvalidAsync(
+        public async Task ShouldThrowValidationExceptionRemoveIfSubscriberCredentialIsInvalidAsync(
            string invalidText)
         {
             // given

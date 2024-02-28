@@ -22,17 +22,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential();
-            SubscriberAgreement inputSubscriberAgreement = CreateSubscriberAgreementFromDynamic(randomDynamic);
-            SubscriberAgreement outputSubscriberAgreement = inputSubscriberAgreement;
-            SubscriberCredential inputSubscriberCredential = CreateSubscriberCredentialFromDynamic(randomDynamic);
-            SubscriberCredential storageSubscriberCredential = inputSubscriberCredential.DeepClone();
-            SubscriberCredential outputSubscriberCredential = storageSubscriberCredential.DeepClone();
-            SubscriberCredential expectedSubscriberCredential = outputSubscriberCredential.DeepClone();
+            IQueryable<dynamic> randomDynamics = CreateRandomDynamicSubscriberAgreementCredentials();
+
+            IQueryable<SubscriberAgreement> inputSubscriberAgreements = 
+                CreateSubscriberAgreementsFromDynamic(randomDynamics);
+
+            IQueryable<SubscriberAgreement> outputSubscriberAgreement = inputSubscriberAgreements;
+
+            IQueryable<SubscriberCredential> expectedSubscriberCredential = 
+                CreateSubscriberCredentialsFromDynamic(randomDynamics);
 
             this.subscriberAgreementProcessingServiceMock.Setup(service =>
-                service.ModifyOrAddSubscriberAgreementAsync(It.Is(SameSubscriberAgreementAs(inputSubscriberAgreement))))
-                    .ReturnsAsync(outputSubscriberAgreement);
+                service.RetrieveAllSubscriberAgreements())
+                    .Returns(outputSubscriberAgreement);
 
             // When
             IQueryable<SubscriberCredential> actualSubscriberCredentials = this.subscriberCredentialOrchestration

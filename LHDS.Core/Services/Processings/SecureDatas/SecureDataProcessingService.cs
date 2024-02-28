@@ -145,8 +145,6 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 return subscriberCredential;
             });
 
-
-
         virtual internal List<SecureData> GetSecureDataItems(SubscriberCredential subscriberCredential)
         {
             

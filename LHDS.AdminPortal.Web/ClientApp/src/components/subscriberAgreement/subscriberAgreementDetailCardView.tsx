@@ -30,66 +30,98 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
     const [ftpKeyCopied, setFtpKeyCopied] = React.useState<boolean>(false);
     const [gpgKeyCopied, setGpgKeyCopied] = React.useState<boolean>(false);
 
+    React.useEffect(() => {
+        const keyStateVariables = [
+            { keyCopied: ftpKeyCopied, setKeyCopied: setFtpKeyCopied },
+            { keyCopied: gpgKeyCopied, setKeyCopied: setGpgKeyCopied },
+        ];
+
+        keyStateVariables.forEach(({ keyCopied, setKeyCopied }) => {
+            if (keyCopied) {
+                const timerId = setTimeout(() => {
+                    setKeyCopied(false);
+                }, 5000);
+
+                return () => clearTimeout(timerId);
+            }
+        });
+
+    }, [ftpKeyCopied, gpgKeyCopied]);
 
     return (
         <>
             <SummaryListBase>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Agreement Short Name:</SummaryListBaseKey>
-                    <div className="w-75">
+                    <SummaryListBaseValue>
                         {subscriberAgreement.supplierSharingAgreementShortName}
-                    </div>
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Ftp UserName</SummaryListBaseKey>
-                    <div className="w-75">
+                    <SummaryListBaseValue>
                         {subscriberAgreement.ftpUserName}
-                    </div>
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Ftp Public Key&nbsp;
-                        {ftpKeyCopied ?
-                            <FontAwesomeIcon icon={faCheck} />
-                            : <FontAwesomeIcon icon={faCopy} onClick={() => { navigator.clipboard.writeText(subscriberAgreement.ftpPublicKey); setFtpKeyCopied(true); }} />
-                        }
+                        
                     </SummaryListBaseKey>
-                    <div className="w-75">
+                    <SummaryListBaseValue>
+                        {ftpKeyCopied ?
+                            <FontAwesomeIcon icon={faCheck} className="text-secondary" />
+                            : <FontAwesomeIcon icon={faCopy} className="text-secondary"
+                                onClick={() => {
+                                    navigator.clipboard.writeText(subscriberAgreement.ftpPublicKey);
+                                    setFtpKeyCopied(true);
+                                }} />
+                        } &nbsp;
                         {subscriberAgreement.ftpPublicKey}
-                    </div>
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Gpg Public Key&nbsp;
-                        {gpgKeyCopied ?
-                            <FontAwesomeIcon icon={faCheck} />
-                            : <FontAwesomeIcon icon={faCopy} onClick={() => { navigator.clipboard.writeText(subscriberAgreement.gpgPublicKey); setGpgKeyCopied(true); }} />
-                        }
                     </SummaryListBaseKey>
-                    <div className="w-75">
+                    <SummaryListBaseValue>
+                        {gpgKeyCopied ?
+                            <FontAwesomeIcon icon={faCheck} className="text-secondary" />
+                            : <FontAwesomeIcon icon={faCopy} className="text-secondary"
+                                onClick={() => {
+                                    navigator.clipboard.writeText(subscriberAgreement.gpgPublicKey);
+                                    setGpgKeyCopied(true);
+                                }} />
+                        } &nbsp;
                         {subscriberAgreement.gpgPublicKey}
-                    </div>
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Is Active</SummaryListBaseKey>
-                    <div className="w-75">
+                    <SummaryListBaseValue>
                         {subscriberAgreement.isActive
                             ? <FontAwesomeIcon icon={faCheck} className="text-success" />
                             : <FontAwesomeIcon icon={faTimes} className="text-danger" />}
-                    </div>
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Last Poll Start Date</SummaryListBaseKey>
-                    <div>
-                        {subscriberAgreement.lastPollStartDate ? moment(subscriberAgreement.lastPollStartDate?.toString()).format("Do-MMM-yyyy"):"Never Started Polling"}
-                    </div>
+                    <SummaryListBaseValue>
+                        {
+                            subscriberAgreement.lastPollStartDate
+                                ? moment(subscriberAgreement.lastPollStartDate?.toString()).format("Do-MMM-yyyy")
+                                : "Never Started Polling"
+                        }
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Last Poll End Date</SummaryListBaseKey>
-                    <div>{subscriberAgreement.lastPollEndDate ? moment(subscriberAgreement.lastPollEndDate?.toString()).format("Do-MMM-yyyy") : "Never Finished Polling"}</div>
+                    <SummaryListBaseValue>
+                        {subscriberAgreement.lastPollEndDate ? moment(subscriberAgreement.lastPollEndDate?.toString()).format("Do-MMM-yyyy") : "Never Finished Polling"}
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
             </SummaryListBase>
 
@@ -120,3 +152,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
 }
 
 export default SubscriberAgreementDetailCardView;
+
+function UseEffect(arg0: () => () => void, arg1: any[]) {
+    throw new Error("Function not implemented.");
+}

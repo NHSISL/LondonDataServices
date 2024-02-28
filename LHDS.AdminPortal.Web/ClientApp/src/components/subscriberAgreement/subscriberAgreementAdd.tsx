@@ -36,12 +36,20 @@ const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (
         event.preventDefault();          
         navigator.clipboard.writeText(sshPublicKey);
         setSshKeyCopied(true);
+
+        setTimeout(() => {
+            setSshKeyCopied(false);
+        }, 10000);
     }
 
     const copyGPGKeyToClipboard = (event:any) => {
         event.preventDefault();  
         navigator.clipboard.writeText(gpgPublicKey);
         setGpgKeyCopied(true);
+
+        setTimeout(() => {
+            setGpgKeyCopied(false);
+        }, 10000);
     }
 
     return (

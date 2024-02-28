@@ -1,16 +1,11 @@
 import React, { FunctionComponent } from "react";
-import { Button, Form, FormGroup } from "react-bootstrap";
-import { Label } from "nhsuk-react-components";
+import { Form } from "react-bootstrap";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import CardBase from "../bases/components/Card/CardBase";
 import CardBaseBody from "../bases/components/Card/CardBase.Body";
 import CardBaseTitle from "../bases/components/Card/CardBase.Title";
 import CardBaseContent from "../bases/components/Card/CardBase.Content";
-import TextAreaInputBase from "../bases/inputs/TextAreaInputBase";
 import TextInputBase from "../bases/inputs/TextInputBase";
-import { set } from "lodash";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCopy, faTicket } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
 interface SubscriberAgreementAddProps {

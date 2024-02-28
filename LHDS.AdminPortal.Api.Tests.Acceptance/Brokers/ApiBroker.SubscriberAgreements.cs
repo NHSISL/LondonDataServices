@@ -31,8 +31,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
               await this.apiFactoryClient.GetContentAsync<List<SubscriberAgreement>>(
                   $"{subscriberAgreementsRelativeUrl}/?$filter=Id eq {subscriberAgreementId}");
 
-        public async ValueTask<SubscriberAgreement> GetSubscriberAgreementByIdAsync(Guid subscriberAgreement) =>
-            await this.apiFactoryClient.GetContentAsync<SubscriberAgreement>($"{subscriberAgreementsRelativeUrl}");
+        public async ValueTask<SubscriberAgreement> GetSubscriberAgreementByIdAsync(Guid subscriberAgreementId) =>
+            await this.apiFactoryClient.GetContentAsync<SubscriberAgreement>($"{subscriberAgreementsRelativeUrl}/{subscriberAgreementId}");
 
         public async ValueTask<SubscriberAgreement> PutSubscriberAgreementAsync(SubscriberAgreement subscriberAgreementId) =>
             await this.apiFactoryClient.PutContentAsync(subscriberAgreementsRelativeUrl, subscriberAgreementId);

@@ -45,7 +45,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
                 .OnProperty(SubscriberAgreement => SubscriberAgreement.CreatedBy).Use(inputSubscriberAgreement.CreatedBy)
                 .OnProperty(SubscriberAgreement => SubscriberAgreement.CreatedDate).Use(inputSubscriberAgreement.CreatedDate)
                 .OnProperty(SubscriberAgreement => SubscriberAgreement.UpdatedDate).Use(now)
-                .OnType<DateTimeOffset>().Use(GetRandomDateTime());
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
+                .OnType<DateTimeOffset?>().Use(GetRandomDateTime());
 
             return filler.Create();
         }
@@ -69,10 +70,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberAgreement => subscriberAgreement.SupplierSharingAgreementGuid).Use(Guid.NewGuid())
                 .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(user)
                 .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedBy).Use(user);
 
             return filler;
         }
+
     }
 }

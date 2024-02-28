@@ -73,7 +73,12 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                     SubscriberCredential.GpgPublicKey)));
         }
 
-        private void ValidateSecureData(SecureData secureData)
+        private void ValidateSubscriberCredentialOnRemove(SubscriberCredential subscriberCredential)
+        {
+            ValidateSubscriberCredentialIsNotNull(subscriberCredential);
+        }
+
+            private void ValidateSecureData(SecureData secureData)
         {
             ValidateSecureDataIsNotNull(secureData);
 

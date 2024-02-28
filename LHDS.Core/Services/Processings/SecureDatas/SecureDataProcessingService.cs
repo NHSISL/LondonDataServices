@@ -116,12 +116,30 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 ValidateSubscriberCredentialOnRemove(subscriberCredential);
                 List<string> keyTypes = GetPropertyList();
                 ValidateSecureData(keyTypes, subscriberCredential);
+                var exceptions = new List<Exception>();
 
-                foreach (string keyType in keyTypes)
+                foreach (var keyType in keyTypes)
                 {
-                    string secretName = $"{subscriberCredential.Id}-{keyType}";
+                    try
+                    {
+                        string secretName = $"{subscriberCredential.Id}-{keyType}";
 
-                    await this.secureDataService.RemoveSecureDataAsync(secretName);
+                        await TryCatch(async () =>
+                        {
+                            await this.secureDataService.RemoveSecureDataAsync(secretName);
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to retrieve {exceptions.Count} secure data",
+                        exceptions);
                 }
 
                 return subscriberCredential;

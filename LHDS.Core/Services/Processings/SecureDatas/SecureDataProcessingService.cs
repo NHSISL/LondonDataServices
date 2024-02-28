@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 ValidateSubscriberCredentialOnRetrieve(subscriberCredential);
                 List<string> keyTypes = GetPropertyList();
-                ValidateSecureData(keyTypes, subscriberCredential);
+                ValidateKeysExist(keyTypes, subscriberCredential);
                 var exceptions = new List<Exception>();
 
                 foreach (var keyType in keyTypes)
@@ -115,7 +115,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 ValidateSubscriberCredentialOnRemove(subscriberCredential);
                 List<string> keyTypes = GetPropertyList();
-                ValidateSecureData(keyTypes, subscriberCredential);
+                ValidateKeysExist(keyTypes, subscriberCredential);
                 var exceptions = new List<Exception>();
 
                 foreach (var keyType in keyTypes)
@@ -150,7 +150,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             
             List<string> keyTypes = GetPropertyList();
             List<SecureData> secureDataList = new List<SecureData>();
-            ValidateSecureData(keyTypes, subscriberCredential);
+            ValidateKeysExist(keyTypes, subscriberCredential);
 
             foreach (string keyType in keyTypes)
             {

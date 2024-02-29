@@ -36,6 +36,7 @@ using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Providers.Downloads.FtpDownloads;
+using LHDS.Core.Services.Coordinations.Decryptions;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
@@ -135,6 +136,7 @@ namespace LHDS.AdminPortal.Api
             AddFoundationServices(services, this.Configuration);
             AddOrchestrationServices(services, this.Configuration);
             AddProcessingServices(services, this.Configuration);
+            AddCoordinationServices(services, this.Configuration);
             services.AddLandingClient(this.Configuration);
             services.AddDecryptionClient(this.Configuration);
             services.UseFtpDownloadProvider(this.Configuration, builder => builder.AddFtpDownloadProvider());
@@ -317,6 +319,11 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IIngestionTrackingProcessingService, IngestionTrackingProcessingService>();
             services.AddTransient<IIngestionTrackingAuditProcessingService, IngestionTrackingAuditProcessingService>();
             services.AddTransient<ISecureDataProcessingService, SecureDataProcessingService>();
+        }
+
+        private static void AddCoordinationServices(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddTransient<IDecryptionCoordinationService, DecryptionCoordinationService>();
         }
 
         private IEdmModel GetEdmModel()

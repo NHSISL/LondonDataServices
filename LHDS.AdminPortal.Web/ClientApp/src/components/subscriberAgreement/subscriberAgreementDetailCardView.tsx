@@ -8,9 +8,8 @@ import { SecuredComponents } from "../links";
 import securityPoints from "../../securityMatrix";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCopy, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCopy, faKey, faTimes } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
-import { Label } from "nhsuk-react-components";
 
 interface SubscriberAgreementDetailCardViewProps {
     subscriberAgreement: SubscriberAgreementView;
@@ -52,7 +51,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
         <>
             <SummaryListBase>
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Agreement Short Name:</SummaryListBaseKey>
+                    <SummaryListBaseKey>Short Name:</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         {subscriberAgreement.supplierSharingAgreementShortName}
                     </SummaryListBaseValue>
@@ -66,7 +65,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Ftp Public Key&nbsp;
-                        
+
                     </SummaryListBaseKey>
                     <SummaryListBaseValue>
                         {ftpKeyCopied ?
@@ -111,7 +110,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                     <SummaryListBaseValue>
                         {
                             subscriberAgreement.lastPollStartDate
-                                ? moment(subscriberAgreement.lastPollStartDate?.toString()).format("Do-MMM-yyyy")
+                                ? moment(subscriberAgreement.lastPollStartDate?.toString()).format("Do-MMM-yyyy HH:mm")
                                 : "Never Started Polling"
                         }
                     </SummaryListBaseValue>
@@ -120,7 +119,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Last Poll End Date</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        {subscriberAgreement.lastPollEndDate ? moment(subscriberAgreement.lastPollEndDate?.toString()).format("Do-MMM-yyyy") : "Never Finished Polling"}
+                        {subscriberAgreement.lastPollEndDate ? moment(subscriberAgreement.lastPollEndDate?.toString()).format("Do-MMM-yyyy HH:mm") : "Never Finished Polling"}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
             </SummaryListBase>
@@ -145,6 +144,29 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                             </>
                         </SecuredComponents>
                     </>
+                }
+
+                {mode === 'VIEW' &&
+                    <span className="float-end">
+                        <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.edit}>
+                            <ButtonBase onClick={() => onModeChange('CONFIRMREGEN')} info title={"Re-Generate Keys"}>
+                                Re-Generate Keys &nbsp;
+                                <FontAwesomeIcon icon={faKey}/>
+                            </ButtonBase>
+                        </SecuredComponents>
+                    </span>
+                }
+
+                {mode === 'CONFIRMREGEN' &&
+                    <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.delete}>
+                        <>
+                            <span className="text-danger">
+                                <strong>NOTE: Continuing to regenerate will lose the current keys forever.</strong></span>
+                            <br /> <br />
+                            <ButtonBase onClick={() => onModeChange('VIEW')} cancel>Cancel</ButtonBase>
+                            <ButtonBase onClick={() => onDelete(subscriberAgreement)} view>Yes, Re-Generate</ButtonBase>
+                        </>
+                    </SecuredComponents>
                 }
             </>
         </>

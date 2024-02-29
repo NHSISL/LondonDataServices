@@ -5,6 +5,7 @@ import { SubscriberAgreement } from "../models/subscriberAgreements/subscriberAg
 
 class SubscriberAgreementBroker {
     relativeSubscriberAgreementUrl = '/api/subscriberAgreements';
+    relativeSubscriberAgreementRegenerateUrl = '/api/subscriberAgreements/Regenerate';
     relativeSubscriberAgreementOdataUrl = '/odata/subscriberAgreements'
 
     private apiBroker: ApiBroker = new ApiBroker();
@@ -50,6 +51,11 @@ class SubscriberAgreementBroker {
 
     async PutSubscriberAgreementAsync(subscriberAgreement: SubscriberAgreement) {
         return await this.apiBroker.PutAsync(this.relativeSubscriberAgreementUrl, subscriberAgreement)
+            .then(result => new SubscriberAgreement(result.data));
+    }
+
+    async PutRegenerateSubscriberAgreementAsync(subscriberAgreement: SubscriberAgreement) {
+        return await this.apiBroker.PutAsync(this.relativeSubscriberAgreementRegenerateUrl, subscriberAgreement)
             .then(result => new SubscriberAgreement(result.data));
     }
 

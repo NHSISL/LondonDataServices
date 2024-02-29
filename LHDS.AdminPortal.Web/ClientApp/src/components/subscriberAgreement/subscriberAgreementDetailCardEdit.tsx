@@ -12,9 +12,11 @@ import { SubscriberAgreementView } from "../../models/views/components/subscribe
 import { subscriberAgreementErrors } from "./subscriberAgreementErrors";
 import { subscriberAgreementValidation } from "./subscriberAgreementValidation";
 import CheckboxBase from "../bases/inputs/CheckboxBase";
+import { Link } from "react-router-dom";
 
 interface SubscriberAgreementDetailCardEditProps {
     subscriberAgreement: SubscriberAgreementView;
+    onAdd: (subscriberAgreement: SubscriberAgreementView) => void;
     onUpdate: (subscriberAgreement: SubscriberAgreementView) => void;
     onCancel: () => void;
     mode: string;
@@ -25,6 +27,7 @@ interface SubscriberAgreementDetailCardEditProps {
 const SubscriberAgreementDetailCardEdit: FunctionComponent<SubscriberAgreementDetailCardEditProps> = (props) => {
     const {
         subscriberAgreement,
+        onAdd,
         onUpdate,
         onCancel,
         mode,
@@ -54,6 +57,14 @@ const SubscriberAgreementDetailCardEdit: FunctionComponent<SubscriberAgreementDe
         onModeChange('VIEW')
         onCancel();
     };
+
+    const handleSave = () => {
+        if (!validate(editSubscriberAgreement)) {
+            onAdd(editSubscriberAgreement)
+        } else {
+            enableValidationMessages();
+        }
+    }
 
     const handleUpdate = () => {
         if (!validate(editSubscriberAgreement)) {
@@ -154,14 +165,27 @@ const SubscriberAgreementDetailCardEdit: FunctionComponent<SubscriberAgreementDe
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
-        </SummaryListBase>
+            </SummaryListBase>
 
-            <div>
-                <ButtonBase onClick={() => handleCancel()} cancel>Cancel</ButtonBase>
-                <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.edit}>
-                    <ButtonBase onClick={handleUpdate} edit>Update</ButtonBase>
-                </SecuredComponents>
-            </div>
+            {mode === "ADD" && (
+                <div>
+                    <Link to={'/configuration/subscriberAgreements/'}>
+                        <ButtonBase onClick={() => { }} add>Cancel</ButtonBase>
+                    </Link>
+                    <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.add}>
+                        <ButtonBase onClick={handleSave} add>Add</ButtonBase>
+                    </SecuredComponents>
+                </div>
+            )}
+
+            {mode !== "ADD" && (
+                <div>
+                    <ButtonBase onClick={() => handleCancel()} cancel>Cancel</ButtonBase>
+                    <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.edit}>
+                        <ButtonBase onClick={handleUpdate} edit>Update</ButtonBase>
+                    </SecuredComponents>
+                </div>
+            )}
         </>
     );
 }

@@ -77,23 +77,7 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
                         Subscriber Agreements
                     </CardBaseTitle>
                     <CardBaseContent>
-                        {/*<Link to="/subscriberAgreement/new" className="btn btn-primary">*/}
-                        {/*    <ButtonBase onClick={() => {  }} add><FontAwesomeIcon icon={faPlusCircle} />&nbsp;New</ButtonBase>*/}
-                        {/*</Link>*/}
                         <InfiniteScroll loading={isLoading} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
-                            {/*<div className="filter-container">*/}
-                            {/*    <div className="filter-item">*/}
-                            {/*        <SearchBase*/}
-                            {/*            id="search"*/}
-                            {/*            label="Search Subscriber Agreements"*/}
-                            {/*            placeholder="Search Subscriber Agreements..."*/}
-                            {/*            value={searchTerm}*/}
-                            {/*            onChange={(e) => {*/}
-                            {/*                handleSearchChange(e.currentTarget.value);*/}
-                            {/*            }} />*/}
-                            {/*    </div>*/}
-                            {/*</div>*/}
-
                             <Row>
                                 <div className="input-group mb-3">
                                     <SearchBase

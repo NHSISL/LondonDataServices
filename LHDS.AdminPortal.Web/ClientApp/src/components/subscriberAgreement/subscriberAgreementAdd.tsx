@@ -29,7 +29,7 @@ const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (
         setSshPublicKey("ssh public key");
         setGpgPublicKey("gpg public key");
         setAdded(true)
-        navigate('/subscriberAgreementDetail/TODO'); 
+        navigate('/subscriberAgreement'); 
     }
 
     const copySSHKeyToClipboard = (event:any) => {

@@ -88,42 +88,43 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                 return await this.secureDataProcessingService.AddOrModifySecureDataAsync(updatedSubcriberCredential);
             });
 
-        public IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials()
-        {
-            IQueryable<SubscriberAgreement> retrievedSubscriberAgreements = 
-                this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreements();
-
-            List<SubscriberCredential> subscriberCredentials = new List<SubscriberCredential>();
-
-            foreach (SubscriberAgreement subscriberAgreement in retrievedSubscriberAgreements)
+        public IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials() =>
+            TryCatch(() =>
             {
-                SubscriberCredential subscriberCredential = new SubscriberCredential
+                IQueryable<SubscriberAgreement> retrievedSubscriberAgreements = 
+                    this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreements();
+
+                List<SubscriberCredential> subscriberCredentials = new List<SubscriberCredential>();
+
+                foreach (SubscriberAgreement subscriberAgreement in retrievedSubscriberAgreements)
                 {
-                    Id = subscriberAgreement.Id,
-                    SupplierSharingAgreementShortName = subscriberAgreement.SupplierSharingAgreementShortName,
-                    SupplierSharingAgreementGuid = subscriberAgreement.SupplierSharingAgreementGuid,
-                    FtpUserName = subscriberAgreement.FtpUserName,
-                    FtpPassword = string.Empty,
-                    FtpPublicKey = subscriberAgreement.FtpPublicKey,
-                    FtpPassPhrase = string.Empty,
-                    FtpPrivateKey = string.Empty,
-                    GpgPublicKey = subscriberAgreement.GpgPublicKey,
-                    GpgPassPhrase = string.Empty,
-                    GpgPrivateKey = string.Empty,
-                    IsActive = subscriberAgreement.IsActive,
-                    LastPollEndDate = subscriberAgreement.LastPollEndDate,
-                    LastPollStartDate = subscriberAgreement.LastPollStartDate,
-                    CreatedBy = subscriberAgreement.CreatedBy,
-                    UpdatedBy = subscriberAgreement.UpdatedBy,
-                    UpdatedDate = subscriberAgreement.UpdatedDate,
-                    CreatedDate = subscriberAgreement.CreatedDate,
-                };
+                    SubscriberCredential subscriberCredential = new SubscriberCredential
+                    {
+                        Id = subscriberAgreement.Id,
+                        SupplierSharingAgreementShortName = subscriberAgreement.SupplierSharingAgreementShortName,
+                        SupplierSharingAgreementGuid = subscriberAgreement.SupplierSharingAgreementGuid,
+                        FtpUserName = subscriberAgreement.FtpUserName,
+                        FtpPassword = string.Empty,
+                        FtpPublicKey = subscriberAgreement.FtpPublicKey,
+                        FtpPassPhrase = string.Empty,
+                        FtpPrivateKey = string.Empty,
+                        GpgPublicKey = subscriberAgreement.GpgPublicKey,
+                        GpgPassPhrase = string.Empty,
+                        GpgPrivateKey = string.Empty,
+                        IsActive = subscriberAgreement.IsActive,
+                        LastPollEndDate = subscriberAgreement.LastPollEndDate,
+                        LastPollStartDate = subscriberAgreement.LastPollStartDate,
+                        CreatedBy = subscriberAgreement.CreatedBy,
+                        UpdatedBy = subscriberAgreement.UpdatedBy,
+                        UpdatedDate = subscriberAgreement.UpdatedDate,
+                        CreatedDate = subscriberAgreement.CreatedDate,
+                    };
 
-                subscriberCredentials.Add(subscriberCredential);
-            }
+                    subscriberCredentials.Add(subscriberCredential);
+                }
 
-            return subscriberCredentials.AsQueryable();
-        }
+                return subscriberCredentials.AsQueryable();
+            });
 
         public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds() =>
             throw new NotImplementedException();

@@ -23,17 +23,28 @@ namespace LHDS.AdminPortal.Api.Controllers
         public SubscriberCredentialsController(ISubscriberCredentialOrchestration subscriberCredentialOrchestration) =>
             this.subscriberCredentialOrchestration = subscriberCredentialOrchestration;
 
-        [HttpPost]
+        [HttpPost("{regeneratekeys?}")]
         public async ValueTask<ActionResult<SubscriberCredential>> PostSubscriberCredentialAsync(
-            SubscriberCredential subscriberCredential)
+            [FromBody] SubscriberCredential subscriberCredential, string? regeneratekeys)
         {
             try
             {
-                SubscriberCredential addedSubscriberCredential =
-                    await this.subscriberCredentialOrchestration
-                        .ModifyOrAddSubscriberCredentialAsync(subscriberCredential);
-
-                return Created(addedSubscriberCredential);
+                if (!string.IsNullOrWhiteSpace(regeneratekeys))
+                {
+                    return Ok(await this.subscriberCredentialOrchestration
+                        .ModifyOrAddSubscriberCredentialAsync(
+                        subscriberCredential,
+                        regenerateKeys: true,
+                        externalUse: true));
+                }
+                else
+                {
+                    return Ok(await this.subscriberCredentialOrchestration
+                        .ModifyOrAddSubscriberCredentialAsync(
+                            subscriberCredential,
+                            regenerateKeys: false,
+                            externalUse: true));
+                }
             }
             catch (SubscriberCredentialValidationOrchestrationException
                 subscriberCredentialValidationOrchestrationException)
@@ -86,7 +97,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             try
             {
                 SubscriberCredential subscriberCredential = await this.subscriberCredentialOrchestration
-                    .RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId);
+                    .RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId, externalUse: true);
 
                 return Ok(subscriberCredential);
             }
@@ -112,17 +123,28 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("{regeneratekeys?}")]
         public async ValueTask<ActionResult<SubscriberCredential>> PutSubscriberCredentialAsync(
-            SubscriberCredential subscriberCredential)
+            [FromBody] SubscriberCredential subscriberCredential, string? regeneratekeys)
         {
             try
             {
-                SubscriberCredential modifiedSubscriberCredential =
-                    await this.subscriberCredentialOrchestration
-                        .ModifyOrAddSubscriberCredentialAsync(subscriberCredential);
-
-                return Ok(modifiedSubscriberCredential);
+                if (!string.IsNullOrWhiteSpace(regeneratekeys))
+                {
+                    return Ok(await this.subscriberCredentialOrchestration
+                        .ModifyOrAddSubscriberCredentialAsync(
+                        subscriberCredential,
+                        regenerateKeys: true,
+                        externalUse: true));
+                }
+                else
+                {
+                    return Ok(await this.subscriberCredentialOrchestration
+                        .ModifyOrAddSubscriberCredentialAsync(
+                            subscriberCredential,
+                            regenerateKeys: false,
+                            externalUse: true));
+                }
             }
             catch (SubscriberCredentialValidationOrchestrationException subscriberCredentialValidationException)
                 when (subscriberCredentialValidationException.InnerException is NotFoundSubscriberAgreementException)

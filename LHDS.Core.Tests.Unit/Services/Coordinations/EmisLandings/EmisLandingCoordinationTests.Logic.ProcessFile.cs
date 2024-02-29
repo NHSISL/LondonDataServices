@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             // Then
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId),
+                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId, true),
                     Times.Once);
 
             this.emisLandingExtractionOrchestrationServiceMock.Verify(service =>

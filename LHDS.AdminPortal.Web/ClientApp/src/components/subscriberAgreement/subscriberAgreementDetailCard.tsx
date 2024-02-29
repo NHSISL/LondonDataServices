@@ -69,13 +69,10 @@ const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetail
             <CardBase>
                 <CardBaseBody>
                     <CardBaseTitle>
-                        Subscriber Agreement Detail
-                    </CardBaseTitle>
-                    <CardBaseTitle>
-                        {displayMode === "ADD" ? "New Subscriber Agreement" : "Subscriber Agreement Detail"}
+                        {displayMode === "ADD" ? "New Subscriber Agreements" : "Subscriber Agreement Details"}
                     </CardBaseTitle>
                     <CardBaseContent>
-                        {(displayMode === "VIEW" || displayMode === "CONFIRMDELETE") && (
+                        {(displayMode === "VIEW" || displayMode === "CONFIRMDELETE" || displayMode === "CONFIRMREGEN") && (
                             <SubscriberAgreementDetailCardView
                                 onModeChange={handleModeChange}
                                 subscriberAgreement={subscriberAgreement}

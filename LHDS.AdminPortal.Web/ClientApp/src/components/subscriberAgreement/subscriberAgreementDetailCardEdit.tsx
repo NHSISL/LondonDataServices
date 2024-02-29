@@ -83,7 +83,7 @@ const SubscriberAgreementDetailCardEdit: FunctionComponent<SubscriberAgreementDe
             <SummaryListBase>
 
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Subscriber Agreement Short Name</SummaryListBaseKey>
+                    <SummaryListBaseKey>Short Name</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         <TextInputBase
                             id="subscriberAgreementName"
@@ -103,21 +103,6 @@ const SubscriberAgreementDetailCardEdit: FunctionComponent<SubscriberAgreementDe
                             id="FtpUserName"
                             name="FtpUserName"
                             placeholder="Ftp User Name"
-                            required={true}
-                            value={editSubscriberAgreement.ftpUserName}
-                            error={errors.ftpUserName}
-                            onChange={handleChange} />
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
-
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>FTP User Name</SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        <TextInputBase
-                            id="FtpUserName"
-                            name="FtpUserName"
-                            placeholder="Ftp User Name"
-                            required={true}
                             value={editSubscriberAgreement.ftpUserName}
                             error={errors.ftpUserName}
                             onChange={handleChange} />
@@ -127,28 +112,14 @@ const SubscriberAgreementDetailCardEdit: FunctionComponent<SubscriberAgreementDe
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>FTP Public Key</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        <TextInputBase
-                            id="FtpPublicKey"
-                            name="FtpPublicKey"
-                            placeholder="Ftp Public Key"
-                            required={true}
-                            value={editSubscriberAgreement.ftpPublicKey}
-                            error={errors.ftpPublicKey}
-                            onChange={handleChange} />
+                        {editSubscriberAgreement.ftpPublicKey}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>GPG Public Key</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        <TextInputBase
-                            id="FpgPublicKey"
-                            name="GpgPublicKey"
-                            placeholder="Gpg Public Key"
-                            required={true}
-                            value={editSubscriberAgreement.gpgPublicKey}
-                            error={errors.gpgPublicKey}
-                            onChange={handleChange} />
+                        {editSubscriberAgreement.gpgPublicKey}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 

@@ -109,7 +109,7 @@ export const NavigationBar: FunctionComponent = () => {
                 <FeatureSwitch feature={FeatureDefinitions.IngestionTracking}>
                     <li className="">
                         <SecuredComponents allowedRoles={securityPoints.ingestionTracking.view}>
-                            <SecuredLink icon="ingestion" to="/ingestionTracking">Ingestion Tracking</SecuredLink>
+                            <SecuredLink to="/ingestionTracking">Ingestion Tracking</SecuredLink>
                         </SecuredComponents>
                     </li>
                 </FeatureSwitch>

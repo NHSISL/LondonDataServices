@@ -41,6 +41,7 @@ var subscriberAgreements_1 = require("../models/subscriberAgreements/subscriberA
 var SubscriberAgreementBroker = /** @class */ (function () {
     function SubscriberAgreementBroker() {
         this.relativeSubscriberAgreementUrl = '/api/subscriberAgreements';
+        this.relativeSubscriberAgreementRegenerateUrl = '/api/subscriberAgreements/Regenerate';
         this.relativeSubscriberAgreementOdataUrl = '/odata/subscriberAgreements';
         this.apiBroker = new apiBroker_1.default();
         this.processOdataResult = function (result) {
@@ -123,6 +124,17 @@ var SubscriberAgreementBroker = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.apiBroker.PutAsync(this.relativeSubscriberAgreementUrl, subscriberAgreement)
+                            .then(function (result) { return new subscriberAgreements_1.SubscriberAgreement(result.data); })];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    SubscriberAgreementBroker.prototype.PutRegenerateSubscriberAgreementAsync = function (subscriberAgreement) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.apiBroker.PutAsync(this.relativeSubscriberAgreementRegenerateUrl, subscriberAgreement)
                             .then(function (result) { return new subscriberAgreements_1.SubscriberAgreement(result.data); })];
                     case 1: return [2 /*return*/, _a.sent()];
                 }

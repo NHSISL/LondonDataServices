@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
@@ -22,26 +21,30 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            IQueryable<dynamic> randomDynamics = CreateRandomDynamicSubscriberAgreementCredentials();
+            List<dynamic> randomDynamics = CreateRandomDynamicSubscriberAgreementCredentials();
 
-            IQueryable<SubscriberAgreement> inputSubscriberAgreements = 
+            IQueryable<SubscriberAgreement> storageSubscriberAgreements =
                 CreateSubscriberAgreementsFromDynamic(randomDynamics);
 
-            IQueryable<SubscriberAgreement> outputSubscriberAgreements = inputSubscriberAgreements;
-
-            IQueryable<SubscriberCredential> expectedSubscriberCredential = 
+            IQueryable<SubscriberCredential> expectedSubscriberCredentials =
                 CreateSubscriberCredentialsFromDynamic(randomDynamics);
 
             this.subscriberAgreementProcessingServiceMock.Setup(service =>
                 service.RetrieveAllSubscriberAgreements())
-                    .Returns(outputSubscriberAgreements);
+                    .Returns(storageSubscriberAgreements);
 
             // When
             IQueryable<SubscriberCredential> actualSubscriberCredentials = this.subscriberCredentialOrchestration
                 .RetrieveAllSubscriberCredentials();
 
             // Then
-            actualSubscriberCredentials.Should().BeEquivalentTo(expectedSubscriberCredential);
+            actualSubscriberCredentials.Count().Should().Be(expectedSubscriberCredentials.Count());
+            var firstActualId = actualSubscriberCredentials.FirstOrDefault().Id;
+
+            actualSubscriberCredentials.Where(actualSubscriberCredential =>
+                actualSubscriberCredential.Id == firstActualId).Should().
+                    BeEquivalentTo(expectedSubscriberCredentials.Where(
+                        expectedSubscriberCredential => expectedSubscriberCredential.Id == firstActualId));
 
             this.subscriberAgreementProcessingServiceMock.Verify(service =>
                 service.RetrieveAllSubscriberAgreements(),

@@ -77,15 +77,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                     .AreEqual;
         }
 
-        private static IQueryable<dynamic> CreateRandomDynamicSubscriberAgreementCredentials()
+        private static List<dynamic> CreateRandomDynamicSubscriberAgreementCredentials()
         {
-            return Enumerable.Range(1, GetRandomNumber())
+            return Enumerable.Range(1, 1)
                 .Select(item => CreateRandomDynamicSubscriberAgreementCredential())
-                    .AsQueryable<dynamic>();
+                    .ToList();
         }
 
         private static IQueryable<SubscriberCredential> CreateSubscriberCredentialsFromDynamic(
-            IQueryable<dynamic> credentials)
+            List<dynamic> credentials)
         {
             List<SubscriberCredential> subscriberCredentials = new List<SubscriberCredential>();
 
@@ -105,11 +105,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         }
 
         private static IQueryable<SubscriberAgreement> CreateSubscriberAgreementsFromDynamic(
-            IQueryable<dynamic> credentials)
+            List<dynamic> credentials)
         {
             List<SubscriberAgreement> subscriberAgreements = new List<SubscriberAgreement>();
 
-            foreach (var credential in credentials)
+            foreach (dynamic credential in credentials)
             {
                 SubscriberAgreement subscriberAgreement = CreateSubscriberAgreementFromDynamic(credential);
 

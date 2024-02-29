@@ -35,7 +35,9 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         }
 
         public ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(
-            SubscriberCredential subscriberCredential) =>
+            SubscriberCredential subscriberCredential,
+            bool regenerateKeys = false,
+            bool externalUse = true) =>
             TryCatch(async () =>
             {
                 ValidateSubscriberCredential(subscriberCredential);
@@ -94,8 +96,9 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds() =>
             throw new NotImplementedException();
 
-        public ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
-            throw new NotImplementedException();
+        public ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(
+            Guid subscriberCredentialId, bool externalUse = true) =>
+                throw new NotImplementedException();
 
         public ValueTask<SubscriberCredential> RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
             throw new NotImplementedException();

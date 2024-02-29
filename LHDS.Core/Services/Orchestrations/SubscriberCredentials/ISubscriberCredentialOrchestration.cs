@@ -12,13 +12,15 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
 {
     public interface ISubscriberCredentialOrchestration
     {
-        ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(SubscriberCredential subscriberCredential);
+        ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(
+            SubscriberCredential subscriberCredential, bool regenerateKeys = false, bool externalUse = true);
+
         IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials();
         ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds();
-        ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(Guid subscriberCredentialId);
-        ValueTask<SubscriberCredential> RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId);
 
-        ValueTask<SubscriberCredential> RetrieveSubscriberCredentialBySupplierSharingAgreementGuidAsync(
-            Guid SupplierSharingAgreementGuid);
+        ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(
+            Guid subscriberCredentialId, bool externalUse = true);
+
+        ValueTask<SubscriberCredential> RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId);
     }
 }

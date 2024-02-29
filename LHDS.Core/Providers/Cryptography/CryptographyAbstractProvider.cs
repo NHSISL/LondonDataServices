@@ -1,8 +1,9 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 
 namespace LHDS.Core.Providers.Cryptography
 {
@@ -15,10 +16,10 @@ namespace LHDS.Core.Providers.Cryptography
             this.provider = provider;
         }
 
-        public async ValueTask<byte[]> EncryptAsync(byte[] data) =>
-            await this.provider.EncryptAsync(data);
+        public async ValueTask<byte[]> EncryptAsync(byte[] data, SubscriberCredential subscriberCredential) =>
+            await this.provider.EncryptAsync(data, subscriberCredential);
 
-        public async ValueTask<byte[]> DecryptAsync(byte[] data) =>
-            await this.provider.DecryptAsync(data);
+        public async ValueTask<byte[]> DecryptAsync(byte[] data, SubscriberCredential subscriberCredential) =>
+            await this.provider.DecryptAsync(data, subscriberCredential);
     }
 }

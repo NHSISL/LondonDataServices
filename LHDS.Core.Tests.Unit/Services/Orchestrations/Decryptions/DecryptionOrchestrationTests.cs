@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq.Expressions;
@@ -12,14 +12,17 @@ using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.Decryptions;
+using LHDS.Core.Services.Processings.Downloads;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -30,6 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
     public partial class DecryptionOrchestrationTests
     {
         private readonly Mock<IDocumentService> documentServiceMock;
+        private readonly Mock<IDownloadProcessingService> downloadProcessingServiceMock;
         private readonly Mock<ICryptographyService> cryptographyServiceMock;
         private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock;
         private readonly Mock<IIngestionTrackingAuditService> auditServiceMock;
@@ -43,6 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         public DecryptionOrchestrationTests()
         {
             documentServiceMock = new Mock<IDocumentService>();
+            downloadProcessingServiceMock = new Mock<IDownloadProcessingService>();
             cryptographyServiceMock = new Mock<ICryptographyService>();
             ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();
             auditServiceMock = new Mock<IIngestionTrackingAuditService>();
@@ -58,6 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             this.decryptionOrchestrationService = new DecryptionOrchestrationService(
                 documentService: documentServiceMock.Object,
+                downloadProcessingService: downloadProcessingServiceMock.Object,
                 cryptographyService: cryptographyServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
                 auditService: auditServiceMock.Object,
@@ -79,6 +85,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             filler.Setup();
 
             return filler;
+        }
+
+        private Expression<Func<Download, bool>> SameDownloadAs(
+            Download expectedDownload)
+        {
+            return actualDownload =>
+                this.compareLogic.Compare(expectedDownload, actualDownload)
+                    .AreEqual;
         }
 
         private static string GetRandomString() =>
@@ -210,6 +224,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt(); ;
+
+            return filler;
+        }
+        
+        private static SubscriberCredential CreateRandomSubscriberCredential() =>
+            CreateSubscriberCredentialFiller().Create();
+
+        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller()
+        {
+            var filler = new Filler<SubscriberCredential>();
+            string user = Guid.NewGuid().ToString();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
             return filler;
         }

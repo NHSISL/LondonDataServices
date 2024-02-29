@@ -42,7 +42,7 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                         .RetrieveSubscriberCredentialByIdAsync(new Guid(extractSubscriberCredentialIdString));
 
                     string decryptItem =
-                        await this.decryptionOrchestrationService.DecryptAsync(fileName);
+                        await this.decryptionOrchestrationService.DecryptAsync(fileName, maybeSubscriberCredential);
 
                     return decryptItem;
                 }

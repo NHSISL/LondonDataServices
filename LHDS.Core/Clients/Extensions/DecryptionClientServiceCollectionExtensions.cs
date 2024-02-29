@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections;
@@ -79,11 +79,6 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddProviders(IServiceCollection services, IConfiguration configuration)
         {
-            IGpgCryptographyProviderSettings gpgCryptographyProviderSettings =
-                configuration.GetSection("cryptography").Get<GpgCryptographyProviderSettings>();
-
-            ValidateCryptographyProviderSettings(gpgCryptographyProviderSettings);
-            services.AddSingleton<IGpgCryptographyProviderSettings>(gpgCryptographyProviderSettings);
             services.AddTransient<IDownloadAbstractionProvider, DownloadAbstractionProvider>();
             services.AddTransient<ICryptographyAbstractProvider, CryptographyAbstractProvider>();
             services.AddTransient<ICryptographyProvider, GpgCryptographyProvider>();
@@ -147,25 +142,6 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddClients(IServiceCollection services)
         {
             services.AddTransient<IDecryptionClient, DecryptionClient>();
-        }
-
-        private static void ValidateCryptographyProviderSettings(
-            IGpgCryptographyProviderSettings cryptographyProviderSettings)
-        {
-            if (cryptographyProviderSettings == null)
-            {
-                throw new InvalidConfigurationException("Configuration section 'cryptography' not defined.");
-            }
-
-            Validate(
-                (Rule: IsInvalid(cryptographyProviderSettings.PrivateKey),
-                    Parameter: "cryptography__privateKey"),
-
-                (Rule: IsInvalid(cryptographyProviderSettings.PublicKey),
-                    Parameter: "cryptography__publicKey"),
-
-                (Rule: IsInvalid(cryptographyProviderSettings.Passphrase),
-                    Parameter: "cryptography__passphrase"));
         }
 
         private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)

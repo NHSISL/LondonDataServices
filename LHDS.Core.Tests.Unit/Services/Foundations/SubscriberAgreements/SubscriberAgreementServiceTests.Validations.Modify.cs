@@ -69,9 +69,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             var invalidSubscriberAgreement = new SubscriberAgreement
             {
                 SupplierSharingAgreementShortName = invalidText,
-                FtpUserName = invalidText,
-                FtpPublicKey = invalidText,
-                GpgPublicKey = invalidText,
                 CreatedBy = invalidText,
                 UpdatedBy = invalidText
             };
@@ -86,18 +83,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             invalidSubscriberAgreementException.AddData(
                 key: nameof(SubscriberAgreement.SupplierSharingAgreementShortName),
-                values: "Text is required");
-
-            invalidSubscriberAgreementException.AddData(
-                key: nameof(SubscriberAgreement.FtpUserName),
-                values: "Text is required");
-
-            invalidSubscriberAgreementException.AddData(
-                key: nameof(SubscriberAgreement.FtpPublicKey),
-                values: "Text is required");
-
-            invalidSubscriberAgreementException.AddData(
-                key: nameof(SubscriberAgreement.GpgPublicKey),
                 values: "Text is required");
 
             invalidSubscriberAgreementException.AddData(
@@ -162,9 +147,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             SubscriberAgreement invalidSubscriberAgreement = CreateRandomModifySubscriberAgreement(randomDateTimeOffset);
             invalidSubscriberAgreement.SupplierSharingAgreementShortName = GetRandomString(129);
-            invalidSubscriberAgreement.FtpUserName = GetRandomString(129);
-            invalidSubscriberAgreement.FtpPublicKey = GetRandomString(129);
-            invalidSubscriberAgreement.GpgPublicKey = GetRandomString(129);
             invalidSubscriberAgreement.CreatedBy = GetRandomString(256);
             invalidSubscriberAgreement.UpdatedBy = GetRandomString(256);
 
@@ -178,18 +160,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             invalidSubscriberAgreementException.AddData(
                 key: nameof(SubscriberAgreement.SupplierSharingAgreementShortName),
-                values: "Text exceeded length requirement");
-
-            invalidSubscriberAgreementException.AddData(
-                key: nameof(SubscriberAgreement.FtpUserName),
-                values: "Text exceeded length requirement");
-
-            invalidSubscriberAgreementException.AddData(
-                key: nameof(SubscriberAgreement.FtpPublicKey),
-                values: "Text exceeded length requirement");
-
-            invalidSubscriberAgreementException.AddData(
-                key: nameof(SubscriberAgreement.GpgPublicKey),
                 values: "Text exceeded length requirement");
 
             invalidSubscriberAgreementException.AddData(

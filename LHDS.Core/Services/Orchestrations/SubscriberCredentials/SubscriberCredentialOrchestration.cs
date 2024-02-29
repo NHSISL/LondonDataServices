@@ -128,14 +128,12 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds() =>
             throw new NotImplementedException();
 
-        public ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
+        public ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(
+            Guid subscriberCredentialId, 
+            bool externalUse = true) =>
             throw new NotImplementedException();
 
         public ValueTask<SubscriberCredential> RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
             throw new NotImplementedException();
-
-        public ValueTask<SubscriberCredential>
-            RetrieveSubscriberCredentialBySupplierSharingAgreementGuidAsync(Guid SupplierSharingAgreementGuid) =>
-                throw new NotImplementedException();
     }
 }

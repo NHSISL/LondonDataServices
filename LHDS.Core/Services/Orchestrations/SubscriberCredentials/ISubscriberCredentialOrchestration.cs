@@ -15,10 +15,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(SubscriberCredential subscriberCredential);
         IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials();
         ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds();
-        ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(Guid subscriberCredentialId);
+        ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(Guid subscriberCredentialId, bool externalUse = true);
         ValueTask<SubscriberCredential> RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId);
-
-        ValueTask<SubscriberCredential> RetrieveSubscriberCredentialBySupplierSharingAgreementGuidAsync(
-            Guid SupplierSharingAgreementGuid);
     }
 }

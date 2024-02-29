@@ -11,6 +11,7 @@ import SubscriberAgreementDetailCardEdit from "./subscriberAgreementDetailCardEd
 interface SubscriberAgreementDetailCardProps {
     subscriberAgreement: SubscriberAgreementView;
     mode: string;
+    onAdd: (subscriberAgreement: SubscriberAgreementView) => void;
     onUpdate: (subscriberAgreement: SubscriberAgreementView) => void;
     onDelete: (subscriberAgreement: SubscriberAgreementView) => void;
     children?: React.ReactNode;
@@ -20,6 +21,7 @@ const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetail
     const {
         subscriberAgreement,
         mode,
+        onAdd,
         onUpdate,
         onDelete,
         children
@@ -33,6 +35,15 @@ const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetail
     };
 
     const navigate = useNavigate();
+
+    const handleAdd = async (subscriberAgreement: SubscriberAgreementView) => {
+        try {
+            await onAdd(subscriberAgreement);
+            navigate('/configuration/subscriberAgreements');
+        } catch (error) {
+            setDisplayMode('EDIT');
+        }
+    };
 
     const handleUpdate = async (subscriberAgreement: SubscriberAgreementView) => {
         try {
@@ -60,6 +71,9 @@ const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetail
                     <CardBaseTitle>
                         Subscriber Agreement Detail
                     </CardBaseTitle>
+                    <CardBaseTitle>
+                        {displayMode === "ADD" ? "New Subscriber Agreement" : "Subscriber Agreement Detail"}
+                    </CardBaseTitle>
                     <CardBaseContent>
                         {(displayMode === "VIEW" || displayMode === "CONFIRMDELETE") && (
                             <SubscriberAgreementDetailCardView
@@ -69,9 +83,10 @@ const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetail
                                 mode={displayMode}
                             />
                         )}
-                        {(displayMode === "EDIT") && (
+                        {(displayMode === "EDIT" || displayMode === "ADD") && (
                             <SubscriberAgreementDetailCardEdit
                                 onModeChange={handleModeChange}
+                                onAdd={handleAdd}
                                 onUpdate={handleUpdate}
                                 onCancel={handleCancel}
                                 subscriberAgreement={subscriberAgreement}

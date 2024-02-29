@@ -91,7 +91,7 @@ export const NavigationBar: FunctionComponent = () => {
                 { icon: 'ingestion', to: '/configuration/dataTypes', label: 'Data Types'},
                 { icon: 'ingestion', to: '/configuration/dataSets', label: 'Data Sets'},
                 {
-                    icon: 'subscriberAgreement', to: '/subscriberAgreement', label: 'Subscriber Agreements',
+                    icon: 'subscriberAgreement', to: '/subscriberAgreements', label: 'Subscriber Agreements',
                     feature: FeatureDefinitions.SubscriberAgreement
                 },
             ].filter(Boolean) as { to: string; label: string }[],

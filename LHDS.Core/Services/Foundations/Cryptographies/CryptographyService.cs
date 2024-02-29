@@ -1,10 +1,11 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Decryptions;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 
 namespace LHDS.Core.Services.Foundations.Cryptographies
 {
@@ -22,20 +23,20 @@ namespace LHDS.Core.Services.Foundations.Cryptographies
             this.loggingBroker = loggingBroker;
         }
 
-        public Task<byte[]> EncryptAsync(byte[] data) =>
+        public Task<byte[]> EncryptAsync(byte[] data, SubscriberCredential subscriberCredential) =>
             TryCatch(async () =>
             {
-                ValidateData(data);
+                ValidateInputs(data, subscriberCredential);
 
-                return await this.cryptographyBroker.EncryptAsync(data);
+                return await this.cryptographyBroker.EncryptAsync(data, subscriberCredential);
             });
 
-        public Task<byte[]> DecryptAsync(byte[] data) =>
+        public Task<byte[]> DecryptAsync(byte[] data, SubscriberCredential subscriberCredential) =>
             TryCatch(async () =>
             {
-                ValidateData(data);
+                ValidateInputs(data, subscriberCredential);
 
-                return await this.cryptographyBroker.DecryptAsync(data);
+                return await this.cryptographyBroker.DecryptAsync(data, subscriberCredential);
             });
     }
 }

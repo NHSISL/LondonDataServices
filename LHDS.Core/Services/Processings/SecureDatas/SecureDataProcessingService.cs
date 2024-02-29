@@ -67,33 +67,97 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 return subscriberCredential;
             });
 
-        public ValueTask<SubscriberCredential> RetrieveSecretsBySubscriberAgreementNameAsync(
-            string subscriberAgreementName) =>
-                throw new NotImplementedException();
+        public ValueTask<SubscriberCredential> RetrieveSecretsByKeyVaultKeyNameAsync(
+            SubscriberCredential subscriberCredential) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberCredentialOnRetrieve(subscriberCredential);
+                List<string> keyTypes = GetPropertyList();
+                ValidateKeysExist(keyTypes, subscriberCredential);
+                var exceptions = new List<Exception>();
+
+                foreach (var keyType in keyTypes)
+                {
+                    try
+                    {
+                        string secretName = $"{subscriberCredential.Id}-{keyType}";
+
+                        await TryCatch(async () =>
+                        {
+
+                            SecureData retrievedSecureData =
+                                await this.secureDataService.RetrieveSecretDataByNameAsync(secretName);
+
+                            SetPropertyValue(
+                                subscriberCredential,
+                                propertyName: keyType,
+                                value: retrievedSecureData.Value);
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to retrieve {exceptions.Count} secure data",
+                        exceptions);
+                }
+
+                return subscriberCredential;
+            });
 
         public ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential subscriberCredential) =>
-            throw new NotImplementedException();
-
-        private static List<SecureData> GetSecureDataItems(SubscriberCredential subscriberCredential)
-        {
-            List<string> keyTypes = new List<string>
+            TryCatch(async () =>
             {
-                "FtpPassword",
-                "FtpPassPhrase",
-                "FtpPrivateKey",
-                "GpgPassPhrase",
-                "GpgPrivateKey",
-            };
+                ValidateSubscriberCredentialOnRemove(subscriberCredential);
+                List<string> keyTypes = GetPropertyList();
+                ValidateKeysExist(keyTypes, subscriberCredential);
+                var exceptions = new List<Exception>();
 
+                foreach (var keyType in keyTypes)
+                {
+                    try
+                    {
+                        string secretName = $"{subscriberCredential.Id}-{keyType}";
+
+                        await TryCatch(async () =>
+                        {
+                            await this.secureDataService.RemoveSecureDataAsync(secretName);
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to retrieve {exceptions.Count} secure data",
+                        exceptions);
+                }
+
+                return subscriberCredential;
+            });
+
+        virtual internal List<SecureData> GetSecureDataItems(SubscriberCredential subscriberCredential)
+        {
+            
+            List<string> keyTypes = GetPropertyList();
             List<SecureData> secureDataList = new List<SecureData>();
+            ValidateKeysExist(keyTypes, subscriberCredential);
 
             foreach (string keyType in keyTypes)
             {
-
                 string secretName = $"{subscriberCredential.Id}-{keyType}";
 
                 string secretValue = GetPropertyValue(
-                    subscriberCredential: subscriberCredential, 
+                    subscriberCredential: subscriberCredential,
                     propertyName: keyType);
 
                 SecureData secureData = new SecureData
@@ -106,6 +170,18 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             }
 
             return secureDataList;
+        }
+
+        virtual internal List<string> GetPropertyList()
+        {
+            return new List<string>
+                {
+                    "FtpPassword",
+                    "FtpPassPhrase",
+                    "FtpPrivateKey",
+                    "GpgPassPhrase",
+                    "GpgPrivateKey"
+                };
         }
 
         private static string GetPropertyValue(SubscriberCredential subscriberCredential, string propertyName)
@@ -121,6 +197,15 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 throw new InvalidArgumentSubscriberCredentialProcessingException(
                     message: $"Property '{propertyName}' not found on object.");
             }
+        }
+
+        private static void SetPropertyValue(
+            SubscriberCredential subscriberCredential,
+            string propertyName,
+            object value)
+        {
+            PropertyInfo propertyInfo = typeof(SubscriberCredential).GetProperty(propertyName);
+            propertyInfo.SetValue(subscriberCredential, value);
         }
     }
 }

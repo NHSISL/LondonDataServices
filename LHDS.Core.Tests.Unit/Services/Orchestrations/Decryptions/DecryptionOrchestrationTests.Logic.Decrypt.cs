@@ -1,13 +1,15 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Text;
 using System.Threading.Tasks;
 using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xunit;
 using Document = LHDS.Core.Models.Foundations.Documents.Document;
@@ -21,6 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         public async Task ShouldProcessDecryptedDocumentAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string randomFileName = GetRandomMessage();
             byte[] randomEncryptedBytes = Encoding.ASCII.GetBytes(GetRandomMessage());
@@ -35,29 +39,33 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             Document encryptedDocument = randomDocument;
 
-            Document decryptedDocument = new Document
+            Download inputDownload = new Download
             {
-                DocumentData = randomDecryptedBytes,
-                FileName = storageIngestionTracking.DecryptedFileName
+                SubscriberCredential = inputSubscriberCredential,
+                Document = new Document { FileName = randomIngestionTracking.FileName }
             };
 
-            this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256Hash(decryptedDocument.DocumentData))
-                    .Returns(randomHash);
+            Download storageDownload = new Download
+            {
+                SubscriberCredential = inputSubscriberCredential,
+                Document = encryptedDocument
+            };
 
             this.ingestionTrackingServiceMock.Setup(service =>
                service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
                    .ReturnsAsync(storageIngestionTracking);
 
-            this.documentServiceMock.Setup(service =>
-                service.RetrieveDocumentByFileNameAsync(
-                    storageIngestionTracking.EncryptedFileName,
-                    It.IsAny<string>()))
-                        .ReturnsAsync(encryptedDocument);
+            this.downloadProcessingServiceMock.Setup(service =>
+                   service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
+                       .ReturnsAsync(storageDownload);
 
             this.cryptographyServiceMock.Setup(service =>
-                service.DecryptAsync(encryptedDocument.DocumentData))
+                service.DecryptAsync(storageDownload.Document.DocumentData, randomSubscriberCredential))
                     .ReturnsAsync(randomDecryptedBytes);
+
+            this.hashBrokerMock.Setup(broker =>
+               broker.GenerateSha256Hash(randomDecryptedBytes))
+                   .Returns(randomHash);
 
             string[] lines = Encoding.UTF8.GetString(randomDecryptedBytes)
                 .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
@@ -69,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             var updatedIngestionTracking = storageIngestionTracking.DeepClone();
             updatedIngestionTracking.Decrypted = true;
             updatedIngestionTracking.RecordCount = lines.Length - 2;
-            updatedIngestionTracking.DecryptedFileSize = decryptedDocument.DocumentData.Length;
+            updatedIngestionTracking.DecryptedFileSize = storageDownload.Document.DocumentData.Length;
             updatedIngestionTracking.DecryptedFileSha256Hash = randomHash;
             updatedIngestionTracking.UpdatedDate = randomDateTimeOffset;
 
@@ -80,35 +88,39 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     .ReturnsAsync(outputIngestionTracking);
 
             // when
-            await this.decryptionOrchestrationService.DecryptAsync(randomFileName);
+            await this.decryptionOrchestrationService.DecryptAsync(randomFileName, inputSubscriberCredential);
 
             // then
             this.ingestionTrackingServiceMock.Verify(service =>
               service.RetrieveIngestionTrackingByFileNameAsync(randomDocument.FileName),
                   Times.Once);
 
-            this.documentServiceMock.Verify(service =>
-                service.RetrieveDocumentByFileNameAsync(
-                    storageIngestionTracking.EncryptedFileName,
-                    It.IsAny<string>()),
-                        Times.Once);
+            this.downloadProcessingServiceMock.Verify(service =>
+                 service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))),
+                     Times.Once);
 
             this.cryptographyServiceMock.Verify(service =>
-                service.DecryptAsync(encryptedDocument.DocumentData),
+                service.DecryptAsync(encryptedDocument.DocumentData, randomSubscriberCredential),
                     Times.Once);
+
+            this.hashBrokerMock.Verify(broker =>
+                broker.GenerateSha256Hash(randomDecryptedBytes),
+                    Times.Once);
+
+            Document newBlobDocument = new Document
+            {
+                DocumentData = randomDecryptedBytes,
+                FileName = storageIngestionTracking.DecryptedFileName
+            };
 
             this.documentServiceMock.Verify(service =>
                 service.AddDocumentAsync(
-                    It.Is(SameDocumentAs(decryptedDocument)),
+                    It.Is(SameDocumentAs(newBlobDocument)),
                     It.IsAny<string>()),
                         Times.Once);
 
             this.ingestionTrackingServiceMock.Verify(service =>
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))),
-                    Times.Once);
-
-            this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(decryptedDocument.DocumentData),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>

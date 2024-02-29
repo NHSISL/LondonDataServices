@@ -1,12 +1,13 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq.Expressions;
 using System.Text;
 using LHDS.Core.Brokers.Decryptions;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -43,6 +44,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
         {
             string randomMessage = GetRandomMessage();
             return Encoding.ASCII.GetBytes(randomMessage);
+        }
+
+        private static SubscriberCredential CreateRandomSubscriberCredential() =>
+            CreateSubscriberCredentialFiller().Create();
+
+        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller()
+        {
+            var filler = new Filler<SubscriberCredential>();
+            string user = Guid.NewGuid().ToString();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
+
+            return filler;
         }
     }
 }

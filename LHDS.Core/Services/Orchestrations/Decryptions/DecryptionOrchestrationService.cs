@@ -9,18 +9,22 @@ using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Processings.Downloads;
 
 namespace LHDS.Core.Services.Orchestrations.Decryptions
 {
     public partial class DecryptionOrchestrationService : IDecryptionOrchestrationService
     {
         private readonly IDocumentService documentService;
+        private readonly IDownloadProcessingService downloadProcessingService;
         private readonly ICryptographyService cryptographyService;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IIngestionTrackingAuditService auditService;
@@ -31,6 +35,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
         public DecryptionOrchestrationService(
             IDocumentService documentService,
+            IDownloadProcessingService downloadProcessingService,
             ICryptographyService cryptographyService,
             IIngestionTrackingService ingestionTrackingService,
             IIngestionTrackingAuditService auditService,
@@ -40,6 +45,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             IHashBroker hashBroker)
         {
             this.documentService = documentService;
+            this.downloadProcessingService = downloadProcessingService;
             this.cryptographyService = cryptographyService;
             this.ingestionTrackingService = ingestionTrackingService;
             this.auditService = auditService;
@@ -49,27 +55,43 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             this.hashBroker = hashBroker;
         }
 
-        public ValueTask<string> DecryptAsync(string fileName) =>
+        public ValueTask<string> DecryptAsync(string fileName, SubscriberCredential subscriberCredential) =>
             TryCatch(async () =>
             {
                 ValidateBlobContainersIsNotNull();
                 ValidateFileNameIsNotNull(fileName);
+                ValidateSubscriberCredentials(subscriberCredential);
 
                 var ingestionTracking = await this.ingestionTrackingService
                     .RetrieveIngestionTrackingByFileNameAsync(fileName);
 
-                Document document = await this.documentService
-                    .RetrieveDocumentByFileNameAsync(
-                        fileName: ingestionTracking.EncryptedFileName,
-                        container: blobContainers.EmisLanding);
+                Download download = new Download
+                {
+                    Document = new Document { FileName = fileName },
+                    SubscriberCredential = subscriberCredential
+                };
 
-                byte[] decryptedData = await this.cryptographyService.DecryptAsync(document.DocumentData);
+                Download externalDownload =
+                    await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
+
+                ValidateStorageDownload(externalDownload, fileName);
+
+                byte[] decryptedData = await this.cryptographyService.DecryptAsync(
+                    data: externalDownload.Document.DocumentData,
+                    subscriberCredential);
 
                 string decryptedFileSha256Hash =
                     this.hashBroker.GenerateSha256Hash(decryptedData);
 
                 string[] lines = System.Text.Encoding.UTF8.GetString(decryptedData)
                     .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+
+                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                ingestionTracking.Decrypted = true;
+                ingestionTracking.RecordCount = lines.Length - 2;
+                ingestionTracking.DecryptedFileSize = externalDownload.Document.DocumentData.Length;
+                ingestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
+                ingestionTracking.UpdatedDate = currentDateTime;
 
                 Document newDecryptedDocument = new Document
                 {
@@ -81,17 +103,10 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     document: newDecryptedDocument,
                     container: blobContainers.Versioner);
 
-                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                ingestionTracking.Decrypted = true;
-                ingestionTracking.RecordCount = lines.Length - 2;
-                ingestionTracking.DecryptedFileSize = newDecryptedDocument.DocumentData.Length;
-                ingestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
-                ingestionTracking.UpdatedDate = currentDateTime;
-
                 await this.ingestionTrackingService
                     .ModifyIngestionTrackingAsync(ingestionTracking);
 
-                LogAudit(ingestionTracking, document: newDecryptedDocument, currentDateTime);
+                LogAudit(ingestionTracking, document: externalDownload.Document, currentDateTime);
 
                 return ingestionTracking.DecryptedFileName;
             });

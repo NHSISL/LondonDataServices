@@ -4,11 +4,11 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Foundations.Cryptographies.Exceptions
+namespace LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions
 {
-    public class NullCryptographyException : Xeption
+    public class InvalidArgumentSubscriberCredentialOrchestrationException : Xeption
     {
-        public NullCryptographyException(string message)
+        public InvalidArgumentSubscriberCredentialOrchestrationException(string message)
             : base(message)
         { }
     }

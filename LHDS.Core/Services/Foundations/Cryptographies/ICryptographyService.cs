@@ -1,14 +1,15 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 
 namespace LHDS.Core.Services.Foundations.Cryptographies
 {
     public interface ICryptographyService
     {
-        Task<byte[]> EncryptAsync(byte[] data);
-        Task<byte[]> DecryptAsync(byte[] data);
+        Task<byte[]> EncryptAsync(byte[] data, SubscriberCredential subscriberCredential);
+        Task<byte[]> DecryptAsync(byte[] data, SubscriberCredential subscriberCredential);
     }
 }

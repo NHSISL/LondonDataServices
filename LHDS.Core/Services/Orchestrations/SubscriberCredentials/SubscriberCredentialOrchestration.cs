@@ -34,6 +34,13 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             this.dateTimeBroker = dateTimeBroker;
         }
 
+        /// <summary>
+        /// Method to update or add a subscriber credential
+        /// </summary>
+        /// <param name="subscriberCredential">The subscriber credentials</param>
+        /// <param name="regenerateKeys">If TRUE, the service will regenerate the cryptography keys</param>
+        /// <param name="externalUse">If TRUE, the cryptography private keys will be omitted from the result</param>
+        /// <returns></returns>
         public ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(
             SubscriberCredential subscriberCredential,
             bool regenerateKeys = false,
@@ -93,7 +100,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         public IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials() =>
             TryCatch(() =>
             {
-                IQueryable<SubscriberAgreement> retrievedSubscriberAgreements = 
+                IQueryable<SubscriberAgreement> retrievedSubscriberAgreements =
                     this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreements();
 
                 List<SubscriberCredential> subscriberCredentials = new List<SubscriberCredential>();
@@ -131,8 +138,14 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds() =>
             throw new NotImplementedException();
 
+        /// <summary>
+        /// Method to retrieve a subscriber credential by its id
+        /// </summary>
+        /// <param name="subscriberCredentialId">The subscriber credential id</param>
+        /// <param name="externalUse">If TRUE, the cryptography private keys will be omitted from the result</param>
+        /// <returns></returns>
         public ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(
-            Guid subscriberCredentialId, 
+            Guid subscriberCredentialId,
             bool externalUse = true) =>
             throw new NotImplementedException();
 

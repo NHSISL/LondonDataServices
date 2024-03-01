@@ -5,11 +5,10 @@
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.CryptographicKeys;
 
-namespace LHDS.Core.Brokers.CryptographyKeys
+namespace LHDS.Core.Services.Foundations.CryptographicKeys
 {
-    public interface ICryptographyKeyBroker
+    public interface ICryptographyKeyService
     {
-        string CryptographyType { get; }
-        ValueTask<CryptographicKey> GenerateKeys(string? publicKeyComment = "");
+        ValueTask<CryptographicKey> GenerateKeys(string CryptographyType, string? publicKeyComment = "");
     }
 }

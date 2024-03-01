@@ -10,6 +10,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Services.Foundations.CryptographicKeys;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
@@ -20,17 +21,20 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
     {
         private readonly ISubscriberAgreementProcessingService subscriberAgreementProcessingService;
         private readonly ISecureDataProcessingService secureDataProcessingService;
+        private readonly ICryptographyKeyProcessingService cryptographyKeyProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
 
         public SubscriberCredentialOrchestration(
             ISubscriberAgreementProcessingService subscriberAgreementProcessingService,
             ISecureDataProcessingService secureDataProcessingService,
+            ICryptographyKeyProcessingService cryptographyKeyProcessingService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
             this.subscriberAgreementProcessingService = subscriberAgreementProcessingService;
             this.secureDataProcessingService = secureDataProcessingService;
+            this.cryptographyKeyProcessingService = cryptographyKeyProcessingService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }
@@ -73,30 +77,88 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
 
                 ValidateSubscriberAgreementIsNotNull(storageSubscriberAgreement);
 
-                SubscriberCredential updatedSubcriberCredential = new SubscriberCredential
+                if (!regenerateKeys)
                 {
-                    Id = storageSubscriberAgreement.Id,
-                    SupplierSharingAgreementShortName = storageSubscriberAgreement.SupplierSharingAgreementShortName,
-                    SupplierSharingAgreementGuid = storageSubscriberAgreement.SupplierSharingAgreementGuid,
-                    FtpUserName = storageSubscriberAgreement.FtpUserName,
-                    FtpPassword = subscriberCredential.FtpPassword,
-                    FtpPublicKey = storageSubscriberAgreement.FtpPublicKey,
-                    FtpPassPhrase = subscriberCredential.FtpPassPhrase,
-                    FtpPrivateKey = subscriberCredential.FtpPrivateKey,
-                    GpgPublicKey = storageSubscriberAgreement.GpgPublicKey,
-                    GpgPassPhrase = subscriberCredential.GpgPassPhrase,
-                    GpgPrivateKey = subscriberCredential.GpgPrivateKey,
-                    IsActive = storageSubscriberAgreement.IsActive,
-                    LastPollEndDate = storageSubscriberAgreement.LastPollEndDate,
-                    LastPollStartDate = storageSubscriberAgreement.LastPollStartDate,
-                    CreatedBy = storageSubscriberAgreement.CreatedBy,
-                    UpdatedBy = storageSubscriberAgreement.UpdatedBy,
-                    UpdatedDate = storageSubscriberAgreement.UpdatedDate,
-                    CreatedDate = storageSubscriberAgreement.CreatedDate,
-                };
+                    return MapToSubsciberCredentialForInternalExternalUse(
+                        subscriberCredential,
+                        storageSubscriberAgreement,
+                        externalUse);
+                }
 
-                return await this.secureDataProcessingService.AddOrModifySecureDataAsync(updatedSubcriberCredential);
+                var updatedSubscriberCredentials = MapToSubsciberCredentialForInternalExternalUse(
+                    subscriberCredential,
+                    storageSubscriberAgreement,
+                    externalUse: false);
+
+                SubscriberCredential subcriberCredentialsWithSecureData = await this.cryptographyKeyProcessingService
+                    .GenerateKeysAsync(updatedSubscriberCredentials);
+
+                ValidateSubscriberCredentialIsNotNull(subcriberCredentialsWithSecureData);
+
+                var updatedSubscriberCredentialsWithSecureData = await this.secureDataProcessingService
+                    .AddOrModifySecureDataAsync(subcriberCredentialsWithSecureData);
+
+                return MapToSubsciberCredentialForInternalExternalUse(
+                    subscriberCredential: updatedSubscriberCredentialsWithSecureData,
+                    externalUse);
             });
+
+        private static SubscriberCredential MapToSubsciberCredentialForInternalExternalUse(
+            SubscriberCredential subscriberCredential,
+            SubscriberAgreement subscriberAgreement,
+            bool externalUse)
+        {
+            var mappedSubscriberCredential = new SubscriberCredential
+            {
+                Id = subscriberAgreement.Id,
+                SupplierSharingAgreementShortName = subscriberAgreement.SupplierSharingAgreementShortName,
+                SupplierSharingAgreementGuid = subscriberAgreement.SupplierSharingAgreementGuid,
+                FtpUserName = subscriberAgreement.FtpUserName,
+                FtpPassword = externalUse ? null : subscriberCredential.FtpPassword,
+                FtpPublicKey = subscriberAgreement.FtpPublicKey,
+                FtpPassPhrase = externalUse ? null : subscriberCredential.FtpPassPhrase,
+                FtpPrivateKey = externalUse ? null : subscriberCredential.FtpPrivateKey,
+                GpgPublicKey = subscriberAgreement.GpgPublicKey,
+                GpgPassPhrase = externalUse ? null : subscriberCredential.GpgPassPhrase,
+                GpgPrivateKey = externalUse ? null : subscriberCredential.GpgPrivateKey,
+                IsActive = subscriberAgreement.IsActive,
+                LastPollEndDate = subscriberAgreement.LastPollEndDate,
+                LastPollStartDate = subscriberAgreement.LastPollStartDate,
+                CreatedBy = subscriberAgreement.CreatedBy,
+                UpdatedBy = subscriberAgreement.UpdatedBy,
+                UpdatedDate = subscriberAgreement.UpdatedDate,
+                CreatedDate = subscriberAgreement.CreatedDate,
+            };
+
+            return MapToSubsciberCredentialForInternalExternalUse(mappedSubscriberCredential, externalUse);
+        }
+
+        private static SubscriberCredential MapToSubsciberCredentialForInternalExternalUse(
+            SubscriberCredential subscriberCredential,
+            bool externalUse)
+        {
+            return new SubscriberCredential
+            {
+                Id = subscriberCredential.Id,
+                SupplierSharingAgreementShortName = subscriberCredential.SupplierSharingAgreementShortName,
+                SupplierSharingAgreementGuid = subscriberCredential.SupplierSharingAgreementGuid,
+                FtpUserName = subscriberCredential.FtpUserName,
+                FtpPassword = externalUse ? null : subscriberCredential.FtpPassword,
+                FtpPublicKey = subscriberCredential.FtpPublicKey,
+                FtpPassPhrase = externalUse ? null : subscriberCredential.FtpPassPhrase,
+                FtpPrivateKey = externalUse ? null : subscriberCredential.FtpPrivateKey,
+                GpgPublicKey = subscriberCredential.GpgPublicKey,
+                GpgPassPhrase = externalUse ? null : subscriberCredential.GpgPassPhrase,
+                GpgPrivateKey = externalUse ? null : subscriberCredential.GpgPrivateKey,
+                IsActive = subscriberCredential.IsActive,
+                LastPollEndDate = subscriberCredential.LastPollEndDate,
+                LastPollStartDate = subscriberCredential.LastPollStartDate,
+                CreatedBy = subscriberCredential.CreatedBy,
+                UpdatedBy = subscriberCredential.UpdatedBy,
+                UpdatedDate = subscriberCredential.UpdatedDate,
+                CreatedDate = subscriberCredential.CreatedDate,
+            };
+        }
 
         public IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials() =>
             TryCatch(() =>

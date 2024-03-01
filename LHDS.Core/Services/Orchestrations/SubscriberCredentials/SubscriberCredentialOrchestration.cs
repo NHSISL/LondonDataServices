@@ -127,15 +127,16 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                 return subscriberCredentials.AsQueryable();
             });
 
-        public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds()
-        {
-            List<Guid> retrievedActiveIds =
-                this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreements()
-                    .Where(SubscriberAgreement => SubscriberAgreement.IsActive)
-                        .Select(SubscriberAgreement => SubscriberAgreement.Id).ToList();
+        public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds() =>
+            TryCatch(async () =>
+            {
+                List<Guid> retrievedActiveIds =
+                    this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreements()
+                        .Where(SubscriberAgreement => SubscriberAgreement.IsActive)
+                            .Select(SubscriberAgreement => SubscriberAgreement.Id).ToList();
 
-            return ValueTask.FromResult(retrievedActiveIds);
-        }
+                return retrievedActiveIds;
+            });
 
         public ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(
             Guid subscriberCredentialId, 

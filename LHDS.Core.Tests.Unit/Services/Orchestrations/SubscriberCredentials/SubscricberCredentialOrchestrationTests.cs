@@ -97,7 +97,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 subscriberCredential.FtpPassPhrase = string.Empty;
                 subscriberCredential.GpgPassPhrase = string.Empty;
                 subscriberCredential.GpgPrivateKey = string.Empty;
-
                 subscriberCredentials.Add(subscriberCredential);
             }
 

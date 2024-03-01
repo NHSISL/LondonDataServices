@@ -35,7 +35,9 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         }
 
         public ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(
-            SubscriberCredential subscriberCredential) =>
+            SubscriberCredential subscriberCredential,
+            bool regenerateKeys = false,
+            bool externalUse = true) =>
             TryCatch(async () =>
             {
                 ValidateSubscriberCredential(subscriberCredential);

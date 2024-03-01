@@ -3,10 +3,13 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberAgreements.Exceptions;
@@ -72,6 +75,47 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             return actualSubscriberCredential =>
                 this.compareLogic.Compare(expectedSubscriberCredential, actualSubscriberCredential)
                     .AreEqual;
+        }
+
+        private static List<dynamic> CreateRandomDynamicSubscriberAgreementCredentials()
+        {
+            return Enumerable.Range(1, 1)
+                .Select(item => CreateRandomDynamicSubscriberAgreementCredential())
+                    .ToList();
+        }
+
+        private static IQueryable<SubscriberCredential> CreateSubscriberCredentialsFromDynamic(
+            List<dynamic> credentials)
+        {
+            List<SubscriberCredential> subscriberCredentials = new List<SubscriberCredential>();
+
+            foreach (var credential in credentials)
+            {
+                SubscriberCredential subscriberCredential = CreateSubscriberCredentialFromDynamic(credential);
+                subscriberCredential.FtpPassword = string.Empty;
+                subscriberCredential.FtpPrivateKey = string.Empty;
+                subscriberCredential.FtpPassPhrase = string.Empty;
+                subscriberCredential.GpgPassPhrase = string.Empty;
+                subscriberCredential.GpgPrivateKey = string.Empty;
+                subscriberCredentials.Add(subscriberCredential);
+            }
+
+            return subscriberCredentials.AsQueryable();
+        }
+
+        private static IQueryable<SubscriberAgreement> CreateSubscriberAgreementsFromDynamic(
+            List<dynamic> credentials)
+        {
+            List<SubscriberAgreement> subscriberAgreements = new List<SubscriberAgreement>();
+
+            foreach (dynamic credential in credentials)
+            {
+                SubscriberAgreement subscriberAgreement = CreateSubscriberAgreementFromDynamic(credential);
+
+                subscriberAgreements.Add(subscriberAgreement);
+            }
+
+            return subscriberAgreements.AsQueryable();
         }
 
         private static dynamic CreateRandomDynamicSubscriberAgreementCredential()

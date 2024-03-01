@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId, true))
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
                     .ThrowsAsync(dependancyValidationException);
 
             // When

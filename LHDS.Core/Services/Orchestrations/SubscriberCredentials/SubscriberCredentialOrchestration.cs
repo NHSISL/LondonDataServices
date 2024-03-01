@@ -91,20 +91,52 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             });
 
         public IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials() =>
-            throw new NotImplementedException();
+            TryCatch(() =>
+            {
+                IQueryable<SubscriberAgreement> retrievedSubscriberAgreements = 
+                    this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreements();
+
+                List<SubscriberCredential> subscriberCredentials = new List<SubscriberCredential>();
+
+                foreach (SubscriberAgreement subscriberAgreement in retrievedSubscriberAgreements)
+                {
+                    SubscriberCredential subscriberCredential = new SubscriberCredential
+                    {
+                        Id = subscriberAgreement.Id,
+                        SupplierSharingAgreementShortName = subscriberAgreement.SupplierSharingAgreementShortName,
+                        SupplierSharingAgreementGuid = subscriberAgreement.SupplierSharingAgreementGuid,
+                        FtpUserName = subscriberAgreement.FtpUserName,
+                        FtpPassword = string.Empty,
+                        FtpPublicKey = subscriberAgreement.FtpPublicKey,
+                        FtpPassPhrase = string.Empty,
+                        FtpPrivateKey = string.Empty,
+                        GpgPublicKey = subscriberAgreement.GpgPublicKey,
+                        GpgPassPhrase = string.Empty,
+                        GpgPrivateKey = string.Empty,
+                        IsActive = subscriberAgreement.IsActive,
+                        LastPollEndDate = subscriberAgreement.LastPollEndDate,
+                        LastPollStartDate = subscriberAgreement.LastPollStartDate,
+                        CreatedBy = subscriberAgreement.CreatedBy,
+                        UpdatedBy = subscriberAgreement.UpdatedBy,
+                        UpdatedDate = subscriberAgreement.UpdatedDate,
+                        CreatedDate = subscriberAgreement.CreatedDate,
+                    };
+
+                    subscriberCredentials.Add(subscriberCredential);
+                }
+
+                return subscriberCredentials.AsQueryable();
+            });
 
         public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds() =>
             throw new NotImplementedException();
 
         public ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(
-            Guid subscriberCredentialId, bool externalUse = true) =>
-                throw new NotImplementedException();
+            Guid subscriberCredentialId, 
+            bool externalUse = true) =>
+            throw new NotImplementedException();
 
         public ValueTask<SubscriberCredential> RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
             throw new NotImplementedException();
-
-        public ValueTask<SubscriberCredential>
-            RetrieveSubscriberCredentialBySupplierSharingAgreementGuidAsync(Guid SupplierSharingAgreementGuid) =>
-                throw new NotImplementedException();
     }
 }

@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
             {
                 this.subscriberCredentialOrchestrationMock.Setup(service =>
-                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId))
+                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, true))
                         .ThrowsAsync(dependancyValidationException);
 
                 var emisLandingCoordinationDependencyValidationException =
@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
             {
                 this.subscriberCredentialOrchestrationMock.Verify(service =>
-                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId),
+                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, true),
                         Times.Once);
             }
 
@@ -123,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
             {
                 this.subscriberCredentialOrchestrationMock.Setup(service =>
-                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId))
+                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, true))
                         .ThrowsAsync(dependancyValidationException);
 
                 var emisLandingCoordinationDependencyException =
@@ -167,7 +167,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
             {
                 this.subscriberCredentialOrchestrationMock.Verify(service =>
-                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId),
+                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, true),
                         Times.Once);
             }
 
@@ -220,7 +220,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
             {
                 this.subscriberCredentialOrchestrationMock.Setup(service =>
-                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId))
+                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, true))
                         .ThrowsAsync(serviceException);
 
                 exceptions.Add(innerEmisLandingCoordinationServiceException);
@@ -259,7 +259,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
             {
                 this.subscriberCredentialOrchestrationMock.Verify(service =>
-                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId),
+                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, true),
                         Times.Once);
             }
 

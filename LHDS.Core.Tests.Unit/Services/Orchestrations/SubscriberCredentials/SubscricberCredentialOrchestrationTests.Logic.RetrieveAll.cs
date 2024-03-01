@@ -38,13 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 .RetrieveAllSubscriberCredentials();
 
             // Then
-            actualSubscriberCredentials.Count().Should().Be(expectedSubscriberCredentials.Count());
-            var firstActualId = actualSubscriberCredentials.FirstOrDefault().Id;
-
-            actualSubscriberCredentials.Where(actualSubscriberCredential =>
-                actualSubscriberCredential.Id == firstActualId).Should().
-                    BeEquivalentTo(expectedSubscriberCredentials.Where(
-                        expectedSubscriberCredential => expectedSubscriberCredential.Id == firstActualId));
+            actualSubscriberCredentials.Should().BeEquivalentTo(expectedSubscriberCredentials);
 
             this.subscriberAgreementProcessingServiceMock.Verify(service =>
                 service.RetrieveAllSubscriberAgreements(),

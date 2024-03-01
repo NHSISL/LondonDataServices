@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                     .Returns(storageSubscriberAgreements.AsQueryable());
 
             // When
-            ValueTask<List<Guid>> actualSubscriberCredentialIds = this.subscriberCredentialOrchestration
+            List<Guid> actualSubscriberCredentialIds = await this.subscriberCredentialOrchestration
                 .RetrieveAllActiveSubscriberCredentialIds();
 
             // Then

@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId, true))
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
                     .ThrowsAsync(dependancyValidationException);
 
             // When
@@ -70,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             string filePath = CreateRandomFilePath(SubscriberCredentialId);
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId, true))
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
                     .ThrowsAsync(dependancyValidationException);
 
             var expectedEmisLandingCoordinationDependencyException =
@@ -113,7 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<Exception> exceptions = new List<Exception>();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId, true))
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
                     .ThrowsAsync(serviceException);
 
             var failedEmisLandingCoordinationServiceException =

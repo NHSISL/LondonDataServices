@@ -13,7 +13,6 @@ using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.CryptographicKeys;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
 {
@@ -103,63 +102,6 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                     externalUse);
             });
 
-        private static SubscriberCredential MapToSubsciberCredentialForInternalExternalUse(
-            SubscriberCredential subscriberCredential,
-            SubscriberAgreement subscriberAgreement,
-            bool externalUse)
-        {
-            var mappedSubscriberCredential = new SubscriberCredential
-            {
-                Id = subscriberAgreement.Id,
-                SupplierSharingAgreementShortName = subscriberAgreement.SupplierSharingAgreementShortName,
-                SupplierSharingAgreementGuid = subscriberAgreement.SupplierSharingAgreementGuid,
-                FtpUserName = subscriberAgreement.FtpUserName,
-                FtpPassword = externalUse ? null : subscriberCredential.FtpPassword,
-                FtpPublicKey = subscriberAgreement.FtpPublicKey,
-                FtpPassPhrase = externalUse ? null : subscriberCredential.FtpPassPhrase,
-                FtpPrivateKey = externalUse ? null : subscriberCredential.FtpPrivateKey,
-                GpgPublicKey = subscriberAgreement.GpgPublicKey,
-                GpgPassPhrase = externalUse ? null : subscriberCredential.GpgPassPhrase,
-                GpgPrivateKey = externalUse ? null : subscriberCredential.GpgPrivateKey,
-                IsActive = subscriberAgreement.IsActive,
-                LastPollEndDate = subscriberAgreement.LastPollEndDate,
-                LastPollStartDate = subscriberAgreement.LastPollStartDate,
-                CreatedBy = subscriberAgreement.CreatedBy,
-                UpdatedBy = subscriberAgreement.UpdatedBy,
-                UpdatedDate = subscriberAgreement.UpdatedDate,
-                CreatedDate = subscriberAgreement.CreatedDate,
-            };
-
-            return MapToSubsciberCredentialForInternalExternalUse(mappedSubscriberCredential, externalUse);
-        }
-
-        private static SubscriberCredential MapToSubsciberCredentialForInternalExternalUse(
-            SubscriberCredential subscriberCredential,
-            bool externalUse)
-        {
-            return new SubscriberCredential
-            {
-                Id = subscriberCredential.Id,
-                SupplierSharingAgreementShortName = subscriberCredential.SupplierSharingAgreementShortName,
-                SupplierSharingAgreementGuid = subscriberCredential.SupplierSharingAgreementGuid,
-                FtpUserName = subscriberCredential.FtpUserName,
-                FtpPassword = externalUse ? null : subscriberCredential.FtpPassword,
-                FtpPublicKey = subscriberCredential.FtpPublicKey,
-                FtpPassPhrase = externalUse ? null : subscriberCredential.FtpPassPhrase,
-                FtpPrivateKey = externalUse ? null : subscriberCredential.FtpPrivateKey,
-                GpgPublicKey = subscriberCredential.GpgPublicKey,
-                GpgPassPhrase = externalUse ? null : subscriberCredential.GpgPassPhrase,
-                GpgPrivateKey = externalUse ? null : subscriberCredential.GpgPrivateKey,
-                IsActive = subscriberCredential.IsActive,
-                LastPollEndDate = subscriberCredential.LastPollEndDate,
-                LastPollStartDate = subscriberCredential.LastPollStartDate,
-                CreatedBy = subscriberCredential.CreatedBy,
-                UpdatedBy = subscriberCredential.UpdatedBy,
-                UpdatedDate = subscriberCredential.UpdatedDate,
-                CreatedDate = subscriberCredential.CreatedDate,
-            };
-        }
-
         public IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials() =>
             TryCatch(() =>
             {
@@ -222,5 +164,62 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
 
         public ValueTask<SubscriberCredential> RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
             throw new NotImplementedException();
+
+        private static SubscriberCredential MapToSubsciberCredentialForInternalExternalUse(
+            SubscriberCredential subscriberCredential,
+            SubscriberAgreement subscriberAgreement,
+            bool externalUse)
+        {
+            var mappedSubscriberCredential = new SubscriberCredential
+            {
+                Id = subscriberAgreement.Id,
+                SupplierSharingAgreementShortName = subscriberAgreement.SupplierSharingAgreementShortName,
+                SupplierSharingAgreementGuid = subscriberAgreement.SupplierSharingAgreementGuid,
+                FtpUserName = subscriberAgreement.FtpUserName,
+                FtpPassword = externalUse ? null : subscriberCredential.FtpPassword,
+                FtpPublicKey = subscriberAgreement.FtpPublicKey,
+                FtpPassPhrase = externalUse ? null : subscriberCredential.FtpPassPhrase,
+                FtpPrivateKey = externalUse ? null : subscriberCredential.FtpPrivateKey,
+                GpgPublicKey = subscriberAgreement.GpgPublicKey,
+                GpgPassPhrase = externalUse ? null : subscriberCredential.GpgPassPhrase,
+                GpgPrivateKey = externalUse ? null : subscriberCredential.GpgPrivateKey,
+                IsActive = subscriberAgreement.IsActive,
+                LastPollEndDate = subscriberAgreement.LastPollEndDate,
+                LastPollStartDate = subscriberAgreement.LastPollStartDate,
+                CreatedBy = subscriberAgreement.CreatedBy,
+                UpdatedBy = subscriberAgreement.UpdatedBy,
+                UpdatedDate = subscriberAgreement.UpdatedDate,
+                CreatedDate = subscriberAgreement.CreatedDate,
+            };
+
+            return MapToSubsciberCredentialForInternalExternalUse(mappedSubscriberCredential, externalUse);
+        }
+
+        private static SubscriberCredential MapToSubsciberCredentialForInternalExternalUse(
+            SubscriberCredential subscriberCredential,
+            bool externalUse)
+        {
+            return new SubscriberCredential
+            {
+                Id = subscriberCredential.Id,
+                SupplierSharingAgreementShortName = subscriberCredential.SupplierSharingAgreementShortName,
+                SupplierSharingAgreementGuid = subscriberCredential.SupplierSharingAgreementGuid,
+                FtpUserName = subscriberCredential.FtpUserName,
+                FtpPassword = externalUse ? null : subscriberCredential.FtpPassword,
+                FtpPublicKey = subscriberCredential.FtpPublicKey,
+                FtpPassPhrase = externalUse ? null : subscriberCredential.FtpPassPhrase,
+                FtpPrivateKey = externalUse ? null : subscriberCredential.FtpPrivateKey,
+                GpgPublicKey = subscriberCredential.GpgPublicKey,
+                GpgPassPhrase = externalUse ? null : subscriberCredential.GpgPassPhrase,
+                GpgPrivateKey = externalUse ? null : subscriberCredential.GpgPrivateKey,
+                IsActive = subscriberCredential.IsActive,
+                LastPollEndDate = subscriberCredential.LastPollEndDate,
+                LastPollStartDate = subscriberCredential.LastPollStartDate,
+                CreatedBy = subscriberCredential.CreatedBy,
+                UpdatedBy = subscriberCredential.UpdatedBy,
+                UpdatedDate = subscriberCredential.UpdatedDate,
+                CreatedDate = subscriberCredential.CreatedDate,
+            };
+        }
     }
 }

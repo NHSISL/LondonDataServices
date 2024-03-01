@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 ValidateSubscriberCredentialOnRetrieve(subscriberCredential);
                 List<string> keyTypes = GetPropertyList();
-                ValidateSecureData(keyTypes, subscriberCredential);
+                ValidateKeysExist(keyTypes, subscriberCredential);
                 var exceptions = new List<Exception>();
 
                 foreach (var keyType in keyTypes)
@@ -111,14 +111,46 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             });
 
         public ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential subscriberCredential) =>
-            throw new NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateSubscriberCredentialOnRemove(subscriberCredential);
+                List<string> keyTypes = GetPropertyList();
+                ValidateKeysExist(keyTypes, subscriberCredential);
+                var exceptions = new List<Exception>();
+
+                foreach (var keyType in keyTypes)
+                {
+                    try
+                    {
+                        string secretName = $"{subscriberCredential.Id}-{keyType}";
+
+                        await TryCatch(async () =>
+                        {
+                            await this.secureDataService.RemoveSecureDataAsync(secretName);
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to retrieve {exceptions.Count} secure data",
+                        exceptions);
+                }
+
+                return subscriberCredential;
+            });
 
         virtual internal List<SecureData> GetSecureDataItems(SubscriberCredential subscriberCredential)
         {
             
             List<string> keyTypes = GetPropertyList();
             List<SecureData> secureDataList = new List<SecureData>();
-            ValidateSecureData(keyTypes, subscriberCredential);
+            ValidateKeysExist(keyTypes, subscriberCredential);
 
             foreach (string keyType in keyTypes)
             {

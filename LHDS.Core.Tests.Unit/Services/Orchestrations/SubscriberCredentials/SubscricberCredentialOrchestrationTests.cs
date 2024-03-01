@@ -198,6 +198,33 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             return randomSubscriberAgreement;
         }
 
+        private static List<SubscriberAgreement> CreateRandomSubscriberAgreements()
+        {
+            return CreateSubscriberAgreementFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static SubscriberAgreement CreateRandomSubscriberAgreement() =>
+            CreateSubscriberAgreementFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static SubscriberAgreement CreateRandomSubscriberAgreement(DateTimeOffset dateTimeOffset) =>
+            CreateSubscriberAgreementFiller(dateTimeOffset).Create();
+
+        private static Filler<SubscriberAgreement> CreateSubscriberAgreementFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<SubscriberAgreement>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(address => address.CreatedBy).Use(user)
+                .OnProperty(address => address.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
         public static TheoryData SubscriberCredentialOrchestrationDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();

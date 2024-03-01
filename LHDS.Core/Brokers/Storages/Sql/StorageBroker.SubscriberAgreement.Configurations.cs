@@ -30,7 +30,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
             modelBuilder.Entity<SubscriberAgreement>()
                 .Property(subscriberAgreement => subscriberAgreement.FtpUserName)
                 .HasMaxLength(128)
-                .IsRequired();
+                .IsRequired(false);
 
             modelBuilder.Entity<SubscriberAgreement>()
                 .Property(subscriberAgreement => subscriberAgreement.FtpPublicKey)

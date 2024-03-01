@@ -12,6 +12,7 @@ using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
 {
@@ -126,8 +127,15 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                 return subscriberCredentials.AsQueryable();
             });
 
-        public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds() =>
-            throw new NotImplementedException();
+        public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds()
+        {
+            List<Guid> retrievedActiveIds =
+                this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreements()
+                    .Where(SubscriberAgreement => SubscriberAgreement.IsActive)
+                        .Select(SubscriberAgreement => SubscriberAgreement.Id).ToList();
+
+            return ValueTask.FromResult(retrievedActiveIds);
+        }
 
         public ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(
             Guid subscriberCredentialId, 

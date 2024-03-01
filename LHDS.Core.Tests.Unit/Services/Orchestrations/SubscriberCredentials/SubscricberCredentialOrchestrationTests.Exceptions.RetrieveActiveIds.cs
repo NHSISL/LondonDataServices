@@ -112,7 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             var failedSubscriberCredentialOrchestrationServiceException =
                 new FailedSubscriberCredentialOrchestrationServiceException(
                     message: "Failed subscriber credential orchestration service error occurred, " +
-                    "please contact support.",
+                        "please contact support.",
                     innerException: serviceException);
 
             var expectedSerivceException =

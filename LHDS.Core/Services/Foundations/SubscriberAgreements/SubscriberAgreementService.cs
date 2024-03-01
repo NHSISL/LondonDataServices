@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -57,7 +61,10 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     await this.storageBroker.SelectSubscriberAgreementByIdAsync(subscriberAgreement.Id);
 
                 ValidateStorageSubscriberAgreement(maybeSubscriberAgreement, subscriberAgreement.Id);
-                ValidateAgainstStorageSubscriberAgreementOnModify(inputSubscriberAgreement: subscriberAgreement, storageSubscriberAgreement: maybeSubscriberAgreement);
+
+                ValidateAgainstStorageSubscriberAgreementOnModify(
+                    inputSubscriberAgreement: subscriberAgreement,
+                    storageSubscriberAgreement: maybeSubscriberAgreement);
 
                 return await this.storageBroker.UpdateSubscriberAgreementAsync(subscriberAgreement);
             });

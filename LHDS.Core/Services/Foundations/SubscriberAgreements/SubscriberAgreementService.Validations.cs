@@ -20,9 +20,6 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 (Rule: IsInvalid(subscriberAgreement.SupplierSharingAgreementShortName),
                     Parameter: nameof(SubscriberAgreement.SupplierSharingAgreementShortName)),
 
-                (Rule: IsInvalid(subscriberAgreement.FtpUserName), Parameter: nameof(SubscriberAgreement.FtpUserName)),
-                (Rule: IsInvalid(subscriberAgreement.FtpPublicKey), Parameter: nameof(SubscriberAgreement.FtpPublicKey)),
-                (Rule: IsInvalid(subscriberAgreement.GpgPublicKey), Parameter: nameof(SubscriberAgreement.GpgPublicKey)),
                 (Rule: IsInvalid(subscriberAgreement.CreatedDate), Parameter: nameof(SubscriberAgreement.CreatedDate)),
                 (Rule: IsInvalid(subscriberAgreement.CreatedBy), Parameter: nameof(SubscriberAgreement.CreatedBy)),
                 (Rule: IsInvalid(subscriberAgreement.UpdatedDate), Parameter: nameof(SubscriberAgreement.UpdatedDate)),
@@ -30,15 +27,6 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
                 (Rule: IsInvalidLength(subscriberAgreement.SupplierSharingAgreementShortName, 128),
                     Parameter: nameof(SubscriberAgreement.SupplierSharingAgreementShortName)),
-
-                (Rule: IsInvalidLength(subscriberAgreement.FtpUserName, 128),
-                    Parameter: nameof(SubscriberAgreement.FtpUserName)),
-
-                (Rule: IsInvalidLength(subscriberAgreement.FtpPublicKey, 128),
-                    Parameter: nameof(SubscriberAgreement.FtpPublicKey)),
-
-                (Rule: IsInvalidLength(subscriberAgreement.GpgPublicKey, 128),
-                    Parameter: nameof(SubscriberAgreement.GpgPublicKey)),
 
                 (Rule: IsInvalidLength(subscriberAgreement.CreatedBy, 255),
                     Parameter: nameof(SubscriberAgreement.CreatedBy)),
@@ -71,9 +59,6 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 (Rule: IsInvalid(subscriberAgreement.SupplierSharingAgreementShortName),
                     Parameter: nameof(SubscriberAgreement.SupplierSharingAgreementShortName)),
 
-                (Rule: IsInvalid(subscriberAgreement.FtpUserName), Parameter: nameof(SubscriberAgreement.FtpUserName)),
-                (Rule: IsInvalid(subscriberAgreement.FtpPublicKey), Parameter: nameof(SubscriberAgreement.FtpPublicKey)),
-                (Rule: IsInvalid(subscriberAgreement.GpgPublicKey), Parameter: nameof(SubscriberAgreement.GpgPublicKey)),
                 (Rule: IsInvalid(subscriberAgreement.CreatedDate), Parameter: nameof(SubscriberAgreement.CreatedDate)),
                 (Rule: IsInvalid(subscriberAgreement.CreatedBy), Parameter: nameof(SubscriberAgreement.CreatedBy)),
                 (Rule: IsInvalid(subscriberAgreement.UpdatedDate), Parameter: nameof(SubscriberAgreement.UpdatedDate)),
@@ -81,15 +66,6 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
                 (Rule: IsInvalidLength(subscriberAgreement.SupplierSharingAgreementShortName, 128),
                     Parameter: nameof(SubscriberAgreement.SupplierSharingAgreementShortName)),
-
-                (Rule: IsInvalidLength(subscriberAgreement.FtpUserName, 128),
-                    Parameter: nameof(SubscriberAgreement.FtpUserName)),
-
-                (Rule: IsInvalidLength(subscriberAgreement.FtpPublicKey, 128),
-                    Parameter: nameof(SubscriberAgreement.FtpPublicKey)),
-
-                (Rule: IsInvalidLength(subscriberAgreement.GpgPublicKey, 128),
-                    Parameter: nameof(SubscriberAgreement.GpgPublicKey)),
 
                 (Rule: IsInvalidLength(subscriberAgreement.CreatedBy, 255),
                     Parameter: nameof(SubscriberAgreement.CreatedBy)),
@@ -103,13 +79,16 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     secondDateName: nameof(SubscriberAgreement.CreatedDate)),
                 Parameter: nameof(SubscriberAgreement.UpdatedDate)),
 
-                (Rule: IsNotRecent(subscriberAgreement.UpdatedDate), Parameter: nameof(subscriberAgreement.UpdatedDate)));
+                (Rule: IsNotRecent(subscriberAgreement.UpdatedDate),
+                    Parameter: nameof(subscriberAgreement.UpdatedDate)));
         }
 
         public void ValidateSubscriberAgreementId(Guid subscriberAgreementId) =>
             Validate((Rule: IsInvalid(subscriberAgreementId), Parameter: nameof(SubscriberAgreement.Id)));
 
-        private static void ValidateStorageSubscriberAgreement(SubscriberAgreement maybeSubscriberAgreement, Guid subscriberAgreementId)
+        private static void ValidateStorageSubscriberAgreement(
+            SubscriberAgreement maybeSubscriberAgreement,
+            Guid subscriberAgreementId)
         {
             if (maybeSubscriberAgreement is null)
             {
@@ -125,7 +104,9 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             }
         }
 
-        private static void ValidateAgainstStorageSubscriberAgreementOnModify(SubscriberAgreement inputSubscriberAgreement, SubscriberAgreement storageSubscriberAgreement)
+        private static void ValidateAgainstStorageSubscriberAgreementOnModify(
+            SubscriberAgreement inputSubscriberAgreement,
+            SubscriberAgreement storageSubscriberAgreement)
         {
             Validate(
                 (Rule: IsNotSame(

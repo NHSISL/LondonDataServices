@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
@@ -18,13 +19,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         [Theory]
         [MemberData(nameof(SubscriberCredentialOrchestrationDependencyValidationExceptions))]
         public async Task
-            ShouldThrowDependencyValidationOnRetrieveAllSubscriberCredentialIfDependencyValidationOccursAndLogItAsync(
+            ShouldThrowDependencyValidationOnRetrieveActiveIdsIfDependencyValidationOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
-            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential();
-            SubscriberCredential inputSubscriberCredential = CreateSubscriberCredentialFromDynamic(randomDynamic);
-
             var expectedDependencyValidationException =
                 new SubscriberCredentialOrchestrationDependencyValidationException(
                     message: "Subscriber credential orchestration dependency validation error occurred, " +
@@ -36,12 +34,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                     .Throws(dependencyValidationException);
 
             // when
-            Action retrieveAllSubscriberCredentialsAction = () =>
-                this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentials();
+            ValueTask<List<Guid>> retrieveActiveSubscriberCredentialIdsTask =
+                this.subscriberCredentialOrchestration.RetrieveAllActiveSubscriberCredentialIds();
 
             SubscriberCredentialOrchestrationDependencyValidationException actualDependencyValidationException =
-                Assert.Throws<SubscriberCredentialOrchestrationDependencyValidationException>(
-                    retrieveAllSubscriberCredentialsAction);
+                await Assert.ThrowsAsync<SubscriberCredentialOrchestrationDependencyValidationException>(
+                    retrieveActiveSubscriberCredentialIdsTask.AsTask);
 
             // then
             actualDependencyValidationException.Should()
@@ -64,13 +62,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         [Theory]
         [MemberData(nameof(SubscriberCredentialOrchestrationDependencyExceptions))]
         public async Task
-            ShouldThrowDependencyExceptionOnretrieveAllSubscriberCredentialIfDependencyErrorOccursAndLogItAsync(
+            ShouldThrowDependencyExceptionOnRetrieveActiveIdslIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
-            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential();
-            SubscriberCredential inputSubscriberCredential = CreateSubscriberCredentialFromDynamic(randomDynamic);
-
             var expectedDependencyException =
                 new SubscriberCredentialDependencyOrchestrationException(
                     message: "Subscriber credential orchestration dependency error occurred, " +
@@ -82,15 +77,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                     .Throws(dependencyException);
 
             // when
-            Action retrieveAllSubscriberCredentialsAction = () =>
-                this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentials();
+            ValueTask<List<Guid>> retrieveActiveSubscriberCredentialIdsTask =
+                this.subscriberCredentialOrchestration.RetrieveAllActiveSubscriberCredentialIds();
 
-            SubscriberCredentialDependencyOrchestrationException actualDependencyVException =
-                Assert.Throws<SubscriberCredentialDependencyOrchestrationException>(
-                    retrieveAllSubscriberCredentialsAction);
+            SubscriberCredentialDependencyOrchestrationException actualDepenedencyException =
+                await Assert.ThrowsAsync<SubscriberCredentialDependencyOrchestrationException>(
+                    retrieveActiveSubscriberCredentialIdsTask.AsTask);
 
             // then
-            actualDependencyVException.Should()
+            actualDepenedencyException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
             this.subscriberAgreementProcessingServiceMock.Verify(service =>
@@ -109,17 +104,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
         [Fact]
         public async Task
-            ShouldThrowServiceExceptionOnRetrieveAllSubscriberCredentialIfServiceErrorOccursAndLogItAsync()
+            ShouldThrowServiceExceptionOnRetrieveActiveIdsIfServiceErrorOccursAndLogItAsync()
         {
             //given
-            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential();
-            SubscriberCredential inputSubscriberCredential = CreateSubscriberCredentialFromDynamic(randomDynamic);
             var serviceException = new Exception();
 
             var failedSubscriberCredentialOrchestrationServiceException =
                 new FailedSubscriberCredentialOrchestrationServiceException(
                     message: "Failed subscriber credential orchestration service error occurred, " +
-                    "please contact support.",
+                        "please contact support.",
                     innerException: serviceException);
 
             var expectedSerivceException =
@@ -133,12 +126,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                    .Throws(serviceException);
 
             // when
-            Action retrieveAllSubscriberCredentialsAction = () =>
-                this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentials();
+            ValueTask<List<Guid>> retrieveActiveSubscriberCredentialIdsTask =
+                this.subscriberCredentialOrchestration.RetrieveAllActiveSubscriberCredentialIds();
 
             SubscriberCredentialOrchestrationServiceException actualServiceException =
-                Assert.Throws<SubscriberCredentialOrchestrationServiceException>(
-                    retrieveAllSubscriberCredentialsAction);
+                await Assert.ThrowsAsync<SubscriberCredentialOrchestrationServiceException>(
+                    retrieveActiveSubscriberCredentialIdsTask.AsTask);
 
             // then
             actualServiceException.Should()

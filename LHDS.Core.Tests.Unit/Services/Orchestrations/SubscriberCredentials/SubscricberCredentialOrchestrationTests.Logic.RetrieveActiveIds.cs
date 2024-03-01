@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
-using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xunit;
 
@@ -21,38 +20,36 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<dynamic> randomDynamics = CreateRandomDynamicSubscriberAgreementCredentials();
 
-            IQueryable<SubscriberAgreement> storageSubscriberAgreements =
-                CreateSubscriberAgreementsFromDynamic(randomDynamics);
+            List<SubscriberAgreement> storageSubscriberAgreements = CreateRandomSubscriberAgreements();
+            List<Guid> expectedSubscriberCredentialIds = new List<Guid>();
 
-            IQueryable<SubscriberCredential> expectedSubscriberCredentials =
-                CreateSubscriberCredentialsFromDynamic(randomDynamics);
+            foreach (SubscriberAgreement subscriberAgreement in storageSubscriberAgreements)
+            {
+                if (subscriberAgreement.IsActive == true)
+                {
+                    expectedSubscriberCredentialIds.Add(subscriberAgreement.Id);
+                }
+            }
 
             this.subscriberAgreementProcessingServiceMock.Setup(service =>
                 service.RetrieveAllSubscriberAgreements())
-                    .Returns(storageSubscriberAgreements);
+                    .Returns(storageSubscriberAgreements.AsQueryable());
 
             // When
-            ValueTask<List<SubscriberCredential>> actualSubscriberCredentials = 
-                this.subscriberCredentialOrchestration.RetrieveAllActiveSubscriberCredentialIds();
+            ValueTask<List<Guid>> actualSubscriberCredentialIds = this.subscriberCredentialOrchestration
+                .RetrieveAllActiveSubscriberCredentialIds();
 
             // Then
-            actualSubscriberCredentials.Count().Should().Be(expectedSubscriberCredentials.Count());
-            var firstActualId = actualSubscriberCredentials.FirstOrDefault().Id;
-
-            actualSubscriberCredentials.Where(actualSubscriberCredential =>
-                actualSubscriberCredential.Id == firstActualId).Should().
-                    BeEquivalentTo(expectedSubscriberCredentials.Where(
-                        expectedSubscriberCredential => expectedSubscriberCredential.Id == firstActualId));
+            actualSubscriberCredentialIds.Should().BeEquivalentTo(expectedSubscriberCredentialIds);
 
             this.subscriberAgreementProcessingServiceMock.Verify(service =>
                 service.RetrieveAllSubscriberAgreements(),
                     Times.Once);
 
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
-            this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }

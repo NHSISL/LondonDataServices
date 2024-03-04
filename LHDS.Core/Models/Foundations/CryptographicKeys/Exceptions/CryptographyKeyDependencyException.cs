@@ -6,10 +6,10 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions
 {
-    public class NullSubscriberCredentialCryptographyException : Xeption
+    public class CryptographyKeyDependencyException : Xeption
     {
-        public NullSubscriberCredentialCryptographyException(string message)
-            : base(message)
+        public CryptographyKeyDependencyException(string message, Xeption innerException)
+            : base(message, innerException)
         { }
     }
 }

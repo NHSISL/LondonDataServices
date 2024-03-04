@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions
 {
-    public class NullSubscriberCredentialCryptographyException : Xeption
+    public class NullBrokerCryptographyKeyException : Xeption
     {
-        public NullSubscriberCredentialCryptographyException(string message)
+        public NullBrokerCryptographyKeyException(string message)
             : base(message)
         { }
     }

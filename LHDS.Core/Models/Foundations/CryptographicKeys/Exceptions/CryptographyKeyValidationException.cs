@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions
 {
-    public class CryptographicKeyValidationProcessingException : Xeption
+    public class CryptographyKeyValidationException : Xeption
     {
-        public CryptographicKeyValidationProcessingException(string message, Xeption innerException)
+        public CryptographyKeyValidationException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

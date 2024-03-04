@@ -73,9 +73,11 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                     SubscriberCredential.GpgPublicKey)));
         }
 
-        private void ValidateSubscriberCredentialOnRemove(SubscriberCredential subscriberCredential)
+        private void ValidateSubscriberCredentialIdOnRemove(Guid subscriberCredentialId)
         {
-            ValidateSubscriberCredentialIsNotNull(subscriberCredential);
+            Validate<InvalidArgumentSubscriberCredentialProcessingException>(
+                 message: "Invalid argument subscriber credential processing error occurred, contact support.",
+                 (Rule: IsInvalid(subscriberCredentialId), Parameter: "subscriberCredentialId"));
         }
 
             private void ValidateSecureData(SecureData secureData)

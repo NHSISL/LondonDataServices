@@ -154,7 +154,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             // when
             ValueTask removeSubscriberCredentialTask =
-                 this.secureDataProcessingService.RemoveSecureDataByIdAsync(randomId);
+                this.secureDataProcessingService.RemoveSecureDataByIdAsync(randomId);
 
             SubscriberCredentialProcessingServiceException actualException =
                 await Assert.ThrowsAsync<SubscriberCredentialProcessingServiceException>(

@@ -13,7 +13,7 @@ using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
 {
-    internal partial class CryptographicKeyProcessingServiceTests
+    public partial class CryptographicKeyProcessingServiceTests
     {
         private readonly Mock<ICryptographyKeyService> cryptographyKeyServiceMock;
         private readonly ICryptographyKeyProcessingService cryptographyKeyProcessingService;

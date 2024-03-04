@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.CryptographicKeys;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
@@ -10,37 +12,37 @@ using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
 {
-    internal partial class CryptographicKeyProcessingServiceTests
+    public partial class CryptographicKeyProcessingServiceTests
     {
         [Fact]
         public async Task ShouldGenerateKeysAsync()
         {
             //given
             string randomPublicKeyComment = GetRandomString();
-            string inputPublicKeyComment = randomPublicKeyComment;
+            string inputPublicKeyComment = "";
             string gpgCryptographyType = "GPG";
-            string ftpCryptographyType = "FTP";
+            string ftpCryptographyType = "SSH";
             CryptographicKey randomGpgCryptographicKey = CreateRandomCryptographicKey();
             CryptographicKey generatedGpgCryptographicKey = randomGpgCryptographicKey;
             CryptographicKey randomFtpCryptographicKey = CreateRandomCryptographicKey();
             CryptographicKey generatedFtpCryptographicKey = randomFtpCryptographicKey;
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            SubscriberCredential generatedSubscriberCredential = inputSubscriberCredential;
+            SubscriberCredential generatedSubscriberCredential = inputSubscriberCredential.DeepClone();
             generatedSubscriberCredential.GpgPassPhrase = generatedGpgCryptographicKey.Passphrase;
             generatedSubscriberCredential.GpgPublicKey = generatedGpgCryptographicKey.Base64PublicKey;
             generatedSubscriberCredential.GpgPrivateKey = generatedGpgCryptographicKey.Base64PrivateKey;
-            generatedSubscriberCredential.FtpPassPhrase = generatedGpgCryptographicKey.Passphrase;
-            generatedSubscriberCredential.FtpPrivateKey = generatedGpgCryptographicKey.Base64PrivateKey;
-            generatedSubscriberCredential.FtpPublicKey = generatedGpgCryptographicKey.Base64PublicKey;
+            generatedSubscriberCredential.FtpPassPhrase = generatedFtpCryptographicKey.Passphrase;
+            generatedSubscriberCredential.FtpPrivateKey = generatedFtpCryptographicKey.Base64PrivateKey;
+            generatedSubscriberCredential.FtpPublicKey = generatedFtpCryptographicKey.Base64PublicKey;
             SubscriberCredential expectedSubscriberCredential = generatedSubscriberCredential;
 
             this.cryptographyKeyServiceMock.Setup(service =>
-                service.GenerateKeysAsync("GPG", inputPublicKeyComment))
+                service.GenerateKeysAsync(gpgCryptographyType, inputPublicKeyComment))
                     .ReturnsAsync(generatedGpgCryptographicKey);
 
             this.cryptographyKeyServiceMock.Setup(service =>
-                service.GenerateKeysAsync("FTP", inputPublicKeyComment))
+                service.GenerateKeysAsync(ftpCryptographyType, inputPublicKeyComment))
                     .ReturnsAsync(generatedFtpCryptographicKey);
 
             // when
@@ -48,15 +50,17 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
                 await this.cryptographyKeyProcessingService.GenerateKeysAsync(inputSubscriberCredential);
 
             // then
+            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+
             this.cryptographyKeyServiceMock.Verify(service =>
-                service.GenerateKeysAsync("GPG", inputPublicKeyComment),
+                service.GenerateKeysAsync(gpgCryptographyType, inputPublicKeyComment),
                     Times.Once);
 
             this.cryptographyKeyServiceMock.Verify(service =>
-                service.GenerateKeysAsync("FTP", inputPublicKeyComment),
+                service.GenerateKeysAsync(ftpCryptographyType, inputPublicKeyComment),
                     Times.Once);
 
-            Assert.Equal(expectedSubscriberCredential, actualSubscriberCredential);
+            this.cryptographyKeyServiceMock.VerifyNoOtherCalls();
         }
     }
 }

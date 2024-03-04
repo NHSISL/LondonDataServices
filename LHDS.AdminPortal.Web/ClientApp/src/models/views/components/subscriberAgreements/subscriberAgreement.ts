@@ -3,9 +3,9 @@ import { Guid } from 'guid-typescript';
 export class SubscriberAgreementView {
     public id: Guid;
     public supplierSharingAgreementShortName: string;
-    public ftpUserName: string;
-    public ftpPublicKey: string;
-    public gpgPublicKey: string;
+    public ftpUserName?: string;
+    public ftpPublicKey?: string;
+    public gpgPublicKey?: string;
     public isActive: boolean;
     public supplierSharingAgreementGuid?: Guid;
     public lastPollStartDate?: Date;

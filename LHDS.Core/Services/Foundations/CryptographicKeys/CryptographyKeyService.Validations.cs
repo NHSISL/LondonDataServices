@@ -14,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
         private void ValidateInputArguments(string cryptographyType, string publicKeyComment)
         {
             Validate<InvalidArgumentCryptographyKeyException>(
-                message: "Invalid file argument(s), please correct the errors and try again.",
+                message: "Invalid cryptography key argument(s), please correct the errors and try again.",
                 (Rule: IsInvalid(cryptographyType), Parameter: nameof(cryptographyType)),
                 (Rule: IsInvalid(publicKeyComment), Parameter: nameof(publicKeyComment)));
         }

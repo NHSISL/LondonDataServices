@@ -14,19 +14,16 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
     {
         private delegate ValueTask<CryptographicKey> ReturningCryptographyKeyFunction();
 
-        private async ValueTask<CryptographicKey> TryCatch(ReturningCryptographyKeyFunction returningCryptographyKeyFunction)
+        private async ValueTask<CryptographicKey> TryCatch(
+            ReturningCryptographyKeyFunction returningCryptographyKeyFunction)
         {
             try
             {
                 return await returningCryptographyKeyFunction();
             }
-            catch (NullCryptographyTypeCryptographyKeyException nullCryptographyTypeCryptographyKeyException)
+            catch (InvalidArgumentCryptographyKeyException invalidArgumentCryptographyKeyException)
             {
-                throw CreateAndLogValidationException(nullCryptographyTypeCryptographyKeyException);
-            }
-            catch (NullPublicKeyCommentCryptographyKeyException nullPublicKeyCommentCryptographyKeyException)
-            {
-                throw CreateAndLogValidationException(nullPublicKeyCommentCryptographyKeyException);
+                throw CreateAndLogValidationException(invalidArgumentCryptographyKeyException);
             }
             catch (NullBrokerCryptographyKeyException nullBrokerCryptographyKeyException)
             {

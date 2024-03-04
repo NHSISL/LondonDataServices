@@ -19,7 +19,7 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             this.cryptographyKeyBrokers = cryptographyKeyBrokers;
         }
 
-        public ValueTask<CryptographicKey> GenerateKeys(string CryptographyType, string? publicKeyComment = "") =>
+        public ValueTask<CryptographicKey> GenerateKeysAsync(string CryptographyType, string? publicKeyComment = "") =>
             throw new NotImplementedException();
     }
 }

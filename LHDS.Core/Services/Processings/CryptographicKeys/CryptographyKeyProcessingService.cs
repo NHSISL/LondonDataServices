@@ -3,24 +3,30 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
 namespace LHDS.Core.Services.Foundations.CryptographicKeys
 {
-    public class CryptographyKeyProcessingService : ICryptographyKeyProcessingService
+    public partial class CryptographyKeyProcessingService : ICryptographyKeyProcessingService
     {
         private readonly ICryptographyKeyService cryptographyKeyService;
+        private readonly ILoggingBroker loggingBroker;
 
-        public CryptographyKeyProcessingService(ICryptographyKeyService cryptographyKeyService)
+        public CryptographyKeyProcessingService(
+            ICryptographyKeyService cryptographyKeyService,
+            ILoggingBroker loggingBroker)
         {
             this.cryptographyKeyService = cryptographyKeyService;
+            this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<SubscriberCredential> GenerateKeysAsync(SubscriberCredential subscriberCredential)
+        public ValueTask<SubscriberCredential> GenerateKeysAsync(SubscriberCredential subscriberCredential) =>
+        TryCatch(async () =>
         {
+            ValidateSubscriberCredential(subscriberCredential);
             var gpgGeneratedKeys = await cryptographyKeyService.GenerateKeysAsync("GPG");
             var ftpGeneratedKeys = await cryptographyKeyService.GenerateKeysAsync("SSH");
-
             subscriberCredential.GpgPublicKey = gpgGeneratedKeys.Base64PublicKey;
             subscriberCredential.GpgPrivateKey = gpgGeneratedKeys.Base64PrivateKey;
             subscriberCredential.GpgPassPhrase = gpgGeneratedKeys.Passphrase;
@@ -29,6 +35,6 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             subscriberCredential.FtpPassPhrase = ftpGeneratedKeys.Passphrase;
 
             return subscriberCredential;
-        }
+        });
     }
 }

@@ -2,8 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.CryptographyKeys;
 using LHDS.Core.Brokers.Loggings;
@@ -23,13 +23,13 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<CryptographicKey> GenerateKeys(string cryptographyType, string? publicKeyComment = "")
+        public async ValueTask<CryptographicKey> GenerateKeys(string cryptographyType, string? publicKeyComment = "")
         {
-            throw new NotImplementedException();
-            // Validate params
-            //var broker = cryptographyKeyBrokers.FirstOrDefault(broker => broker.CryptographyType == cryptographyType);
-            //Validate broker is not null
-            //return await broker.GenerateKeys(publicKeyComment);
+            // ValidateGenerateKeysParamsNotNull
+            var broker = cryptographyKeyBrokers.FirstOrDefault(broker => broker.CryptographyType == cryptographyType);
+            // ValidateBrokerNotNull
+
+            return await broker.GenerateKeys(publicKeyComment);
         }
     }
 }

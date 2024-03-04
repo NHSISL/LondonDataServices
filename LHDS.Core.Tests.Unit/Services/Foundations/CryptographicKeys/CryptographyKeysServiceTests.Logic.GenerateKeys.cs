@@ -17,18 +17,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
         public async Task ShouldGenerateKeysAsync()
         {
             // given
-            string randomCryptographyTypeString = GetRandomString();
-            string inputCryptographyType = randomCryptographyTypeString;
-
+            string inputCryptographyType = this.cryptographyKeyBrokerMock.Object.CryptographyType;
             string randomPublicKeyCommentString = GetRandomString();
             string inputPublicKeyCommentString = randomPublicKeyCommentString;
-
             CryptographicKey randomCryptographicKey = GenerateRandomCryptographicKey();
             CryptographicKey outputCryptographicKey = randomCryptographicKey;
             CryptographicKey expectedCryptographicKey = outputCryptographicKey.DeepClone();
 
-            this.cryptographyKeyBroker.Setup(brokers =>
-                brokers.GenerateKeys(inputPublicKeyCommentString))
+            this.cryptographyKeyBrokerMock.Setup(broker =>
+                broker.GenerateKeys(inputPublicKeyCommentString))
                     .ReturnsAsync(outputCryptographicKey);
 
             // When
@@ -38,11 +35,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
             // Then
             actualCryptographicKey.Should().BeEquivalentTo(expectedCryptographicKey);
 
-            this.cryptographyKeyBroker.Verify(broker =>
-                broker.GenerateKeys(inputPublicKeyCommentString),
-                Times.Once);
+            this.cryptographyKeyBrokerMock.Verify(broker =>
+                broker.CryptographyType,
+                    Times.Exactly(2));
 
-            this.cryptographyKeyBroker.VerifyNoOtherCalls();
+            this.cryptographyKeyBrokerMock.Verify(broker =>
+                broker.GenerateKeys(inputPublicKeyCommentString),
+                    Times.Once);
+
+            this.cryptographyKeyBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

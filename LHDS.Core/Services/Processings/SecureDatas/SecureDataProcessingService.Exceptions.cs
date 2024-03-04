@@ -61,7 +61,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 var failedSubscriberCredentialProcessingServiceException =
                     new FailedSubscriberCredentialProcessingServiceException(
                         message: "Failed subscriber credential aggregate processing service error occurred, " +
-                        "contact support.",
+                            "contact support.",
                         innerException: aggregateException);
 
                 throw CreateAndLogServiceException(failedSubscriberCredentialProcessingServiceException);

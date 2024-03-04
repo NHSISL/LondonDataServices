@@ -17,12 +17,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
         public async Task ShouldGenerateKeysAsync()
         {
             // given
-            string inputCryptographyType = this.cryptographyKeyBrokerMock.Object.CryptographyType;
+            string inputCryptographyType = GetRandomString();
             string randomPublicKeyCommentString = GetRandomString();
             string inputPublicKeyCommentString = randomPublicKeyCommentString;
             CryptographicKey randomCryptographicKey = GenerateRandomCryptographicKey();
             CryptographicKey outputCryptographicKey = randomCryptographicKey;
             CryptographicKey expectedCryptographicKey = outputCryptographicKey.DeepClone();
+
+            this.cryptographyKeyBrokerMock.Setup(broker =>
+                broker.CryptographyType)
+                    .Returns(inputCryptographyType);
 
             this.cryptographyKeyBrokerMock.Setup(broker =>
                 broker.GenerateKeys(inputPublicKeyCommentString))
@@ -37,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
 
             this.cryptographyKeyBrokerMock.Verify(broker =>
                 broker.CryptographyType,
-                    Times.Exactly(2));
+                    Times.Once);
 
             this.cryptographyKeyBrokerMock.Verify(broker =>
                 broker.GenerateKeys(inputPublicKeyCommentString),

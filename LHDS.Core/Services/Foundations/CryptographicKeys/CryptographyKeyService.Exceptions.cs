@@ -2,10 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.CryptographicKeys;
 using LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions;
-using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.CryptographicKeys
@@ -28,6 +28,15 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             {
                 throw CreateAndLogValidationException(nullPublicKeyCommentCryptographyKeyException);
             }
+            catch (Exception exception)
+            {
+                var failedCryptographyKeyServiceException =
+                    new FailedCryptographyKeyServiceException(
+                        message: "Failed cryptography key service occurred, please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedCryptographyKeyServiceException);
+            }
         }
 
         private CryptographyKeyValidationException CreateAndLogValidationException(Xeption exception)
@@ -40,6 +49,18 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             loggingBroker.LogError(cryptographyKeyValidationException);
 
             return cryptographyKeyValidationException;
+        }
+
+        private CryptographyKeyServiceException CreateAndLogServiceException(
+           Xeption exception)
+        {
+            var generateKeysServiceException = new CryptographyKeyServiceException(
+                message: "Cryptography key service error occurred, contact support.",
+                innerException: exception);
+
+            this.loggingBroker.LogError(generateKeysServiceException);
+
+            return generateKeysServiceException;
         }
     }
 }

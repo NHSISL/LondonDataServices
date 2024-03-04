@@ -86,5 +86,46 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
             this.cryptographyKeyBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnGenerateIfBrokerIsNullAndLogItAsync()
+        {
+            // given
+            string nullCryptographyType = GetRandomString();
+            string randomPublicKeyCommentString = GetRandomString();
+
+            var nullCryptographyBrokerException =
+                new NullBrokerCryptographyKeyException(message: "Broker is null.");
+
+            var expectedCryptographyTypeValidationException =
+                new CryptographyKeyValidationException(
+                    message: "Cryptography key validation errors occurred, please try again.",
+                    innerException: nullCryptographyBrokerException);
+
+            // when
+            ValueTask<CryptographicKey> CryptographicKeyTask = this.cryptographyKeyService.GenerateKeys(
+                cryptographyType: nullCryptographyType,
+                publicKeyComment: randomPublicKeyCommentString);
+
+            CryptographyKeyValidationException actualEncryptionValidationException =
+                await Assert.ThrowsAsync<CryptographyKeyValidationException>(async () =>
+                    await CryptographicKeyTask);
+
+            // then
+            actualEncryptionValidationException.Should()
+                .BeEquivalentTo(expectedCryptographyTypeValidationException);
+
+            this.cryptographyKeyBrokerMock.Verify(broker =>
+               broker.CryptographyType,
+                   Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedCryptographyTypeValidationException))),
+                        Times.Once);
+
+            this.cryptographyKeyBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

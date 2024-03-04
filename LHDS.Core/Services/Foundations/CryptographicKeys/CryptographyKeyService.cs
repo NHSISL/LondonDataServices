@@ -28,7 +28,7 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             {
                 ValidateInputs(cryptographyType, publicKeyComment);
                 var broker = cryptographyKeyBrokers.FirstOrDefault(broker => broker.CryptographyType == cryptographyType);
-                // ValidateBrokerNotNull
+                ValidateBrokerNotNull(broker);
 
                 return await broker.GenerateKeys(publicKeyComment);
             });

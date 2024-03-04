@@ -218,6 +218,56 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             {
                 throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialOrchestrationException);
             }
+            catch (SubscriberAgreementProcessingValidationException
+                subscriberAgreementProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(subscriberAgreementProcessingValidationException);
+            }
+            catch (SubscriberAgreementProcessingDependencyValidationException
+                subscriberAgreementProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(subscriberAgreementProcessingDependencyValidationException);
+            }
+            catch (SubscriberCredentialValidationException
+                subscriberCredentialValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationException);
+            }
+            catch (SubscriberCredentialProcessingDependencyValidationException
+                subscriberCredentialProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    subscriberCredentialProcessingDependencyValidationException);
+            }
+            catch (SubscriberAgreementProcessingDependencyException
+                subscriberAgreementProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(subscriberAgreementProcessingDependencyException);
+            }
+            catch (SubscriberAgreementProcessingServiceException
+                subscriberAgreementProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(subscriberAgreementProcessingServiceException);
+            }
+            catch (SubscriberCredentialProcessingDependencyException
+                subscriberCredentialProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(subscriberCredentialProcessingDependencyException);
+            }
+            catch (SubscriberCredentialProcessingServiceException
+                subscriberCredentialProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(subscriberCredentialProcessingServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedSubscriberCredentialOrchestrationServiceException =
+                    new FailedSubscriberCredentialOrchestrationServiceException(
+                        message: "Failed subscriber credential orchestration service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedSubscriberCredentialOrchestrationServiceException);
+            }
         }
 
         private SubscriberCredentialValidationOrchestrationException CreateAndLogValidationException(Xeption exception)

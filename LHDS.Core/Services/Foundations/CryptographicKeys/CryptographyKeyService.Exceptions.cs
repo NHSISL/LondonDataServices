@@ -28,6 +28,10 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             {
                 throw CreateAndLogValidationException(nullPublicKeyCommentCryptographyKeyException);
             }
+            catch (NullBrokerCryptographyKeyException nullBrokerCryptographyKeyException)
+            {
+                throw CreateAndLogValidationException(nullBrokerCryptographyKeyException);
+            }
             catch (Exception exception)
             {
                 var failedCryptographyKeyServiceException =

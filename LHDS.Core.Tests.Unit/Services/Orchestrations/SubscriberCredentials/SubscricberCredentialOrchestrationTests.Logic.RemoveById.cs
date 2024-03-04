@@ -4,10 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
-using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xunit;
 
@@ -23,26 +20,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential(randomId);
             SubscriberAgreement inputSubscriberAgreement = CreateSubscriberAgreementFromDynamic(randomDynamic);
             SubscriberAgreement outputSubscriberAgreement = inputSubscriberAgreement;
-            SubscriberCredential inputSubscriberCredential = CreateSubscriberCredentialFromDynamic(randomDynamic);
-            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
 
             this.secureDataProcessingServiceMock.Setup(service =>
-                service.RemoveSecureDataAsync(inputSubscriberCredential))
-                    .ReturnsAsync(expectedSubscriberCredential);
+                service.RemoveSecureDataByIdAsync(randomId));
 
             this.subscriberAgreementProcessingServiceMock.Setup(service =>
                 service.RemoveSubscriberAgreementByIdAsync(randomId))
                     .ReturnsAsync(outputSubscriberAgreement);
 
             // When
-            SubscriberCredential actualSubscriberCredential = await this.subscriberCredentialOrchestration
-                .RemoveSubscriberCredentialByIdAsync(randomId);
+            await this.subscriberCredentialOrchestration.RemoveSubscriberCredentialByIdAsync(randomId);
 
             // Then
-            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
-
             this.secureDataProcessingServiceMock.Verify(service =>
-                service.RemoveSecureDataAsync(inputSubscriberCredential),
+                service.RemoveSecureDataByIdAsync(randomId),
                     Times.Once);
 
             this.subscriberAgreementProcessingServiceMock.Verify(service =>

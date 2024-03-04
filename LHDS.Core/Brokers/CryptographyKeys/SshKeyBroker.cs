@@ -9,7 +9,7 @@ namespace LHDS.Core.Brokers.CryptographyKeys
 {
     public class SshKeyBroker : ICryptographyKeyBroker
     {
-        public string CryptographyType => "Ssh";
+        public string CryptographyType => "SSH";
 
         public async ValueTask<CryptographicKey> GenerateKeys(string? publicKeyComment = "")
         {

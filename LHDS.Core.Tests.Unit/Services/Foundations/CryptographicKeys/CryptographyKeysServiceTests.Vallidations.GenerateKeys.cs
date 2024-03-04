@@ -13,57 +13,32 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
 {
     public partial class CryptographyKeyServiceTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnGenerateIfCryptographyTypeIsNullAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionOnGenerateIfArgumentsIsInvalidAndLogItAsync(string invalidValue)
         {
             // given
-            string nullCryptographyType = null;
-            string randomPublicKeyCommentString = GetRandomString();
+            string nullCryptographyType = invalidValue;
+            string randomPublicKeyCommentString = invalidValue;
 
-            var nullCryptographyTypeException =
-                new NullCryptographyTypeCryptographyKeyException(message: "Cryptography type is null.");
+            var invalidArgumentCryptographyKeyException =
+                new InvalidArgumentCryptographyKeyException(
+                    message: "Invalid file argument(s), please correct the errors and try again.");
+
+            invalidArgumentCryptographyKeyException.AddData(
+                key: "cryptographyType",
+                values: "Text is required");
+
+            invalidArgumentCryptographyKeyException.AddData(
+                key: "publicKeyComment",
+                values: "Text is required");
 
             var expectedCryptographyTypeValidationException =
                 new CryptographyKeyValidationException(
                     message: "Cryptography key validation errors occurred, please try again.",
-                    innerException: nullCryptographyTypeException);
-
-            // when
-            ValueTask<CryptographicKey> CryptographicKeyTask = this.cryptographyKeyService.GenerateKeys(
-                cryptographyType: nullCryptographyType,
-                publicKeyComment: randomPublicKeyCommentString);
-
-            CryptographyKeyValidationException actualEncryptionValidationException =
-                await Assert.ThrowsAsync<CryptographyKeyValidationException>(async () =>
-                    await CryptographicKeyTask);
-
-            // then
-            actualEncryptionValidationException.Should()
-                .BeEquivalentTo(expectedCryptographyTypeValidationException);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedCryptographyTypeValidationException))),
-                        Times.Once);
-
-            this.cryptographyKeyBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnGenerateIfPublicKeyCommentIsNullAndLogItAsync()
-        {
-            // given
-            string nullCryptographyType = GetRandomString(); ;
-            string randomPublicKeyCommentString = null;
-
-            var nullCryptographyTypeException =
-                new NullPublicKeyCommentCryptographyKeyException(message: "Public key comment is null.");
-
-            var expectedCryptographyTypeValidationException =
-                new CryptographyKeyValidationException(
-                    message: "Cryptography key validation errors occurred, please try again.",
-                    innerException: nullCryptographyTypeException);
+                    innerException: invalidArgumentCryptographyKeyException);
 
             // when
             ValueTask<CryptographicKey> CryptographicKeyTask = this.cryptographyKeyService.GenerateKeys(

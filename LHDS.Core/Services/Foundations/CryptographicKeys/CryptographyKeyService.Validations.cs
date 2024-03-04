@@ -2,38 +2,32 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using LHDS.Core.Brokers.CryptographyKeys;
 using LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.CryptographicKeys
 {
     public partial class CryptographyKeyService
     {
-        private void ValidateInputs(string cryptographyType, string publicKeyComment)
+        private void ValidateInputArguments(string cryptographyType, string publicKeyComment)
         {
-            ValidateCryptographyTypeIsNotNull(cryptographyType);
-            ValidatePublicKeyCommentIsNotNull(publicKeyComment);
+            Validate<InvalidArgumentCryptographyKeyException>(
+                message: "Invalid file argument(s), please correct the errors and try again.",
+                (Rule: IsInvalid(cryptographyType), Parameter: nameof(cryptographyType)),
+                (Rule: IsInvalid(publicKeyComment), Parameter: nameof(publicKeyComment)));
         }
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = String.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
+        };
 
         private void ValidateBrokerNotNull(ICryptographyKeyBroker broker)
         {
             ValidateCryptographyBrokerIsNotNull(broker);
-        }
-
-        private static void ValidateCryptographyTypeIsNotNull(string cryptographyType)
-        {
-            if (cryptographyType is null)
-            {
-                throw new NullCryptographyTypeCryptographyKeyException(message: "Cryptography type is null.");
-            }
-        }
-
-        private static void ValidatePublicKeyCommentIsNotNull(string publicKeyComment)
-        {
-            if (publicKeyComment is null)
-            {
-                throw new NullPublicKeyCommentCryptographyKeyException(message: "Public key comment is null.");
-            }
         }
 
         private static void ValidateCryptographyBrokerIsNotNull(ICryptographyKeyBroker broker)
@@ -42,6 +36,24 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             {
                 throw new NullBrokerCryptographyKeyException(message: "Broker is null.");
             }
+        }
+
+        private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
+        {
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidDataException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

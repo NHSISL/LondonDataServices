@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions;
 using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 

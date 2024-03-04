@@ -9,12 +9,11 @@ using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
-using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberAgreements.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
+using LHDS.Core.Services.Foundations.CryptographicKeys;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
@@ -29,6 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
     {
         private readonly Mock<ISubscriberAgreementProcessingService> subscriberAgreementProcessingServiceMock;
         private readonly Mock<ISecureDataProcessingService> secureDataProcessingServiceMock;
+        private readonly Mock<ICryptographyKeyProcessingService> cryptographyKeyProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ICompareLogic compareLogic;
@@ -38,6 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         {
             this.subscriberAgreementProcessingServiceMock = new Mock<ISubscriberAgreementProcessingService>();
             this.secureDataProcessingServiceMock = new Mock<ISecureDataProcessingService>();
+            this.cryptographyKeyProcessingServiceMock = new Mock<ICryptographyKeyProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
@@ -45,6 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             this.subscriberCredentialOrchestration = new SubscriberCredentialOrchestration(
                 subscriberAgreementProcessingService: subscriberAgreementProcessingServiceMock.Object,
                 secureDataProcessingService: secureDataProcessingServiceMock.Object,
+                cryptographyKeyProcessingService: cryptographyKeyProcessingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object);
         }

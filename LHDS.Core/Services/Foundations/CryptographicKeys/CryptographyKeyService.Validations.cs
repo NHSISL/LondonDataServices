@@ -26,7 +26,7 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
         {
             if (publicKeyComment is null)
             {
-                throw new NullPublicKeyCommentCryptographyKeyException(message: "public key comment is null.");
+                throw new NullPublicKeyCommentCryptographyKeyException(message: "Public key comment is null.");
             }
         }
     }

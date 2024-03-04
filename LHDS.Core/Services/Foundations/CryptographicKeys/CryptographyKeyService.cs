@@ -25,7 +25,7 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
 
         public async ValueTask<CryptographicKey> GenerateKeys(string cryptographyType, string? publicKeyComment = "")
         {
-            // ValidateGenerateKeysParamsNotNull
+            // ValidateInputs(cryptographyType, publicKeyComment);
             var broker = cryptographyKeyBrokers.FirstOrDefault(broker => broker.CryptographyType == cryptographyType);
             // ValidateBrokerNotNull
 

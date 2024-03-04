@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
 
             var expectedCryptographyTypeValidationException =
                 new CryptographyKeyValidationException(
-                    message: "Cryptography type validation errors occurred, please try again.",
+                    message: "Cryptography key validation errors occurred, please try again.",
                     innerException: nullCryptographyTypeException);
 
             // when

@@ -230,11 +230,10 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                SubscriberCredential deletedSubscriberCredential =
-                    await this.subscriberCredentialOrchestration
+                await this.subscriberCredentialOrchestration
                         .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId);
 
-                return Ok(deletedSubscriberCredential);
+                return Ok();
             }
             catch (SubscriberCredentialValidationOrchestrationException subscriberCredentialValidationException)
                 when (subscriberCredentialValidationException.InnerException is NotFoundSubscriberAgreementException)

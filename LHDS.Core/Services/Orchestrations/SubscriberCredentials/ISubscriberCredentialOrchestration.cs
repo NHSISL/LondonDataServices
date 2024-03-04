@@ -35,6 +35,6 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             Guid subscriberCredentialId,
             bool externalUse = true);
 
-        ValueTask<SubscriberCredential> RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId);
+        ValueTask RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId);
     }
 }

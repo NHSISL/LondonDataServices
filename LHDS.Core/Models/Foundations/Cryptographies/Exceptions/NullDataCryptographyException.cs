@@ -4,11 +4,11 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions
+namespace LHDS.Core.Models.Foundations.Cryptographies.Exceptions
 {
-    public class NullCryptographyTypeCryptographyKeyException : Xeption
+    public class NullDataCryptographyException : Xeption
     {
-        public NullCryptographyTypeCryptographyKeyException(string message)
+        public NullDataCryptographyException(string message)
             : base(message)
         { }
     }

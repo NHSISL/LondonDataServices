@@ -17,17 +17,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
 {
     public partial class CryptographyKeyServiceTests
     {
-        private readonly Mock<ICryptographyKeyBroker> cryptographyKeyBroker;
+        private readonly Mock<ICryptographyKeyBroker> cryptographyKeyBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ICryptographyKeyService cryptographyKeyService;
 
         public CryptographyKeyServiceTests()
         {
-            this.cryptographyKeyBroker = new Mock<ICryptographyKeyBroker>();
+            this.cryptographyKeyBrokerMock = new Mock<ICryptographyKeyBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.cryptographyKeyService = new CryptographyKeyService(
-                cryptographyKeyBrokers: new List<ICryptographyKeyBroker> { this.cryptographyKeyBroker.Object },
+                cryptographyKeyBrokers: new List<ICryptographyKeyBroker> { this.cryptographyKeyBrokerMock.Object },
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
@@ -48,6 +48,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                 Base64PrivateKey = GetRandomString(),
                 Passphrase = GetRandomString()
             };
+        }
+
+        static List<string> GenerateCryptographyTypes(int count)
+        {
+            List<string> cryptographyTypes = new List<string>();
+            Random random = new Random();
+
+            for (int i = 0; i < count; i++)
+            {
+                string randomString = GetRandomString();
+                cryptographyTypes.Add(randomString);
+            }
+
+            return cryptographyTypes;
         }
     }
 }

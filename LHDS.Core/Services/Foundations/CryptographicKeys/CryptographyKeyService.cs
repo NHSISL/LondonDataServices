@@ -6,20 +6,30 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.CryptographyKeys;
+using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.CryptographicKeys;
 
 namespace LHDS.Core.Services.Foundations.CryptographicKeys
 {
-    public class CryptographyKeyService : ICryptographyKeyService
+    public partial class CryptographyKeyService : ICryptographyKeyService
     {
         private readonly IEnumerable<ICryptographyKeyBroker> cryptographyKeyBrokers;
+        private readonly ILoggingBroker loggingBroker;
 
-        public CryptographyKeyService(IEnumerable<ICryptographyKeyBroker> cryptographyKeyBrokers)
+        public CryptographyKeyService(IEnumerable<ICryptographyKeyBroker> cryptographyKeyBrokers,
+            ILoggingBroker loggingBroker)
         {
             this.cryptographyKeyBrokers = cryptographyKeyBrokers;
+            this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<CryptographicKey> GenerateKeys(string CryptographyType, string? publicKeyComment = "") =>
+        public ValueTask<CryptographicKey> GenerateKeys(string cryptographyType, string? publicKeyComment = "")
+        {
             throw new NotImplementedException();
+            // Validate params
+            //var broker = cryptographyKeyBrokers.FirstOrDefault(broker => broker.CryptographyType == cryptographyType);
+            //Validate broker is not null
+            //return await broker.GenerateKeys(publicKeyComment);
+        }
     }
 }

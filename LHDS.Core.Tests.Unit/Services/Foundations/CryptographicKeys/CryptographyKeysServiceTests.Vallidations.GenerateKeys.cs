@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.CryptographicKeys;
 using LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions;
-using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
 using Moq;
 using Xunit;
 

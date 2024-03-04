@@ -6,6 +6,7 @@ using System;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
@@ -36,6 +37,19 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                         "please correct the errors and try again.");
             }
         }
+
+        private void ValidateSubscriberCredentialIdOnRemove(Guid subscriberCredentialId)
+        {
+            Validate<InvalidArgumentSubscriberCredentialOrchestrationException>(
+                 message: "Invalid argument subscriber credential orchestration error occurred, contact support.",
+                 (Rule: IsInvalid(subscriberCredentialId), Parameter: "subscriberCredentialId"));
+        }
+
+        private static dynamic IsInvalid(Guid someId) => new
+        {
+            Condition = someId == Guid.Empty,
+            Message = "Id is required"
+        };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption

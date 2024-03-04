@@ -110,19 +110,18 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 return subscriberCredential;
             });
 
-        public ValueTask<SubscriberCredential> RemoveSecureDataAsync(SubscriberCredential subscriberCredential) =>
+        public ValueTask RemoveSecureDataByIdAsync(Guid subscriberCredentialId) =>
             TryCatch(async () =>
             {
-                ValidateSubscriberCredentialOnRemove(subscriberCredential);
+                ValidateSubscriberCredentialIdOnRemove(subscriberCredentialId);
                 List<string> keyTypes = GetPropertyList();
-                ValidateKeysExist(keyTypes, subscriberCredential);
                 var exceptions = new List<Exception>();
 
                 foreach (var keyType in keyTypes)
                 {
                     try
                     {
-                        string secretName = $"{subscriberCredential.Id}-{keyType}";
+                        string secretName = $"{subscriberCredentialId}-{keyType}";
 
                         await TryCatch(async () =>
                         {
@@ -141,8 +140,6 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                         $"Unable to retrieve {exceptions.Count} secure data",
                         exceptions);
                 }
-
-                return subscriberCredential;
             });
 
         virtual internal List<SecureData> GetSecureDataItems(SubscriberCredential subscriberCredential)

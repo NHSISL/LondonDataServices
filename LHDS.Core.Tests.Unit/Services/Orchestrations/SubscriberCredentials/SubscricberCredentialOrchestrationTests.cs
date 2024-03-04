@@ -120,9 +120,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             return subscriberAgreements.AsQueryable();
         }
 
-        private static dynamic CreateRandomDynamicSubscriberAgreementCredential()
+        private static dynamic CreateRandomDynamicSubscriberAgreementCredential(Guid id = default(Guid))
         {
-            Guid id = Guid.NewGuid();
+            if (id == Guid.Empty)
+            {
+                id = Guid.NewGuid();
+            }
+
             Guid supplierSharingAgreementGuid = Guid.NewGuid();
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
 

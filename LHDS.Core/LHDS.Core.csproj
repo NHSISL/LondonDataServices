@@ -49,7 +49,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Migrations\" />
-	  <Folder Include="Models\Processings\CryptographicKeys\" />
 	</ItemGroup>
 
 	<ItemGroup>

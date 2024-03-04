@@ -22,6 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             Xeption dependencyValidationException)
         {
             // Given
+            Guid randomId = Guid.NewGuid();
+
             List<string> keyTypes = new List<string>
             {
                 "FtpPassword",
@@ -30,12 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                 "GpgPassPhrase",
                 "GpgPrivateKey"
             };
-
-            dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();
+          
             List<Exception> exceptions = new List<Exception>();
-
-            SubscriberCredential inputSubscriberCredential =
-                CreateSubscriberCredentialFromDynamic(credential: randomCredential);
 
             foreach (string keyType in keyTypes)
             {
@@ -69,12 +67,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     innerException: failedSubscriberCredentialProcessingServiceException);
 
             // when
-            ValueTask<SubscriberCredential> secureDataRetrieveTask =
-                this.secureDataProcessingService.RemoveSecureDataAsync(inputSubscriberCredential);
+            ValueTask removeSubscriberCredentialTask =
+                this.secureDataProcessingService.RemoveSecureDataByIdAsync(randomId);
 
             SubscriberCredentialProcessingServiceException actualException =
                 await Assert.ThrowsAsync<SubscriberCredentialProcessingServiceException>(
-                    secureDataRetrieveTask.AsTask);
+                    removeSubscriberCredentialTask.AsTask);
 
             // Then
             actualException.Should()
@@ -110,6 +108,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             Xeption dependencyException)
         {
             // Given
+            Guid randomId = Guid.NewGuid();
+
             List<string> keyTypes = new List<string>
             {
                 "FtpPassword",
@@ -119,11 +119,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                 "GpgPrivateKey"
             };
 
-            dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();
             List<Exception> exceptions = new List<Exception>();
-
-            SubscriberCredential inputSubscriberCredential =
-                CreateSubscriberCredentialFromDynamic(credential: randomCredential);
 
             foreach (var keyType in keyTypes)
             {
@@ -157,12 +153,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     innerException: failedSubscriberCredentialProcessingServiceException);
 
             // when
-            ValueTask<SubscriberCredential> secureDataAddTask =
-                this.secureDataProcessingService.RemoveSecureDataAsync(inputSubscriberCredential);
+            ValueTask removeSubscriberCredentialTask =
+                this.secureDataProcessingService.RemoveSecureDataByIdAsync(randomId);
 
             SubscriberCredentialProcessingServiceException actualException =
                 await Assert.ThrowsAsync<SubscriberCredentialProcessingServiceException>(
-                    secureDataAddTask.AsTask);
+                    removeSubscriberCredentialTask.AsTask);
 
             // Then
             actualException.Should()
@@ -196,6 +192,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
         public async Task ShouldThrowAggregateServiceExceptionOnRemoveIfErrorsInLoopAndLogItAsync()
         {
             // Given
+            Guid randomId = Guid.NewGuid();
+
             List<string> keyTypes = new List<string>
                 {
                     "FtpPassword",
@@ -205,12 +203,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     "GpgPrivateKey"
                 };
 
-            dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();
             var serviceException = new Exception();
             List<Exception> exceptions = new List<Exception>();
-
-            SubscriberCredential inputSubscriberCredential =
-                CreateSubscriberCredentialFromDynamic(credential: randomCredential);
 
             var innerfailedSubscriberCredentialProcessingServiceException =
                 new FailedSubscriberCredentialProcessingServiceException(
@@ -248,12 +242,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     innerException: failedSubscriberCredentialProcessingServiceException);
 
             // when
-            ValueTask<SubscriberCredential> secureDataAddTask =
-               this.secureDataProcessingService.RemoveSecureDataAsync(inputSubscriberCredential);
+            ValueTask removeSubscriberCredentialTask =
+                this.secureDataProcessingService.RemoveSecureDataByIdAsync(randomId);
 
             SubscriberCredentialProcessingServiceException actualException =
                 await Assert.ThrowsAsync<SubscriberCredentialProcessingServiceException>(
-                    secureDataAddTask.AsTask);
+                    removeSubscriberCredentialTask.AsTask);
 
             // Then
             actualException.Should()

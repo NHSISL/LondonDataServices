@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions;
+using LHDS.Core.Models.Processings.CryptographicKeys.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Xunit;
 

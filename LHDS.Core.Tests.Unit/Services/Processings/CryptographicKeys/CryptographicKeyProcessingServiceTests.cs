@@ -6,11 +6,13 @@ using System;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.CryptographicKeys;
+using LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.CryptographicKeys;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
 {
@@ -62,6 +64,38 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
                 Base64PrivateKey = GetRandomString(),
                 Base64PublicKey = GetRandomString(),
                 Passphrase = GetRandomString()
+            };
+        }
+
+        public static TheoryData DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new CryptographyKeyValidationException(
+                    message: "Cryptography key validation errors occurred, please try again.", innerException),
+
+                new CryptographyKeyDependencyValidationException(
+                    message: "Cryptography key dependency validation occurred, please try again.", innerException)
+            };
+        }
+
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new CryptographyKeyDependencyException(
+                    message: "Cryptography key dependency errors occurred, please try again.", innerException),
+
+                new CryptographyKeyServiceException(
+                    message : "Cryptography key service error occurred, contact support.", innerException)
             };
         }
     }

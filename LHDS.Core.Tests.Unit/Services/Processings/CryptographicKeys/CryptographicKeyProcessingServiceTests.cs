@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq.Expressions;
+using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.CryptographicKeys;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.CryptographicKeys;
@@ -16,12 +17,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
     public partial class CryptographicKeyProcessingServiceTests
     {
         private readonly Mock<ICryptographyKeyService> cryptographyKeyServiceMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock = new Mock<ILoggingBroker>();
         private readonly ICryptographyKeyProcessingService cryptographyKeyProcessingService;
 
         public CryptographicKeyProcessingServiceTests()
         {
             cryptographyKeyServiceMock = new Mock<ICryptographyKeyService>();
-            cryptographyKeyProcessingService = new CryptographyKeyProcessingService(cryptographyKeyServiceMock.Object);
+            cryptographyKeyProcessingService = new CryptographyKeyProcessingService(
+                cryptographyKeyService: cryptographyKeyServiceMock.Object,
+                loggingBroker: loggingBrokerMock.Object);
         }
 
         private static string GetRandomString() =>

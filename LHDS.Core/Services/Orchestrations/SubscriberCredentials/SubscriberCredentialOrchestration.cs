@@ -158,11 +158,14 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             bool externalUse = true) =>
             throw new NotImplementedException();
 
-        public async ValueTask RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId)
-        {
-            await this.secureDataProcessingService.RemoveSecureDataByIdAsync(subscriberCredentialId);
+        public ValueTask RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberCredentialIdOnRemove(subscriberCredentialId);
+                await this.secureDataProcessingService.RemoveSecureDataByIdAsync(subscriberCredentialId);
 
-            await this.subscriberAgreementProcessingService.RemoveSubscriberAgreementByIdAsync(subscriberCredentialId);
-        }
+                await this.subscriberAgreementProcessingService.RemoveSubscriberAgreementByIdAsync(
+                    subscriberCredentialId);
+            });
     }
 }

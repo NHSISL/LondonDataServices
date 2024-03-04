@@ -19,6 +19,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         private delegate ValueTask<SubscriberCredential> ReturningSubscriberCredentialFunction();
         private delegate IQueryable<SubscriberCredential> ReturningSubscriberCredentialIQueryableFunction();
         private delegate ValueTask<List<Guid>> ReturningGuidListFunction();
+        private delegate ValueTask ReturnNothingFunction();
 
         private async ValueTask<SubscriberCredential> TryCatch(ReturningSubscriberCredentialFunction
             returningSubscriberCredentialFunction)
@@ -203,6 +204,19 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedSubscriberCredentialOrchestrationServiceException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturnNothingFunction returnNothingFunction)
+        {
+            try
+            {
+                await returnNothingFunction();
+            }
+            catch (InvalidArgumentSubscriberCredentialOrchestrationException
+                invalidArgumentSubscriberCredentialOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialOrchestrationException);
             }
         }
 

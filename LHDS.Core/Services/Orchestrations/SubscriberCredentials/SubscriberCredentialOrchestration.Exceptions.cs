@@ -226,7 +226,8 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             catch (SubscriberAgreementProcessingDependencyValidationException
                 subscriberAgreementProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberAgreementProcessingDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(
+                    subscriberAgreementProcessingDependencyValidationException);
             }
             catch (SubscriberCredentialValidationException
                 subscriberCredentialValidationException)
@@ -263,7 +264,8 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             {
                 var failedSubscriberCredentialOrchestrationServiceException =
                     new FailedSubscriberCredentialOrchestrationServiceException(
-                        message: "Failed subscriber credential orchestration service error occurred, please contact support.",
+                        message: "Failed subscriber credential orchestration service error occurred, " +
+                            "please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedSubscriberCredentialOrchestrationServiceException);

@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.CryptographicKeys;
 
@@ -10,6 +9,8 @@ namespace LHDS.Core.Brokers.CryptographyKeys
 {
     public class SshKeyBroker : ICryptographyKeyBroker
     {
+        public string CryptographyType => "Ssh";
+
         public async ValueTask<CryptographicKey> GenerateKeys(string? publicKeyComment = "")
         {
             int keyBits = 2048;

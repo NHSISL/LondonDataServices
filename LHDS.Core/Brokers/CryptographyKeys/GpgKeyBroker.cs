@@ -17,6 +17,8 @@ namespace LHDS.Core.Brokers.CryptographyKeys
 {
     public class GpgKeyBroker : ICryptographyKeyBroker
     {
+        public string CryptographyType => "Gpg";
+
         public async ValueTask<CryptographicKey> GenerateKeys(string? publicKeyComment = "")
         {
             RsaKeyPairGenerator rsaKeyPairGenerator = new RsaKeyPairGenerator();

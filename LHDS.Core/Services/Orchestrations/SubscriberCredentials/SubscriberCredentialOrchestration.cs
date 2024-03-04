@@ -162,8 +162,15 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             bool externalUse = true) =>
             throw new NotImplementedException();
 
-        public ValueTask<SubscriberCredential> RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
-            throw new NotImplementedException();
+        public ValueTask RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberCredentialIdOnRemove(subscriberCredentialId);
+                await this.secureDataProcessingService.RemoveSecureDataByIdAsync(subscriberCredentialId);
+
+                await this.subscriberAgreementProcessingService.RemoveSubscriberAgreementByIdAsync(
+                    subscriberCredentialId);
+            });
 
         private static SubscriberCredential MapToSubsciberCredentialForInternalExternalUse(
             SubscriberCredential subscriberCredential,
@@ -221,14 +228,5 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                 CreatedDate = subscriberCredential.CreatedDate,
             };
         }
-        public ValueTask RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
-            TryCatch(async () =>
-            {
-                ValidateSubscriberCredentialIdOnRemove(subscriberCredentialId);
-                await this.secureDataProcessingService.RemoveSecureDataByIdAsync(subscriberCredentialId);
-
-                await this.subscriberAgreementProcessingService.RemoveSubscriberAgreementByIdAsync(
-                    subscriberCredentialId);
-            });
     }
 }

@@ -91,6 +91,11 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 throw CreateAndLogValidationException(invalidSubscriberCredentialException);
             }
+            catch (InvalidArgumentSubscriberCredentialProcessingException 
+                invalidArgumentSubscriberCredentialProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialProcessingException);
+            }
             catch (SecureDataDependencyValidationException secureDataDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(secureDataDependencyValidationException);
@@ -111,8 +116,8 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 var failedSubscriberCredentialProcessingServiceException =
                     new FailedSubscriberCredentialProcessingServiceException(
-                        message: "Failed subscriber credential aggregate coordination service occurred, " +
-                        "please contact support.",
+                        message: "Failed subscriber credential aggregate processing service error occurred, " +
+                        "contact support.",
                         innerException: aggregateException);
 
                 throw CreateAndLogServiceException(failedSubscriberCredentialProcessingServiceException);

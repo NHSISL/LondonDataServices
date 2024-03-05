@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         [MemberData(nameof(SubscriberCredentialOrchestrationDependencyValidationExceptions))]
         public async Task
             ShouldThrowDependencyValidationOnRetrieveSubscriberCredentialByIdIfDependencyValidationOccursAndLogItAsync(
-            Xeption dependencyValidationException)
+                Xeption dependencyValidationException)
         {
             // given
             Guid randomId = Guid.NewGuid();
@@ -65,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         [MemberData(nameof(SubscriberCredentialOrchestrationDependencyExceptions))]
         public async Task
             ShouldThrowDependencyExceptionOnRetrieveSubscriberCredentialByIdIfDependencyErrorOccursAndLogItAsync(
-            Xeption dependencyException)
+                Xeption dependencyException)
         {
             // given
             Guid randomId = Guid.NewGuid();

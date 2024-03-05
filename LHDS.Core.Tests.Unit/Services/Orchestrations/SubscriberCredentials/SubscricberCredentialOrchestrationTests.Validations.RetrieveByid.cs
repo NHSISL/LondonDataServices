@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(expectedSubscriberCredentialOrchestrationValidationException))),
-                        Times.Once);
+                    Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.secureDataProcessingServiceMock.VerifyNoOtherCalls();

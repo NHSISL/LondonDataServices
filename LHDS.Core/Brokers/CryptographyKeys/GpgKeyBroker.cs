@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Text;
+using LHDS.Core.Models.Foundations.CryptographicKeys;
 using Org.BouncyCastle.Bcpg;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using Org.BouncyCastle.Crypto;
@@ -18,7 +19,7 @@ namespace LHDS.Core.Brokers.CryptographyKeys
     {
         public string CryptographyType => "GPG";
 
-        public KeysModel GenerateKeys(string name, string email, string? password, string comment)
+        public CryptographicKey GenerateKeys(string name, string email, string? password, string comment)
         {
             RsaKeyPairGenerator rsaKeyPairGenerator = new RsaKeyPairGenerator();
             rsaKeyPairGenerator.Init(new KeyGenerationParameters(new SecureRandom(), 2048));
@@ -82,7 +83,7 @@ namespace LHDS.Core.Brokers.CryptographyKeys
                 privateKey = Encoding.UTF8.GetString(outputStream.ToArray());
             }
 
-            return new KeysModel
+            return new CryptographicKey
             {
                 PrivateKey = privateKey,
                 PublicKey = publicKey,

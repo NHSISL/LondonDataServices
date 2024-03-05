@@ -157,35 +157,36 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         /// <param name="subscriberCredentialId">The subscriber credential id</param>
         /// <param name="externalUse">If TRUE, the cryptography private keys will be omitted from the result</param>
         /// <returns></returns>
-        public async ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(
+        public ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(
             Guid subscriberCredentialId,
-            bool externalUse = true)
-        {
-            SubscriberAgreement retrievedSubscriberAgreement =
-                await this.subscriberAgreementProcessingService.RetrieveSubscriberAgreementByIdAsync(
-                    subscriberCredentialId);
-
-            SubscriberCredential mappedSubscriberCredential = MapToSubsciberCredentialForInternalExternalUse(
-                subscriberAgreement: retrievedSubscriberAgreement,
-                externalUse);
-
-            if (externalUse)
+            bool externalUse = true) =>
+            TryCatch(async () =>
             {
-                return mappedSubscriberCredential;
-            }
+                ValidateSubscriberCredentialId(subscriberCredentialId);
+                SubscriberAgreement retrievedSubscriberAgreement =
+                    await this.subscriberAgreementProcessingService.RetrieveSubscriberAgreementByIdAsync(
+                        subscriberCredentialId);
 
-            SubscriberCredential retrievedSubscriberCredential =
-                await this.secureDataProcessingService.RetrieveSecretsByKeyVaultKeyNameAsync(
-                    mappedSubscriberCredential);
+                SubscriberCredential mappedSubscriberCredential = MapToSubsciberCredentialForInternalExternalUse(
+                    subscriberAgreement: retrievedSubscriberAgreement,
+                    externalUse);
 
-            return retrievedSubscriberCredential;
+                if (externalUse)
+                {
+                    return mappedSubscriberCredential;
+                }
 
-        }
+                SubscriberCredential retrievedSubscriberCredential =
+                    await this.secureDataProcessingService.RetrieveSecretsByKeyVaultKeyNameAsync(
+                        mappedSubscriberCredential);
+
+                return retrievedSubscriberCredential;
+            });
 
         public ValueTask RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
             TryCatch(async () =>
             {
-                ValidateSubscriberCredentialIdOnRemove(subscriberCredentialId);
+                ValidateSubscriberCredentialId(subscriberCredentialId);
                 await this.secureDataProcessingService.RemoveSecureDataByIdAsync(subscriberCredentialId);
 
                 await this.subscriberAgreementProcessingService.RemoveSubscriberAgreementByIdAsync(

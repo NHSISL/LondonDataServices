@@ -109,7 +109,6 @@ namespace LHDS.Core.Clients.Extensions
                 services.AddTransient<IDownloadBroker, DownloadBroker>();
                 services.AddTransient<IKeyVaultSecretBroker, KeyVaultSecretBroker>();
 
-
                 var blobServiceClientOptions = new BlobClientOptions()
                 {
                     Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
@@ -128,6 +127,10 @@ namespace LHDS.Core.Clients.Extensions
                         options: blobServiceClientOptions));
 
                 services.AddTransient<IAzureBlobClient, AzureBlobClient>();
+            }
+            else
+            {
+                services.AddTransient<IKeyVaultSecretBroker, MockKeyVaultSecretBroker>();
             }
         }
 

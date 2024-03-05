@@ -157,10 +157,31 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         /// <param name="subscriberCredentialId">The subscriber credential id</param>
         /// <param name="externalUse">If TRUE, the cryptography private keys will be omitted from the result</param>
         /// <returns></returns>
-        public ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(
+        public async ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(
             Guid subscriberCredentialId,
-            bool externalUse = true) =>
-            throw new NotImplementedException();
+            bool externalUse = true)
+        {
+            SubscriberAgreement retrievedSubscriberAgreement =
+                await this.subscriberAgreementProcessingService.RetrieveSubscriberAgreementByIdAsync(
+                    subscriberCredentialId);
+
+            SubscriberCredential subscriberCredential = new SubscriberCredential();
+
+            SubscriberCredential mappedSubscriberCredential = MapToSubsciberCredentialForInternalExternalUse(
+                subscriberCredential, 
+                subscriberAgreement: retrievedSubscriberAgreement, 
+                externalUse);
+
+            SubscriberCredential retrievedSubscriberCredential = 
+                await this.secureDataProcessingService.RetrieveSecretsByKeyVaultKeyNameAsync(
+                    mappedSubscriberCredential);
+
+            SubscriberCredential maskedSubscriberCredential = MapToSubsciberCredentialForInternalExternalUse(
+                subscriberCredential: retrievedSubscriberCredential, 
+                externalUse);
+
+            return maskedSubscriberCredential;
+        }
 
         public ValueTask RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
             TryCatch(async () =>

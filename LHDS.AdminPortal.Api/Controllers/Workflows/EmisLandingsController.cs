@@ -48,31 +48,31 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
             }
         }
 
-        [HttpPost]
-#if RELEASE
-[Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.EmisLandings")]
-#endif
-        public async ValueTask<ActionResult<string>> ProcessDocumentByFileNameAsync([FromBody] string fileName)
-        {
-            try
-            {
-                var returnFilePath = await emisLandingCoordinationService
-                    .ProcessFileAsync(fileName);
+        //        [HttpPost]
+        //#if RELEASE
+        //[Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.EmisLandings")]
+        //#endif
+        //        public async ValueTask<ActionResult<string>> ProcessDocumentByFileNameAsync([FromBody] string fileName)
+        //        {
+        //            try
+        //            {
+        //                var returnFilePath = await emisLandingCoordinationService
+        //                    .ProcessFileAsync(fileName);
 
-                return Ok(returnFilePath);
-            }
-            catch (EmisLandingOrchestrationValidationException emisLandingOrchestrationValidationException)
-            {
-                return BadRequest(emisLandingOrchestrationValidationException.InnerException);
-            }
-            catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
-            {
-                return InternalServerError(emisLandingOrchestrationDependencyException);
-            }
-            catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)
-            {
-                return InternalServerError(emisLandingOrchestrationServiceException);
-            }
-        }
+        //                return Ok(returnFilePath);
+        //            }
+        //            catch (EmisLandingOrchestrationValidationException emisLandingOrchestrationValidationException)
+        //            {
+        //                return BadRequest(emisLandingOrchestrationValidationException.InnerException);
+        //            }
+        //            catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
+        //            {
+        //                return InternalServerError(emisLandingOrchestrationDependencyException);
+        //            }
+        //            catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)
+        //            {
+        //                return InternalServerError(emisLandingOrchestrationServiceException);
+        //            }
+        //        }
     }
 }

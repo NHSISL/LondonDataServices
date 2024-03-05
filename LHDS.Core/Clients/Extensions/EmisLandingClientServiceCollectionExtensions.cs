@@ -23,6 +23,7 @@ using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Services.Coordinations.EmisLandings;
+using LHDS.Core.Services.Foundations.CryptographicKeys;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
@@ -93,7 +94,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
-            var landingConfiguration = configuration.GetSection("landingSettings").Get<LandingConfiguration>();
+            LandingConfiguration landingConfiguration = configuration.GetSection("landingSettings").Get<LandingConfiguration>();
             ValidateLandingConfiguration(landingConfiguration);
 
             var blobStorageSettings = configuration
@@ -107,7 +108,9 @@ namespace LHDS.Core.Clients.Extensions
             {
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
                 services.AddTransient<IDownloadBroker, DownloadBroker>();
-                services.AddTransient<IKeyVaultSecretBroker, KeyVaultSecretBroker>();
+
+                services.AddTransient<IKeyVaultSecretBroker>((LandingConfiguration) =>
+                    new KeyVaultSecretBroker(landingConfiguration.KeyVaultUrl));
 
                 var blobServiceClientOptions = new BlobClientOptions()
                 {
@@ -144,6 +147,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
             services.AddTransient<ISubscriberAgreementService, SubscriberAgreementService>();
             services.AddTransient<ISecureDataService, SecureDataService>();
+            services.AddTransient<ICryptographyKeyService, CryptographyKeyService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
@@ -156,6 +160,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIngestionTrackingAuditProcessingService, IngestionTrackingAuditProcessingService>();
             services.AddTransient<ISubscriberAgreementProcessingService, SubscriberAgreementProcessingService>();
             services.AddTransient<ISecureDataProcessingService, SecureDataProcessingService>();
+            services.AddTransient<ICryptographyKeyProcessingService, CryptographyKeyProcessingService>();
         }
 
         private static void AddOrchestrations(IServiceCollection services)

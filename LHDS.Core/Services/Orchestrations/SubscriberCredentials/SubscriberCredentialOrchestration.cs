@@ -160,17 +160,50 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         public ValueTask<SubscriberCredential> RetrieveSubscriberCredentialByIdAsync(
             Guid subscriberCredentialId,
             bool externalUse = true) =>
-            throw new NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateSubscriberCredentialId(subscriberCredentialId);
+                SubscriberAgreement retrievedSubscriberAgreement =
+                    await this.subscriberAgreementProcessingService.RetrieveSubscriberAgreementByIdAsync(
+                        subscriberCredentialId);
+
+                ValidateSubscriberAgreementIsNotNull(retrievedSubscriberAgreement);
+
+                SubscriberCredential mappedSubscriberCredential = MapToSubsciberCredentialForInternalExternalUse(
+                    subscriberAgreement: retrievedSubscriberAgreement,
+                    externalUse);
+
+                if (externalUse)
+                {
+                    return mappedSubscriberCredential;
+                }
+
+                SubscriberCredential retrievedSubscriberCredential =
+                    await this.secureDataProcessingService.RetrieveSecretsByKeyVaultKeyNameAsync(
+                        mappedSubscriberCredential);
+
+                return retrievedSubscriberCredential;
+            });
 
         public ValueTask RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
             TryCatch(async () =>
             {
-                ValidateSubscriberCredentialIdOnRemove(subscriberCredentialId);
+                ValidateSubscriberCredentialId(subscriberCredentialId);
                 await this.secureDataProcessingService.RemoveSecureDataByIdAsync(subscriberCredentialId);
 
                 await this.subscriberAgreementProcessingService.RemoveSubscriberAgreementByIdAsync(
                     subscriberCredentialId);
             });
+
+        private static SubscriberCredential MapToSubsciberCredentialForInternalExternalUse(
+            SubscriberAgreement subscriberAgreement,
+            bool externalUse)
+        {
+            return MapToSubsciberCredentialForInternalExternalUse(
+                subscriberCredential: new SubscriberCredential(),
+                subscriberAgreement,
+                externalUse);
+        }
 
         private static SubscriberCredential MapToSubsciberCredentialForInternalExternalUse(
             SubscriberCredential subscriberCredential,

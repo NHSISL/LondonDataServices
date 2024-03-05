@@ -5,13 +5,13 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.CryptographicKeys;
 using Org.BouncyCastle.Bcpg;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Security;
-using static LHDS.Core.Models.Foundations.CryptographicKeys.CryptographicKey;
 
 namespace LHDS.Core.Brokers.CryptographyKeys
 {
@@ -19,14 +19,14 @@ namespace LHDS.Core.Brokers.CryptographyKeys
     {
         public string CryptographyType => "GPG";
 
-        public CryptographicKey GenerateKeys(string name, string email, string? password, string comment)
+        public async CryptographicKey GenerateKeys(string name, string email, string? password, string comment)
         {
             RsaKeyPairGenerator rsaKeyPairGenerator = new RsaKeyPairGenerator();
             rsaKeyPairGenerator.Init(new KeyGenerationParameters(new SecureRandom(), 2048));
             AsymmetricCipherKeyPair keyPair = rsaKeyPairGenerator.GenerateKeyPair();
 
             PgpKeyPair pgpKeyPair = new PgpKeyPair(
-                algorithm: PublicKeyAlgorithmTag.RsaGeneral, 
+                algorithm: PublicKeyAlgorithmTag.RsaGeneral,
                 keyPair,
                 time: DateTime.UtcNow);
 
@@ -83,12 +83,14 @@ namespace LHDS.Core.Brokers.CryptographyKeys
                 privateKey = Encoding.UTF8.GetString(outputStream.ToArray());
             }
 
-            return new CryptographicKey
+            CryptographicKey returnedKey = new CryptographicKey
             {
                 PrivateKey = privateKey,
                 PublicKey = publicKey,
                 Passphrase = password,
             };
+
+            return await ValueTask.FromResult(returnedKey);
         }
     }
 }

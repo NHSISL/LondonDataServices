@@ -10,6 +10,6 @@ namespace LHDS.Core.Brokers.CryptographyKeys
     public interface ICryptographyKeyBroker
     {
         string CryptographyType { get; }
-        CryptographicKey GenerateKeys(string comment, string? password, string userName = "", string email = "");
+        CryptographicKey GenerateKeys(string comment, string password = "", string userName = "", string email = "");
     }
 }

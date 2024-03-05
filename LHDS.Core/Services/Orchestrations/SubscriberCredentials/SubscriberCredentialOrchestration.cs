@@ -172,15 +172,18 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                 subscriberAgreement: retrievedSubscriberAgreement, 
                 externalUse);
 
-            SubscriberCredential retrievedSubscriberCredential = 
-                await this.secureDataProcessingService.RetrieveSecretsByKeyVaultKeyNameAsync(
-                    mappedSubscriberCredential);
+            if(externalUse == false)
+            {
+                SubscriberCredential retrievedSubscriberCredential = 
+                    await this.secureDataProcessingService.RetrieveSecretsByKeyVaultKeyNameAsync(
+                        mappedSubscriberCredential);
 
-            SubscriberCredential maskedSubscriberCredential = MapToSubsciberCredentialForInternalExternalUse(
-                subscriberCredential: retrievedSubscriberCredential, 
-                externalUse);
-
-            return maskedSubscriberCredential;
+                return retrievedSubscriberCredential;
+            }
+            else
+            {
+                return mappedSubscriberCredential;
+            }
         }
 
         public ValueTask RemoveSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>

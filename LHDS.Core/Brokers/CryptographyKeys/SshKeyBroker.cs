@@ -2,8 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.CryptographicKeys;
+using static LHDS.Core.Models.Foundations.CryptographicKeys.CryptographicKey;
 
 namespace LHDS.Core.Brokers.CryptographyKeys
 {
@@ -11,19 +10,17 @@ namespace LHDS.Core.Brokers.CryptographyKeys
     {
         public string CryptographyType => "SSH";
 
-        public async ValueTask<CryptographicKey> GenerateKeys(string? publicKeyComment = "")
+        public KeysModel GenerateKeys(string comment, string? password, string name, string email)
         {
             int keyBits = 2048;
 
             var keygen = new SshKeyGenerator.SshKeyGenerator(keyBits);
 
-            CryptographicKey key = new CryptographicKey
+            return new KeysModel
             {
-                Base64PublicKey = keygen.ToRfcPublicKey(publicKeyComment),
-                Base64PrivateKey = keygen.ToPrivateKey(),
+                PublicKey = keygen.ToRfcPublicKey(comment),
+                PrivateKey = keygen.ToPrivateKey(),
             };
-
-            return await ValueTask.FromResult(key);
         }
     }
 }

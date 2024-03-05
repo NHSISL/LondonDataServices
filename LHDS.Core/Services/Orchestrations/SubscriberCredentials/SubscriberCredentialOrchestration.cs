@@ -167,6 +167,8 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                     await this.subscriberAgreementProcessingService.RetrieveSubscriberAgreementByIdAsync(
                         subscriberCredentialId);
 
+                ValidateSubscriberAgreementIsNotNull(retrievedSubscriberAgreement);
+
                 SubscriberCredential mappedSubscriberCredential = MapToSubsciberCredentialForInternalExternalUse(
                     subscriberAgreement: retrievedSubscriberAgreement,
                     externalUse);

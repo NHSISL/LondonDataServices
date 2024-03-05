@@ -89,16 +89,16 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
 
             // then
             actualException.Should()
-                 .BeEquivalentTo(expectedDependencyException);
+                .BeEquivalentTo(expectedDependencyException);
 
             this.cryptographyKeyServiceMock.Verify(service =>
                 service.GenerateKeysAsync(It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedDependencyException))),
-                       Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
 
             this.cryptographyKeyServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -143,8 +143,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedDependencyException))),
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
                        Times.Once);
 
             this.cryptographyKeyServiceMock.VerifyNoOtherCalls();

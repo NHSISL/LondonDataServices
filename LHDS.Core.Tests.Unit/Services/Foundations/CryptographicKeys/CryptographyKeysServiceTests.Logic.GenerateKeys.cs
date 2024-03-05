@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
 
             // When
             CryptographicKey actualCryptographicKey = await this.cryptographyKeyService
-               .GenerateKeys(cryptographyType: inputCryptographyType, publicKeyComment: inputPublicKeyCommentString);
+                .GenerateKeysAsync(cryptographyType: inputCryptographyType, publicKeyComment: inputPublicKeyCommentString);
 
             // Then
             actualCryptographicKey.Should().BeEquivalentTo(expectedCryptographicKey);

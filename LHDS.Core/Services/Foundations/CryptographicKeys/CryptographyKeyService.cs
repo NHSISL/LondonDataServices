@@ -23,11 +23,14 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<CryptographicKey> GenerateKeys(string cryptographyType, string? publicKeyComment = "") =>
+        public ValueTask<CryptographicKey> GenerateKeysAsync(string cryptographyType, string? publicKeyComment = "") =>
             TryCatch(async () =>
             {
                 ValidateInputArguments(cryptographyType, publicKeyComment);
-                var broker = cryptographyKeyBrokers.FirstOrDefault(broker => broker.CryptographyType == cryptographyType);
+
+                var broker = cryptographyKeyBrokers
+                    .FirstOrDefault(broker => broker.CryptographyType == cryptographyType);
+
                 ValidateBrokerNotNull(broker);
 
                 return await broker.GenerateKeys(publicKeyComment);

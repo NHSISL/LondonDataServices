@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                     innerException: invalidArgumentCryptographyKeyException);
 
             // when
-            ValueTask<CryptographicKey> CryptographicKeyTask = this.cryptographyKeyService.GenerateKeys(
+            ValueTask<CryptographicKey> CryptographicKeyTask = this.cryptographyKeyService.GenerateKeysAsync(
                 cryptographyType: nullCryptographyType,
                 publicKeyComment: randomPublicKeyCommentString);
 
@@ -78,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                     innerException: nullCryptographyBrokerException);
 
             // when
-            ValueTask<CryptographicKey> CryptographicKeyTask = this.cryptographyKeyService.GenerateKeys(
+            ValueTask<CryptographicKey> CryptographicKeyTask = this.cryptographyKeyService.GenerateKeysAsync(
                 cryptographyType: nullCryptographyType,
                 publicKeyComment: randomPublicKeyCommentString);
 

@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
 
             // when
             ValueTask<CryptographicKey> CryptographicKeyTask =
-                this.cryptographyKeyService.GenerateKeys(
+                this.cryptographyKeyService.GenerateKeysAsync(
                 cryptographyType: cryptographyType,
                 publicKeyComment: publicKeyComment);
 

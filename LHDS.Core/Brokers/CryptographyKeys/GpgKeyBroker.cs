@@ -12,12 +12,13 @@ using Org.BouncyCastle.Bcpg.OpenPgp;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Security;
+using Tynamix.ObjectFiller;
 
 namespace LHDS.Core.Brokers.CryptographyKeys
 {
     public class GpgKeyBroker : ICryptographyKeyBroker
     {
-        public string CryptographyType => "Gpg";
+        public string CryptographyType => "GPG";
 
         public async ValueTask<CryptographicKey> GenerateKeys(string? publicKeyComment = "")
         {
@@ -68,10 +69,13 @@ namespace LHDS.Core.Brokers.CryptographyKeys
                 privateKey = Encoding.UTF8.GetString(outputStream.ToArray());
             }
 
+            string passphrase = new MnemonicString(wordCount: 1, wordMinLength: 32, wordMaxLength: 32).GetValue();
+
             CryptographicKey returnedKey = new CryptographicKey
             {
                 Base64PrivateKey = publicKey,
-                Base64PublicKey = privateKey
+                Base64PublicKey = privateKey,
+                Passphrase = passphrase
             };
 
             return await ValueTask.FromResult(returnedKey);

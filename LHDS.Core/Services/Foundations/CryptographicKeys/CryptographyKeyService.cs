@@ -33,7 +33,7 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
 
                 ValidateBrokerNotNull(broker);
 
-                return await broker.GenerateKeys(publicKeyComment);
+                return await broker.GenerateKeys(comment: publicKeyComment);
             });
     }
 }

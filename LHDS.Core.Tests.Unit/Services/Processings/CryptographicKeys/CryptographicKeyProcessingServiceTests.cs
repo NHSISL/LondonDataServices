@@ -61,8 +61,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
         {
             return new CryptographicKey
             {
-                Base64PrivateKey = GetRandomString(),
-                Base64PublicKey = GetRandomString(),
+                PrivateKey = GetRandomString(),
+                PublicKey = GetRandomString(),
                 Passphrase = GetRandomString()
             };
         }

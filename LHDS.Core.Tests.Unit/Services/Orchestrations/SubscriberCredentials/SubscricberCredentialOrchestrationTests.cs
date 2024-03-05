@@ -154,7 +154,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             };
         }
 
-        private static SubscriberCredential CreateSubscriberCredentialFromDynamic(dynamic credential)
+        private static SubscriberCredential CreateSubscriberCredentialFromDynamic(
+            dynamic credential, 
+            bool blankKeys = false)
         {
             SubscriberCredential randomSubscriberCredential = new SubscriberCredential
             {
@@ -162,12 +164,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 SupplierSharingAgreementShortName = credential.SupplierSharingAgreementShortName,
                 SupplierSharingAgreementGuid = credential.SupplierSharingAgreementGuid,
                 FtpUserName = credential.FtpUserName,
-                FtpPassword = credential.FtpPassword,
-                FtpPassPhrase = credential.FtpPassPhrase,
-                FtpPrivateKey = credential.FtpPrivateKey,
+                FtpPassword = blankKeys ? null : credential.FtpPassword,
+                FtpPassPhrase = blankKeys ? null : credential.FtpPassPhrase,
+                FtpPrivateKey = blankKeys ? null : credential.FtpPrivateKey,
                 FtpPublicKey = credential.FtpPublicKey,
-                GpgPassPhrase = credential.GpgPassPhrase,
-                GpgPrivateKey = credential.GpgPrivateKey,
+                GpgPassPhrase = blankKeys ? null : credential.GpgPassPhrase,
+                GpgPrivateKey = blankKeys ? null : credential.GpgPrivateKey,
                 GpgPublicKey = credential.GpgPublicKey,
                 IsActive = credential.IsActive,
                 LastPollStartDate = credential.LastPollStartDate,

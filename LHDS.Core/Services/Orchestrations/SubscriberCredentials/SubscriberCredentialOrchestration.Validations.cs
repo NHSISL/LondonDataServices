@@ -38,7 +38,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             }
         }
 
-        private void ValidateSubscriberCredentialIdOnRemove(Guid subscriberCredentialId)
+        private void ValidateSubscriberCredentialId(Guid subscriberCredentialId)
         {
             Validate<InvalidArgumentSubscriberCredentialOrchestrationException>(
                  message: "Invalid argument subscriber credential orchestration error occurred, contact support.",

@@ -16,7 +16,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 {
     public partial class DecryptionsApiTests
     {
-        [Fact(Skip = "Ftp Down")]
+        //[Fact(Skip = "Ftp Down")]
+        [Fact]
         public async Task ShouldDecryptFileAsync()
         {
             // given

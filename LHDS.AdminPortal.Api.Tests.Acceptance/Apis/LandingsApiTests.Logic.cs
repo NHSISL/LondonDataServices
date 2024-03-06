@@ -85,20 +85,20 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 bool hasExistingDataSetSpecification =
                     (await this.apiBroker.FindtDataSetSpecificationByIdAsync(dataSetSpecificationId)).Any();
 
-                if (!hasExisitingSupplier)
-                {
-                    await PostLandingSupplierAsync(supplierId);
-                }
+                //if (!hasExisitingSupplier)
+                //{
+                //    await PostLandingSupplierAsync(supplierId);
+                //}
 
-                if (!hasExisitingDataSet)
-                {
-                    await PostDataSetAsync(supplierId, dataSetId);
-                }
+                //if (!hasExisitingDataSet)
+                //{
+                //    await PostDataSetAsync(supplierId, dataSetId);
+                //}
 
-                if (!hasExistingDataSetSpecification)
-                {
-                    await PostDataSetSpecificationAsync(dataSetSpecificationId, dataSetId);
-                }
+                //if (!hasExistingDataSetSpecification)
+                //{
+                //    await PostDataSetSpecificationAsync(dataSetSpecificationId, dataSetId);
+                //}
 
 
                 DataSet activeDataSet = await this.apiBroker.GetDataSetByIdAsync(dataSetId);

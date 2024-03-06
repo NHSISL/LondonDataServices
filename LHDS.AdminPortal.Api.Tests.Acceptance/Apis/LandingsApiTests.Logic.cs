@@ -13,6 +13,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
@@ -26,9 +27,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             try
             {
                 //Given
-                List<Document> retrievedDocuments = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync();
                 byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
                 byte[] encryptedData = await this.apiBroker.PostEncryptDataAsync(documentData);
+
+                List<Download> downloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(download);
                 Document retrievedDocument = retrievedDocuments[0];
                 retrievedDocument.DocumentData = encryptedData;
                 Supplier randomSupplier = await PostRandomSupplierAsync();
@@ -72,7 +74,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             try
             {
                 //Given
-                List<Document> retrievedDocuments = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync();
+                byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
+                byte[] encryptedData = await this.apiBroker.PostEncryptDataAsync(documentData);
+
+                List<Download> downloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(download);
                 byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
                 byte[] encryptedData = await this.apiBroker.PostEncryptDataAsync(documentData);
                 Document retrievedDocument = retrievedDocuments[1];
@@ -85,20 +90,20 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 bool hasExistingDataSetSpecification =
                     (await this.apiBroker.FindtDataSetSpecificationByIdAsync(dataSetSpecificationId)).Any();
 
-                //if (!hasExisitingSupplier)
-                //{
-                //    await PostLandingSupplierAsync(supplierId);
-                //}
+                if (!hasExisitingSupplier)
+                {
+                    await PostLandingSupplierAsync(supplierId);
+                }
 
-                //if (!hasExisitingDataSet)
-                //{
-                //    await PostDataSetAsync(supplierId, dataSetId);
-                //}
+                if (!hasExisitingDataSet)
+                {
+                    await PostDataSetAsync(supplierId, dataSetId);
+                }
 
-                //if (!hasExistingDataSetSpecification)
-                //{
-                //    await PostDataSetSpecificationAsync(dataSetSpecificationId, dataSetId);
-                //}
+                if (!hasExistingDataSetSpecification)
+                {
+                    await PostDataSetSpecificationAsync(dataSetSpecificationId, dataSetId);
+                }
 
 
                 DataSet activeDataSet = await this.apiBroker.GetDataSetByIdAsync(dataSetId);

@@ -42,8 +42,6 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                // TODO: Fix this once stack has been converted
-                //throw new NotImplementedException();
                 List<Document> retrievedDocuments =
                     await downloadService.RetrieveListOfDocumentsToProcessAsync(download);
 
@@ -67,9 +65,6 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                //TODO: Fix this once stack is up to date
-                //    throw new NotImplementedException();
-
                 Document document = await downloadService.RetrieveDownloadByFileNameAsync(fileName);
 
                 return Ok(document);

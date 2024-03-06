@@ -42,11 +42,11 @@ namespace LHDS.AdminPortal.Api.Controllers
             try
             {
                 // TODO: Fix this once stack has been converted
-                throw new NotImplementedException();
-                //List<Document> retrievedDocuments =
-                //    await downloadService.RetrieveListOfDocumentsToProcessAsync();
+                //throw new NotImplementedException();
+                List<Document> retrievedDocuments =
+                await downloadService.RetrieveListOfDocumentsToProcessAsync();
 
-                //return Ok(retrievedDocuments);
+                return Ok(retrievedDocuments);
             }
             catch (DownloadDependencyException downloadDependencyException)
             {
@@ -66,12 +66,12 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                // TODO: Fix this once stack is up to date
-                throw new NotImplementedException();
+                //TODO: Fix this once stack is up to date
+                //    throw new NotImplementedException();
 
-                //Document document = await downloadService.RetrieveDownloadByFileNameAsync(fileName);
+                Document document = await downloadService.RetrieveDownloadByFileNameAsync(fileName);
 
-                //return Ok(document);
+                return Ok(document);
             }
             catch (DownloadValidationException downloadValidationException)
                 when (downloadValidationException.InnerException is NotFoundDocumentException)

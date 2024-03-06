@@ -19,9 +19,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
             // given
             string inputCryptographyType = GetRandomString();
             string randomPublicKeyCommentString = GetRandomString();
-            string randomUserNameString = GetRandomString();
-            string randomPasswordString = GetRandomString();
-            string randomEmailString = GetRandomString();
+            string randomUserNameString = "";
+            string randomPasswordString = "";
+            string randomEmailString = "";
             string inputPublicKeyCommentString = randomPublicKeyCommentString;
             CryptographicKey randomCryptographicKey = GenerateRandomCryptographicKey();
             CryptographicKey outputCryptographicKey = randomCryptographicKey;

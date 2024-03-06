@@ -24,6 +24,7 @@ using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
 using LHDS.Core.Providers.Downloads;
+using LHDS.Core.Services.Coordinations.Decryptions;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
@@ -72,6 +73,7 @@ namespace LHDS.Core.Clients.Extensions
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
+            AddCoordinations(services);
             AddClients(services);
 
             return services;
@@ -139,9 +141,14 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddOrchestrations(IServiceCollection services)
         { }
 
+        private static void AddCoordinations(IServiceCollection services)
+        {
+            services.AddTransient<ICryptographyService, CryptographyService>();
+        }
+
         private static void AddClients(IServiceCollection services)
         {
-            services.AddTransient<IDecryptionClient, DecryptionClient>();
+            services.AddTransient<IDecryptionCoordinationService, DecryptionCoordinationService>();
         }
 
         private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)

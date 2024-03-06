@@ -38,12 +38,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                    .Returns(cryptographyType);
 
             this.cryptographyKeyBrokerMock.Setup(broker =>
-                broker.GenerateKeys(
+                broker.GenerateKeysAsync(
                     It.IsAny<string>(), 
                     It.IsAny<string>(), 
                     It.IsAny<string>(), 
                     It.IsAny<string>()))
-                    .ThrowsAsync(serviceException);
+                        .ThrowsAsync(serviceException);
 
             // when
             ValueTask<CryptographicKey> CryptographicKeyTask =
@@ -64,12 +64,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                     Times.Once);
 
             this.cryptographyKeyBrokerMock.Verify(broker =>
-                broker.GenerateKeys(
+                broker.GenerateKeysAsync(
                     It.IsAny<string>(), 
                     It.IsAny<string>(), 
                     It.IsAny<string>(), 
                     It.IsAny<string>()),
-                    Times.Once);
+                        Times.Once);
 
             loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(

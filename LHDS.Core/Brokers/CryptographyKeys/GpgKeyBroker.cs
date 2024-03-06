@@ -19,7 +19,7 @@ namespace LHDS.Core.Brokers.CryptographyKeys
     {
         public string CryptographyType => "GPG";
 
-        public async ValueTask<CryptographicKey> GenerateKeys(string comment, string password, string name, string email)
+        public async ValueTask<CryptographicKey> GenerateKeysAsync(string comment, string password, string name, string email)
         {
             RsaKeyPairGenerator rsaKeyPairGenerator = new RsaKeyPairGenerator();
             rsaKeyPairGenerator.Init(new KeyGenerationParameters(new SecureRandom(), 2048));

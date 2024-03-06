@@ -32,12 +32,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                     .Returns(inputCryptographyType);
 
             this.cryptographyKeyBrokerMock.Setup(broker =>
-                broker.GenerateKeys(
+                broker.GenerateKeysAsync(
                     inputPublicKeyCommentString, 
                     randomPasswordString, 
                     randomUserNameString, 
                     randomEmailString))
-                    .ReturnsAsync(outputCryptographicKey);
+                        .ReturnsAsync(outputCryptographicKey);
 
             // When
             CryptographicKey actualCryptographicKey = await this.cryptographyKeyService
@@ -51,12 +51,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                     Times.Once);
 
             this.cryptographyKeyBrokerMock.Verify(broker =>
-                broker.GenerateKeys(
+                broker.GenerateKeysAsync(
                     inputPublicKeyCommentString,
                     randomPasswordString,
                     randomUserNameString,
                     randomEmailString),
-                    Times.Once);
+                        Times.Once);
 
             this.cryptographyKeyBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

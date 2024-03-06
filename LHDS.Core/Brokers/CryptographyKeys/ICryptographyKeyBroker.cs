@@ -11,6 +11,6 @@ namespace LHDS.Core.Brokers.CryptographyKeys
     public interface ICryptographyKeyBroker
     {
         string CryptographyType { get; }
-        ValueTask<CryptographicKey> GenerateKeys(string comment, string password = "", string userName = "", string email = "");
+        ValueTask<CryptographicKey> GenerateKeysAsync(string comment, string password = "", string userName = "", string email = "");
     }
 }

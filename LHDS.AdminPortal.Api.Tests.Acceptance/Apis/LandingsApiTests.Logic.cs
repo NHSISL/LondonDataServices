@@ -75,7 +75,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
                 byte[] encryptedData = await this.apiBroker.PostEncryptDataAsync(documentData);
 
-                List<Download> downloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(download);
+                Document document = 
+
+                List<Download> downloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync();
                 byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
                 byte[] encryptedData = await this.apiBroker.PostEncryptDataAsync(documentData);
                 Document retrievedDocument = retrievedDocuments[1];

@@ -9,6 +9,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using LHDS.Core.Models.Foundations.Documents;
 using Tynamix.ObjectFiller;
 using Xunit;
 using Xunit.Abstractions;
@@ -301,6 +302,20 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Document CreateRandomDocument() =>
+            CreateDocumentFiller().Create();
+
+        private static Filler<Document> CreateDocumentFiller()
+        {
+            var filler = new Filler<Document>();
+            string filename = GetRandomString();
+
+            filler.Setup()
+                .OnProperty(document => document.FileName).Use(filename);
 
             return filler;
         }

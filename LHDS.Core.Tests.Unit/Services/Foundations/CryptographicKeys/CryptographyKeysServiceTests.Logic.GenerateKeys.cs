@@ -19,6 +19,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
             // given
             string inputCryptographyType = GetRandomString();
             string randomPublicKeyCommentString = GetRandomString();
+            string randomUserNameString = "";
+            string randomPasswordString = "";
+            string randomEmailString = "";
             string inputPublicKeyCommentString = randomPublicKeyCommentString;
             CryptographicKey randomCryptographicKey = GenerateRandomCryptographicKey();
             CryptographicKey outputCryptographicKey = randomCryptographicKey;
@@ -29,8 +32,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                     .Returns(inputCryptographyType);
 
             this.cryptographyKeyBrokerMock.Setup(broker =>
-                broker.GenerateKeys(inputPublicKeyCommentString))
-                    .ReturnsAsync(outputCryptographicKey);
+                broker.GenerateKeysAsync(
+                    inputPublicKeyCommentString, 
+                    randomPasswordString, 
+                    randomUserNameString, 
+                    randomEmailString))
+                        .ReturnsAsync(outputCryptographicKey);
 
             // When
             CryptographicKey actualCryptographicKey = await this.cryptographyKeyService
@@ -44,8 +51,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                     Times.Once);
 
             this.cryptographyKeyBrokerMock.Verify(broker =>
-                broker.GenerateKeys(inputPublicKeyCommentString),
-                    Times.Once);
+                broker.GenerateKeysAsync(
+                    inputPublicKeyCommentString,
+                    randomPasswordString,
+                    randomUserNameString,
+                    randomEmailString),
+                        Times.Once);
 
             this.cryptographyKeyBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

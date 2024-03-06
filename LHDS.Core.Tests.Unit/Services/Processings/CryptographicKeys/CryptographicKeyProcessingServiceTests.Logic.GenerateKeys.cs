@@ -30,11 +30,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             SubscriberCredential generatedSubscriberCredential = inputSubscriberCredential.DeepClone();
             generatedSubscriberCredential.GpgPassPhrase = generatedGpgCryptographicKey.Passphrase;
-            generatedSubscriberCredential.GpgPublicKey = generatedGpgCryptographicKey.Base64PublicKey;
-            generatedSubscriberCredential.GpgPrivateKey = generatedGpgCryptographicKey.Base64PrivateKey;
+            generatedSubscriberCredential.GpgPublicKey = generatedGpgCryptographicKey.PublicKey;
+            generatedSubscriberCredential.GpgPrivateKey = generatedGpgCryptographicKey.PrivateKey;
             generatedSubscriberCredential.FtpPassPhrase = generatedFtpCryptographicKey.Passphrase;
-            generatedSubscriberCredential.FtpPrivateKey = generatedFtpCryptographicKey.Base64PrivateKey;
-            generatedSubscriberCredential.FtpPublicKey = generatedFtpCryptographicKey.Base64PublicKey;
+            generatedSubscriberCredential.FtpPrivateKey = generatedFtpCryptographicKey.PrivateKey;
+            generatedSubscriberCredential.FtpPublicKey = generatedFtpCryptographicKey.PublicKey;
             SubscriberCredential expectedSubscriberCredential = generatedSubscriberCredential;
 
             this.cryptographyKeyServiceMock.Setup(service =>

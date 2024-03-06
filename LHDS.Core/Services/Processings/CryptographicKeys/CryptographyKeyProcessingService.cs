@@ -27,11 +27,11 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             ValidateSubscriberCredential(subscriberCredential);
             var gpgGeneratedKeys = await cryptographyKeyService.GenerateKeysAsync("GPG");
             var ftpGeneratedKeys = await cryptographyKeyService.GenerateKeysAsync("SSH");
-            subscriberCredential.GpgPublicKey = gpgGeneratedKeys.Base64PublicKey;
-            subscriberCredential.GpgPrivateKey = gpgGeneratedKeys.Base64PrivateKey;
+            subscriberCredential.GpgPublicKey = gpgGeneratedKeys.PublicKey;
+            subscriberCredential.GpgPrivateKey = gpgGeneratedKeys.PrivateKey;
             subscriberCredential.GpgPassPhrase = gpgGeneratedKeys.Passphrase;
-            subscriberCredential.FtpPublicKey = ftpGeneratedKeys.Base64PublicKey;
-            subscriberCredential.FtpPrivateKey = ftpGeneratedKeys.Base64PrivateKey;
+            subscriberCredential.FtpPublicKey = ftpGeneratedKeys.PublicKey;
+            subscriberCredential.FtpPrivateKey = ftpGeneratedKeys.PrivateKey;
             subscriberCredential.FtpPassPhrase = ftpGeneratedKeys.Passphrase;
 
             return subscriberCredential;

@@ -12,7 +12,6 @@ using Org.BouncyCastle.Bcpg.OpenPgp;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Security;
-using Tynamix.ObjectFiller;
 
 namespace LHDS.Core.Brokers.CryptographyKeys
 {
@@ -20,36 +19,49 @@ namespace LHDS.Core.Brokers.CryptographyKeys
     {
         public string CryptographyType => "GPG";
 
-        public async ValueTask<CryptographicKey> GenerateKeys(string? publicKeyComment = "")
+        public async ValueTask<CryptographicKey> GenerateKeysAsync(string comment, string password, string name, string email)
         {
             RsaKeyPairGenerator rsaKeyPairGenerator = new RsaKeyPairGenerator();
             rsaKeyPairGenerator.Init(new KeyGenerationParameters(new SecureRandom(), 2048));
             AsymmetricCipherKeyPair keyPair = rsaKeyPairGenerator.GenerateKeyPair();
-            PgpKeyPair pgpKeyPair = new PgpKeyPair(PublicKeyAlgorithmTag.RsaGeneral, keyPair, DateTime.UtcNow);
+
+            PgpKeyPair pgpKeyPair = new PgpKeyPair(
+                algorithm: PublicKeyAlgorithmTag.RsaGeneral,
+                keyPair,
+                time: DateTime.UtcNow);
+
             PgpSignatureSubpacketGenerator subpacketGenerator = new PgpSignatureSubpacketGenerator();
 
             subpacketGenerator.SetKeyFlags(
-                false, PgpKeyFlags.CanSign | PgpKeyFlags.CanEncryptCommunications | PgpKeyFlags.CanEncryptStorage);
+                isCritical: false,
+                flags: PgpKeyFlags.CanSign | PgpKeyFlags.CanEncryptCommunications | PgpKeyFlags.CanEncryptStorage);
 
-            subpacketGenerator.SetPreferredSymmetricAlgorithms(false, new[] { (int)SymmetricKeyAlgorithmTag.Aes256 });
-            subpacketGenerator.SetPreferredHashAlgorithms(false, new[] { (int)HashAlgorithmTag.Sha256 });
+            subpacketGenerator.SetPreferredSymmetricAlgorithms(
+                isCritical: false,
+                algorithms: new[] { (int)SymmetricKeyAlgorithmTag.Aes256 });
+
+            subpacketGenerator.SetPreferredHashAlgorithms(
+                isCritical: false,
+                algorithms: new[] { (int)HashAlgorithmTag.Sha256 });
+
             PgpSignatureSubpacketVector subpacketVector = subpacketGenerator.Generate();
+            var userId = $"{name} {comment} <{email}>";
 
             PgpKeyRingGenerator keyRingGenerator = new PgpKeyRingGenerator(
                 certificationLevel: PgpSignature.DefaultCertification,
                 masterKey: pgpKeyPair,
-                id: "test",
-                SymmetricKeyAlgorithmTag.Aes256,
-                "test".ToCharArray(),
-                true,
-                subpacketVector,
-                null,
-                new SecureRandom());
+                id: userId,
+                encAlgorithm: SymmetricKeyAlgorithmTag.Aes256,
+                passPhrase: password.ToCharArray(),
+                useSha1: true,
+                hashedPackets: subpacketVector,
+                unhashedPackets: null,
+                rand: new SecureRandom());
 
             PgpPublicKeyRing publicKeyRing = keyRingGenerator.GeneratePublicKeyRing();
             PgpSecretKeyRing secretKeyRing = keyRingGenerator.GenerateSecretKeyRing();
+
             string publicKey;
-            string privateKey;
 
             using (MemoryStream outputStream = new MemoryStream())
             {
@@ -60,6 +72,8 @@ namespace LHDS.Core.Brokers.CryptographyKeys
                 publicKey = Encoding.UTF8.GetString(outputStream.ToArray());
             }
 
+            string privateKey;
+
             using (MemoryStream outputStream = new MemoryStream())
             {
                 using (ArmoredOutputStream armoredStream = new ArmoredOutputStream(outputStream))
@@ -69,13 +83,11 @@ namespace LHDS.Core.Brokers.CryptographyKeys
                 privateKey = Encoding.UTF8.GetString(outputStream.ToArray());
             }
 
-            string passphrase = new MnemonicString(wordCount: 1, wordMinLength: 32, wordMaxLength: 32).GetValue();
-
             CryptographicKey returnedKey = new CryptographicKey
             {
-                Base64PrivateKey = publicKey,
-                Base64PublicKey = privateKey,
-                Passphrase = passphrase
+                PrivateKey = privateKey,
+                PublicKey = publicKey,
+                Passphrase = password,
             };
 
             return await ValueTask.FromResult(returnedKey);

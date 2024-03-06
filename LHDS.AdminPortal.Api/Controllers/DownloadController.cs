@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Services.Foundations.Downloads;
 using Microsoft.AspNetCore.Mvc;
@@ -37,14 +38,14 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<List<Document>>> Get()
+        public async ValueTask<ActionResult<List<Document>>> Get(Download download)
         {
             try
             {
                 // TODO: Fix this once stack has been converted
                 //throw new NotImplementedException();
                 List<Document> retrievedDocuments =
-                await downloadService.RetrieveListOfDocumentsToProcessAsync();
+                    await downloadService.RetrieveListOfDocumentsToProcessAsync(download);
 
                 return Ok(retrievedDocuments);
             }

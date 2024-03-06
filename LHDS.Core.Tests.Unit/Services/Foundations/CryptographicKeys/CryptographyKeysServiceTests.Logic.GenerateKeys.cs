@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                     .Returns(inputCryptographyType);
 
             this.cryptographyKeyBrokerMock.Setup(broker =>
-                broker.GenerateKeys(inputPublicKeyCommentString))
+                broker.GenerateKeys(inputPublicKeyCommentString, "", "", ""))
                     .ReturnsAsync(outputCryptographicKey);
 
             // When
@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                     Times.Once);
 
             this.cryptographyKeyBrokerMock.Verify(broker =>
-                broker.GenerateKeys(inputPublicKeyCommentString),
+                broker.GenerateKeys(inputPublicKeyCommentString, "", "", ""),
                     Times.Once);
 
             this.cryptographyKeyBrokerMock.VerifyNoOtherCalls();

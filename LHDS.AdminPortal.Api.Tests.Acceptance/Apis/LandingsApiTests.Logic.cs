@@ -92,6 +92,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 await CleanupTask(randomDocument.FileName);
                 bool hasExisitingSupplier = (await this.apiBroker.FindSupplierByIdAsync(supplierId)).Any();
                 bool hasExisitingDataSet = (await this.apiBroker.FindDataSetByIdAsync(dataSetId)).Any();
+                string decryptedFilePath = decryptedFolder;
 
                 bool hasExistingDataSetSpecification =
                     (await this.apiBroker.FindtDataSetSpecificationByIdAsync(dataSetSpecificationId)).Any();

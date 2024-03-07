@@ -8,6 +8,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
 using Tynamix.ObjectFiller;
@@ -316,6 +317,24 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             filler.Setup()
                 .OnProperty(document => document.FileName).Use(filename);
+
+            return filler;
+        }
+
+        private static SubscriberCredential CreateRandomSubscriberCredential() =>
+            CreateSubscriberCredentialFiller().Create();
+
+        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller()
+        {
+            var filler = new Filler<SubscriberCredential>();
+            string user = Guid.NewGuid().ToString();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
             return filler;
         }

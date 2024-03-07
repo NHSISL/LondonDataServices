@@ -6,7 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
-using LHDS.Core.Models.Foundations.Documents;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Documents;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using Tynamix.ObjectFiller;
 using Xunit;
 
@@ -36,6 +37,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Downloads
                     .ToList();
         }
 
+        private static Document CreateRandomDocument() =>
+            CreateDocumentFiller().Create();
+
         private static Filler<Document> CreateDocumentFiller()
         {
             var filler = new Filler<Document>();
@@ -43,6 +47,24 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Downloads
 
             filler.Setup()
                 .OnProperty(document => document.FileName).Use(filename);
+
+            return filler;
+        }
+
+        private static SubscriberCredential CreateRandomSubscriberCredential() =>
+            CreateSubscriberCredentialFiller().Create();
+
+        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller()
+        {
+            var filler = new Filler<SubscriberCredential>();
+            string user = Guid.NewGuid().ToString();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
             return filler;
         }

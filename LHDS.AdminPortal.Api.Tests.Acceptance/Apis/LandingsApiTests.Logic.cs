@@ -11,9 +11,9 @@ using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.Downloads;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
@@ -26,10 +26,16 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             try
             {
                 //Given
-                byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
-                byte[] encryptedData = await this.apiBroker.PostEncryptDataAsync(documentData);
+                SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+                SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+                Document randomDocument = CreateRandomDocument();
 
-                Document document = CreateRandomDocument();
+                Download inputDownload = new Download
+                {
+                    SubscriberCredential = inputSubscriberCredential,
+                    Document = new Document { FileName = randomDocument.FileName }
+                };
+
 
                 List<Download> downloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(download);
                 Document retrievedDocument = retrievedDocuments[0];

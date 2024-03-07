@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Downloads;
 using LHDS.Core.Models.Foundations.Documents;
 using Xunit;
 
@@ -16,7 +17,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Downloads
         public async Task ShouldRetrieveListOfDocumentsToProcessAsync()
         {
             // when
-            List<Document> actualDownloads =
+            List<Download> actualDownloads =
                 await this.apiBroker.RetrieveListOfDocumentsToProcessAsync();
 
             // then

@@ -54,7 +54,6 @@ namespace LHDS.Core.Tests.Integration.Landings
 
                     await blobStorageBroker.DeleteFileAsync(
                         fileName: ingestionTracking.EncryptedFileName, container: encryptedFileContainer);
-
                 }
             }
             catch (Exception ex)

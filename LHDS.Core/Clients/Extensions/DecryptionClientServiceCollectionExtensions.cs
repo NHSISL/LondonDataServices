@@ -111,7 +111,9 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
 
-            LandingConfiguration landingConfiguration = configuration.GetSection("landingSettings").Get<LandingConfiguration>();
+            LandingConfiguration landingConfiguration = 
+                configuration.GetSection("landingSettings").Get<LandingConfiguration>();
+                
             ValidateLandingConfiguration(landingConfiguration);
 
             if (!acceptanceTest)

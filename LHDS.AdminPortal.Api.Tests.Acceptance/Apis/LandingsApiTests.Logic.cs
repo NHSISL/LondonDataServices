@@ -37,16 +37,16 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                     Document = new Document { FileName = randomDocument.FileName }
                 };
 
-                List<Download> downloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync();
+                List<Download> downloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
                 Supplier randomSupplier = await PostRandomSupplierAsync();
                 string encryptedFilePath = encryptedFolder;
                 string decryptedFilePath = decryptedFolder;
-                await CleanupTask(retrievedDocument.FileName);
+                await CleanupTask(randomDocument.FileName);
 
                 IngestionTracking randomIngestionTracking =
                     await PostRandomIngestionTrackingAsync(
                         randomSupplier.Id,
-                        retrievedDocument.FileName,
+                        randomDocument.FileName,
                         encryptedFilePath,
                         decryptedFilePath);
 
@@ -55,7 +55,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
                 //When
                 string actualDecryptedFileName =
-                    await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
+                    await this.apiBroker.GetLandingDocumentByFileNameAsync(randomDocument.FileName);
 
                 //Then
                 actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);

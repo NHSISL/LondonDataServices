@@ -10,10 +10,11 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Documents;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Downloads;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
-using LHDS.Core.Models.Foundations.Documents;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
@@ -36,10 +37,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                     Document = new Document { FileName = randomDocument.FileName }
                 };
 
-
-                List<Download> downloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(download);
-                Document retrievedDocument = retrievedDocuments[0];
-                retrievedDocument.DocumentData = encryptedData;
+                List<Download> downloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync();
                 Supplier randomSupplier = await PostRandomSupplierAsync();
                 string encryptedFilePath = encryptedFolder;
                 string decryptedFilePath = decryptedFolder;

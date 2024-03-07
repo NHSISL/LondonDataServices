@@ -55,26 +55,26 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             this.hashBroker = hashBroker;
         }
 
-        public ValueTask<string> DecryptAsync(string fileName, SubscriberCredential subscriberCredential) =>
+        public ValueTask<string> DecryptAsync(string encryptedFileName, SubscriberCredential subscriberCredential) =>
             TryCatch(async () =>
             {
                 ValidateBlobContainersIsNotNull();
-                ValidateFileNameIsNotNull(fileName);
+                ValidateFileNameIsNotNull(encryptedFileName);
                 ValidateSubscriberCredentials(subscriberCredential);
 
                 var ingestionTracking = await this.ingestionTrackingService
-                    .RetrieveIngestionTrackingByFileNameAsync(fileName);
+                    .RetrieveIngestionTrackingByFileNameAsync(encryptedFileName);
 
                 Download download = new Download
                 {
-                    Document = new Document { FileName = fileName },
+                    Document = new Document { FileName = encryptedFileName },
                     SubscriberCredential = subscriberCredential
                 };
 
                 Download externalDownload =
                     await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
 
-                ValidateStorageDownload(externalDownload, fileName);
+                ValidateStorageDownload(externalDownload, encryptedFileName);
 
                 byte[] decryptedData = await this.cryptographyService.DecryptAsync(
                     data: externalDownload.Document.DocumentData,

@@ -140,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             // when
             ValueTask<string> processTask =
                 this.decryptionOrchestrationService
-                    .DecryptAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
+                    .DecryptAsync(encryptedFileName: inputFileName, subscriberCredential: inputSubscriberCredential);
 
             DecryptionOrchestrationValidationException actualDecryptionOrchestrationValidationException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(processTask.AsTask);
@@ -198,7 +198,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             // when
             ValueTask<string> processTask = this.decryptionOrchestrationService
-                .DecryptAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
+                .DecryptAsync(encryptedFileName: inputFileName, subscriberCredential: inputSubscriberCredential);
 
             DecryptionOrchestrationValidationException actualDecryptionOrchestrationValidationExceptionn =
                 await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(processTask.AsTask);

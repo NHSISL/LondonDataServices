@@ -5,10 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
-using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Decryptions;
 using Moq;
@@ -148,72 +145,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             // then
             actualDecryptionOrchestrationValidationException.Should()
                 .BeEquivalentTo(expectedDecryptionOrchestrationValidationException);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedDecryptionOrchestrationValidationException))),
-                        Times.Once);
-
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
-            this.cryptographyServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
-            this.auditServiceMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldNotProcessNamedDocumentOnProcessFileIfDownloadIsNullAsync()
-        {
-            // given
-            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            string randomFileName = GetRandomString();
-            string inputFileName = randomFileName;
-
-            Download inputDownload = new Download
-            {
-                SubscriberCredential = inputSubscriberCredential,
-                Document = new Document { FileName = inputFileName }
-            };
-
-            var notFoundDecryptionOrchestrationException =
-                new NotFoundDecryptionOrchestrationException(
-                message: $"Couldn't find download with file name: {inputFileName}.");
-
-            var expectedDecryptionOrchestrationValidationException =
-                new DecryptionOrchestrationValidationException(
-                    message: "Decryption orchestration validation errors occurred, please try again.",
-                    innerException: notFoundDecryptionOrchestrationException);
-
-            this.ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
-                    .Returns(null);
-
-            this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
-                    .Returns(null);
-
-            // when
-            ValueTask<string> processTask = this.decryptionOrchestrationService
-                .DecryptAsync(encryptedFileName: inputFileName, subscriberCredential: inputSubscriberCredential);
-
-            DecryptionOrchestrationValidationException actualDecryptionOrchestrationValidationExceptionn =
-                await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(processTask.AsTask);
-
-            // then
-            actualDecryptionOrchestrationValidationExceptionn.Should()
-                .BeEquivalentTo(expectedDecryptionOrchestrationValidationException);
-
-            this.ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveIngestionTrackingByFileNameAsync(It.IsAny<string>()),
-                    Times.Once);
-
-            this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))),
-                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

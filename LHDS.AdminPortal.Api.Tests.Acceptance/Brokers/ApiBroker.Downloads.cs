@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Downloads;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Downloads;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 {

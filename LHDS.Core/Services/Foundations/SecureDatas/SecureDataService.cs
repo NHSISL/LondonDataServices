@@ -27,7 +27,6 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             TryCatch(async () =>
             {
                 ValidateSecureDataOnAdd(secureData);
-
                 string value = string.IsNullOrWhiteSpace(secureData.Value) ? "null" : secureData.Value;
                 KeyVaultSecret keyVaultSecret = new KeyVaultSecret(name: secureData.Name, value);
 

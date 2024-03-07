@@ -99,7 +99,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
         private static string CreateRandomFilePath(Guid identifier)
         {
             return $"{GetRandomString()}/{GetRandomString()}" +
-                $"/{GetRandomString()}/{GetRandomString()}/{GetRandomString()}" +
                 $"/{identifier}/0122235/{GetRandomNumber}" +
                 $"_{GetRandomString()}_{GetRandomString()}" +
                 $"_{GetRandomNumber()}_{identifier}.csv.gpg;";

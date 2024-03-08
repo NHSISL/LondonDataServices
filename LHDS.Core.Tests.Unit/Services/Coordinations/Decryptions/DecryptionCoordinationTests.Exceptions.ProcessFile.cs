@@ -109,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             // Given
             var serviceException = new Exception();
             Guid SubscriberCredentialId = Guid.NewGuid();
-            string filePath = CreateRandomFilePath(SubscriberCredentialId);
+            string encryptedFileName = CreateRandomFilePath(SubscriberCredentialId);
             List<Exception> exceptions = new List<Exception>();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
@@ -127,7 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     innerException: failedDecryptionCoordinationServiceException);
 
             // When
-            ValueTask<string> processDataTask = this.decryptionCoordinationService.DecryptAsync(filePath);
+            ValueTask<string> processDataTask = this.decryptionCoordinationService.DecryptAsync(encryptedFileName);
 
             DecryptionCoordinationServiceException actualDecryptionCoordinationServiceException =
                 await Assert.ThrowsAsync<DecryptionCoordinationServiceException>(async () =>

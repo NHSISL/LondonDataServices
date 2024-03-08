@@ -2,11 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.Downloads;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -140,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             // when
             ValueTask<string> processTask =
                 this.decryptionOrchestrationService
-                    .DecryptAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
+                    .DecryptAsync(encryptedFileName: inputFileName, subscriberCredential: inputSubscriberCredential);
 
             DecryptionOrchestrationValidationException actualDecryptionOrchestrationValidationException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(processTask.AsTask);
@@ -165,23 +165,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         }
 
         [Fact]
-        public async Task ShouldNotProcessNamedDocumentOnProcessFileIfDownloadIsNullAsync()
+        public async Task ShouldNotProcessNamedDocumentOnProcessFileIfDocumentIsNullAsync()
         {
             // given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
-
-            Download inputDownload = new Download
-            {
-                SubscriberCredential = inputSubscriberCredential,
-                Document = new Document { FileName = inputFileName }
-            };
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
+            randomIngestionTracking.FileName = randomFileName;
+            IngestionTracking storageIngestionTracking = randomIngestionTracking;
 
             var notFoundDecryptionOrchestrationException =
                 new NotFoundDecryptionOrchestrationException(
-                message: $"Couldn't find download with file name: {inputFileName}.");
+                message: $"Couldn't find document with file name: {inputFileName}.");
 
             var expectedDecryptionOrchestrationValidationException =
                 new DecryptionOrchestrationValidationException(
@@ -189,16 +187,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     innerException: notFoundDecryptionOrchestrationException);
 
             this.ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
-                    .Returns(null);
+               service.RetrieveIngestionTrackingByEncryptedFileNameAsync(randomFileName))
+                   .ReturnsAsync(storageIngestionTracking);
 
-            this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
-                    .Returns(null);
+            this.documentServiceMock.Setup(service =>
+                 service.RetrieveDocumentByFileNameAsync(
+                     storageIngestionTracking.EncryptedFileName,
+                     It.IsAny<string>()))
+                         .Returns(null);
 
             // when
             ValueTask<string> processTask = this.decryptionOrchestrationService
-                .DecryptAsync(fileName: inputFileName, subscriberCredential: inputSubscriberCredential);
+                .DecryptAsync(encryptedFileName: inputFileName, subscriberCredential: inputSubscriberCredential);
 
             DecryptionOrchestrationValidationException actualDecryptionOrchestrationValidationExceptionn =
                 await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(processTask.AsTask);
@@ -208,11 +208,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 .BeEquivalentTo(expectedDecryptionOrchestrationValidationException);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveIngestionTrackingByFileNameAsync(It.IsAny<string>()),
+                service.RetrieveIngestionTrackingByEncryptedFileNameAsync(It.IsAny<string>()),
                     Times.Once);
 
-            this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))),
+            this.documentServiceMock.Verify(service =>
+                service.RetrieveDocumentByFileNameAsync(storageIngestionTracking.EncryptedFileName, It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

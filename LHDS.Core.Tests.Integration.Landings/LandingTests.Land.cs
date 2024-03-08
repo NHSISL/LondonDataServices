@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Xunit;
 
@@ -24,6 +25,7 @@ namespace LHDS.Core.Tests.Integration.Landings
                 // given
                 string encryptedFileContainer = "emislanding";
                 Supplier supplier = await SetupSupplier();
+                SubscriberAgreement maybeSubscriberAgreement = await SetupSubscriberAgreement();
 
                 // when
                 List<string> files = await landingClient.ProcessAsync();

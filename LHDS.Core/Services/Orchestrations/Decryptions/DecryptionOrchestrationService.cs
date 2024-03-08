@@ -9,7 +9,6 @@ using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -55,29 +54,25 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             this.hashBroker = hashBroker;
         }
 
-        public ValueTask<string> DecryptAsync(string fileName, SubscriberCredential subscriberCredential) =>
+        public ValueTask<string> DecryptAsync(string encryptedFileName, SubscriberCredential subscriberCredential) =>
             TryCatch(async () =>
             {
                 ValidateBlobContainersIsNotNull();
-                ValidateFileNameIsNotNull(fileName);
+                ValidateFileNameIsNotNull(encryptedFileName);
                 ValidateSubscriberCredentials(subscriberCredential);
 
                 var ingestionTracking = await this.ingestionTrackingService
-                    .RetrieveIngestionTrackingByFileNameAsync(fileName);
+                    .RetrieveIngestionTrackingByEncryptedFileNameAsync(encryptedFileName);
 
-                Download download = new Download
-                {
-                    Document = new Document { FileName = fileName },
-                    SubscriberCredential = subscriberCredential
-                };
+                Document document = await this.documentService
+                   .RetrieveDocumentByFileNameAsync(
+                       fileName: ingestionTracking.EncryptedFileName,
+                       container: blobContainers.EmisLanding);
 
-                Download externalDownload =
-                    await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
-
-                ValidateStorageDownload(externalDownload, fileName);
+                ValidateStorageDocumentIsNotNull(document, encryptedFileName);
 
                 byte[] decryptedData = await this.cryptographyService.DecryptAsync(
-                    data: externalDownload.Document.DocumentData,
+                    data: document.DocumentData,
                     subscriberCredential);
 
                 string decryptedFileSha256Hash =
@@ -86,18 +81,18 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 string[] lines = System.Text.Encoding.UTF8.GetString(decryptedData)
                     .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
-                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                ingestionTracking.Decrypted = true;
-                ingestionTracking.RecordCount = lines.Length - 2;
-                ingestionTracking.DecryptedFileSize = externalDownload.Document.DocumentData.Length;
-                ingestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
-                ingestionTracking.UpdatedDate = currentDateTime;
-
                 Document newDecryptedDocument = new Document
                 {
                     DocumentData = decryptedData,
                     FileName = ingestionTracking.DecryptedFileName
                 };
+
+                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                ingestionTracking.Decrypted = true;
+                ingestionTracking.RecordCount = lines.Length - 2;
+                ingestionTracking.DecryptedFileSize = newDecryptedDocument.DocumentData.Length;
+                ingestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
+                ingestionTracking.UpdatedDate = currentDateTime;
 
                 await this.documentService.AddDocumentAsync(
                     document: newDecryptedDocument,
@@ -106,7 +101,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 await this.ingestionTrackingService
                     .ModifyIngestionTrackingAsync(ingestionTracking);
 
-                LogAudit(ingestionTracking, document: externalDownload.Document, currentDateTime);
+                LogAudit(ingestionTracking, document: document, currentDateTime);
 
                 return ingestionTracking.DecryptedFileName;
             });

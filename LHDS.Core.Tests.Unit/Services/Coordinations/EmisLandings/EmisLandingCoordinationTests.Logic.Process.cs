@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     randomSubscriberAgreements.FirstOrDefault(agreement => agreement.Id == subscriberAgreementId);
 
                 this.subscriberCredentialOrchestrationMock.Setup(service =>
-                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, true))
+                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, false))
                         .ReturnsAsync(randomSubscriberAgreement);
 
                 this.emisLandingExtractionOrchestrationServiceMock.Setup(service =>
@@ -62,7 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     randomSubscriberAgreements.FirstOrDefault(agreement => agreement.Id == subscriberAgreementId);
 
                 this.subscriberCredentialOrchestrationMock.Verify(service =>
-                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, true),
+                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, false),
                         Times.Once);
 
                 this.emisLandingExtractionOrchestrationServiceMock.Verify(service =>

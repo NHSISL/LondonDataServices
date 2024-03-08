@@ -137,7 +137,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                         $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
                                         $"/{retrievedDataSetSpecification.Id}" +
                                         $"/{filename.Split('_')[3]}" +
-                                        $"{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                                        $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                                       Decrypted = false,
                                       LastSeen = currentDateTime,

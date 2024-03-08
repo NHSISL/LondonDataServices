@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -60,6 +60,18 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 IngestionTracking maybeIngestionTracking =
                     this.storageBroker.SelectAllIngestionTrackings()
                         .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
+
+                return await ValueTask.FromResult(maybeIngestionTracking);
+            });
+
+        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByEncryptedFileNameAsync(string encryptedFileName) =>
+            TryCatch(async () =>
+            {
+                ValidateIngestionTrackingFileName(encryptedFileName);
+
+                IngestionTracking maybeIngestionTracking =
+                    this.storageBroker.SelectAllIngestionTrackings()
+                        .FirstOrDefault(ingestionTracking => ingestionTracking.EncryptedFileName == encryptedFileName);
 
                 return await ValueTask.FromResult(maybeIngestionTracking);
             });

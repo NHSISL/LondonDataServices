@@ -109,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                             + $"/{randomDataSet.DataSetName}"
                             + $"/{randomDataSetSpecification.Id}"
                             + $"/{filename.Split('_')[3]}"
-                            + $"{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                            + $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                         Decrypted = false,
                         LastSeen = randomDateTime,
@@ -183,7 +183,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                             + $"/{randomDataSet.DataSetName}"
                             + $"/{randomDataSetSpecification.Id}"
                             + $"/{filename.Split('_')[3]}"
-                            + $"{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                            + $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                       Decrypted = false,
                       LastSeen = randomDateTime,

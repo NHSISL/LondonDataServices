@@ -131,10 +131,6 @@ namespace LHDS.Core.Clients.Extensions
 
                 services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             }
-            else
-            {
-                services.AddTransient<IKeyVaultSecretBroker, MockKeyVaultSecretBroker>();
-            }
         }
 
         private static void AddServices(IServiceCollection services)
@@ -195,7 +191,10 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "landingSettings:encryptedFolder"),
 
                 (Rule: IsInvalid(landingConfiguration.DecryptedFolder),
-                    Parameter: "landingSettings:decryptedFolder"));
+                    Parameter: "landingSettings:decryptedFolder"),
+
+                (Rule: IsInvalid(landingConfiguration.KeyVaultUrl),
+                        Parameter: "landingSettings:keyVaultUrl"));
         }
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)

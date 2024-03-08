@@ -15,6 +15,7 @@ using LHDS.Core.Brokers.Decryptions;
 using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
+using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
@@ -24,14 +25,22 @@ using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
 using LHDS.Core.Providers.Downloads;
+using LHDS.Core.Providers.Downloads.FtpDownloads;
 using LHDS.Core.Services.Coordinations.Decryptions;
+using LHDS.Core.Services.Foundations.CryptographicKeys;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.SecureDatas;
+using LHDS.Core.Services.Foundations.SubscriberAgreements;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Decryptions;
+using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
+using LHDS.Core.Services.Processings.Downloads;
+using LHDS.Core.Services.Processings.SecureDatas;
+using LHDS.Core.Services.Processings.SubscriberAgreements;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -84,6 +93,13 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDownloadAbstractionProvider, DownloadAbstractionProvider>();
             services.AddTransient<ICryptographyAbstractProvider, CryptographyAbstractProvider>();
             services.AddTransient<ICryptographyProvider, GpgCryptographyProvider>();
+
+            IFtpDownloadProviderSettings ftpDownloadProviderSettings =
+                configuration.GetSection("ftpDownload").Get<FtpDownloadProviderSettings>();
+
+            ValidateFtpProviderSettings(ftpDownloadProviderSettings);
+            services.AddTransient<IFtpDownloadProviderSettings>(_ => ftpDownloadProviderSettings);
+            services.AddTransient<IDownloadProvider, FtpDownloadProvider>();
         }
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration, bool acceptanceTest)
@@ -94,6 +110,11 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
+
+            LandingConfiguration landingConfiguration = 
+                configuration.GetSection("landingSettings").Get<LandingConfiguration>();
+                
+            ValidateLandingConfiguration(landingConfiguration);
 
             if (!acceptanceTest)
             {
@@ -120,6 +141,10 @@ namespace LHDS.Core.Clients.Extensions
 
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
                 services.AddTransient<IDownloadBroker, DownloadBroker>();
+
+                services.AddTransient<IKeyVaultSecretBroker>((LandingConfiguration) =>
+                    new KeyVaultSecretBroker(landingConfiguration.KeyVaultUrl));
+
                 services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             }
         }
@@ -133,22 +158,50 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
             services.AddTransient<IDecryptionOrchestrationService, DecryptionOrchestrationService>();
             services.AddTransient<ICryptographyService, CryptographyService>();
+            services.AddTransient<ISubscriberAgreementService, SubscriberAgreementService>();
+            services.AddTransient<ISecureDataService, SecureDataService>();
+            services.AddTransient<ICryptographyKeyService, CryptographyKeyService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
-        { }
+        {
+            services.AddTransient<IDownloadProcessingService, DownloadProcessingService>();
+            services.AddTransient<ISubscriberAgreementProcessingService, SubscriberAgreementProcessingService>();
+            services.AddTransient<ISecureDataProcessingService, SecureDataProcessingService>();
+            services.AddTransient<ICryptographyKeyProcessingService, CryptographyKeyProcessingService>();
+        }
 
         private static void AddOrchestrations(IServiceCollection services)
-        { }
+        {
+            services.AddTransient<ISubscriberCredentialOrchestration, SubscriberCredentialOrchestration>();
+        }
 
         private static void AddCoordinations(IServiceCollection services)
         {
-            services.AddTransient<ICryptographyService, CryptographyService>();
+            services.AddTransient<IDecryptionCoordinationService, DecryptionCoordinationService>();
         }
 
         private static void AddClients(IServiceCollection services)
         {
-            services.AddTransient<IDecryptionCoordinationService, DecryptionCoordinationService>();
+            services.AddTransient<IDecryptionClient, DecryptionClient>();
+        }
+
+        private static void ValidateFtpProviderSettings(IFtpDownloadProviderSettings ftpDownloadProviderSettings)
+        {
+            if (ftpDownloadProviderSettings is null)
+            {
+                throw new InvalidConfigurationException("ftpDownload configuration section missing");
+            }
+
+            Validate(
+                (Rule: IsInvalid(ftpDownloadProviderSettings.FtpPort),
+                    Parameter: "ftpDownload__ftpPort"),
+
+                (Rule: IsInvalid(ftpDownloadProviderSettings.FtpUserName),
+                    Parameter: "ftpDownload__ftpUserName"),
+
+                (Rule: IsInvalid(ftpDownloadProviderSettings.IncludeSubDirectories),
+                    Parameter: "ftpDownload__includeSubDirectories"));
         }
 
         private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)
@@ -166,7 +219,10 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "landingSettings:encryptedFolder"),
 
                 (Rule: IsInvalid(landingConfiguration.DecryptedFolder),
-                    Parameter: "landingSettings:decryptedFolder"));
+                    Parameter: "landingSettings:decryptedFolder"),
+
+                (Rule: IsInvalid(landingConfiguration.KeyVaultUrl),
+                        Parameter: "landingSettings:keyVaultUrl"));
         }
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
@@ -187,6 +243,18 @@ namespace LHDS.Core.Clients.Extensions
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
+            Message = "Configuration value does not exist"
+        };
+
+        private static dynamic IsInvalid(int value) => new
+        {
+            Condition = value == 0,
+            Message = "Configuration value does not exist"
+        };
+
+        private static dynamic IsInvalid(bool value) => new
+        {
+            Condition = value == null,
             Message = "Configuration value does not exist"
         };
 

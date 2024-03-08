@@ -69,6 +69,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                        fileName: ingestionTracking.EncryptedFileName,
                        container: blobContainers.EmisLanding);
 
+                ValidateStorageDocumentIsNotNull(document, encryptedFileName);
+
                 byte[] decryptedData = await this.cryptographyService.DecryptAsync(
                     data: document.DocumentData,
                     subscriberCredential);

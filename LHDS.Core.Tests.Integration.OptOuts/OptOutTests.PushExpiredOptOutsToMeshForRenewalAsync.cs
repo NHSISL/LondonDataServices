@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -12,7 +12,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 {
     public partial class OptOutTests
     {
-        [ReleaseCandidateFact]
+        [Fact]
         public async Task ShouldPushExpiredOptOutsToMeshForRenewalAsyncsAsync()
         {
             try

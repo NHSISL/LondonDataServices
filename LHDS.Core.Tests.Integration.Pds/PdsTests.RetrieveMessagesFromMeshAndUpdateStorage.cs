@@ -1,18 +1,19 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.PdsAudits;
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Pds
 {
     public partial class PdsTests
     {
-        [ReleaseCandidateFact]
+        [Fact]
         public async Task ShouldRetrieveMessagesFromMeshAndUpdateStorageAsync()
         {
             // Given
@@ -60,7 +61,7 @@ namespace LHDS.Core.Tests.Integration.Pds
                 await this.pdsAuditService.RemovePdsAuditByIdAsync(audit.Id);
             }
 
-            await this.meshService.AcknowledgeMessageByIdAsync(meshMessage.MessageId);
+            //await this.meshService.AcknowledgeMessageByIdAsync(meshMessage.MessageId);
         }
     }
 }

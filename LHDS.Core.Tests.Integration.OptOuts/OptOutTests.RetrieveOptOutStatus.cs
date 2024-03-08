@@ -1,17 +1,18 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.OptOuts
 {
     public partial class OptOutTests
     {
-        [ReleaseCandidateFact]
+        [Fact]
         public async Task ShouldRetreiveOptOutStatusAsync()
         {
             // GIVEN

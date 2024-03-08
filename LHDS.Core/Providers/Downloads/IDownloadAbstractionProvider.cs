@@ -10,7 +10,7 @@ namespace LHDS.Core.Providers.Downloads
 {
     public interface IDownloadAbstractionProvider
     {
-        ValueTask<List<Download>> GetListOfDownloadsToProcessAsync(Download download);
+        ValueTask<List<string>> GetListOfDownloadsToProcessAsync(Download download);
         ValueTask<Download> GetDownloadByFileNameAsync(Download download);
     }
 }

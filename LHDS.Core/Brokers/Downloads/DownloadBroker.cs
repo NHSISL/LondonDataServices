@@ -18,7 +18,7 @@ namespace LHDS.Core.Brokers.Downloads
             this.downloadAbstractProvider = downloadAbstractProvider;
         }
 
-        public ValueTask<List<Download>> GetListOfDownloadsToProcessAsync(Download download) =>
+        public ValueTask<List<string>> GetListOfDownloadsToProcessAsync(Download download) =>
             this.downloadAbstractProvider.GetListOfDownloadsToProcessAsync(download);
 
         public ValueTask<Download> GetDownloadByFileNameAsync(Download download) =>

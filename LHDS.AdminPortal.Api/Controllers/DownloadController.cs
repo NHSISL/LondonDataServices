@@ -41,10 +41,11 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                List<string> retrieveFileList =
-                    await emisLandingCoordinationService.RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId);
+                throw new System.NotImplementedException();
+                //List<string> retrieveFileList =
+                //    await emisLandingCoordinationService.RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId);
 
-                return Ok(retrieveFileList);
+                //return Ok(retrieveFileList);
             }
             catch (DownloadDependencyException downloadDependencyException)
             {
@@ -64,10 +65,11 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                Document retrieveDownload = await emisLandingCoordinationService
-                    .RetrieveDownloadByFileNameAsync(filename);
+                throw new System.NotImplementedException();
+                //Document retrieveDownload = await emisLandingCoordinationService
+                //    .RetrieveDownloadByFileNameAsync(filename);
 
-                return Ok(retrieveDownload);
+                //return Ok(retrieveDownload);
             }
             catch (DownloadValidationException downloadValidationException)
                 when (downloadValidationException.InnerException is NotFoundDocumentException)

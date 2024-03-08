@@ -13,7 +13,7 @@ namespace LHDS.Core.Services.Foundations.Downloads
 {
     public partial class DownloadService
     {
-        private delegate ValueTask<List<Download>> ReturningDownloadsFunction();
+        private delegate ValueTask<List<string>> ReturningStringListFunction();
         private delegate ValueTask<Download> ReturningDownloadFunction();
 
         private async ValueTask<Download> TryCatch(ReturningDownloadFunction returningDownloadFunction)
@@ -53,11 +53,11 @@ namespace LHDS.Core.Services.Foundations.Downloads
             }
         }
 
-        private async ValueTask<List<Download>> TryCatch(ReturningDownloadsFunction returningDownloadsFunction)
+        private async ValueTask<List<string>> TryCatch(ReturningStringListFunction returningStringListFunction)
         {
             try
             {
-                return await returningDownloadsFunction();
+                return await returningStringListFunction();
             }
             catch (Exception exception)
             {

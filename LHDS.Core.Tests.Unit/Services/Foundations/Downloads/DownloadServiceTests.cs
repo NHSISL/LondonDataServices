@@ -43,6 +43,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
+        private static List<string> GetRandomStrings(int count)
+        {
+            var messages = new List<string>();
+
+            for (int i = 0; i < count; i++)
+            {
+                string message = new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+                messages.Add(message);
+            }
+
+            return messages;
+        }
+
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 

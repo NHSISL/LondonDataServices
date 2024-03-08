@@ -54,32 +54,10 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
 
             for (int i = 0; i < 1; i++)
             {
-                Document document = await GetRandomDocumentAsync();
-
-                var downloadedItem = new Download
-                {
-                    Document = document,
-                    SubscriberCredential = download.SubscriberCredential
-                };
-
-                downloads.Add(downloadedItem);
+                downloads.Add(GetRandomString());
             }
 
             return downloads;
-        }
-
-        private async ValueTask<Document> GetRandomDocumentAsync()
-        {
-            string randomString = GetRandomString();
-            byte[] data = Encoding.ASCII.GetBytes(randomString);
-
-            Document document = new Document()
-            {
-                FileName = GetRandomString(),
-                DocumentData = data
-            };
-
-            return document;
         }
     }
 }

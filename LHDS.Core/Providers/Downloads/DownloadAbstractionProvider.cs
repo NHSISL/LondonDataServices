@@ -20,7 +20,7 @@ namespace LHDS.Core.Providers.Downloads
             provider = providers.First(provider => provider.IsMock == isMock);
         }
 
-        public async ValueTask<List<Download>> GetListOfDownloadsToProcessAsync(Download download) =>
+        public async ValueTask<List<string>> GetListOfDownloadsToProcessAsync(Download download) =>
             await this.provider.GetListOfDocumentsToProcessAsync(download);
 
         public async ValueTask<Download> GetDownloadByFileNameAsync(Download download) =>

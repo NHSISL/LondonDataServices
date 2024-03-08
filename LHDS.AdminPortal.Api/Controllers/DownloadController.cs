@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Services.Foundations.Downloads;
 using Microsoft.AspNetCore.Mvc;
@@ -37,16 +38,14 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<List<Document>>> Get()
+        public async ValueTask<ActionResult<List<Document>>> Get(Download download)
         {
             try
             {
-                // TODO: Fix this once stack has been converted
-                throw new NotImplementedException();
-                //List<Document> retrievedDocuments =
-                //    await downloadService.RetrieveListOfDocumentsToProcessAsync();
+                List<Download> retrieveDownloads =
+                    await downloadService.RetrieveListOfDocumentsToProcessAsync(download);
 
-                //return Ok(retrievedDocuments);
+                return Ok(retrieveDownloads);
             }
             catch (DownloadDependencyException downloadDependencyException)
             {
@@ -62,16 +61,13 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<Document>> RetrieveDownloadByFileNameAsync(string fileName)
+        public async ValueTask<ActionResult<Document>> RetrieveDownloadByFileNameAsync(Download download)
         {
             try
             {
-                // TODO: Fix this once stack is up to date
-                throw new NotImplementedException();
+                Download retrieveDownload = await downloadService.RetrieveDownloadByFileNameAsync(download);
 
-                //Document document = await downloadService.RetrieveDownloadByFileNameAsync(fileName);
-
-                //return Ok(document);
+                return Ok(retrieveDownload);
             }
             catch (DownloadValidationException downloadValidationException)
                 when (downloadValidationException.InnerException is NotFoundDocumentException)

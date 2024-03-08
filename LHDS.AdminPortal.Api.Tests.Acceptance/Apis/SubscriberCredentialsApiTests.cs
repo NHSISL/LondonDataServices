@@ -81,6 +81,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(subscriberCredential => subscriberCredential.CreatedDate).Use(now)
                 .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedDate).Use(now)

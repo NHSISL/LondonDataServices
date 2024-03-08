@@ -27,7 +27,7 @@ namespace LHDS.Core.Services.Foundations.Downloads
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<Download>> RetrieveListOfDocumentsToProcessAsync(Download download) =>
+        public ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(Download download) =>
             TryCatch(async () =>
             {
                 ValidateOnRetrieveListOfDocumentsToProcessAsync(download);

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
@@ -97,5 +98,20 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                     throw new InvalidArgumentEmisLandingCoordinationException("Invalid file name format.");
                 }
             });
+
+        public async ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(Guid subscriberAgreementId)
+        {
+            // 1) Lookup Subscriber Credential based on Id
+            // SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
+            //      .RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, false);
+            // 2) Retrieve list of documents to process from orchestration service
+            // return emisLandingOrchestrationService.RetrieveListOfDocumentsToProcessAsync(maybeSubscriberCredential);
+
+
+            throw new NotImplementedException();
+        }
+
+        public ValueTask<Document> RetrieveDownloadByFileNameAsync(string fileName) =>
+            throw new NotImplementedException();
     }
 }

@@ -13,5 +13,6 @@ namespace LHDS.Core.Services.Orchestrations.EmisLandings
         ValueTask<List<string>> ProcessAsync(SubscriberCredential subscriberCredential);
         ValueTask<string> ProcessFileAsync(string fileName, SubscriberCredential subscriberCredential);
         ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(SubscriberCredential subscriberCredential);
+        ValueTask<byte[]> RetrieveDownloadByFileNameAsync(string fileName, SubscriberCredential subscriberCredential);
     }
 }

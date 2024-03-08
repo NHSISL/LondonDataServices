@@ -351,6 +351,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(download);
         }
 
+        public async ValueTask<byte[]> RetrieveDownloadByFileNameAsync(string fileName, SubscriberCredential subscriberCredential) =>
+            throw new NotImplementedException();
+
         private void LogAudit(
             IngestionTracking ingestionTracking,
             Document document,

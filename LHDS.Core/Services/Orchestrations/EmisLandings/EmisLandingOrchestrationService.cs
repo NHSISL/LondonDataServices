@@ -344,6 +344,13 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 }
             });
 
+        public async ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(SubscriberCredential subscriberCredential)
+        {
+
+            Download download = new Download { SubscriberCredential = subscriberCredential };
+            this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(download);
+        }
+
         private void LogAudit(
             IngestionTracking ingestionTracking,
             Document document,

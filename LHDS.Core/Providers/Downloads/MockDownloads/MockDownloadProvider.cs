@@ -48,9 +48,9 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
             return await ValueTask.FromResult(downloadedItem);
         }
 
-        public async ValueTask<List<Download>> GetListOfDocumentsToProcessAsync(Download download)
+        public async ValueTask<List<string>> GetListOfDocumentsToProcessAsync(Download download)
         {
-            List<Download> downloads = new List<Download>();
+            List<string> downloads = new List<string>();
 
             for (int i = 0; i < 1; i++)
             {

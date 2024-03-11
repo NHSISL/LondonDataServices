@@ -64,5 +64,52 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DownloadDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnRetrieveListIfDependencyExceptionOccursAndLogItAsync(
+           Xeption dependancyException)
+        {
+            // given
+            SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
+            Download someDownload = new Download { SubscriberCredential = someSubscriberCredential };
+
+            var expectedDependencyException =
+                new EmisLandingOrchestrationDependencyException(
+                    message: "EMIS landing orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyException.InnerException as Xeption);
+
+            this.downloadProcessingServiceMock.Setup(service =>
+                service.RetrieveListOfDownloadsToProcessAsync(It.IsAny<Download>()))
+                    .ThrowsAsync(dependancyException);
+
+            // when
+            ValueTask<List<string>> retrieveListOfDocumentsToProcessAsyncTask = this.emisLandingOrchestrationService
+                .ProcessAsync(subscriberCredential: someSubscriberCredential);
+
+            EmisLandingOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyException>(
+                    retrieveListOfDocumentsToProcessAsyncTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDependencyException);
+
+            this.downloadProcessingServiceMock.Verify(service =>
+                service.RetrieveListOfDownloadsToProcessAsync(It.IsAny<Download>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
+
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

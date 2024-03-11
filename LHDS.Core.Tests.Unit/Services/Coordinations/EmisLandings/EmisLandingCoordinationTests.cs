@@ -17,7 +17,6 @@ using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Coordinations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
-using LHDS.Core.Services.Processings.Downloads;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -29,7 +28,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
     {
         private readonly Mock<ISubscriberCredentialOrchestration> subscriberCredentialOrchestrationMock;
         private readonly Mock<IEmisLandingOrchestrationService> emisLandingExtractionOrchestrationServiceMock;
-        private readonly Mock<IDownloadProcessingService> downloadProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly IEmisLandingCoordinationService emisLandingCoordinationService;
@@ -38,14 +36,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         {
             this.subscriberCredentialOrchestrationMock = new Mock<ISubscriberCredentialOrchestration>();
             this.emisLandingExtractionOrchestrationServiceMock = new Mock<IEmisLandingOrchestrationService>();
-            this.downloadProcessingServiceMock = new Mock<IDownloadProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
             this.emisLandingCoordinationService = new EmisLandingCoordinationService(
                 subscriberCredentialOrchestration: subscriberCredentialOrchestrationMock.Object,
                 emisLandingOrchestrationService: emisLandingExtractionOrchestrationServiceMock.Object,
-                downloadProcessingService: downloadProcessingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
         }
 
@@ -214,6 +210,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             filler.Setup();
 
             return filler;
+        }
+
+        private Expression<Func<SubscriberCredential, bool>> SameSubscriberCredentialAs(
+            SubscriberCredential expectedSubscriberCredential)
+        {
+            return actualSubscriberCredential =>
+                this.compareLogic.Compare(expectedSubscriberCredential, actualSubscriberCredential)
+                    .AreEqual;
         }
 
         private static SubscriberCredential CreateRandomSubscriberCredential() =>

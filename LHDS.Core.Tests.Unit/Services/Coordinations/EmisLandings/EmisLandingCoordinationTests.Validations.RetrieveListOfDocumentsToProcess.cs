@@ -34,12 +34,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: invalidArgumentEmisLandingCoordinationException);
 
             // when
-            ValueTask<List<string>> processDataTask =
+            ValueTask<List<string>> retrieveListOfDocumentsToProcessAsyncTask =
                 this.emisLandingCoordinationService.RetrieveListOfDocumentsToProcessAsync(invalidSubscriberAgreementId);
 
             EmisLandingCoordinationValidationException actualEmisLandingCoordinationValidationException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(async () =>
-                    await processDataTask);
+                    await retrieveListOfDocumentsToProcessAsyncTask);
 
             // then
             actualEmisLandingCoordinationValidationException.Should()

@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 
 namespace LHDS.Core.Services.Coordinations.EmisLandings
@@ -16,7 +18,16 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
 
         private static void ValidateFileNameOnRetrieve(string fileName)
         {
+            var invalidArgumentEmisLandingCoordinationException =
+                new InvalidArgumentEmisLandingCoordinationException(
+                    message: "Invalid Emis Landing coordination argument, please correct the errors and try again.");
+
             Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
+
+            if (fileName.Split("/").Length < 6)
+            {
+                throw invalidArgumentEmisLandingCoordinationException;
+            }
         }
 
         private static void ValidateArgsOnRetrieveListOfDocumentsToProcess(Guid subscriberAgreementId)

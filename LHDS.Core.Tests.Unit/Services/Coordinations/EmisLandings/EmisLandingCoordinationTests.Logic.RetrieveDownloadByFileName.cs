@@ -1,7 +1,10 @@
-// ---------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -11,12 +14,12 @@ using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 {
-    public partial class DownloadServiceTests
+    public partial class EmisLandingCoordinationServiceTests
     {
         [Fact]
-        public async Task ShouldRetrieveDownloadByIdAsync()
+        public async Task ShouldRetrieveDownloadByFileNameAndLogAsync()
         {
             // given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
@@ -40,13 +43,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
 
             Download expectedDownload = storageDownload.DeepClone();
 
-            this.downloadPro.Setup(broker =>
-                broker.GetDownloadByFileNameAsync(inputDownload))
+            this.downloadProcessingServiceMock.Setup(service =>
+                service.RetrieveDownloadByFileNameAsync(inputDownload))
                     .ReturnsAsync(storageDownload);
 
             // when
             Download actualDownload =
-                await this.downloadService.RetrieveDownloadByFileNameAsync(inputDownload);
+                await this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(inputDownload);
 
             // then
             actualDownload.Should().BeEquivalentTo(expectedDownload);
@@ -60,3 +63,4 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
         }
     }
 }
+

@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Extensions.Exceptions;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
@@ -16,6 +17,7 @@ using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Coordinations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
+using LHDS.Core.Services.Processings.Downloads;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -27,6 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
     {
         private readonly Mock<ISubscriberCredentialOrchestration> subscriberCredentialOrchestrationMock;
         private readonly Mock<IEmisLandingOrchestrationService> emisLandingExtractionOrchestrationServiceMock;
+        private readonly Mock<IDownloadProcessingService> downloadProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly IEmisLandingCoordinationService emisLandingCoordinationService;
@@ -35,12 +38,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         {
             this.subscriberCredentialOrchestrationMock = new Mock<ISubscriberCredentialOrchestration>();
             this.emisLandingExtractionOrchestrationServiceMock = new Mock<IEmisLandingOrchestrationService>();
+            this.downloadProcessingServiceMock = new Mock<IDownloadProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
             this.emisLandingCoordinationService = new EmisLandingCoordinationService(
                 subscriberCredentialOrchestration: subscriberCredentialOrchestrationMock.Object,
                 emisLandingOrchestrationService: emisLandingExtractionOrchestrationServiceMock.Object,
+                downloadProcessingService: downloadProcessingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
         }
 
@@ -191,6 +196,42 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             }
 
             return Guid.Empty;
+        }
+
+        private static List<Document> CreateRandomDocuments()
+        {
+            return CreateDocumentFiller()
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static Document CreateRandomDocument() =>
+            CreateDocumentFiller().Create();
+
+        private static Filler<Document> CreateDocumentFiller()
+        {
+            var filler = new Filler<Document>();
+            filler.Setup();
+
+            return filler;
+        }
+
+        private static SubscriberCredential CreateRandomSubscriberCredential() =>
+            CreateSubscriberCredentialFiller().Create();
+
+        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller()
+        {
+            var filler = new Filler<SubscriberCredential>();
+            string user = Guid.NewGuid().ToString();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
+
+            return filler;
         }
 
         public static TheoryData DependencyValidationExceptions()

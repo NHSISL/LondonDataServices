@@ -98,6 +98,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 landingConfiguration: landingConfiguration);
         }
 
+        private static List<string> GetRandomStrings(int count)
+        {
+            var messages = new List<string>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var message = GetRandomString();
+                messages.Add(message);
+            }
+
+            return messages;
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 

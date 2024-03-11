@@ -44,6 +44,19 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 loggingBroker: loggingBrokerMock.Object);
         }
 
+        private static List<string> GetRandomStrings(int count)
+        {
+            var messages = new List<string>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var message = GetRandomString();
+                messages.Add(message);
+            }
+
+            return messages;
+        }
+
         private static string GetRandomString() =>
            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 

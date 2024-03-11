@@ -24,6 +24,10 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             {
                 return await returningStringListFunction();
             }
+            catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentEmisLandingCoordinationException);
+            }
             catch (SubscriberCredentialValidationOrchestrationException
                 subscriberCredentialValidationOrchestrationException)
             {

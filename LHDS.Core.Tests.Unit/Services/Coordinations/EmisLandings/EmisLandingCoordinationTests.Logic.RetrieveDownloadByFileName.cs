@@ -56,6 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))),
                         Times.Once);
 
+            this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
             this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

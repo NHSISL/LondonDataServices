@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
@@ -31,14 +30,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             var expectedEmisLandingCoordinationDependencyValidationException =
                 new EmisLandingCoordinationDependencyValidationException(
-                    message: "EMIS landing coordination dependency validation error occurred, contact support.",
-                    innerException: dependencyValidationException);
+                    message: "EMIS landing coordination dependency validation error occurred, please try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
 
             // When
-            ValueTask<Document> retrieveDownlaodTask = 
+            ValueTask<Document> retrieveDownlaodTask =
                 this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(fileName);
 
-            EmisLandingCoordinationDependencyValidationException 
+            EmisLandingCoordinationDependencyValidationException
                 actualEmisLandingCoordinationDependencyValidationException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationDependencyValidationException>(async () =>
                     await retrieveDownlaodTask);
@@ -72,11 +71,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
                 service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId, true))
-                    .ThrowsAsync(dependencyException);
+                    .ThrowsAsync(dependencyException.InnerException as Xeption);
 
             var expectedEmisLandingCoordinationDependencyException =
                 new EmisLandingCoordinationDependencyException(
-                    message: "EMIS landing coordination dependency error occurred, contact support.",
+                    message: "EMIS landing coordination dependency error occurred, please try again.",
                     innerException: dependencyException);
 
             // When

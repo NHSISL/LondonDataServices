@@ -78,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                         .Returns(externalIngestionTrackingsFound.AsQueryable());
 
                 this.downloadProcessingServiceMock.Setup(service =>
-                    service.RetrieveDownloadByFileNameAsync(inputFileDownload))
+                    service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputFileDownload))))
                         .ReturnsAsync(storageFileDownload);
 
                 this.hashBrokerMock.Setup(broker =>
@@ -147,27 +147,27 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             foreach (var externalFileName in externalDownloadList)
             {
-                Download inputFileDownload = new Download
+                Download inputNewFileDownload = new Download
                 {
                     Document = new Document { FileName = externalFileName },
                     SubscriberCredential = inputDownload.SubscriberCredential
                 };
 
-                Download storageFileDownload = inputDownload.DeepClone();
+                Download storageNewFileDownload = inputNewFileDownload.DeepClone();
 
-                storageFileDownload.Document.DocumentData = 
-                    Encoding.ASCII.GetBytes(storageFileDownload.Document.FileName);
+                storageNewFileDownload.Document.DocumentData = 
+                    Encoding.ASCII.GetBytes(storageNewFileDownload.Document.FileName);
 
                 this.ingestionTrackingProcessingServiceMock.Verify(service =>
                     service.RetrieveAllIngestionTrackings(),
                         Times.Exactly(2));
 
                 this.downloadProcessingServiceMock.Verify(service =>
-                    service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputFileDownload))),
+                    service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputNewFileDownload))),
                         Times.Once);
 
                 this.hashBrokerMock.Verify(broker =>
-                    broker.GenerateSha256Hash(storageFileDownload.Document.DocumentData),
+                    broker.GenerateSha256Hash(storageNewFileDownload.Document.DocumentData),
                         Times.Once);
 
                 this.dateTimeBrokerMock.Verify(broker =>
@@ -209,7 +209,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                       LastSeen = randomDateTime,
                       FileDeleted = false,
                       RecordCount = 0,
-                      EncryptedFileSize = storageFileDownload.Document.DocumentData.Length,
+                      EncryptedFileSize = storageNewFileDownload.Document.DocumentData.Length,
                       EncryptedFileSha256Hash = randomHash,
                       DecryptedFileSize = 0,
                       DecryptedFileSha256Hash = string.Empty,
@@ -232,7 +232,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
                 Document newBlobDocument = new Document
                 {
-                    DocumentData = storageFileDownload.Document.DocumentData,
+                    DocumentData = storageNewFileDownload.Document.DocumentData,
                     FileName = newIngestionTracking.EncryptedFileName
                 };
 

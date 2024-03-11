@@ -13,6 +13,11 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
+        private static void ValidateFileNameOnRetrieve(string fileName)
+        {
+            Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
+        }
+
         private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),

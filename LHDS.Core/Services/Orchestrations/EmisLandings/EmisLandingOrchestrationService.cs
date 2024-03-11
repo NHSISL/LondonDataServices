@@ -364,8 +364,24 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 return retrievedDownloadList;
             });
 
-        public async ValueTask<byte[]> RetrieveDownloadByFileNameAsync(string fileName, SubscriberCredential subscriberCredential) =>
-            throw new NotImplementedException();
+        public ValueTask<byte[]> RetrieveDownloadByFileNameAsync(
+            string fileName, SubscriberCredential subscriberCredential) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberCredentials(subscriberCredential);
+                ValidateFileName(fileName);
+
+                Download download = new Download
+                {
+                    Document = new Document { FileName = fileName },
+                    SubscriberCredential = subscriberCredential
+                };
+
+                Download storageDownload =
+                    await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
+
+                return storageDownload.Document.DocumentData;
+            });
 
         private void LogAudit(
             IngestionTracking ingestionTracking,

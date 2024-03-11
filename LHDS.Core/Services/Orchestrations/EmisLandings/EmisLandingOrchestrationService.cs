@@ -355,7 +355,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             TryCatch(async () =>
             {
                 ValidateSubscriberCredentials(subscriberCredential);
-
                 Download download = new Download { SubscriberCredential = subscriberCredential };
 
                 List<string> retrievedDownloadList =

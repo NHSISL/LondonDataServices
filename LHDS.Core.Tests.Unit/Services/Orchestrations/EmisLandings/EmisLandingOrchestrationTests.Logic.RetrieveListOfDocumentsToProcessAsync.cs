@@ -26,13 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             List<string> storageFileNames = randomFileNames;
             List<string> expectedFileNames = storageFileNames.DeepClone();
 
-
             Download inputDownload = new Download
-            {
-                SubscriberCredential = inputSubscriberCredential,
-            };
-
-            Download storageDownload = new Download
             {
                 SubscriberCredential = inputSubscriberCredential,
             };

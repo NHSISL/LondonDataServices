@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Hl7.Fhir.Serialization;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Extensions.Exceptions;
@@ -27,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
     public partial class EmisLandingCoordinationServiceTests
     {
         private readonly Mock<ISubscriberCredentialOrchestration> subscriberCredentialOrchestrationMock;
-        private readonly Mock<IEmisLandingOrchestrationService> emisLandingExtractionOrchestrationServiceMock;
+        private readonly Mock<IEmisLandingOrchestrationService> emisLandingOrchestrationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly IEmisLandingCoordinationService emisLandingCoordinationService;
@@ -35,13 +36,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         public EmisLandingCoordinationServiceTests()
         {
             this.subscriberCredentialOrchestrationMock = new Mock<ISubscriberCredentialOrchestration>();
-            this.emisLandingExtractionOrchestrationServiceMock = new Mock<IEmisLandingOrchestrationService>();
+            this.emisLandingOrchestrationServiceMock = new Mock<IEmisLandingOrchestrationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
             this.emisLandingCoordinationService = new EmisLandingCoordinationService(
                 subscriberCredentialOrchestration: subscriberCredentialOrchestrationMock.Object,
-                emisLandingOrchestrationService: emisLandingExtractionOrchestrationServiceMock.Object,
+                emisLandingOrchestrationService: emisLandingOrchestrationServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
         }
 
@@ -111,6 +112,25 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .OnProperty(subscriberCredential => subscriberCredential.Id).Use(() => subscriberAgreementId);
 
             return filler.Create();
+        }
+
+        public static string CreateRandomSubscriberCredentialIdFileName(Guid subscriberAgreementId)
+        {
+            string fileName = "";
+
+            for (int i = 0; i < 10; i++)
+            {
+                if (i != 5)
+                {
+                    fileName = fileName + GetRandomString() + "/";
+                }
+                else
+                {
+                    fileName = fileName + subscriberAgreementId.ToString() + "/";
+                }
+            }
+
+            return fileName;
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
@@ -218,24 +238,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             return actualSubscriberCredential =>
                 this.compareLogic.Compare(expectedSubscriberCredential, actualSubscriberCredential)
                     .AreEqual;
-        }
-
-        private static SubscriberCredential CreateRandomSubscriberCredential() =>
-            CreateSubscriberCredentialFiller().Create();
-
-        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller()
-        {
-            var filler = new Filler<SubscriberCredential>();
-            string user = Guid.NewGuid().ToString();
-            var now = DateTimeOffset.UtcNow;
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(now)
-                .OnType<DateTimeOffset?>().Use(now)
-                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
-                .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
-
-            return filler;
         }
 
         public static TheoryData DependencyValidationExceptions()

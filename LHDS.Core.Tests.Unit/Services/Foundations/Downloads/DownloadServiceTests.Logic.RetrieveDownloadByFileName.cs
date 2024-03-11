@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
 
             Download expectedDownload = storageDownload.DeepClone();
 
-            this.downloadPro.Setup(broker =>
+            this.downloadBrokerMock.Setup(broker =>
                 broker.GetDownloadByFileNameAsync(inputDownload))
                     .ReturnsAsync(storageDownload);
 

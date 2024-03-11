@@ -12,7 +12,6 @@ using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
-using LHDS.Core.Services.Processings.Downloads;
 
 namespace LHDS.Core.Services.Coordinations.EmisLandings
 {
@@ -20,18 +19,15 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
     {
         private readonly IEmisLandingOrchestrationService emisLandingOrchestrationService;
         private readonly ISubscriberCredentialOrchestration subscriberCredentialOrchestration;
-        private readonly IDownloadProcessingService downloadProcessingService;
         private readonly ILoggingBroker loggingBroker;
 
         public EmisLandingCoordinationService(
             IEmisLandingOrchestrationService emisLandingOrchestrationService,
             ISubscriberCredentialOrchestration subscriberCredentialOrchestration,
-            IDownloadProcessingService downloadProcessingService,
             ILoggingBroker loggingBroker)
         {
             this.emisLandingOrchestrationService = emisLandingOrchestrationService;
             this.subscriberCredentialOrchestration = subscriberCredentialOrchestration;
-            this.downloadProcessingService = downloadProcessingService;
             this.loggingBroker = loggingBroker;
         }
 

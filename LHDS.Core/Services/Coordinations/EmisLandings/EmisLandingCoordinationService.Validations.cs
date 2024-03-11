@@ -3,8 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+using System.Collections.Generic;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 
 namespace LHDS.Core.Services.Coordinations.EmisLandings
@@ -18,16 +17,9 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
 
         private static void ValidateFileNameOnRetrieve(string fileName)
         {
-            var invalidArgumentEmisLandingCoordinationException =
-                new InvalidArgumentEmisLandingCoordinationException(
-                    message: "Invalid Emis Landing coordination argument, please correct the errors and try again.");
+            Validate((Rule: IsInvalid(fileName), Parameter: "FileName"),
+                (Rule: IsInvalid(fileName.Split("/")), Parameter: "FileName array"));
 
-            Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
-
-            if (fileName.Split("/").Length < 6)
-            {
-                throw invalidArgumentEmisLandingCoordinationException;
-            }
         }
 
         private static void ValidateArgsOnRetrieveListOfDocumentsToProcess(Guid subscriberAgreementId)
@@ -45,6 +37,12 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(string[] array) => new
+        {
+            Condition = array.Length < 6,
+            Message = "File name is not valid"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

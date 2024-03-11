@@ -14,7 +14,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 {
     public partial class EmisLandingOrchestrationTests
     {
-
         [Fact]
         public async Task ShouldThrowValidationExceptionOnRetrieveListIfSubscriptionCredentialIsNullAndLogItAsync()
         {

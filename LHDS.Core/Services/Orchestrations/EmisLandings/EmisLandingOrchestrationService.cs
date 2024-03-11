@@ -350,15 +350,18 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 }
             });
 
-        public async ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(SubscriberCredential subscriberCredential) =>
-            throw new System.NotImplementedException();
-        //{
+        public ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(
+            SubscriberCredential subscriberCredential) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberCredentials(subscriberCredential);
+                Download download = new Download { SubscriberCredential = subscriberCredential };
 
-        //    Download download = new Download { SubscriberCredential = subscriberCredential };
-        //    await this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(download);
+                List<string> retrievedDownloadList =
+                    await this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(download);
 
-        //    retur
-        //}
+                return retrievedDownloadList;
+            });
 
         public async ValueTask<byte[]> RetrieveDownloadByFileNameAsync(string fileName, SubscriberCredential subscriberCredential) =>
             throw new NotImplementedException();

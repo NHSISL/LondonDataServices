@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId, true))
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
                     .ThrowsAsync(dependencyValidationException);
 
             // When
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingCoordinationDependencyValidationException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId, true),
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: dependencyException.InnerException as Xeption);
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId, true))
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
                     .ThrowsAsync(dependencyException);
 
             // When
@@ -92,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingCoordinationDependencyException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId, true),
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -114,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             var serviceException = new Exception();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId, true))
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
                     .ThrowsAsync(serviceException);
 
             var failedEmisLandingCoordinationServiceException =
@@ -141,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingCoordinationServiceException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId, true),
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

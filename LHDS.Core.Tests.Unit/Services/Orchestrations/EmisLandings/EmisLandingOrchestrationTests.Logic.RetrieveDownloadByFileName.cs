@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -23,7 +22,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             string randomFileName = GetRandomString();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             Document randomDocument = CreateRandomDocument();
             Document externalDocument = randomDocument;
 

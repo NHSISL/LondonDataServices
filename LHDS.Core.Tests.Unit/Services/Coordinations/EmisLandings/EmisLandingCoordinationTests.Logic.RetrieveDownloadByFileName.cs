@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -18,32 +19,35 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         public async Task ShouldRetrieveDownloadByFileNameAndLogAsync()
         {
             // given
-            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            Guid subscriberCredentailId = Guid.NewGuid();
+            string fileName = CreateRandomSubscriberCredentialIdFileName(subscriberCredentailId);
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberCredentailId);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Document randomDocument = CreateRandomDocument();
-            Document inputDocument = randomDocument;
-            Document expectedDocument = inputDocument.DeepClone();
+            randomDocument.FileName = fileName;
+            Document storageDocument = randomDocument.DeepClone();
+            Document expectedDocument = storageDocument.DeepClone();
 
-            this.emisLandingExtractionOrchestrationServiceMock.Setup(service =>
+            this.emisLandingOrchestrationServiceMock.Setup(service =>
                 service.RetrieveDownloadByFileNameAsync(
-                    inputDocument.FileName,
+                    fileName,
                     It.Is(SameSubscriberCredentialAs(inputSubscriberCredential))))
-                        .ReturnsAsync(inputDocument.DocumentData);
+                        .ReturnsAsync(storageDocument.DocumentData);
 
             // when
             Document actualDocument =
-                await this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(inputDocument.FileName);
+                await this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(fileName);
 
             // then
             actualDocument.Should().BeEquivalentTo(expectedDocument);
 
-            this.emisLandingExtractionOrchestrationServiceMock.Verify(service =>
+            this.emisLandingOrchestrationServiceMock.Verify(service =>
                 service.RetrieveDownloadByFileNameAsync(
-                    inputDocument.FileName,
+                    fileName,
                     It.Is(SameSubscriberCredentialAs(inputSubscriberCredential))),
                         Times.Once);
 
-            this.emisLandingExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

@@ -12,7 +12,7 @@ namespace LHDS.Core.Providers.Downloads
     {
         string Name { get; }
         bool IsMock { get; }
-        ValueTask<List<Download>> GetListOfDocumentsToProcessAsync(Download download);
+        ValueTask<List<string>> GetListOfDocumentsToProcessAsync(Download download);
         ValueTask<Download> GetDocumentByFileNameAsync(Download download);
     }
 }

@@ -24,14 +24,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             Guid subscriberCredentialId = Guid.NewGuid();
             string fileName = CreateRandomSubscriberCredentialIdFileName(subscriberCredentialId);
 
-            this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId, true))
-                    .ThrowsAsync(dependencyValidationException);
-
             var expectedEmisLandingCoordinationDependencyValidationException =
                 new EmisLandingCoordinationDependencyValidationException(
                     message: "EMIS landing coordination dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
+
+            this.subscriberCredentialOrchestrationMock.Setup(service =>
+                service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId, true))
+                    .ThrowsAsync(dependencyValidationException);
 
             // When
             ValueTask<Document> retrieveDownlaodTask =
@@ -69,22 +69,22 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             Guid subscriberCredentialId = Guid.NewGuid();
             string fileName = CreateRandomSubscriberCredentialIdFileName(subscriberCredentialId);
 
-            this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId, true))
-                    .ThrowsAsync(dependencyException.InnerException as Xeption);
-
             var expectedEmisLandingCoordinationDependencyException =
                 new EmisLandingCoordinationDependencyException(
-                    message: "EMIS landing coordination dependency error occurred, please try again.",
-                    innerException: dependencyException);
+                    message: "EMIS landing coordination dependency error occurred, fix the errors and try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.subscriberCredentialOrchestrationMock.Setup(service =>
+                service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentialId, true))
+                    .ThrowsAsync(dependencyException);
 
             // When
             ValueTask<Document> retrieveDownlaodTask =
                 this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(fileName);
 
-            EmisLandingCoordinationServiceException
+            EmisLandingCoordinationDependencyException
                 actualEmisLandingCoordinationDependencyException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
+                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(async () =>
                     await retrieveDownlaodTask);
 
             // Then

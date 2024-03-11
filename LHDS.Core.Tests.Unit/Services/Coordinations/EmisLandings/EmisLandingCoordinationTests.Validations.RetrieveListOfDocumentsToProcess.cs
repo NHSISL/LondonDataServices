@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                         Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
-            this.emisLandingExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

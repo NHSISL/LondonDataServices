@@ -55,5 +55,42 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnRetrieveDownloadByFileNameIfFileNameIsInvalidAndLogItAsync()
+        {
+            // given
+            string invalidFileName = GetRandomString();
+
+            var invalidArgumentEmisLandingCoordinationException =
+                new InvalidArgumentEmisLandingCoordinationException(
+                    message: "Invalid Emis Landing coordination argument, please correct the errors and try again.");
+
+            var expectedEmisLandingCoordinationValidationException =
+                new EmisLandingCoordinationValidationException(
+                    message: "Emis Landing coordination validation error occurred, please try again.",
+                    innerException: invalidArgumentEmisLandingCoordinationException);
+
+            // when
+            ValueTask<Document> retrieveDownloadByFilenameTask =
+                this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(invalidFileName);
+
+            EmisLandingCoordinationValidationException actualEmisLandingCoordinationValidationException =
+                await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(async () =>
+                    await retrieveDownloadByFilenameTask);
+
+            // then
+            actualEmisLandingCoordinationValidationException.Should()
+                .BeEquivalentTo(expectedEmisLandingCoordinationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedEmisLandingCoordinationValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
+        }
     }
 }

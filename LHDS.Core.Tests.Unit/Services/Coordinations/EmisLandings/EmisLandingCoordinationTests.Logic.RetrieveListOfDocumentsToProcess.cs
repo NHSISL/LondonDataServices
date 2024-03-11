@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 service.RetrieveSubscriberCredentialByIdAsync(inputSubscriberCredentialId, false))
                     .ReturnsAsync(storageSubscriberCredential);
 
-            this.emisLandingExtractionOrchestrationServiceMock.Setup(service =>
+            this.emisLandingOrchestrationServiceMock.Setup(service =>
                 service.RetrieveListOfDocumentsToProcessAsync(storageSubscriberCredential))
                     .ReturnsAsync(storageFilePaths);
 
@@ -46,12 +46,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 service.RetrieveSubscriberCredentialByIdAsync(inputSubscriberCredentialId, false),
                     Times.Once);
 
-            this.emisLandingExtractionOrchestrationServiceMock.Verify(service =>
+            this.emisLandingOrchestrationServiceMock.Verify(service =>
                 service.RetrieveListOfDocumentsToProcessAsync(storageSubscriberCredential),
                     Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
-            this.emisLandingExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

@@ -7,9 +7,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
-using LHDS.Core.Services.Foundations.Downloads;
+using LHDS.Core.Services.Orchestrations.EmisLandings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
@@ -23,10 +22,10 @@ namespace LHDS.AdminPortal.Api.Controllers
     [Route("api/[controller]")]
     public class DownloadsController : RESTFulController
     {
-        private readonly IDownloadService downloadService;
+        private readonly IEmisLandingCoordinationService emisLandingCoordinationService;
 
-        public DownloadsController(IDownloadService downloadService) =>
-            this.downloadService = downloadService;
+        public DownloadsController(IEmisLandingCoordinationService emisLandingCoordinationService) =>
+            this.emisLandingCoordinationService = emisLandingCoordinationService;
 
         [HttpGet]
 #if !DEBUG
@@ -38,14 +37,15 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<List<Document>>> Get(Download download)
+        public async ValueTask<ActionResult<List<string>>> Get(Guid subscriberAgreementId)
         {
             try
             {
-                List<Download> retrieveDownloads =
-                    await downloadService.RetrieveListOfDocumentsToProcessAsync(download);
+                throw new System.NotImplementedException();
+                //List<string> retrieveFileList =
+                //    await emisLandingCoordinationService.RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId);
 
-                return Ok(retrieveDownloads);
+                //return Ok(retrieveFileList);
             }
             catch (DownloadDependencyException downloadDependencyException)
             {
@@ -61,13 +61,15 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<Document>> RetrieveDownloadByFileNameAsync(Download download)
+        public async ValueTask<ActionResult<Document>> RetrieveDownloadByFileNameAsync(string filename)
         {
             try
             {
-                Download retrieveDownload = await downloadService.RetrieveDownloadByFileNameAsync(download);
+                throw new System.NotImplementedException();
+                //Document retrieveDownload = await emisLandingCoordinationService
+                //    .RetrieveDownloadByFileNameAsync(filename);
 
-                return Ok(retrieveDownload);
+                //return Ok(retrieveDownload);
             }
             catch (DownloadValidationException downloadValidationException)
                 when (downloadValidationException.InnerException is NotFoundDocumentException)

@@ -69,7 +69,7 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
             }
         }
 
-        public async ValueTask<List<Download>> GetListOfDocumentsToProcessAsync(Download download)
+        public async ValueTask<List<string>> GetListOfDocumentsToProcessAsync(Download download)
         {
             IFtpDownloadProviderSettings settings = new FtpDownloadProviderSettings
             {
@@ -100,24 +100,20 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
             }
         }
 
-        private async ValueTask<List<Download>> GetListOfDocumentsToProcessAsync(
+        private async ValueTask<List<string>> GetListOfDocumentsToProcessAsync(
             SftpClient client,
             Download download,
             string path,
             bool includeSubDirectories)
         {
-            var downloads = new List<Download>();
+            var downloads = new List<string>();
 
             var currDir = path == "/" ? client.WorkingDirectory : path;
             var files = client.ListDirectory(currDir).ToList();
 
             if (!includeSubDirectories)
             {
-                return files.Select(x => new Download
-                {
-                    SubscriberCredential = download.SubscriberCredential,
-                    Document = new Document { FileName = x.FullName }
-                }).ToList();
+                return files.Select(x => x.FullName).ToList();
             }
 
             foreach (var remotefile in files)
@@ -139,11 +135,7 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
                 }
                 else
                 {
-                    downloads.Add(new Download
-                    {
-                        SubscriberCredential = download.SubscriberCredential,
-                        Document = new Document { FileName = remotefile.FullName }
-                    });
+                    downloads.Add(remotefile.FullName);
                 }
             }
 

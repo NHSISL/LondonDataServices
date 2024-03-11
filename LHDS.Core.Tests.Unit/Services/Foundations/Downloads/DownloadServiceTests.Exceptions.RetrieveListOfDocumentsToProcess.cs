@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<List<Download>> RetrieveListOfDocumentsToProcessTask =
+            ValueTask<List<string>> RetrieveListOfDocumentsToProcessTask =
                 this.downloadService.RetrieveListOfDocumentsToProcessAsync(inputDownload);
 
             DownloadServiceException actualDownloadServiceException =

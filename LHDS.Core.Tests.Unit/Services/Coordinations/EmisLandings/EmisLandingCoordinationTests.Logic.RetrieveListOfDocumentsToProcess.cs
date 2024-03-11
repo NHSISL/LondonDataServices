@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<string> expectedPaths = storageFilePaths.DeepClone();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(inputSubscriberCredentialId, true))
+                service.RetrieveSubscriberCredentialByIdAsync(inputSubscriberCredentialId, false))
                     .ReturnsAsync(storageSubscriberCredential);
 
             this.emisLandingExtractionOrchestrationServiceMock.Setup(service =>
@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             // Then
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(inputSubscriberCredentialId, true),
+                service.RetrieveSubscriberCredentialByIdAsync(inputSubscriberCredentialId, false),
                     Times.Once);
 
             this.emisLandingExtractionOrchestrationServiceMock.Verify(service =>

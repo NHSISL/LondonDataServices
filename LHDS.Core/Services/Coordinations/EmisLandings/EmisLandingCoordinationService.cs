@@ -99,17 +99,19 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 }
             });
 
-        public async ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(Guid subscriberAgreementId)
-        {
-            // 1) Lookup Subscriber Credential based on Id
-            // SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
-            //      .RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, false);
-            // 2) Retrieve list of documents to process from orchestration service
-            // return emisLandingOrchestrationService.RetrieveListOfDocumentsToProcessAsync(maybeSubscriberCredential);
+        public async ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(Guid subscriberAgreementId) =>
+            await TryCatch(async () =>
+            {
+                SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
+                    .RetrieveSubscriberCredentialByIdAsync(
+                        subscriberCredentialId: subscriberAgreementId,
+                        externalUse: false);
 
+                List<string> listOfDocumentsToProcess = await this.emisLandingOrchestrationService
+                    .RetrieveListOfDocumentsToProcessAsync(maybeSubscriberCredential);
 
-            throw new NotImplementedException();
-        }
+                return listOfDocumentsToProcess;
+            });
 
         public ValueTask<Document> RetrieveDownloadByFileNameAsync(string fileName) =>
             throw new NotImplementedException();

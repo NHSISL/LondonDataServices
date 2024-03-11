@@ -350,18 +350,37 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 }
             });
 
-        public async ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(SubscriberCredential subscriberCredential) =>
-            throw new System.NotImplementedException();
-        //{
+        public ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(
+            SubscriberCredential subscriberCredential) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberCredentials(subscriberCredential);
+                Download download = new Download { SubscriberCredential = subscriberCredential };
 
-        //    Download download = new Download { SubscriberCredential = subscriberCredential };
-        //    await this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(download);
+                List<string> retrievedDownloadList =
+                    await this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(download);
 
-        //    retur
-        //}
+                return retrievedDownloadList;
+            });
 
-        public async ValueTask<byte[]> RetrieveDownloadByFileNameAsync(string fileName, SubscriberCredential subscriberCredential) =>
-            throw new NotImplementedException();
+        public ValueTask<byte[]> RetrieveDownloadByFileNameAsync(
+            string fileName, SubscriberCredential subscriberCredential) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberCredentials(subscriberCredential);
+                ValidateFileName(fileName);
+
+                Download download = new Download
+                {
+                    Document = new Document { FileName = fileName },
+                    SubscriberCredential = subscriberCredential
+                };
+
+                Download storageDownload =
+                    await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
+
+                return storageDownload.Document.DocumentData;
+            });
 
         private void LogAudit(
             IngestionTracking ingestionTracking,

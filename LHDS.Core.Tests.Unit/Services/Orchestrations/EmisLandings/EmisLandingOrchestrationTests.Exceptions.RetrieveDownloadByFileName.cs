@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Downloads;
@@ -105,6 +106,59 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                broker.LogError(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
+
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveFileIfServiceErrorOccursAndLogItAsync()
+        {
+            //Given
+            SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
+            var someFileName = GetRandomMessage();
+            var serviceException = new Exception();
+
+            var failedEmisLandingOrchestrationServiceException =
+                new FailedEmisLandingOrchestrationServiceException(
+                    message: "Failed EMIS landing orchestration service occurred, please contact support",
+                    serviceException);
+
+            var expectedEmisLandingOrchestrationServiceException =
+                new EmisLandingOrchestrationServiceException(
+                    message: "EMIS landing orchestration service error occurred, contact support.",
+                    failedEmisLandingOrchestrationServiceException);
+
+            this.downloadProcessingServiceMock.Setup(service =>
+                service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<byte[]> retrieveDownloadByFileNameTask = this.emisLandingOrchestrationService
+                .RetrieveDownloadByFileNameAsync(
+                    fileName: someFileName,
+                    subscriberCredential: someSubscriberCredential);
+
+            EmisLandingOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<EmisLandingOrchestrationServiceException>(
+                    retrieveDownloadByFileNameTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedEmisLandingOrchestrationServiceException);
+
+            this.downloadProcessingServiceMock.Verify(service =>
+                service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedEmisLandingOrchestrationServiceException))),
+                        Times.Once);
 
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

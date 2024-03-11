@@ -21,10 +21,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             // given
             Guid subscriberCredentailId = Guid.NewGuid();
             string fileName = CreateRandomSubscriberCredentialIdFileName(subscriberCredentailId);
-            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberCredentailId);
+            SubscriberCredential randomSubscriberCredential = new SubscriberCredential { Id = subscriberCredentailId }; ;
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Document randomDocument = CreateRandomDocument();
             randomDocument.FileName = fileName;
+            randomDocument.SHA256Hash = string.Empty;
             Document storageDocument = randomDocument.DeepClone();
             Document expectedDocument = storageDocument.DeepClone();
 

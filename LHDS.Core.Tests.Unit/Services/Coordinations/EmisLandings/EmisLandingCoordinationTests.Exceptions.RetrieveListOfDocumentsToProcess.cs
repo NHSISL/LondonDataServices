@@ -59,6 +59,50 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             this.emisLandingExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnRetrieveFileListIfErrorsAndLogItAsync(
+           Xeption dependancyValidationException)
+        {
+            // Given
+            Guid subscriberCredentialId = Guid.NewGuid();
+
+            this.subscriberCredentialOrchestrationMock.Setup(service =>
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
+                    .ThrowsAsync(dependancyValidationException);
+
+            var expectedEmisLandingCoordinationDependencyException =
+                new EmisLandingCoordinationDependencyException(
+                    message: "EMIS landing coordination dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyValidationException.InnerException as Xeption);
+
+            // When
+            ValueTask<List<string>> retrieveListOfDocumentsToProcessTask =
+                this.emisLandingCoordinationService
+                    .RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId: subscriberCredentialId);
+
+            EmisLandingCoordinationDependencyException actualEmisLandingCoordinationDependencyException =
+                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(async () =>
+                    await retrieveListOfDocumentsToProcessTask);
+
+            // Then
+            actualEmisLandingCoordinationDependencyException.Should()
+                .BeEquivalentTo(expectedEmisLandingCoordinationDependencyException);
+
+            this.subscriberCredentialOrchestrationMock.Verify(service =>
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(IsSameExceptionAs(
+                     expectedEmisLandingCoordinationDependencyException))),
+                         Times.Once);
+
+            this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
+            this.emisLandingExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
 

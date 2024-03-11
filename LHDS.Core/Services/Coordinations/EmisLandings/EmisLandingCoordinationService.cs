@@ -119,7 +119,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
 
                 SubscriberCredential subscriberCredential =
                     await this.subscriberCredentialOrchestration.RetrieveSubscriberCredentialByIdAsync(
-                        subscriberCredentialId);
+                        subscriberCredentialId, false);
 
                 byte[] documentData =
                     await this.emisLandingOrchestrationService.RetrieveDownloadByFileNameAsync(

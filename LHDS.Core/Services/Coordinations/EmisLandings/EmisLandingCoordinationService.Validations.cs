@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 
 namespace LHDS.Core.Services.Coordinations.EmisLandings
@@ -13,10 +14,21 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
+        private static void ValidateArgsOnRetrieveListOfDocumentsToProcess(Guid subscriberAgreementId)
+        {
+            Validate((Rule: IsInvalid(subscriberAgreementId), Parameter: "SubscriberAgreementId"));
+        }
+
         private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "Id is required"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

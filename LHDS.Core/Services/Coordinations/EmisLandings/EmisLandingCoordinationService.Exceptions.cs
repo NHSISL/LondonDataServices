@@ -209,15 +209,6 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             {
                 throw CreateAndLogDependencyException(emisLandingOrchestrationServiceException);
             }
-            catch (AggregateException aggregateException)
-            {
-                var failedEmisLandingCoordinationServiceException =
-                    new FailedEmisLandingCoordinationServiceException(
-                        message: "Failed EMIS landing aggregate coordination service occurred, please contact support.",
-                        innerException: aggregateException);
-
-                throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
-            }
             catch (Exception exception)
             {
                 var failedEmisLandingCoordinationServiceException =

@@ -102,6 +102,8 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
         public async ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(Guid subscriberAgreementId) =>
             await TryCatch(async () =>
             {
+                ValidateArgsOnRetrieveListOfDocumentsToProcess(subscriberAgreementId);
+
                 SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
                     .RetrieveSubscriberCredentialByIdAsync(
                         subscriberCredentialId: subscriberAgreementId,

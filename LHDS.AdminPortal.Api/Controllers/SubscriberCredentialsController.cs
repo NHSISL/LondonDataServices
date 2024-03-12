@@ -25,7 +25,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpPost]
         public async ValueTask<ActionResult<SubscriberCredential>> PostSubscriberCredentialAsync(
-            [FromBody] SubscriberCredential subscriberCredential, string? regeneratekeys)
+            [FromBody] SubscriberCredential subscriberCredential)
         {
             try
             {
@@ -59,14 +59,14 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpPost("regeneratekeys")]
         public async ValueTask<ActionResult<SubscriberCredential>> PostSubscriberCredentialAndRegenerateKeysAsync(
-            [FromBody] SubscriberCredential subscriberCredential, string? regeneratekeys)
+            [FromBody] SubscriberCredential subscriberCredential)
         {
             try
             {
                 return Ok(await this.subscriberCredentialOrchestration
                     .ModifyOrAddSubscriberCredentialAsync(
                         subscriberCredential,
-                        regenerateKeys: false,
+                        regenerateKeys: true,
                         externalUse: true));
             }
             catch (SubscriberCredentialValidationOrchestrationException

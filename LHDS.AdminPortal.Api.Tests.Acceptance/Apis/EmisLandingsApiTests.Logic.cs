@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
@@ -19,7 +18,7 @@ using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 {
-    public partial class LandingsApiTests
+    public partial class EmisLandingsApiTests
     {
         [Fact]
         public async Task ShouldLandDocumentByFileNameForExistingIngestionTrackingAsync()
@@ -55,7 +54,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
                 //When
                 string actualDecryptedFileName =
-                    await this.apiBroker.GetLandingDocumentByFileNameAsync(randomDocument.FileName);
+                    await this.apiBroker.ReLandDocumentByFileNameAsync(randomDocument.FileName);
 
                 //Then
                 actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
@@ -127,7 +126,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
                 //When
                 string actualDecryptedFileName =
-                    await this.apiBroker.GetLandingDocumentByFileNameAsync(randomDocument.FileName);
+                    await this.apiBroker.ReLandDocumentByFileNameAsync(randomDocument.FileName);
 
                 //Then 
                 actualDecryptedFileName.Should().BeEquivalentTo(expectedDecryptedFileName);
@@ -142,6 +141,28 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
                 throw;
             }
+        }
+
+        [Fact]
+        public async Task ShouldRetrieveListOfDocumentsToProcessAsync()
+        {
+            //given 
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            Document randomDocument = CreateRandomDocument();
+
+            Download inputDownload = new Download
+            {
+                SubscriberCredential = inputSubscriberCredential,
+                Document = new Document { FileName = randomDocument.FileName }
+            };
+
+            // when
+            List<Download> actualDownloads =
+                await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
+
+            // then
+            actualDownloads.Count.Should().BeGreaterThan(0);
         }
 
         private async ValueTask CleanupTask(string fileName)

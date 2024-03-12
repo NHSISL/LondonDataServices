@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using RESTFulSense.Exceptions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
 using Xunit;
 
@@ -76,6 +77,28 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
             // then
             actualSubscriberAgreement.Should().BeEquivalentTo(modifiedSubscriberAgreement);
             await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
+        }
+
+        [Fact]
+        public async Task ShouldDeleteSubscriberAgreementAsync()
+        {
+            // given
+            SubscriberAgreement randomSubscriberAgreement = await PostRandomSubscriberAgreementAsync();
+            SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
+            SubscriberAgreement expectedSubscriberAgreement = inputSubscriberAgreement;
+
+            // when
+            SubscriberAgreement deletedSubscriberAgreement =
+                await this.apiBroker.DeleteSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id);
+
+            ValueTask<SubscriberAgreement> getSubscriberAgreementbyIdTask =
+                this.apiBroker.GetSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id);
+
+            // then
+            deletedSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
+
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
+                getSubscriberAgreementbyIdTask.AsTask());
         }
     }
 }

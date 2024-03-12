@@ -99,5 +99,44 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(subscriberAgreementServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<SubscriberAgreement>> PutSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement)
+        {
+            try
+            {
+                SubscriberAgreement modifiedSubscriberAgreement =
+                    await this.subscriberAgreementService.ModifySubscriberAgreementAsync(subscriberAgreement);
+
+                return Ok(modifiedSubscriberAgreement);
+            }
+            catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
+                when (subscriberAgreementValidationException.InnerException is NotFoundSubscriberAgreementException)
+            {
+                return NotFound(subscriberAgreementValidationException.InnerException);
+            }
+            catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
+            {
+                return BadRequest(subscriberAgreementValidationException.InnerException);
+            }
+            catch (SubscriberAgreementDependencyValidationException subscriberAgreementValidationException)
+                when (subscriberAgreementValidationException.InnerException is InvalidSubscriberAgreementReferenceException)
+            {
+                return FailedDependency(subscriberAgreementValidationException.InnerException);
+            }
+            catch (SubscriberAgreementDependencyValidationException subscriberAgreementDependencyValidationException)
+               when (subscriberAgreementDependencyValidationException.InnerException is AlreadyExistsSubscriberAgreementException)
+            {
+                return Conflict(subscriberAgreementDependencyValidationException.InnerException);
+            }
+            catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
+            {
+                return InternalServerError(subscriberAgreementDependencyException);
+            }
+            catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
+            {
+                return InternalServerError(subscriberAgreementServiceException);
+            }
+        }
     }
 }

@@ -1,11 +1,15 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
+using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
+using LHDS.Core.Services.Foundations.SubscriberAgreements;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
-using LHDS.AdminPortal.Api.Models.Foundations.SubscriberAgreements;
-using LHDS.AdminPortal.Api.Models.Foundations.SubscriberAgreements.Exceptions;
-using LHDS.AdminPortal.Api.Services.Foundations.SubscriberAgreements;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {

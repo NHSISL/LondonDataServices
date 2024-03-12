@@ -34,13 +34,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .ThrowsAsync(dependencyValidationException);
 
             // When
-            ValueTask<Document> retrieveDownlaodTask =
+            ValueTask<Document> retrieveDownloadTask =
                 this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(fileName);
 
             EmisLandingCoordinationDependencyValidationException
                 actualEmisLandingCoordinationDependencyValidationException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationDependencyValidationException>(async () =>
-                    await retrieveDownlaodTask);
+                    await retrieveDownloadTask);
 
             // Then
             actualEmisLandingCoordinationDependencyValidationException.Should()
@@ -79,13 +79,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .ThrowsAsync(dependencyException);
 
             // When
-            ValueTask<Document> retrieveDownlaodTask =
+            ValueTask<Document> retrieveDownloadTask =
                 this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(fileName);
 
             EmisLandingCoordinationDependencyException
                 actualEmisLandingCoordinationDependencyException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(async () =>
-                    await retrieveDownlaodTask);
+                    await retrieveDownloadTask);
 
             // Then
             actualEmisLandingCoordinationDependencyException.Should()

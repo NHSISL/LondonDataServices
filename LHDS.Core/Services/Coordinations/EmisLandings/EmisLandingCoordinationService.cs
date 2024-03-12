@@ -121,7 +121,6 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 ValidateFileNameOnRetrieve(fileName);
                 Guid subscriberCredentialId = Guid.Parse(fileName.Split("/")[5]);
 
-
                 SubscriberCredential subscriberCredential =
                     await this.subscriberCredentialOrchestration.RetrieveSubscriberCredentialByIdAsync(
                         subscriberCredentialId, false);

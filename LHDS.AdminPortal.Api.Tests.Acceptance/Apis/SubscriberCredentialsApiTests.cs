@@ -124,6 +124,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(subscriberAgreement => subscriberAgreement.Id).Use(id)
                 .OnProperty(subscriberAgreement => subscriberAgreement.CreatedDate).Use(now)
                 .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(user)

@@ -17,9 +17,9 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
 
         private static void ValidateFileNameOnRetrieve(string fileName)
         {
-            Validate((Rule: IsInvalid(fileName), Parameter: "FileName"),
-                (Rule: IsInvalid(fileName.Split("/")), Parameter: "FileName array"));
-
+            Validate(
+                (Rule: IsInvalid(fileName), Parameter: "FileName"),
+                (Rule: IsInvalidArray(fileName), Parameter: "FileName"));
         }
 
         private static void ValidateArgsOnRetrieveListOfDocumentsToProcess(Guid subscriberAgreementId)
@@ -39,9 +39,9 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             Message = "Id is required"
         };
 
-        private static dynamic IsInvalid(string[] array) => new
+        private static dynamic IsInvalidArray(string value) => new
         {
-            Condition = array.Length < 6,
+            Condition = value == null ? true : value.Split("/").Length < 6,
             Message = "File name is not valid"
         };
 

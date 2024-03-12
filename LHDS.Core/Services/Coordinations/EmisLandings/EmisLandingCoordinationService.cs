@@ -116,6 +116,27 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             });
 
         public ValueTask<Document> RetrieveDownloadByFileNameAsync(string fileName) =>
-            throw new NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateFileNameOnRetrieve(fileName);
+                Guid subscriberCredentialId = Guid.Parse(fileName.Split("/")[5]);
+
+                SubscriberCredential subscriberCredential =
+                    await this.subscriberCredentialOrchestration.RetrieveSubscriberCredentialByIdAsync(
+                        subscriberCredentialId, false);
+
+                byte[] documentData =
+                    await this.emisLandingOrchestrationService.RetrieveDownloadByFileNameAsync(
+                        fileName,
+                        subscriberCredential);
+
+                Document document = new Document
+                {
+                    FileName = fileName,
+                    DocumentData = documentData,
+                };
+
+                return document;
+            });
     }
 }

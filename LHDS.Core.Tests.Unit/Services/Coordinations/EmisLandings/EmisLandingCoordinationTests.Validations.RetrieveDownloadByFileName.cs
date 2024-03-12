@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
+using LHDS.Core.Models.Foundations.Documents;
 using Moq;
 using Xunit;
 
@@ -16,7 +17,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnProcessFileIfFileNameIsNullAndLogItAsync(string invalidData)
+        public async Task
+            ShouldThrowValidationExceptionOnRetrieveDownloadByFileNameIfFileNameIsNullAndLogItAsync(string invalidData)
         {
             // given
             var invalidArgumentEmisLandingCoordinationException =
@@ -25,7 +27,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             invalidArgumentEmisLandingCoordinationException.AddData(
                 key: "FileName",
-                values: "Text is required");
+                values:
+                new[] {
+                    "Text is required",
+                    "File name is not valid"
+                });
 
             var expectedEmisLandingCoordinationValidationException =
                 new EmisLandingCoordinationValidationException(
@@ -33,12 +39,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: invalidArgumentEmisLandingCoordinationException);
 
             // when
-            ValueTask<string> processDataTask =
-                this.emisLandingCoordinationService.ProcessFileAsync(invalidData);
+            ValueTask<Document> retrieveDownloadByFilenameTask =
+                this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(invalidData);
 
             EmisLandingCoordinationValidationException actualEmisLandingCoordinationValidationException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(async () =>
-                    await processDataTask);
+                    await retrieveDownloadByFilenameTask);
 
             // then
             actualEmisLandingCoordinationValidationException.Should()
@@ -49,9 +55,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     expectedEmisLandingCoordinationValidationException))),
                         Times.Once);
 
-            this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
-            this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
         }
     }
 }

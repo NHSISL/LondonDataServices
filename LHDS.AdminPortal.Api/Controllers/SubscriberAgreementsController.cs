@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace LHDS.AdminPortal.Api.Controllers
                when (subscriberAgreementDependencyValidationException.InnerException is AlreadyExistsSubscriberAgreementException)
             {
                 return Conflict(subscriberAgreementDependencyValidationException.InnerException);
+            }
+            catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
+            {
+                return InternalServerError(subscriberAgreementDependencyException);
+            }
+            catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
+            {
+                return InternalServerError(subscriberAgreementServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<SubscriberAgreement>> GetAllSubscriberAgreements()
+        {
+            try
+            {
+                IQueryable<SubscriberAgreement> retrievedSubscriberAgreements =
+                    this.subscriberAgreementService.RetrieveAllSubscriberAgreements();
+
+                return Ok(retrievedSubscriberAgreements);
             }
             catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
             {

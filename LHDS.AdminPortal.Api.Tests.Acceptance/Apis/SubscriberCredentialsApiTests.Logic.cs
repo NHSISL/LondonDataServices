@@ -17,10 +17,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
         public async Task ShouldPostSubscriberCredentialAsync()
         {
             // given
+            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             Guid subscriberAgreementId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberAgreementId);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential;
+
 
             SubscriberAgreement subscriberAgreement =
                 await this.PostRandomSubscriberAgreementAsync(subscriberAgreementId);

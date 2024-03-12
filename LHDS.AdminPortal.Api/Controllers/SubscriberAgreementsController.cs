@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace LHDS.AdminPortal.Api.Controllers
                     this.subscriberAgreementService.RetrieveAllSubscriberAgreements();
 
                 return Ok(retrievedSubscriberAgreements);
+            }
+            catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
+            {
+                return InternalServerError(subscriberAgreementDependencyException);
+            }
+            catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
+            {
+                return InternalServerError(subscriberAgreementServiceException);
+            }
+        }
+
+        [HttpGet("{subscriberAgreementId}")]
+        public async ValueTask<ActionResult<SubscriberAgreement>> GetSubscriberAgreementByIdAsync(Guid subscriberAgreementId)
+        {
+            try
+            {
+                SubscriberAgreement subscriberAgreement = await this.subscriberAgreementService.RetrieveSubscriberAgreementByIdAsync(subscriberAgreementId);
+
+                return Ok(subscriberAgreement);
+            }
+            catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
+                when (subscriberAgreementValidationException.InnerException is NotFoundSubscriberAgreementException)
+            {
+                return NotFound(subscriberAgreementValidationException.InnerException);
+            }
+            catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
+            {
+                return BadRequest(subscriberAgreementValidationException.InnerException);
             }
             catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
             {

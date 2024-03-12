@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 
 namespace LHDS.Core.Services.Coordinations.EmisLandings
@@ -12,6 +13,13 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
         private static void ValidateFileNameOnLand(string fileName)
         {
             Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
+        }
+
+        private static void ValidateFileNameOnRetrieve(string fileName)
+        {
+            Validate(
+                (Rule: IsInvalid(fileName), Parameter: "FileName"),
+                (Rule: IsInvalidArray(fileName), Parameter: "FileName"));
         }
 
         private static void ValidateArgsOnRetrieveListOfDocumentsToProcess(Guid subscriberAgreementId)
@@ -29,6 +37,12 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalidArray(string value) => new
+        {
+            Condition = value == null ? true : value.Split("/").Length < 6,
+            Message = "File name is not valid"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

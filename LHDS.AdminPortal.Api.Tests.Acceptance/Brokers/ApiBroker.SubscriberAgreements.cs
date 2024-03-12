@@ -1,0 +1,27 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
+
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
+{
+    public partial class ApiBroker
+    {
+        private const string SubscriberAgreementsRelativeUrl = "api/subscriberAgreements";
+
+        public async ValueTask<SubscriberAgreement> PostSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
+            await this.apiFactoryClient.PostContentAsync(SubscriberAgreementsRelativeUrl, subscriberAgreement);
+
+        public async ValueTask<SubscriberAgreement> GetSubscriberAgreementByIdAsync(Guid subscriberAgreementId) =>
+            await this.apiFactoryClient.GetContentAsync<SubscriberAgreement>($"{SubscriberAgreementsRelativeUrl}/{subscriberAgreementId}");
+
+        public async ValueTask<List<SubscriberAgreement>> GetAllSubscriberAgreementsAsync() =>
+          await this.apiFactoryClient.GetContentAsync<List<SubscriberAgreement>>($"{SubscriberAgreementsRelativeUrl}/");
+
+        public async ValueTask<SubscriberAgreement> PutSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
+            await this.apiFactoryClient.PutContentAsync(SubscriberAgreementsRelativeUrl, subscriberAgreement);
+
+        public async ValueTask<SubscriberAgreement> DeleteSubscriberAgreementByIdAsync(Guid subscriberAgreementId) =>
+            await this.apiFactoryClient.DeleteContentAsync<SubscriberAgreement>($"{SubscriberAgreementsRelativeUrl}/{subscriberAgreementId}");
+    }
+}

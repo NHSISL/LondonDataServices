@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
@@ -24,6 +26,25 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
             // then
             actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
             await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
+        }
+
+        [Fact]
+        public async Task ShouldGetAllSubscriberAgreementsAsync()
+        {
+            // given
+            List<SubscriberAgreement> randomSubscriberAgreements = await PostRandomSubscriberAgreementsAsync();
+            List<SubscriberAgreement> expectedSubscriberAgreements = randomSubscriberAgreements;
+
+            // when
+            List<SubscriberAgreement> actualSubscriberAgreements = await this.apiBroker.GetAllSubscriberAgreementsAsync();
+
+            // then
+            foreach (SubscriberAgreement expectedSubscriberAgreement in expectedSubscriberAgreements)
+            {
+                SubscriberAgreement actualSubscriberAgreement = actualSubscriberAgreements.Single(approval => approval.Id == expectedSubscriberAgreement.Id);
+                actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
+                await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
+            }
         }
     }
 }

@@ -61,5 +61,21 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
             actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
             await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
         }
+
+        [Fact]
+        public async Task ShouldPutSubscriberAgreementAsync()
+        {
+            // given
+            SubscriberAgreement randomSubscriberAgreement = await PostRandomSubscriberAgreementAsync();
+            SubscriberAgreement modifiedSubscriberAgreement = UpdateSubscriberAgreementWithRandomValues(randomSubscriberAgreement);
+
+            // when
+            await this.apiBroker.PutSubscriberAgreementAsync(modifiedSubscriberAgreement);
+            SubscriberAgreement actualSubscriberAgreement = await this.apiBroker.GetSubscriberAgreementByIdAsync(randomSubscriberAgreement.Id);
+
+            // then
+            actualSubscriberAgreement.Should().BeEquivalentTo(modifiedSubscriberAgreement);
+            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
+        }
     }
 }

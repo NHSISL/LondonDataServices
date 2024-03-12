@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
 using Tynamix.ObjectFiller;
@@ -13,6 +15,30 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
 
         public SubscriberAgreementsApiTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
+
+        private int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
+        private async ValueTask<SubscriberAgreement> PostRandomSubscriberAgreementAsync()
+        {
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement();
+            await this.apiBroker.PostSubscriberAgreementAsync(randomSubscriberAgreement);
+
+            return randomSubscriberAgreement;
+        }
+
+        private async ValueTask<List<SubscriberAgreement>> PostRandomSubscriberAgreementsAsync()
+        {
+            int randomNumber = GetRandomNumber();
+            var randomSubscriberAgreements = new List<SubscriberAgreement>();
+
+            for (int i = 0; i < randomNumber; i++)
+            {
+                randomSubscriberAgreements.Add(await PostRandomSubscriberAgreementAsync());
+            }
+
+            return randomSubscriberAgreements;
+        }
 
         private static SubscriberAgreement CreateRandomSubscriberAgreement() =>
             CreateRandomSubscriberAgreementFiller().Create();

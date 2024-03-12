@@ -19,6 +19,24 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
         private int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static DateTimeOffset GetRandomDateTime() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static SubscriberAgreement UpdateSubscriberAgreementWithRandomValues(SubscriberAgreement inputSubscriberAgreement)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<SubscriberAgreement>();
+
+            filler.Setup()
+                .OnProperty(subscriberAgreement => subscriberAgreement.Id).Use(inputSubscriberAgreement.Id)
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
+                .OnProperty(subscriberAgreement => subscriberAgreement.CreatedDate).Use(inputSubscriberAgreement.CreatedDate)
+                .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(inputSubscriberAgreement.CreatedBy)
+                .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedDate).Use(now);
+
+            return filler.Create();
+        }
+
         private async ValueTask<SubscriberAgreement> PostRandomSubscriberAgreementAsync()
         {
             SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement();

@@ -17,12 +17,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnProcessFileIfErrorsAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveFileListIfErrorsAndLogItAsync(
             Xeption dependancyValidationException)
         {
             // Given
-            Guid SubscriberCredentialId = Guid.NewGuid();
-            string filePath = CreateRandomFilePath(SubscriberCredentialId);
+            Guid subscriberCredentialId = Guid.NewGuid();
 
             var expectedEmisLandingCoordinationDependencyValidationException =
                 new EmisLandingCoordinationDependencyValidationException(
@@ -34,13 +33,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .ThrowsAsync(dependancyValidationException);
 
             // When
-            ValueTask<string> processDataTask =
-                this.emisLandingCoordinationService.ProcessFileAsync(filePath);
+            ValueTask<List<string>> retrieveListOfDocumentsToProcessTask =
+                this.emisLandingCoordinationService
+                    .RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId: subscriberCredentialId);
 
             EmisLandingCoordinationDependencyValidationException
                 actuaEmisLandingCoordinationDependencyValidationException =
                     await Assert.ThrowsAsync<EmisLandingCoordinationDependencyValidationException>(
-                        processDataTask.AsTask);
+                        retrieveListOfDocumentsToProcessTask.AsTask);
 
             // Then
             actuaEmisLandingCoordinationDependencyValidationException.Should()
@@ -62,12 +62,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnProcessFileIfErrorsAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRetrieveFileListIfErrorsAndLogItAsync(
            Xeption dependancyValidationException)
         {
             // Given
-            Guid SubscriberCredentialId = Guid.NewGuid();
-            string filePath = CreateRandomFilePath(SubscriberCredentialId);
+            Guid subscriberCredentialId = Guid.NewGuid();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
                 service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
@@ -79,11 +78,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             // When
-            ValueTask<string> processDataTask = this.emisLandingCoordinationService.ProcessFileAsync(filePath);
+            ValueTask<List<string>> retrieveListOfDocumentsToProcessTask =
+                this.emisLandingCoordinationService
+                    .RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId: subscriberCredentialId);
 
             EmisLandingCoordinationDependencyException actualEmisLandingCoordinationDependencyException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(async () =>
-                    await processDataTask);
+                    await retrieveListOfDocumentsToProcessTask);
 
             // Then
             actualEmisLandingCoordinationDependencyException.Should()
@@ -104,12 +105,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnProcessFileIfErrorsAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveFileListIfErrorsAndLogItAsync()
         {
             // Given
             var serviceException = new Exception();
-            Guid SubscriberCredentialId = Guid.NewGuid();
-            string filePath = CreateRandomFilePath(SubscriberCredentialId);
+            Guid subscriberCredentialId = Guid.NewGuid();
             List<Exception> exceptions = new List<Exception>();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
@@ -127,11 +127,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: failedEmisLandingCoordinationServiceException);
 
             // When
-            ValueTask<string> processDataTask = this.emisLandingCoordinationService.ProcessFileAsync(filePath);
+            ValueTask<List<string>> retrieveListOfDocumentsToProcessTask =
+                this.emisLandingCoordinationService
+                    .RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId: subscriberCredentialId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationServiceException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await processDataTask);
+                    await retrieveListOfDocumentsToProcessTask);
 
             // Then
             actualEmisLandingCoordinationServiceException.Should()

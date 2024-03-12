@@ -6,9 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Hl7.Fhir.Serialization;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Extensions.Exceptions;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
@@ -26,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
     public partial class EmisLandingCoordinationServiceTests
     {
         private readonly Mock<ISubscriberCredentialOrchestration> subscriberCredentialOrchestrationMock;
-        private readonly Mock<IEmisLandingOrchestrationService> emisLandingExtractionOrchestrationServiceMock;
+        private readonly Mock<IEmisLandingOrchestrationService> emisLandingOrchestrationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly IEmisLandingCoordinationService emisLandingCoordinationService;
@@ -34,14 +36,27 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         public EmisLandingCoordinationServiceTests()
         {
             this.subscriberCredentialOrchestrationMock = new Mock<ISubscriberCredentialOrchestration>();
-            this.emisLandingExtractionOrchestrationServiceMock = new Mock<IEmisLandingOrchestrationService>();
+            this.emisLandingOrchestrationServiceMock = new Mock<IEmisLandingOrchestrationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
             this.emisLandingCoordinationService = new EmisLandingCoordinationService(
                 subscriberCredentialOrchestration: subscriberCredentialOrchestrationMock.Object,
-                emisLandingOrchestrationService: emisLandingExtractionOrchestrationServiceMock.Object,
+                emisLandingOrchestrationService: emisLandingOrchestrationServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
+        }
+
+        private static List<string> GetRandomStrings(int count)
+        {
+            var messages = new List<string>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var message = GetRandomString();
+                messages.Add(message);
+            }
+
+            return messages;
         }
 
         private static string GetRandomString() =>
@@ -110,6 +125,25 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .OnProperty(subscriberCredential => subscriberCredential.Id).Use(() => subscriberAgreementId);
 
             return filler.Create();
+        }
+
+        public static string CreateRandomSubscriberCredentialIdFileName(Guid subscriberAgreementId)
+        {
+            string fileName = "";
+
+            for (int i = 0; i < 10; i++)
+            {
+                if (i != 5)
+                {
+                    fileName = fileName + GetRandomString() + "/";
+                }
+                else
+                {
+                    fileName = fileName + subscriberAgreementId.ToString() + "/";
+                }
+            }
+
+            return fileName;
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
@@ -191,6 +225,32 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             }
 
             return Guid.Empty;
+        }
+
+        private static List<Document> CreateRandomDocuments()
+        {
+            return CreateDocumentFiller()
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static Document CreateRandomDocument() =>
+            CreateDocumentFiller().Create();
+
+        private static Filler<Document> CreateDocumentFiller()
+        {
+            var filler = new Filler<Document>();
+            filler.Setup();
+
+            return filler;
+        }
+
+        private Expression<Func<SubscriberCredential, bool>> SameSubscriberCredentialAs(
+            SubscriberCredential expectedSubscriberCredential)
+        {
+            return actualSubscriberCredential =>
+                this.compareLogic.Compare(expectedSubscriberCredential, actualSubscriberCredential)
+                    .AreEqual;
         }
 
         public static TheoryData DependencyValidationExceptions()

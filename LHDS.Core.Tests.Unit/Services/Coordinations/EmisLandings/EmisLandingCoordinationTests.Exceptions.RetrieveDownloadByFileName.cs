@@ -3,10 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
+using LHDS.Core.Models.Foundations.Documents;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -17,33 +17,33 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnProcessFileIfErrorsAndLogItAsync(
-            Xeption dependancyValidationException)
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveIfErrorsInLoopAndLogItAsync(
+            Xeption dependencyValidationException)
         {
             // Given
-            Guid SubscriberCredentialId = Guid.NewGuid();
-            string filePath = CreateRandomFilePath(SubscriberCredentialId);
+            Guid subscriberCredentialId = Guid.NewGuid();
+            string fileName = CreateRandomSubscriberCredentialIdFileName(subscriberCredentialId);
 
             var expectedEmisLandingCoordinationDependencyValidationException =
                 new EmisLandingCoordinationDependencyValidationException(
                     message: "EMIS landing coordination dependency validation error occurred, please try again.",
-                    innerException: dependancyValidationException.InnerException as Xeption);
+                    innerException: dependencyValidationException.InnerException as Xeption);
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
                 service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
-                    .ThrowsAsync(dependancyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // When
-            ValueTask<string> processDataTask =
-                this.emisLandingCoordinationService.ProcessFileAsync(filePath);
+            ValueTask<Document> retrieveDownloadTask =
+                this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(fileName);
 
             EmisLandingCoordinationDependencyValidationException
-                actuaEmisLandingCoordinationDependencyValidationException =
-                    await Assert.ThrowsAsync<EmisLandingCoordinationDependencyValidationException>(
-                        processDataTask.AsTask);
+                actualEmisLandingCoordinationDependencyValidationException =
+                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyValidationException>(async () =>
+                    await retrieveDownloadTask);
 
             // Then
-            actuaEmisLandingCoordinationDependencyValidationException.Should()
+            actualEmisLandingCoordinationDependencyValidationException.Should()
                 .BeEquivalentTo(expectedEmisLandingCoordinationDependencyValidationException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
@@ -56,34 +56,36 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                          Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
-            this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnProcessFileIfErrorsAndLogItAsync(
-           Xeption dependancyValidationException)
+        public async Task ShouldThrowDependencyExceptionOnRetrieveIfErrorsInLoopAndLogItAsync(
+            Xeption dependencyException)
         {
             // Given
-            Guid SubscriberCredentialId = Guid.NewGuid();
-            string filePath = CreateRandomFilePath(SubscriberCredentialId);
-
-            this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
-                    .ThrowsAsync(dependancyValidationException);
+            Guid subscriberCredentialId = Guid.NewGuid();
+            string fileName = CreateRandomSubscriberCredentialIdFileName(subscriberCredentialId);
 
             var expectedEmisLandingCoordinationDependencyException =
                 new EmisLandingCoordinationDependencyException(
                     message: "EMIS landing coordination dependency error occurred, fix the errors and try again.",
-                    innerException: dependancyValidationException.InnerException as Xeption);
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.subscriberCredentialOrchestrationMock.Setup(service =>
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
+                    .ThrowsAsync(dependencyException);
 
             // When
-            ValueTask<string> processDataTask = this.emisLandingCoordinationService.ProcessFileAsync(filePath);
+            ValueTask<Document> retrieveDownloadTask =
+                this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(fileName);
 
-            EmisLandingCoordinationDependencyException actualEmisLandingCoordinationDependencyException =
+            EmisLandingCoordinationDependencyException
+                actualEmisLandingCoordinationDependencyException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(async () =>
-                    await processDataTask);
+                    await retrieveDownloadTask);
 
             // Then
             actualEmisLandingCoordinationDependencyException.Should()
@@ -99,18 +101,17 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                          Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
-            this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnProcessFileIfErrorsAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveIfErrorsInLoopAndLogItAsync()
         {
             // Given
+            Guid subscriberCredentialId = Guid.NewGuid();
+            string fileName = CreateRandomSubscriberCredentialIdFileName(subscriberCredentialId);
             var serviceException = new Exception();
-            Guid SubscriberCredentialId = Guid.NewGuid();
-            string filePath = CreateRandomFilePath(SubscriberCredentialId);
-            List<Exception> exceptions = new List<Exception>();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
                 service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
@@ -127,11 +128,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: failedEmisLandingCoordinationServiceException);
 
             // When
-            ValueTask<string> processDataTask = this.emisLandingCoordinationService.ProcessFileAsync(filePath);
+            ValueTask<Document> retrieveDownloadTask =
+                this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(fileName);
 
-            EmisLandingCoordinationServiceException actualEmisLandingCoordinationServiceException =
+            EmisLandingCoordinationServiceException
+                actualEmisLandingCoordinationServiceException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await processDataTask);
+                    await retrieveDownloadTask);
 
             // Then
             actualEmisLandingCoordinationServiceException.Should()
@@ -147,8 +150,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                          Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
-            this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

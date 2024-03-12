@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
@@ -12,20 +14,19 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 {
     public partial class EmisLandingCoordinationServiceTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnProcessFileIfFileNameIsNullAndLogItAsync(string invalidData)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnRetrieveFileListIfFileNameIsNullAndLogItAsync()
         {
             // given
+            Guid invalidSubscriberAgreementId = Guid.Empty;
+
             var invalidArgumentEmisLandingCoordinationException =
                 new InvalidArgumentEmisLandingCoordinationException(
                     message: "Invalid Emis Landing coordination argument, please correct the errors and try again.");
 
             invalidArgumentEmisLandingCoordinationException.AddData(
-                key: "FileName",
-                values: "Text is required");
+                key: "SubscriberAgreementId",
+                values: "Id is required");
 
             var expectedEmisLandingCoordinationValidationException =
                 new EmisLandingCoordinationValidationException(
@@ -33,12 +34,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: invalidArgumentEmisLandingCoordinationException);
 
             // when
-            ValueTask<string> processDataTask =
-                this.emisLandingCoordinationService.ProcessFileAsync(invalidData);
+            ValueTask<List<string>> retrieveListOfDocumentsToProcessAsyncTask =
+                this.emisLandingCoordinationService.RetrieveListOfDocumentsToProcessAsync(invalidSubscriberAgreementId);
 
             EmisLandingCoordinationValidationException actualEmisLandingCoordinationValidationException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(async () =>
-                    await processDataTask);
+                    await retrieveListOfDocumentsToProcessAsyncTask);
 
             // then
             actualEmisLandingCoordinationValidationException.Should()

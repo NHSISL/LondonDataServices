@@ -14,7 +14,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
     public partial class SubscriberCredentialsApiTests
     {
         [Fact]
-        public async Task ShouldPostSubscriberCredentialAsync()
+        public async Task ShouldPostNewSubscriberCredentialAsync()
         {
             // given
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;

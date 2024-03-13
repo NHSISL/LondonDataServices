@@ -22,7 +22,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static SubscriberAgreement UpdateSubscriberAgreementWithRandomValues(SubscriberAgreement inputSubscriberAgreement)
+        private static SubscriberAgreement UpdateSubscriberAgreementWithRandomValues(
+            SubscriberAgreement inputSubscriberAgreement)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
             var filler = new Filler<SubscriberAgreement>();

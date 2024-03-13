@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
@@ -46,7 +47,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                         List<string> processedFiles = await TryCatch(async () =>
                         {
                             SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
-                                .RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId);
+                                .RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, false);
 
                             List<string> processedItems = await this.emisLandingOrchestrationService
                                 .ProcessAsync(maybeSubscriberCredential);
@@ -96,6 +97,46 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 {
                     throw new InvalidArgumentEmisLandingCoordinationException("Invalid file name format.");
                 }
+            });
+
+        public async ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(Guid subscriberAgreementId) =>
+            await TryCatch(async () =>
+            {
+                ValidateArgsOnRetrieveListOfDocumentsToProcess(subscriberAgreementId);
+
+                SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
+                    .RetrieveSubscriberCredentialByIdAsync(
+                        subscriberCredentialId: subscriberAgreementId,
+                        externalUse: false);
+
+                List<string> listOfDocumentsToProcess = await this.emisLandingOrchestrationService
+                    .RetrieveListOfDocumentsToProcessAsync(maybeSubscriberCredential);
+
+                return listOfDocumentsToProcess;
+            });
+
+        public ValueTask<Document> RetrieveDownloadByFileNameAsync(string fileName) =>
+            TryCatch(async () =>
+            {
+                ValidateFileNameOnRetrieve(fileName);
+                Guid subscriberCredentialId = Guid.Parse(fileName.Split("/")[5]);
+
+                SubscriberCredential subscriberCredential =
+                    await this.subscriberCredentialOrchestration.RetrieveSubscriberCredentialByIdAsync(
+                        subscriberCredentialId, false);
+
+                byte[] documentData =
+                    await this.emisLandingOrchestrationService.RetrieveDownloadByFileNameAsync(
+                        fileName,
+                        subscriberCredential);
+
+                Document document = new Document
+                {
+                    FileName = fileName,
+                    DocumentData = documentData,
+                };
+
+                return document;
             });
     }
 }

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
@@ -17,12 +18,17 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
     {
         private delegate ValueTask<List<string>> ReturningStringListFunction();
         private delegate ValueTask<string> ReturningStringFunction();
+        private delegate ValueTask<Document> ReturningDocumentFunction();
 
         private async ValueTask<List<string>> TryCatch(ReturningStringListFunction returningStringListFunction)
         {
             try
             {
                 return await returningStringListFunction();
+            }
+            catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentEmisLandingCoordinationException);
             }
             catch (SubscriberCredentialValidationOrchestrationException
                 subscriberCredentialValidationOrchestrationException)
@@ -144,6 +150,68 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                         innerException: aggregateException);
 
                 throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedEmisLandingCoordinationServiceException =
+                    new FailedEmisLandingCoordinationServiceException(
+                        message: "Failed EMIS landing coordination service occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
+            }
+        }
+
+        private async ValueTask<Document> TryCatch(ReturningDocumentFunction returningDocumentFunction)
+        {
+            try
+            {
+                return await returningDocumentFunction();
+            }
+            catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentEmisLandingCoordinationException);
+            }
+            catch (SubscriberCredentialValidationOrchestrationException
+                subscriberCredentialValidationOrchestrationException)
+            {
+                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationOrchestrationException);
+            }
+            catch (SubscriberCredentialOrchestrationDependencyValidationException
+                subscriberCredentialOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    subscriberCredentialOrchestrationDependencyValidationException);
+            }
+            catch (EmisLandingOrchestrationValidationException
+                emisLandingOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationValidationException);
+            }
+            catch (EmisLandingOrchestrationDependencyValidationException
+                emisLandingOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationDependencyValidationException);
+            }
+            catch (SubscriberCredentialDependencyOrchestrationException
+                subscriberCredentialDependencyOrchestrationException)
+            {
+                throw CreateAndLogDependencyException(subscriberCredentialDependencyOrchestrationException);
+            }
+            catch (SubscriberCredentialOrchestrationServiceException
+                subscriberCredentialOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(subscriberCredentialOrchestrationServiceException);
+            }
+            catch (EmisLandingOrchestrationDependencyException
+                emisLandingOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(emisLandingOrchestrationDependencyException);
+            }
+            catch (EmisLandingOrchestrationServiceException
+                emisLandingOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(emisLandingOrchestrationServiceException);
             }
             catch (Exception exception)
             {

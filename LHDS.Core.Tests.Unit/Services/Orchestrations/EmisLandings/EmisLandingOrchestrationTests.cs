@@ -98,6 +98,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 landingConfiguration: landingConfiguration);
         }
 
+        private static List<string> GetRandomStrings(int count)
+        {
+            var messages = new List<string>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var message = GetRandomString();
+                messages.Add(message);
+            }
+
+            return messages;
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
@@ -145,13 +158,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
         private static List<IngestionTracking> CreateRandomIngestionTrackings(
             DateTimeOffset dateTimeOffset,
-            List<Document> documents)
+            List<string> fileNames)
         {
             List<IngestionTracking> items = new List<IngestionTracking>();
 
-            foreach (var document in documents)
+            foreach (var fileName in fileNames)
             {
-                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, document.FileName).Create());
+                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, fileName).Create());
             }
 
             return items;

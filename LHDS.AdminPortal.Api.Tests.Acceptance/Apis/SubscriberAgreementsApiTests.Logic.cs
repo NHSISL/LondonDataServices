@@ -1,13 +1,9 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
 using RESTFulSense.Exceptions;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
@@ -17,102 +13,79 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
         [Fact]
         public async Task ShouldPostSubscriberAgreementAsync()
         {
-            // Given
+            // given
             SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement();
             SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
             SubscriberAgreement expectedSubscriberAgreement = inputSubscriberAgreement;
 
-            // When
+            // when 
+            await this.apiBroker.PostSubscriberAgreementAsync(inputSubscriberAgreement);
+
             SubscriberAgreement actualSubscriberAgreement =
-                await this.apiBroker.PostSubscriberAgreementAsync(inputSubscriberAgreement);
+                await this.apiBroker.GetSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id);
 
-            // Then
+            // then
             actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
-
-            // Cleanup
-            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id);
+            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
         }
-
 
         [Fact]
         public async Task ShouldGetAllSubscriberAgreementsAsync()
         {
-            // Given
-            IQueryable<SubscriberAgreement> randomSubscriberAgreements = CreateRandomSubscriberAgreements();
-            IQueryable<SubscriberAgreement> inputSubscriberAgreements = randomSubscriberAgreements;
-            IQueryable<SubscriberAgreement> expectedSubscriberAgreements = inputSubscriberAgreements;
+            // given
+            List<SubscriberAgreement> randomSubscriberAgreements = await PostRandomSubscriberAgreementsAsync();
+            List<SubscriberAgreement> expectedSubscriberAgreements = randomSubscriberAgreements;
 
-            foreach (SubscriberAgreement inputSubscriberAgreement in inputSubscriberAgreements)
-            {
-                await this.apiBroker.PostSubscriberAgreementAsync(inputSubscriberAgreement);
-            }
-
-            // When
+            // when
             List<SubscriberAgreement> actualSubscriberAgreements = await this.apiBroker.GetAllSubscriberAgreementsAsync();
 
-            // Then
+            // then
             foreach (SubscriberAgreement expectedSubscriberAgreement in expectedSubscriberAgreements)
             {
-                SubscriberAgreement actualSubscriberAgreement =
-                    actualSubscriberAgreements.Single(approval => approval.Id == expectedSubscriberAgreement.Id);
-
+                SubscriberAgreement actualSubscriberAgreement = actualSubscriberAgreements.Single(approval => approval.Id == expectedSubscriberAgreement.Id);
                 actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
                 await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
             }
         }
 
         [Fact]
-        public async Task ShouldGetSubscriberAgreementByIdAsync()
+        public async Task ShouldGetSubscriberAgreementAsync()
         {
-            // Given
-            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement();
-            SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
-            SubscriberAgreement expectedSubscriberAgreement = inputSubscriberAgreement;
-            await this.apiBroker.PostSubscriberAgreementAsync(inputSubscriberAgreement);
+            // given
+            SubscriberAgreement randomSubscriberAgreement = await PostRandomSubscriberAgreementAsync();
+            SubscriberAgreement expectedSubscriberAgreement = randomSubscriberAgreement;
 
-            // When
-            SubscriberAgreement actualSubscriberAgreement =
-                await this.apiBroker.GetSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id);
+            // when
+            SubscriberAgreement actualSubscriberAgreement = await this.apiBroker.GetSubscriberAgreementByIdAsync(randomSubscriberAgreement.Id);
 
-            // Then
+            // then
             actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
-
-            // Cleanup
-            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id);
+            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
         }
 
         [Fact]
         public async Task ShouldPutSubscriberAgreementAsync()
         {
-            // Given
-            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement();
-            SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
-            await this.apiBroker.PostSubscriberAgreementAsync(inputSubscriberAgreement);
+            // given
+            SubscriberAgreement randomSubscriberAgreement = await PostRandomSubscriberAgreementAsync();
+            SubscriberAgreement modifiedSubscriberAgreement = UpdateSubscriberAgreementWithRandomValues(randomSubscriberAgreement);
 
-            SubscriberAgreement modifiedSubscriberAgreement =
-                UpdatSubscriberAgreementWithRandomValues(inputSubscriberAgreement);
-
-            // When
+            // when
             await this.apiBroker.PutSubscriberAgreementAsync(modifiedSubscriberAgreement);
+            SubscriberAgreement actualSubscriberAgreement = await this.apiBroker.GetSubscriberAgreementByIdAsync(randomSubscriberAgreement.Id);
 
-            SubscriberAgreement actualSubscriberAgreement =
-                await this.apiBroker.GetSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id);
-
-            // Then
+            // then
             actualSubscriberAgreement.Should().BeEquivalentTo(modifiedSubscriberAgreement);
-
-            // Cleanup
-            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id);
+            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(actualSubscriberAgreement.Id);
         }
 
         [Fact]
         public async Task ShouldDeleteSubscriberAgreementAsync()
         {
             // given
-            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement();
+            SubscriberAgreement randomSubscriberAgreement = await PostRandomSubscriberAgreementAsync();
             SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
             SubscriberAgreement expectedSubscriberAgreement = inputSubscriberAgreement;
-            await this.apiBroker.PostSubscriberAgreementAsync(inputSubscriberAgreement);
 
             // when
             SubscriberAgreement deletedSubscriberAgreement =
@@ -126,7 +99,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
 
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
                 getSubscriberAgreementbyIdTask.AsTask());
-
         }
     }
 }

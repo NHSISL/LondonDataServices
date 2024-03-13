@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             string randomEmisLandingPath = GetRandomString();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId))
+                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId, false))
                     .ReturnsAsync(randomActiveSubscriberCredential);
 
             this.decryptionOrchestrationServiceMock.Setup(service =>
@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
             // Then
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId),
+                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId, false),
                     Times.Once);
 
             this.decryptionOrchestrationServiceMock.Verify(service =>

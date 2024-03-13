@@ -25,26 +25,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
             List<Document> randomDocuments = CreateRandomDocuments();
-
-            List<Download> externalDownloads = randomDocuments.Select(document =>
-                new Download
-                {
-                    SubscriberCredential = inputSubscriberCredential,
-                    Document = document
-                }).ToList();
-
-            List<Download> expectedDownloads = externalDownloads.DeepClone();
+            List<string> externalDownloadList = randomDocuments.Select(document => document.FileName).ToList();
+            List<string> expectedDownloadList = externalDownloadList.DeepClone();
 
             this.downloadServiceMock.Setup(broker =>
                 broker.RetrieveListOfDocumentsToProcessAsync(inputDownload))
-                    .ReturnsAsync(externalDownloads);
+                    .ReturnsAsync(externalDownloadList);
 
             // when
-            List<Download> actualDownloads =
+            List<string> actualDownloadList =
                 await this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(inputDownload);
 
             // then
-            actualDownloads.Should().BeEquivalentTo(expectedDownloads);
+            actualDownloadList.Should().BeEquivalentTo(expectedDownloadList);
 
             this.downloadServiceMock.Verify(broker =>
                 broker.RetrieveListOfDocumentsToProcessAsync(inputDownload),

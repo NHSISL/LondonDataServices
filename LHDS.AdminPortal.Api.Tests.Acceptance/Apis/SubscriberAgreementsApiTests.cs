@@ -30,6 +30,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
             filler.Setup()
                 .OnProperty(subscriberAgreement => subscriberAgreement.Id).Use(inputSubscriberAgreement.Id)
                 .OnType<DateTimeOffset>().Use(GetRandomDateTime())
+                .OnType<DateTimeOffset?>().Use(GetRandomDateTime())
                 .OnProperty(subscriberAgreement => subscriberAgreement.CreatedDate).Use(inputSubscriberAgreement.CreatedDate)
                 .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(inputSubscriberAgreement.CreatedBy)
                 .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedDate).Use(now);

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
+using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -65,6 +66,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
             var blobStorageSettings = dependencyBroker.Configuration
                 .GetSection("blobStorage").Get<BlobStorageSettings>();
+
+            LandingConfiguration landingConfiguration =
+                dependencyBroker.Configuration.GetSection("landingSettings").Get<LandingConfiguration>();
+
+            serviceCollection.AddTransient<IKeyVaultSecretBroker>((LandingConfiguration) =>
+                new KeyVaultSecretBroker(landingConfiguration.KeyVaultUrl));
 
             serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 

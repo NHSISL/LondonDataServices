@@ -25,10 +25,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             //Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             SubscriberAgreement subscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset);
-            SubscriberAgreement storageSubscriberAgreement = subscriberAgreement;
 
-            string fileName = CreateRandomFilePath(subscriberAgreement.SupplierSharingAgreementGuid);
-            string randomContainer = GetRandomString();
+            SubscriberAgreement storageSubscriberAgreement =
+                await this.storageBroker.InsertSubscriberAgreementAsync(subscriberAgreement);
+
+            string fileName = CreateRandomFilePath(storageSubscriberAgreement.Id);
+            string blobContainer = "EmisLanding";
             SubscriberCredential subscriberCredential = CreateRandomSubscriberCredential();
             string randomString = GetRandomString();
             byte[] randomBytes = Encoding.UTF8.GetBytes(randomString);
@@ -40,27 +42,32 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 DocumentData = encryptedData
             };
 
-            await this.storageBroker.InsertSubscriberAgreementAsync(subscriberAgreement);
+            string encryptedFileSha256Hash =
+                this.hashBroker.GenerateSha256Hash(document.DocumentData);
+
+            await this.documentProcessingService.AddDocumentAsync(document, blobContainer);
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
                 document,
+                storageSubscriberAgreement.Id,
+                encryptedFileSha256Hash,
                 supplierId: this.landingConfiguration.LandingSupplierId);
 
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName, randomContainer))
+                broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName, blobContainer))
                     .ReturnsAsync(encryptedData);
 
             //When
-            var actualString = await this.decryptionClient.DecryptAsync(fileName);
+            var actualString = await this.decryptionClient.DecryptAsync(ingestionTracking.EncryptedFileName);
 
             //Then
             actualString.Should().BeEquivalentTo(ingestionTracking.DecryptedFileName);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName, randomContainer),
+                broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName, blobContainer),
                     Times.Once);
 
             ingestionTracking.Should().NotBeNull();

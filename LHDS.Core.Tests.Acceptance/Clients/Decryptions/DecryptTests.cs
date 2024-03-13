@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
+using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
@@ -23,6 +24,7 @@ using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +43,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private readonly Mock<IDownloadBroker> downloadBrokerMock;
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IHashBroker hashBroker;
         private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly IDocumentProcessingService documentProcessingService;
         private readonly IDecryptionClient decryptionClient;
         private readonly LandingConfiguration landingConfiguration;
         private readonly ICryptographyProvider cryptographyProvider;
@@ -76,9 +80,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
+            this.documentProcessingService = serviceProvider.GetService<IDocumentProcessingService>();
             this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             this.storageBroker = serviceProvider.GetService<IStorageBroker>();
+            this.hashBroker = serviceProvider.GetService<IHashBroker>();
             this.landingConfiguration = serviceProvider.GetRequiredService<LandingConfiguration>();
             this.cryptographyProvider = serviceProvider.GetRequiredService<ICryptographyProvider>();
             decryptionClient = serviceProvider.GetService<IDecryptionClient>();
@@ -90,8 +96,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private static string GetRandomString(int length) =>
           new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
-        private static int GetRandomNumber(int min = 2, int max = 10) =>
-            new IntRange(min, max).GetValue();
+        //private static int GetRandomNumber(int min = 2, int max = 10) =>
+        //    new IntRange(min, max).GetValue();
+
+        private static int GetRandomNumber() =>
+           new IntRange(min: 2, max: 10).GetValue();
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
@@ -99,11 +108,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private static IngestionTracking CreateRandomIngestionTracking(
            DateTimeOffset dateTimeOffset,
            Document document,
+           Guid storageSubscriberAgreementId,
+           string encryptedFileSha256Hash,
            Guid supplierId)
         {
             IngestionTracking ingestionTracking = CreateIngestionTrackingFiller(
                 dateTimeOffset,
                 fileName: document.FileName,
+                storageSubscriberAgreementId,
+                encryptedFileSha256Hash,
                 supplierId)
                     .Create();
 
@@ -117,13 +130,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<SubscriberAgreement>();
+            Guid id = new Guid("2b086eb6-4666-45c1-baa8-1cbdda532e5c");
             Guid supplierSharingAgreementGuid = new Guid("6263EBC7-D8CC-4AA9-8849-60DCEDB63974");
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(user)
-
+                .OnProperty(subscriberAgreement => subscriberAgreement.Id).Use(id)
                 .OnProperty(subscriberAgreement => subscriberAgreement.SupplierSharingAgreementGuid)
                     .Use(supplierSharingAgreementGuid)
 
@@ -135,7 +149,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private static string GetRandomMessage() =>
            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset, string fileName, Guid supplierId)
+            DateTimeOffset dateTimeOffset,
+            string fileName,
+            Guid storageSubscriberAgreementId,
+            string encryptedFileSha256Hash,
+            Guid supplierId)
         {
             string user = "System";
             var filler = new Filler<IngestionTracking>();
@@ -145,6 +163,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
+                .OnProperty(ingestionTracking => ingestionTracking.EncryptedFileSha256Hash).Use(encryptedFileSha256Hash)
+                .OnProperty(ingestionTracking => ingestionTracking.EncryptedFileName).Use(
+                    $"{"encrypted"}/" +
+                    $"{"testsubId"}/" +
+                    $"{storageSubscriberAgreementId}" +
+                    $"/{"0122235"}" +
+                    $"_{GetRandomString()}_{GetRandomString()}" +
+                    $"_{GetRandomNumber()}_{supplierId}.csv.gpg;")
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
@@ -174,8 +200,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private static string CreateRandomFilePath(Guid? identifier)
         {
             return $"{GetRandomString()}/{GetRandomString()}" +
-                $"/{identifier}/0122235/{GetRandomNumber}" +
-                $"_{GetRandomString()}_{GetRandomString()}" +
+                $"/{identifier}/0122235/{GetRandomNumber()}/" +
+                $"{GetRandomString()}_{GetRandomString()}" +
                 $"_{GetRandomNumber()}_{identifier}.csv.gpg;";
         }
 

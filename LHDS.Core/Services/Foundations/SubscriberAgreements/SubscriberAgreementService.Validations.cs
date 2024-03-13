@@ -203,7 +203,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 this.dateTimeBroker.GetCurrentDateTimeOffset();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
-            TimeSpan oneMinute = TimeSpan.FromMinutes(4);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
 
             return timeDifference.Duration() > oneMinute;
         }

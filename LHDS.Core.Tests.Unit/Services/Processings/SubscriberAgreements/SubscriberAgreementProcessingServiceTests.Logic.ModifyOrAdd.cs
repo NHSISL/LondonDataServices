@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
@@ -17,6 +19,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
         {
             // Given
             SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement();
+
+            List<SubscriberAgreement> randomSubscriberAgreements =
+                new List<SubscriberAgreement> { randomSubscriberAgreement };
+
+            List<SubscriberAgreement> storageSubscriberAgreements = randomSubscriberAgreements;
             SubscriberAgreement storageSubscriberAgreement = randomSubscriberAgreement;
             SubscriberAgreement modifiedSubscriberAgreement = storageSubscriberAgreement.DeepClone();
 
@@ -27,8 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             SubscriberAgreement expectedSubscriberAgreement = updatedSubscriberAgreement;
 
             this.subscriberAgreementServiceMock.Setup(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(modifiedSubscriberAgreement.Id))
-                    .ReturnsAsync(value: storageSubscriberAgreement);
+                service.RetrieveAllSubscriberAgreements())
+                    .Returns(storageSubscriberAgreements.AsQueryable());
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.ModifySubscriberAgreementAsync(modifiedSubscriberAgreement))
@@ -40,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             // Then
             this.subscriberAgreementServiceMock.Verify(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(modifiedSubscriberAgreement.Id),
+                service.RetrieveAllSubscriberAgreements(),
                     Times.Once);
 
             this.subscriberAgreementServiceMock.Verify(service =>
@@ -63,10 +70,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
             SubscriberAgreement storageSubscriberAgreement = inputSubscriberAgreement.DeepClone();
             SubscriberAgreement expectedSubscriberAgreement = storageSubscriberAgreement;
+            List<SubscriberAgreement> randomSubscriberAgreements = new List<SubscriberAgreement>();
+            List<SubscriberAgreement> storageSubscriberAgreements = randomSubscriberAgreements;
 
             this.subscriberAgreementServiceMock.Setup(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id))
-                    .ReturnsAsync(value: null);
+                service.RetrieveAllSubscriberAgreements())
+                    .Returns(value: storageSubscriberAgreements.AsQueryable());
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.AddSubscriberAgreementAsync(inputSubscriberAgreement))
@@ -78,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             // Then
             this.subscriberAgreementServiceMock.Verify(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id),
+                service.RetrieveAllSubscriberAgreements(),
                     Times.Once);
 
             this.subscriberAgreementServiceMock.Verify(service =>

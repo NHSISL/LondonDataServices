@@ -23,9 +23,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential;
 
-
-            SubscriberAgreement subscriberAgreement =
-                await this.PostRandomSubscriberAgreementAsync(subscriberAgreementId);
+            //SubscriberAgreement subscriberAgreement =
+            //    await this.PostRandomSubscriberAgreementAsync(subscriberAgreementId);
 
             // when 
             await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);

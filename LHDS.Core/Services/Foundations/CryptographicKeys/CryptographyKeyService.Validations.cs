@@ -11,12 +11,11 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
 {
     public partial class CryptographyKeyService
     {
-        private void ValidateInputArguments(string cryptographyType, string publicKeyComment)
+        private void ValidateInputArguments(string cryptographyType)
         {
             Validate<InvalidArgumentCryptographyKeyException>(
                 message: "Invalid cryptography key argument(s), please correct the errors and try again.",
-                (Rule: IsInvalid(cryptographyType), Parameter: nameof(cryptographyType)),
-                (Rule: IsInvalid(publicKeyComment), Parameter: nameof(publicKeyComment)));
+                (Rule: IsInvalid(cryptographyType), Parameter: nameof(cryptographyType)));
         }
 
         private static dynamic IsInvalid(string text) => new

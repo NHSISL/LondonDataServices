@@ -10,6 +10,7 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using LHDS.Core.Brokers.CryptographyKeys;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Hashing;
@@ -94,6 +95,8 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
+            services.AddTransient<ICryptographyKeyBroker, GpgKeyBroker>();
+            services.AddTransient<ICryptographyKeyBroker, SshKeyBroker>();
             LandingConfiguration landingConfiguration = configuration.GetSection("landingSettings").Get<LandingConfiguration>();
             ValidateLandingConfiguration(landingConfiguration);
 

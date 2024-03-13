@@ -17,8 +17,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
 
             Validate<InvalidSecureDataException>(
                 message: "Invalid secure data errors occured. Please correct the errors and try again.",
-                (Rule: IsInvalid(secureData.Name), Parameter: nameof(SecureData.Name)),
-                (Rule: IsInvalid(secureData.Value), Parameter: nameof(SecureData.Value)));
+                (Rule: IsInvalid(secureData.Name), Parameter: nameof(SecureData.Name)));
         }
 
         private void ValidateArgumentOnRetrieve(string secretName)

@@ -15,7 +15,7 @@ namespace LHDS.Core.Services.Processings.Downloads
     public partial class DownloadProcessingService
     {
         private delegate ValueTask<Download> ReturningDownloadFunction();
-        private delegate ValueTask<List<Download>> ReturningDownloadsFunction();
+        private delegate ValueTask<List<string>> ReturningStringListFunction();
 
         private async ValueTask<Download> TryCatch(ReturningDownloadFunction returningDownloadFunction)
         {
@@ -58,11 +58,11 @@ namespace LHDS.Core.Services.Processings.Downloads
             }
         }
 
-        private async ValueTask<List<Download>> TryCatch(ReturningDownloadsFunction returningDownloadsFunction)
+        private async ValueTask<List<string>> TryCatch(ReturningStringListFunction returningStringListFunction)
         {
             try
             {
-                return await returningDownloadsFunction();
+                return await returningStringListFunction();
             }
             catch (DownloadValidationException downloadValidationException)
             {

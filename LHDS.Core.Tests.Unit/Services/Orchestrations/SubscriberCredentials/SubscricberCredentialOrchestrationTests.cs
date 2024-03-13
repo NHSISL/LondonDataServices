@@ -3,15 +3,17 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
-using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberAgreements.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
+using LHDS.Core.Services.Foundations.CryptographicKeys;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
@@ -26,6 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
     {
         private readonly Mock<ISubscriberAgreementProcessingService> subscriberAgreementProcessingServiceMock;
         private readonly Mock<ISecureDataProcessingService> secureDataProcessingServiceMock;
+        private readonly Mock<ICryptographyKeyProcessingService> cryptographyKeyProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ICompareLogic compareLogic;
@@ -35,6 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         {
             this.subscriberAgreementProcessingServiceMock = new Mock<ISubscriberAgreementProcessingService>();
             this.secureDataProcessingServiceMock = new Mock<ISecureDataProcessingService>();
+            this.cryptographyKeyProcessingServiceMock = new Mock<ICryptographyKeyProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
@@ -42,6 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             this.subscriberCredentialOrchestration = new SubscriberCredentialOrchestration(
                 subscriberAgreementProcessingService: subscriberAgreementProcessingServiceMock.Object,
                 secureDataProcessingService: secureDataProcessingServiceMock.Object,
+                cryptographyKeyProcessingService: cryptographyKeyProcessingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object);
         }
@@ -74,9 +79,54 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                     .AreEqual;
         }
 
-        private static dynamic CreateRandomDynamicSubscriberAgreementCredential()
+        private static List<dynamic> CreateRandomDynamicSubscriberAgreementCredentials()
         {
-            Guid id = Guid.NewGuid();
+            return Enumerable.Range(1, 1)
+                .Select(item => CreateRandomDynamicSubscriberAgreementCredential())
+                    .ToList();
+        }
+
+        private static IQueryable<SubscriberCredential> CreateSubscriberCredentialsFromDynamic(
+            List<dynamic> credentials)
+        {
+            List<SubscriberCredential> subscriberCredentials = new List<SubscriberCredential>();
+
+            foreach (var credential in credentials)
+            {
+                SubscriberCredential subscriberCredential = CreateSubscriberCredentialFromDynamic(credential);
+                subscriberCredential.FtpPassword = string.Empty;
+                subscriberCredential.FtpPrivateKey = string.Empty;
+                subscriberCredential.FtpPassPhrase = string.Empty;
+                subscriberCredential.GpgPassPhrase = string.Empty;
+                subscriberCredential.GpgPrivateKey = string.Empty;
+                subscriberCredentials.Add(subscriberCredential);
+            }
+
+            return subscriberCredentials.AsQueryable();
+        }
+
+        private static IQueryable<SubscriberAgreement> CreateSubscriberAgreementsFromDynamic(
+            List<dynamic> credentials)
+        {
+            List<SubscriberAgreement> subscriberAgreements = new List<SubscriberAgreement>();
+
+            foreach (dynamic credential in credentials)
+            {
+                SubscriberAgreement subscriberAgreement = CreateSubscriberAgreementFromDynamic(credential);
+
+                subscriberAgreements.Add(subscriberAgreement);
+            }
+
+            return subscriberAgreements.AsQueryable();
+        }
+
+        private static dynamic CreateRandomDynamicSubscriberAgreementCredential(Guid id = default(Guid))
+        {
+            if (id == Guid.Empty)
+            {
+                id = Guid.NewGuid();
+            }
+
             Guid supplierSharingAgreementGuid = Guid.NewGuid();
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
 
@@ -104,7 +154,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             };
         }
 
-        private static SubscriberCredential CreateSubscriberCredentialFromDynamic(dynamic credential)
+        private static SubscriberCredential CreateSubscriberCredentialFromDynamic(
+            dynamic credential, 
+            bool blankKeys = false)
         {
             SubscriberCredential randomSubscriberCredential = new SubscriberCredential
             {
@@ -112,12 +164,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 SupplierSharingAgreementShortName = credential.SupplierSharingAgreementShortName,
                 SupplierSharingAgreementGuid = credential.SupplierSharingAgreementGuid,
                 FtpUserName = credential.FtpUserName,
-                FtpPassword = credential.FtpPassword,
-                FtpPassPhrase = credential.FtpPassPhrase,
-                FtpPrivateKey = credential.FtpPrivateKey,
+                FtpPassword = blankKeys ? null : credential.FtpPassword,
+                FtpPassPhrase = blankKeys ? null : credential.FtpPassPhrase,
+                FtpPrivateKey = blankKeys ? null : credential.FtpPrivateKey,
                 FtpPublicKey = credential.FtpPublicKey,
-                GpgPassPhrase = credential.GpgPassPhrase,
-                GpgPrivateKey = credential.GpgPrivateKey,
+                GpgPassPhrase = blankKeys ? null : credential.GpgPassPhrase,
+                GpgPrivateKey = blankKeys ? null : credential.GpgPrivateKey,
                 GpgPublicKey = credential.GpgPublicKey,
                 IsActive = credential.IsActive,
                 LastPollStartDate = credential.LastPollStartDate,
@@ -151,6 +203,33 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             };
 
             return randomSubscriberAgreement;
+        }
+
+        private static List<SubscriberAgreement> CreateRandomSubscriberAgreements()
+        {
+            return CreateSubscriberAgreementFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static SubscriberAgreement CreateRandomSubscriberAgreement() =>
+            CreateSubscriberAgreementFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static SubscriberAgreement CreateRandomSubscriberAgreement(DateTimeOffset dateTimeOffset) =>
+            CreateSubscriberAgreementFiller(dateTimeOffset).Create();
+
+        private static Filler<SubscriberAgreement> CreateSubscriberAgreementFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<SubscriberAgreement>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(address => address.CreatedBy).Use(user)
+                .OnProperty(address => address.UpdatedBy).Use(user);
+
+            return filler;
         }
 
         public static TheoryData SubscriberCredentialOrchestrationDependencyValidationExceptions()

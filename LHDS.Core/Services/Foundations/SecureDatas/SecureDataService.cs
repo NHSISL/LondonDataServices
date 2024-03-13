@@ -27,7 +27,8 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             TryCatch(async () =>
             {
                 ValidateSecureDataOnAdd(secureData);
-                KeyVaultSecret keyVaultSecret = new KeyVaultSecret(name: secureData.Name, value: secureData.Value);
+                string value = string.IsNullOrWhiteSpace(secureData.Value) ? "null" : secureData.Value;
+                KeyVaultSecret keyVaultSecret = new KeyVaultSecret(name: secureData.Name, value);
 
                 KeyVaultSecret returnedKeyVaultSecret =
                     await this.keyVaultSecretBroker.CreateOrUpdateKeyVaultSecretAsync(keyVaultSecret);
@@ -35,7 +36,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 SecureData returnedSecureData = new SecureData
                 {
                     Name = returnedKeyVaultSecret.Name,
-                    Value = returnedKeyVaultSecret.Value,
+                    Value = returnedKeyVaultSecret.Value == "null" ? null : returnedKeyVaultSecret.Value,
                 };
 
                 return returnedSecureData;
@@ -52,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 SecureData returnedSecureData = new SecureData
                 {
                     Name = returnedKeyVaultSecret.Name,
-                    Value = returnedKeyVaultSecret.Value,
+                    Value = returnedKeyVaultSecret.Value == "null" ? null : returnedKeyVaultSecret.Value,
                 };
 
                 return returnedSecureData;

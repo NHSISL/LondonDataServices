@@ -1,9 +1,6 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
 using Tynamix.ObjectFiller;
@@ -19,63 +16,66 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
         public SubscriberAgreementsApiTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
 
-        private static int GetRandomNumber() =>
+        private int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static SubscriberAgreement UpdatSubscriberAgreementWithRandomValues(SubscriberAgreement inputSubscriberAgreement)
+        private static SubscriberAgreement UpdateSubscriberAgreementWithRandomValues(SubscriberAgreement inputSubscriberAgreement)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
             var filler = new Filler<SubscriberAgreement>();
 
             filler.Setup()
-                .OnProperty(SubscriberAgreement => SubscriberAgreement.Id).Use(inputSubscriberAgreement.Id)
-
-                .OnProperty(SubscriberAgreement => SubscriberAgreement.SupplierSharingAgreementShortName)
-                    .Use(inputSubscriberAgreement.SupplierSharingAgreementShortName)
-
-                .OnProperty(SubscriberAgreement => SubscriberAgreement.SupplierSharingAgreementGuid)
-                    .Use(inputSubscriberAgreement.SupplierSharingAgreementGuid)
-
-                .OnProperty(SubscriberAgreement => SubscriberAgreement.FtpPublicKey).Use(inputSubscriberAgreement.FtpPublicKey)
-                .OnProperty(SubscriberAgreement => SubscriberAgreement.FtpUserName).Use(inputSubscriberAgreement.FtpUserName)
-                .OnProperty(SubscriberAgreement => SubscriberAgreement.GpgPublicKey).Use(inputSubscriberAgreement.GpgPublicKey)
-                .OnProperty(SubscriberAgreement => SubscriberAgreement.CreatedBy).Use(inputSubscriberAgreement.CreatedBy)
-                .OnProperty(SubscriberAgreement => SubscriberAgreement.CreatedDate).Use(inputSubscriberAgreement.CreatedDate)
-                .OnProperty(SubscriberAgreement => SubscriberAgreement.UpdatedDate).Use(now)
+                .OnProperty(subscriberAgreement => subscriberAgreement.Id).Use(inputSubscriberAgreement.Id)
                 .OnType<DateTimeOffset>().Use(GetRandomDateTime())
-                .OnType<DateTimeOffset?>().Use(GetRandomDateTime());
+                .OnProperty(subscriberAgreement => subscriberAgreement.CreatedDate).Use(inputSubscriberAgreement.CreatedDate)
+                .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(inputSubscriberAgreement.CreatedBy)
+                .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedDate).Use(now);
 
             return filler.Create();
         }
 
-        private static IQueryable<SubscriberAgreement> CreateRandomSubscriberAgreements()
+        private async ValueTask<SubscriberAgreement> PostRandomSubscriberAgreementAsync()
         {
-            return CreateSubscriberAgreementFiller()
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement();
+            await this.apiBroker.PostSubscriberAgreementAsync(randomSubscriberAgreement);
+
+            return randomSubscriberAgreement;
+        }
+
+        private async ValueTask<List<SubscriberAgreement>> PostRandomSubscriberAgreementsAsync()
+        {
+            int randomNumber = GetRandomNumber();
+            var randomSubscriberAgreements = new List<SubscriberAgreement>();
+
+            for (int i = 0; i < randomNumber; i++)
+            {
+                randomSubscriberAgreements.Add(await PostRandomSubscriberAgreementAsync());
+            }
+
+            return randomSubscriberAgreements;
         }
 
         private static SubscriberAgreement CreateRandomSubscriberAgreement() =>
-            CreateSubscriberAgreementFiller().Create();
+            CreateRandomSubscriberAgreementFiller().Create();
 
-        private static Filler<SubscriberAgreement> CreateSubscriberAgreementFiller()
+        private static Filler<SubscriberAgreement> CreateRandomSubscriberAgreementFiller()
         {
             string user = Guid.NewGuid().ToString();
+            DateTime now = DateTime.UtcNow;
             var filler = new Filler<SubscriberAgreement>();
-            var now = DateTimeOffset.UtcNow;
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
-                .OnProperty(subscriberAgreement => subscriberAgreement.SupplierSharingAgreementGuid).Use(Guid.NewGuid())
+                .OnProperty(subscriberAgreement => subscriberAgreement.CreatedDate).Use(now)
                 .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(user)
+                .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedDate).Use(now)
                 .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedBy).Use(user);
 
             return filler;
         }
-
     }
 }

@@ -37,6 +37,19 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             }
         }
 
+        private void ValidateSubscriberCredentialId(Guid subscriberCredentialId)
+        {
+            Validate<InvalidArgumentSubscriberCredentialOrchestrationException>(
+                 message: "Invalid argument subscriber credential orchestration error occurred, contact support.",
+                 (Rule: IsInvalid(subscriberCredentialId), Parameter: "subscriberCredentialId"));
+        }
+
+        private static dynamic IsInvalid(Guid someId) => new
+        {
+            Condition = someId == Guid.Empty,
+            Message = "Id is required"
+        };
+
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {

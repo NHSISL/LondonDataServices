@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -9,7 +9,6 @@ using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using LHDS.Core.Services.Foundations.SubscriberAgreements;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
@@ -18,176 +17,167 @@ namespace LHDS.AdminPortal.Api.Controllers
     [Route("api/[controller]")]
     public class SubscriberAgreementsController : RESTFulController
     {
-        private readonly ISubscriberAgreementService SubscriberAgreementService;
+        private readonly ISubscriberAgreementService subscriberAgreementService;
 
-        public SubscriberAgreementsController(ISubscriberAgreementService SubscriberAgreementService) =>
-            this.SubscriberAgreementService = SubscriberAgreementService;
+        public SubscriberAgreementsController(ISubscriberAgreementService subscriberAgreementService) =>
+            this.subscriberAgreementService = subscriberAgreementService;
 
         [HttpPost]
-        public async ValueTask<ActionResult<SubscriberAgreement>> PostSubscriberAgreementAsync(SubscriberAgreement SubscriberAgreement)
+        public async ValueTask<ActionResult<SubscriberAgreement>> PostSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement)
         {
             try
             {
                 SubscriberAgreement addedSubscriberAgreement =
-                    await this.SubscriberAgreementService.AddSubscriberAgreementAsync(SubscriberAgreement);
+                    await this.subscriberAgreementService.AddSubscriberAgreementAsync(subscriberAgreement);
 
                 return Created(addedSubscriberAgreement);
             }
-            catch (SubscriberAgreementValidationException SubscriberAgreementValidationException)
+            catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
             {
-                return BadRequest(SubscriberAgreementValidationException.InnerException);
+                return BadRequest(subscriberAgreementValidationException.InnerException);
             }
-            catch (SubscriberAgreementDependencyValidationException SubscriberAgreementValidationException)
-                when (SubscriberAgreementValidationException.InnerException is InvalidSubscriberAgreementReferenceException)
+            catch (SubscriberAgreementDependencyValidationException subscriberAgreementValidationException)
+                when (subscriberAgreementValidationException.InnerException is InvalidSubscriberAgreementReferenceException)
             {
-                return FailedDependency(SubscriberAgreementValidationException.InnerException);
+                return FailedDependency(subscriberAgreementValidationException.InnerException);
             }
-            catch (SubscriberAgreementDependencyValidationException SubscriberAgreementDependencyValidationException)
-               when (SubscriberAgreementDependencyValidationException.InnerException is AlreadyExistsSubscriberAgreementException)
+            catch (SubscriberAgreementDependencyValidationException subscriberAgreementDependencyValidationException)
+               when (subscriberAgreementDependencyValidationException.InnerException is AlreadyExistsSubscriberAgreementException)
             {
-                return Conflict(SubscriberAgreementDependencyValidationException.InnerException);
+                return Conflict(subscriberAgreementDependencyValidationException.InnerException);
             }
-            catch (SubscriberAgreementDependencyException SubscriberAgreementDependencyException)
+            catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
             {
-                return InternalServerError(SubscriberAgreementDependencyException);
+                return InternalServerError(subscriberAgreementDependencyException);
             }
-            catch (SubscriberAgreementServiceException SubscriberAgreementServiceException)
+            catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
             {
-                return InternalServerError(SubscriberAgreementServiceException);
+                return InternalServerError(subscriberAgreementServiceException);
             }
         }
 
         [HttpGet]
-#if !DEBUG
-        [EnableQuery(PageSize = 50)]
-#endif
-#if DEBUG
-        [EnableQuery(PageSize = 5000)]
-#endif
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.SubscriberAgreements, ISL.LDS.AdminApi.ReadOnly")]
-#endif
-        public ActionResult<IQueryable<SubscriberAgreement>> Get()
+        public ActionResult<IQueryable<SubscriberAgreement>> GetAllSubscriberAgreements()
         {
             try
             {
                 IQueryable<SubscriberAgreement> retrievedSubscriberAgreements =
-                    this.SubscriberAgreementService.RetrieveAllSubscriberAgreements();
+                    this.subscriberAgreementService.RetrieveAllSubscriberAgreements();
 
                 return Ok(retrievedSubscriberAgreements);
             }
-            catch (SubscriberAgreementDependencyException SubscriberAgreementDependencyException)
+            catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
             {
-                return InternalServerError(SubscriberAgreementDependencyException);
+                return InternalServerError(subscriberAgreementDependencyException);
             }
-            catch (SubscriberAgreementServiceException SubscriberAgreementServiceException)
+            catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
             {
-                return InternalServerError(SubscriberAgreementServiceException);
+                return InternalServerError(subscriberAgreementServiceException);
             }
         }
 
-        [HttpGet("{SubscriberAgreementId}")]
-        public async ValueTask<ActionResult<SubscriberAgreement>> GetSubscriberAgreementByIdAsync(Guid SubscriberAgreementId)
+        [HttpGet("{subscriberAgreementId}")]
+        public async ValueTask<ActionResult<SubscriberAgreement>> GetSubscriberAgreementByIdAsync(Guid subscriberAgreementId)
         {
             try
             {
-                SubscriberAgreement SubscriberAgreement = await this.SubscriberAgreementService.RetrieveSubscriberAgreementByIdAsync(SubscriberAgreementId);
+                SubscriberAgreement subscriberAgreement = await this.subscriberAgreementService.RetrieveSubscriberAgreementByIdAsync(subscriberAgreementId);
 
-                return Ok(SubscriberAgreement);
+                return Ok(subscriberAgreement);
             }
-            catch (SubscriberAgreementValidationException SubscriberAgreementValidationException)
-                when (SubscriberAgreementValidationException.InnerException is NotFoundSubscriberAgreementException)
+            catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
+                when (subscriberAgreementValidationException.InnerException is NotFoundSubscriberAgreementException)
             {
-                return NotFound(SubscriberAgreementValidationException.InnerException);
+                return NotFound(subscriberAgreementValidationException.InnerException);
             }
-            catch (SubscriberAgreementValidationException SubscriberAgreementValidationException)
+            catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
             {
-                return BadRequest(SubscriberAgreementValidationException.InnerException);
+                return BadRequest(subscriberAgreementValidationException.InnerException);
             }
-            catch (SubscriberAgreementDependencyException SubscriberAgreementDependencyException)
+            catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
             {
-                return InternalServerError(SubscriberAgreementDependencyException);
+                return InternalServerError(subscriberAgreementDependencyException);
             }
-            catch (SubscriberAgreementServiceException SubscriberAgreementServiceException)
+            catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
             {
-                return InternalServerError(SubscriberAgreementServiceException);
+                return InternalServerError(subscriberAgreementServiceException);
             }
         }
 
         [HttpPut]
-        public async ValueTask<ActionResult<SubscriberAgreement>> PutSubscriberAgreementAsync(SubscriberAgreement SubscriberAgreement)
+        public async ValueTask<ActionResult<SubscriberAgreement>> PutSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement)
         {
             try
             {
                 SubscriberAgreement modifiedSubscriberAgreement =
-                    await this.SubscriberAgreementService.ModifySubscriberAgreementAsync(SubscriberAgreement);
+                    await this.subscriberAgreementService.ModifySubscriberAgreementAsync(subscriberAgreement);
 
                 return Ok(modifiedSubscriberAgreement);
             }
-            catch (SubscriberAgreementValidationException SubscriberAgreementValidationException)
-                when (SubscriberAgreementValidationException.InnerException is NotFoundSubscriberAgreementException)
+            catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
+                when (subscriberAgreementValidationException.InnerException is NotFoundSubscriberAgreementException)
             {
-                return NotFound(SubscriberAgreementValidationException.InnerException);
+                return NotFound(subscriberAgreementValidationException.InnerException);
             }
-            catch (SubscriberAgreementValidationException SubscriberAgreementValidationException)
+            catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
             {
-                return BadRequest(SubscriberAgreementValidationException.InnerException);
+                return BadRequest(subscriberAgreementValidationException.InnerException);
             }
-            catch (SubscriberAgreementDependencyValidationException SubscriberAgreementValidationException)
-                when (SubscriberAgreementValidationException.InnerException is InvalidSubscriberAgreementReferenceException)
+            catch (SubscriberAgreementDependencyValidationException subscriberAgreementValidationException)
+                when (subscriberAgreementValidationException.InnerException is InvalidSubscriberAgreementReferenceException)
             {
-                return FailedDependency(SubscriberAgreementValidationException.InnerException);
+                return FailedDependency(subscriberAgreementValidationException.InnerException);
             }
-            catch (SubscriberAgreementDependencyValidationException SubscriberAgreementDependencyValidationException)
-               when (SubscriberAgreementDependencyValidationException.InnerException is AlreadyExistsSubscriberAgreementException)
+            catch (SubscriberAgreementDependencyValidationException subscriberAgreementDependencyValidationException)
+               when (subscriberAgreementDependencyValidationException.InnerException is AlreadyExistsSubscriberAgreementException)
             {
-                return Conflict(SubscriberAgreementDependencyValidationException.InnerException);
+                return Conflict(subscriberAgreementDependencyValidationException.InnerException);
             }
-            catch (SubscriberAgreementDependencyException SubscriberAgreementDependencyException)
+            catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
             {
-                return InternalServerError(SubscriberAgreementDependencyException);
+                return InternalServerError(subscriberAgreementDependencyException);
             }
-            catch (SubscriberAgreementServiceException SubscriberAgreementServiceException)
+            catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
             {
-                return InternalServerError(SubscriberAgreementServiceException);
+                return InternalServerError(subscriberAgreementServiceException);
             }
         }
 
-        [HttpDelete("{SubscriberAgreementId}")]
-        public async ValueTask<ActionResult<SubscriberAgreement>> DeleteSubscriberAgreementByIdAsync(Guid SubscriberAgreementId)
+        [HttpDelete("{subscriberAgreementId}")]
+        public async ValueTask<ActionResult<SubscriberAgreement>> DeleteSubscriberAgreementByIdAsync(Guid subscriberAgreementId)
         {
             try
             {
                 SubscriberAgreement deletedSubscriberAgreement =
-                    await this.SubscriberAgreementService.RemoveSubscriberAgreementByIdAsync(SubscriberAgreementId);
+                    await this.subscriberAgreementService.RemoveSubscriberAgreementByIdAsync(subscriberAgreementId);
 
                 return Ok(deletedSubscriberAgreement);
             }
-            catch (SubscriberAgreementValidationException SubscriberAgreementValidationException)
-                when (SubscriberAgreementValidationException.InnerException is NotFoundSubscriberAgreementException)
+            catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
+                when (subscriberAgreementValidationException.InnerException is NotFoundSubscriberAgreementException)
             {
-                return NotFound(SubscriberAgreementValidationException.InnerException);
+                return NotFound(subscriberAgreementValidationException.InnerException);
             }
-            catch (SubscriberAgreementValidationException SubscriberAgreementValidationException)
+            catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
             {
-                return BadRequest(SubscriberAgreementValidationException.InnerException);
+                return BadRequest(subscriberAgreementValidationException.InnerException);
             }
-            catch (SubscriberAgreementDependencyValidationException SubscriberAgreementDependencyValidationException)
-                when (SubscriberAgreementDependencyValidationException.InnerException is LockedSubscriberAgreementException)
+            catch (SubscriberAgreementDependencyValidationException subscriberAgreementDependencyValidationException)
+                when (subscriberAgreementDependencyValidationException.InnerException is LockedSubscriberAgreementException)
             {
-                return Locked(SubscriberAgreementDependencyValidationException.InnerException);
+                return Locked(subscriberAgreementDependencyValidationException.InnerException);
             }
-            catch (SubscriberAgreementDependencyValidationException SubscriberAgreementDependencyValidationException)
+            catch (SubscriberAgreementDependencyValidationException subscriberAgreementDependencyValidationException)
             {
-                return BadRequest(SubscriberAgreementDependencyValidationException);
+                return BadRequest(subscriberAgreementDependencyValidationException);
             }
-            catch (SubscriberAgreementDependencyException SubscriberAgreementDependencyException)
+            catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
             {
-                return InternalServerError(SubscriberAgreementDependencyException);
+                return InternalServerError(subscriberAgreementDependencyException);
             }
-            catch (SubscriberAgreementServiceException SubscriberAgreementServiceException)
+            catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
             {
-                return InternalServerError(SubscriberAgreementServiceException);
+                return InternalServerError(subscriberAgreementServiceException);
             }
         }
     }

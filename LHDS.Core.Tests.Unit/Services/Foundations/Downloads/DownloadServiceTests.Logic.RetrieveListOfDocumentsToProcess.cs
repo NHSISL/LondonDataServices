@@ -17,34 +17,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
     public partial class DownloadServiceTests
     {
         [Fact]
-        public async Task ShouldReturnDownloads()
+        public async Task ShouldRetrieveListOfDocumentsToProcess()
         {
             // given
+            int randomNumber = GetRandomNumber();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
-            List<Document> randomDowcuments = CreateRandomDocuments();
-            List<Document> externalDocuments = randomDowcuments;
-
-            List<Download> externalDownloads = externalDocuments.Select(document =>
-                new Download
-                {
-                    SubscriberCredential = inputSubscriberCredential,
-                    Document = document
-                }).ToList();
-
-            List<Download> expectedDownloads = externalDownloads;
+            List<string> externalDownloadList = GetRandomStrings(randomNumber); 
+            List<string> expectedDownloadList = externalDownloadList;
 
             this.downloadBrokerMock.Setup(broker =>
                 broker.GetListOfDownloadsToProcessAsync(inputDownload))
-                    .ReturnsAsync(externalDownloads);
+                    .ReturnsAsync(externalDownloadList);
 
             // when
-            List<Download> actualDownloads =
+            List<string> actualDownloadList =
                 await this.downloadService.RetrieveListOfDocumentsToProcessAsync(inputDownload);
 
             // then
-            actualDownloads.Should().BeEquivalentTo(expectedDownloads);
+            actualDownloadList.Should().BeEquivalentTo(expectedDownloadList);
 
             this.downloadBrokerMock.Verify(broker =>
                 broker.GetListOfDownloadsToProcessAsync(inputDownload),

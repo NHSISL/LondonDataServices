@@ -77,12 +77,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 var exceptions = new List<Exception>();
                 Download download = new Download { SubscriberCredential = subscriberCredential };
 
-                List<Download> retrievedDownloads =
+                List<string> retrievedDownloadList =
                     await this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(download);
 
                 List<string> files = new List<string>();
 
-                foreach (var downloadItem in retrievedDownloads)
+                foreach (var fileName in retrievedDownloadList)
                 {
                     try
                     {
@@ -91,13 +91,19 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                             IngestionTracking? maybeIngestionTracking =
                                 this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
                                     .FirstOrDefault(ingestionTracking =>
-                                        ingestionTracking.FileName == downloadItem.Document.FileName);
+                                        ingestionTracking.FileName == fileName);
 
                             if (maybeIngestionTracking == null)
                             {
+                                Download fileToRetrieve = new Download
+                                {
+                                    Document = new Document { FileName = fileName },
+                                    SubscriberCredential = subscriberCredential
+                                };
+
                                 Download retrievedDownload =
                                     await this.downloadProcessingService
-                                        .RetrieveDownloadByFileNameAsync(downloadItem);
+                                        .RetrieveDownloadByFileNameAsync(fileToRetrieve);
 
                                 string encryptedFileSha256Hash =
                                     this.hashBroker.GenerateSha256Hash(retrievedDownload.Document.DocumentData);
@@ -108,9 +114,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                     this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
                                         landingConfiguration.LandingSupplierId);
 
-                                var filename = downloadItem.Document.FileName.StartsWith('/')
-                                    ? downloadItem.Document.FileName
-                                    : "/" + downloadItem.Document.FileName;
+                                var filename = fileName.StartsWith('/')
+                                    ? fileName
+                                    : "/" + fileName;
 
                                 string[] splitFileName = filename.Split('/');
                                 string newFileName = "";
@@ -128,7 +134,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                   new IngestionTracking
                                   {
                                       Id = this.identifierBroker.GetIdentifier(),
-                                      FileName = downloadItem.Document.FileName,
+                                      FileName = fileName,
                                       SupplierId = landingConfiguration.LandingSupplierId,
                                       EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
 
@@ -137,7 +143,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                         $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
                                         $"/{retrievedDataSetSpecification.Id}" +
                                         $"/{filename.Split('_')[3]}" +
-                                        $"{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                                        $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                                       Decrypted = false,
                                       LastSeen = currentDateTime,
@@ -190,7 +196,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     catch (Exception ex)
                     {
                         this.loggingBroker.LogError(ex);
-                        Console.WriteLine($"Unable to land document: {downloadItem.Document.FileName}");
+                        Console.WriteLine($"Unable to land document: {fileName}");
                         exceptions.Add(ex);
                     }
                 }
@@ -342,6 +348,38 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                     return newIngestionTracking.DecryptedFileName;
                 }
+            });
+
+        public ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(
+            SubscriberCredential subscriberCredential) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberCredentials(subscriberCredential);
+                Download download = new Download { SubscriberCredential = subscriberCredential };
+
+                List<string> retrievedDownloadList =
+                    await this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(download);
+
+                return retrievedDownloadList;
+            });
+
+        public ValueTask<byte[]> RetrieveDownloadByFileNameAsync(
+            string fileName, SubscriberCredential subscriberCredential) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberCredentials(subscriberCredential);
+                ValidateFileName(fileName);
+
+                Download download = new Download
+                {
+                    Document = new Document { FileName = fileName },
+                    SubscriberCredential = subscriberCredential
+                };
+
+                Download storageDownload =
+                    await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
+
+                return storageDownload.Document.DocumentData;
             });
 
         private void LogAudit(

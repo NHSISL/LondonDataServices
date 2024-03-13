@@ -28,21 +28,25 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<string> DecryptAsync(string fileName) =>
+        public ValueTask<string> DecryptAsync(string encryptedFileName) =>
             TryCatch(async () =>
             {
-                ValidateFileNameOnDecrypt(fileName);
-                string[] parts = fileName.Split("/");
+                ValidateFileNameOnDecrypt(encryptedFileName);
+                string[] parts = encryptedFileName.Split("/");
 
                 if (parts.Length > 0)
                 {
-                    string extractSubscriberCredentialIdString = parts[5];
+                    string extractSubscriberCredentialIdString = parts[2];
 
                     SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
-                        .RetrieveSubscriberCredentialByIdAsync(new Guid(extractSubscriberCredentialIdString));
+                        .RetrieveSubscriberCredentialByIdAsync(
+                            subscriberCredentialId: new Guid(extractSubscriberCredentialIdString),
+                            externalUse: false);
 
                     string decryptItem =
-                        await this.decryptionOrchestrationService.DecryptAsync(fileName, maybeSubscriberCredential);
+                        await this.decryptionOrchestrationService.DecryptAsync(
+                            encryptedFileName,
+                            maybeSubscriberCredential);
 
                     return decryptItem;
                 }

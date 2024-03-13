@@ -10,7 +10,6 @@ using LHDS.Core.Models.Foundations.SecureData.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using Xeptions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace LHDS.Core.Services.Processings.SecureDatas
 {
@@ -73,12 +72,14 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                     SubscriberCredential.GpgPublicKey)));
         }
 
-        private void ValidateSubscriberCredentialOnRemove(SubscriberCredential subscriberCredential)
+        private void ValidateSubscriberCredentialIdOnRemove(Guid subscriberCredentialId)
         {
-            ValidateSubscriberCredentialIsNotNull(subscriberCredential);
+            Validate<InvalidArgumentSubscriberCredentialProcessingException>(
+                 message: "Invalid argument subscriber credential processing error occurred, contact support.",
+                 (Rule: IsInvalid(subscriberCredentialId), Parameter: "subscriberCredentialId"));
         }
 
-            private void ValidateSecureData(SecureData secureData)
+        private void ValidateSecureData(SecureData secureData)
         {
             ValidateSecureDataIsNotNull(secureData);
 
@@ -136,7 +137,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
         {
             Type type = subscriberCredential.GetType();
             PropertyInfo property = type.GetProperty(keyType);
-            
+
             return new
             {
                 Condition = property == null,

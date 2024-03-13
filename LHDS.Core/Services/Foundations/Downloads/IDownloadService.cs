@@ -10,7 +10,7 @@ namespace LHDS.Core.Services.Foundations.Downloads
 {
     public interface IDownloadService
     {
-        ValueTask<List<Download>> RetrieveListOfDocumentsToProcessAsync(Download download);
+        ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(Download download);
         ValueTask<Download> RetrieveDownloadByFileNameAsync(Download download);
     }
 }

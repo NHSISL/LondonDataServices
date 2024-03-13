@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId))
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
                     .ThrowsAsync(dependancyValidationException);
 
             // When
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 .BeEquivalentTo(expectedDecryptionCoordinationDependencyValidationException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>()),
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -70,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             string filePath = CreateRandomFilePath(SubscriberCredentialId);
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId))
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
                     .ThrowsAsync(dependancyValidationException);
 
             var expectedDecryptionCoordinationDependencyException =
@@ -90,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 .BeEquivalentTo(expectedDecryptionCoordinationDependencyException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>()),
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -109,11 +109,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             // Given
             var serviceException = new Exception();
             Guid SubscriberCredentialId = Guid.NewGuid();
-            string filePath = CreateRandomFilePath(SubscriberCredentialId);
+            string encryptedFileName = CreateRandomFilePath(SubscriberCredentialId);
             List<Exception> exceptions = new List<Exception>();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId))
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
                     .ThrowsAsync(serviceException);
 
             var failedDecryptionCoordinationServiceException =
@@ -127,7 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     innerException: failedDecryptionCoordinationServiceException);
 
             // When
-            ValueTask<string> processDataTask = this.decryptionCoordinationService.DecryptAsync(filePath);
+            ValueTask<string> processDataTask = this.decryptionCoordinationService.DecryptAsync(encryptedFileName);
 
             DecryptionCoordinationServiceException actualDecryptionCoordinationServiceException =
                 await Assert.ThrowsAsync<DecryptionCoordinationServiceException>(async () =>
@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 .BeEquivalentTo(expectedDecryptionCoordinationServiceException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>()),
+                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

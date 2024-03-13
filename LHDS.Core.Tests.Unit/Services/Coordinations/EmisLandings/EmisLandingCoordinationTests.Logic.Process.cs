@@ -38,10 +38,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     randomSubscriberAgreements.FirstOrDefault(agreement => agreement.Id == subscriberAgreementId);
 
                 this.subscriberCredentialOrchestrationMock.Setup(service =>
-                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId))
+                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, false))
                         .ReturnsAsync(randomSubscriberAgreement);
 
-                this.emisLandingExtractionOrchestrationServiceMock.Setup(service =>
+                this.emisLandingOrchestrationServiceMock.Setup(service =>
                     service.ProcessAsync(randomSubscriberAgreement))
                         .ReturnsAsync(randomEmisLandingPaths);
             }
@@ -62,16 +62,16 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     randomSubscriberAgreements.FirstOrDefault(agreement => agreement.Id == subscriberAgreementId);
 
                 this.subscriberCredentialOrchestrationMock.Verify(service =>
-                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId),
+                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, false),
                         Times.Once);
 
-                this.emisLandingExtractionOrchestrationServiceMock.Verify(service =>
+                this.emisLandingOrchestrationServiceMock.Verify(service =>
                     service.ProcessAsync(randomSubscriberAgreement),
                         Times.Once);
             }
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
-            this.emisLandingExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

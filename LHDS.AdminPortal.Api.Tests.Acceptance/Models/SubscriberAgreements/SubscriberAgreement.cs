@@ -13,9 +13,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements
         public Guid Id { get; set; }
         public string SupplierSharingAgreementShortName { get; set; }
         public Guid? SupplierSharingAgreementGuid { get; set; }
-        public string FtpUserName { get; set; }
-        public string FtpPublicKey { get; set; }
-        public string GpgPublicKey { get; set; }
+        public string? FtpUserName { get; set; }
+        public string? FtpPublicKey { get; set; }
+        public string? GpgPublicKey { get; set; }
         public bool IsActive { get; set; }
 
         [JsonConverter(typeof(IsoDateTimeConverter))]
@@ -32,5 +32,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements
 
         [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset CreatedDate { get; set; }
+        public string UpdatedBy { get; set; }
+        public DateTimeOffset UpdatedDate { get; set; }
     }
 }

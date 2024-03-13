@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Documents;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
 using Xunit;
@@ -16,7 +18,7 @@ using Xunit.Abstractions;
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 {
     [Collection(nameof(ApiTestCollection))]
-    public partial class LandingsApiTests
+    public partial class EmisLandingsApiTests
     {
         private readonly ApiBroker apiBroker;
         private readonly string encryptedFolder;
@@ -26,7 +28,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         private readonly Guid dataSetSpecificationId;
         private readonly ITestOutputHelper output;
 
-        public LandingsApiTests(
+        public EmisLandingsApiTests(
             ApiBroker apiBroker,
             ITestOutputHelper output)
         {
@@ -301,6 +303,38 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Document CreateRandomDocument() =>
+            CreateDocumentFiller().Create();
+
+        private static Filler<Document> CreateDocumentFiller()
+        {
+            var filler = new Filler<Document>();
+            string filename = GetRandomString();
+
+            filler.Setup()
+                .OnProperty(document => document.FileName).Use(filename);
+
+            return filler;
+        }
+
+        private static SubscriberCredential CreateRandomSubscriberCredential() =>
+            CreateSubscriberCredentialFiller().Create();
+
+        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller()
+        {
+            var filler = new Filler<SubscriberCredential>();
+            string user = Guid.NewGuid().ToString();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
             return filler;
         }

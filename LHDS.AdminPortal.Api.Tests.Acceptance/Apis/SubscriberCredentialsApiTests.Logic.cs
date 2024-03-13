@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using Xunit;
@@ -21,7 +22,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             Guid subscriberAgreementId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberAgreementId);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential;
+            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
             expectedSubscriberCredential.FtpPassPhrase = null;
             expectedSubscriberCredential.FtpPrivateKey = null;
             expectedSubscriberCredential.FtpPassword = null;
@@ -52,7 +53,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             randomSubscriberCredential.CreatedBy = subscriberAgreement.CreatedBy;
             randomSubscriberCredential.UpdatedDate = dateOffset.AddMilliseconds(10);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential;
+            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
             expectedSubscriberCredential.FtpPassPhrase = null;
             expectedSubscriberCredential.FtpPrivateKey = null;
             expectedSubscriberCredential.FtpPassword = null;
@@ -79,7 +80,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             Guid subscriberAgreementId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberAgreementId);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential;
+            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
             expectedSubscriberCredential.FtpPassPhrase = null;
             expectedSubscriberCredential.FtpPrivateKey = null;
             expectedSubscriberCredential.FtpPassword = null;
@@ -110,7 +111,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             randomSubscriberCredential.CreatedBy = subscriberAgreement.CreatedBy;
             randomSubscriberCredential.UpdatedDate = dateOffset.AddMilliseconds(10);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential;
+            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
             expectedSubscriberCredential.FtpPassPhrase = null;
             expectedSubscriberCredential.FtpPrivateKey = null;
             expectedSubscriberCredential.FtpPassword = null;
@@ -137,7 +138,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             Guid subscriberAgreementId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberAgreementId);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential;
+            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
             expectedSubscriberCredential.FtpPassPhrase = null;
             expectedSubscriberCredential.FtpPrivateKey = null;
             expectedSubscriberCredential.FtpPassword = null;
@@ -168,7 +169,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             randomSubscriberCredential.CreatedBy = subscriberAgreement.CreatedBy;
             randomSubscriberCredential.UpdatedDate = dateOffset.AddMilliseconds(10);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential;
+            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
             expectedSubscriberCredential.FtpPassPhrase = null;
             expectedSubscriberCredential.FtpPrivateKey = null;
             expectedSubscriberCredential.FtpPassword = null;
@@ -195,7 +196,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             Guid subscriberAgreementId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberAgreementId);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential;
+            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
             expectedSubscriberCredential.FtpPassPhrase = null;
             expectedSubscriberCredential.FtpPrivateKey = null;
             expectedSubscriberCredential.FtpPassword = null;
@@ -226,7 +227,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             randomSubscriberCredential.CreatedBy = subscriberAgreement.CreatedBy;
             randomSubscriberCredential.UpdatedDate = dateOffset.AddMilliseconds(10);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential;
+            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
             expectedSubscriberCredential.FtpPassPhrase = null;
             expectedSubscriberCredential.FtpPrivateKey = null;
             expectedSubscriberCredential.FtpPassword = null;

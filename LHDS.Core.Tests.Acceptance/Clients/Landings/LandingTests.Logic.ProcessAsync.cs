@@ -3,153 +3,201 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 {
     public partial class LandingTests
     {
-        [Fact(Skip = "Ftp Down")]
+        [Fact]
         public async Task ShouldProcessNewDocumentsAsync()
         {
-            throw new NotImplementedException();
-            ////Given
-            //DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            //Guid supplierId = landingConfiguration.LandingSupplierId;
-            //string fileName = GetRandomFileName();
-            //byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
-            //DataSet activeDataSet = CreateRandomDataSet(supplierId);
-            //DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
+            //Given
+            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            Guid supplierId = landingConfiguration.LandingSupplierId;
+            string fileName = GetRandomFileName();
+            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+            DataSet activeDataSet = CreateRandomDataSet(supplierId);
+            DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
 
-            //Document document = new Document
-            //{
-            //    DocumentData = documentData,
-            //    FileName = fileName
-            //};
+            Document randomDocument = new Document
+            {
+                DocumentData = documentData,
+                FileName = fileName
+            };
 
-            //List<Document> documents = new List<Document> { document };
+            Download downloadListRequest = new Download
+            {
+                SubscriberCredential = inputSubscriberCredential
+            };
 
-            //this.downloadBrokerMock.Setup(broker =>
-            //    broker.GetListOfDocumentsToProcessAsync())
-            //        .ReturnsAsync(documents);
+            Download downloadFileRequest = new Download
+            {
+                Document = new Document { FileName = fileName },
+                SubscriberCredential = inputSubscriberCredential
+            };
 
-            //this.downloadBrokerMock.Setup(broker =>
-            //    broker.GetDocumentByFileNameAsync(fileName))
-            //        .ReturnsAsync(document);
+            Download downloadFileResponse = new Download
+            {
+                Document = randomDocument,
+                SubscriberCredential = inputSubscriberCredential
+            };
 
-            //await this.dataSetService.AddDataSetAsync(activeDataSet);
-            //await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecification);
+            List<string> fileList = new List<string> { fileName };
 
-            //DataSetSpecification retrievedDataSetSpecification =
-            //    await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
+            this.downloadBrokerMock.Setup(broker =>
+                broker.GetListOfDownloadsToProcessAsync(downloadListRequest))
+                    .ReturnsAsync(fileList);
 
-            ////When
-            //var actualStringList = await this.landingClient.ProcessAsync();
+            this.downloadBrokerMock.Setup(broker =>
+                broker.GetDownloadByFileNameAsync(downloadFileRequest))
+                    .ReturnsAsync(downloadFileResponse);
 
-            ////Then
-            //this.downloadBrokerMock.Verify(broker =>
-            //    broker.GetListOfDocumentsToProcessAsync(),
-            //        Times.Once);
+            await this.dataSetService.AddDataSetAsync(activeDataSet);
+            await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecification);
 
-            //foreach (var actualFile in actualStringList)
-            //{
-            //    this.downloadBrokerMock.Verify(broker =>
-            //        broker.GetDocumentByFileNameAsync(fileName),
-            //            Times.Once);
+            DataSetSpecification retrievedDataSetSpecification =
+                await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
 
-            //    string expectedFile =
-            //        $"/{landingConfiguration.DecryptedFolder}"
-            //        + $"/{activeDataSet.DataSetName}"
-            //        + $"/{activeDataSetSpecification.Id}"
-            //        + $"/{fileName.Split('_')[3]}"
-            //        + $"/{fileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+            //When
+            var actualStringList = await this.landingClient.ProcessAsync();
 
-            //    actualFile.Should().BeEquivalentTo(expectedFile);
+            //Then
+            this.downloadBrokerMock.Verify(broker =>
+                broker.GetListOfDownloadsToProcessAsync(downloadListRequest),
+                    Times.Once);
 
-            //    IngestionTracking ingestionTracking = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
-            //        .FirstOrDefault(ingestionTracking => ingestionTracking.DecryptedFileName == actualFile);
+            foreach (var actualFile in actualStringList)
+            {
+                this.downloadBrokerMock.Verify(broker =>
+                    broker.GetDownloadByFileNameAsync(downloadFileRequest),
+                        Times.Once);
 
-            //    ingestionTracking.Should().NotBeNull();
+                string expectedFile =
+                    $"/{landingConfiguration.DecryptedFolder}"
+                    + $"/{activeDataSet.DataSetName}"
+                    + $"/{activeDataSetSpecification.Id}"
+                    + $"/{fileName.Split('_')[3]}"
+                    + $"/{fileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
-            //    var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
-            //        .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+                actualFile.Should().BeEquivalentTo(expectedFile);
 
-            //    foreach (var audit in audits)
-            //    {
-            //        await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
-            //    }
+                IngestionTracking ingestionTracking = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                    .FirstOrDefault(ingestionTracking => ingestionTracking.DecryptedFileName == actualFile);
 
-            //    await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+                ingestionTracking.Should().NotBeNull();
 
-            //    this.blobStorageBrokerMock.Verify(broker =>
-            //        broker.InsertFileAsync(
-            //            ingestionTracking.EncryptedFileName,
-            //            It.IsAny<Stream>(),
-            //            It.IsAny<string>()),
-            //                Times.Once());
-            //}
+                var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
+                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
-            //await this.dataSetSpecificationProcessingService
-            //    .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
+                foreach (var audit in audits)
+                {
+                    await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+                }
 
-            //await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
-            //this.downloadBrokerMock.VerifyNoOtherCalls();
-            //this.blobStorageBrokerMock.VerifyNoOtherCalls();
+                await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
+                this.blobStorageBrokerMock.Verify(broker =>
+                    broker.InsertFileAsync(
+                        ingestionTracking.EncryptedFileName,
+                        It.IsAny<Stream>(),
+                        It.IsAny<string>()),
+                            Times.Once());
+            }
+
+            await this.dataSetSpecificationProcessingService
+                .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
+
+            await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
+            this.downloadBrokerMock.VerifyNoOtherCalls();
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact(Skip = "Ftp Down")]
+        [Fact]
         public async Task ShouldNotProcessExistingDocumentsAsync()
         {
-            throw new NotImplementedException();
+            //Given
+            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            string fileName = GetRandomString();
+            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
 
-            ////Given
-            //DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            //string fileName = GetRandomString();
-            //byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+            Document randomDocument = new Document
+            {
+                DocumentData = documentData,
+                FileName = fileName
+            };
 
-            //Document document = new Document
-            //{
-            //    DocumentData = documentData,
-            //    FileName = fileName
-            //};
+            Download downloadListRequest = new Download
+            {
+                SubscriberCredential = inputSubscriberCredential
+            };
 
-            //List<Document> documents = new List<Document> { document };
+            Download downloadFileRequest = new Download
+            {
+                Document = new Document { FileName = fileName },
+                SubscriberCredential = inputSubscriberCredential
+            };
 
-            //this.downloadBrokerMock.Setup(broker =>
-            //    broker.GetListOfDocumentsToProcessAsync())
-            //        .ReturnsAsync(documents);
+            Download downloadFileResponse = new Download
+            {
+                Document = randomDocument,
+                SubscriberCredential = inputSubscriberCredential
+            };
 
-            //List<IngestionTracking> ingestionTrackings = await CreateRandomIngestionTrackings(
-            //    dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
-            //    documents,
-            //    supplierId: landingConfiguration.LandingSupplierId);
+            List<string> fileList = new List<string> { fileName };
+            List<Document> documents = new List<Document> { randomDocument };
 
-            ////When
-            //var actualStringList = await this.landingClient.ProcessAsync();
+            this.downloadBrokerMock.Setup(broker =>
+                broker.GetListOfDownloadsToProcessAsync(downloadListRequest))
+                    .ReturnsAsync(fileList);
 
-            ////Then
-            //actualStringList.Should().HaveCount(0);
+            List<IngestionTracking> ingestionTrackings = await CreateRandomIngestionTrackings(
+                dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                documents,
+                supplierId: landingConfiguration.LandingSupplierId);
 
-            //this.downloadBrokerMock.Verify(broker =>
-            //    broker.GetListOfDocumentsToProcessAsync(),
-            //        Times.Once);
+            //When
+            var actualStringList = await this.landingClient.ProcessAsync();
 
-            //foreach (var tracking in ingestionTrackings)
-            //{
-            //    var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
-            //        .Where(audit => audit.IngestionTrackingId == tracking.Id);
+            //Then
+            actualStringList.Should().HaveCount(0);
 
-            //    foreach (var audit in audits)
-            //    {
-            //        await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
-            //    }
+            this.downloadBrokerMock.Verify(broker =>
+                broker.GetListOfDownloadsToProcessAsync(downloadListRequest),
+                    Times.Once);
 
-            //    await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(tracking.Id);
-            //}
+            foreach (var tracking in ingestionTrackings)
+            {
+                var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
+                    .Where(audit => audit.IngestionTrackingId == tracking.Id);
 
-            //this.downloadBrokerMock.VerifyNoOtherCalls();
-            //this.blobStorageBrokerMock.VerifyNoOtherCalls();
+                foreach (var audit in audits)
+                {
+                    await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+                }
+
+                await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(tracking.Id);
+            }
+
+            this.downloadBrokerMock.VerifyNoOtherCalls();
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

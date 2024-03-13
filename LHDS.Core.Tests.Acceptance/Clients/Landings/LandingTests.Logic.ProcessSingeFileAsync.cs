@@ -1,128 +1,168 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
+using Moq;
+using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 {
     public partial class LandingTests
     {
-        // TODO: @Hassan, to fix this test and remove the mocks on the acceptance tests.  
-        // Removed to test for now to allow testing of self-hosted agent.
+        [Fact]
+        public async Task ShouldProcessNewDocumentAsync()
+        {
+            // Given
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            string fileName = GetRandomString();
+            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
 
-        //[Fact]
-        //public async Task ShouldProcessNewDocumentAsync()
-        //{
-        //    // Given
-        //    DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-        //    string fileName = GetRandomString();
-        //    byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+            Document randomDocument = new Document
+            {
+                DocumentData = documentData,
+                FileName = fileName
+            };
 
-        //    Document document = new Document
-        //    {
-        //        DocumentData = documentData,
-        //        FileName = fileName
-        //    };
+            Download downloadListRequest = new Download
+            {
+                SubscriberCredential = inputSubscriberCredential
+            };
 
-        //    this.downloadBrokerMock.Setup(broker =>
-        //        broker.GetDocumentByFileNameAsync(fileName))
-        //            .ReturnsAsync(document);
+            Download downloadFileRequest = new Download
+            {
+                Document = new Document { FileName = fileName },
+                SubscriberCredential = inputSubscriberCredential
+            };
 
-        //    string encryptedFileName = $"/encrypted/{fileName}";
-        //    string expectedString = $"/decrypted/{fileName}";
+            List<string> fileList = new List<string> { fileName };
 
-        //    // When
-        //    var actualString = await this.landingClient.ProcessAsync(fileName);
+            this.downloadBrokerMock.Setup(broker =>
+                broker.GetListOfDownloadsToProcessAsync(downloadListRequest))
+                    .ReturnsAsync(fileList);
 
-        //    // Then
-        //    actualString.Should().BeEquivalentTo(expectedString);
+            string encryptedFileName = $"/encrypted/{fileName}";
+            string expectedString = $"/decrypted/{fileName}";
 
-        //    this.downloadBrokerMock.Verify(broker =>
-        //        broker.GetDocumentByFileNameAsync(fileName),
-        //            Times.Once());
+            // When
+            var actualString = await this.landingClient.ProcessAsync(fileName);
 
-        //    this.blobStorageBrokerMock.Verify(broker =>
-        //        broker.InsertFileAsync(encryptedFileName, It.IsAny<Stream>()),
-        //            Times.Once());
+            // Then
+            actualString.Should().BeEquivalentTo(expectedString);
 
-        //    IngestionTracking retrievedInestionTracking =
-        //        await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(fileName);
+            this.downloadBrokerMock.Verify(broker =>
+                broker.GetDownloadByFileNameAsync(downloadFileRequest),
+                    Times.Once());
 
-        //    retrievedInestionTracking.CreatedDate.Should().Be(retrievedInestionTracking.UpdatedDate);
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.InsertFileAsync(encryptedFileName, It.IsAny<Stream>(), It.IsAny<string>()),
+                    Times.Once());
 
-        //    var audits = this.auditService.RetrieveAllAudits()
-        //                    .Where(audit => audit.IngestionTrackingId == retrievedInestionTracking.Id);
+            IngestionTracking retrievedInestionTracking =
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(fileName);
 
-        //    foreach (var audit in audits)
-        //    {
-        //        await this.auditService.RemoveAuditByIdAsync(audit.Id);
-        //    }
+            retrievedInestionTracking.CreatedDate.Should().Be(retrievedInestionTracking.UpdatedDate);
 
-        //    await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(retrievedInestionTracking.Id);
+            var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
+                .Where(audit => audit.IngestionTrackingId == retrievedInestionTracking.Id);
 
-        //    this.downloadBrokerMock.VerifyNoOtherCalls();
-        //    this.blobStorageBrokerMock.VerifyNoOtherCalls();
-        //}
+            foreach (var audit in audits)
+            {
+                await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+            }
 
-        //[Fact]
-        //public async Task ShouldProcessExistingDocumentAsync()
-        //{
-        //    // Given
-        //    DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-        //    string fileName = GetRandomString();
-        //    byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(retrievedInestionTracking.Id);
 
-        //    Document document = new Document
-        //    {
-        //        DocumentData = documentData,
-        //        FileName = fileName
-        //    };
+            this.downloadBrokerMock.VerifyNoOtherCalls();
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+        }
 
-        //    this.downloadBrokerMock.Setup(broker =>
-        //        broker.GetDocumentByFileNameAsync(fileName))
-        //            .ReturnsAsync(document);
+        [Fact]
+        public async Task ShouldProcessExistingDocumentAsync()
+        {
+            // Given
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            string fileName = GetRandomString();
+            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
 
-        //    IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
-        //        dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
-        //        document,
-        //        supplierId: this.landingConfiguration.LandingSupplierId);
+            Document randomDocument = new Document
+            {
+                DocumentData = documentData,
+                FileName = fileName
+            };
 
-        //    await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
+            Download downloadFileRequest = new Download
+            {
+                Document = new Document { FileName = fileName },
+                SubscriberCredential = inputSubscriberCredential
+            };
 
-        //    // When
-        //    var actualString = await this.landingClient.ProcessAsync(fileName);
+            Download downloadFileResponse = new Download
+            {
+                Document = randomDocument,
+                SubscriberCredential = inputSubscriberCredential
+            };
 
-        //    // Then
-        //    actualString.Should().BeEquivalentTo(ingestionTracking.DecryptedFileName);
+            this.downloadBrokerMock.Setup(broker =>
+                broker.GetDownloadByFileNameAsync(downloadFileRequest))
+                    .ReturnsAsync(downloadFileResponse);
 
-        //    this.downloadBrokerMock.Verify(broker =>
-        //        broker.GetDocumentByFileNameAsync(fileName),
-        //            Times.Once());
+            IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
+                dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                randomDocument,
+                supplierId: this.landingConfiguration.LandingSupplierId);
 
-        //    this.blobStorageBrokerMock.Verify(broker =>
-        //        broker.InsertFileAsync(ingestionTracking.EncryptedFileName, It.IsAny<Stream>()),
-        //            Times.Once());
+            await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 
-        //    var audits = this.auditService.RetrieveAllAudits()
-        //                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+            // When
+            var actualString = await this.landingClient.ProcessAsync(fileName);
 
-        //    foreach (var audit in audits)
-        //    {
-        //        await this.auditService.RemoveAuditByIdAsync(audit.Id);
-        //    }
+            // Then
+            actualString.Should().BeEquivalentTo(ingestionTracking.DecryptedFileName);
 
-        //    IngestionTracking modifiedIngestionTracking =
-        //        await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(fileName);
+            this.downloadBrokerMock.Verify(broker =>
+                broker.GetDownloadByFileNameAsync(downloadFileRequest),
+                    Times.Once());
 
-        //    modifiedIngestionTracking.UpdatedDate.Should().BeAfter(ingestionTracking.UpdatedDate);
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.InsertFileAsync(ingestionTracking.EncryptedFileName, It.IsAny<Stream>(), It.IsAny<string>()),
+                    Times.Once());
 
-        //    this.blobStorageBrokerMock.Verify(broker =>
-        //        broker.DeleteFileAsync(ingestionTracking.EncryptedFileName),
-        //            Times.Once());
+            var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
-        //    await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+            foreach (var audit in audits)
+            {
+                await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+            }
 
-        //    this.downloadBrokerMock.VerifyNoOtherCalls();
-        //    this.blobStorageBrokerMock.VerifyNoOtherCalls();
-        //}
+            IngestionTracking modifiedIngestionTracking =
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(fileName);
+
+            modifiedIngestionTracking.UpdatedDate.Should().BeAfter(ingestionTracking.UpdatedDate);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.DeleteFileAsync(ingestionTracking.EncryptedFileName, It.IsAny<string>()),
+                    Times.Once());
+
+            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
+            this.downloadBrokerMock.VerifyNoOtherCalls();
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -30,6 +30,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             SubscriberCredential subscriberCredential) =>
                 await this.apiFactoryClient.PutContentAsync(subscriberCredentialsRelativeUrl, subscriberCredential);
 
+        public async ValueTask<SubscriberCredential> PutSubscriberCredentialAndGenerateKeysAsync(
+            SubscriberCredential subscriberCredential) =>
+                await this.apiFactoryClient.PutContentAsync($"{subscriberCredentialsRelativeUrl}/regeneratekeys",
+                    subscriberCredential);
+
         public async ValueTask<SubscriberCredential> DeleteSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>
             await this.apiFactoryClient.DeleteContentAsync<SubscriberCredential>(
                 $"{subscriberCredentialsRelativeUrl}/{subscriberCredentialId}");

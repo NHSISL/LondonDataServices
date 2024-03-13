@@ -48,8 +48,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             Guid subscriberAgreementId = Guid.NewGuid();
             SubscriberAgreement subscriberAgreement = await PostRandomSubscriberAgreementAsync(subscriberAgreementId);
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberAgreementId);
-            randomSubscriberCredential.CreatedDate = dateOffset.AddDays(-2);
-            //randomSubscriberCredential.UpdatedDate = DateTimeOffset.UtcNow;
+            randomSubscriberCredential.CreatedDate = subscriberAgreement.CreatedDate;
+            randomSubscriberCredential.CreatedBy = subscriberAgreement.CreatedBy;
+            randomSubscriberCredential.UpdatedDate = dateOffset.AddMilliseconds(10);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential;
             expectedSubscriberCredential.FtpPassPhrase = null;

@@ -2,16 +2,19 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
+using System.Web;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 #if RELEASE
 using Microsoft.AspNetCore.Authorization;
 #endif
@@ -20,11 +23,11 @@ namespace LHDS.AdminPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class DownloadsController : RESTFulController
+    public class EmisLandingsController : RESTFulController
     {
         private readonly IEmisLandingCoordinationService emisLandingCoordinationService;
 
-        public DownloadsController(IEmisLandingCoordinationService emisLandingCoordinationService) =>
+        public EmisLandingsController(IEmisLandingCoordinationService emisLandingCoordinationService) =>
             this.emisLandingCoordinationService = emisLandingCoordinationService;
 
         [HttpGet]
@@ -41,11 +44,10 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                throw new System.NotImplementedException();
-                //List<string> retrieveFileList =
-                //    await emisLandingCoordinationService.RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId);
+                List<string> retrieveFileList =
+                    await emisLandingCoordinationService.RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId);
 
-                //return Ok(retrieveFileList);
+                return Ok(retrieveFileList);
             }
             catch (DownloadDependencyException downloadDependencyException)
             {
@@ -57,19 +59,45 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [HttpGet("{fileName}")]
+        [HttpGet("filename/{fileName}")]
 #if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<Document>> RetrieveDownloadByFileNameAsync(string filename)
+        public async ValueTask<ActionResult<string>> ReLandDocumentByFileNameAsync(string fileName)
         {
             try
             {
-                throw new System.NotImplementedException();
-                //Document retrieveDownload = await emisLandingCoordinationService
-                //    .RetrieveDownloadByFileNameAsync(filename);
+                var returnFilePath = await this.emisLandingCoordinationService
+                    .ProcessFileAsync(HttpUtility.UrlDecode(fileName));
 
-                //return Ok(retrieveDownload);
+                return Ok(returnFilePath);
+            }
+            catch (EmisLandingCoordinationValidationException emisLandingOrchestrationValidationException)
+            {
+                return BadRequest(emisLandingOrchestrationValidationException.InnerException);
+            }
+            catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
+            {
+                return InternalServerError(emisLandingOrchestrationDependencyException);
+            }
+            catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)
+            {
+                return InternalServerError(emisLandingOrchestrationServiceException);
+            }
+        }
+
+        [HttpGet("download/{fileName}")]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
+#endif
+        public async ValueTask<ActionResult<Document>> DownloadDocumentByFileNameAsync(string filename)
+        {
+            try
+            {
+                Document retrieveDownload = await emisLandingCoordinationService
+                    .RetrieveDownloadByFileNameAsync(filename);
+
+                return Ok(retrieveDownload);
             }
             catch (DownloadValidationException downloadValidationException)
                 when (downloadValidationException.InnerException is NotFoundDocumentException)

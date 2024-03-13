@@ -31,10 +31,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                 key: "cryptographyType",
                 values: "Text is required");
 
-            invalidArgumentCryptographyKeyException.AddData(
-                key: "publicKeyComment",
-                values: "Text is required");
-
             var expectedCryptographyTypeValidationException =
                 new CryptographyKeyValidationException(
                     message: "Cryptography key validation errors occurred, please try again.",

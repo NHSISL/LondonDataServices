@@ -22,9 +22,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberAgreementId);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential;
-
-            //SubscriberAgreement subscriberAgreement =
-            //    await this.PostRandomSubscriberAgreementAsync(subscriberAgreementId);
+            expectedSubscriberCredential.FtpPassPhrase = null;
+            expectedSubscriberCredential.FtpPrivateKey = null;
+            expectedSubscriberCredential.FtpPassword = null;
+            expectedSubscriberCredential.GpgPassPhrase = null;
+            expectedSubscriberCredential.GpgPrivateKey = null;
 
             // when 
             await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);

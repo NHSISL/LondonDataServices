@@ -58,8 +58,9 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
                 ValidateSubscriberAgreement(subscriberAgreement);
                 ValidateSubscriberAgreementId(subscriberAgreement.Id);
 
-                var maybeSubscriberAgreement = await this.subscriberAgreementService
-                    .RetrieveSubscriberAgreementByIdAsync(subscriberAgreement.Id);
+                var maybeSubscriberAgreement = this.subscriberAgreementService
+                    .RetrieveAllSubscriberAgreements().FirstOrDefault(
+                        agreement => agreement.Id == subscriberAgreement.Id);
 
                 if (maybeSubscriberAgreement != null)
                 {

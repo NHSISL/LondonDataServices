@@ -40,6 +40,36 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             //await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
+        [Fact]
+        public async Task ShouldPostModifiedSubscriberCredentialAsync()
+        {
+            // given
+            DateTimeOffset dateOffset = DateTimeOffset.UtcNow;
+            Guid subscriberAgreementId = Guid.NewGuid();
+            SubscriberAgreement subscriberAgreement = await PostRandomSubscriberAgreementAsync(subscriberAgreementId);
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberAgreementId);
+            randomSubscriberCredential.UpdatedDate = dateOffset.AddDays(-2);
+            //randomSubscriberCredential.UpdatedDate = DateTimeOffset.UtcNow;
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential;
+            expectedSubscriberCredential.FtpPassPhrase = null;
+            expectedSubscriberCredential.FtpPrivateKey = null;
+            expectedSubscriberCredential.FtpPassword = null;
+            expectedSubscriberCredential.GpgPassPhrase = null;
+            expectedSubscriberCredential.GpgPrivateKey = null;
+
+            // when 
+            await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);
+
+            SubscriberCredential actualSubscriberCredential =
+                await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
+
+            // then
+            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+            await this.apiBroker.DeleteSubscriberAgreementByIdAsync(subscriberAgreementId);
+            //await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
+        }
+
         //[Fact]
         //public async Task ShouldGetAllSubscriberCredentialsAsync()
         //{

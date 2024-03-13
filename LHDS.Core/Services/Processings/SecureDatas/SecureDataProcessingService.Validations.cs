@@ -18,37 +18,6 @@ namespace LHDS.Core.Services.Processings.SecureDatas
         private void ValidateSubscriberCredentialOnAdd(SubscriberCredential subscriberCredential)
         {
             ValidateSubscriberCredentialIsNotNull(subscriberCredential);
-
-            Validate<InvalidSubscriberCredentialException>(
-                message: "Invalid subscriber credential errors occured. Please correct the errors and try again.",
-                (Rule: IsInvalid(subscriberCredential.Id), Parameter: nameof(SubscriberCredential.Id)),
-
-                (Rule: IsInvalid(subscriberCredential.SupplierSharingAgreementShortName), Parameter: nameof(
-                    SubscriberCredential.SupplierSharingAgreementShortName)),
-
-                (Rule: IsInvalid(subscriberCredential.FtpUserName), Parameter: nameof(
-                    SubscriberCredential.FtpUserName)),
-
-                (Rule: IsInvalid(subscriberCredential.FtpPassword), Parameter: nameof(
-                    SubscriberCredential.FtpPassword)),
-
-                (Rule: IsInvalid(subscriberCredential.FtpPassPhrase), Parameter: nameof(
-                    SubscriberCredential.FtpPassPhrase)),
-
-                (Rule: IsInvalid(subscriberCredential.FtpPrivateKey), Parameter: nameof(
-                    SubscriberCredential.FtpPrivateKey)),
-
-                (Rule: IsInvalid(subscriberCredential.FtpPublicKey), Parameter: nameof(
-                    SubscriberCredential.FtpPublicKey)),
-
-                (Rule: IsInvalid(subscriberCredential.GpgPassPhrase), Parameter: nameof(
-                    SubscriberCredential.GpgPassPhrase)),
-
-                (Rule: IsInvalid(subscriberCredential.GpgPrivateKey), Parameter: nameof(
-                    SubscriberCredential.GpgPrivateKey)),
-
-                (Rule: IsInvalid(subscriberCredential.GpgPublicKey), Parameter: nameof(
-                    SubscriberCredential.GpgPublicKey)));
         }
 
         private void ValidateSubscriberCredentialOnRetrieve(SubscriberCredential subscriberCredential)
@@ -57,19 +26,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
 
             Validate<InvalidSubscriberCredentialException>(
                 message: "Invalid subscriber credential errors occurred. Please correct the errors and try again.",
-                (Rule: IsInvalid(subscriberCredential.Id), Parameter: nameof(SubscriberCredential.Id)),
-
-                (Rule: IsInvalid(subscriberCredential.SupplierSharingAgreementShortName), Parameter: nameof(
-                    SubscriberCredential.SupplierSharingAgreementShortName)),
-
-                (Rule: IsInvalid(subscriberCredential.FtpUserName), Parameter: nameof(
-                    SubscriberCredential.FtpUserName)),
-
-                (Rule: IsInvalid(subscriberCredential.FtpPublicKey), Parameter: nameof(
-                    SubscriberCredential.FtpPublicKey)),
-
-                (Rule: IsInvalid(subscriberCredential.GpgPublicKey), Parameter: nameof(
-                    SubscriberCredential.GpgPublicKey)));
+                (Rule: IsInvalid(subscriberCredential.Id), Parameter: nameof(SubscriberCredential.Id)));
         }
 
         private void ValidateSubscriberCredentialIdOnRemove(Guid subscriberCredentialId)
@@ -85,8 +42,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
 
             Validate<InvalidSecureDataException>(
                 message: "Invalid secure data errors occured. Please correct the errors and try again.",
-                (Rule: IsInvalid(secureData.Name), Parameter: nameof(SecureData.Name)),
-                (Rule: IsInvalid(secureData.Value), Parameter: nameof(SecureData.Value)));
+                (Rule: IsInvalid(secureData.Name), Parameter: nameof(SecureData.Name)));
         }
 
         private void ValidateKeysExist(List<string> keyTypes, SubscriberCredential subscriberCredential)

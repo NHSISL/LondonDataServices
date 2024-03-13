@@ -36,8 +36,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
 
             // then
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
-            await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
             await this.apiBroker.DeleteSubscriberAgreementByIdAsync(subscriberAgreementId);
+            //await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
         //[Fact]

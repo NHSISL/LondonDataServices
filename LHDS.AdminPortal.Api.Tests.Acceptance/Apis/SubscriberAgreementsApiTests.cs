@@ -69,6 +69,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(subscriberAgreement => subscriberAgreement.CreatedDate).Use(now)
                 .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(user)
                 .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedDate).Use(now)

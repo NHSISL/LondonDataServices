@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.subscriberAgreementServiceMock.Setup(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id))
+                service.RetrieveAllSubscriberAgreements())
                     .Throws(dependencyValidationException);
 
             // when
@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingDependencyValidationException);
 
             this.subscriberAgreementServiceMock.Verify(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id),
+                service.RetrieveAllSubscriberAgreements(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     innerException: dependencyException.InnerException as Xeption);
 
             this.subscriberAgreementServiceMock.Setup(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id))
+                service.RetrieveAllSubscriberAgreements())
                     .Throws(dependencyException);
 
             // when
@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingDependencyException);
 
             this.subscriberAgreementServiceMock.Verify(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id),
+                service.RetrieveAllSubscriberAgreements(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     innerException: failedSubscriberAgreementProcessingServiceException);
 
             this.subscriberAgreementServiceMock.Setup(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id))
+                service.RetrieveAllSubscriberAgreements())
                     .Throws(serviceException);
 
             // when
@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingServiveException);
 
             this.subscriberAgreementServiceMock.Verify(service =>
-                service.RetrieveSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id),
+                service.RetrieveAllSubscriberAgreements(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

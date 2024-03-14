@@ -18,7 +18,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
         public async Task ShouldPostNewSubscriberCredentialAsync()
         {
             // given
-            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             Guid subscriberAgreementId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberAgreementId);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
@@ -37,7 +36,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
 
             // then
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
-            await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
+            await this.apiBroker.DeleteSubscriberCredentialByIdAsync(actualSubscriberCredential.Id);
         }
 
         [Fact]
@@ -74,7 +73,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
         public async Task ShouldPostNewSubscriberCredentialAndGenerateKeysAsync()
         {
             // given
-            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             Guid subscriberAgreementId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberAgreementId);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
@@ -185,7 +183,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
         public async Task ShouldPutNewSubscriberCredentialAndGenerateKeysAsync()
         {
             // given
-            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             Guid subscriberAgreementId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberAgreementId);
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;

@@ -86,17 +86,48 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             return randomSubscriberCredentials;
         }
 
-        public static List<SubscriberCredential> CreateRandomSubscriberCredentials(
-            List<Guid> subscriberAgreementIds)
+        public static List<SubscriberCredential> CreatSubscriberCredentialsFromAgreements(
+            List<SubscriberAgreement> subscriberAgreements)
         {
             List<SubscriberCredential> subscriberCredentials = new List<SubscriberCredential>();
 
-            foreach (Guid subscriberAgreementId in subscriberAgreementIds)
+            foreach (SubscriberAgreement subscriberAgreement in subscriberAgreements)
             {
-                subscriberCredentials.Add(CreateRandomSubscriberCredentialFiller(subscriberAgreementId).Create());
+                SubscriberCredential subscriberCredential = 
+                    CreateSubscriberCredentialFromAgreement(subscriberAgreement);
+
+                subscriberCredentials.Add(subscriberCredential);
             }
 
             return subscriberCredentials;
+        }
+
+        private static SubscriberCredential CreateSubscriberCredentialFromAgreement(
+            SubscriberAgreement subscriberAgreement)
+        {
+            SubscriberCredential subscriberCredential = new SubscriberCredential
+            {
+                Id = subscriberAgreement.Id,
+                SupplierSharingAgreementShortName = subscriberAgreement.SupplierSharingAgreementShortName,
+                SupplierSharingAgreementGuid = subscriberAgreement.SupplierSharingAgreementGuid,
+                FtpPublicKey = subscriberAgreement.FtpPublicKey,
+                FtpUserName = subscriberAgreement.FtpUserName,
+                FtpPassPhrase = "",
+                FtpPassword = "",
+                FtpPrivateKey = "",
+                GpgPublicKey = subscriberAgreement.GpgPublicKey,
+                GpgPassPhrase = "",
+                GpgPrivateKey = "",
+                IsActive = subscriberAgreement.IsActive,
+                LastPollEndDate = subscriberAgreement.LastPollEndDate,
+                LastPollStartDate = subscriberAgreement.LastPollStartDate,
+                CreatedBy = subscriberAgreement.CreatedBy,
+                CreatedDate = subscriberAgreement.CreatedDate,
+                UpdatedBy = subscriberAgreement.UpdatedBy,
+                UpdatedDate = subscriberAgreement.UpdatedDate,
+            };
+
+            return subscriberCredential;
         }
 
         private static SubscriberCredential CreateRandomSubscriberCredential(Guid id) =>

@@ -140,8 +140,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             List<SubscriberAgreement> postedSubscriberCredentials = 
                 await PostRandomSubscriberAgreementsAsync(subscriberAgreementIds);
 
-            List<SubscriberCredential> expectedSubscriberCredentials = 
-                CreateRandomSubscriberCredentials(subscriberAgreementIds);
+            List<SubscriberCredential> expectedSubscriberCredentials =
+                CreatSubscriberCredentialsFromAgreements(postedSubscriberCredentials);
 
             // when
             List<SubscriberCredential> actualSubscriberCredentials = await this.apiBroker

@@ -53,7 +53,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         private readonly ISubscriberCredentialOrchestration subscriberCredentialOrchestration;
         private readonly IEmisLandingClient landingClient;
         private readonly LandingConfiguration landingConfiguration;
-        private readonly IIngestionTrackingAuditService auditService;
+        private readonly IIngestionTrackingAuditService ingestionTrackingAuditService;
         private readonly ICompareLogic compareLogic;
         private readonly DependencyBroker dependencyBroker;
 
@@ -101,7 +101,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             this.dataSetSpecificationProcessingService =
                 serviceProvider.GetService<IDataSetSpecificationProcessingService>();
 
-            this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
+            this.ingestionTrackingAuditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             landingClient = serviceProvider.GetService<IEmisLandingClient>();
@@ -273,6 +273,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.IsActive).Use(true)
                 .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 

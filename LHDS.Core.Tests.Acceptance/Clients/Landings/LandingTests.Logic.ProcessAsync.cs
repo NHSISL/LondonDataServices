@@ -30,10 +30,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             Guid supplierId = landingConfiguration.LandingSupplierId;
             string fileName = GetRandomFileName();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
-            DataSet activeDataSet = CreateRandomDataSet(supplierId);
-            DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
+            //DataSet activeDataSet = CreateRandomDataSet(supplierId);
+            //DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+
+            await this.subscriberCredentialOrchestration
+                .ModifyOrAddSubscriberCredentialAsync(inputSubscriberCredential);
 
             Document randomDocument = new Document
             {
@@ -68,9 +71,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 broker.GetDownloadByFileNameAsync(downloadFileRequest))
                     .ReturnsAsync(downloadFileResponse);
 
-            await this.dataSetService.AddDataSetAsync(activeDataSet);
-            await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecification);
-
             DataSetSpecification retrievedDataSetSpecification =
                 await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
 
@@ -90,8 +90,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
                 string expectedFile =
                     $"/{landingConfiguration.DecryptedFolder}"
-                    + $"/{activeDataSet.DataSetName}"
-                    + $"/{activeDataSetSpecification.Id}"
+                    + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
+                    + $"/{retrievedDataSetSpecification.Id}"
                     + $"/{fileName.Split('_')[3]}"
                     + $"/{fileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
@@ -102,12 +102,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
                 ingestionTracking.Should().NotBeNull();
 
-                var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
+                var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                     .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
                 foreach (var audit in audits)
                 {
-                    await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+                    await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
                 }
 
                 await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
@@ -120,13 +120,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                             Times.Once());
             }
 
-            await this.dataSetSpecificationProcessingService
-                .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
-
-            await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
+
+
 
         [Fact]
         public async Task ShouldNotProcessExistingDocumentsAsync()
@@ -188,12 +186,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
             foreach (var tracking in ingestionTrackings)
             {
-                var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
+                var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                     .Where(audit => audit.IngestionTrackingId == tracking.Id);
 
                 foreach (var audit in audits)
                 {
-                    await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+                    await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
                 }
 
                 await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(tracking.Id);
@@ -201,6 +199,41 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
+
+            await this.subscriberCredentialOrchestration
+                .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
+
+            // await CleanupTestData(ingestionTrackings);
+        }
+
+        private async Task CleanupTestData(
+            DataSet activeDataSet,
+            DataSetSpecification activeDataSetSpecification,
+            SubscriberCredential inputSubscriberCredential,
+            List<IngestionTracking> ingestionTrackings)
+        {
+
+            foreach (var ingestionTracking in ingestionTrackings)
+            {
+                var items = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+
+                foreach (var audit in items)
+                {
+                    await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+                }
+
+                await this.ingestionTrackingService
+                    .RemoveIngestionTrackingByIdAsync(ingestionTrackingId: ingestionTracking.Id);
+            }
+
+            await this.dataSetService.AddDataSetAsync(activeDataSet);
+
+            await this.dataSetSpecificationProcessingService
+                .AddDataSetSpecificationAsync(activeDataSetSpecification);
+
+            await this.subscriberCredentialOrchestration
+                .ModifyOrAddSubscriberCredentialAsync(inputSubscriberCredential);
         }
     }
 }

@@ -75,12 +75,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
             retrievedInestionTracking.CreatedDate.Should().Be(retrievedInestionTracking.UpdatedDate);
 
-            var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
+            var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == retrievedInestionTracking.Id);
 
             foreach (var audit in audits)
             {
-                await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+                await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
             }
 
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(retrievedInestionTracking.Id);
@@ -142,12 +142,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 broker.InsertFileAsync(ingestionTracking.EncryptedFileName, It.IsAny<Stream>(), It.IsAny<string>()),
                     Times.Once());
 
-            var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
+            var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
             foreach (var audit in audits)
             {
-                await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+                await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
             }
 
             IngestionTracking modifiedIngestionTracking =

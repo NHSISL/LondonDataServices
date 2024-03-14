@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE [SeedData].[MetaData_SeedScript] AS
+CREATE OR ALTER PROCEDURE [SeedData].[Configuration_SeedScript] AS
 BEGIN
 	SET NOCOUNT ON;
 

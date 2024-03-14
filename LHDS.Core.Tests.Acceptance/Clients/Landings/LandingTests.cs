@@ -4,7 +4,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.KeyVaults;
@@ -15,6 +17,7 @@ using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
@@ -24,6 +27,7 @@ using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
+using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.Configuration;
@@ -46,10 +50,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         private readonly ISupplierService supplierService;
         private readonly IDataSetService dataSetService;
         private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
+        private readonly ISubscriberCredentialOrchestration subscriberCredentialOrchestration;
         private readonly IEmisLandingClient landingClient;
         private readonly LandingConfiguration landingConfiguration;
         private readonly IIngestionTrackingAuditService auditService;
-
+        private readonly ICompareLogic compareLogic;
         private readonly DependencyBroker dependencyBroker;
 
         public LandingTests(DependencyBroker dependencyBroker)
@@ -57,6 +62,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             this.dependencyBroker = dependencyBroker;
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.downloadBrokerMock = new Mock<IDownloadBroker>();
+            this.compareLogic = new CompareLogic();
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging(builder =>
@@ -89,6 +95,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             this.supplierService = serviceProvider.GetService<ISupplierService>();
             this.dataSetService = serviceProvider.GetService<IDataSetService>();
             this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
+            this.subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
+
 
             this.dataSetSpecificationProcessingService =
                 serviceProvider.GetService<IDataSetSpecificationProcessingService>();
@@ -269,6 +277,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private Expression<Func<Download, bool>> SameDownloadAs(
+            Download expectedDownload)
+        {
+            return actualDownload =>
+                this.compareLogic.Compare(expectedDownload, actualDownload)
+                    .AreEqual;
         }
     }
 }

@@ -138,6 +138,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
 
+            await this.subscriberCredentialOrchestration
+                .ModifyOrAddSubscriberCredentialAsync(inputSubscriberCredential);
+
             Document randomDocument = new Document
             {
                 DocumentData = documentData,
@@ -165,7 +168,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             List<Document> documents = new List<Document> { randomDocument };
 
             this.downloadBrokerMock.Setup(broker =>
-                broker.GetListOfDownloadsToProcessAsync(downloadListRequest))
+                broker.GetListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(downloadListRequest))))
                     .ReturnsAsync(fileList);
 
             List<IngestionTracking> ingestionTrackings = await CreateRandomIngestionTrackings(
@@ -180,7 +183,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             actualStringList.Should().HaveCount(0);
 
             this.downloadBrokerMock.Verify(broker =>
-                broker.GetListOfDownloadsToProcessAsync(downloadListRequest),
+                broker.GetListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(downloadListRequest))),
                     Times.Once);
 
             foreach (var tracking in ingestionTrackings)

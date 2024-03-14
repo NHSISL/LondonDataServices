@@ -14,7 +14,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\SeedData\MetaData_SeedScript.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\SeedData\Configuration_SeedScript.sql" />
 	</ItemGroup>
 
 	<ItemGroup>

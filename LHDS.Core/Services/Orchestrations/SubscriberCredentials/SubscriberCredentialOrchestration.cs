@@ -163,6 +163,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             TryCatch(async () =>
             {
                 ValidateSubscriberCredentialId(subscriberCredentialId);
+
                 SubscriberAgreement retrievedSubscriberAgreement =
                     await this.subscriberAgreementProcessingService.RetrieveSubscriberAgreementByIdAsync(
                         subscriberCredentialId);

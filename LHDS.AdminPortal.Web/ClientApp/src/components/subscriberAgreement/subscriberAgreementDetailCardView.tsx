@@ -1,3 +1,4 @@
+import React, { FunctionComponent } from "react";
 import { SubscriberAgreementView } from "../../models/views/components/subscriberAgreements/subscriberAgreement";
 import SummaryListBase from "../bases/components/SummaryList/SummaryListBase";
 import SummaryListBaseRow from "../bases/components/SummaryList/SummaryListBase.Row";
@@ -9,7 +10,6 @@ import ButtonBase from "../bases/buttons/ButtonBase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faCopy, faKey, faTimes } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
-import React { FunctionComponent } from "react";
 
 interface SubscriberAgreementDetailCardViewProps {
     subscriberAgreement: SubscriberAgreementView;

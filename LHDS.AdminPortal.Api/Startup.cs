@@ -13,7 +13,6 @@ using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
-using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
@@ -33,6 +32,7 @@ using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Providers.Downloads.FtpDownloads;
@@ -207,7 +207,6 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
-            services.AddTransient<IKeyVaultSecretBroker, KeyVaultSecretBroker>();
             services.AddTransient<ISecureDataService, SecureDataService>();
         }
 
@@ -342,6 +341,7 @@ namespace LHDS.AdminPortal.Api
             builder.EntitySet<PdsAudit>("PdsAudits");
             builder.EntitySet<Supplier>("Suppliers");
             builder.EntitySet<TerminologyArtifact>("TerminologyArtifacts");
+            builder.EntitySet<SubscriberCredential>("SubscriberCredential");
             builder.EntitySet<SubscriberAgreement>("SubscriberAgreements");
             builder.EnableLowerCamelCase();
 

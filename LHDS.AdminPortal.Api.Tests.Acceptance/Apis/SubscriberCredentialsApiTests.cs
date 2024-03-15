@@ -172,6 +172,22 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             return randomSubscriberAgreements;
         }
 
+        public static List<SubscriberAgreement> CreateRandomSubscriberAgreements()
+        {
+            List<SubscriberAgreement> subscriberAgreements = new List<SubscriberAgreement>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                Guid id = Guid.NewGuid();
+
+                SubscriberAgreement subscriberAgreement = CreateRandomSubscriberAgreement(id);
+
+                subscriberAgreements.Add(subscriberAgreement);
+            }
+
+            return subscriberAgreements;
+        }
+
         private static SubscriberAgreement CreateRandomSubscriberAgreement(Guid id) =>
             CreateRandomSubscriberAgreementFiller(id).Create();
 

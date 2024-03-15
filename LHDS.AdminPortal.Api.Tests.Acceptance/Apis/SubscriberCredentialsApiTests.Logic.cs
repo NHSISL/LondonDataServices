@@ -240,13 +240,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
         public async Task ShouldGetAllSubscriberCredentialsAsync()
         {
             // given
-            List<Guid> subscriberAgreementIds = CreateRandomSubscriberAgreementIds();
+            List<SubscriberAgreement> subscriberAgreements = CreateRandomSubscriberAgreements();
 
-            List<SubscriberAgreement> postedSubscriberCredentials = 
-                await PostRandomSubscriberAgreementsAsync(subscriberAgreementIds);
+            foreach(SubscriberAgreement subscriberAgreement in subscriberAgreements)
+            {
+                await this.apiBroker.PostSubscriberAgreementAsync(subscriberAgreement);
+            }
 
             List<SubscriberCredential> expectedSubscriberCredentials =
-                CreatSubscriberCredentialsFromAgreements(postedSubscriberCredentials);
+                CreatSubscriberCredentialsFromAgreements(subscriberAgreements);
 
             // when
             List<SubscriberCredential> actualSubscriberCredentials = await this.apiBroker

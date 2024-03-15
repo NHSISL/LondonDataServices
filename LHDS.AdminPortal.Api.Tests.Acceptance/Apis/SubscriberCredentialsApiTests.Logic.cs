@@ -268,12 +268,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
         {
             // given
             Guid subscriberAgreementId = Guid.NewGuid();
-
-            SubscriberAgreement randomSubscriberAgreement = 
-                await PostRandomSubscriberAgreementAsync(subscriberAgreementId);
+            SubscriberAgreement subscriberAgreement = CreateRandomSubscriberAgreement(subscriberAgreementId);
+            await this.apiBroker.PostSubscriberAgreementAsync(subscriberAgreement);
 
             SubscriberCredential expectedSubscriberCredential = 
-                CreateSubscriberCredentialFromAgreement(randomSubscriberAgreement);
+                CreateSubscriberCredentialFromAgreement(subscriberAgreement);
 
             expectedSubscriberCredential.FtpPassPhrase = null;
             expectedSubscriberCredential.FtpPrivateKey = null;

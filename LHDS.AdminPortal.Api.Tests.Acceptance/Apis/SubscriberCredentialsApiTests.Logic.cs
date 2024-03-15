@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -232,6 +234,35 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             // then
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
+        }
+
+        [Fact]
+        public async Task ShouldGetAllSubscriberCredentialsAsync()
+        {
+            // given
+            List<SubscriberAgreement> subscriberAgreements = CreateRandomSubscriberAgreements();
+
+            foreach(SubscriberAgreement subscriberAgreement in subscriberAgreements)
+            {
+                await this.apiBroker.PostSubscriberAgreementAsync(subscriberAgreement);
+            }
+
+            List<SubscriberCredential> expectedSubscriberCredentials =
+                CreatSubscriberCredentialsFromAgreements(subscriberAgreements);
+
+            // when
+            List<SubscriberCredential> actualSubscriberCredentials = await this.apiBroker
+                .GetAllSubscriberCredentialsAsync();
+
+            // then
+            foreach (SubscriberCredential expectedSubscriberCredential in expectedSubscriberCredentials)
+            {
+                SubscriberCredential actualSubscriberCredential = actualSubscriberCredentials
+                    .Single(actual => actual.Id == expectedSubscriberCredential.Id);
+
+                actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+                await this.apiBroker.DeleteSubscriberCredentialByIdAsync(actualSubscriberCredential.Id);
+            }
         }
     }
 }

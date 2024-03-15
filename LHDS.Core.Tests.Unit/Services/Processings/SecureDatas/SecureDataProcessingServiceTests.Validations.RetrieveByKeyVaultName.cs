@@ -78,22 +78,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                 key: nameof(SubscriberCredential.Id),
                 values: "Id is required");
 
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.SupplierSharingAgreementShortName),
-                values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.FtpUserName),
-                values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.FtpPublicKey),
-                values: "Text is required");
-
-            invalidSubscriberCredentialException.AddData(
-                key: nameof(SubscriberCredential.GpgPublicKey),
-                values: "Text is required");
-
             var expectedSubscriberCredentialValidationException =
                new SubscriberCredentialValidationException(
                    message: "Subscriber credential validation errors occurred, please try again.",

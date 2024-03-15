@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { ChangeEvent, FunctionComponent, useState } from "react";
 import { Form } from "react-bootstrap";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import CardBase from "../bases/components/Card/CardBase";
@@ -9,30 +9,37 @@ import TextInputBase from "../bases/inputs/TextInputBase";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faKey } from "@fortawesome/free-solid-svg-icons";
+import { subscriberCredentialViewService } from "../../services/views/subscriberCredentials/subscriberCredentialViewService";
+import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
+import { Guid } from "guid-typescript";
 
 interface SubscriberAgreementAddProps {
     children?: React.ReactNode;
 }
 
 const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (props) => {
-    const {
-        children
-    } = props;
+    const { children } = props;
 
-    const [added, setAdded] = React.useState<boolean>(false);
-    const [subscriberAgreementShortName, setSubscriberAgreementShortName] = React.useState<string>("");
-    const [sshPublicKey, setSshPublicKey] = React.useState<string>("");
-    const [gpgPublicKey, setGpgPublicKey] = React.useState<string>("");
-    const [sshKeyCopied, setSshKeyCopied] = React.useState<boolean>(false);
-    const [gpgKeyCopied, setGpgKeyCopied] = React.useState<boolean>(false);
     const navigate = useNavigate();
+    const [subscriberAgreementShortName, setSubscriberAgreementShortName] = React.useState<string>("");
 
-    const addSubscriberAgreement = () => { 
-        setSshPublicKey("ssh public key");
-        setGpgPublicKey("gpg public key");
-        setAdded(true)
-        navigate('/subscriberAgreement'); 
-    }
+    const [subscriberCredential, setSubscriberCredential] =
+        useState<SubscriberCredentialView>(new SubscriberCredentialView(Guid.create()));
+
+    const addSubscriberCredential = subscriberCredentialViewService.useCreateSubscriberCredential();
+
+    const handleAddNew = () => {
+        // Move the logic inside handleAddNew
+        subscriberCredential.supplierSharingAgreementShortName = subscriberAgreementShortName;
+        addSubscriberCredential.mutate(subscriberCredential, {
+            onSuccess: () => {
+                alert("Pow");
+            },
+            onError: (error: any) => {
+                /* setAddApiError(error?.response?.data?.errors);*/
+            }
+        });
+    };
 
     return (
         <CardBase>
@@ -44,14 +51,17 @@ const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (
                     <Form>
 
                         <TextInputBase
-                            id="Subscriber Agreement Short Name"
-                            name="Subscriber Agreement Short Name"
+                            id="SubscriberAgreementShortName"
+                            name="SubscriberAgreementShortName"
                             label="Subscriber Agreement Short Name"
+                            placeholder="Subscriber Agreement Short Name"
+                            value={subscriberAgreementShortName}
                             onChange={(e) => { setSubscriberAgreementShortName(e.target.value) }}
-                            value={subscriberAgreementShortName} />
+                        />
+
 
                         <br />
-                        <ButtonBase onClick={addSubscriberAgreement} info>
+                        <ButtonBase onClick={handleAddNew} info>
                             Create Subscriber Agreement and Generate Keys &nbsp;
                             <FontAwesomeIcon icon={faKey} title="required" />
                         </ButtonBase>

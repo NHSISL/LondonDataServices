@@ -341,7 +341,7 @@ namespace LHDS.AdminPortal.Api
             builder.EntitySet<PdsAudit>("PdsAudits");
             builder.EntitySet<Supplier>("Suppliers");
             builder.EntitySet<TerminologyArtifact>("TerminologyArtifacts");
-            builder.EntitySet<SubscriberCredential>("SubscriberCredential");
+            builder.EntitySet<SubscriberCredential>("SubscriberCredentials");
             builder.EntitySet<SubscriberAgreement>("SubscriberAgreements");
             builder.EnableLowerCamelCase();
 

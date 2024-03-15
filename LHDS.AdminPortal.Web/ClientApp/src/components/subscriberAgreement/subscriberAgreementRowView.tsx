@@ -1,31 +1,33 @@
 ﻿import React, { FunctionComponent } from "react";
-import { SubscriberAgreement } from "../../models/subscriberAgreements/subscriberAgreements";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import ButtonBase from "../bases/buttons/ButtonBase";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
+import { SubscriberCredential } from "../../models/subscriberCredentials/subscriberCredentials";
 
 type SubscriberAgreementRowProps = {
-    subscriberAgreement: SubscriberAgreement;
+    subscriberCredential: SubscriberCredential;
 }
 
 const SubscriberRowView: FunctionComponent<SubscriberAgreementRowProps> = (props) => {
     const {
-        subscriberAgreement
+        subscriberCredential
     } = props;
 
     return (<>
 
         <TableBaseRow>
             <TableBaseData>
-                {subscriberAgreement.supplierSharingAgreementShortName}
+                {subscriberCredential.id.toString()}
             </TableBaseData>
             <TableBaseData>
-                {subscriberAgreement.supplierSharingAgreementGuid!.toString()}
+                {subscriberCredential.supplierSharingAgreementShortName}
             </TableBaseData>
             <TableBaseData>
-                <Link to={`/subscriberAgreementDetail/${subscriberAgreement.id}`}>
+                {subscriberCredential.supplierSharingAgreementGuid!.toString()}
+            </TableBaseData>
+            <TableBaseData>
+                <Link to={`/subscriberAgreementDetail/${subscriberCredential.id}`}>
                     <ButtonBase onClick={() => { }} add>
                         View/Edit
                     </ButtonBase>

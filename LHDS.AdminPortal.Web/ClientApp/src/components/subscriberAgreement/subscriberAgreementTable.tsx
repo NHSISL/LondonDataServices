@@ -2,7 +2,6 @@
 import React, { FunctionComponent, useMemo, useState } from "react";
 import SubscriberAgreementRow from "./subscriberAgreementRow";
 import { SubscriberAgreementView } from "../../models/views/components/subscriberAgreements/subscriberAgreement";
-import { subscriberAgreementViewService } from "../../services/views/subscriberAgreements/subscriberAgreementViewService";
 import CardBase from "../bases/components/Card/CardBase";
 import CardBaseBody from "../bases/components/Card/CardBase.Body";
 import CardBaseTitle from "../bases/components/Card/CardBase.Title";
@@ -22,6 +21,9 @@ import { faPlusCircle, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import SubscriberAgreementAdd from "./subscriberAgreementAdd";
 import { Link } from "react-router-dom";
 import { Row } from "react-bootstrap";
+import { subscriberCredentialViewService } from "../../services/views/subscriberCredentials/subscriberCredentialViewService";
+import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
+import { subscriberAgreementViewService } from "../../services/views/subscriberAgreements/subscriberAgreementViewService";
 
 type SubscriberAgreementTableProps = {};
 
@@ -31,14 +33,14 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
     const [showSpinner, setShowSpinner] = useState(false);
 
     const {
-        mappedSubscriberAgreements: subscriberAgreementRetrieved,
+        mappedSubscriberCredentials: subscriberCredentialRetrieved,
         isLoading,
         fetchNextPage,
         isFetchingNextPage,
         hasNextPage,
         data,
         refetch
-    } = subscriberAgreementViewService.useGetAllSubscriberAgreements(
+    } = subscriberCredentialViewService.useGetAllSubscriberCredentials(
         debouncedTerm
     );
 
@@ -107,17 +109,18 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
                             <TableBase>
                                 <TableBaseThead>
                                     <TableBaseRow>
+                                        <TableBaseHeader>Supplier Agreement Id</TableBaseHeader>
                                         <TableBaseHeader>Supplier Sharing Agreement ShortName</TableBaseHeader>
                                         <TableBaseHeader>Supplier Sharing Agreement Guid</TableBaseHeader>
                                         <TableBaseHeader></TableBaseHeader>
                                     </TableBaseRow>
                                 </TableBaseThead>
                                 <TableBaseTbody>
-                                    {subscriberAgreementRetrieved?.map(
-                                        (subscriberAgreementHomeView: SubscriberAgreementView) => (
+                                    {subscriberCredentialRetrieved?.map(
+                                        (subscriberCredentialHomeView: SubscriberCredentialView) => (
                                             <SubscriberAgreementRow
-                                                key={subscriberAgreementHomeView.id.toString()}
-                                                subscriberAgreement={subscriberAgreementHomeView} />)
+                                                key={subscriberCredentialHomeView.id.toString()}
+                                                subscriberCredential={subscriberCredentialHomeView} />)
                                     )}
                                     <tr>
                                         <td colSpan={4} className="text-center">

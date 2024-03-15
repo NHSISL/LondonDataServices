@@ -1,17 +1,17 @@
 ﻿import React, { FunctionComponent } from "react";
-import { SubscriberAgreement } from "../../models/subscriberAgreements/subscriberAgreements";
 import SubscriberRowView from "./subscriberAgreementRowView";
+import { SubscriberCredential } from "../../models/subscriberCredentials/subscriberCredentials";
 
 type SubscriberAgreementRowProps = {
-    subscriberAgreement: SubscriberAgreement;
+    subscriberCredential: SubscriberCredential;
 };
 
 const SubscriberAgreementRow: FunctionComponent<SubscriberAgreementRowProps> = (props) => {
-    const { subscriberAgreement } = props;
+    const { subscriberCredential } = props;
     return (
         <SubscriberRowView
-            key={subscriberAgreement.id.toString()}
-            subscriberAgreement={subscriberAgreement} />
+            key={subscriberCredential.id.toString()}
+            subscriberCredential={subscriberCredential} />
     );
 };
 

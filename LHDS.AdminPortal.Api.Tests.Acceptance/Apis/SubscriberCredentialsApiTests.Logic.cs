@@ -261,6 +261,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                     .Single(actual => actual.Id == expectedSubscriberCredential.Id);
 
                 actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+                actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
+                actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
+                actualSubscriberCredential.FtpPassword.Should().BeNull();
+                actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
+                actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
                 await this.apiBroker.DeleteSubscriberCredentialByIdAsync(actualSubscriberCredential.Id);
             }
         }
@@ -275,12 +280,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
 
             SubscriberCredential expectedSubscriberCredential = 
                 CreateSubscriberCredentialFromAgreement(subscriberAgreement);
-
-            expectedSubscriberCredential.FtpPassPhrase = null;
-            expectedSubscriberCredential.FtpPrivateKey = null;
-            expectedSubscriberCredential.FtpPassword = null;
-            expectedSubscriberCredential.GpgPassPhrase = null;
-            expectedSubscriberCredential.GpgPrivateKey = null;
 
             // when
             SubscriberCredential actualSubscriberCredential = await this.apiBroker

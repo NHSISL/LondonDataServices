@@ -66,10 +66,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                 key: nameof(SecureData.Name),
                 values: "Text is required");
 
-            invalidAddressException.AddData(
-                key: nameof(SecureData.Value),
-                values: "Text is required");
-
             var expectedSecureDataValidationException =
                 new SecureDataValidationException(
                     message: "Secure data validation errors occurred, please try again.",

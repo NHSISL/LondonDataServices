@@ -37,7 +37,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             string inputFileName = randomFilePath;
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
 
-
             Document randomDocument = new Document
             {
                 DocumentData = documentData,

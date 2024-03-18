@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
@@ -14,13 +15,24 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
     {
         private readonly DiskDownloadProviderSettings diskDownloadProviderSettings;
 
-        public string Name { get; private set; }
+        public string Name { get; private set; } = "DiskDownloadProvider";
         public bool IsOfflineProvider { get; private set; }
+
+        public DiskDownloadProvider()
+        {
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", "downloads");
+
+            this.diskDownloadProviderSettings = new DiskDownloadProviderSettings
+            {
+                LocalRootFolder = defaultFolderPath,
+                IncludeSubDirectories = true
+            };
+        }
 
         public DiskDownloadProvider(DiskDownloadProviderSettings diskDownloadProviderSettings)
         {
             this.diskDownloadProviderSettings = diskDownloadProviderSettings;
-            this.Name = "DiskDownloadProvider";
         }
 
         public async ValueTask<Download> GetDocumentByFileNameAsync(Download download)

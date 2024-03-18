@@ -16,8 +16,8 @@ namespace LHDS.Core.Providers.Downloads
 
         public DownloadAbstractionProvider(IEnumerable<IDownloadProvider> providers, IConfiguration config)
         {
-            bool isMock = config.GetValue<bool>("IsMock");
-            provider = providers.First(provider => provider.IsMock == isMock);
+            bool useOfflineProvider = config.GetValue<bool>("UseOfflineProvider");
+            provider = providers.First(provider => provider.IsOfflineProvider == useOfflineProvider);
         }
 
         public async ValueTask<List<string>> GetListOfDownloadsToProcessAsync(Download download) =>

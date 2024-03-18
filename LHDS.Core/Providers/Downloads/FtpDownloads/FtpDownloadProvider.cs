@@ -19,12 +19,13 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
     {
         private readonly IFtpDownloadProviderSettings ftpDownloadProviderSettings;
         public string Name { get; private set; }
-        public bool IsMock { get; private set; }
+        public bool IsOfflineProvider { get; private set; }
 
         public FtpDownloadProvider(IFtpDownloadProviderSettings ftpDownloadProviderSettings)
         {
             this.ftpDownloadProviderSettings = ftpDownloadProviderSettings;
             this.Name = "FtpDownloadProvider";
+            this.IsOfflineProvider = false;
         }
 
         public async ValueTask<Download> GetDocumentByFileNameAsync(Download download)

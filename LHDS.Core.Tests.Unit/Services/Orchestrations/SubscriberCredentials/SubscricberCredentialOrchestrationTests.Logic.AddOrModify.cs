@@ -84,6 +84,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             storageSubscriberCredentialWithGeneratedKeys.GpgPrivateKey = GetRandomString();
             storageSubscriberCredentialWithGeneratedKeys.GpgPublicKey = GetRandomString();
 
+            SubscriberAgreement subscriberAgreementWithGeneratedKeys = 
+                CreateSubscriberAgreementFromSubscriberCredential(storageSubscriberCredentialWithGeneratedKeys);
+
+            SubscriberAgreement outputSubscriberAgreementWithGeneratedKeys =
+                subscriberAgreementWithGeneratedKeys.DeepClone();
+
             SubscriberCredential updatedSubscriberCredentialWithGeneratedKeys =
                 storageSubscriberCredentialWithGeneratedKeys.DeepClone();
 
@@ -108,6 +114,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 service.GenerateKeysAsync(It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))))
                     .ReturnsAsync(storageSubscriberCredentialWithGeneratedKeys);
 
+            this.subscriberAgreementProcessingServiceMock.Setup(service =>
+                service.ModifyOrAddSubscriberAgreementAsync(
+                    It.Is(SameSubscriberAgreementAs(subscriberAgreementWithGeneratedKeys))))
+                        .ReturnsAsync(outputSubscriberAgreementWithGeneratedKeys);
+
             this.secureDataProcessingServiceMock.Setup(service =>
                 service.AddOrModifySecureDataAsync(
                     It.Is(SameSubscriberCredentialAs(storageSubscriberCredentialWithGeneratedKeys))))
@@ -130,6 +141,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             this.cryptographyKeyProcessingServiceMock.Verify(service =>
                 service.GenerateKeysAsync(
                     It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))),
+                        Times.Once);
+
+            this.subscriberAgreementProcessingServiceMock.Verify(service =>
+                service.ModifyOrAddSubscriberAgreementAsync(
+                    It.Is(SameSubscriberAgreementAs(subscriberAgreementWithGeneratedKeys))),
                         Times.Once);
 
             this.secureDataProcessingServiceMock.Verify(service =>

@@ -205,6 +205,29 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             return randomSubscriberAgreement;
         }
 
+        private static SubscriberAgreement CreateSubscriberAgreementFromSubscriberCredential(
+            SubscriberCredential subscriberCredential)
+        {
+            SubscriberAgreement subscriberAgreement = new SubscriberAgreement
+            {
+                Id = subscriberCredential.Id,
+                SupplierSharingAgreementShortName = subscriberCredential.SupplierSharingAgreementShortName,
+                SupplierSharingAgreementGuid = subscriberCredential.SupplierSharingAgreementGuid,
+                FtpUserName = subscriberCredential.FtpUserName,
+                FtpPublicKey = subscriberCredential.FtpPublicKey,
+                GpgPublicKey = subscriberCredential.GpgPublicKey,
+                IsActive = subscriberCredential.IsActive,
+                LastPollStartDate = subscriberCredential.LastPollStartDate,
+                LastPollEndDate = subscriberCredential.LastPollEndDate,
+                CreatedBy = subscriberCredential.CreatedBy,
+                UpdatedBy = subscriberCredential.UpdatedBy,
+                UpdatedDate = subscriberCredential.UpdatedDate,
+                CreatedDate = subscriberCredential.CreatedDate
+            };
+
+            return subscriberAgreement;
+        }
+
         private static List<SubscriberAgreement> CreateRandomSubscriberAgreements()
         {
             return CreateSubscriberAgreementFiller(dateTimeOffset: GetRandomDateTimeOffset())

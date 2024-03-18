@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Hl7.Fhir.Serialization;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Extensions.Exceptions;
@@ -183,13 +182,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             return $"/{GetRandomString()}" +
                 $"/{GetRandomString()}" +
                 $"/{randomGuid}" +
-                $"/{GetRandomNumber}" +
+                $"/{GetRandomNumber()}" +
                 $"/{GetRandomString()}" +
                 $"_{GetRandomNumber}" +
                 $"_{GetRandomString()}" +
                 $"_{GetRandomString()}" +
                 $"_{GetRandomNumber()}" +
-                $"_{identifier}.csv.gpg;";
+                $"_{identifier}.csv.gpg";
         }
 
         private static string CreateRandomFilePath(Guid identifier)
@@ -201,11 +200,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 $"/{GetRandomString()}" +
                 $"/{identifier}" +
                 $"/0122235" +
-                $"/{GetRandomNumber}" +
+                $"/{GetRandomNumber()}" +
                 $"_{GetRandomString()}" +
                 $"_{GetRandomString()}" +
                 $"_{GetRandomNumber()}" +
-                $"_{identifier}.csv.gpg;";
+                $"_{identifier}.csv.gpg";
         }
 
         private static Guid GetLastRandomGuid(string filename)

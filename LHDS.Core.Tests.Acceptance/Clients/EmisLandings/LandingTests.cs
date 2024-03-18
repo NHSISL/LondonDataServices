@@ -8,12 +8,8 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Downloads;
-using LHDS.Core.Brokers.KeyVaults;
-using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
-using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
@@ -30,20 +26,16 @@ using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Moq;
 using Tynamix.ObjectFiller;
 using Xunit;
 
-namespace LHDS.Core.Tests.Acceptance.Clients.Landings
+namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 {
     [Collection(nameof(CoreTestCollection))]
     public partial class LandingTests
     {
-        private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
-        private readonly Mock<IDownloadBroker> downloadBrokerMock;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IDataSetSpecificationService dataSetSpecificationService;
@@ -60,8 +52,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         public LandingTests(DependencyBroker dependencyBroker)
         {
             this.dependencyBroker = dependencyBroker;
-            this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
-            this.downloadBrokerMock = new Mock<IDownloadBroker>();
             this.compareLogic = new CompareLogic();
             var serviceCollection = new ServiceCollection();
 
@@ -70,33 +60,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 builder.AddConsole();
             });
 
-            var blobStorageSettings = dependencyBroker.Configuration
-                .GetSection("blobStorage").Get<BlobStorageSettings>();
-
-            LandingConfiguration landingConfiguration =
-                dependencyBroker.Configuration.GetSection("landingSettings").Get<LandingConfiguration>();
-
-            serviceCollection.AddTransient<IKeyVaultSecretBroker>((LandingConfiguration) =>
-                new KeyVaultSecretBroker(landingConfiguration.KeyVaultUrl));
-
-            serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
-
             serviceCollection
-                .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object)
-                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
                 .AddTransient<ISupplierService, SupplierService>()
                 .AddTransient<IDataSetService, DataSetService>()
                 .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
                 .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
 
-            serviceCollection.AddLandingClientForAcceptance(this.dependencyBroker.Configuration);
+            serviceCollection.AddLandingClient(this.dependencyBroker.Configuration);
+
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();
             this.dataSetService = serviceProvider.GetService<IDataSetService>();
             this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
             this.subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
-
 
             this.dataSetSpecificationProcessingService =
                 serviceProvider.GetService<IDataSetSpecificationProcessingService>();
@@ -110,17 +87,30 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        private static string GetRandomFileName()
+        private static string GetRandomFileName(Guid subscriberAgreementId)
         {
-            string filename = GetRandomString();
-
-            for (int i = 0; i < 6; i++)
-            {
-                filename = $"{filename}_{GetRandomString(10)}";
-            }
+            string filename =
+                $"{GetRandomNumber()}" +
+                $"_{GetRandomString()}" +
+                $"_{GetRandomString()}" +
+                $"_{GetRandomNumber()}" +
+                $"_{subscriberAgreementId}.csv.gpg";
 
             return filename;
         }
+
+        private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
+        {
+            return $"{GetRandomString()}" +
+                $"/{GetRandomString()}" +
+                $"/{GetRandomString()}" +
+                $"/{GetRandomString()}" +
+                $"/{GetRandomString()}" +
+                $"/{subscriberAgreementId}" +
+                $"/0122235" +
+                $"/{fileName}.csv.gpg";
+        }
+
 
         private static string GetRandomString(int length) =>
                new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();

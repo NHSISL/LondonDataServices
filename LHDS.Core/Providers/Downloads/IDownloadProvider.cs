@@ -11,7 +11,7 @@ namespace LHDS.Core.Providers.Downloads
     public interface IDownloadProvider
     {
         string Name { get; }
-        bool IsMock { get; }
+        bool IsOfflineProvider { get; }
         ValueTask<List<string>> GetListOfDocumentsToProcessAsync(Download download);
         ValueTask<Download> GetDocumentByFileNameAsync(Download download);
     }

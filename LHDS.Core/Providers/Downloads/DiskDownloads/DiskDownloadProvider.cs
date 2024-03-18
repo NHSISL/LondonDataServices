@@ -3,35 +3,30 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
-using Tynamix.ObjectFiller;
 
-namespace LHDS.Core.Providers.Downloads.FtpDownloads
+namespace LHDS.Core.Providers.Downloads.DiskDownloads
 {
-    public class MockDownloadProvider : IDownloadProvider
+    public class DiskDownloadProvider : IDownloadProvider
     {
+        private readonly DiskDownloadProviderSettings diskDownloadProviderSettings;
+
         public string Name { get; private set; }
         public bool IsOfflineProvider { get; private set; }
 
-        public MockDownloadProvider()
+        public DiskDownloadProvider(DiskDownloadProviderSettings diskDownloadProviderSettings)
         {
-            this.Name = "MockDownloadProvider";
-            this.IsOfflineProvider = true;
+            this.diskDownloadProviderSettings = diskDownloadProviderSettings;
+            this.Name = "DiskDownloadProvider";
         }
-
-        private static string GetRandomString() =>
-            new MnemonicString().GetValue();
-
-        private static int GetRandomNumber() =>
-            new IntRange(min: 2, max: 10).GetValue();
 
         public async ValueTask<Download> GetDocumentByFileNameAsync(Download download)
         {
-            string randomString = GetRandomString();
-            byte[] data = Encoding.ASCII.GetBytes(randomString);
+            string filePath = Path.Combine(diskDownloadProviderSettings.LocalRootFolder, download.Document.FileName);
+            byte[] data = await File.ReadAllBytesAsync(filePath);
 
             var document = new Document()
             {
@@ -45,19 +40,18 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
                 SubscriberCredential = download.SubscriberCredential
             };
 
-            return await ValueTask.FromResult(downloadedItem);
+            return downloadedItem;
         }
 
         public async ValueTask<List<string>> GetListOfDocumentsToProcessAsync(Download download)
         {
-            List<string> downloads = new List<string>();
+            string[] files = Directory.GetFiles(
+                diskDownloadProviderSettings.LocalRootFolder, "*",
+                diskDownloadProviderSettings.IncludeSubDirectories
+                    ? SearchOption.AllDirectories
+                    : SearchOption.TopDirectoryOnly);
 
-            for (int i = 0; i < 1; i++)
-            {
-                downloads.Add(GetRandomString());
-            }
-
-            return downloads;
+            return new List<string>(files);
         }
     }
 }

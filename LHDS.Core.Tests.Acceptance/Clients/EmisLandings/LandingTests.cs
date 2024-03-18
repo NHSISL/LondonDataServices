@@ -18,6 +18,8 @@ using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Providers.Downloads;
+using LHDS.Core.Providers.Downloads.FtpDownloads;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
@@ -67,6 +69,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
 
             serviceCollection.AddLandingClient(this.dependencyBroker.Configuration);
+
+            serviceCollection.Remove(new ServiceDescriptor(typeof(IDownloadProvider), typeof(FtpDownloadProvider)));
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();

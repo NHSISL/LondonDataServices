@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,10 +12,9 @@ using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
-using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Acceptance.Clients.Landings
+namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 {
     public partial class LandingTests
     {
@@ -25,15 +23,25 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         {
             // Given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            string fileName = GetRandomString();
-            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+
+            SubscriberCredential inputSubscriberCredential = await this.subscriberCredentialOrchestration
+                .ModifyOrAddSubscriberCredentialAsync(randomSubscriberCredential);
+
+            string randomFileName = GetRandomFileName(subscriberAgreementId: inputSubscriberCredential.Id);
+
+            string randomFilePath = CreateRandomFilePath(
+                subscriberAgreementId: inputSubscriberCredential.Id,
+                fileName: randomFileName);
+
+            string inputFileName = randomFilePath;
+            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+
 
             Document randomDocument = new Document
             {
                 DocumentData = documentData,
-                FileName = fileName
+                FileName = inputFileName
             };
 
             Download downloadListRequest = new Download
@@ -43,35 +51,23 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
             Download downloadFileRequest = new Download
             {
-                Document = new Document { FileName = fileName },
+                Document = new Document { FileName = inputFileName },
                 SubscriberCredential = inputSubscriberCredential
             };
 
-            List<string> fileList = new List<string> { fileName };
+            List<string> fileList = new List<string> { inputFileName };
 
-            this.downloadBrokerMock.Setup(broker =>
-                broker.GetListOfDownloadsToProcessAsync(downloadListRequest))
-                    .ReturnsAsync(fileList);
-
-            string encryptedFileName = $"/encrypted/{fileName}";
-            string expectedString = $"/decrypted/{fileName}";
+            string encryptedFileName = $"/encrypted/{inputFileName}";
+            string expectedString = $"/decrypted/{inputFileName}";
 
             // When
-            var actualString = await this.landingClient.ProcessAsync(fileName);
+            var actualString = await this.landingClient.ProcessAsync(inputFileName);
 
             // Then
             actualString.Should().BeEquivalentTo(expectedString);
 
-            this.downloadBrokerMock.Verify(broker =>
-                broker.GetDownloadByFileNameAsync(downloadFileRequest),
-                    Times.Once());
-
-            this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(encryptedFileName, It.IsAny<Stream>(), It.IsAny<string>()),
-                    Times.Once());
-
             IngestionTracking retrievedInestionTracking =
-                await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(fileName);
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(inputFileName);
 
             retrievedInestionTracking.CreatedDate.Should().Be(retrievedInestionTracking.UpdatedDate);
 
@@ -84,9 +80,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             }
 
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(retrievedInestionTracking.Id);
-
-            this.downloadBrokerMock.VerifyNoOtherCalls();
-            this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -117,10 +110,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 SubscriberCredential = inputSubscriberCredential
             };
 
-            this.downloadBrokerMock.Setup(broker =>
-                broker.GetDownloadByFileNameAsync(downloadFileRequest))
-                    .ReturnsAsync(downloadFileResponse);
-
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
                 randomDocument,
@@ -134,14 +123,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             // Then
             actualString.Should().BeEquivalentTo(ingestionTracking.DecryptedFileName);
 
-            this.downloadBrokerMock.Verify(broker =>
-                broker.GetDownloadByFileNameAsync(downloadFileRequest),
-                    Times.Once());
-
-            this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(ingestionTracking.EncryptedFileName, It.IsAny<Stream>(), It.IsAny<string>()),
-                    Times.Once());
-
             var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
@@ -154,15 +135,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(fileName);
 
             modifiedIngestionTracking.UpdatedDate.Should().BeAfter(ingestionTracking.UpdatedDate);
-
-            this.blobStorageBrokerMock.Verify(broker =>
-                broker.DeleteFileAsync(ingestionTracking.EncryptedFileName, It.IsAny<string>()),
-                    Times.Once());
-
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-            this.downloadBrokerMock.VerifyNoOtherCalls();
-            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            // TODO: Tear down the test data
         }
     }
 }

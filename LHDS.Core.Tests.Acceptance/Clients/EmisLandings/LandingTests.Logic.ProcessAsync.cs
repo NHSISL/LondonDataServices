@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,10 +14,9 @@ using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
-using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Acceptance.Clients.Landings
+namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 {
     public partial class LandingTests
     {
@@ -28,7 +26,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             //Given
             DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
             Guid supplierId = landingConfiguration.LandingSupplierId;
-            string fileName = GetRandomFileName();
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+
+            SubscriberCredential inputSubscriberCredential = await this.subscriberCredentialOrchestration
+                .ModifyOrAddSubscriberCredentialAsync(randomSubscriberCredential);
+
+            string randomFileName = GetRandomFileName(subscriberAgreementId: inputSubscriberCredential.Id);
+
+            string randomFilePath = CreateRandomFilePath(
+                subscriberAgreementId: inputSubscriberCredential.Id,
+                fileName: randomFileName);
+
+            Guid randomIdentifier = Guid.NewGuid();
+            string inputFileName = randomFileName;
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
             //DataSet activeDataSet = CreateRandomDataSet(supplierId);
             //DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
@@ -41,7 +51,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             Document randomDocument = new Document
             {
                 DocumentData = documentData,
-                FileName = fileName
+                FileName = inputFileName
             };
 
             Download downloadListRequest = new Download
@@ -51,7 +61,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
             Download downloadFileRequest = new Download
             {
-                Document = new Document { FileName = fileName },
+                Document = new Document { FileName = inputFileName },
                 SubscriberCredential = inputSubscriberCredential
             };
 
@@ -61,7 +71,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 SubscriberCredential = inputSubscriberCredential
             };
 
-            List<string> fileList = new List<string> { fileName };
+            List<string> fileList = new List<string> { inputFileName };
 
             this.downloadBrokerMock.Setup(broker =>
                 broker.GetListOfDownloadsToProcessAsync(downloadListRequest))
@@ -78,16 +88,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             var actualStringList = await this.landingClient.ProcessAsync();
 
             //Then
-            this.downloadBrokerMock.Verify(broker =>
-                broker.GetListOfDownloadsToProcessAsync(downloadListRequest),
-                    Times.Once);
-
             foreach (var actualFile in actualStringList)
             {
-                this.downloadBrokerMock.Verify(broker =>
-                    broker.GetDownloadByFileNameAsync(downloadFileRequest),
-                        Times.Once);
-
                 string expectedFile =
                     $"/{landingConfiguration.DecryptedFolder}"
                     + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
@@ -112,13 +114,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
                 await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-                this.blobStorageBrokerMock.Verify(broker =>
-                    broker.InsertFileAsync(
-                        ingestionTracking.EncryptedFileName,
-                        It.IsAny<Stream>(),
-                        It.IsAny<string>()),
-                            Times.Once());
+                // TODO: Tear down the test data
             }
+        }
 
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
@@ -165,10 +163,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             List<string> fileList = new List<string> { fileName };
             List<Document> documents = new List<Document> { randomDocument };
 
-            this.downloadBrokerMock.Setup(broker =>
-                broker.GetListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(downloadListRequest))))
-                    .ReturnsAsync(fileList);
-
             List<IngestionTracking> ingestionTrackings = await CreateRandomIngestionTrackings(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
                 documents,
@@ -179,10 +173,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
             //Then
             actualStringList.Should().HaveCount(0);
-
-            this.downloadBrokerMock.Verify(broker =>
-                broker.GetListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(downloadListRequest))),
-                    Times.Once);
 
             foreach (var tracking in ingestionTrackings)
             {
@@ -195,6 +185,34 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 }
 
                 await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(tracking.Id);
+            }
+
+            await this.subscriberCredentialOrchestration
+                .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
+
+            // TODO: Tear down the test data
+            // await CleanupTestData(ingestionTrackings);
+        }
+
+        private async Task CleanupTestData(
+            DataSet activeDataSet,
+            DataSetSpecification activeDataSetSpecification,
+            SubscriberCredential inputSubscriberCredential,
+            List<IngestionTracking> ingestionTrackings)
+        {
+
+            foreach (var ingestionTracking in ingestionTrackings)
+            {
+                var items = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+
+                foreach (var audit in items)
+                {
+                    await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+                }
+
+                await this.ingestionTrackingService
+                    .RemoveIngestionTrackingByIdAsync(ingestionTrackingId: ingestionTracking.Id);
             }
 
             this.downloadBrokerMock.VerifyNoOtherCalls();

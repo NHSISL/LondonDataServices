@@ -134,6 +134,10 @@ namespace LHDS.Core.Clients.Extensions
 
                 services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             }
+            else
+            {
+
+            }
         }
 
         private static void AddServices(IServiceCollection services)

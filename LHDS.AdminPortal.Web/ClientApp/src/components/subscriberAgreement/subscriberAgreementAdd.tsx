@@ -22,6 +22,7 @@ const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (
 
     const navigate = useNavigate();
     const [subscriberAgreementShortName, setSubscriberAgreementShortName] = React.useState<string>("");
+    const [addApiError, setAddApiError] = useState<any>({});
 
     const [subscriberCredential, setSubscriberCredential] =
         useState<SubscriberCredentialView>(new SubscriberCredentialView(Guid.create()));
@@ -29,14 +30,13 @@ const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (
     const addSubscriberCredential = subscriberCredentialViewService.useCreateSubscriberCredential();
 
     const handleAddNew = () => {
-        // Move the logic inside handleAddNew
         subscriberCredential.supplierSharingAgreementShortName = subscriberAgreementShortName;
         addSubscriberCredential.mutate(subscriberCredential, {
             onSuccess: () => {
-                alert("Pow");
+                navigate('/subscriberAgreements'); 
             },
             onError: (error: any) => {
-                /* setAddApiError(error?.response?.data?.errors);*/
+                setAddApiError(error?.response?.data?.errors);
             }
         });
     };

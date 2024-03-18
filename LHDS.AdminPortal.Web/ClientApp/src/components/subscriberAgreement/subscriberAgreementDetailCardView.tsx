@@ -51,9 +51,21 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
         <>
             <SummaryListBase>
                 <SummaryListBaseRow>
+                    <SummaryListBaseKey>Id:</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        {subscriberAgreement.id.toString()}
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
                     <SummaryListBaseKey>Short Name:</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         {subscriberAgreement.supplierSharingAgreementShortName}
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Supplier Sharing Agreement Guid:</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        {subscriberAgreement.supplierSharingAgreementGuid!.toString()}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
@@ -130,14 +142,14 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                 </SecuredComponents>
             }
             <>
-                {mode === 'VIEW' &&
-                    <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.delete}>
-                        <ButtonBase onClick={() => onModeChange('CONFIRMDELETE')} remove>Delete</ButtonBase>
-                    </SecuredComponents>
+                {mode === 'VIEW'
+                    //&&
+                    //<SecuredComponents allowedRoles={securityPoints.subscriberAgreement.delete}>
+                    //    <ButtonBase onClick={() => onModeChange('CONFIRMDELETE')} remove>Delete</ButtonBase>
+                    //</SecuredComponents>
                 }
                 {mode === 'CONFIRMDELETE' &&
-                    <>
-                        <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.delete}>
+                    <>                        <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.delete}>
                             <>
                                 <ButtonBase onClick={() => onModeChange('VIEW')} cancel>Cancel</ButtonBase>
                                 <ButtonBase onClick={() => onDelete(subscriberAgreement)} remove>Yes, Delete</ButtonBase>

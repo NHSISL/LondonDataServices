@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -23,56 +22,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         public async Task ShouldProcessNewDocumentsAsync()
         {
             //Given
-            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
             Guid supplierId = landingConfiguration.LandingSupplierId;
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
 
             SubscriberCredential inputSubscriberCredential = await this.subscriberCredentialOrchestration
-                .ModifyOrAddSubscriberCredentialAsync(randomSubscriberCredential);
+                .ModifyOrAddSubscriberCredentialAsync(
+                    subscriberCredential: randomSubscriberCredential,
+                    regenerateKeys: true,
+                    externalUse: false);
 
-            string randomFileName = GetRandomFileName(subscriberAgreementId: inputSubscriberCredential.Id);
-
-            string randomFilePath = CreateRandomFilePath(
-                subscriberAgreementId: inputSubscriberCredential.Id,
-                fileName: randomFileName);
-
-            Guid randomIdentifier = Guid.NewGuid();
-            string inputFileName = randomFileName;
-            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
-            //DataSet activeDataSet = CreateRandomDataSet(supplierId);
-            //DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
-
-            await this.subscriberCredentialOrchestration
-                .ModifyOrAddSubscriberCredentialAsync(inputSubscriberCredential);
-
-            Document randomDocument = new Document
-            {
-                DocumentData = documentData,
-                FileName = inputFileName
-            };
-
-            Download downloadListRequest = new Download
-            {
-                SubscriberCredential = inputSubscriberCredential
-            };
-
-            Download downloadFileRequest = new Download
-            {
-                Document = new Document { FileName = inputFileName },
-                SubscriberCredential = inputSubscriberCredential
-            };
-
-            Download downloadFileResponse = new Download
-            {
-                Document = randomDocument,
-                SubscriberCredential = inputSubscriberCredential
-            };
-
-            List<string> fileList = new List<string> { inputFileName };
-
-
-            DataSetSpecification retrievedDataSetSpecification =
-                await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
+            List<string> randomFiles = PrepareAndAddFile(inputSubscriberCredential.Id);
 
             //When
             var actualStringList = await this.landingClient.ProcessAsync();
@@ -106,6 +65,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             // TODO: Tear down the test data
         }
+
+
 
         [Fact]
         public async Task ShouldNotProcessExistingDocumentsAsync()

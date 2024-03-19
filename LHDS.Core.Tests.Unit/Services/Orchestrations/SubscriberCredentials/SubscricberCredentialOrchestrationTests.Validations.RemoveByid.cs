@@ -51,6 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
         }
     }

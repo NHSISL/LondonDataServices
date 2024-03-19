@@ -1,8 +1,4 @@
-﻿// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -248,8 +244,8 @@ namespace LHDS.Core.Migrations
                     SupplierSharingAgreementShortName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     SupplierSharingAgreementGuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     FtpUserName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
-                    FtpPublicKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
-                    GpgPublicKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    FtpPublicKey = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    GpgPublicKey = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     LastPollStartDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     LastPollEndDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),

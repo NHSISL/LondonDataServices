@@ -4,7 +4,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
@@ -19,6 +21,7 @@ using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Downloads;
+using LHDS.Core.Providers.Downloads.DiskDownloads;
 using LHDS.Core.Providers.Downloads.FtpDownloads;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
@@ -69,8 +72,17 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
 
             serviceCollection.AddLandingClient(this.dependencyBroker.Configuration);
-
             serviceCollection.Remove(new ServiceDescriptor(typeof(IDownloadProvider), typeof(FtpDownloadProvider)));
+
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", "downloads");
+
+            serviceCollection.AddTransient<IDownloadProvider>(_ =>
+                new DiskDownloadProvider(new DiskDownloadProviderSettings
+                {
+                    IncludeSubDirectories = true,
+                    LocalRootFolder = defaultFolderPath
+                }));
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
@@ -88,16 +100,46 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             landingClient = serviceProvider.GetService<IEmisLandingClient>();
         }
 
+        private List<string> PrepareAndAddFile(Guid subscriberAgreementId)
+        {
+            int count = GetRandomNumber();
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", "downloads");
+
+            List<string> randomFiles = new List<string>();
+
+            for (int i = 0; i < count; i++)
+            {
+                string randomFileName = GetRandomFileName(subscriberAgreementId);
+                string randomFilePath = CreateRandomFilePath(subscriberAgreementId, randomFileName);
+                string filePath = Path.Combine(defaultFolderPath, randomFilePath);
+                FileInfo fileInfo = new FileInfo(filePath);
+
+                if (!fileInfo.Directory.Exists)
+                {
+                    fileInfo.Directory.Create();
+                }
+
+                File.WriteAllText(filePath, GetRandomString());
+                var relativePath = Path.GetRelativePath(defaultFolderPath, filePath).Replace("\\", "/");
+                randomFiles.Add(relativePath);
+            }
+
+            return randomFiles;
+        }
+
+
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
         private static string GetRandomFileName(Guid subscriberAgreementId)
         {
             string filename =
-                $"{GetRandomNumber()}" +
-                $"_{GetRandomString()}" +
-                $"_{GetRandomString()}" +
+                $"delta" +
                 $"_{GetRandomNumber()}" +
+                $"_Admin" +
+                $"_Location" +
+                $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}" +
                 $"_{subscriberAgreementId}.csv.gpg";
 
             return filename;
@@ -105,16 +147,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
         private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
         {
-            return $"{GetRandomString()}" +
-                $"/{GetRandomString()}" +
-                $"/{GetRandomString()}" +
-                $"/{GetRandomString()}" +
-                $"/{GetRandomString()}" +
+            return $"emisnightingale-data-preprod-provider-extracts" +
+                $"/IM1" +
+                $"/sftp" +
                 $"/{subscriberAgreementId}" +
-                $"/0122235" +
-                $"/{fileName}.csv.gpg";
+                $"/{DateTime.Now.ToString("yyyyMMdd")}" +
+                $"/{fileName}";
         }
-
 
         private static string GetRandomString(int length) =>
                new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Hl7.Fhir.Serialization;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Extensions.Exceptions;
@@ -176,6 +175,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .AreEqual;
         }
 
+
+        //TODO:  DH - can you double check these paths. Also check the tests
+        // cant see how this is passing as the values are different from orchestration service
         private static string GenerateFilename(Guid identifier)
         {
             Guid randomGuid = Guid.NewGuid();
@@ -183,15 +185,17 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             return $"/{GetRandomString()}" +
                 $"/{GetRandomString()}" +
                 $"/{randomGuid}" +
-                $"/{GetRandomNumber}" +
+                $"/{GetRandomNumber()}" +
                 $"/{GetRandomString()}" +
                 $"_{GetRandomNumber}" +
                 $"_{GetRandomString()}" +
                 $"_{GetRandomString()}" +
                 $"_{GetRandomNumber()}" +
-                $"_{identifier}.csv.gpg;";
+                $"_{identifier}.csv.gpg";
         }
 
+        //TODO:  DH - can you double check these paths
+        // cant see how this is passing as the values are different from orchestration service
         private static string CreateRandomFilePath(Guid identifier)
         {
             return $"{GetRandomString()}" +
@@ -201,11 +205,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 $"/{GetRandomString()}" +
                 $"/{identifier}" +
                 $"/0122235" +
-                $"/{GetRandomNumber}" +
+                $"/{GetRandomNumber()}" +
                 $"_{GetRandomString()}" +
                 $"_{GetRandomString()}" +
                 $"_{GetRandomNumber()}" +
-                $"_{identifier}.csv.gpg;";
+                $"_{identifier}.csv.gpg";
         }
 
         private static Guid GetLastRandomGuid(string filename)

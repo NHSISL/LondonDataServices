@@ -5,7 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
-using LHDS.Core.Services.Foundations.Cryptographies;
+using LHDS.Core.Services.Coordinations.Decryptions;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 #if RELEASE
@@ -18,23 +18,25 @@ namespace LHDS.AdminPortal.Api.Controllers
     [Route("api/[controller]")]
     public class CryptographyController : RESTFulController
     {
-        private readonly ICryptographyService cryptographyService;
+        private readonly IDecryptionCoordinationService decryptionCoordinationService;
 
-        public CryptographyController(ICryptographyService cryptographyService) =>
-            this.cryptographyService = cryptographyService;
+        public CryptographyController(IDecryptionCoordinationService decryptionCoordinationService) =>
+            this.decryptionCoordinationService = decryptionCoordinationService;
 
         [HttpPost]
         [Route("encrypt")]
-        public async ValueTask<ActionResult<byte[]>> PostCryptographEncryptyAsync([FromBody] byte[] data)
+        public async ValueTask<ActionResult<byte[]>> PostCryptographEncryptyAsync(
+            [FromBody] byte[] data,
+            Guid subscriberAgreementId)
         {
             try
             {
-                throw new NotImplementedException();
+                throw new System.NotImplementedException();
                 // Need to look into how to implement this.  Possibly the subscriber agreement id in the url so we can
                 // look up the subscriber credentials.
                 // out of scope for this change, so leaving this till we do the acceptance tests.
                 //byte[] encryptedData =
-                //    await this.cryptographyService.EncryptAsync(data);
+                //    await this.decryptionCoordinationService.EncryptAsync(data);
 
                 //return Created(encryptedData);
             }
@@ -58,20 +60,21 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpPost]
         [Route("decrypt")]
-        public async ValueTask<ActionResult<byte[]>> PostCryptographyDecryptAsync([FromBody] byte[] data)
+        public async ValueTask<ActionResult<byte[]>> PostCryptographyDecryptAsync(
+            [FromBody] string encryptedFileName)
         {
             try
             {
-                throw new NotImplementedException();
+                //throw new NotImplementedException();
 
                 // Need to look into how to implement this.  Possibly the subscriber agreement id in the url so we can
                 // look up the subscriber credentials.
                 // out of scope for this change, so leaving this till we do the acceptance tests.
 
-                //byte[] encryptedData =
-                //    await this.cryptographyService.DecryptAsync(data);
+                string decryptedItem =
+                    await this.decryptionCoordinationService.DecryptAsync(encryptedFileName);
 
-                //return Created(encryptedData);
+                return Created(decryptedItem);
             }
             catch (CryptographyValidationException cryptographyValidationException)
             {

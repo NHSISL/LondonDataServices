@@ -3,9 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
-using System.Web;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
+using LHDS.Core.Models.Coordinations.Decryptions.Exceptions;
 using LHDS.Core.Services.Coordinations.Decryptions;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -28,53 +26,28 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Decryptions")]
 #endif
-        public async ValueTask<ActionResult<IngestionTracking>> DecryptDocumentAsync(
+        public async ValueTask<ActionResult<string>> DecryptDocumentAsync(
             [FromBody] string fileName)
         {
             try
             {
-                await decryptionCoordinationService.DecryptAsync(fileName);
+                string decryptedItem =
+                    await decryptionCoordinationService.DecryptAsync(fileName);
 
-                return Ok();
+                return Ok(decryptedItem);
             }
-            catch (EmisLandingOrchestrationValidationException emisLandingOrchestrationValidationException)
+            catch (DecryptionCoordinationDependencyValidationException
+                decryptionCoordinationDependencyValidationException)
             {
-                return BadRequest(emisLandingOrchestrationValidationException.InnerException);
+                return BadRequest(decryptionCoordinationDependencyValidationException.InnerException);
             }
-            catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
+            catch (DecryptionCoordinationDependencyException decryptionCoordinationDependencyException)
             {
-                return InternalServerError(emisLandingOrchestrationDependencyException);
+                return InternalServerError(decryptionCoordinationDependencyException);
             }
-            catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)
+            catch (FailedDecryptionCoordinationServiceException failedDecryptionCoordinationServiceException)
             {
-                return InternalServerError(emisLandingOrchestrationServiceException);
-            }
-        }
-
-        // TODO: Remove this method in a seperate PR and update UI to use the above method
-        [HttpGet("{fileName}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
-#endif
-        public async ValueTask<ActionResult<IngestionTracking>> GetDocumentByFileNameToDecryptAsync(string fileName)
-        {
-            try
-            {
-                await decryptionCoordinationService.DecryptAsync(HttpUtility.UrlDecode(fileName));
-
-                return Ok();
-            }
-            catch (EmisLandingOrchestrationValidationException emisLandingOrchestrationValidationException)
-            {
-                return BadRequest(emisLandingOrchestrationValidationException.InnerException);
-            }
-            catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
-            {
-                return InternalServerError(emisLandingOrchestrationDependencyException);
-            }
-            catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)
-            {
-                return InternalServerError(emisLandingOrchestrationServiceException);
+                return InternalServerError(failedDecryptionCoordinationServiceException);
             }
         }
     }

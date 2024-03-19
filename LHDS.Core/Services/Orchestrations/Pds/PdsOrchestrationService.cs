@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -88,7 +88,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                         CorrelationId = correlationId,
                         FileName = fileName,
                         Message = $"Sent message to mesh with id {correlationId}",
-                        MessageId = correlationId.ToString(),
+                        MessageId = meshMessage.MessageId.ToString(),
                         CreatedDate = timeStamp,
                         UpdatedDate = timeStamp,
                         CreatedBy = "System",

@@ -36,7 +36,7 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
 
                 if (parts.Length > 0)
                 {
-                    string extractSubscriberCredentialIdString = parts[2];
+                    string extractSubscriberCredentialIdString = parts[1];
 
                     SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
                         .RetrieveSubscriberCredentialByIdAsync(

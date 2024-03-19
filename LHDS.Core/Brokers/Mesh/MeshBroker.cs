@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -54,17 +54,19 @@ namespace LHDS.Core.Brokers.Mesh
         {
             try
             {
-                return await this.meshClient.Mailbox.SendMessageAsync(
-                    mexTo: mexTo,
-                    mexWorkflowId: mexWorkflowId,
-                    fileContent: fileContent,
-                    mexSubject: mexSubject,
-                    mexLocalId: mexLocalId,
-                    mexFileName: mexFileName,
-                    mexContentChecksum: mexContentChecksum,
-                    contentType: contentType,
-                    contentEncoding: contentEncoding,
-                    accept: accept);
+                Message message = await this.meshClient.Mailbox.SendMessageAsync(
+                     mexTo: mexTo,
+                     mexWorkflowId: mexWorkflowId,
+                     fileContent: fileContent,
+                     mexSubject: mexSubject,
+                     mexLocalId: mexLocalId,
+                     mexFileName: mexFileName,
+                     mexContentChecksum: mexContentChecksum,
+                     contentType: contentType,
+                     contentEncoding: contentEncoding,
+                     accept: accept);
+
+                return message;
             }
             catch (System.Exception ex)
             {

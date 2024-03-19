@@ -18,11 +18,11 @@ namespace LHDS.Core.Tests.Integration.Pds
             // Given
             byte[] fileBytes =
                 File.ReadAllBytes(
-                    @"Resources\MPTREQ_20240310110100.csv");
+                    @"Resources\EmisPDSPatientExtract20_247BB600-213A-494E-8E90-A4F9190F07DF_20240311110100.csv");
 
             FileInfo fi =
                 new FileInfo(
-                    @"Resources\MPTREQ_20240310110100.csv");
+                    @"Resources\EmisPDSPatientExtract20_247BB600-213A-494E-8E90-A4F9190F07DF_20240311110100.csv");
 
             var fileName = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
 
@@ -33,9 +33,9 @@ namespace LHDS.Core.Tests.Integration.Pds
             // Then
             pdsAudit.Should().NotBeNull();
             await pdsAuditService.RemovePdsAuditByIdAsync(pdsAudit.Id);
-            //var messageId = pdsAudit.MessageId;
-            //bool messageAcked = await meshService.AcknowledgeMessageByIdAsync(messageId);
-            // messageAcked.Should().BeTrue();
+            var messageId = pdsAudit.MessageId;
+            bool messageAcked = await meshService.AcknowledgeMessageByIdAsync(messageId);
+            messageAcked.Should().BeTrue();
         }
     }
 }

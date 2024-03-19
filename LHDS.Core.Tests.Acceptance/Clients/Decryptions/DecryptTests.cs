@@ -7,18 +7,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Hashing;
-using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
+using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
@@ -29,7 +30,6 @@ using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Moq;
 using Tynamix.ObjectFiller;
 using Xunit;
 
@@ -39,8 +39,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
     public partial class DecryptionTests
     {
         private readonly DependencyBroker dependencyBroker;
-        private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
-        private readonly Mock<IDownloadBroker> downloadBrokerMock;
+        //private readonly Mock<IDownloadBroker> downloadBrokerMock;
+        private readonly IBlobStorageBroker blobStorageBroker;
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IHashBroker hashBroker;
@@ -54,8 +54,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         public DecryptionTests(DependencyBroker dependencyBroker)
         {
             this.dependencyBroker = dependencyBroker;
-            this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
-            this.downloadBrokerMock = new Mock<IDownloadBroker>();
+            //this.downloadBrokerMock = new Mock<IDownloadBroker>();
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging(builder =>
@@ -69,17 +68,17 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             ValidateBlobStorageSettings(blobStorageSettings);
             serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
-            serviceCollection.AddDecryptionClientForAcceptance(this.dependencyBroker.Configuration);
+            serviceCollection.AddDecryptionClient(this.dependencyBroker.Configuration);
 
-            serviceCollection.AddTransient<IKeyVaultSecretBroker>((LandingConfiguration) =>
-                    new KeyVaultSecretBroker(landingConfiguration.KeyVaultUrl));
+            //serviceCollection.AddTransient<IKeyVaultSecretBroker>((LandingConfiguration) =>
+            //        new KeyVaultSecretBroker(landingConfiguration.KeyVaultUrl));
 
-            serviceCollection
-                .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object)
-                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
+            //serviceCollection
+            //    .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
+            this.blobStorageBroker = serviceProvider.GetService<IBlobStorageBroker>();
             this.documentProcessingService = serviceProvider.GetService<IDocumentProcessingService>();
             this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
@@ -105,26 +104,87 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
 
-        private static IngestionTracking CreateRandomIngestionTracking(
-           DateTimeOffset dateTimeOffset,
-           Document document,
-           Guid storageSubscriberAgreementId,
-           string encryptedFileSha256Hash,
-           Guid supplierId)
-        {
-            IngestionTracking ingestionTracking = CreateIngestionTrackingFiller(
-                dateTimeOffset,
-                fileName: document.FileName,
-                storageSubscriberAgreementId,
-                encryptedFileSha256Hash,
-                supplierId)
-                    .Create();
-
-            return ingestionTracking;
-        }
+        private static string GetRandomMessage() =>
+            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
         private static SubscriberAgreement CreateRandomSubscriberAgreement(DateTimeOffset dateTimeOffset) =>
            CreateSubscriberAgreementFiller(dateTimeOffset).Create();
+
+        private static Supplier CreateRandomSupplier(DateTimeOffset dateTimeOffset) =>
+           CreateSupplierFiller(dateTimeOffset).Create();
+
+        private static Filler<Supplier> CreateSupplierFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<Supplier>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(supplier => supplier.CreatedBy).Use(user)
+                .OnProperty(supplier => supplier.UpdatedBy).Use(user)
+                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt()
+                .OnProperty(supplier => supplier.DataSets).IgnoreIt();
+
+            return filler;
+        }
+
+        private static DataSet CreateRandomDataSet(Guid supplierId) =>
+            CreateDataSetFiller(supplierId).Create();
+
+        private static Filler<DataSet> CreateDataSetFiller(Guid supplierId)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<DataSet>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(dataSet => dataSet.SupplierId).Use(supplierId)
+                .OnProperty(dataSet => dataSet.IsActive).Use(true)
+                .OnProperty(dataSet => dataSet.ActiveFrom).Use(now.AddDays(-2))
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(2))
+                .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+
+            return filler;
+        }
+
+        private static DataSetSpecification CreateRandomDataSetSpecification(DataSet dataSet) =>
+            CreateDataSetSpecificationFiller(dataSet).Create();
+
+        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(DataSet dataSet)
+        {
+            string user = GetRandomString(255);
+            var filler = new Filler<DataSetSpecification>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId).Use(dataSet.Id)
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).Use(dataSet)
+                .OnProperty(dataSetSpecification => dataSetSpecification.IsActive).Use(true)
+                .OnProperty(dataSetSpecification => dataSetSpecification.ActiveFrom).Use(now.AddDays(-2))
+                .OnProperty(dataSetSpecification => dataSetSpecification.ActiveTo).Use(now.AddDays(2))
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
+
+            return filler;
+        }
 
         private static Filler<SubscriberAgreement> CreateSubscriberAgreementFiller(DateTimeOffset dateTimeOffset)
         {
@@ -146,12 +206,31 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             return filler;
         }
 
-        private static string GetRandomMessage() =>
-           new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+        private static IngestionTracking CreateRandomIngestionTracking(
+           DateTimeOffset dateTimeOffset,
+           Document document,
+           string encryptedFileName,
+           string decryptedFileName,
+           string encryptedFileSha256Hash,
+           Guid supplierId)
+        {
+            IngestionTracking ingestionTracking = CreateIngestionTrackingFiller(
+                dateTimeOffset,
+                fileName: document.FileName,
+                encryptedFileName,
+                decryptedFileName,
+                encryptedFileSha256Hash,
+                supplierId)
+                    .Create();
+
+            return ingestionTracking;
+        }
+
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
             DateTimeOffset dateTimeOffset,
             string fileName,
-            Guid storageSubscriberAgreementId,
+            string encryptedFileName,
+            string decryptedFileName,
             string encryptedFileSha256Hash,
             Guid supplierId)
         {
@@ -160,17 +239,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             filler.Setup()
                 .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(fileName)
+                .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
+                .OnProperty(ingestionTracking => ingestionTracking.EncryptedFileName).Use(encryptedFileName)
+                .OnProperty(ingestionTracking => ingestionTracking.DecryptedFileName).Use(decryptedFileName)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
-                .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
                 .OnProperty(ingestionTracking => ingestionTracking.EncryptedFileSha256Hash).Use(encryptedFileSha256Hash)
-                .OnProperty(ingestionTracking => ingestionTracking.EncryptedFileName).Use(
-                    $"{"encrypted"}/" +
-                    $"{"testsubId"}/" +
-                    $"{storageSubscriberAgreementId}" +
-                    $"/{"0122235"}" +
-                    $"_{GetRandomString()}_{GetRandomString()}" +
-                    $"_{GetRandomNumber()}_{supplierId}.csv.gpg;")
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
@@ -199,10 +273,47 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
         private static string CreateRandomFilePath(Guid? identifier)
         {
-            return $"{GetRandomString()}/{GetRandomString()}" +
-                $"/{identifier}/0122235/{GetRandomNumber()}/" +
-                $"{GetRandomString()}_{GetRandomString()}" +
-                $"_{GetRandomNumber()}_{identifier}.csv.gpg;";
+            return $"{GetRandomString()}" +
+                $"/{GetRandomString()}" +
+                $"/{GetRandomString()}" +
+                $"/{identifier}" +
+                $"/0122235" +
+                $"/{GetRandomString()}" +
+                $"_{GetRandomNumber()}" +
+                $"_{GetRandomString()}" +
+                $"_{GetRandomString()}" +
+                $"_{GetRandomNumber()}" +
+                $"_{identifier}.csv.gpg";
+        }
+
+        private static string CreateRandomEncryptedFilePath(
+            Guid? storageSubscriberAgreementId,
+            Guid? supplierSharingAgreementGuid)
+        {
+            return $"{"encrypted"}/" +
+                    $"{storageSubscriberAgreementId}" +
+                    $"/{"0122235"}" +
+                    $"/{GetRandomString()}" +
+                    $"_{GetRandomNumber()}" +
+                    $"_{GetRandomString()}" +
+                    $"_{GetRandomString()}" +
+                    $"_{GetRandomNumber()}" +
+                    $"_{supplierSharingAgreementGuid}.csv.gpg";
+        }
+
+        private static string CreateRandomDecryptedFilePath(string dataSetName, Guid? datasetSpecificationId, string fileNameBase, Guid storageSubscriberAgreementId, Guid? supplierSharingAgreementGuid)
+        {
+            return $"{"decrypted"}/" +
+                    $"{dataSetName}" +
+                    $"/{datasetSpecificationId}" +
+                    $"/{fileNameBase}" +
+                    $"/{storageSubscriberAgreementId}" +
+                    $"/{"0122235"}" +
+                    $"_{GetRandomString()}" +
+                    $"_{GetRandomNumber()}" +
+                    $"_{GetRandomString()}" +
+                    $"_{GetRandomString()}" +
+                    $"_{supplierSharingAgreementGuid}.csv.gpg";
         }
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)

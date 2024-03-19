@@ -39,13 +39,7 @@
     <None Update="local.appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\EmisPDSPatientExtract1_247BB600-213A-494E-8E90-A4F9190F07DF_20240311110100.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\EmisPDSPatientExtract2_247BB600-213A-494E-8E90-A4F9190F07DF_20240311110100.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\EmisPDSPatientExtract3_247BB600-213A-494E-8E90-A4F9190F07DF_20240311110100.csv">
+    <None Update="Resources\EmisPDSPatientExtract20_247BB600-213A-494E-8E90-A4F9190F07DF_20240311110100.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\EmisPDSPatientExtract_247BB600-213A-494E-8E90-A4F9190F07DF_20230601T130544.csv">

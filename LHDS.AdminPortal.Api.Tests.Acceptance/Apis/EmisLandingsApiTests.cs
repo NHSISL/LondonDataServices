@@ -18,7 +18,7 @@ using Xunit.Abstractions;
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 {
     [Collection(nameof(ApiTestCollection))]
-    public partial class LandingsApiTests
+    public partial class EmisLandingsApiTests
     {
         private readonly ApiBroker apiBroker;
         private readonly string encryptedFolder;
@@ -28,7 +28,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         private readonly Guid dataSetSpecificationId;
         private readonly ITestOutputHelper output;
 
-        public LandingsApiTests(
+        public EmisLandingsApiTests(
             ApiBroker apiBroker,
             ITestOutputHelper output)
         {

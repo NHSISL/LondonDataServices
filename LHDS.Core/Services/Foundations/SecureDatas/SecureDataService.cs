@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
+using Azure;
 using Azure.Security.KeyVault.Secrets;
 using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Loggings;
@@ -63,7 +64,16 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             TryCatch(async () =>
             {
                 ValidateArgumentOnRemove(secretName);
-                await this.keyVaultSecretBroker.DeleteKeyVaultSecretAsync(secretName);
+
+                try
+                {
+                    await this.keyVaultSecretBroker.DeleteKeyVaultSecretAsync(secretName);
+                }
+                catch (RequestFailedException requestFailedException)
+                    when (requestFailedException.ErrorCode is "SecretNotFound")
+                {
+                    return;
+                }
             });
     }
 }

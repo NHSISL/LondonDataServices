@@ -22,7 +22,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential();
+            Guid randomId = Guid.NewGuid();
+
+            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential(
+                date: randomDateTimeOffset,
+                id: randomId);
+
             SubscriberAgreement inputSubscriberAgreement = CreateSubscriberAgreementFromDynamic(randomDynamic);
             SubscriberAgreement outputSubscriberAgreement = inputSubscriberAgreement;
             SubscriberCredential inputSubscriberCredential = CreateSubscriberCredentialFromDynamic(randomDynamic);
@@ -60,6 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -70,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential();
+            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential(date: randomDateTimeOffset);
             SubscriberAgreement inputSubscriberAgreement = CreateSubscriberAgreementFromDynamic(randomDynamic);
             SubscriberAgreement outputSubscriberAgreement = inputSubscriberAgreement;
             SubscriberCredential inputSubscriberCredential = CreateSubscriberCredentialFromDynamic(randomDynamic);
@@ -83,6 +89,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             storageSubscriberCredentialWithGeneratedKeys.GpgPassPhrase = GetRandomString();
             storageSubscriberCredentialWithGeneratedKeys.GpgPrivateKey = GetRandomString();
             storageSubscriberCredentialWithGeneratedKeys.GpgPublicKey = GetRandomString();
+
+            SubscriberAgreement subscriberAgreementWithGeneratedKeys =
+                CreateSubscriberAgreementFromSubscriberCredential(storageSubscriberCredentialWithGeneratedKeys);
+
+            subscriberAgreementWithGeneratedKeys.UpdatedDate = randomDateTimeOffset;
+
+            SubscriberAgreement outputSubscriberAgreementWithGeneratedKeys =
+                subscriberAgreementWithGeneratedKeys.DeepClone();
 
             SubscriberCredential updatedSubscriberCredentialWithGeneratedKeys =
                 storageSubscriberCredentialWithGeneratedKeys.DeepClone();
@@ -108,6 +122,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 service.GenerateKeysAsync(It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))))
                     .ReturnsAsync(storageSubscriberCredentialWithGeneratedKeys);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.subscriberAgreementProcessingServiceMock.Setup(service =>
+                service.ModifyOrAddSubscriberAgreementAsync(
+                    It.Is(SameSubscriberAgreementAs(subscriberAgreementWithGeneratedKeys))))
+                        .ReturnsAsync(outputSubscriberAgreementWithGeneratedKeys);
+
             this.secureDataProcessingServiceMock.Setup(service =>
                 service.AddOrModifySecureDataAsync(
                     It.Is(SameSubscriberCredentialAs(storageSubscriberCredentialWithGeneratedKeys))))
@@ -132,6 +155,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                     It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.subscriberAgreementProcessingServiceMock.Verify(service =>
+                service.ModifyOrAddSubscriberAgreementAsync(
+                    It.Is(SameSubscriberAgreementAs(subscriberAgreementWithGeneratedKeys))),
+                        Times.Once);
+
             this.secureDataProcessingServiceMock.Verify(service =>
                 service.AddOrModifySecureDataAsync(
                     It.Is(SameSubscriberCredentialAs(storageSubscriberCredentialWithGeneratedKeys))),
@@ -139,6 +171,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

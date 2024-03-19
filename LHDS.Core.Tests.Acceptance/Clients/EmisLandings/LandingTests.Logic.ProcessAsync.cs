@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -31,42 +33,46 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                     regenerateKeys: true,
                     externalUse: false);
 
-            List<string> randomFiles = PrepareAndAddFile(inputSubscriberCredential.Id);
+            DataSetSpecification retrievedDataSetSpecification =
+                await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
+
+            List<string> randomFiles = PrepareAndAddFile(
+                subscriberAgreementId: inputSubscriberCredential.Id,
+                dataSetSpecification: retrievedDataSetSpecification);
+
+            List<string> expectedFiles = randomFiles.DeepClone();
 
             //When
             var actualStringList = await this.landingClient.ProcessAsync();
 
             //Then
-            //foreach (var actualFile in actualStringList)
-            //{
-            //    string expectedFile =
-            //        $"/{landingConfiguration.DecryptedFolder}"
-            //        + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
-            //        + $"/{retrievedDataSetSpecification.Id}"
-            //        + $"/{fileName.Split('_')[3]}"
-            //        + $"/{fileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+            expectedFiles.Should().BeEquivalentTo(actualStringList);
 
-            //    actualFile.Should().BeEquivalentTo(expectedFile);
+            foreach (var actualFile in actualStringList)
+            {
+                IngestionTracking ingestionTracking = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                    .FirstOrDefault(ingestionTracking => ingestionTracking.DecryptedFileName == actualFile);
 
-            //IngestionTracking ingestionTracking = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
-            //    .FirstOrDefault(ingestionTracking => ingestionTracking.DecryptedFileName == actualFile);
+                ingestionTracking.Should().NotBeNull();
 
-            //ingestionTracking.Should().NotBeNull();
+                await this.documentService.RemoveDocumentByFileNameAsync(
+                    filename: ingestionTracking.EncryptedFileName,
+                    container: blobContainers.EmisLanding);
 
-            //var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-            //    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+                var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
-            //foreach (var audit in audits)
-            //{
-            //    await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
-            //}
+                foreach (var audit in audits)
+                {
+                    await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+                }
 
-            //await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+                await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-            // TODO: Tear down the test data
+                await this.subscriberCredentialOrchestration
+                    .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
+            }
         }
-
-
 
         [Fact]
         public async Task ShouldNotProcessExistingDocumentsAsync()

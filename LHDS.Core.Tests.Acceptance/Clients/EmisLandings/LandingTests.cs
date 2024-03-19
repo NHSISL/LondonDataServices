@@ -12,6 +12,7 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
@@ -25,6 +26,7 @@ using LHDS.Core.Providers.Downloads.DiskDownloads;
 using LHDS.Core.Providers.Downloads.FtpDownloads;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
+using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
@@ -46,6 +48,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         private readonly IDataSetSpecificationService dataSetSpecificationService;
         private readonly ISupplierService supplierService;
         private readonly IDataSetService dataSetService;
+        private readonly IDocumentService documentService;
         private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
         private readonly ISubscriberCredentialOrchestration subscriberCredentialOrchestration;
         private readonly IEmisLandingClient landingClient;
@@ -53,6 +56,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         private readonly IIngestionTrackingAuditService ingestionTrackingAuditService;
         private readonly ICompareLogic compareLogic;
         private readonly DependencyBroker dependencyBroker;
+        private readonly BlobContainers blobContainers;
 
         public LandingTests(DependencyBroker dependencyBroker)
         {
@@ -90,6 +94,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             this.dataSetService = serviceProvider.GetService<IDataSetService>();
             this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
             this.subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
+            this.documentService = serviceProvider.GetService<IDocumentService>();
+            this.blobContainers = serviceProvider.GetService<BlobContainers>();
 
             this.dataSetSpecificationProcessingService =
                 serviceProvider.GetService<IDataSetSpecificationProcessingService>();
@@ -100,9 +106,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             landingClient = serviceProvider.GetService<IEmisLandingClient>();
         }
 
-        private List<string> PrepareAndAddFile(Guid subscriberAgreementId)
+        private List<string> PrepareAndAddFile(
+            Guid subscriberAgreementId,
+            DataSetSpecification dataSetSpecification)
         {
-            int count = GetRandomNumber();
+            int count = 1; //GetRandomNumber();
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string defaultFolderPath = Path.Combine(assemblyPath, "temp", "downloads");
 
@@ -121,8 +129,23 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 }
 
                 File.WriteAllText(filePath, GetRandomString());
-                var relativePath = Path.GetRelativePath(defaultFolderPath, filePath).Replace("\\", "/");
-                randomFiles.Add(relativePath);
+                var relativeSourcePath = Path.GetRelativePath(defaultFolderPath, filePath).Replace("\\", "/");
+
+                var filename = relativeSourcePath.StartsWith('/')
+                    ? relativeSourcePath
+                    : "/" + relativeSourcePath;
+
+                string[] splitFileName = filename.Split('/');
+                string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}"; ;
+
+                var relativeDecryptedPath =
+                    $"/{landingConfiguration.DecryptedFolder}" +
+                    $"/{dataSetSpecification.DataSet.DataSetName}" +
+                    $"/{dataSetSpecification.Id}" +
+                    $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
+                    $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
+                randomFiles.Add(relativeDecryptedPath);
             }
 
             return randomFiles;

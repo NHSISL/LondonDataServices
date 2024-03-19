@@ -43,7 +43,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 throw CreateAndLogValidationException(invalidSubscriberCredentialException);
             }
-            catch (InvalidArgumentSubscriberCredentialProcessingException 
+            catch (InvalidArgumentSubscriberCredentialProcessingException
                 invalidArgumentSubscriberCredentialProcessingException)
             {
                 throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialProcessingException);
@@ -91,7 +91,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 throw CreateAndLogValidationException(invalidSubscriberCredentialException);
             }
-            catch (InvalidArgumentSubscriberCredentialProcessingException 
+            catch (InvalidArgumentSubscriberCredentialProcessingException
                 invalidArgumentSubscriberCredentialProcessingException)
             {
                 throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialProcessingException);
@@ -166,7 +166,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
 
             this.loggingBroker.LogError(subscriberCredentialProcessingDependencyException);
 
-            throw subscriberCredentialProcessingDependencyException;
+            return subscriberCredentialProcessingDependencyException;
         }
 
         private SubscriberCredentialProcessingServiceException CreateAndLogServiceException(Xeption exception)

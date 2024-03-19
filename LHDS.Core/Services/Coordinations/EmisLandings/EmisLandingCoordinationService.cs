@@ -46,8 +46,9 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                     {
                         List<string> processedFiles = await TryCatch(async () =>
                         {
-                            SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
-                                .RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, false);
+                            SubscriberCredential maybeSubscriberCredential =
+                                await this.subscriberCredentialOrchestration
+                                    .RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, false);
 
                             List<string> processedItems = await this.emisLandingOrchestrationService
                                 .ProcessAsync(maybeSubscriberCredential);

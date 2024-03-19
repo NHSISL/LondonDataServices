@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
@@ -63,7 +64,10 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
                     ? SearchOption.AllDirectories
                     : SearchOption.TopDirectoryOnly);
 
-            return new List<string>(files);
+            List<string> relativePaths = files.Select(file =>
+                Path.GetRelativePath(diskDownloadProviderSettings.LocalRootFolder, file).Replace("\\", "/")).ToList();
+
+            return relativePaths;
         }
     }
 }

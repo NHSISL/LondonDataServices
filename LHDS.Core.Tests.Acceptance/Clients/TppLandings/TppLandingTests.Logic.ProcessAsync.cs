@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 {
     public partial class TppLandingTests
     {
-        [Fact(Skip = "Build Issue FK")]
+        [Fact]
         public async Task ShouldProcessNewDocumentAndAddHashAsync()
         {
             //Given
@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 blobContainers.Versioner);
         }
 
-        [Fact(Skip = "Build Issue FK")]
+        [Fact]
         public async Task ShouldNotProcessExistingDocumentAsync()
         {
             //Given
@@ -121,7 +121,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 blobContainers.Versioner);
         }
 
-        [Fact(Skip = "Build Issue FK")]
+        [Fact]
         public async Task ShouldProcessExistingDocumentAndUpdateHashAsync()
         {
             //Given

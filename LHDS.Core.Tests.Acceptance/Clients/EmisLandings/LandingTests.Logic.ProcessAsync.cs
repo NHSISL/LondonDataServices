@@ -8,12 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
-using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Tests.Acceptance.Clients.EmisLandings.Models;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
@@ -36,11 +34,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             DataSetSpecification retrievedDataSetSpecification =
                 await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
 
-            List<string> randomFiles = PrepareAndAddFile(
+            List<DocumentSource> randomFiles = PrepareAndAddFile(
                 subscriberAgreementId: inputSubscriberCredential.Id,
-                dataSetSpecification: retrievedDataSetSpecification);
+                dataSetSpecification: retrievedDataSetSpecification,
+                createFiles: true);
 
-            List<string> expectedFiles = randomFiles.DeepClone();
+            List<string> expectedFiles = randomFiles.Select(file => file.DecryptedBlobPath).ToList();
 
             //When
             var actualStringList = await this.landingClient.ProcessAsync();
@@ -72,6 +71,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 await this.subscriberCredentialOrchestration
                     .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
             }
+
+            foreach (var file in randomFiles)
+            {
+                System.IO.File.Delete(file.FilePath);
+            }
         }
 
         [Fact]
@@ -79,43 +83,27 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         {
             //Given
             DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            string fileName = GetRandomString();
+            Guid supplierId = landingConfiguration.LandingSupplierId;
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
 
-            await this.subscriberCredentialOrchestration
-                .ModifyOrAddSubscriberCredentialAsync(inputSubscriberCredential);
+            SubscriberCredential inputSubscriberCredential = await this.subscriberCredentialOrchestration
+                .ModifyOrAddSubscriberCredentialAsync(
+                    subscriberCredential: randomSubscriberCredential,
+                    regenerateKeys: true,
+                    externalUse: false);
 
-            Document randomDocument = new Document
-            {
-                DocumentData = documentData,
-                FileName = fileName
-            };
+            DataSetSpecification retrievedDataSetSpecification =
+                await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
 
-            Download downloadListRequest = new Download
-            {
-                SubscriberCredential = inputSubscriberCredential
-            };
-
-            Download downloadFileRequest = new Download
-            {
-                Document = new Document { FileName = fileName },
-                SubscriberCredential = inputSubscriberCredential
-            };
-
-            Download downloadFileResponse = new Download
-            {
-                Document = randomDocument,
-                SubscriberCredential = inputSubscriberCredential
-            };
-
-            List<string> fileList = new List<string> { fileName };
-            List<Document> documents = new List<Document> { randomDocument };
+            List<DocumentSource> documentSources = PrepareAndAddFile(
+                subscriberAgreementId: inputSubscriberCredential.Id,
+                dataSetSpecification: retrievedDataSetSpecification,
+                createFiles: false);
 
             List<IngestionTracking> ingestionTrackings = await CreateRandomIngestionTrackings(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                documents,
+                documentSources,
                 supplierId: landingConfiguration.LandingSupplierId);
 
             //When
@@ -140,35 +128,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             await this.subscriberCredentialOrchestration
                 .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
 
-            // TODO: Tear down the test data
-            // await CleanupTestData(ingestionTrackings);
+            foreach (var file in documentSources)
+            {
+                System.IO.File.Delete(file.FilePath);
+            }
         }
-
-        //private async Task CleanupTestData(
-        //    DataSet activeDataSet,
-        //    DataSetSpecification activeDataSetSpecification,
-        //    SubscriberCredential inputSubscriberCredential,
-        //    List<IngestionTracking> ingestionTrackings)
-        //{
-
-        //    foreach (var ingestionTracking in ingestionTrackings)
-        //    {
-        //        var items = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-        //            .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
-
-        //        foreach (var audit in items)
-        //        {
-        //            await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
-        //        }
-
-        //        await this.ingestionTrackingService
-        //            .RemoveIngestionTrackingByIdAsync(ingestionTrackingId: ingestionTracking.Id);
-        //    }
-
-        //    await this.subscriberCredentialOrchestration
-        //        .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
-
-        //    // await CleanupTestData(ingestionTrackings);
-        //}
     }
 }

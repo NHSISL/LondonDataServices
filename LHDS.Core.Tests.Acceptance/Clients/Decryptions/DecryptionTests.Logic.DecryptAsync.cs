@@ -57,7 +57,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 SubscriberCredential = inputSubscriberCredential
             };
 
-
             string encryptedFileSha256Hash =
                 this.hashBroker.GenerateSha256Hash(fileToRetrieve.Document.DocumentData);
 
@@ -67,6 +66,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 encryptedFileName,
                 decryptedFileName,
                 encryptedFileSha256Hash,
+                encryptedFileSize: fileToRetrieve.Document.DocumentData.Length,
                 supplierId: this.landingConfiguration.LandingSupplierId);
 
             Document document = new Document
@@ -77,11 +77,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
             await this.documentProcessingService.AddDocumentAsync(document, encryptedBlobContainer);
-
-            //await this.blobStorageBroker.InsertFileAsync(
-            //    fileName: randomFilePath,
-            //    stream: new MemoryStream(document.DocumentData),
-            //    blobContainer);
 
             //When
             var actualString = await this.decryptionClient.DecryptAsync(ingestionTracking.EncryptedFileName);

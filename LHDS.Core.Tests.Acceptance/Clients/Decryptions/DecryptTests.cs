@@ -231,6 +231,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
            string encryptedFileName,
            string decryptedFileName,
            string encryptedFileSha256Hash,
+           int encryptedFileSize,
            Guid supplierId)
         {
             IngestionTracking ingestionTracking = CreateIngestionTrackingFiller(
@@ -239,6 +240,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 encryptedFileName,
                 decryptedFileName,
                 encryptedFileSha256Hash,
+                encryptedFileSize,
                 supplierId)
                     .Create();
 
@@ -251,6 +253,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             string encryptedFileName,
             string decryptedFileName,
             string encryptedFileSha256Hash,
+            int encryptedFileSize,
             Guid supplierId)
         {
             string user = "System";
@@ -261,9 +264,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
                 .OnProperty(ingestionTracking => ingestionTracking.EncryptedFileName).Use(encryptedFileName)
                 .OnProperty(ingestionTracking => ingestionTracking.DecryptedFileName).Use(decryptedFileName)
+                .OnProperty(ingestionTracking => ingestionTracking.Decrypted).Use(false)
+                .OnProperty(ingestionTracking => ingestionTracking.LastSeen).Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.FileDeleted).Use(false)
+                .OnProperty(ingestionTracking => ingestionTracking.RecordCount).Use(0)
+                .OnProperty(ingestionTracking => ingestionTracking.EncryptedFileSize).Use(encryptedFileSize)
+                .OnProperty(ingestionTracking => ingestionTracking.EncryptedFileSha256Hash).Use(encryptedFileSha256Hash)
+                .OnProperty(ingestionTracking => ingestionTracking.DecryptedFileSize).Use(0)
+                .OnProperty(ingestionTracking => ingestionTracking.DecryptedFileSha256Hash).Use(string.Empty)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
-                .OnProperty(ingestionTracking => ingestionTracking.EncryptedFileSha256Hash).Use(encryptedFileSha256Hash)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 

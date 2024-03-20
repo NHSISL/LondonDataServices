@@ -259,9 +259,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                             maybeIngestionTracking.EncryptedFileName, blobContainers.EmisLanding);
                     }
-                    catch (DocumentDependencyException documentDependencyException)
-                        when (documentDependencyException.InnerException is FailedDocumentRequestException
-                            && documentDependencyException.InnerException.InnerException.Message
+                    catch (DocumentProcessingDependencyException documentProcessingDependencyException)
+                        when (documentProcessingDependencyException.InnerException is FailedDocumentRequestException
+                            && documentProcessingDependencyException.InnerException.InnerException.Message
                                 .StartsWith("The specified blob does not exist.")
                         )
                     { }
@@ -309,21 +309,24 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
                     }
 
+                    var encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
+
+                    var decryptedFileName =
+                        $"/{landingConfiguration.DecryptedFolder}" +
+                        $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
+                        $"/{retrievedDataSetSpecification.Id}" +
+                        $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
+                        $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
+
                     IngestionTracking newIngestionTracking =
                       new IngestionTracking
                       {
                           Id = this.identifierBroker.GetIdentifier(),
                           FileName = externalDownload.Document.FileName,
                           SupplierId = landingConfiguration.LandingSupplierId,
-                          EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
-
-                          DecryptedFileName =
-                                $"/{landingConfiguration.DecryptedFolder}"
-                                + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
-                                + $"/{retrievedDataSetSpecification.Id}"
-                                + $"/{filename.Split('_')[3]}"
-                                + $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
-
+                          EncryptedFileName = encryptedFileName,
+                          DecryptedFileName = decryptedFileName,
                           Decrypted = false,
                           LastSeen = currentDateTime,
                           FileDeleted = false,

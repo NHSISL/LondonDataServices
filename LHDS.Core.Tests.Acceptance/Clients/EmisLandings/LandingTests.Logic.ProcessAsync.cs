@@ -22,6 +22,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         public async Task ShouldProcessNewDocumentsAsync()
         {
             //Given
+            CleanupDownloadFolder();
             Guid supplierId = landingConfiguration.LandingSupplierId;
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
 
@@ -37,7 +38,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             List<DocumentSource> randomFiles = PrepareAndAddFile(
                 subscriberAgreementId: inputSubscriberCredential.Id,
                 dataSetSpecification: retrievedDataSetSpecification,
-                createFiles: true);
+                createFiles: true,
+                count: GetRandomNumber());
 
             List<string> expectedFiles = randomFiles.Select(file => file.DecryptedBlobPath).ToList();
 
@@ -68,20 +70,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
                 await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-                await this.subscriberCredentialOrchestration
-                    .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
             }
 
-            foreach (var file in randomFiles)
-            {
-                System.IO.File.Delete(file.FilePath);
-            }
+            await this.subscriberCredentialOrchestration
+                .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
+
+            CleanupDownloadFolder();
         }
 
         [Fact]
         public async Task ShouldNotProcessExistingDocumentsAsync()
         {
             //Given
+            CleanupDownloadFolder();
             DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
             Guid supplierId = landingConfiguration.LandingSupplierId;
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
@@ -99,7 +100,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             List<DocumentSource> documentSources = PrepareAndAddFile(
                 subscriberAgreementId: inputSubscriberCredential.Id,
                 dataSetSpecification: retrievedDataSetSpecification,
-                createFiles: false);
+                createFiles: false,
+                count: GetRandomNumber());
 
             List<IngestionTracking> ingestionTrackings = await CreateRandomIngestionTrackings(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
@@ -128,10 +130,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             await this.subscriberCredentialOrchestration
                 .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
 
-            foreach (var file in documentSources)
-            {
-                System.IO.File.Delete(file.FilePath);
-            }
+            CleanupDownloadFolder();
         }
     }
 }

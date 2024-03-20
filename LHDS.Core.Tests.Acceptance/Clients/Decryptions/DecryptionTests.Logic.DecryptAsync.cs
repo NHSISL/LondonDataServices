@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,9 +10,9 @@ using FluentAssertions;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
-using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Xunit;
 
@@ -26,50 +25,63 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         {
             //Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            SubscriberCredential subscriberCredential = CreateRandomSubscriberCredential();
-            Supplier supplier = CreateRandomSupplier(randomDateTimeOffset);
-            DataSet activeDataSet = CreateRandomDataSet(supplier.Id);
+            SubscriberCredential inputSubscriberCredential = CreateRandomSubscriberCredential();
+            Guid supplierId = landingConfiguration.LandingSupplierId;
+            DataSet activeDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
-            string blobContainer = "emislanding";
+            string encryptedBlobContainer = "emislanding/encrypted";
             SubscriberAgreement subscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset);
             SubscriberAgreement storageSubscriberAgreement = await this.storageBroker.InsertSubscriberAgreementAsync(subscriberAgreement);
-            string fileName = CreateRandomFilePath(storageSubscriberAgreement.Id);
+
+            string randomFileName = GetRandomFileName(subscriberAgreementId: inputSubscriberCredential.Id);
+
+            string randomFilePath = CreateRandomFilePath(
+                subscriberAgreementId: inputSubscriberCredential.Id,
+                fileName: randomFileName);
+
             string encryptedFileName = CreateRandomEncryptedFilePath(storageSubscriberAgreement.Id, storageSubscriberAgreement.SupplierSharingAgreementGuid);
             string decryptedFileName = CreateRandomDecryptedFilePath(
                 activeDataSet.DataSetName,
                 activeDataSetSpecification.Id,
-                fileName.Split('_')[3],
+                randomFilePath.Split('_')[3],
                 storageSubscriberAgreement.Id,
                 storageSubscriberAgreement.SupplierSharingAgreementGuid);
 
             string randomString = GetRandomString();
             byte[] randomBytes = Encoding.UTF8.GetBytes(randomString);
-            byte[] encryptedData = await this.cryptographyProvider.EncryptAsync(randomBytes, subscriberCredential);
+            byte[] encryptedData = await this.cryptographyProvider.EncryptAsync(randomBytes, inputSubscriberCredential);
 
-            Document document = new Document
+            Download fileToRetrieve = new Download
             {
-                FileName = fileName,
-                DocumentData = encryptedData
+                Document = new Document { FileName = randomFilePath },
+                SubscriberCredential = inputSubscriberCredential
             };
 
+
             string encryptedFileSha256Hash =
-                this.hashBroker.GenerateSha256Hash(document.DocumentData);
+                this.hashBroker.GenerateSha256Hash(fileToRetrieve.Document.DocumentData);
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                document,
+                fileToRetrieve,
                 encryptedFileName,
                 decryptedFileName,
                 encryptedFileSha256Hash,
                 supplierId: this.landingConfiguration.LandingSupplierId);
 
-            await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
-            await this.documentProcessingService.AddDocumentAsync(document, blobContainer);
+            Document document = new Document
+            {
+                FileName = ingestionTracking.EncryptedFileName,
+                DocumentData = encryptedData
+            };
 
-            await this.blobStorageBroker.InsertFileAsync(
-                fileName: fileName,
-                stream: new MemoryStream(document.DocumentData),
-                blobContainer);
+            await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
+            await this.documentProcessingService.AddDocumentAsync(document, encryptedBlobContainer);
+
+            //await this.blobStorageBroker.InsertFileAsync(
+            //    fileName: randomFilePath,
+            //    stream: new MemoryStream(document.DocumentData),
+            //    blobContainer);
 
             //When
             var actualString = await this.decryptionClient.DecryptAsync(ingestionTracking.EncryptedFileName);
@@ -102,17 +114,17 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
         private async Task DeleteAudits(IngestionTracking ingestionTracking)
         {
-            var auditIds = this.auditService.RetrieveAllIngestionTrackingAudits()
+            var auditIds = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id)
                 .Select(ingestionTracking => ingestionTracking.Id)
                 .ToList();
 
             foreach (var id in auditIds)
             {
-                await this.auditService.RemoveIngestionTrackingAuditByIdAsync(id);
+                await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(id);
             }
 
-            if (this.auditService.RetrieveAllIngestionTrackingAudits()
+            if (this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Any(audit => audit.IngestionTrackingId == ingestionTracking.Id))
             {
                 await DeleteAudits(ingestionTracking);

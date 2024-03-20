@@ -5,6 +5,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
@@ -16,18 +18,25 @@ using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
-using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
+using LHDS.Core.Providers.Downloads;
+using LHDS.Core.Providers.Downloads.DiskDownloads;
+using LHDS.Core.Providers.Downloads.FtpDownloads;
+using LHDS.Core.Services.Foundations.DataSets;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.Suppliers;
+using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
+using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tynamix.ObjectFiller;
@@ -38,23 +47,27 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
     [Collection(nameof(CoreTestCollection))]
     public partial class DecryptionTests
     {
-        private readonly DependencyBroker dependencyBroker;
-        //private readonly Mock<IDownloadBroker> downloadBrokerMock;
-        private readonly IBlobStorageBroker blobStorageBroker;
-        private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly IHashBroker hashBroker;
         private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly IDataSetSpecificationService dataSetSpecificationService;
+        private readonly ISupplierService supplierService;
+        private readonly IDataSetService dataSetService;
         private readonly IDocumentProcessingService documentProcessingService;
+        private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
+        private readonly ISubscriberCredentialOrchestration subscriberCredentialOrchestration;
         private readonly IDecryptionClient decryptionClient;
         private readonly LandingConfiguration landingConfiguration;
+        private readonly IIngestionTrackingAuditService ingestionTrackingAuditService;
+        private readonly DependencyBroker dependencyBroker;
+        private readonly BlobContainers blobContainers;
+        private readonly IBlobStorageBroker blobStorageBroker;
+        private readonly IStorageBroker storageBroker;
+        private readonly IHashBroker hashBroker;
         private readonly ICryptographyProvider cryptographyProvider;
-        private readonly IIngestionTrackingAuditService auditService;
 
         public DecryptionTests(DependencyBroker dependencyBroker)
         {
             this.dependencyBroker = dependencyBroker;
-            //this.downloadBrokerMock = new Mock<IDownloadBroker>();
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging(builder =>
@@ -62,26 +75,35 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 builder.AddConsole();
             });
 
-            var blobStorageSettings =
-                this.dependencyBroker.Configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
-
-            ValidateBlobStorageSettings(blobStorageSettings);
-            serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+            serviceCollection
+                .AddTransient<ISupplierService, SupplierService>()
+                .AddTransient<IDataSetService, DataSetService>()
+                .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
+                .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
 
             serviceCollection.AddDecryptionClient(this.dependencyBroker.Configuration);
+            serviceCollection.Remove(new ServiceDescriptor(typeof(IDownloadProvider), typeof(FtpDownloadProvider)));
 
-            //serviceCollection.AddTransient<IKeyVaultSecretBroker>((LandingConfiguration) =>
-            //        new KeyVaultSecretBroker(landingConfiguration.KeyVaultUrl));
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", "downloads");
 
-            //serviceCollection
-            //    .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object);
+            serviceCollection.AddTransient<IDownloadProvider>(_ =>
+                new DiskDownloadProvider(new DiskDownloadProviderSettings
+                {
+                    IncludeSubDirectories = true,
+                    LocalRootFolder = defaultFolderPath
+                }));
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
-            this.blobStorageBroker = serviceProvider.GetService<IBlobStorageBroker>();
+            this.supplierService = serviceProvider.GetService<ISupplierService>();
+            this.dataSetService = serviceProvider.GetService<IDataSetService>();
+            this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
             this.documentProcessingService = serviceProvider.GetService<IDocumentProcessingService>();
-            this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
+            this.subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
+            this.ingestionTrackingAuditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
+            this.blobStorageBroker = serviceProvider.GetService<IBlobStorageBroker>();
             this.storageBroker = serviceProvider.GetService<IStorageBroker>();
             this.hashBroker = serviceProvider.GetService<IHashBroker>();
             this.landingConfiguration = serviceProvider.GetRequiredService<LandingConfiguration>();
@@ -94,9 +116,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
         private static string GetRandomString(int length) =>
           new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
-
-        //private static int GetRandomNumber(int min = 2, int max = 10) =>
-        //    new IntRange(min, max).GetValue();
 
         private static int GetRandomNumber() =>
            new IntRange(min: 2, max: 10).GetValue();
@@ -208,7 +227,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
         private static IngestionTracking CreateRandomIngestionTracking(
            DateTimeOffset dateTimeOffset,
-           Document document,
+           Download fileToRetrieve,
            string encryptedFileName,
            string decryptedFileName,
            string encryptedFileSha256Hash,
@@ -216,7 +235,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         {
             IngestionTracking ingestionTracking = CreateIngestionTrackingFiller(
                 dateTimeOffset,
-                fileName: document.FileName,
+                fileName: fileToRetrieve.Document.FileName,
                 encryptedFileName,
                 decryptedFileName,
                 encryptedFileSha256Hash,
@@ -269,6 +288,29 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private static string GetRandomFileName(Guid subscriberAgreementId)
+        {
+            string filename =
+                $"delta" +
+                $"_{GetRandomNumber()}" +
+                $"_Admin" +
+                $"_Location" +
+                $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}" +
+                $"_{subscriberAgreementId}.csv.gpg";
+
+            return filename;
+        }
+
+        private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
+        {
+            return $"emisnightingale-data-preprod-provider-extracts" +
+                $"/IM1" +
+                $"/sftp" +
+                $"/{subscriberAgreementId}" +
+                $"/{DateTime.Now.ToString("yyyyMMdd")}" +
+                $"/{fileName}";
         }
 
         private static string CreateRandomFilePath(Guid? identifier)

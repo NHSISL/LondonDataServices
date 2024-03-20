@@ -176,7 +176,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         }
 
 
-        //TODO:  DH - can you double check these paths
+        //TODO:  DH - can you double check these paths. Also check the tests
+        // cant see how this is passing as the values are different from orchestration service
         private static string GenerateFilename(Guid identifier)
         {
             Guid randomGuid = Guid.NewGuid();
@@ -194,6 +195,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         }
 
         //TODO:  DH - can you double check these paths
+        // cant see how this is passing as the values are different from orchestration service
         private static string CreateRandomFilePath(Guid identifier)
         {
             return $"{GetRandomString()}" +

@@ -59,6 +59,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private readonly LandingConfiguration landingConfiguration;
         private readonly IIngestionTrackingAuditService ingestionTrackingAuditService;
         private readonly DependencyBroker dependencyBroker;
+
         private readonly BlobContainers blobContainers;
         private readonly IBlobStorageBroker blobStorageBroker;
         private readonly IStorageBroker storageBroker;
@@ -292,8 +293,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
-                .OnProperty(subscriberCredential => subscriberCredential.GpgPublicKey)
-                .Use("LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgptRE1FWStKTjl4WUpLd1lCQkFIYVJ3OEJBUWRBZFpNbEhySm9yRDJSaDJlTGFNRDJOUFNUeW9mYzRXVnU2R1FhCndNNWd5dWUwRmt4SVJGTWdQSFJsYzNSQWJHaGtjeTVzYjJOaGJENklrd1FURmdvQU94WWhCQkF4dVR3MnBHQjcKOHBFSWFsVjJadU1ZSW9PbEJRSmo0azMzQWhzREJRc0pDQWNDQWlJQ0JoVUtDUWdMQWdRV0FnTUJBaDRIQWhlQQpBQW9KRUZWMlp1TVlJb09sVmw0QS8xRk8xVUd3V05JcWFuUTBPaDJKbTlQK2YyNVRvWFJ2bnRRRktTYUx2aUJZCkFQNDhCQ3FaVm1pcERaaFlNdVFmUWpyTmJEV2gvUWc1YTlJUG5xeHB4N2JtQUxnNEJHUGlUZmNTQ2lzR0FRUUIKbDFVQkJRRUJCMEFCUXl0b3hoNExMSCtPRi9OdmhxamE1THNtbEhPNS9wTU5rUnlSZ0l2eEZRTUJDQWVJZUFRWQpGZ29BSUJZaEJCQXh1VHcycEdCNzhwRUlhbFYyWnVNWUlvT2xCUUpqNGszM0Foc01BQW9KRUZWMlp1TVlJb09sCk5OZ0JBTEdSWWNFbzRYeXJJZjVaaDhSeWRNd1dqVTJtZjk5M0tZWjFQaVgyLy9hbUFQOVF4WnNac2oxTjJNdDAKTjZveWs3UDJSRExrSTBVRDZiUlJTS0NTVnFIRkJBPT0KPWVIMEoKLS0tLS1FTkQgUEdQIFBVQkxJQyBLRVkgQkxPQ0stLS0tLQo=")
+                .OnProperty(subscriberCredential => subscriberCredential.IsActive).Use(true)
                 .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
@@ -361,6 +361,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                     $"/{fileNameBase}" +
                     $"/{storageSubscriberAgreementId}" +
                     $"/{"0122235"}" +
+
                     $"_{GetRandomString()}" +
                     $"_{GetRandomNumber()}" +
                     $"_{GetRandomString()}" +

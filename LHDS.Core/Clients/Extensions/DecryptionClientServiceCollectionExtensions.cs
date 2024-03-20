@@ -10,6 +10,7 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using LHDS.Core.Brokers.CryptographyKeys;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Decryptions;
 using LHDS.Core.Brokers.Downloads;
@@ -111,43 +112,45 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
+            services.AddTransient<ICryptographyKeyBroker, GpgKeyBroker>();
+            services.AddTransient<ICryptographyKeyBroker, SshKeyBroker>();
 
             LandingConfiguration landingConfiguration =
                 configuration.GetSection("landingSettings").Get<LandingConfiguration>();
 
             ValidateLandingConfiguration(landingConfiguration);
 
-            if (!acceptanceTest)
+            var blobStorageSettings = configuration
+                .GetSection("blobStorage").Get<BlobStorageSettings>();
+
+            ValidateBlobStorageSettings(blobStorageSettings);
+            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+            services.AddSingleton(landingConfiguration);
+            services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+            services.AddTransient<IDownloadBroker, DownloadBroker>();
+
+            services.AddTransient<IKeyVaultSecretBroker>((LandingConfiguration) =>
+                new KeyVaultSecretBroker(landingConfiguration.KeyVaultUrl));
+
+            var blobServiceClientOptions = new BlobClientOptions()
             {
-                var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
-                ValidateBlobStorageSettings(blobStorageSettings);
-                services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+                Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
+                Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                EnableTenantDiscovery = true
+            };
 
-                var blobServiceClientOptions = new BlobClientOptions()
-                {
-                    Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
-                    Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
-                    EnableTenantDiscovery = true
-                };
+            services.AddSingleton(
+                new BlobServiceClient(
+                    serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
+                    credential: new DefaultAzureCredential(
+                        new DefaultAzureCredentialOptions
+                        {
+                            VisualStudioTenantId = blobStorageSettings.AzureTenantId,
+                        }),
+                    options: blobServiceClientOptions));
 
-                services.AddSingleton(
-                    new BlobServiceClient(
-                        serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
-                        credential: new DefaultAzureCredential(
-                            new DefaultAzureCredentialOptions
-                            {
-                                VisualStudioTenantId = blobStorageSettings.AzureTenantId,
-                            }),
-                        options: blobServiceClientOptions));
 
-                services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
-                services.AddTransient<IDownloadBroker, DownloadBroker>();
-
-                services.AddTransient<IKeyVaultSecretBroker>((LandingConfiguration) =>
-                    new KeyVaultSecretBroker(landingConfiguration.KeyVaultUrl));
-
-                services.AddTransient<IAzureBlobClient, AzureBlobClient>();
-            }
+            services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
 
         private static void AddServices(IServiceCollection services)

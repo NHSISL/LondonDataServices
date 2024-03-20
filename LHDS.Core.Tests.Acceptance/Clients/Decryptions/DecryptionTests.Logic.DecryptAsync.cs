@@ -12,7 +12,6 @@ using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Xunit;
 
@@ -25,13 +24,21 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         {
             //Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            SubscriberCredential inputSubscriberCredential = CreateRandomSubscriberCredential();
+
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+
+            SubscriberCredential inputSubscriberCredential = await this.subscriberCredentialOrchestration
+                .ModifyOrAddSubscriberCredentialAsync(
+                    subscriberCredential: randomSubscriberCredential,
+                    regenerateKeys: true,
+                    externalUse: false);
+
             Guid supplierId = landingConfiguration.LandingSupplierId;
             DataSet activeDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
             string encryptedBlobContainer = "emislanding/encrypted";
-            SubscriberAgreement subscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset);
-            SubscriberAgreement storageSubscriberAgreement = await this.storageBroker.InsertSubscriberAgreementAsync(subscriberAgreement);
+            //SubscriberAgreement subscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset);
+            //SubscriberAgreement storageSubscriberAgreement = await this.storageBroker.InsertSubscriberAgreementAsync(subscriberAgreement);
 
             string randomFileName = GetRandomFileName(subscriberAgreementId: inputSubscriberCredential.Id);
 
@@ -39,13 +46,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 subscriberAgreementId: inputSubscriberCredential.Id,
                 fileName: randomFileName);
 
-            string encryptedFileName = CreateRandomEncryptedFilePath(storageSubscriberAgreement.Id, storageSubscriberAgreement.SupplierSharingAgreementGuid);
+
+            string encryptedFileName = CreateRandomEncryptedFilePath(inputSubscriberCredential.Id, inputSubscriberCredential.SupplierSharingAgreementGuid);
+
             string decryptedFileName = CreateRandomDecryptedFilePath(
                 activeDataSet.DataSetName,
                 activeDataSetSpecification.Id,
-                randomFilePath.Split('_')[3],
-                storageSubscriberAgreement.Id,
-                storageSubscriberAgreement.SupplierSharingAgreementGuid);
+                randomFilePath.Split('_')[2] + "_" + randomFilePath.Split('_')[3],
+                inputSubscriberCredential.Id,
+                inputSubscriberCredential.SupplierSharingAgreementGuid);
 
             string randomString = GetRandomString();
             byte[] randomBytes = Encoding.UTF8.GetBytes(randomString);

@@ -33,6 +33,7 @@ using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
+using LHDS.Core.Tests.Acceptance.Clients.EmisLandings.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tynamix.ObjectFiller;
@@ -106,15 +107,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             landingClient = serviceProvider.GetService<IEmisLandingClient>();
         }
 
-        private List<string> PrepareAndAddFile(
+        private List<DocumentSource> PrepareAndAddFile(
             Guid subscriberAgreementId,
-            DataSetSpecification dataSetSpecification)
+            DataSetSpecification dataSetSpecification,
+            bool createFiles)
         {
             int count = 1; //GetRandomNumber();
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string defaultFolderPath = Path.Combine(assemblyPath, "temp", "downloads");
 
-            List<string> randomFiles = new List<string>();
+            List<DocumentSource> randomFiles = new List<DocumentSource>();
 
             for (int i = 0; i < count; i++)
             {
@@ -138,6 +140,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 string[] splitFileName = filename.Split('/');
                 string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}"; ;
 
+                var encryptedFilePath = $"/{landingConfiguration.EncryptedFolder}/{newFileName}"; ;
+
                 var relativeDecryptedPath =
                     $"/{landingConfiguration.DecryptedFolder}" +
                     $"/{dataSetSpecification.DataSet.DataSetName}" +
@@ -145,7 +149,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                     $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
                     $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
-                randomFiles.Add(relativeDecryptedPath);
+                DocumentSource documentSource = new DocumentSource
+                {
+                    FtpPath = relativeSourcePath,
+                    EncryptedBlobPath = encryptedFilePath,
+                    DecryptedBlobPath = relativeDecryptedPath,
+                    FilePath = filePath
+                };
+
+                randomFiles.Add(documentSource);
             }
 
             return randomFiles;
@@ -203,16 +215,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
         private async ValueTask<List<IngestionTracking>> CreateRandomIngestionTrackings(
             DateTimeOffset dateTimeOffset,
-            List<Document> documents,
+            List<DocumentSource> documentSources,
             Guid supplierId)
         {
             List<IngestionTracking> items = new List<IngestionTracking>();
 
-            foreach (var document in documents)
+            foreach (var documentSource in documentSources)
             {
                 var item = CreateIngestionTrackingFiller(
                     dateTimeOffset,
-                    fileName: document.FileName,
+                    fileName: documentSource.FtpPath,
                     supplierId)
                         .Create();
 

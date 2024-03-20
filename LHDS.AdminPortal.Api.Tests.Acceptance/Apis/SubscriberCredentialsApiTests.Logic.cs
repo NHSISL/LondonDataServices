@@ -10,6 +10,7 @@ using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
+using RESTFulSense.Exceptions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
@@ -290,5 +291,22 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
+        [Fact]
+        public async Task ShouldDeleteSubscriberCredentialAsync()
+        {
+            // given
+            Guid subscriberAgreementId = Guid.NewGuid();
+            await PostRandomSubscriberCredentialAsync(subscriberAgreementId);
+
+            // when
+            await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
+
+            ValueTask<SubscriberCredential> getSubscriberCredentialbyIdTask =
+                this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
+
+            // then
+            await Assert.ThrowsAsync<HttpResponseInternalServerErrorException>(() =>
+                getSubscriberCredentialbyIdTask.AsTask());
+        }
     }
 }

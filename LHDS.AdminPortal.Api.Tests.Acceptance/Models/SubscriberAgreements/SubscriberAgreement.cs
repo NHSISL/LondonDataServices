@@ -32,7 +32,5 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements
 
         [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset CreatedDate { get; set; }
-        public string UpdatedBy { get; set; }
-        public DateTimeOffset UpdatedDate { get; set; }
     }
 }

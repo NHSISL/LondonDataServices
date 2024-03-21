@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -20,23 +21,24 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
         public async Task ShouldDecryptFileAsync()
         {
             // given
+            Guid subscriberCredentialId = Guid.NewGuid();
             string encryptedFileContainer = "emislanding";
             string decryptedFileContainer = "versioner";
             Supplier randomSupplier = await PostRandomSupplierAsync();
             string encryptedFilePath = "encrypted";
             string decryptedFilePath = "decrypted";
-            string decryptedData = GetRandomString();
-            byte[] decryptedDocumentData = Encoding.ASCII.GetBytes(decryptedFileContainer);
+
 
             IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(randomSupplier.Id, encryptedFilePath, decryptedFilePath);
 
             IngestionTracking inputIngestionTracking = randomIngestionTracking;
             IngestionTracking expectedIngestionTracking = inputIngestionTracking;
-
+            string decryptedData = GetRandomString();
+            byte[] decryptedDocumentData = Encoding.ASCII.GetBytes(decryptedFileContainer);
             string inputFileName = randomIngestionTracking.EncryptedFileName;
+            this.cryptographyBroker.EncryptAsync(decryptedDocumentData, subscriberCredential)
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
-            byte[] encryptedData = await this.apiBroker.PostEncryptDataAsync(documentData);
 
             Document document = new Document
             {

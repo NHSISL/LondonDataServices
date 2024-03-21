@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using LHDS.Core.Brokers.Decryptions;
 using Tynamix.ObjectFiller;
 using Xunit;
 
@@ -16,9 +17,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
     public partial class DecryptionsApiTests
     {
         private readonly ApiBroker apiBroker;
+        private readonly ICryptographyBroker cryptographyBroker;
 
-        public DecryptionsApiTests(ApiBroker apiBroker) =>
+        public DecryptionsApiTests(
+            ApiBroker apiBroker,
+            ICryptographyBroker cryptographyBroker)
+        {
             this.apiBroker = apiBroker;
+            this.cryptographyBroker = cryptographyBroker;
+        }
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();

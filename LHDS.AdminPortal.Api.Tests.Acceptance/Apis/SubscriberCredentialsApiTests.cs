@@ -27,6 +27,20 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private List<Guid> CreateRandomSubscriberAgreementIds()
+        {
+            int randomNumber = GetRandomNumber();
+            var randomSubscriberAgreementIds = new List<Guid>();
+
+            for (int i = 0; i < randomNumber; i++)
+            {
+                Guid id = Guid.NewGuid();
+                randomSubscriberAgreementIds.Add(id);
+            }
+
+            return randomSubscriberAgreementIds;
+        }
+
         private static SubscriberCredential UpdateSubscriberCredentialWithRandomValues(
             SubscriberCredential inputSubscriberCredential)
         {
@@ -58,17 +72,62 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             return randomSubscriberCredential;
         }
 
-        private async ValueTask<List<SubscriberCredential>> PostRandomSubscriberCredentialsAsync(Guid id)
+        private async ValueTask<List<SubscriberCredential>> PostRandomSubscriberCredentialsAsync()
         {
             int randomNumber = GetRandomNumber();
             var randomSubscriberCredentials = new List<SubscriberCredential>();
 
             for (int i = 0; i < randomNumber; i++)
             {
+                Guid id = Guid.NewGuid();
                 randomSubscriberCredentials.Add(await PostRandomSubscriberCredentialAsync(id));
             }
 
             return randomSubscriberCredentials;
+        }
+
+        public static List<SubscriberCredential> CreatSubscriberCredentialsFromAgreements(
+            List<SubscriberAgreement> subscriberAgreements)
+        {
+            List<SubscriberCredential> subscriberCredentials = new List<SubscriberCredential>();
+
+            foreach (SubscriberAgreement subscriberAgreement in subscriberAgreements)
+            {
+                SubscriberCredential subscriberCredential = 
+                    CreateSubscriberCredentialFromAgreement(subscriberAgreement);
+
+                subscriberCredentials.Add(subscriberCredential);
+            }
+
+            return subscriberCredentials;
+        }
+
+        private static SubscriberCredential CreateSubscriberCredentialFromAgreement(
+            SubscriberAgreement subscriberAgreement)
+        {
+            SubscriberCredential subscriberCredential = new SubscriberCredential
+            {
+                Id = subscriberAgreement.Id,
+                SupplierSharingAgreementShortName = subscriberAgreement.SupplierSharingAgreementShortName,
+                SupplierSharingAgreementGuid = subscriberAgreement.SupplierSharingAgreementGuid,
+                FtpPublicKey = subscriberAgreement.FtpPublicKey,
+                FtpUserName = subscriberAgreement.FtpUserName,
+                FtpPassPhrase = null,
+                FtpPassword = null,
+                FtpPrivateKey = null,
+                GpgPublicKey = subscriberAgreement.GpgPublicKey,
+                GpgPassPhrase = null,
+                GpgPrivateKey = null,
+                IsActive = subscriberAgreement.IsActive,
+                LastPollEndDate = subscriberAgreement.LastPollEndDate,
+                LastPollStartDate = subscriberAgreement.LastPollStartDate,
+                CreatedBy = subscriberAgreement.CreatedBy,
+                CreatedDate = subscriberAgreement.CreatedDate,
+                UpdatedBy = subscriberAgreement.UpdatedBy,
+                UpdatedDate = subscriberAgreement.UpdatedDate,
+            };
+
+            return subscriberCredential;
         }
 
         private static SubscriberCredential CreateRandomSubscriberCredential(Guid id) =>
@@ -100,17 +159,33 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             return randomSubscriberAgreement;
         }
 
-        private async ValueTask<List<SubscriberAgreement>> PostRandomSubscriberAgreementsAsync(Guid id)
+        private async ValueTask<List<SubscriberAgreement>> PostRandomSubscriberAgreementsAsync(
+            List<Guid> subscriberAgreementIds)
         {
-            int randomNumber = GetRandomNumber();
             var randomSubscriberAgreements = new List<SubscriberAgreement>();
 
-            for (int i = 0; i < randomNumber; i++)
+            foreach (Guid subscriberAgreementId in subscriberAgreementIds)
             {
-                randomSubscriberAgreements.Add(await PostRandomSubscriberAgreementAsync(id));
+                randomSubscriberAgreements.Add(await PostRandomSubscriberAgreementAsync(subscriberAgreementId));
             }
 
             return randomSubscriberAgreements;
+        }
+
+        public static List<SubscriberAgreement> CreateRandomSubscriberAgreements()
+        {
+            List<SubscriberAgreement> subscriberAgreements = new List<SubscriberAgreement>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                Guid id = Guid.NewGuid();
+
+                SubscriberAgreement subscriberAgreement = CreateRandomSubscriberAgreement(id);
+
+                subscriberAgreements.Add(subscriberAgreement);
+            }
+
+            return subscriberAgreements;
         }
 
         private static SubscriberAgreement CreateRandomSubscriberAgreement(Guid id) =>

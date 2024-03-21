@@ -16,8 +16,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         public async Task ShouldRemoveSubscriberCredentialByIdAndLogAsync()
         {
             // Given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid randomId = Guid.NewGuid();
-            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential(randomId);
+
+            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential(
+                date: randomDateTimeOffset,
+                id: randomId);
+
             SubscriberAgreement inputSubscriberAgreement = CreateSubscriberAgreementFromDynamic(randomDynamic);
             SubscriberAgreement outputSubscriberAgreement = inputSubscriberAgreement;
 
@@ -42,6 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

@@ -82,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         private static List<dynamic> CreateRandomDynamicSubscriberAgreementCredentials()
         {
             return Enumerable.Range(1, 1)
-                .Select(item => CreateRandomDynamicSubscriberAgreementCredential())
+                .Select(item => CreateRandomDynamicSubscriberAgreementCredential(date: GetRandomDateTimeOffset()))
                     .ToList();
         }
 
@@ -94,11 +94,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             foreach (var credential in credentials)
             {
                 SubscriberCredential subscriberCredential = CreateSubscriberCredentialFromDynamic(credential);
-                subscriberCredential.FtpPassword = string.Empty;
-                subscriberCredential.FtpPrivateKey = string.Empty;
-                subscriberCredential.FtpPassPhrase = string.Empty;
-                subscriberCredential.GpgPassPhrase = string.Empty;
-                subscriberCredential.GpgPrivateKey = string.Empty;
+                subscriberCredential.FtpPassword = null;
+                subscriberCredential.FtpPrivateKey = null;
+                subscriberCredential.FtpPassPhrase = null;
+                subscriberCredential.GpgPassPhrase = null;
+                subscriberCredential.GpgPrivateKey = null;
                 subscriberCredentials.Add(subscriberCredential);
             }
 
@@ -120,7 +120,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             return subscriberAgreements.AsQueryable();
         }
 
-        private static dynamic CreateRandomDynamicSubscriberAgreementCredential(Guid id = default(Guid))
+        private static dynamic CreateRandomDynamicSubscriberAgreementCredential(
+            DateTimeOffset date,
+            Guid id = default(Guid))
         {
             if (id == Guid.Empty)
             {
@@ -128,7 +130,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             }
 
             Guid supplierSharingAgreementGuid = Guid.NewGuid();
-            DateTimeOffset randomDate = GetRandomDateTimeOffset();
 
             return new
             {
@@ -144,18 +145,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 GpgPrivateKey = GetRandomString(),
                 GpgPublicKey = GetRandomString(),
                 IsActive = false,
-                LastPollStartDate = randomDate,
-                LastPollEndDate = randomDate.AddMinutes(1),
+                LastPollStartDate = date,
+                LastPollEndDate = date.AddMinutes(1),
                 CreatedBy = GetRandomString(),
                 UpdatedBy = GetRandomString(),
-                UpdatedDate = randomDate,
-                CreatedDate = randomDate
-
+                UpdatedDate = date,
+                CreatedDate = date
             };
         }
 
         private static SubscriberCredential CreateSubscriberCredentialFromDynamic(
-            dynamic credential, 
+            dynamic credential,
             bool blankKeys = false)
         {
             SubscriberCredential randomSubscriberCredential = new SubscriberCredential
@@ -203,6 +203,29 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             };
 
             return randomSubscriberAgreement;
+        }
+
+        private static SubscriberAgreement CreateSubscriberAgreementFromSubscriberCredential(
+            SubscriberCredential subscriberCredential)
+        {
+            SubscriberAgreement subscriberAgreement = new SubscriberAgreement
+            {
+                Id = subscriberCredential.Id,
+                SupplierSharingAgreementShortName = subscriberCredential.SupplierSharingAgreementShortName,
+                SupplierSharingAgreementGuid = subscriberCredential.SupplierSharingAgreementGuid,
+                FtpUserName = subscriberCredential.FtpUserName,
+                FtpPublicKey = subscriberCredential.FtpPublicKey,
+                GpgPublicKey = subscriberCredential.GpgPublicKey,
+                IsActive = subscriberCredential.IsActive,
+                LastPollStartDate = subscriberCredential.LastPollStartDate,
+                LastPollEndDate = subscriberCredential.LastPollEndDate,
+                CreatedBy = subscriberCredential.CreatedBy,
+                UpdatedBy = subscriberCredential.UpdatedBy,
+                UpdatedDate = subscriberCredential.UpdatedDate,
+                CreatedDate = subscriberCredential.CreatedDate
+            };
+
+            return subscriberAgreement;
         }
 
         private static List<SubscriberAgreement> CreateRandomSubscriberAgreements()

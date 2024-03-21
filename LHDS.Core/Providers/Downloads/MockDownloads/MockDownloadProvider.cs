@@ -14,12 +14,12 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
     public class MockDownloadProvider : IDownloadProvider
     {
         public string Name { get; private set; }
-        public bool IsMock { get; private set; }
+        public bool IsOfflineProvider { get; private set; }
 
         public MockDownloadProvider()
         {
             this.Name = "MockDownloadProvider";
-            this.IsMock = true;
+            this.IsOfflineProvider = true;
         }
 
         private static string GetRandomString() =>

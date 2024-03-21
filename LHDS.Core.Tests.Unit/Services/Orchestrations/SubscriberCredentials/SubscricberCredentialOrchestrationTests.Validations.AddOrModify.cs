@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
@@ -49,6 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
         }
 
@@ -56,7 +58,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         public async Task ShouldThrowValidationExceptionOnModifyOrAddIfSubscriberAgreementIsNullAndLogItAsync()
         {
             // given
-            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Guid randomId = Guid.NewGuid();
+
+            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential(
+                date: randomDateTimeOffset,
+                id: randomId);
+
             SubscriberCredential inputSubscriberCredential = CreateSubscriberCredentialFromDynamic(randomDynamic);
             SubscriberAgreement nullSubscriberAgreement = null;
 
@@ -97,6 +105,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
         }
     }

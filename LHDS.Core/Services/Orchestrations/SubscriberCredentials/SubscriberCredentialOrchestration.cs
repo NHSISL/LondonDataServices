@@ -52,23 +52,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             TryCatch(async () =>
             {
                 ValidateSubscriberCredential(subscriberCredential);
-
-                SubscriberAgreement subscriberAgreement = new SubscriberAgreement
-                {
-                    Id = subscriberCredential.Id,
-                    SupplierSharingAgreementShortName = subscriberCredential.SupplierSharingAgreementShortName,
-                    SupplierSharingAgreementGuid = subscriberCredential.SupplierSharingAgreementGuid,
-                    FtpUserName = subscriberCredential.FtpUserName,
-                    FtpPublicKey = subscriberCredential.FtpPublicKey,
-                    GpgPublicKey = subscriberCredential.GpgPublicKey,
-                    IsActive = subscriberCredential.IsActive,
-                    LastPollEndDate = subscriberCredential.LastPollEndDate,
-                    LastPollStartDate = subscriberCredential.LastPollStartDate,
-                    CreatedBy = subscriberCredential.CreatedBy,
-                    UpdatedBy = subscriberCredential.UpdatedBy,
-                    UpdatedDate = subscriberCredential.UpdatedDate,
-                    CreatedDate = subscriberCredential.CreatedDate,
-                };
+                SubscriberAgreement subscriberAgreement = MapToSubsciberAgreement(subscriberCredential);
 
                 SubscriberAgreement storageSubscriberAgreement =
                     await this.subscriberAgreementProcessingService.ModifyOrAddSubscriberAgreementAsync(
@@ -94,6 +78,14 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
 
                 ValidateSubscriberCredentialIsNotNull(subcriberCredentialsWithSecureData);
 
+                SubscriberAgreement subscriberAgreementWithKeys = MapToSubsciberAgreement(
+                    subcriberCredentialsWithSecureData);
+
+                subscriberAgreementWithKeys.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                await this.subscriberAgreementProcessingService.ModifyOrAddSubscriberAgreementAsync(
+                    subscriberAgreementWithKeys);
+
                 var updatedSubscriberCredentialsWithSecureData = await this.secureDataProcessingService
                     .AddOrModifySecureDataAsync(subcriberCredentialsWithSecureData);
 
@@ -118,13 +110,13 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                         SupplierSharingAgreementShortName = subscriberAgreement.SupplierSharingAgreementShortName,
                         SupplierSharingAgreementGuid = subscriberAgreement.SupplierSharingAgreementGuid,
                         FtpUserName = subscriberAgreement.FtpUserName,
-                        FtpPassword = string.Empty,
+                        FtpPassword = null,
                         FtpPublicKey = subscriberAgreement.FtpPublicKey,
-                        FtpPassPhrase = string.Empty,
-                        FtpPrivateKey = string.Empty,
+                        FtpPassPhrase = null,
+                        FtpPrivateKey = null,
                         GpgPublicKey = subscriberAgreement.GpgPublicKey,
-                        GpgPassPhrase = string.Empty,
-                        GpgPrivateKey = string.Empty,
+                        GpgPassPhrase = null,
+                        GpgPrivateKey = null,
                         IsActive = subscriberAgreement.IsActive,
                         LastPollEndDate = subscriberAgreement.LastPollEndDate,
                         LastPollStartDate = subscriberAgreement.LastPollStartDate,
@@ -163,6 +155,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             TryCatch(async () =>
             {
                 ValidateSubscriberCredentialId(subscriberCredentialId);
+
                 SubscriberAgreement retrievedSubscriberAgreement =
                     await this.subscriberAgreementProcessingService.RetrieveSubscriberAgreementByIdAsync(
                         subscriberCredentialId);
@@ -252,6 +245,27 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                 GpgPublicKey = subscriberCredential.GpgPublicKey,
                 GpgPassPhrase = externalUse ? null : subscriberCredential.GpgPassPhrase,
                 GpgPrivateKey = externalUse ? null : subscriberCredential.GpgPrivateKey,
+                IsActive = subscriberCredential.IsActive,
+                LastPollEndDate = subscriberCredential.LastPollEndDate,
+                LastPollStartDate = subscriberCredential.LastPollStartDate,
+                CreatedBy = subscriberCredential.CreatedBy,
+                UpdatedBy = subscriberCredential.UpdatedBy,
+                UpdatedDate = subscriberCredential.UpdatedDate,
+                CreatedDate = subscriberCredential.CreatedDate,
+            };
+        }
+
+        private static SubscriberAgreement MapToSubsciberAgreement(
+            SubscriberCredential subscriberCredential)
+        {
+            return new SubscriberAgreement
+            {
+                Id = subscriberCredential.Id,
+                SupplierSharingAgreementShortName = subscriberCredential.SupplierSharingAgreementShortName,
+                SupplierSharingAgreementGuid = subscriberCredential.SupplierSharingAgreementGuid,
+                FtpUserName = subscriberCredential.FtpUserName,
+                FtpPublicKey = subscriberCredential.FtpPublicKey,
+                GpgPublicKey = subscriberCredential.GpgPublicKey,
                 IsActive = subscriberCredential.IsActive,
                 LastPollEndDate = subscriberCredential.LastPollEndDate,
                 LastPollStartDate = subscriberCredential.LastPollStartDate,

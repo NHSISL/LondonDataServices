@@ -23,7 +23,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             Xeption dependencyValidationException)
         {
             // given
-            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Guid randomId = Guid.NewGuid();
+
+            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential(
+                date: randomDateTimeOffset,
+                id: randomId);
+
             SubscriberCredential inputSubscriberCredential = CreateSubscriberCredentialFromDynamic(randomDynamic);
 
             var expectedDependencyException =
@@ -59,6 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
         }
 
@@ -69,7 +76,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             Xeption dependencyException)
         {
             // given
-            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Guid randomId = Guid.NewGuid();
+
+            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential(
+                date: randomDateTimeOffset,
+                id: randomId);
+
             SubscriberCredential inputSubscriberCredential = CreateSubscriberCredentialFromDynamic(randomDynamic);
 
             var expectedDependencyException =
@@ -105,6 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
         }
 
@@ -113,7 +127,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             ShouldThrowServiceExceptionOnModifyOrAddSubscriberCredentialIfServiceErrorOccursAndLogItAsync()
         {
             //given
-            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Guid randomId = Guid.NewGuid();
+
+            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential(
+                date: randomDateTimeOffset,
+                id: randomId);
+
             SubscriberCredential inputSubscriberCredential = CreateSubscriberCredentialFromDynamic(randomDynamic);
             var serviceException = new Exception();
 
@@ -155,6 +175,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
         }
     }

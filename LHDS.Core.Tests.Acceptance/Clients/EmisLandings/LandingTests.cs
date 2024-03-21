@@ -1,61 +1,68 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Downloads;
-using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Providers.Downloads;
+using LHDS.Core.Providers.Downloads.DiskDownloads;
+using LHDS.Core.Providers.Downloads.FtpDownloads;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
+using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
+using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
-using Microsoft.Extensions.Configuration;
+using LHDS.Core.Tests.Acceptance.Clients.EmisLandings.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Moq;
 using Tynamix.ObjectFiller;
 using Xunit;
 
-namespace LHDS.Core.Tests.Acceptance.Clients.Landings
+namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 {
     [Collection(nameof(CoreTestCollection))]
     public partial class LandingTests
     {
-        private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
-        private readonly Mock<IDownloadBroker> downloadBrokerMock;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IDataSetSpecificationService dataSetSpecificationService;
         private readonly ISupplierService supplierService;
         private readonly IDataSetService dataSetService;
+        private readonly IDocumentService documentService;
         private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
+        private readonly ISubscriberCredentialOrchestration subscriberCredentialOrchestration;
         private readonly IEmisLandingClient landingClient;
         private readonly LandingConfiguration landingConfiguration;
-        private readonly IIngestionTrackingAuditService auditService;
-
+        private readonly IIngestionTrackingAuditService ingestionTrackingAuditService;
+        private readonly ICompareLogic compareLogic;
         private readonly DependencyBroker dependencyBroker;
+        private readonly BlobContainers blobContainers;
 
         public LandingTests(DependencyBroker dependencyBroker)
         {
             this.dependencyBroker = dependencyBroker;
-            this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
-            this.downloadBrokerMock = new Mock<IDownloadBroker>();
+            this.compareLogic = new CompareLogic();
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging(builder =>
@@ -63,52 +70,128 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 builder.AddConsole();
             });
 
-            var blobStorageSettings = dependencyBroker.Configuration
-                .GetSection("blobStorage").Get<BlobStorageSettings>();
-
-            serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
-
             serviceCollection
-                .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object)
-                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
                 .AddTransient<ISupplierService, SupplierService>()
                 .AddTransient<IDataSetService, DataSetService>()
                 .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
                 .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
 
-            serviceCollection.AddLandingClientForAcceptance(this.dependencyBroker.Configuration);
+            serviceCollection.AddLandingClient(this.dependencyBroker.Configuration);
+            serviceCollection.Remove(new ServiceDescriptor(typeof(IDownloadProvider), typeof(FtpDownloadProvider)));
+
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", "downloads");
+
+            serviceCollection.AddTransient<IDownloadProvider>(_ =>
+                new DiskDownloadProvider(new DiskDownloadProviderSettings
+                {
+                    IncludeSubDirectories = true,
+                    LocalRootFolder = defaultFolderPath
+                }));
+
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();
             this.dataSetService = serviceProvider.GetService<IDataSetService>();
             this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
+            this.subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
+            this.documentService = serviceProvider.GetService<IDocumentService>();
+            this.blobContainers = serviceProvider.GetService<BlobContainers>();
 
-            this.dataSetSpecificationProcessingService = 
+            this.dataSetSpecificationProcessingService =
                 serviceProvider.GetService<IDataSetSpecificationProcessingService>();
 
-            this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
+            this.ingestionTrackingAuditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             landingClient = serviceProvider.GetService<IEmisLandingClient>();
         }
 
+        private List<DocumentSource> PrepareAndAddFile(
+            Guid subscriberAgreementId,
+            DataSetSpecification dataSetSpecification,
+            bool createFiles)
+        {
+            int count = 1; //GetRandomNumber();
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", "downloads");
+
+            List<DocumentSource> randomFiles = new List<DocumentSource>();
+
+            for (int i = 0; i < count; i++)
+            {
+                string randomFileName = GetRandomFileName(subscriberAgreementId);
+                string randomFilePath = CreateRandomFilePath(subscriberAgreementId, randomFileName);
+                string filePath = Path.Combine(defaultFolderPath, randomFilePath);
+                FileInfo fileInfo = new FileInfo(filePath);
+
+                if (!fileInfo.Directory.Exists)
+                {
+                    fileInfo.Directory.Create();
+                }
+
+                File.WriteAllText(filePath, GetRandomString());
+                var relativeSourcePath = Path.GetRelativePath(defaultFolderPath, filePath).Replace("\\", "/");
+
+                var filename = relativeSourcePath.StartsWith('/')
+                    ? relativeSourcePath
+                    : "/" + relativeSourcePath;
+
+                string[] splitFileName = filename.Split('/');
+                string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}"; ;
+
+                var encryptedFilePath = $"/{landingConfiguration.EncryptedFolder}/{newFileName}"; ;
+
+                var relativeDecryptedPath =
+                    $"/{landingConfiguration.DecryptedFolder}" +
+                    $"/{dataSetSpecification.DataSet.DataSetName}" +
+                    $"/{dataSetSpecification.Id}" +
+                    $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
+                    $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
+                DocumentSource documentSource = new DocumentSource
+                {
+                    FtpPath = relativeSourcePath,
+                    EncryptedBlobPath = encryptedFilePath,
+                    DecryptedBlobPath = relativeDecryptedPath,
+                    FilePath = filePath
+                };
+
+                randomFiles.Add(documentSource);
+            }
+
+            return randomFiles;
+        }
+
+
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        private static string GetRandomFileName()
+        private static string GetRandomFileName(Guid subscriberAgreementId)
         {
-            string filename = GetRandomString();
-
-            for (int i = 0; i< 6; i++)
-            {
-                filename = $"{filename}_{GetRandomString(10)}";
-            }
+            string filename =
+                $"delta" +
+                $"_{GetRandomNumber()}" +
+                $"_Admin" +
+                $"_Location" +
+                $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}" +
+                $"_{subscriberAgreementId}.csv.gpg";
 
             return filename;
         }
 
-    private static string GetRandomString(int length) =>
-           new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
+        {
+            return $"emisnightingale-data-preprod-provider-extracts" +
+                $"/IM1" +
+                $"/sftp" +
+                $"/{subscriberAgreementId}" +
+                $"/{DateTime.Now.ToString("yyyyMMdd")}" +
+                $"/{fileName}";
+        }
+
+        private static string GetRandomString(int length) =>
+               new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
         private static int GetRandomNumber(int min = 2, int max = 10) =>
             new IntRange(min, max).GetValue();
@@ -132,16 +215,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
         private async ValueTask<List<IngestionTracking>> CreateRandomIngestionTrackings(
             DateTimeOffset dateTimeOffset,
-            List<Document> documents,
+            List<DocumentSource> documentSources,
             Guid supplierId)
         {
             List<IngestionTracking> items = new List<IngestionTracking>();
 
-            foreach (var document in documents)
+            foreach (var documentSource in documentSources)
             {
                 var item = CreateIngestionTrackingFiller(
                     dateTimeOffset,
-                    fileName: document.FileName,
+                    fileName: documentSource.FtpPath,
                     supplierId)
                         .Create();
 
@@ -170,7 +253,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         }
 
         private static Supplier CreateRandomSupplier(Guid supplierId, DateTimeOffset dateTimeOffset) =>
-            CreateSupplierFiller(supplierId ,dateTimeOffset).Create();
+            CreateSupplierFiller(supplierId, dateTimeOffset).Create();
 
         private static Filler<Supplier> CreateSupplierFiller(Guid supplierId, DateTimeOffset dateTimeOffset)
         {
@@ -244,6 +327,33 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private static SubscriberCredential CreateRandomSubscriberCredential() =>
+            CreateSubscriberCredentialFiller().Create();
+
+        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller()
+        {
+            var filler = new Filler<SubscriberCredential>();
+            string user = Guid.NewGuid().ToString();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.IsActive).Use(true)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private Expression<Func<Download, bool>> SameDownloadAs(
+            Download expectedDownload)
+        {
+            return actualDownload =>
+                this.compareLogic.Compare(expectedDownload, actualDownload)
+                    .AreEqual;
         }
     }
 }

@@ -127,21 +127,35 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         private static Filler<Document> CreateDocumentFiller()
         {
             var filler = new Filler<Document>();
-            string filename = GetRandomString(10);
-
-            for (int i = 0; i < 6; i++)
-            {
-                filename = $"{GetRandomString()}/" +
-                    $"{GetRandomString()}/" +
-                    $"{GetRandomString()}/" +
-                    $"{GetRandomString()}/" +
-                    $"{0122235}/{GetRandomString(10)}_{GetRandomString(10)}_{GetRandomString(10)}_{GetRandomString(10)}";
-            }
-
-            filler.Setup()
-                .OnProperty(dataSet => dataSet.FileName).Use(filename);
+            Guid supplierAgreementId = Guid.NewGuid();
+            string filename = GetRandomFileName(supplierAgreementId);
+            string filePath = CreateRandomFilePath(supplierAgreementId, filename);
+            filler.Setup().OnProperty(document => document.FileName).Use(() => filePath);
 
             return filler;
+        }
+
+        private static string GetRandomFileName(Guid subscriberAgreementId)
+        {
+            string filename =
+                $"delta" +
+                $"_{GetRandomNumber()}" +
+                $"_Admin" +
+                $"_Location" +
+                $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}" +
+                $"_{subscriberAgreementId}.csv.gpg";
+
+            return filename;
+        }
+
+        private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
+        {
+            return $"emisnightingale-data-preprod-provider-extracts" +
+                $"/IM1" +
+                $"/sftp" +
+                $"/{subscriberAgreementId}" +
+                $"/{DateTime.Now.ToString("yyyyMMdd")}" +
+                $"/{fileName}";
         }
 
         private static string GetRandomString() =>

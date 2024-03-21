@@ -82,7 +82,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
 
                 if (parts.Length > 0)
                 {
-                    string extractSubscriberCredentialId = parts[5];
+                    string extractSubscriberCredentialId = parts[3];
 
                     SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
                         .RetrieveSubscriberCredentialByIdAsync(new Guid(extractSubscriberCredentialId));

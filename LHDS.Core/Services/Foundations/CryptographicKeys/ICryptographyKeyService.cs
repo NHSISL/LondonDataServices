@@ -9,6 +9,11 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
 {
     public interface ICryptographyKeyService
     {
-        ValueTask<CryptographicKey> GenerateKeysAsync(string cryptographyType, string? publicKeyComment = "");
+        ValueTask<CryptographicKey> GenerateKeysAsync(
+            string cryptographyType,
+            string? comment = "",
+            string? passPhrase = "",
+            string? userName = "",
+            string? email = "");
     }
 }

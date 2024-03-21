@@ -11,7 +11,7 @@ using RESTFulSense.Controllers;
 using Microsoft.AspNetCore.Authorization;
 #endif
 
-namespace LHDS.AdminPortal.Api.Controllers.Workflows
+namespace LHDS.AdminPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

@@ -15,7 +15,6 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
@@ -58,6 +57,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         private readonly ICompareLogic compareLogic;
         private readonly DependencyBroker dependencyBroker;
         private readonly BlobContainers blobContainers;
+        private readonly string dropfolder = "landing";
 
         public LandingTests(DependencyBroker dependencyBroker)
         {
@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             serviceCollection.Remove(new ServiceDescriptor(typeof(IDownloadProvider), typeof(FtpDownloadProvider)));
 
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string defaultFolderPath = Path.Combine(assemblyPath, "temp", "downloads");
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
 
             serviceCollection.AddTransient<IDownloadProvider>(_ =>
                 new DiskDownloadProvider(new DiskDownloadProviderSettings
@@ -107,14 +107,38 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             landingClient = serviceProvider.GetService<IEmisLandingClient>();
         }
 
+        private void CleanupDownloadFolder()
+        {
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+
+            if (!Directory.Exists(defaultFolderPath))
+            {
+                return;
+            }
+
+            string[] files = Directory.GetFiles(defaultFolderPath);
+            foreach (string file in files)
+            {
+                File.Delete(file);
+            }
+
+            // Delete all subfolders recursively
+            string[] subdirectories = Directory.GetDirectories(defaultFolderPath);
+            foreach (string subdirectory in subdirectories)
+            {
+                Directory.Delete(subdirectory, true);
+            }
+        }
+
         private List<DocumentSource> PrepareAndAddFile(
             Guid subscriberAgreementId,
             DataSetSpecification dataSetSpecification,
-            bool createFiles)
+            bool createFiles,
+            int count)
         {
-            int count = 1; //GetRandomNumber();
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string defaultFolderPath = Path.Combine(assemblyPath, "temp", "downloads");
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
 
             List<DocumentSource> randomFiles = new List<DocumentSource>();
 
@@ -170,8 +194,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         private static string GetRandomFileName(Guid subscriberAgreementId)
         {
             string filename =
-                $"delta" +
-                $"_{GetRandomNumber()}" +
+                $"delta{GetRandomString()}" +
+                $"_{GetRandomNumber(min: 2, max: 1000)}" +
                 $"_Admin" +
                 $"_Location" +
                 $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}" +
@@ -199,20 +223,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
 
-        private static IngestionTracking CreateRandomIngestionTracking(
-           DateTimeOffset dateTimeOffset,
-           Document document,
-           Guid supplierId)
-        {
-            IngestionTracking ingestionTracking = CreateIngestionTrackingFiller(
-                dateTimeOffset,
-                fileName: document.FileName,
-                supplierId)
-                    .Create();
-
-            return ingestionTracking;
-        }
-
         private async ValueTask<List<IngestionTracking>> CreateRandomIngestionTrackings(
             DateTimeOffset dateTimeOffset,
             List<DocumentSource> documentSources,
@@ -224,7 +234,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             {
                 var item = CreateIngestionTrackingFiller(
                     dateTimeOffset,
-                    fileName: documentSource.FtpPath,
+                    documentSource,
                     supplierId)
                         .Create();
 
@@ -236,13 +246,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset, string fileName, Guid supplierId)
+            DateTimeOffset dateTimeOffset, DocumentSource documentSource, Guid supplierId)
         {
             string user = "System";
             var filler = new Filler<IngestionTracking>();
 
             filler.Setup()
-                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(fileName)
+                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(documentSource.FtpPath)
+
+                .OnProperty(ingestionTracking => ingestionTracking.EncryptedFileName)
+                    .Use(documentSource.EncryptedBlobPath)
+
+                .OnProperty(ingestionTracking => ingestionTracking.DecryptedFileName)
+                    .Use(documentSource.DecryptedBlobPath)
+
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)

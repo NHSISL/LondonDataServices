@@ -20,6 +20,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
             //given
             string randomPublicKeyComment = GetRandomString();
             string inputPublicKeyComment = "";
+            string inputPassPhrase = "";
+            string inputUsername = "";
+            string inputEmail = "";
             string gpgCryptographyType = "GPG";
             string ftpCryptographyType = "SSH";
             CryptographicKey randomGpgCryptographicKey = CreateRandomCryptographicKey();
@@ -38,12 +41,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
             SubscriberCredential expectedSubscriberCredential = generatedSubscriberCredential;
 
             this.cryptographyKeyServiceMock.Setup(service =>
-                service.GenerateKeysAsync(gpgCryptographyType, inputPublicKeyComment))
-                    .ReturnsAsync(generatedGpgCryptographicKey);
+                service.GenerateKeysAsync(
+                    gpgCryptographyType,
+                    inputPublicKeyComment,
+                    inputPassPhrase,
+                    inputUsername,
+                    inputEmail))
+                        .ReturnsAsync(generatedGpgCryptographicKey);
 
             this.cryptographyKeyServiceMock.Setup(service =>
-                service.GenerateKeysAsync(ftpCryptographyType, inputPublicKeyComment))
-                    .ReturnsAsync(generatedFtpCryptographicKey);
+                service.GenerateKeysAsync(
+                    ftpCryptographyType,
+                    inputPublicKeyComment,
+                    inputPassPhrase,
+                    inputUsername,
+                    inputEmail))
+                        .ReturnsAsync(generatedFtpCryptographicKey);
 
             // when
             SubscriberCredential actualSubscriberCredential =
@@ -53,12 +66,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
 
             this.cryptographyKeyServiceMock.Verify(service =>
-                service.GenerateKeysAsync(gpgCryptographyType, inputPublicKeyComment),
-                    Times.Once);
+                service.GenerateKeysAsync(
+                    gpgCryptographyType,
+                    inputPublicKeyComment,
+                    inputPassPhrase,
+                    inputUsername,
+                    inputEmail),
+                        Times.Once);
 
             this.cryptographyKeyServiceMock.Verify(service =>
-                service.GenerateKeysAsync(ftpCryptographyType, inputPublicKeyComment),
-                    Times.Once);
+                service.GenerateKeysAsync(
+                    ftpCryptographyType,
+                    inputPublicKeyComment,
+                    inputPassPhrase,
+                    inputUsername,
+                    inputEmail),
+                        Times.Once);
 
             this.cryptographyKeyServiceMock.VerifyNoOtherCalls();
         }

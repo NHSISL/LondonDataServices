@@ -18,7 +18,6 @@ namespace LHDS.Core.Brokers.CryptographyKeys
             string email = "")
         {
             int keyBits = 2048;
-
             var keygen = new SshKeyGenerator.SshKeyGenerator(keyBits);
 
             CryptographicKey returnedKey = new CryptographicKey

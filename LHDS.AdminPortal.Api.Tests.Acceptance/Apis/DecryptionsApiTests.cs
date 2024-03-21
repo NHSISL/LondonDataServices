@@ -8,6 +8,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Brokers.Decryptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Tynamix.ObjectFiller;
 using Xunit;
 
@@ -118,6 +119,35 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             {
                 await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(audit.Id);
             }
+        }
+
+        private async ValueTask<SubscriberCredential> PostRandomSubscriberCredentialAsync(Guid id)
+        {
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(id);
+            await this.apiBroker.PostSubscriberCredentialAsync(randomSubscriberCredential);
+
+            return randomSubscriberCredential;
+        }
+
+        private static SubscriberCredential CreateRandomSubscriberCredential(Guid id) =>
+            CreateRandomSubscriberCredentialFiller(id).Create();
+
+        private static Filler<SubscriberCredential> CreateRandomSubscriberCredentialFiller(Guid id)
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTime now = DateTime.UtcNow;
+            var filler = new Filler<SubscriberCredential>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.Id).Use(id)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedDate).Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedDate).Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
+
+            return filler;
         }
     }
 }

@@ -27,7 +27,6 @@ import { TerminologyArtifactPage } from './pages/terminologyArtifactPage';
 import { TerminologyArtifactDetailPage } from './pages/terminologyArtifactDetailPage';
 import { SubscriberAgreementPage } from './pages/subscriberAgreementPage';
 import { SubscriberAgreementDetailPage } from './pages/subscriberAgreementDetailPage';
-import SubscriberAgreementAdd from './components/subscriberAgreement/subscriberAgreementAdd';
 import { SubscriberAgreementAddPage } from './pages/subscriberAgreementAddPage';
 
 const App = ({ msalInstance }: any) => {

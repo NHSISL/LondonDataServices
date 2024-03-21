@@ -25,6 +25,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             Supplier randomSupplier = await PostRandomSupplierAsync();
             string encryptedFilePath = "encrypted";
             string decryptedFilePath = "decrypted";
+            string decryptedData = GetRandomString();
+            byte[] decryptedDocumentData = Encoding.ASCII.GetBytes(decryptedFileContainer);
 
             IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(randomSupplier.Id, encryptedFilePath, decryptedFilePath);

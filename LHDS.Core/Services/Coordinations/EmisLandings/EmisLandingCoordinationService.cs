@@ -138,5 +138,8 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
 
                 return document;
             });
+
+        public ValueTask<string> DecryptDocumentByFileNameAsync(string encryptedFileName) =>
+            throw new NotImplementedException();
     }
 }

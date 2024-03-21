@@ -39,11 +39,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 
         private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync(
             Guid supplierId,
+            Guid subscriberCredentialId,
             string encryptedFilePath,
             string decryptedFilePath)
         {
             IngestionTracking randomIngestionTracking =
-                CreateRandomIngestionTracking(supplierId, encryptedFilePath, decryptedFilePath);
+                CreateRandomIngestionTracking(supplierId, subscriberCredentialId, encryptedFilePath, decryptedFilePath);
 
             await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
 
@@ -52,29 +53,33 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 
         private static IngestionTracking CreateRandomIngestionTracking(
             Guid supplierId,
+            Guid subscriberCredentialId,
             string encryptedFilePath,
             string decryptedFilePath) =>
-            CreateRandomIngestionTrackingFiller(supplierId, encryptedFilePath, decryptedFilePath).Create();
+            CreateRandomIngestionTrackingFiller(
+                supplierId, subscriberCredentialId, encryptedFilePath, decryptedFilePath).Create();
 
         private static Filler<IngestionTracking> CreateRandomIngestionTrackingFiller(
             Guid supplierId,
+            Guid subscriberCredentialId,
             string encryptedFilePath,
             string decryptedFilePath)
         {
             string user = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;
+            string fileName = $"{GetRandomString()}/{GetRandomString()}/{subscriberCredentialId}/{supplierId}";
             var filler = new Filler<IngestionTracking>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
-                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use($"{supplierId}.doc")
+                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use($"{fileName}.doc")
 
                 .OnProperty(ingestionTracking =>
-                    ingestionTracking.EncryptedFileName).Use($"/{encryptedFilePath}/{supplierId}.doc")
+                    ingestionTracking.EncryptedFileName).Use($"/{encryptedFilePath}/{fileName}.doc")
 
                 .OnProperty(ingestionTracking =>
-                    ingestionTracking.DecryptedFileName).Use($"/{decryptedFilePath}/{supplierId}.doc")
+                    ingestionTracking.DecryptedFileName).Use($"/{decryptedFilePath}/{fileName}.doc")
 
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)

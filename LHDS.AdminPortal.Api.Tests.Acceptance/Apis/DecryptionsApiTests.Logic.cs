@@ -28,9 +28,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             Supplier randomSupplier = await PostRandomSupplierAsync();
             string encryptedFilePath = "encrypted";
             string decryptedFilePath = "decrypted";
-
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberCredentialId);
-
 
             IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(randomSupplier.Id, encryptedFilePath, decryptedFilePath);
@@ -38,10 +36,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             IngestionTracking inputIngestionTracking = randomIngestionTracking;
             IngestionTracking expectedIngestionTracking = inputIngestionTracking;
             string decryptedData = GetRandomString();
-            byte[] decryptedDocumentData = Encoding.ASCII.GetBytes(decryptedFileContainer);
+            byte[] decryptedDocumentData = Encoding.ASCII.GetBytes(decryptedData);
             string inputFileName = randomIngestionTracking.EncryptedFileName;
-            this.cryptographyBroker.EncryptAsync(decryptedDocumentData, randomSubscriberCredential)
-            byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
+
+            byte[] encryptedData = 
+                await this.cryptographyBroker.EncryptAsync(decryptedDocumentData, randomSubscriberCredential); ;
 
             Document document = new Document
             {
@@ -64,6 +63,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             //Then
             IngestionTracking decryptedIngestionTracking =
                 await this.apiBroker.GetIngestionTrackingByIdAsync(expectedIngestionTracking.Id);
+
+            Document decryptedDocument = await this.apiBroker.DocumentByFileName
 
             decryptedIngestionTracking.Decrypted.Should().BeTrue();
 

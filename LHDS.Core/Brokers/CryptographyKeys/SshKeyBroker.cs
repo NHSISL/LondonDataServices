@@ -11,7 +11,11 @@ namespace LHDS.Core.Brokers.CryptographyKeys
     {
         public string CryptographyType => "SSH";
 
-        public async ValueTask<CryptographicKey> GenerateKeysAsync(string comment, string? password, string name, string email)
+        public async ValueTask<CryptographicKey> GenerateKeysAsync(
+            string comment,
+            string passPhrase = "",
+            string userName = "",
+            string email = "")
         {
             int keyBits = 2048;
 

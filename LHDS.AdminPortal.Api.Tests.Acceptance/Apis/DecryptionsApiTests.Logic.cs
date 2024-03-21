@@ -9,6 +9,7 @@ using System.Web;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Models.Controllers.Documents;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
 using Xunit;
@@ -28,6 +29,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             string encryptedFilePath = "encrypted";
             string decryptedFilePath = "decrypted";
 
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberCredentialId);
+
 
             IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(randomSupplier.Id, encryptedFilePath, decryptedFilePath);
@@ -37,7 +40,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             string decryptedData = GetRandomString();
             byte[] decryptedDocumentData = Encoding.ASCII.GetBytes(decryptedFileContainer);
             string inputFileName = randomIngestionTracking.EncryptedFileName;
-            this.cryptographyBroker.EncryptAsync(decryptedDocumentData, subscriberCredential)
+            this.cryptographyBroker.EncryptAsync(decryptedDocumentData, randomSubscriberCredential)
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
 
             Document document = new Document

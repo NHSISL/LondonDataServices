@@ -4,7 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
@@ -24,9 +23,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             randomIngestionTracking.Decrypted = true;
             IngestionTracking inputIngestionTracking = randomIngestionTracking;
             IngestionTracking storageIngestionTracking = inputIngestionTracking.DeepClone();
-            IngestionTracking expectedIngestionTracking = inputIngestionTracking.DeepClone();
-            expectedIngestionTracking.Decrypted = false;
-            expectedIngestionTracking.UpdatedDate = currentDateTimeOffset;
+            IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
+            updatedIngestionTracking.Decrypted = false;
+            updatedIngestionTracking.UpdatedDate = currentDateTimeOffset;
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingByIdAsync(inputIngestionTracking.Id))
@@ -35,6 +34,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
                     .Returns(currentDateTimeOffset);
+
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.ModifyOrAddIngestionTrackingAsync(updatedIngestionTracking))
+                    .ReturnsAsync(updatedIngestionTracking);
 
             // when
             await this.emisLandingOrchestrationService.RedecryptDocumentByIngestionIdAsync(inputIngestionTracking.Id);
@@ -46,6 +49,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             this.dateTimeBrokerMock.Verify(broker =>
                broker.GetCurrentDateTimeOffset(),
+                   Times.Once);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.ModifyOrAddIngestionTrackingAsync(updatedIngestionTracking),
                    Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();

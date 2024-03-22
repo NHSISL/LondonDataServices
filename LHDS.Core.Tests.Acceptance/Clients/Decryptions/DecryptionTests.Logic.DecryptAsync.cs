@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -24,7 +23,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         {
             //Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
 
             SubscriberCredential inputSubscriberCredential = await this.subscriberCredentialOrchestration
@@ -36,10 +34,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             Guid supplierId = landingConfiguration.LandingSupplierId;
             DataSet activeDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
-            string encryptedBlobContainer = "emislanding/encrypted";
-            //SubscriberAgreement subscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset);
-            //SubscriberAgreement storageSubscriberAgreement = await this.storageBroker.InsertSubscriberAgreementAsync(subscriberAgreement);
-
             string randomFileName = GetRandomFileName(subscriberAgreementId: inputSubscriberCredential.Id);
 
             string randomFilePath = CreateRandomFilePath(
@@ -47,7 +41,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 fileName: randomFileName);
 
 
-            string encryptedFileName = CreateRandomEncryptedFilePath(inputSubscriberCredential.Id, inputSubscriberCredential.SupplierSharingAgreementGuid);
+            string encryptedFileName = CreateRandomEncryptedFilePath(
+                inputSubscriberCredential.Id,
+                inputSubscriberCredential.SupplierSharingAgreementGuid);
 
             string decryptedFileName = CreateRandomDecryptedFilePath(
                 activeDataSet.DataSetName,
@@ -58,7 +54,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             string randomString = GetRandomString();
             byte[] randomBytes = Encoding.UTF8.GetBytes(randomString);
-            byte[] encryptedData = await this.cryptographyProvider.EncryptAsync(randomBytes, inputSubscriberCredential);
+
+            byte[] encryptedData = await this.cryptographyProvider.EncryptAsync(
+                randomBytes,
+                inputSubscriberCredential);
 
             Download fileToRetrieve = new Download
             {
@@ -85,7 +84,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             };
 
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
-            await this.documentProcessingService.AddDocumentAsync(document, encryptedBlobContainer);
+            await this.documentProcessingService.AddDocumentAsync(document, blobContainers.EmisLanding);
 
             //When
             var actualString = await this.decryptionClient.DecryptAsync(ingestionTracking.EncryptedFileName);
@@ -93,46 +92,23 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             //Then
             actualString.Should().BeEquivalentTo(ingestionTracking.DecryptedFileName);
 
-            //this.blobStorageBrokerMock.Verify(broker =>
-            //    broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName, blobContainer),
-            //        Times.Once);
-
             ingestionTracking.Should().NotBeNull();
 
             IngestionTracking decryptedIngestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-            //this.blobStorageBrokerMock.Verify(broker =>
-            //    broker.InsertFileAsync(
-            //        decryptedIngestionTracking.DecryptedFileName,
-            //        It.IsAny<Stream>(),
-            //        It.IsAny<string>()),
-            //            Times.Once());
+            await this.subscriberCredentialOrchestration
+                .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
 
-            //this.downloadBrokerMock.VerifyNoOtherCalls();
-            //this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                  fileName: ingestionTracking.EncryptedFileName,
+                  container: blobContainers.EmisLanding);
 
-            await DeleteAudits(ingestionTracking);
+            await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                  fileName: ingestionTracking.DecryptedFileName,
+                  container: blobContainers.Versioner);
+
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-        }
-
-        private async Task DeleteAudits(IngestionTracking ingestionTracking)
-        {
-            var auditIds = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id)
-                .Select(ingestionTracking => ingestionTracking.Id)
-                .ToList();
-
-            foreach (var id in auditIds)
-            {
-                await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(id);
-            }
-
-            if (this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                .Any(audit => audit.IngestionTrackingId == ingestionTracking.Id))
-            {
-                await DeleteAudits(ingestionTracking);
-            }
         }
     }
 }

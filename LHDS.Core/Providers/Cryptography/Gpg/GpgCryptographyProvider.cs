@@ -17,18 +17,14 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
     {
         public async ValueTask<byte[]> EncryptAsync(byte[] data, SubscriberCredential subscriberCredential)
         {
-            // Parse ASCII-armored public key
-            PgpPublicKey publicKey;
-            using (Stream keyIn = new MemoryStream(Encoding.UTF8.GetBytes(subscriberCredential.GpgPublicKey)))
-            {
-                var decoderStream = PgpUtilities.GetDecoderStream(keyIn);
-                var publicKeyRingBundle = new PgpPublicKeyRingBundle(decoderStream);
-                publicKey = GetFirstPublicKey(publicKeyRingBundle);
-            }
+            var publicKeyDecoded = Encoding.UTF8.GetBytes(subscriberCredential.GpgPublicKey);
 
             using (Stream inputFileStream = new MemoryStream(data))
+            using (Stream publicKeyFileStream = new MemoryStream(publicKeyDecoded))
             using (MemoryStream encryptedFileStream = new MemoryStream())
             {
+                PgpPublicKey publicKey = ReadPublicKey(publicKeyFileStream);
+
                 PgpEncryptedDataGenerator encryptedDataGenerator =
                     new PgpEncryptedDataGenerator(SymmetricKeyAlgorithmTag.Cast5, true, new SecureRandom());
 
@@ -61,40 +57,40 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
 
         public async ValueTask<byte[]> DecryptAsync(byte[] data, SubscriberCredential subscriberCredential)
         {
-            // Decode ASCII-armored private key
-            PgpPrivateKey privateKey;
+            byte[] privateKeyDecoded = Encoding.UTF8.GetBytes(subscriberCredential.GpgPrivateKey);
+
             char[] privateKeyPassphrase = subscriberCredential.GpgPassPhrase.ToCharArray();
 
-            using (Stream privateKeyStream = new MemoryStream(Encoding.UTF8.GetBytes(subscriberCredential.GpgPrivateKey)))
-            {
-                var decoderStream = PgpUtilities.GetDecoderStream(privateKeyStream);
-                var privateKeyRingBundle = new PgpSecretKeyRingBundle(decoderStream);
-                privateKey = GetPrivateKey(privateKeyRingBundle, privateKeyPassphrase);
-            }
-
             using (Stream encryptedFileStream = new MemoryStream(data))
+            using (Stream privateKeyFileStream = new MemoryStream(privateKeyDecoded))
             {
                 PgpObjectFactory pgpFactory = new PgpObjectFactory(PgpUtilities.GetDecoderStream(encryptedFileStream));
                 PgpEncryptedDataList encryptedDataList = (PgpEncryptedDataList)pgpFactory.NextPgpObject();
 
+                PgpPrivateKey privateKey = null;
                 PgpPublicKeyEncryptedData encryptedData = null;
 
                 foreach (PgpPublicKeyEncryptedData encryptedDataItem in encryptedDataList.GetEncryptedDataObjects())
                 {
-                    if (encryptedDataItem.KeyId == privateKey.KeyId)
+                    privateKey = FindPrivateKey(
+                        privateKeyStream: privateKeyFileStream,
+                        keyId: encryptedDataItem.KeyId,
+                        passphrase: privateKeyPassphrase);
+
+                    if (privateKey != null)
                     {
                         encryptedData = encryptedDataItem;
                         break;
                     }
                 }
 
-                if (encryptedData == null)
+                if (privateKey == null)
                 {
-                    throw new ArgumentException("No encrypted data found for the provided private key.");
+                    throw new ArgumentException("Private key not found in the key file");
                 }
 
                 Stream decryptedStream = encryptedData.GetDataStream(privateKey);
-                PgpObjectFactory decryptedFactory = new PgpObjectFactory(decryptedStream);
+                PgpObjectFactory decryptedFactory = new PgpObjectFactory(inputStream: decryptedStream);
                 PgpObject pgpObject = decryptedFactory.NextPgpObject();
 
                 if (pgpObject is PgpCompressedData)
@@ -134,23 +130,6 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
             }
 
             return publicKey;
-        }
-
-        private PgpPrivateKey GetPrivateKey(PgpSecretKeyRingBundle secretKeyRingBundle, char[] passphrase)
-        {
-            foreach (PgpSecretKeyRing keyRing in secretKeyRingBundle.GetKeyRings())
-            {
-                foreach (PgpSecretKey key in keyRing.GetSecretKeys())
-                {
-                    if (key.IsSigningKey)
-                        continue;
-
-                    var privateKey = key.ExtractPrivateKey(passphrase);
-                    if (privateKey != null)
-                        return privateKey;
-                }
-            }
-            throw new ArgumentException("No private key found in the provided key ring bundle.");
         }
 
         private static PgpPublicKey GetFirstPublicKey(PgpPublicKeyRingBundle publicKeyRingBundle)

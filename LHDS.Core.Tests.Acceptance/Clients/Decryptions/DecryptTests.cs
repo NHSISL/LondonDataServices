@@ -99,6 +99,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();
             this.dataSetService = serviceProvider.GetService<IDataSetService>();
+            this.blobContainers = serviceProvider.GetService<BlobContainers>();
             this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
             this.documentProcessingService = serviceProvider.GetService<IDocumentProcessingService>();
             this.subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();

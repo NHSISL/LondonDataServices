@@ -25,8 +25,15 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
         TryCatch(async () =>
         {
             ValidateSubscriberCredential(subscriberCredential);
-            var gpgGeneratedKeys = await cryptographyKeyService.GenerateKeysAsync("GPG");
-            var ftpGeneratedKeys = await cryptographyKeyService.GenerateKeysAsync("SSH");
+
+            var gpgGeneratedKeys = await cryptographyKeyService.GenerateKeysAsync(
+                cryptographyType: "GPG",
+                comment: " ",
+                passPhrase: subscriberCredential.GpgPassPhrase);
+
+            var ftpGeneratedKeys = await cryptographyKeyService.GenerateKeysAsync(
+                cryptographyType: "SSH");
+
             subscriberCredential.GpgPublicKey = gpgGeneratedKeys.PublicKey;
             subscriberCredential.GpgPrivateKey = gpgGeneratedKeys.PrivateKey;
             subscriberCredential.GpgPassPhrase = gpgGeneratedKeys.Passphrase;

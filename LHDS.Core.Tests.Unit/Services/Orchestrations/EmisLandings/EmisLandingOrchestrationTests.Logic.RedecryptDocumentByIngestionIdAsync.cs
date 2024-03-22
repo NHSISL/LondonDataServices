@@ -26,6 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
             updatedIngestionTracking.Decrypted = false;
             updatedIngestionTracking.UpdatedDate = currentDateTimeOffset;
+            IngestionTracking outputIngestionTracking = updatedIngestionTracking.DeepClone();
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingByIdAsync(inputIngestionTracking.Id))
@@ -36,8 +37,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(currentDateTimeOffset);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.ModifyIngestionTrackingAsync(updatedIngestionTracking))
-                    .ReturnsAsync(updatedIngestionTracking);
+                service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))))
+                    .ReturnsAsync(outputIngestionTracking);
 
             // when
             await this.emisLandingOrchestrationService.RedecryptDocumentByIngestionIdAsync(inputIngestionTracking.Id);
@@ -52,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                    Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.ModifyIngestionTrackingAsync(updatedIngestionTracking),
+                service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))),
                    Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();

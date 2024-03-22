@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // when
             await this.emisLandingOrchestrationService
                 .ProcessFileAsync(
-                    fileName: externalIngestionTracking.FileName,
+                    ftpFileName: externalIngestionTracking.FileName,
                     subscriberCredential: inputSubscriberCredential);
 
             // then
@@ -230,7 +230,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             await this.emisLandingOrchestrationService.ProcessFileAsync(
-                fileName: newRandomIngestionTracking.FileName,
+                ftpFileName: newRandomIngestionTracking.FileName,
                 subscriberCredential: inputSubscriberCredential);
 
             // then

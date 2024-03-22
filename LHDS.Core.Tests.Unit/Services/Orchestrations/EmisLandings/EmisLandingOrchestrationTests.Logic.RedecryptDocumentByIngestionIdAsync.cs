@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(currentDateTimeOffset);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.ModifyOrAddIngestionTrackingAsync(updatedIngestionTracking))
+                service.ModifyIngestionTrackingAsync(updatedIngestionTracking))
                     .ReturnsAsync(updatedIngestionTracking);
 
             // when
@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                    Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.ModifyOrAddIngestionTrackingAsync(updatedIngestionTracking),
+                service.ModifyIngestionTrackingAsync(updatedIngestionTracking),
                    Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();

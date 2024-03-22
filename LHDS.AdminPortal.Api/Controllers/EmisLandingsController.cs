@@ -94,10 +94,11 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                string retrieveDownload = await emisLandingCoordinationService
-                    .DecryptDocumentByFileNameAsync(filename);
+                throw new NotImplementedException();
+                //string retrieveDownload = await emisLandingCoordinationService
+                //    .DecryptDocumentByFileNameAsync(filename);
 
-                return Ok(retrieveDownload);
+                //return Ok(retrieveDownload);
             }
             catch (DownloadValidationException downloadValidationException)
                 when (downloadValidationException.InnerException is NotFoundDocumentException)
@@ -126,10 +127,11 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                Document retrieveDownload = await emisLandingCoordinationService
-                    .DecryptDocumentByFileNameAsync(filename);
+                throw new NotImplementedException();
+                //Document retrieveDownload = await emisLandingCoordinationService
+                //    .DecryptDocumentByFileNameAsync(filename);
 
-                return Ok(retrieveDownload);
+                //return Ok(retrieveDownload);
             }
             catch (DownloadValidationException downloadValidationException)
                 when (downloadValidationException.InnerException is NotFoundDocumentException)

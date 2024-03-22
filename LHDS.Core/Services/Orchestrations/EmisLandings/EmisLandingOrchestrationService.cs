@@ -389,7 +389,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             IngestionTracking retrievedIngestionTracking = 
                 await this.ingestionTrackingProcessingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
 
-            retrievedIngestionTracking.Decrypted = true;
+            retrievedIngestionTracking.Decrypted = false;
             retrievedIngestionTracking.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
             IngestionTracking modifiedIngestionTracking =

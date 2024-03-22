@@ -21,6 +21,10 @@ export const subscriberCredentialViewService = {
        return subscriberCredentialService.useCreateSubscriberCredential();
     },
 
+    useRegenerateKeysSubscriberCredential: () => {
+        return subscriberCredentialService.useRegenerateKeysSubscriberCredential();
+    },
+
     useGetAllSubscriberCredentials: (searchTerm?: string): SubscriberCredentialViewServiceResponse => {
         try {
             let query = `?$orderby=createdDate desc`;

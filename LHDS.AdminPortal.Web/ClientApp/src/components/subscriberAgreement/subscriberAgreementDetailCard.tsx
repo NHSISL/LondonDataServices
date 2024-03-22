@@ -7,23 +7,26 @@ import CardBaseContent from "../bases/components/Card/CardBase.Content";
 import { SubscriberAgreementView } from "../../models/views/components/subscriberAgreements/subscriberAgreement";
 import { useNavigate } from "react-router-dom";
 import SubscriberAgreementDetailCardEdit from "./subscriberAgreementDetailCardEdit";
+import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
 
 interface SubscriberAgreementDetailCardProps {
-    subscriberAgreement: SubscriberAgreementView;
+    subscriberCredential: SubscriberCredentialView;
     mode: string;
-    onAdd: (subscriberAgreement: SubscriberAgreementView) => void;
-    onUpdate: (subscriberAgreement: SubscriberAgreementView) => void;
-    onDelete: (subscriberAgreement: SubscriberAgreementView) => void;
+    onAdd: (subscriberCredential: SubscriberCredentialView) => void;
+    onUpdate: (subscriberCredential: SubscriberCredentialView) => void;
+    onDelete: (subscriberCredential: SubscriberCredentialView) => void;
+    onRegenerate: (subscriberCredential: SubscriberCredentialView) => void;
     children?: React.ReactNode;
 }
 
 const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetailCardProps> = (props) => {
     const {
-        subscriberAgreement,
+        subscriberCredential,
         mode,
         onAdd,
         onUpdate,
         onDelete,
+        onRegenerate,
         children
     } = props;
 
@@ -36,18 +39,18 @@ const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetail
 
     const navigate = useNavigate();
 
-    const handleAdd = async (subscriberAgreement: SubscriberAgreementView) => {
+    const handleAdd = async (subscriberCredential: SubscriberCredentialView) => {
         try {
-            await onAdd(subscriberAgreement);
+            await onAdd(subscriberCredential);
             navigate('/configuration/subscriberAgreements');
         } catch (error) {
             setDisplayMode('EDIT');
         }
     };
 
-    const handleUpdate = async (subscriberAgreement: SubscriberAgreementView) => {
+    const handleUpdate = async (subscriberCredential: SubscriberCredentialView) => {
         try {
-            await onUpdate(subscriberAgreement);
+            await onUpdate(subscriberCredential);
             setDisplayMode('VIEW');
         } catch (error) {
             setApiError(error);
@@ -55,9 +58,19 @@ const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetail
         }
     };
 
-    const handleDelete = (subscriberAgreement: SubscriberAgreementView) => {
-        onDelete(subscriberAgreement);
+    const handleDelete = (subscriberCredential: SubscriberCredentialView) => {
+        onDelete(subscriberCredential);
         setDisplayMode('VIEW');
+    };
+
+    const handleRegenerate = async (subscriberCredential: SubscriberCredentialView) => {
+        try {
+            await onRegenerate(subscriberCredential);
+            setDisplayMode('VIEW');
+        } catch (error) {
+            setApiError(error);
+            setDisplayMode('VIEW');
+        }
     };
 
     const handleCancel = () => {
@@ -75,8 +88,9 @@ const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetail
                         {(displayMode === "VIEW" || displayMode === "CONFIRMDELETE" || displayMode === "CONFIRMREGEN") && (
                             <SubscriberAgreementDetailCardView
                                 onModeChange={handleModeChange}
-                                subscriberAgreement={subscriberAgreement}
+                                subscriberCredential={subscriberCredential}
                                 onDelete={handleDelete}
+                                onRegenerate={handleRegenerate}
                                 mode={displayMode}
                             />
                         )}
@@ -86,7 +100,7 @@ const SubscriberAgreementDetailCard: FunctionComponent<SubscriberAgreementDetail
                                 onAdd={handleAdd}
                                 onUpdate={handleUpdate}
                                 onCancel={handleCancel}
-                                subscriberAgreement={subscriberAgreement}
+                                subscriberCredential={subscriberCredential}
                                 mode={displayMode}
                                 apiError={apiError}
                             />

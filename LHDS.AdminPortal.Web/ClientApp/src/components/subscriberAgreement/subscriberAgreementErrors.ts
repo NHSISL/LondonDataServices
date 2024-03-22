@@ -5,6 +5,7 @@ export interface SubscriberAgreementErrors extends ErrorBase {
     ftpUserName: string;
     ftpPublicKey: string;
     gpgPublicKey: string;
+    supplierSharingAgreementGuid: string;
 }
 
 export const subscriberAgreementErrors: SubscriberAgreementErrors = {
@@ -13,4 +14,5 @@ export const subscriberAgreementErrors: SubscriberAgreementErrors = {
     ftpUserName: "",
     ftpPublicKey: "",
     gpgPublicKey: "",
+    supplierSharingAgreementGuid: "",
 }

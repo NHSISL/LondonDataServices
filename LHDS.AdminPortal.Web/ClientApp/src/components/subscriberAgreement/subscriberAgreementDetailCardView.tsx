@@ -10,18 +10,21 @@ import ButtonBase from "../bases/buttons/ButtonBase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faCopy, faKey, faTimes } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
+import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
 
 interface SubscriberAgreementDetailCardViewProps {
-    subscriberAgreement: SubscriberAgreementView;
-    onDelete: (subscriberAgreement: SubscriberAgreementView) => void;
+    subscriberCredential: SubscriberCredentialView;
+    onDelete: (subscriberCredential: SubscriberCredentialView) => void;
+    onRegenerate: (subscriberCredential: SubscriberCredentialView) => void;
     mode: string;
     onModeChange: (value: string) => void;
 }
 
 const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDetailCardViewProps> = (props) => {
     const {
-        subscriberAgreement,
+        subscriberCredential,
         onDelete,
+        onRegenerate,
         mode,
         onModeChange
     } = props;
@@ -53,25 +56,25 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Id:</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        {subscriberAgreement.id.toString()}
+                        {subscriberCredential.id.toString()}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Short Name:</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        {subscriberAgreement.supplierSharingAgreementShortName}
+                        {subscriberCredential.supplierSharingAgreementShortName}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Supplier Sharing Agreement Guid:</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        {subscriberAgreement.supplierSharingAgreementGuid!.toString()}
+                        {subscriberCredential.supplierSharingAgreementGuid!.toString()}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Ftp UserName</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        {subscriberAgreement.ftpUserName}
+                        {subscriberCredential.ftpUserName}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
@@ -82,13 +85,15 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                     <SummaryListBaseValue>
                         {ftpKeyCopied ?
                             <FontAwesomeIcon icon={faCheck} className="text-secondary" />
-                            : <FontAwesomeIcon icon={faCopy} className="text-secondary"
+                            : <FontAwesomeIcon icon={faCopy}
                                 onClick={() => {
-                                    //navigator.clipboard.writeText(subscriberAgreement.ftpPublicKey);
+                                    const publicKey = subscriberCredential.ftpPublicKey ?? "";
+                                    navigator.clipboard.writeText(publicKey);
                                     setFtpKeyCopied(true);
-                                }} />
+                                }}
+                            />
                         } &nbsp;
-                        {subscriberAgreement.ftpPublicKey}
+                        {subscriberCredential.ftpPublicKey}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
@@ -98,20 +103,22 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                     <SummaryListBaseValue>
                         {gpgKeyCopied ?
                             <FontAwesomeIcon icon={faCheck} className="text-secondary" />
-                            : <FontAwesomeIcon icon={faCopy} className="text-secondary"
+                            : <FontAwesomeIcon icon={faCopy}
                                 onClick={() => {
-                                    //navigator.clipboard.writeText(subscriberAgreement.gpgPublicKey);
+                                    const gpgPublicKey = subscriberCredential.gpgPublicKey ?? ""; 
+                                    navigator.clipboard.writeText(gpgPublicKey);
                                     setGpgKeyCopied(true);
-                                }} />
+                                }}
+                            />
                         } &nbsp;
-                        {subscriberAgreement.gpgPublicKey}
+                        {subscriberCredential.gpgPublicKey}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Is Active</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        {subscriberAgreement.isActive
+                        {subscriberCredential.isActive
                             ? <FontAwesomeIcon icon={faCheck} className="text-success" />
                             : <FontAwesomeIcon icon={faTimes} className="text-danger" />}
                     </SummaryListBaseValue>
@@ -121,8 +128,8 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                     <SummaryListBaseKey>Last Poll Start Date</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         {
-                            subscriberAgreement.lastPollStartDate
-                                ? moment(subscriberAgreement.lastPollStartDate?.toString()).format("Do-MMM-yyyy HH:mm")
+                            subscriberCredential.lastPollStartDate
+                                ? moment(subscriberCredential.lastPollStartDate?.toString()).format("Do-MMM-yyyy HH:mm")
                                 : "Never Started Polling"
                         }
                     </SummaryListBaseValue>
@@ -131,7 +138,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Last Poll End Date</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        {subscriberAgreement.lastPollEndDate ? moment(subscriberAgreement.lastPollEndDate?.toString()).format("Do-MMM-yyyy HH:mm") : "Never Finished Polling"}
+                        {subscriberCredential.lastPollEndDate ? moment(subscriberCredential.lastPollEndDate?.toString()).format("Do-MMM-yyyy HH:mm") : "Never Finished Polling"}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
             </SummaryListBase>
@@ -150,11 +157,11 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                 }
                 {mode === 'CONFIRMDELETE' &&
                     <>                        <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.delete}>
-                            <>
-                                <ButtonBase onClick={() => onModeChange('VIEW')} cancel>Cancel</ButtonBase>
-                                <ButtonBase onClick={() => onDelete(subscriberAgreement)} remove>Yes, Delete</ButtonBase>
-                            </>
-                        </SecuredComponents>
+                        <>
+                            <ButtonBase onClick={() => onModeChange('VIEW')} cancel>Cancel</ButtonBase>
+                            <ButtonBase onClick={() => onDelete(subscriberCredential)} remove>Yes, Delete</ButtonBase>
+                        </>
+                    </SecuredComponents>
                     </>
                 }
 
@@ -163,7 +170,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                         <SecuredComponents allowedRoles={securityPoints.subscriberAgreement.edit}>
                             <ButtonBase onClick={() => onModeChange('CONFIRMREGEN')} info title={"Re-Generate Keys"}>
                                 Re-Generate Keys &nbsp;
-                                <FontAwesomeIcon icon={faKey}/>
+                                <FontAwesomeIcon icon={faKey} />
                             </ButtonBase>
                         </SecuredComponents>
                     </span>
@@ -176,7 +183,7 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                                 <strong>NOTE: Continuing to regenerate will lose the current keys forever.</strong></span>
                             <br /> <br />
                             <ButtonBase onClick={() => onModeChange('VIEW')} cancel>Cancel</ButtonBase>
-                            <ButtonBase onClick={() => onDelete(subscriberAgreement)} view>Yes, Re-Generate</ButtonBase>
+                            <ButtonBase onClick={() => onRegenerate(subscriberCredential)} view>Yes, Re-Generate</ButtonBase>
                         </>
                     </SecuredComponents>
                 }

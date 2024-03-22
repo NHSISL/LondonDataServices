@@ -67,7 +67,7 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
             refetch();
             setTimeout(() => {
                 setShowSpinner(false);
-            }, 200);
+            }, 1000);
         }, 200);
     };
 
@@ -106,6 +106,7 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
                                 </div>
                             </Row>
 
+                            {!showSpinner && (
                             <TableBase>
                                 <TableBaseThead>
                                     <TableBaseRow>
@@ -132,7 +133,8 @@ const SubscriberAgreementTable: FunctionComponent<SubscriberAgreementTableProps>
                                         </td>
                                     </tr>
                                 </TableBaseTbody>
-                            </TableBase>
+                                </TableBase>
+                            )}
                         </InfiniteScroll>
                     </CardBaseContent>
                 </CardBaseBody>

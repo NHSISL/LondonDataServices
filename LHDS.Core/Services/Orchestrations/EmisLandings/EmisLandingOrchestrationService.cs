@@ -390,6 +390,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 await this.ingestionTrackingProcessingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
 
             retrievedIngestionTracking.Decrypted = true;
+            retrievedIngestionTracking.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(retrievedIngestionTracking);
         }
 
         private void LogAudit(

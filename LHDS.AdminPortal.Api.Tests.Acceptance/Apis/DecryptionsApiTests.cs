@@ -126,14 +126,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             }
         }
 
-        private async ValueTask<SubscriberCredential> PostRandomSubscriberCredentialAsync(Guid id)
-        {
-            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(id);
-            await this.apiBroker.PostSubscriberCredentialAsync(randomSubscriberCredential);
-
-            return randomSubscriberCredential;
-        }
-
         private static SubscriberCredential CreateRandomSubscriberCredential(Guid id) =>
             CreateRandomSubscriberCredentialFiller(id).Create();
 

@@ -139,7 +139,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 return document;
             });
 
-        public ValueTask<string> DecryptDocumentByFileNameAsync(string encryptedFileName) =>
+        public ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId) =>
             throw new NotImplementedException();
     }
 }

@@ -3,6 +3,8 @@ import SubscriberAgreementDetailCard from "./subscriberAgreementDetailCard";
 import { SubscriberAgreementView } from "../../models/views/components/subscriberAgreements/subscriberAgreement";
 import { Guid } from "guid-typescript";
 import { subscriberAgreementViewService } from "../../services/views/subscriberAgreements/subscriberAgreementViewService";
+import { subscriberCredentialViewService } from "../../services/views/subscriberCredentials/subscriberCredentialViewService";
+import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
 
 interface SubscriberAgreementDetailProps {
     subscriberAgreementId?: string;
@@ -15,57 +17,64 @@ const SubscriberAgreementDetail: FunctionComponent<SubscriberAgreementDetailProp
         children
     } = props;
 
-    let subscriberAgreementRetrieved: SubscriberAgreementView | undefined
+    let subscriberCredentialRetrieved: SubscriberCredentialView | undefined
 
     if (subscriberAgreementId !== "" && subscriberAgreementId !== undefined) {
-        let { mappedSubscriberAgreement } =
-            subscriberAgreementViewService.useGetSubscriberAgreementById(Guid.parse(subscriberAgreementId ?? Guid.EMPTY));
+        let { mappedSubscriberCredential } =
+            subscriberCredentialViewService.useGetSubscriberCredentialById(Guid.parse(subscriberAgreementId ?? Guid.EMPTY));
 
-        subscriberAgreementRetrieved = mappedSubscriberAgreement;
+        subscriberCredentialRetrieved = mappedSubscriberCredential;
     }
 
-    const [subscriberAgreement, setSubscriberAgreement] = useState<SubscriberAgreementView>();
+    const [subscriberCredential, setSubscriberCredential] = useState<SubscriberCredentialView>();
     const [mode, setMode] = useState<string>('VIEW');
 
-    const addSubscriberAgreement = subscriberAgreementViewService.useCreateSubscriberAgreement();
+    const addSubscriberCredential = subscriberCredentialViewService.useCreateSubscriberCredential();
 
-    const handleAdd = (subscriberAgreement: SubscriberAgreementView) => {
-        return addSubscriberAgreement.mutate(subscriberAgreement);
+    const handleAdd = (subscriberCredential: SubscriberCredentialView) => {
+        return addSubscriberCredential.mutate(subscriberCredential);
     }
 
-    const updateSubscriberAgreement = subscriberAgreementViewService.useUpdateSubscriberAgreement();
+    const reGenerateKeysSubscriberCredential = subscriberCredentialViewService.useRegenerateKeysSubscriberCredential();
 
-    const handleUpdate = async (subscriberAgreement:SubscriberAgreementView) => {
-        return updateSubscriberAgreement.mutateAsync(subscriberAgreement);
+    const handleRegenerate = (subscriberCredential: SubscriberCredentialView) => {
+        return reGenerateKeysSubscriberCredential.mutate(subscriberCredential);
     }
 
-    const handleDelete = async (subscriberAgreement: SubscriberAgreementView) => {
-        subscriberAgreement.isActive = false;
-        return updateSubscriberAgreement.mutateAsync(subscriberAgreement);
+    const updateSubscriberCredential = subscriberCredentialViewService.useUpdateSubscriberCredential();
+
+    const handleUpdate = async (subscriberCredential:SubscriberCredentialView) => {
+        return updateSubscriberCredential.mutateAsync(subscriberCredential);
+    }
+
+    const handleDelete = async (subscriberCredential: SubscriberCredentialView) => {
+        subscriberCredential.isActive = false;
+        return updateSubscriberCredential.mutateAsync(subscriberCredential);
     }
 
     useEffect(() => {
-        if (subscriberAgreementId !== "" && subscriberAgreementRetrieved !== undefined) {
-            setSubscriberAgreement(subscriberAgreementRetrieved);
+        if (subscriberAgreementId !== "" && subscriberCredentialRetrieved !== undefined) {
+            setSubscriberCredential(subscriberCredentialRetrieved);
             setMode('VIEW');
         }
         if (subscriberAgreementId === "" || subscriberAgreementId === undefined) {
-            setSubscriberAgreement(new SubscriberAgreementView(Guid.create(), "", "", "", "",true))
+            setSubscriberCredential(new SubscriberCredentialView(Guid.create(), "", "", "", "",true))
             setMode('ADD');
         }
-    }, [subscriberAgreementId, subscriberAgreementRetrieved]);
+    }, [subscriberAgreementId, subscriberCredentialRetrieved]);
 
     return (
         <div>
-            {subscriberAgreement !== undefined && (
+            {subscriberCredential !== undefined && (
                 <div>
                     <SubscriberAgreementDetailCard
-                        key={subscriberAgreement.id.toString()}
-                        subscriberAgreement={subscriberAgreement}
+                        key={subscriberCredential.id.toString()}
+                        subscriberCredential={subscriberCredential}
                         mode={mode}
                         onAdd={handleAdd}
                         onUpdate={handleUpdate}
-                        onDelete={handleDelete}>
+                        onDelete={handleDelete}
+                        onRegenerate={handleRegenerate}>
                         {children}
                     </SubscriberAgreementDetailCard>
                 </div>

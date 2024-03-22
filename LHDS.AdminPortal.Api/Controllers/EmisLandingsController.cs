@@ -90,12 +90,12 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<Document>> DownloadDocumentByFileNameAsync(string filename)
+        public async ValueTask<ActionResult<string>> DownloadDocumentByFileNameAsync(string filename)
         {
             try
             {
-                Document retrieveDownload = await emisLandingCoordinationService
-                    .RetrieveDownloadByFileNameAsync(filename);
+                string retrieveDownload = await emisLandingCoordinationService
+                    .DecryptDocumentByFileNameAsync(filename);
 
                 return Ok(retrieveDownload);
             }
@@ -127,7 +127,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             try
             {
                 Document retrieveDownload = await emisLandingCoordinationService
-                    .RetrieveDownloadByFileNameAsync(filename);
+                    .DecryptDocumentByFileNameAsync(filename);
 
                 return Ok(retrieveDownload);
             }

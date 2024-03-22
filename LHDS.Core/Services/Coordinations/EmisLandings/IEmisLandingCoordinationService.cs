@@ -15,6 +15,6 @@ namespace LHDS.Core.Services.Orchestrations.EmisLandings
         ValueTask<string> ProcessFileAsync(string ftpFileName);
         ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(Guid subscriberAgreementId);
         ValueTask<Document> RetrieveDownloadByFileNameAsync(string fileName);
-        ValueTask<string> DecryptDocumentByFileNameAsync(string encryptedFileName);
+        ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId);
     }
 }

@@ -35,10 +35,8 @@ const SubscriberAgreementDetail: FunctionComponent<SubscriberAgreementDetailProp
         return addSubscriberCredential.mutate(subscriberCredential);
     }
 
-    const reGenerateKeysSubscriberCredential = subscriberCredentialViewService.useRegenerateKeysSubscriberCredential();
-
     const handleRegenerate = (subscriberCredential: SubscriberCredentialView) => {
-        return reGenerateKeysSubscriberCredential.mutate(subscriberCredential);
+        return addSubscriberCredential.mutate(subscriberCredential);
     }
 
     const updateSubscriberCredential = subscriberCredentialViewService.useUpdateSubscriberCredential();

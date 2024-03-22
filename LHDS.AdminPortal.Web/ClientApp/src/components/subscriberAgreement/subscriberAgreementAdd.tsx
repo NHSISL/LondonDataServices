@@ -12,6 +12,7 @@ import { faKey } from "@fortawesome/free-solid-svg-icons";
 import { subscriberCredentialViewService } from "../../services/views/subscriberCredentials/subscriberCredentialViewService";
 import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
 import { Guid } from "guid-typescript";
+import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 
 interface SubscriberAgreementAddProps {
     children?: React.ReactNode;
@@ -23,6 +24,7 @@ const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (
     const navigate = useNavigate();
     const [subscriberAgreementShortName, setSubscriberAgreementShortName] = React.useState<string>("");
     const [addApiError, setAddApiError] = useState<any>({});
+    const [loading, setLoading] = useState<boolean>(false);
 
     const [subscriberCredential, setSubscriberCredential] =
         useState<SubscriberCredentialView>(new SubscriberCredentialView(Guid.create()));
@@ -30,13 +32,17 @@ const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (
     const addSubscriberCredential = subscriberCredentialViewService.useCreateSubscriberCredential();
 
     const handleAddNew = () => {
+        setLoading(true);
         subscriberCredential.supplierSharingAgreementShortName = subscriberAgreementShortName;
         addSubscriberCredential.mutate(subscriberCredential, {
             onSuccess: () => {
-                navigate('/subscriberAgreements'); 
+                navigate('/subscriberAgreements');
             },
             onError: (error: any) => {
                 setAddApiError(error?.response?.data?.errors);
+            },
+            onSettled: () => {
+                setLoading(false); // Set loading to false when the operation finishes
             }
         });
     };
@@ -48,27 +54,39 @@ const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (
                     Subscriber Agreements
                 </CardBaseTitle>
                 <CardBaseContent>
-                    <Form>
+                    {loading ? (
+                        <SpinnerBase />
+                    ) : (
+                        <Form>
+                            <TextInputBase
+                                id="SubscriberAgreementShortName"
+                                name="SubscriberAgreementShortName"
+                                label="Subscriber Agreement Short Name"
+                                placeholder="Subscriber Agreement Short Name"
+                                value={subscriberAgreementShortName}
+                                onChange={(e) => { setSubscriberAgreementShortName(e.target.value) }}
+                            />
 
-                        <TextInputBase
-                            id="SubscriberAgreementShortName"
-                            name="SubscriberAgreementShortName"
-                            label="Subscriber Agreement Short Name"
-                            placeholder="Subscriber Agreement Short Name"
-                            value={subscriberAgreementShortName}
-                            onChange={(e) => { setSubscriberAgreementShortName(e.target.value) }}
-                        />
+                            <br />
+                            <ButtonBase onClick={handleAddNew} add>
+                                Create Subscriber Agreement and Generate Keys &nbsp;
+                                <FontAwesomeIcon icon={faKey} title="required" />
+                            </ButtonBase>
 
+                            <br /><br />
+                                <div className="p-3 mb-2 bg-dark text-white">
+                                    <strong>NOTE:</strong>
+                                    <br />
+                                <p>When you click the generate button, our system will begin generating
+                                        custom Azure Key Vault secrets for
+                                        all the necessary keys required to land data from EMIS.  
 
-                        <br />
-                        <ButtonBase onClick={handleAddNew} info>
-                            Create Subscriber Agreement and Generate Keys &nbsp;
-                            <FontAwesomeIcon icon={faKey} title="required" />
-                        </ButtonBase>
-
-                        <br /><br />
-                        <p>INFO: Description of what will happen</p>
-                    </Form>
+                                    This process may take a minute or so,
+                                    as we want to ensure each secret is created accurately and securely.
+                                </p>
+                            </div>
+                        </Form>
+                    )}
                 </CardBaseContent>
             </CardBaseBody>
         </CardBase>

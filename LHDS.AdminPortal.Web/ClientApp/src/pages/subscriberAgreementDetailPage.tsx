@@ -14,7 +14,7 @@ export const SubscriberAgreementDetailPage = () => {
                 <main role="main">
 
                     <BreadCrumbBase
-                        link="/subscriberAgreement"
+                        link="/subscriberAgreements"
                         backLink="Subscriber Agreements"
                         currentLink="Subscriber Agreement Detail">
                     </BreadCrumbBase>

@@ -98,10 +98,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
         private static string CreateRandomFilePath(Guid identifier)
         {
-            return $"{GetRandomString()}/{GetRandomString()}" +
-                $"/{identifier}/0122235/{GetRandomNumber}" +
-                $"_{GetRandomString()}_{GetRandomString()}" +
-                $"_{GetRandomNumber()}_{identifier}.csv.gpg;";
+            return $"{GetRandomString()}" +
+                $"/{identifier}" +
+                $"/0122235" +
+                $"/{GetRandomString()}" +
+                $"_{GetRandomNumber()}" +
+                $"_{GetRandomString()}" +
+                $"_{GetRandomString()}" +
+                $"_{GetRandomNumber()}" +
+                $"_{identifier}.csv.gpg";
         }
 
         public static TheoryData DependencyValidationExceptions()

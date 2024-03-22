@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -108,7 +109,27 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                   fileName: ingestionTracking.DecryptedFileName,
                   container: blobContainers.Versioner);
 
+            await DeleteAudits(ingestionTracking);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+        }
+
+        private async Task DeleteAudits(IngestionTracking ingestionTracking)
+        {
+            var auditIds = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id)
+                .Select(ingestionTracking => ingestionTracking.Id)
+                .ToList();
+
+            foreach (var id in auditIds)
+            {
+                await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(id);
+            }
+
+            if (this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                .Any(audit => audit.IngestionTrackingId == ingestionTracking.Id))
+            {
+                await DeleteAudits(ingestionTracking);
+            }
         }
     }
 }

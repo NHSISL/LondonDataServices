@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
             //given
             string randomPublicKeyComment = GetRandomString();
             string inputPublicKeyComment = "";
-            string inputPassPhrase = "";
+            string inputPassPhrase = GetRandomString();
             string inputUsername = "";
             string inputEmail = "";
             string gpgCryptographyType = "GPG";

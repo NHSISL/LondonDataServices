@@ -4,6 +4,7 @@
 
 using System;
 using LHDS.Core.Models.Foundations.Downloads;
+using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
@@ -30,6 +31,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             }
         }
 
+        public void ValidateIngestionTrackingId(Guid ingestionTrackingId)
+        {
+            Validate((Rule: IsInvalid(ingestionTrackingId), Parameter: "ingestionTrackingId"));
+        }
         private void ValidateLandingConfigurationIsNotNull()
         {
             if (this.landingConfiguration is null)

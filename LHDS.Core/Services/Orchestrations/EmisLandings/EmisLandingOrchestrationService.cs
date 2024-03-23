@@ -384,17 +384,19 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 return storageDownload.Document.DocumentData;
             });
 
-        public async ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId)
-        {
-            IngestionTracking retrievedIngestionTracking = 
-                await this.ingestionTrackingProcessingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
+        public ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId) =>
+            TryCatch(async () =>
+            {
+                ValidateIngestionTrackingId(ingestionTrackingId);
+                IngestionTracking retrievedIngestionTracking =
+                    await this.ingestionTrackingProcessingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
 
-            retrievedIngestionTracking.Decrypted = false;
-            retrievedIngestionTracking.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                retrievedIngestionTracking.Decrypted = false;
+                retrievedIngestionTracking.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-            IngestionTracking modifiedIngestionTracking =
-                await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(retrievedIngestionTracking);
-        }
+                IngestionTracking modifiedIngestionTracking =
+                    await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(retrievedIngestionTracking);
+            });
 
         private void LogAudit(
             IngestionTracking ingestionTracking,

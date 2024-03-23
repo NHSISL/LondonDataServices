@@ -19,6 +19,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private delegate ValueTask<string> ReturningStringFunction();
         private delegate ValueTask<byte[]> ReturningByteArrayFunction();
         private delegate ValueTask<List<string>> ReturningStringListFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<List<string>> TryCatch(ReturningStringListFunction returningStringListFunction)
         {
@@ -323,6 +324,18 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         exception);
 
                 throw CreateAndLogServiceException(failedEmisLandingOrchestrationServiceException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (InvalidArgumentEmisLandingOrchestrationException invalidArgumentEmisLandingOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentEmisLandingOrchestrationException);
             }
         }
 

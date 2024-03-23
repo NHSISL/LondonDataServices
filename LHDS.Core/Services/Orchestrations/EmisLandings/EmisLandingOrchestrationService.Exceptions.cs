@@ -337,6 +337,79 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw CreateAndLogValidationException(invalidArgumentEmisLandingOrchestrationException);
             }
+            catch (DocumentValidationException documentValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(documentValidationException);
+            }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
+            }
+            catch (DownloadValidationException downloadValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(downloadValidationException);
+            }
+            catch (DownloadDependencyValidationException downloadDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(downloadDependencyValidationException);
+            }
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
+            }
+            catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ingestionTrackingDependencyValidationException);
+            }
+            catch (IngestionTrackingAuditValidationException auditValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(auditValidationException);
+            }
+            catch (IngestionTrackingAuditDependencyValidationException auditDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(auditDependencyValidationException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw CreateAndLogDependencyException(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw CreateAndLogDependencyException(documentServiceException);
+            }
+            catch (DownloadDependencyException downloadDependencyException)
+            {
+                throw CreateAndLogDependencyException(downloadDependencyException);
+            }
+            catch (DownloadServiceException downloadServiceException)
+            {
+                throw CreateAndLogDependencyException(downloadServiceException);
+            }
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            {
+                throw CreateAndLogDependencyException(ingestionTrackingDependencyException);
+            }
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            {
+                throw CreateAndLogDependencyException(ingestionTrackingServiceException);
+            }
+            catch (IngestionTrackingAuditDependencyException auditDependencyException)
+            {
+                throw CreateAndLogDependencyException(auditDependencyException);
+            }
+            catch (IngestionTrackingAuditServiceException auditServiceException)
+            {
+                throw CreateAndLogDependencyException(auditServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedEmisLandingOrchestrationServiceException =
+                    new FailedEmisLandingOrchestrationServiceException(
+                        message: "Failed EMIS landing orchestration service occurred, please contact support",
+                        exception);
+
+                throw CreateAndLogServiceException(failedEmisLandingOrchestrationServiceException);
+            }
         }
 
         private EmisLandingOrchestrationValidationException CreateAndLogValidationException(Xeption exception)

@@ -391,6 +391,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             TryCatch(async () =>
             {
                 ValidateIngestionTrackingId(ingestionTrackingId);
+
                 IngestionTracking retrievedIngestionTracking =
                     await this.ingestionTrackingProcessingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
 
@@ -398,7 +399,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 retrievedIngestionTracking.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
                 IngestionTracking modifiedIngestionTracking =
-                    await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(retrievedIngestionTracking);
+                    await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(
+                        retrievedIngestionTracking);
             });
 
         private void LogAudit(

@@ -225,91 +225,99 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 return files;
             });
 
-        public async ValueTask<string> ProcessFileAsync(
-            string ftpFileName, 
-            SubscriberCredential subscriberCredential) => 
-                await TryCatch(async () =>
-                {
-                    ValidateConfigurationSettings();
-                    ValidateSubscriberCredentials(subscriberCredential);
-                    ValidateFileName(ftpFileName);
+        public async ValueTask<string> ProcessFileAsync(string ftpFileName, SubscriberCredential subscriberCredential) =>
+            await TryCatch(async () =>
+            {
+                ValidateConfigurationSettings();
+                ValidateSubscriberCredentials(subscriberCredential);
+                ValidateFileName(ftpFileName);
 
-                    Download download = new Download
+                Download download = new Download
+                {
+                    Document = new Document { FileName = ftpFileName },
+                    SubscriberCredential = subscriberCredential
+                };
+
+                Download externalDownload =
+                    await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
+
+                ValidateStorageDownload(externalDownload, ftpFileName);
+
+                IngestionTracking? maybeIngestionTracking =
+                    this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
+                        .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == ftpFileName);
+
+                if (maybeIngestionTracking != null)
+                {
+                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    maybeIngestionTracking.UpdatedDate = currentDateTime;
+                    maybeIngestionTracking.LastSeen = currentDateTime;
+                    maybeIngestionTracking.EncryptedFileSize = externalDownload.Document.DocumentData.Length;
+
+                    try
                     {
-                        Document = new Document { FileName = ftpFileName },
-                        SubscriberCredential = subscriberCredential
+                        await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                            maybeIngestionTracking.EncryptedFileName, blobContainers.EmisLanding);
+                    }
+                    catch (DocumentProcessingDependencyException documentProcessingDependencyException)
+                        when (documentProcessingDependencyException.InnerException is FailedDocumentRequestException
+                            && documentProcessingDependencyException.InnerException.InnerException.Message
+                                .StartsWith("The specified blob does not exist.")
+                        )
+                    { }
+
+                    Document newBlobDocument = new Document
+                    {
+                        DocumentData = externalDownload.Document.DocumentData,
+                        FileName = maybeIngestionTracking.EncryptedFileName
                     };
 
-                    Download externalDownload =
-                        await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
+                    await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
+                    await this.documentProcessingService.AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
 
-                    ValidateStorageDownload(externalDownload, ftpFileName);
+                    LogAudit(
+                        ingestionTracking: maybeIngestionTracking,
+                        document: externalDownload.Document,
+                        message: "Refreshed");
 
-                    IngestionTracking? maybeIngestionTracking =
-                        this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
-                            .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == ftpFileName);
+                    return maybeIngestionTracking.DecryptedFileName;
+                }
+                else
+                {
+                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-                    if (maybeIngestionTracking != null)
+                    var filename = externalDownload.Document.FileName.StartsWith('/')
+                        ? externalDownload.Document.FileName
+                        : "/" + externalDownload.Document.FileName;
+
+                    string encryptedFileSha256Hash =
+                        this.hashBroker.GenerateSha256Hash(externalDownload.Document.DocumentData);
+
+                    DataSetSpecification retrievedDataSetSpecification = await
+                        this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
+                            landingConfiguration.LandingSupplierId);
+
+                    string[] splitFileName = filename.Split('/');
+                    string newFileName = "";
+
+                    if (splitFileName.Length < 6)
                     {
-                        var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                        maybeIngestionTracking.UpdatedDate = currentDateTime;
-                        maybeIngestionTracking.LastSeen = currentDateTime;
-                        maybeIngestionTracking.EncryptedFileSize = externalDownload.Document.DocumentData.Length;
-
-                        try
-                        {
-                            await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                                maybeIngestionTracking.EncryptedFileName, blobContainers.EmisLanding);
-                        }
-                        catch (DocumentDependencyException documentDependencyException)
-                            when (documentDependencyException.InnerException is FailedDocumentRequestException
-                                && documentDependencyException.InnerException.InnerException.Message
-                                    .StartsWith("The specified blob does not exist.")
-                            )
-                        { }
-
-                        Document newBlobDocument = new Document
-                        {
-                            DocumentData = externalDownload.Document.DocumentData,
-                            FileName = maybeIngestionTracking.EncryptedFileName
-                        };
-
-                        await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
-                        await this.documentProcessingService.AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
-
-                        LogAudit(
-                            ingestionTracking: maybeIngestionTracking,
-                            document: externalDownload.Document,
-                            message: "Refreshed");
-
-                        return maybeIngestionTracking.DecryptedFileName;
+                        throw new InvalidDocumentProcessingFileNameException(filename);
                     }
                     else
                     {
-                        var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                        newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
+                    }
 
-                        var filename = externalDownload.Document.FileName.StartsWith('/')
-                            ? externalDownload.Document.FileName
-                            : "/" + externalDownload.Document.FileName;
+                    var encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
 
-                        string encryptedFileSha256Hash =
-                            this.hashBroker.GenerateSha256Hash(externalDownload.Document.DocumentData);
+                    var decryptedFileName =
+                        $"/{landingConfiguration.DecryptedFolder}" +
+                        $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
+                        $"/{retrievedDataSetSpecification.Id}" +
+                        $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
+                        $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
-                        DataSetSpecification retrievedDataSetSpecification = await
-                            this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
-                                landingConfiguration.LandingSupplierId);
-
-                        string[] splitFileName = filename.Split('/');
-                        string newFileName = "";
-
-                        if (splitFileName.Length < 6)
-                        {
-                            throw new InvalidDocumentProcessingFileNameException(filename);
-                        }
-                        else
-                        {
-                            newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
-                        }
 
                     IngestionTracking newIngestionTracking =
                       new IngestionTracking
@@ -317,15 +325,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                           Id = this.identifierBroker.GetIdentifier(),
                           FileName = externalDownload.Document.FileName,
                           SupplierId = landingConfiguration.LandingSupplierId,
-                          EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
-
-                          DecryptedFileName =
-                                $"/{landingConfiguration.DecryptedFolder}"
-                                + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
-                                + $"/{retrievedDataSetSpecification.Id}"
-                                + $"/{filename.Split('_')[3]}"
-                                + $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
-
+                          EncryptedFileName = encryptedFileName,
+                          DecryptedFileName = decryptedFileName,
                           Decrypted = false,
                           LastSeen = currentDateTime,
                           FileDeleted = false,
@@ -340,19 +341,19 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                           UpdatedDate = currentDateTime
                       };
 
-                        Document newBlobDocument = new Document
-                        {
-                            DocumentData = externalDownload.Document.DocumentData,
-                            FileName = newIngestionTracking.EncryptedFileName
-                        };
+                    Document newBlobDocument = new Document
+                    {
+                        DocumentData = externalDownload.Document.DocumentData,
+                        FileName = newIngestionTracking.EncryptedFileName
+                    };
 
-                        await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);
-                        await this.documentProcessingService.AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
-                        LogAudit(newIngestionTracking, externalDownload.Document, "Re-Landed");
+                    await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);
+                    await this.documentProcessingService.AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
+                    LogAudit(newIngestionTracking, externalDownload.Document, "Re-Landed");
 
-                        return newIngestionTracking.DecryptedFileName;
-                    }
-                });
+                    return newIngestionTracking.DecryptedFileName;
+                }
+            });
 
         public ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(
             SubscriberCredential subscriberCredential) =>

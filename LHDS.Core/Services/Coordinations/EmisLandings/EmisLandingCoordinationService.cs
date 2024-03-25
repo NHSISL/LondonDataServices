@@ -74,11 +74,11 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 return processedPaths;
             });
 
-        public ValueTask<string> ProcessFileAsync(string fileName) =>
+        public ValueTask<string> ProcessFileAsync(string ftpFileName) =>
             TryCatch(async () =>
             {
-                ValidateFileNameOnLand(fileName);
-                string[] parts = fileName.Split("/");
+                ValidateFileNameOnLand(ftpFileName);
+                string[] parts = ftpFileName.Split("/");
 
                 if (parts.Length > 0)
                 {
@@ -89,7 +89,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
 
                     string processedItem =
                         await this.emisLandingOrchestrationService.ProcessFileAsync(
-                            fileName: fileName,
+                            ftpFileName: ftpFileName,
                             subscriberCredential: maybeSubscriberCredential);
 
                     return processedItem;
@@ -140,7 +140,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 return document;
             });
 
-        public async ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId) =>
+        public ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId) =>
             throw new NotImplementedException();
     }
 }

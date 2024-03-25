@@ -89,7 +89,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
 
                     string processedItem =
                         await this.emisLandingOrchestrationService.ProcessFileAsync(
-                            ftpFileName: ftpFileName,
+                            fileName: ftpFileName,
                             subscriberCredential: maybeSubscriberCredential);
 
                     return processedItem;

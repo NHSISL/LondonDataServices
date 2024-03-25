@@ -387,6 +387,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 return storageDownload.Document.DocumentData;
             });
 
+        public async ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId) =>
+            throw new NotImplementedException();
+
         private void LogAudit(
             IngestionTracking ingestionTracking,
             Document document,

@@ -140,7 +140,12 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 return document;
             });
 
-        public async ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId) =>
-            await this.emisLandingOrchestrationService.RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
+        public ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId) =>
+            TryCatch(async () =>
+            {
+                ValidateArgsOnRedecryptDocumentByIngestionId(ingestionTrackingId);
+
+                await this.emisLandingOrchestrationService.RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
+            });
     }
 }

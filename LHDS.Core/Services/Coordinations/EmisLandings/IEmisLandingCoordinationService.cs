@@ -12,8 +12,9 @@ namespace LHDS.Core.Services.Orchestrations.EmisLandings
     public interface IEmisLandingCoordinationService
     {
         ValueTask<List<string>> ProcessAsync();
-        ValueTask<string> ProcessFileAsync(string fileName);
+        ValueTask<string> ProcessFileAsync(string ftpFileName);
         ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(Guid subscriberAgreementId);
         ValueTask<Document> RetrieveDownloadByFileNameAsync(string fileName);
+        ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId);
     }
 }

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Hl7.Fhir.Serialization;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Extensions.Exceptions;
@@ -62,8 +61,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         private static string GetRandomString() =>
            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
-        private static int GetRandomNumber() =>
-            new IntRange(min: 2, max: 10).GetValue();
+        private static int GetRandomNumber(int min = 2, int max = 10) =>
+            new IntRange(min, max).GetValue();
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
@@ -158,7 +157,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
                 .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt()
                 .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(() =>
-                    GenerateFilename(subscriberAgreementId));
+                    CreateRandomFilePath(subscriberAgreementId));
 
             return filler;
         }
@@ -176,36 +175,19 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .AreEqual;
         }
 
-        private static string GenerateFilename(Guid identifier)
-        {
-            Guid randomGuid = Guid.NewGuid();
-
-            return $"/{GetRandomString()}" +
-                $"/{GetRandomString()}" +
-                $"/{randomGuid}" +
-                $"/{GetRandomNumber}" +
-                $"/{GetRandomString()}" +
-                $"_{GetRandomNumber}" +
-                $"_{GetRandomString()}" +
-                $"_{GetRandomString()}" +
-                $"_{GetRandomNumber()}" +
-                $"_{identifier}.csv.gpg;";
-        }
-
         private static string CreateRandomFilePath(Guid identifier)
         {
-            return $"{GetRandomString()}" +
-                $"/{GetRandomString()}" +
-                $"/{GetRandomString()}" +
-                $"/{GetRandomString()}" +
-                $"/{GetRandomString()}" +
+            return $"emisnightingale-data-preprod-provider-extracts" +
+                $"/IM1" +
+                $"/sftp" +
                 $"/{identifier}" +
-                $"/0122235" +
-                $"/{GetRandomNumber}" +
-                $"_{GetRandomString()}" +
-                $"_{GetRandomString()}" +
-                $"_{GetRandomNumber()}" +
-                $"_{identifier}.csv.gpg;";
+                $"/{DateTime.Now.ToString("yyyyMMdd")}" +
+                $"/delta{GetRandomString()}" +
+                $"_{GetRandomNumber(min: 2, max: 1000)}" +
+                $"_Admin" +
+                $"_Location" +
+                $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}" +
+                $"_{identifier}.csv.gpg";
         }
 
         private static Guid GetLastRandomGuid(string filename)

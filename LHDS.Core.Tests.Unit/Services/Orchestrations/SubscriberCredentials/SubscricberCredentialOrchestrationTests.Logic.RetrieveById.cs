@@ -23,12 +23,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid randomId = Guid.NewGuid();
-            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential(randomId);
+
+            dynamic randomDynamic = CreateRandomDynamicSubscriberAgreementCredential(
+                date: randomDateTimeOffset,
+                id: randomId);
+
             SubscriberAgreement inputSubscriberAgreement = CreateSubscriberAgreementFromDynamic(randomDynamic);
             SubscriberAgreement storageSubscriberAgreement = inputSubscriberAgreement;
 
             SubscriberCredential inputSubscriberCredential = CreateSubscriberCredentialFromDynamic(
-                credential: randomDynamic, 
+                credential: randomDynamic,
                 blankKeys: true);
 
             SubscriberCredential outputSubscriberCredential = CreateSubscriberCredentialFromDynamic(
@@ -50,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 service.RetrieveSubscriberAgreementByIdAsync(randomId))
                     .ReturnsAsync(storageSubscriberAgreement);
 
-            if(externalUse == false)
+            if (externalUse == false)
             {
                 this.secureDataProcessingServiceMock.Setup(service =>
                     service.RetrieveSecretsByKeyVaultKeyNameAsync(
@@ -71,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 service.RetrieveSubscriberAgreementByIdAsync(randomId),
                     Times.Once);
 
-            if(externalUse == false)
+            if (externalUse == false)
             {
                 this.secureDataProcessingServiceMock.Verify(service =>
                     service.RetrieveSecretsByKeyVaultKeyNameAsync(
@@ -81,6 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();
             this.secureDataProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

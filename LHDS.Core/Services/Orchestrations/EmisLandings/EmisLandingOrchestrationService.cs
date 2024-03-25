@@ -130,21 +130,23 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                     newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
                                 }
 
+                                var encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
+
+                                var decryptedFileName =
+                                    $"/{landingConfiguration.DecryptedFolder}" +
+                                    $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
+                                    $"/{retrievedDataSetSpecification.Id}" +
+                                    $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
+                                    $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
                                 IngestionTracking newIngestionTracking =
                                   new IngestionTracking
                                   {
                                       Id = this.identifierBroker.GetIdentifier(),
                                       FileName = fileName,
                                       SupplierId = landingConfiguration.LandingSupplierId,
-                                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
-
-                                      DecryptedFileName =
-                                        $"/{landingConfiguration.DecryptedFolder}" +
-                                        $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
-                                        $"/{retrievedDataSetSpecification.Id}" +
-                                        $"/{filename.Split('_')[3]}" +
-                                        $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
-
+                                      EncryptedFileName = encryptedFileName,
+                                      DecryptedFileName = decryptedFileName,
                                       Decrypted = false,
                                       LastSeen = currentDateTime,
                                       FileDeleted = false,
@@ -309,34 +311,34 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                             newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
                         }
 
-                        IngestionTracking newIngestionTracking =
-                          new IngestionTracking
-                          {
-                              Id = this.identifierBroker.GetIdentifier(),
-                              FileName = externalDownload.Document.FileName,
-                              SupplierId = landingConfiguration.LandingSupplierId,
-                              EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
+                    IngestionTracking newIngestionTracking =
+                      new IngestionTracking
+                      {
+                          Id = this.identifierBroker.GetIdentifier(),
+                          FileName = externalDownload.Document.FileName,
+                          SupplierId = landingConfiguration.LandingSupplierId,
+                          EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
 
-                              DecryptedFileName =
-                                    $"/{landingConfiguration.DecryptedFolder}"
-                                    + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
-                                    + $"/{retrievedDataSetSpecification.Id}"
-                                    + $"/{filename.Split('_')[3]}"
-                                    + $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                          DecryptedFileName =
+                                $"/{landingConfiguration.DecryptedFolder}"
+                                + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
+                                + $"/{retrievedDataSetSpecification.Id}"
+                                + $"/{filename.Split('_')[3]}"
+                                + $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
-                              Decrypted = false,
-                              LastSeen = currentDateTime,
-                              FileDeleted = false,
-                              RecordCount = 0,
-                              EncryptedFileSize = externalDownload.Document.DocumentData.Length,
-                              EncryptedFileSha256Hash = encryptedFileSha256Hash,
-                              DecryptedFileSize = 0,
-                              DecryptedFileSha256Hash = string.Empty,
-                              CreatedBy = "System",
-                              CreatedDate = currentDateTime,
-                              UpdatedBy = "System",
-                              UpdatedDate = currentDateTime
-                          };
+                          Decrypted = false,
+                          LastSeen = currentDateTime,
+                          FileDeleted = false,
+                          RecordCount = 0,
+                          EncryptedFileSize = externalDownload.Document.DocumentData.Length,
+                          EncryptedFileSha256Hash = encryptedFileSha256Hash,
+                          DecryptedFileSize = 0,
+                          DecryptedFileSha256Hash = string.Empty,
+                          CreatedBy = "System",
+                          CreatedDate = currentDateTime,
+                          UpdatedBy = "System",
+                          UpdatedDate = currentDateTime
+                      };
 
                         Document newBlobDocument = new Document
                         {

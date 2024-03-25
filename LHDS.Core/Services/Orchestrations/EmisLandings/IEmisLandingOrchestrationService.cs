@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -14,5 +15,6 @@ namespace LHDS.Core.Services.Orchestrations.EmisLandings
         ValueTask<string> ProcessFileAsync(string fileName, SubscriberCredential subscriberCredential);
         ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(SubscriberCredential subscriberCredential);
         ValueTask<byte[]> RetrieveDownloadByFileNameAsync(string fileName, SubscriberCredential subscriberCredential);
+        ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId);
     }
 }

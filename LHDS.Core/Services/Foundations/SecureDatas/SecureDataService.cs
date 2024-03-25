@@ -2,15 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Security.KeyVault.Secrets;
 using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.SecureData;
-using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
-using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.SecureDatas
 {
@@ -72,7 +69,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                 {
                     await this.keyVaultSecretBroker.DeleteKeyVaultSecretAsync(secretName);
                 }
-                catch(RequestFailedException requestFailedException)
+                catch (RequestFailedException requestFailedException)
                     when (requestFailedException.ErrorCode is "SecretNotFound")
                 {
                     return;

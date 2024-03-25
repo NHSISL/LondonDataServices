@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Linq;
 using System.Threading.Tasks;
@@ -64,6 +64,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
         {
             this.Entry(@object).State = EntityState.Added;
             await this.SaveChangesAsync();
+            DetachSavedEntity(@object);
 
             return @object;
         }
@@ -77,6 +78,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
         {
             this.Entry(@object).State = EntityState.Modified;
             await this.SaveChangesAsync();
+            DetachSavedEntity(@object);
 
             return @object;
         }
@@ -87,6 +89,11 @@ namespace LHDS.Core.Brokers.Storages.Sql
             await this.SaveChangesAsync();
 
             return @object;
+        }
+
+        private void DetachSavedEntity<T>(T @object)
+        {
+            this.Entry(@object).State = EntityState.Detached;
         }
     }
 }

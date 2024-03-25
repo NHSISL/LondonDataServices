@@ -27,6 +27,11 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             Validate((Rule: IsInvalid(subscriberAgreementId), Parameter: "SubscriberAgreementId"));
         }
 
+        private static void ValidateArgsOnRedecryptDocumentByIngestionId(Guid ingestionTrackingId)
+        {
+            Validate((Rule: IsInvalid(ingestionTrackingId), Parameter: "ingestionTrackingId"));
+        }
+
         private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),

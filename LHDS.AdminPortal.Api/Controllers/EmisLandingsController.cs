@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 #if RELEASE
 using Microsoft.AspNetCore.Authorization;
 #endif
@@ -115,6 +116,38 @@ namespace LHDS.AdminPortal.Api.Controllers
             catch (DownloadServiceException downloadServiceException)
             {
                 return InternalServerError(downloadServiceException);
+            }
+        }
+
+        [HttpPut("decrypt")]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
+#endif
+        public async ValueTask<ActionResult> RedecryptDocumentByIngestionTrackingIdAsync(Guid ingestionTrackingId)
+        {
+            try
+            {
+                await emisLandingCoordinationService
+                    .RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
+
+                return Ok();
+            }
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+                when (ingestionTrackingValidationException.InnerException is NotFoundIngestionTrackingException)
+            {
+                return NotFound(ingestionTrackingValidationException.InnerException);
+            }
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+            {
+                return BadRequest(ingestionTrackingValidationException.InnerException);
+            }
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            {
+                return InternalServerError(ingestionTrackingDependencyException);
+            }
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            {
+                return InternalServerError(ingestionTrackingServiceException);
             }
         }
     }

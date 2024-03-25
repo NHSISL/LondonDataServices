@@ -141,6 +141,6 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             });
 
         public async ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId) =>
-            throw new NotImplementedException();
+            await this.emisLandingOrchestrationService.RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
     }
 }

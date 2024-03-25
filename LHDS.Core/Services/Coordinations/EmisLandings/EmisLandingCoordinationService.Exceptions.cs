@@ -235,6 +235,56 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             {
                 throw CreateAndLogValidationException(invalidArgumentEmisLandingCoordinationException);
             }
+            catch (SubscriberCredentialValidationOrchestrationException
+                subscriberCredentialValidationOrchestrationException)
+            {
+                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationOrchestrationException);
+            }
+            catch (SubscriberCredentialOrchestrationDependencyValidationException
+                subscriberCredentialOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    subscriberCredentialOrchestrationDependencyValidationException);
+            }
+            catch (EmisLandingOrchestrationValidationException
+                emisLandingOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationValidationException);
+            }
+            catch (EmisLandingOrchestrationDependencyValidationException
+                emisLandingOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationDependencyValidationException);
+            }
+            catch (SubscriberCredentialDependencyOrchestrationException
+                subscriberCredentialDependencyOrchestrationException)
+            {
+                throw CreateAndLogDependencyException(subscriberCredentialDependencyOrchestrationException);
+            }
+            catch (SubscriberCredentialOrchestrationServiceException
+                subscriberCredentialOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(subscriberCredentialOrchestrationServiceException);
+            }
+            catch (EmisLandingOrchestrationDependencyException
+                emisLandingOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(emisLandingOrchestrationDependencyException);
+            }
+            catch (EmisLandingOrchestrationServiceException
+                emisLandingOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(emisLandingOrchestrationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedEmisLandingCoordinationServiceException =
+                    new FailedEmisLandingCoordinationServiceException(
+                        message: "Failed EMIS landing coordination service occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
+            }
         }
 
         private EmisLandingCoordinationValidationException CreateAndLogValidationException(Xeption exception)

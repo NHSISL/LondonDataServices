@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             var expectedEmisLandingCoordinationDependencyException =
                 new EmisLandingCoordinationDependencyException(
-                    message: "EMIS landing coordination dependency error occurred, please try again.",
+                    message: "EMIS landing coordination dependency error occurred, fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             // When

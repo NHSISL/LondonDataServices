@@ -144,7 +144,6 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             TryCatch(async () =>
             {
                 ValidateArgsOnRedecryptDocumentByIngestionId(ingestionTrackingId);
-
                 await this.emisLandingOrchestrationService.RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
             });
     }

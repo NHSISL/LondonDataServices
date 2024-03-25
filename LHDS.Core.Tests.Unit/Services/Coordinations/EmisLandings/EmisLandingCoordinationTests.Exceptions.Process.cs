@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowAggregateDependencyValidationExceptionOnRedecryptIfErrorsInLoopAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRedecryptIfErrorsInLoopAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // Given
@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowAggregateDependencyExceptionOnRedecryptIfErrorsInLoopAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRedecryptIfErrorsInLoopAndLogItAsync(
             Xeption dependencyException)
         {
             // Given
@@ -101,7 +101,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         }
 
         [Fact]
-        public async Task ShouldThrowAggregateServiceExceptionOnRedecryptIfErrorsInLoopAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRedecryptIfErrorsInLoopAndLogItAsync()
         {
             // Given
             Guid ingestionTrackingId = Guid.NewGuid();

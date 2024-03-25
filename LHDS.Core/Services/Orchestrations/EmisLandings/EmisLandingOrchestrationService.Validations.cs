@@ -35,6 +35,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         {
             Validate((Rule: IsInvalid(ingestionTrackingId), Parameter: "ingestionTrackingId"));
         }
+        
         private void ValidateLandingConfigurationIsNotNull()
         {
             if (this.landingConfiguration is null)

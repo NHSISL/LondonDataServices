@@ -10,9 +10,5 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
     public interface IDecryptionOrchestrationService
     {
         ValueTask<string> DecryptAsync(string encryptedFileName, SubscriberCredential subscriberCredential);
-        //ValueTask<string> EncryptAsync(
-        //    string decryptedFileName, 
-        //    byte[] data, 
-        //    SubscriberCredential subscriberCredential);
     }
 }

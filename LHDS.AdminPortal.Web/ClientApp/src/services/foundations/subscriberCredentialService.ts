@@ -15,7 +15,7 @@ export const subscriberCredentialService = {
             subscriberCredential.createdDate = subscriberCredential.updatedDate = date;
             subscriberCredential.createdBy = subscriberCredential.updatedBy = msal.accounts[0].username;
 
-            return broker.PostSubscriberCredentialAndRegenerateKeysAsync(subscriberCredential);
+            return broker.PostSubscriberCredentialAsync(subscriberCredential);
         },
             {
                 onSuccess: (variables) => {
@@ -35,7 +35,8 @@ export const subscriberCredentialService = {
             subscriberCredential.createdDate = subscriberCredential.updatedDate = date;
             subscriberCredential.createdBy = subscriberCredential.updatedBy = msal.accounts[0].username;
 
-            return broker.PostSubscriberCredentialAsync(subscriberCredential);
+            return broker.PostSubscriberCredentialAndRegenerateKeysAsync(subscriberCredential);
+            
         },
             {
                 onSuccess: (variables) => {

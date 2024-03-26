@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
             string inputCryptographyType = GetRandomString();
             string randomPublicKeyCommentString = GetRandomString();
             string randomUserNameString = "";
-            string randomPasswordString = "";
+            string randomPassPhraseString = "";
             string randomEmailString = "";
             string inputPublicKeyCommentString = randomPublicKeyCommentString;
             CryptographicKey randomCryptographicKey = GenerateRandomCryptographicKey();
@@ -33,15 +33,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
 
             this.cryptographyKeyBrokerMock.Setup(broker =>
                 broker.GenerateKeysAsync(
-                    inputPublicKeyCommentString, 
-                    randomPasswordString, 
-                    randomUserNameString, 
+                    inputPublicKeyCommentString,
+                    randomPassPhraseString,
+                    randomUserNameString,
                     randomEmailString))
                         .ReturnsAsync(outputCryptographicKey);
 
             // When
             CryptographicKey actualCryptographicKey = await this.cryptographyKeyService
-                .GenerateKeysAsync(cryptographyType: inputCryptographyType, publicKeyComment: inputPublicKeyCommentString);
+                .GenerateKeysAsync(cryptographyType: inputCryptographyType, comment: inputPublicKeyCommentString);
 
             // Then
             actualCryptographicKey.Should().BeEquivalentTo(expectedCryptographicKey);
@@ -53,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
             this.cryptographyKeyBrokerMock.Verify(broker =>
                 broker.GenerateKeysAsync(
                     inputPublicKeyCommentString,
-                    randomPasswordString,
+                    randomPassPhraseString,
                     randomUserNameString,
                     randomEmailString),
                         Times.Once);

@@ -90,14 +90,48 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<Document>> DownloadDocumentByFileNameAsync(string filename)
+        public async ValueTask<ActionResult<string>> DownloadDocumentByFileNameAsync(string filename)
         {
             try
             {
-                Document retrieveDownload = await emisLandingCoordinationService
-                    .RetrieveDownloadByFileNameAsync(filename);
+                throw new NotImplementedException();
+                //string retrieveDownload = await emisLandingCoordinationService
+                //    .DecryptDocumentByFileNameAsync(filename);
 
-                return Ok(retrieveDownload);
+                //return Ok(retrieveDownload);
+            }
+            catch (DownloadValidationException downloadValidationException)
+                when (downloadValidationException.InnerException is NotFoundDocumentException)
+            {
+                return NotFound(downloadValidationException.InnerException);
+            }
+            catch (DownloadValidationException dataSetValidationException)
+            {
+                return BadRequest(dataSetValidationException.InnerException);
+            }
+            catch (DownloadDependencyException downloadDependencyException)
+            {
+                return InternalServerError(downloadDependencyException);
+            }
+            catch (DownloadServiceException downloadServiceException)
+            {
+                return InternalServerError(downloadServiceException);
+            }
+        }
+
+        [HttpGet("decrypt/{fileName}")]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
+#endif
+        public async ValueTask<ActionResult<Document>> DecryptDocumentByFileNameAsync(string filename)
+        {
+            try
+            {
+                throw new NotImplementedException();
+                //Document retrieveDownload = await emisLandingCoordinationService
+                //    .DecryptDocumentByFileNameAsync(filename);
+
+                //return Ok(retrieveDownload);
             }
             catch (DownloadValidationException downloadValidationException)
                 when (downloadValidationException.InnerException is NotFoundDocumentException)

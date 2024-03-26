@@ -23,7 +23,12 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<CryptographicKey> GenerateKeysAsync(string cryptographyType, string? publicKeyComment = "") =>
+        public ValueTask<CryptographicKey> GenerateKeysAsync(
+            string cryptographyType,
+            string? comment = "",
+            string? passPhrase = "",
+            string? userName = "",
+            string? email = "") =>
             TryCatch(async () =>
             {
                 ValidateInputArguments(cryptographyType);
@@ -33,7 +38,11 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
 
                 ValidateBrokerNotNull(broker);
 
-                return await broker.GenerateKeysAsync(comment: publicKeyComment);
+                return await broker.GenerateKeysAsync(
+                    comment,
+                    passPhrase,
+                    userName,
+                    email);
             });
     }
 }

@@ -1,0 +1,125 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Tests.Acceptance.Clients.EmisLandings.Models;
+using Xunit;
+
+namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
+{
+    public partial class LandingTests
+    {
+        [Fact]
+        public async Task ShouldProcessNewDocumentAsync()
+        {
+            // Given
+            CleanupDownloadFolder();
+            Guid supplierId = landingConfiguration.LandingSupplierId;
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+
+            SubscriberCredential inputSubscriberCredential = await this.subscriberCredentialOrchestration
+                .ModifyOrAddSubscriberCredentialAsync(
+                    subscriberCredential: randomSubscriberCredential,
+                    regenerateKeys: true,
+                    externalUse: false);
+
+            DataSetSpecification retrievedDataSetSpecification =
+                await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
+
+            DocumentSource randomFile = PrepareAndAddFile(
+                subscriberAgreementId: inputSubscriberCredential.Id,
+                dataSetSpecification: retrievedDataSetSpecification,
+                createFiles: true,
+                count: 1).First();
+
+            string inputFileName = randomFile.FtpPath;
+            string expectedString = randomFile.DecryptedBlobPath;
+
+            // When
+            var actualString = await this.landingClient.ProcessAsync(inputFileName);
+
+            // Then
+            actualString.Should().BeEquivalentTo(expectedString);
+
+            IngestionTracking retrievedInestionTracking =
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(inputFileName);
+
+            var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                .Where(audit => audit.IngestionTrackingId == retrievedInestionTracking.Id);
+
+            foreach (var audit in audits)
+            {
+                await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+            }
+
+            await this.subscriberCredentialOrchestration
+                .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
+
+            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(retrievedInestionTracking.Id);
+            CleanupDownloadFolder();
+        }
+
+        [Fact]
+        public async Task ShouldProcessExistingDocumentAsync()
+        {
+            // Given
+            CleanupDownloadFolder();
+            Guid supplierId = landingConfiguration.LandingSupplierId;
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+
+            SubscriberCredential inputSubscriberCredential = await this.subscriberCredentialOrchestration
+                .ModifyOrAddSubscriberCredentialAsync(
+                    subscriberCredential: randomSubscriberCredential,
+                    regenerateKeys: true,
+                    externalUse: false);
+
+            DataSetSpecification retrievedDataSetSpecification =
+                await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
+
+            DocumentSource randomFile = PrepareAndAddFile(
+                subscriberAgreementId: inputSubscriberCredential.Id,
+                dataSetSpecification: retrievedDataSetSpecification,
+                createFiles: true,
+                count: 1).First();
+
+            List<IngestionTracking> ingestionTrackings = await CreateRandomIngestionTrackings(
+                dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                documentSources: new List<DocumentSource> { randomFile },
+                supplierId: landingConfiguration.LandingSupplierId);
+
+            string inputFileName = randomFile.FtpPath;
+            string expectedString = randomFile.DecryptedBlobPath;
+
+            // When
+            var actualString = await this.landingClient.ProcessAsync(inputFileName);
+
+            // Then
+            actualString.Should().BeEquivalentTo(expectedString);
+
+            IngestionTracking retrievedInestionTracking =
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(inputFileName);
+
+            var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                .Where(audit => audit.IngestionTrackingId == retrievedInestionTracking.Id);
+
+            foreach (var audit in audits)
+            {
+                await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+            }
+
+            await this.subscriberCredentialOrchestration
+                .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
+
+            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(retrievedInestionTracking.Id);
+            CleanupDownloadFolder();
+        }
+    }
+}

@@ -130,21 +130,23 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                     newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
                                 }
 
+                                var encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
+
+                                var decryptedFileName =
+                                    $"/{landingConfiguration.DecryptedFolder}" +
+                                    $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
+                                    $"/{retrievedDataSetSpecification.Id}" +
+                                    $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
+                                    $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
                                 IngestionTracking newIngestionTracking =
                                   new IngestionTracking
                                   {
                                       Id = this.identifierBroker.GetIdentifier(),
                                       FileName = fileName,
                                       SupplierId = landingConfiguration.LandingSupplierId,
-                                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
-
-                                      DecryptedFileName =
-                                        $"/{landingConfiguration.DecryptedFolder}" +
-                                        $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
-                                        $"/{retrievedDataSetSpecification.Id}" +
-                                        $"/{filename.Split('_')[3]}" +
-                                        $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
-
+                                      EncryptedFileName = encryptedFileName,
+                                      DecryptedFileName = decryptedFileName,
                                       Decrypted = false,
                                       LastSeen = currentDateTime,
                                       FileDeleted = false,
@@ -223,27 +225,27 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 return files;
             });
 
-        public async ValueTask<string> ProcessFileAsync(string fileName, SubscriberCredential subscriberCredential) =>
+        public async ValueTask<string> ProcessFileAsync(string ftpFileName, SubscriberCredential subscriberCredential) =>
             await TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
                 ValidateSubscriberCredentials(subscriberCredential);
-                ValidateFileName(fileName);
+                ValidateFileName(ftpFileName);
 
                 Download download = new Download
                 {
-                    Document = new Document { FileName = fileName },
+                    Document = new Document { FileName = ftpFileName },
                     SubscriberCredential = subscriberCredential
                 };
 
                 Download externalDownload =
                     await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
 
-                ValidateStorageDownload(externalDownload, fileName);
+                ValidateStorageDownload(externalDownload, ftpFileName);
 
                 IngestionTracking? maybeIngestionTracking =
                     this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
-                        .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
+                        .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == ftpFileName);
 
                 if (maybeIngestionTracking != null)
                 {
@@ -257,9 +259,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                             maybeIngestionTracking.EncryptedFileName, blobContainers.EmisLanding);
                     }
-                    catch (DocumentDependencyException documentDependencyException)
-                        when (documentDependencyException.InnerException is FailedDocumentRequestException
-                            && documentDependencyException.InnerException.InnerException.Message
+                    catch (DocumentProcessingDependencyException documentProcessingDependencyException)
+                        when (documentProcessingDependencyException.InnerException is FailedDocumentRequestException
+                            && documentProcessingDependencyException.InnerException.InnerException.Message
                                 .StartsWith("The specified blob does not exist.")
                         )
                     { }
@@ -307,21 +309,24 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
                     }
 
+                    var encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
+
+                    var decryptedFileName =
+                        $"/{landingConfiguration.DecryptedFolder}" +
+                        $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
+                        $"/{retrievedDataSetSpecification.Id}" +
+                        $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
+                        $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
+
                     IngestionTracking newIngestionTracking =
                       new IngestionTracking
                       {
                           Id = this.identifierBroker.GetIdentifier(),
                           FileName = externalDownload.Document.FileName,
                           SupplierId = landingConfiguration.LandingSupplierId,
-                          EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
-
-                          DecryptedFileName =
-                                $"/{landingConfiguration.DecryptedFolder}"
-                                + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
-                                + $"/{retrievedDataSetSpecification.Id}"
-                                + $"/{filename.Split('_')[3]}"
-                                + $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
-
+                          EncryptedFileName = encryptedFileName,
+                          DecryptedFileName = decryptedFileName,
                           Decrypted = false,
                           LastSeen = currentDateTime,
                           FileDeleted = false,
@@ -380,6 +385,22 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
 
                 return storageDownload.Document.DocumentData;
+            });
+
+        public ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId) =>
+            TryCatch(async () =>
+            {
+                ValidateIngestionTrackingId(ingestionTrackingId);
+
+                IngestionTracking retrievedIngestionTracking =
+                    await this.ingestionTrackingProcessingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
+
+                retrievedIngestionTracking.Decrypted = false;
+                retrievedIngestionTracking.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                IngestionTracking modifiedIngestionTracking =
+                    await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(
+                        retrievedIngestionTracking);
             });
 
         private void LogAudit(

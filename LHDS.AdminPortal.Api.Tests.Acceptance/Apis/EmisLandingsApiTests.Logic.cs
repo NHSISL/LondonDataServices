@@ -14,8 +14,6 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Downloads;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
-using Microsoft.ApplicationInsights.WindowsServer;
-using Org.BouncyCastle.Crypto.Engines;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
@@ -89,7 +87,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                     Document = new Document { FileName = randomDocument.FileName }
                 };
 
-                List<Download> retrievedDownloads = 
+                List<Download> retrievedDownloads =
                     await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
 
                 await CleanupTask(randomDocument.FileName);
@@ -178,11 +176,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             string encryptedFilePath = "encrypted";
             string decryptedFilePath = "decrypted";
 
-            IngestionTracking randomIngestionTracking = 
+            IngestionTracking randomIngestionTracking =
                 CreateRandomIngestionTracking(
-                    supplierId: randomSupplier.Id, 
+                    supplierId: randomSupplier.Id,
                     fileName,
-                    encryptedFilePath, 
+                    encryptedFilePath,
                     decryptedFilePath);
 
             randomIngestionTracking.Decrypted = true;
@@ -192,7 +190,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             await this.apiBroker.RedecryptDocumentByIngestionTrackingIdAsync(randomIngestionTracking.Id);
 
             // then
-            IngestionTracking redecryptedIngestionTracking = 
+            IngestionTracking redecryptedIngestionTracking =
                 await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
 
             redecryptedIngestionTracking.Decrypted.Should().BeFalse();

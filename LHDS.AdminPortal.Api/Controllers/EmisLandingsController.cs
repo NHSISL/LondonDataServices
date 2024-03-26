@@ -119,7 +119,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [HttpPut("decrypt")]
+        [HttpPut("decrypt/{ingestionTrackingId}")]
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif

@@ -5,9 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
-using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -18,11 +16,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
     {
         [Theory]
         [MemberData(nameof(DownloadDependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationOnProcessFileIfDependencyValidationOccursAndLogItAsync(
-            Xeption dependancyValidationException)
+        public async Task ShouldThrowDependencyValidationRedecryptIfDependencyValidationOccursAndLogItAsync(
+            Xeption dependencyValidationException)
         {
             // given
-            SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
+            Guid ingestionTrackingId = Guid.NewGuid();
             var someFileName = GetRandomMessage();
 
             var expectedDependencyException =
@@ -30,24 +28,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     message: "EMIS landing orchestration dependency validation error occurred, " +
                         "fix the errors and try again.",
 
-                    dependancyValidationException.InnerException as Xeption);
+                    dependencyValidationException.InnerException as Xeption);
 
-            this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()))
-                    .Throws(dependancyValidationException);
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveIngestionTrackingByIdAsync(It.IsAny<Guid>()))
+                    .Throws(dependencyValidationException);
 
             // when
-            ValueTask<string> processTask = this.emisLandingOrchestrationService
-                .ProcessFileAsync(ftpFileName: someFileName, subscriberCredential: someSubscriberCredential);
+            ValueTask redecryptTask = this.emisLandingOrchestrationService
+                .RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
 
             EmisLandingOrchestrationDependencyValidationException actualException =
-                await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyValidationException>(processTask.AsTask);
+                await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyValidationException>(
+                    redecryptTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
-            this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()),
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.RetrieveIngestionTrackingByIdAsync(It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -55,9 +54,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                    expectedDependencyException))),
                        Times.Once);
 
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
@@ -66,34 +65,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
         [Theory]
         [MemberData(nameof(DownloadDependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnProcessFileIfDependencyExceptionOccursAndLogItAsync(
-           Xeption dependancyException)
+        public async Task ShouldThrowDependencyExceptionOnRedecryptIfDependencyExceptionOccursAndLogItAsync(
+           Xeption dependencyException)
         {
             // given
-            SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
-            string someFileName = GetRandomMessage();
+            Guid ingestionTrackingId = Guid.NewGuid();
+            var someFileName = GetRandomMessage();
 
             var expectedDependencyException =
                 new EmisLandingOrchestrationDependencyException(
-                    message: "EMIS landing orchestration dependency error occurred, fix the errors and try again.",
-                    innerException: dependancyException.InnerException as Xeption);
+                    message: "EMIS landing orchestration dependency error occurred, " +
+                        "fix the errors and try again.",
 
-            this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()))
-                    .ThrowsAsync(dependancyException);
+                    dependencyException.InnerException as Xeption);
+
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveIngestionTrackingByIdAsync(It.IsAny<Guid>()))
+                    .Throws(dependencyException);
 
             // when
-            ValueTask<string> processTask = this.emisLandingOrchestrationService
-                .ProcessFileAsync(ftpFileName: someFileName, subscriberCredential: someSubscriberCredential);
+            ValueTask redecryptTask = this.emisLandingOrchestrationService
+                .RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
 
             EmisLandingOrchestrationDependencyException actualException =
-                await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyException>(processTask.AsTask);
+                await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyException>(
+                    redecryptTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
-            this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()),
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.RetrieveIngestionTrackingByIdAsync(It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -101,9 +103,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                    expectedDependencyException))),
                        Times.Once);
 
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
@@ -111,11 +113,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnProcessFileIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRedecryptIfServiceErrorOccursAndLogItAsync()
         {
             //Given
-            SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
-            var someFileName = GetRandomMessage();
+            Guid ingestionTrackingId = Guid.NewGuid();
             var serviceException = new Exception();
 
             var failedEmisLandingOrchestrationServiceException =
@@ -128,22 +129,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     message: "EMIS landing orchestration service error occurred, contact support.",
                     failedEmisLandingOrchestrationServiceException);
 
-            this.downloadProcessingServiceMock.Setup(service =>
-                service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()))
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveIngestionTrackingByIdAsync(It.IsAny<Guid>()))
                     .Throws(serviceException);
 
             // when
-            ValueTask<string> processTask = this.emisLandingOrchestrationService
-                .ProcessFileAsync(ftpFileName: someFileName, subscriberCredential: someSubscriberCredential);
+            ValueTask redecryptTask = this.emisLandingOrchestrationService
+                .RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
 
             EmisLandingOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<EmisLandingOrchestrationServiceException>(processTask.AsTask);
+                await Assert.ThrowsAsync<EmisLandingOrchestrationServiceException>(
+                    redecryptTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedEmisLandingOrchestrationServiceException);
 
-            this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(It.IsAny<Download>()),
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.RetrieveIngestionTrackingByIdAsync(It.IsAny<Guid>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -151,9 +153,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     expectedEmisLandingOrchestrationServiceException))),
                         Times.Once);
 
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();

@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
             // when
             ValueTask<CryptographicKey> CryptographicKeyTask = this.cryptographyKeyService.GenerateKeysAsync(
                 cryptographyType: nullCryptographyType,
-                publicKeyComment: randomPublicKeyCommentString);
+                comment: randomPublicKeyCommentString);
 
             CryptographyKeyValidationException actualEncryptionValidationException =
                 await Assert.ThrowsAsync<CryptographyKeyValidationException>(async () =>
@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
             // when
             ValueTask<CryptographicKey> CryptographicKeyTask = this.cryptographyKeyService.GenerateKeysAsync(
                 cryptographyType: nullCryptographyType,
-                publicKeyComment: randomPublicKeyCommentString);
+                comment: randomPublicKeyCommentString);
 
             CryptographyKeyValidationException actualEncryptionValidationException =
                 await Assert.ThrowsAsync<CryptographyKeyValidationException>(async () =>

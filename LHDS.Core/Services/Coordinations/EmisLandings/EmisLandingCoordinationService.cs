@@ -46,8 +46,9 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                     {
                         List<string> processedFiles = await TryCatch(async () =>
                         {
-                            SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
-                                .RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, false);
+                            SubscriberCredential maybeSubscriberCredential =
+                                await this.subscriberCredentialOrchestration
+                                    .RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, false);
 
                             List<string> processedItems = await this.emisLandingOrchestrationService
                                 .ProcessAsync(maybeSubscriberCredential);
@@ -73,22 +74,22 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 return processedPaths;
             });
 
-        public ValueTask<string> ProcessFileAsync(string fileName) =>
+        public ValueTask<string> ProcessFileAsync(string ftpFileName) =>
             TryCatch(async () =>
             {
-                ValidateFileNameOnLand(fileName);
-                string[] parts = fileName.Split("/");
+                ValidateFileNameOnLand(ftpFileName);
+                string[] parts = ftpFileName.Split("/");
 
                 if (parts.Length > 0)
                 {
-                    string extractSubscriberCredentialId = parts[5];
+                    string extractSubscriberCredentialId = parts[3];
 
                     SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
                         .RetrieveSubscriberCredentialByIdAsync(new Guid(extractSubscriberCredentialId));
 
                     string processedItem =
                         await this.emisLandingOrchestrationService.ProcessFileAsync(
-                            fileName: fileName,
+                            ftpFileName: ftpFileName,
                             subscriberCredential: maybeSubscriberCredential);
 
                     return processedItem;
@@ -137,6 +138,13 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 };
 
                 return document;
+            });
+
+        public ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId) =>
+            TryCatch(async () =>
+            {
+                ValidateArgsOnRedecryptDocumentByIngestionId(ingestionTrackingId);
+                await this.emisLandingOrchestrationService.RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
             });
     }
 }

@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using LHDS.Core.Brokers.Decryptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Tynamix.ObjectFiller;
 using Xunit;
 
@@ -16,9 +18,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
     public partial class DecryptionsApiTests
     {
         private readonly ApiBroker apiBroker;
+        private readonly ICryptographyBroker cryptographyBroker;
 
-        public DecryptionsApiTests(ApiBroker apiBroker) =>
+        public DecryptionsApiTests(
+            ApiBroker apiBroker,
+            ICryptographyBroker cryptographyBroker)
+        {
             this.apiBroker = apiBroker;
+            this.cryptographyBroker = cryptographyBroker;
+        }
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
@@ -31,11 +39,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 
         private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync(
             Guid supplierId,
+            Guid subscriberCredentialId,
             string encryptedFilePath,
             string decryptedFilePath)
         {
             IngestionTracking randomIngestionTracking =
-                CreateRandomIngestionTracking(supplierId, encryptedFilePath, decryptedFilePath);
+                CreateRandomIngestionTracking(supplierId, subscriberCredentialId, encryptedFilePath, decryptedFilePath);
 
             await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
 
@@ -44,29 +53,33 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 
         private static IngestionTracking CreateRandomIngestionTracking(
             Guid supplierId,
+            Guid subscriberCredentialId,
             string encryptedFilePath,
             string decryptedFilePath) =>
-            CreateRandomIngestionTrackingFiller(supplierId, encryptedFilePath, decryptedFilePath).Create();
+            CreateRandomIngestionTrackingFiller(
+                supplierId, subscriberCredentialId, encryptedFilePath, decryptedFilePath).Create();
 
         private static Filler<IngestionTracking> CreateRandomIngestionTrackingFiller(
             Guid supplierId,
+            Guid subscriberCredentialId,
             string encryptedFilePath,
             string decryptedFilePath)
         {
             string user = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;
+            string fileName = $"{GetRandomString()}/{GetRandomString()}/{subscriberCredentialId}/{supplierId}";
             var filler = new Filler<IngestionTracking>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
-                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use($"{supplierId}.doc")
+                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use($"{fileName}.doc")
 
                 .OnProperty(ingestionTracking =>
-                    ingestionTracking.EncryptedFileName).Use($"/{encryptedFilePath}/{supplierId}.doc")
+                    ingestionTracking.EncryptedFileName).Use($"/{encryptedFilePath}/{fileName}.doc")
 
                 .OnProperty(ingestionTracking =>
-                    ingestionTracking.DecryptedFileName).Use($"/{decryptedFilePath}/{supplierId}.doc")
+                    ingestionTracking.DecryptedFileName).Use($"/{decryptedFilePath}/{fileName}.doc")
 
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
@@ -111,6 +124,27 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             {
                 await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(audit.Id);
             }
+        }
+
+        private static SubscriberCredential CreateRandomSubscriberCredential(Guid id) =>
+            CreateRandomSubscriberCredentialFiller(id).Create();
+
+        private static Filler<SubscriberCredential> CreateRandomSubscriberCredentialFiller(Guid id)
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTime now = DateTime.UtcNow;
+            var filler = new Filler<SubscriberCredential>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.Id).Use(id)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedDate).Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedDate).Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
+
+            return filler;
         }
     }
 }

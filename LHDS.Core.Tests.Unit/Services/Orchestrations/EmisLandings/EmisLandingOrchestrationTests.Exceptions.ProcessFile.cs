@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<string> processTask = this.emisLandingOrchestrationService
-                .ProcessFileAsync(fileName: someFileName, subscriberCredential: someSubscriberCredential);
+                .ProcessFileAsync(ftpFileName: someFileName, subscriberCredential: someSubscriberCredential);
 
             EmisLandingOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyValidationException>(processTask.AsTask);
@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<string> processTask = this.emisLandingOrchestrationService
-                .ProcessFileAsync(fileName: someFileName, subscriberCredential: someSubscriberCredential);
+                .ProcessFileAsync(ftpFileName: someFileName, subscriberCredential: someSubscriberCredential);
 
             EmisLandingOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyException>(processTask.AsTask);
@@ -134,7 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<string> processTask = this.emisLandingOrchestrationService
-                .ProcessFileAsync(fileName: someFileName, subscriberCredential: someSubscriberCredential);
+                .ProcessFileAsync(ftpFileName: someFileName, subscriberCredential: someSubscriberCredential);
 
             EmisLandingOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationServiceException>(processTask.AsTask);

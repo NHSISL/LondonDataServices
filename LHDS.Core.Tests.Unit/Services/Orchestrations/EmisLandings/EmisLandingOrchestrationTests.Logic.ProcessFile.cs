@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // when
             await this.emisLandingOrchestrationService
                 .ProcessFileAsync(
-                    fileName: externalIngestionTracking.FileName,
+                    ftpFileName: externalIngestionTracking.FileName,
                     subscriberCredential: inputSubscriberCredential);
 
             // then
@@ -164,20 +164,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 newRandomFileName = $"{inputSubscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
             }
 
+            var encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newRandomFileName}";
+
+            var decryptedFileName =
+                $"/{landingConfiguration.DecryptedFolder}" +
+                $"/{randomDataSet.DataSetName}" +
+                $"/{randomDataSetSpecification.Id}" +
+                $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
+                $"/{newRandomFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
             IngestionTracking newRandomIngestionTracking = new IngestionTracking
             {
                 Id = randomIdentifier,
                 FileName = externalDocument.FileName,
                 SupplierId = this.landingConfiguration.LandingSupplierId,
-                EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newRandomFileName}",
-
-                DecryptedFileName =
-                    $"/{landingConfiguration.DecryptedFolder}"
-                    + $"/{randomDataSet.DataSetName}"
-                    + $"/{randomDataSetSpecification.Id}"
-                    + $"/{filename.Split('_')[3]}"
-                    + $"/{newRandomFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
-
+                EncryptedFileName = encryptedFileName,
+                DecryptedFileName = decryptedFileName,
                 Decrypted = false,
                 LastSeen = randomDateTime,
                 FileDeleted = false,
@@ -230,7 +232,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             await this.emisLandingOrchestrationService.ProcessFileAsync(
-                fileName: newRandomIngestionTracking.FileName,
+                ftpFileName: newRandomIngestionTracking.FileName,
                 subscriberCredential: inputSubscriberCredential);
 
             // then
@@ -248,22 +250,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 FileName = newRandomIngestionTracking.EncryptedFileName
             };
 
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
-                    outputIngestionTracking))),
-                        Times.Once);
-
-            this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(externalDocument.DocumentData),
-                    Times.Once);
-
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
                     Times.Exactly(2));
 
+            this.hashBrokerMock.Verify(broker =>
+            broker.GenerateSha256Hash(externalDocument.DocumentData),
+            Times.Once);
+
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>
                 service.GetActiveDataSetSpecification(supplierId),
                     Times.Once);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
+                    newRandomIngestionTracking))),
+                        Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(

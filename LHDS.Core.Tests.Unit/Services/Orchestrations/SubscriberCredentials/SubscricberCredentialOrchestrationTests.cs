@@ -82,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
         private static List<dynamic> CreateRandomDynamicSubscriberAgreementCredentials()
         {
             return Enumerable.Range(1, 1)
-                .Select(item => CreateRandomDynamicSubscriberAgreementCredential())
+                .Select(item => CreateRandomDynamicSubscriberAgreementCredential(date: GetRandomDateTimeOffset()))
                     .ToList();
         }
 
@@ -120,7 +120,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             return subscriberAgreements.AsQueryable();
         }
 
-        private static dynamic CreateRandomDynamicSubscriberAgreementCredential(Guid id = default(Guid))
+        private static dynamic CreateRandomDynamicSubscriberAgreementCredential(
+            DateTimeOffset date,
+            Guid id = default(Guid))
         {
             if (id == Guid.Empty)
             {
@@ -128,7 +130,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             }
 
             Guid supplierSharingAgreementGuid = Guid.NewGuid();
-            DateTimeOffset randomDate = GetRandomDateTimeOffset();
 
             return new
             {
@@ -144,18 +145,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 GpgPrivateKey = GetRandomString(),
                 GpgPublicKey = GetRandomString(),
                 IsActive = false,
-                LastPollStartDate = randomDate,
-                LastPollEndDate = randomDate.AddMinutes(1),
+                LastPollStartDate = date,
+                LastPollEndDate = date.AddMinutes(1),
                 CreatedBy = GetRandomString(),
                 UpdatedBy = GetRandomString(),
-                UpdatedDate = randomDate,
-                CreatedDate = randomDate
-
+                UpdatedDate = date,
+                CreatedDate = date
             };
         }
 
         private static SubscriberCredential CreateSubscriberCredentialFromDynamic(
-            dynamic credential, 
+            dynamic credential,
             bool blankKeys = false)
         {
             SubscriberCredential randomSubscriberCredential = new SubscriberCredential

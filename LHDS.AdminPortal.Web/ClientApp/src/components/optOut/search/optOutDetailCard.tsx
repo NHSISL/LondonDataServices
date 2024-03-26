@@ -29,28 +29,19 @@ const OptOutDetailCard: FunctionComponent<OptOutDetailCardProps> = (props) => {
 
     return (
         <div>
-            <CardBase>
-                <CardBaseBody>
-                    <CardBaseTitle>
-                        Patient Opt-Out
-                    </CardBaseTitle>
-                    <CardBaseContent>
-                        <OptOutDetailCardView
-                            optOuts={optOuts}
-                            onClearCache={onClearCache}
-                            onAddNewNHS={onAddNewNHS}
-                            isValidNumber={isValidNumber}
-                            nhsNumber={nhsNumber} />
+            <OptOutDetailCardView
+                optOuts={optOuts}
+                onClearCache={onClearCache}
+                onAddNewNHS={onAddNewNHS}
+                isValidNumber={isValidNumber}
+                nhsNumber={nhsNumber} />
 
-                        {children !== undefined && (
-                            <>
-                                <br />
-                                {children}
-                            </>
-                        )}
-                    </CardBaseContent>
-                </CardBaseBody>
-            </CardBase>
+            {children !== undefined && (
+                <>
+                    <br />
+                    {children}
+                </>
+            )}
         </div>
     );
 }

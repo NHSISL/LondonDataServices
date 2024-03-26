@@ -16,6 +16,7 @@ import { PdsHomeView } from "../../../models/pds/pdsHomeView";
 import TableBaseThead from "../../bases/components/Table/TableBase.Thead";
 import TableBaseRow from "../../bases/components/Table/TableBase.Row";
 import TableBaseHeader from "../../bases/components/Table/TableBase.Header";
+import { Row } from "react-bootstrap";
 
 type PdsTableProps = {};
 
@@ -58,7 +59,7 @@ const PdsTable: FunctionComponent<PdsTableProps> = (props) => {
                     <CardBaseTitle>Patient Demographic Search</CardBaseTitle>
                     <CardBaseContent>
                         <InfiniteScroll loading={isLoading} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
-                            <div className="filter-container">
+                            <Row>
                                 <div className="filter-item">
                                     <SearchBase
                                         id="search"
@@ -68,7 +69,6 @@ const PdsTable: FunctionComponent<PdsTableProps> = (props) => {
                                             handleSearchChange(e.currentTarget.value);
                                         }} />
                                 </div>
-                            </div>
 
                             <TableBase>
                                 <TableBaseThead>
@@ -96,7 +96,8 @@ const PdsTable: FunctionComponent<PdsTableProps> = (props) => {
                                         </td>
                                     </tr>
                                 </TableBaseTbody>
-                            </TableBase>
+                                </TableBase>
+                                </Row>
                         </InfiniteScroll>
                     </CardBaseContent>
                 </CardBaseBody>

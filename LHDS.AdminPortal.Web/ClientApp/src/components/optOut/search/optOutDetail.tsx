@@ -7,6 +7,14 @@ import SearchBase from "../../bases/inputs/SearchBase";
 import { SpinnerBase } from "../../bases/spinner/SpinnerBase";
 import OptOutDetailCard from "./optOutDetailCard";
 import { Guid } from "guid-typescript";
+import CardBase from "../../bases/components/Card/CardBase";
+import CardBaseBody from "../../bases/components/Card/CardBase.Body";
+import CardBaseTitle from "../../bases/components/Card/CardBase.Title";
+import CardBaseContent from "../../bases/components/Card/CardBase.Content";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFilter, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 interface OptOutDetailProps {
     children?: React.ReactNode;
@@ -101,26 +109,38 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
     };
 
     return (
-        <div>
-            <div>
-                <div className="filter-container mt-2">
-                    <div className="filter-item">
-                        <SearchBase
-                            id="search"
-                            label="Search NHS Number"
-                            placeholder="  Search NHS Number"
-                            value={searchTerm}
-                            onChange={(e) => {
-                                handleSearchChange(e.currentTarget.value);
-                            }}
-                        />
-                        {isFetching && (
-                            <>
-                                <SpinnerBase />
-                            </>
-                        )}
-                    </div>
-                </div>
+        <CardBase>
+            <CardBaseBody>
+                <CardBaseTitle>
+                    Patient Opt-Out
+                </CardBaseTitle>
+                <CardBaseContent>
+
+                    <Row>
+                        <div className="input-group mb-3">
+                            <SearchBase
+                                id="search"
+                                label="Search NHS Number"
+                                placeholder="  Search by NHS Number"
+                                value={searchTerm}
+                                onChange={(e) => {
+                                    handleSearchChange(e.currentTarget.value);
+                                }}
+                            />
+
+                            <div className="input-group-append">
+                                <Link to="/optOutUpload" className="btn btn-outline-secondary" id="filterButton">
+                                    <FontAwesomeIcon icon={faFilter} /> Upload
+                                </Link>
+                            </div>
+
+                            {isFetching && (
+                                <>
+                                    <SpinnerBase />
+                                </>
+                            )}
+                        </div>
+                    </Row>
 
                 <OptOutDetailCard
                     optOuts={mappedOptOut}
@@ -131,8 +151,9 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
 
                     {children}
                 </OptOutDetailCard>
-            </div>
-        </div>
+                </CardBaseContent>
+            </CardBaseBody>
+        </CardBase>
     );
 };
 

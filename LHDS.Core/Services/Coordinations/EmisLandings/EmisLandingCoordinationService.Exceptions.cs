@@ -19,6 +19,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
         private delegate ValueTask<List<string>> ReturningStringListFunction();
         private delegate ValueTask<string> ReturningStringFunction();
         private delegate ValueTask<Document> ReturningDocumentFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
         private async ValueTask<List<string>> TryCatch(ReturningStringListFunction returningStringListFunction)
         {
@@ -167,6 +168,68 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             try
             {
                 return await returningDocumentFunction();
+            }
+            catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentEmisLandingCoordinationException);
+            }
+            catch (SubscriberCredentialValidationOrchestrationException
+                subscriberCredentialValidationOrchestrationException)
+            {
+                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationOrchestrationException);
+            }
+            catch (SubscriberCredentialOrchestrationDependencyValidationException
+                subscriberCredentialOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    subscriberCredentialOrchestrationDependencyValidationException);
+            }
+            catch (EmisLandingOrchestrationValidationException
+                emisLandingOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationValidationException);
+            }
+            catch (EmisLandingOrchestrationDependencyValidationException
+                emisLandingOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationDependencyValidationException);
+            }
+            catch (SubscriberCredentialDependencyOrchestrationException
+                subscriberCredentialDependencyOrchestrationException)
+            {
+                throw CreateAndLogDependencyException(subscriberCredentialDependencyOrchestrationException);
+            }
+            catch (SubscriberCredentialOrchestrationServiceException
+                subscriberCredentialOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(subscriberCredentialOrchestrationServiceException);
+            }
+            catch (EmisLandingOrchestrationDependencyException
+                emisLandingOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(emisLandingOrchestrationDependencyException);
+            }
+            catch (EmisLandingOrchestrationServiceException
+                emisLandingOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(emisLandingOrchestrationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedEmisLandingCoordinationServiceException =
+                    new FailedEmisLandingCoordinationServiceException(
+                        message: "Failed EMIS landing coordination service occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
             }
             catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
             {

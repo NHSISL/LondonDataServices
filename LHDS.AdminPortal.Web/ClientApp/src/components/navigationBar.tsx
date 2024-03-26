@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useState } from 'react';
 import securityPoints from '../securityMatrix';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
+import { faCaretDown, faCaretUp, faUserLock } from '@fortawesome/free-solid-svg-icons';
 import { SecuredComponents, SecuredLink } from './links';
 
 interface SubmenuItem {
@@ -55,24 +55,6 @@ const Submenu: FunctionComponent<SubmenuProps> = (props) => {
 export const NavigationBar: FunctionComponent = () => {
     const submenuItems: SubmenuItem[] = [
         {
-            icon: 'address',
-            label: 'Opt-Out',
-            allowedRoles: [...securityPoints.optOut.view, 'securityPoints.admin.view'],
-            links: [
-                { to: '/optOutSearch', label: 'Search Opt-Out' },
-                securityPoints.optOut.upload && { to: '/optOutUpload', label: 'Upload Opt-Out' },
-            ].filter(Boolean) as { to: string; label: string }[],
-        },
-        {
-            icon: 'address',
-            label: 'Demographic Search',
-            allowedRoles: securityPoints.pds.view,
-            links: [
-                { to: '/pds', label: 'Search Pds Audit' },
-                securityPoints.pds.upload && { to: '/pdsUpload', label: 'Pds Upload' },
-            ].filter(Boolean) as { to: string; label: string }[],
-        },
-        {
             icon: 'config',
             label: 'Configuration',
             allowedRoles: securityPoints.configuration.view,
@@ -98,15 +80,28 @@ export const NavigationBar: FunctionComponent = () => {
                     </SecuredComponents>
                 </li>
 
+                <li className="">
+                    <SecuredComponents allowedRoles={securityPoints.optOut.view}>
+                        <SecuredLink icon="optOut" to="/optOutSearch">Patient Opt Out</SecuredLink>
+                    </SecuredComponents>
+                </li>
+
+                <li className="">
+                    <SecuredComponents allowedRoles={securityPoints.pds.view}>
+                        <SecuredLink icon="address" to="/pds">Patient Demographic Search</SecuredLink>
+                    </SecuredComponents>
+                </li>
+
+                <li className="">
+                    <SecuredComponents allowedRoles={securityPoints.terminologyArtifact.view}>
+                        <SecuredLink icon="terminology" to="/terminologyArtifact">Terminology Artifacts</SecuredLink>
+                    </SecuredComponents>
+                </li>
+
                 {submenuItems.map((item, index) => (
                     <Submenu key={index} items={item} allowedRoles={item.allowedRoles} />
                 ))}
 
-                <li className="">
-                    <SecuredComponents allowedRoles={securityPoints.terminologyArtifact.view}>
-                        <SecuredLink icon="" to="/terminologyArtifact">Terminology Artifacts</SecuredLink>
-                    </SecuredComponents>
-                </li>
             </ul>
         </>
     );

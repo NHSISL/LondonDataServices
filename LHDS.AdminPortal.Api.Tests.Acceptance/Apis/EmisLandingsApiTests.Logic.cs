@@ -14,6 +14,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Downloads;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using Microsoft.ApplicationInsights.WindowsServer;
 using Org.BouncyCastle.Crypto.Engines;
 using Xunit;
 
@@ -172,13 +173,17 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         public async Task ShouldRedecryptDocumentByIngestionTrackingAsync()
         {
             //given 
-            Guid supplierId = Guid.NewGuid();
+            Supplier randomSupplier = await PostRandomSupplierAsync();
             string fileName = GetRandomString(10);
             string encryptedFilePath = "encrypted";
             string decryptedFilePath = "decrypted";
 
             IngestionTracking randomIngestionTracking = 
-                CreateRandomIngestionTracking(supplierId, fileName,encryptedFilePath, decryptedFilePath);
+                CreateRandomIngestionTracking(
+                    supplierId: randomSupplier.Id, 
+                    fileName,
+                    encryptedFilePath, 
+                    decryptedFilePath);
 
             randomIngestionTracking.Decrypted = true;
             await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
@@ -192,6 +197,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             redecryptedIngestionTracking.Decrypted.Should().BeFalse();
             await CleanupTask(randomIngestionTracking.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
 
         private async ValueTask CleanupTask(string fileName)

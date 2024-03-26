@@ -23,52 +23,41 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         [Fact]
         public async Task ShouldLandDocumentByFileNameForExistingIngestionTrackingAsync()
         {
-            try
+            //Given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            Document randomDocument = CreateRandomDocument();
+
+            Download inputDownload = new Download
             {
-                //Given
-                SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-                SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-                Document randomDocument = CreateRandomDocument();
+                SubscriberCredential = inputSubscriberCredential,
+                Document = new Document { FileName = randomDocument.FileName }
+            };
 
-                Download inputDownload = new Download
-                {
-                    SubscriberCredential = inputSubscriberCredential,
-                    Document = new Document { FileName = randomDocument.FileName }
-                };
+            List<Download> downloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            string encryptedFilePath = encryptedFolder;
+            string decryptedFilePath = decryptedFolder;
+            await CleanupTask(randomDocument.FileName);
 
-                List<Download> downloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
-                Supplier randomSupplier = await PostRandomSupplierAsync();
-                string encryptedFilePath = encryptedFolder;
-                string decryptedFilePath = decryptedFolder;
-                await CleanupTask(randomDocument.FileName);
+            IngestionTracking randomIngestionTracking =
+                await PostRandomIngestionTrackingAsync(
+                    randomSupplier.Id,
+                    randomDocument.FileName,
+                    encryptedFilePath,
+                    decryptedFilePath);
 
-                IngestionTracking randomIngestionTracking =
-                    await PostRandomIngestionTrackingAsync(
-                        randomSupplier.Id,
-                        randomDocument.FileName,
-                        encryptedFilePath,
-                        decryptedFilePath);
+            IngestionTracking inputIngestionTracking = randomIngestionTracking;
+            IngestionTracking expectedIngestionTracking = inputIngestionTracking;
 
-                IngestionTracking inputIngestionTracking = randomIngestionTracking;
-                IngestionTracking expectedIngestionTracking = inputIngestionTracking;
+            //When
+            string actualDecryptedFileName =
+                await this.apiBroker.ReLandDocumentByFileNameAsync(randomDocument.FileName);
 
-                //When
-                string actualDecryptedFileName =
-                    await this.apiBroker.ReLandDocumentByFileNameAsync(randomDocument.FileName);
-
-                //Then
-                actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
-                await CleanupTask(expectedIngestionTracking.Id);
-            }
-            catch (Exception ex)
-            {
-                output.WriteLine($"Error: {ex.Message}{Environment.NewLine}" +
-                    $"{ex?.StackTrace}{Environment.NewLine}" +
-                    $"{ex?.InnerException?.Message}{Environment.NewLine}" +
-                    $"{ex?.InnerException?.StackTrace}");
-
-                throw;
-            }
+            //Then
+            actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
+            await CleanupTask(expectedIngestionTracking.Id);
+         
         }
 
         [Fact]

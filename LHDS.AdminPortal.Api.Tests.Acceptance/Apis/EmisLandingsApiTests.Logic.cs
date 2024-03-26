@@ -26,24 +26,28 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             //Given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+
+            string fileName = 
+                $"{GetRandomString()}/{GetRandomString()}/{GetRandomString()}/{inputSubscriberCredential.Id}";
+
             Document randomDocument = CreateRandomDocument();
 
-            Download inputDownload = new Download
-            {
-                SubscriberCredential = inputSubscriberCredential,
-                Document = new Document { FileName = randomDocument.FileName }
-            };
+            //Download inputDownload = new Download
+            //{
+            //    SubscriberCredential = inputSubscriberCredential,
+            //    Document = new Document { FileName = randomDocument.FileName }
+            //};
 
-            List<Download> downloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
+            //List<Download> downloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
             Supplier randomSupplier = await PostRandomSupplierAsync();
             string encryptedFilePath = encryptedFolder;
             string decryptedFilePath = decryptedFolder;
-            await CleanupTask(randomDocument.FileName);
+            //await CleanupTask(randomDocument.FileName);
 
             IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(
                     randomSupplier.Id,
-                    randomDocument.FileName,
+                    fileName,
                     encryptedFilePath,
                     decryptedFilePath);
 
@@ -52,7 +56,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             //When
             string actualDecryptedFileName =
-                await this.apiBroker.ReLandDocumentByFileNameAsync(randomDocument.FileName);
+                await this.apiBroker.ReLandDocumentByFileNameAsync(fileName);
 
             //Then
             actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);

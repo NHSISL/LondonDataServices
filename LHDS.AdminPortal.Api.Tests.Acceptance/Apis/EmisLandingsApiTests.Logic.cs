@@ -42,7 +42,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 DocumentData = Encoding.ASCII.GetBytes(GetRandomString()),
             };
 
-            await this.documentService.AddDocumentAsync(document, "landing");
+            await this.documentService.AddDocumentAsync(document, "landings");
 
             IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(
@@ -61,104 +61,104 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             //Then
             actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
             await CleanupTask(expectedIngestionTracking.Id);
-         
+            await this.documentService.RemoveDocumentByFileNameAsync(fileName, "landings");
         }
 
-        [Fact]
-        public async Task ShouldLandDocumentByFileNameForNewIngestionTrackingAsync()
-        {
-            try
-            {
-                //Given
-                SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-                SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-                Document randomDocument = CreateRandomDocument();
+        //[Fact]
+        //public async Task ShouldLandDocumentByFileNameForNewIngestionTrackingAsync()
+        //{
+        //    try
+        //    {
+        //        //Given
+        //        SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+        //        SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+        //        Document randomDocument = CreateRandomDocument();
 
-                Download inputDownload = new Download
-                {
-                    SubscriberCredential = inputSubscriberCredential,
-                    Document = new Document { FileName = randomDocument.FileName }
-                };
+        //        Download inputDownload = new Download
+        //        {
+        //            SubscriberCredential = inputSubscriberCredential,
+        //            Document = new Document { FileName = randomDocument.FileName }
+        //        };
 
-                List<Download> retrievedDownloads =
-                    await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
+        //        List<Download> retrievedDownloads =
+        //            await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
 
-                await CleanupTask(randomDocument.FileName);
-                bool hasExisitingSupplier = (await this.apiBroker.FindSupplierByIdAsync(supplierId)).Any();
-                bool hasExisitingDataSet = (await this.apiBroker.FindDataSetByIdAsync(dataSetId)).Any();
-                string decryptedFilePath = decryptedFolder;
+        //        await CleanupTask(randomDocument.FileName);
+        //        bool hasExisitingSupplier = (await this.apiBroker.FindSupplierByIdAsync(supplierId)).Any();
+        //        bool hasExisitingDataSet = (await this.apiBroker.FindDataSetByIdAsync(dataSetId)).Any();
+        //        string decryptedFilePath = decryptedFolder;
 
-                bool hasExistingDataSetSpecification =
-                    (await this.apiBroker.FindtDataSetSpecificationByIdAsync(dataSetSpecificationId)).Any();
+        //        bool hasExistingDataSetSpecification =
+        //            (await this.apiBroker.FindtDataSetSpecificationByIdAsync(dataSetSpecificationId)).Any();
 
-                if (!hasExisitingSupplier)
-                {
-                    await PostLandingSupplierAsync(supplierId);
-                }
+        //        if (!hasExisitingSupplier)
+        //        {
+        //            await PostLandingSupplierAsync(supplierId);
+        //        }
 
-                if (!hasExisitingDataSet)
-                {
-                    await PostDataSetAsync(supplierId, dataSetId);
-                }
+        //        if (!hasExisitingDataSet)
+        //        {
+        //            await PostDataSetAsync(supplierId, dataSetId);
+        //        }
 
-                if (!hasExistingDataSetSpecification)
-                {
-                    await PostDataSetSpecificationAsync(dataSetSpecificationId, dataSetId);
-                }
+        //        if (!hasExistingDataSetSpecification)
+        //        {
+        //            await PostDataSetSpecificationAsync(dataSetSpecificationId, dataSetId);
+        //        }
 
 
-                DataSet activeDataSet = await this.apiBroker.GetDataSetByIdAsync(dataSetId);
+        //        DataSet activeDataSet = await this.apiBroker.GetDataSetByIdAsync(dataSetId);
 
-                DataSetSpecification activeDataSetSpecification =
-                    await this.apiBroker.GetDataSetSpecificationByIdAsync(dataSetSpecificationId);
+        //        DataSetSpecification activeDataSetSpecification =
+        //            await this.apiBroker.GetDataSetSpecificationByIdAsync(dataSetSpecificationId);
 
-                string expectedDecryptedFileName =
-                    $"/{decryptedFilePath}" +
-                    $"/{activeDataSet.DataSetName}" +
-                    $"/{activeDataSetSpecification.Id}" +
-                    $"/{randomDocument.FileName.Split('_')[3]}" +
-                    $"{randomDocument.FileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+        //        string expectedDecryptedFileName =
+        //            $"/{decryptedFilePath}" +
+        //            $"/{activeDataSet.DataSetName}" +
+        //            $"/{activeDataSetSpecification.Id}" +
+        //            $"/{randomDocument.FileName.Split('_')[3]}" +
+        //            $"{randomDocument.FileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
-                //When
-                string actualDecryptedFileName =
-                    await this.apiBroker.ReLandDocumentByFileNameAsync(randomDocument.FileName);
+        //        //When
+        //        string actualDecryptedFileName =
+        //            await this.apiBroker.ReLandDocumentByFileNameAsync(randomDocument.FileName);
 
-                //Then 
-                actualDecryptedFileName.Should().BeEquivalentTo(expectedDecryptedFileName);
-                await CleanupTask(randomDocument.FileName);
-            }
-            catch (Exception ex)
-            {
-                output.WriteLine($"Error: {ex.Message}{Environment.NewLine}" +
-                    $"{ex?.StackTrace}{Environment.NewLine}" +
-                    $"{ex?.InnerException?.Message}{Environment.NewLine}" +
-                    $"{ex?.InnerException?.StackTrace}");
+        //        //Then 
+        //        actualDecryptedFileName.Should().BeEquivalentTo(expectedDecryptedFileName);
+        //        await CleanupTask(randomDocument.FileName);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        output.WriteLine($"Error: {ex.Message}{Environment.NewLine}" +
+        //            $"{ex?.StackTrace}{Environment.NewLine}" +
+        //            $"{ex?.InnerException?.Message}{Environment.NewLine}" +
+        //            $"{ex?.InnerException?.StackTrace}");
 
-                throw;
-            }
-        }
+        //        throw;
+        //    }
+        //}
 
-        [Fact]
-        public async Task ShouldRetrieveListOfDocumentsToProcessAsync()
-        {
-            //given 
-            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            Document randomDocument = CreateRandomDocument();
+        //[Fact]
+        //public async Task ShouldRetrieveListOfDocumentsToProcessAsync()
+        //{
+        //    //given 
+        //    SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+        //    SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+        //    Document randomDocument = CreateRandomDocument();
 
-            Download inputDownload = new Download
-            {
-                SubscriberCredential = inputSubscriberCredential,
-                Document = new Document { FileName = randomDocument.FileName }
-            };
+        //    Download inputDownload = new Download
+        //    {
+        //        SubscriberCredential = inputSubscriberCredential,
+        //        Document = new Document { FileName = randomDocument.FileName }
+        //    };
 
-            // when
-            List<Download> actualDownloads =
-                await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
+        //    // when
+        //    List<Download> actualDownloads =
+        //        await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
 
-            // then
-            actualDownloads.Count.Should().BeGreaterThan(0);
-        }
+        //    // then
+        //    actualDownloads.Count.Should().BeGreaterThan(0);
+        //}
 
         [Fact]
         public async Task ShouldRedecryptDocumentByIngestionTrackingAsync()

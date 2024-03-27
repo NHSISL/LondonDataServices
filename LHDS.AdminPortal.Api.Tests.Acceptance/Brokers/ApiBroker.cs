@@ -5,6 +5,7 @@
 using System.Net.Http;
 using LHDS.Core.Brokers.Decryptions;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
+using LHDS.Core.Services.Foundations.Documents;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,8 +17,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
     {
         private readonly WebApplicationFactory<Startup> webApplicationFactory;
         private readonly HttpClient httpClient;
-        private readonly ICryptographyBroker cryptographyBroker;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
+        private readonly IDocumentService documentService;
         internal IConfiguration configuration;
         internal LandingConfiguration landingConfiguration;
 
@@ -28,7 +29,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             this.apiFactoryClient = new RESTFulApiFactoryClient(this.httpClient);
             this.configuration = this.webApplicationFactory.Services.GetService<IConfiguration>();
             this.landingConfiguration = this.webApplicationFactory.Services.GetService<LandingConfiguration>();
-            this.cryptographyBroker = this.webApplicationFactory.Services.GetService<ICryptographyBroker>();
+            this.documentService = this.webApplicationFactory.Services.GetService<IDocumentService>();
         }
     }
 }

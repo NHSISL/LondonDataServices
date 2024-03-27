@@ -104,7 +104,6 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     };
 
     const handleFilter = (supplier: SupplierView) => {
-        //alert(supplier.id);
         setSearchTerm(debouncedTerm);
         handleSupplierDebounce(supplier.id.toString());
     };

@@ -44,7 +44,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
         }
 
         [Fact]
-        public async Task ShouldDeleteDocumentByFileNameAsyncAsync()
+        public async Task ShouldDeleteDocumentByFileNameAsync()
         {
             // given
             var blobStorageSettings = this.apiBroker.configuration

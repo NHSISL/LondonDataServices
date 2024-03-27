@@ -17,7 +17,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         private readonly WebApplicationFactory<Startup> webApplicationFactory;
         private readonly HttpClient httpClient;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
-        private readonly IDocumentService documentService;
+        internal readonly IDocumentService documentService;
         internal IConfiguration configuration;
         internal LandingConfiguration landingConfiguration;
 

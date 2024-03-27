@@ -11,6 +11,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Documents;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using LHDS.Core.Services.Foundations.Documents;
 using Tynamix.ObjectFiller;
 using Xunit;
 using Xunit.Abstractions;
@@ -21,7 +22,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
     public partial class EmisLandingsApiTests
     {
         private readonly ApiBroker apiBroker;
-        private readonly 
+        private readonly IDocumentService documentService;
         private readonly string encryptedFolder;
         private readonly string decryptedFolder;
         private readonly Guid supplierId;
@@ -34,6 +35,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             ITestOutputHelper output)
         {
             this.apiBroker = apiBroker;
+            this.documentService = documentService;
             this.supplierId = this.apiBroker.landingConfiguration.LandingSupplierId;
             this.dataSetId = Guid.Parse("6a62313a-7442-462e-b6e8-dec541ddd0ba");
             this.dataSetSpecificationId = Guid.Parse("e8ebce80-e619-40ca-b45f-9c3ac0328143");

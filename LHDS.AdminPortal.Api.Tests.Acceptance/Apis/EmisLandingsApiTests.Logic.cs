@@ -26,11 +26,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             //Given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);
 
             string fileName = 
                 $"{GetRandomString()}/{GetRandomString()}/{GetRandomString()}/{inputSubscriberCredential.Id}";
 
-            Document randomDocument = CreateRandomDocument();
+            //Document randomDocument = CreateRandomDocument();
 
             //Download inputDownload = new Download
             //{

@@ -21,6 +21,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
     public partial class EmisLandingsApiTests
     {
         private readonly ApiBroker apiBroker;
+        private readonly 
         private readonly string encryptedFolder;
         private readonly string decryptedFolder;
         private readonly Guid supplierId;

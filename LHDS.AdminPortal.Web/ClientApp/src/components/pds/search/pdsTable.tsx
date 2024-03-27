@@ -64,6 +64,7 @@ const PdsTable: FunctionComponent<PdsTableProps> = (props) => {
                                     <SearchBase
                                         id="search"
                                         label="Search Pds"
+                                        placeholder="search for patient file..."
                                         value={searchTerm}
                                         onChange={(e) => {
                                             handleSearchChange(e.currentTarget.value);

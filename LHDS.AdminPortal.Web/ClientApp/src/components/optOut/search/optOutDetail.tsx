@@ -12,7 +12,7 @@ import CardBaseBody from "../../bases/components/Card/CardBase.Body";
 import CardBaseTitle from "../../bases/components/Card/CardBase.Title";
 import CardBaseContent from "../../bases/components/Card/CardBase.Content";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilter, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import { Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
@@ -115,7 +115,6 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
                     Patient Opt-Out
                 </CardBaseTitle>
                 <CardBaseContent>
-
                     <Row>
                         <div className="input-group mb-3">
                             <SearchBase
@@ -141,7 +140,6 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
                             )}
                         </div>
                     </Row>
-
                 <OptOutDetailCard
                     optOuts={mappedOptOut}
                     onClearCache={handleClearCache}

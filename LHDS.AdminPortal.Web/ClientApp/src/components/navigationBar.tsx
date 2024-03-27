@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useState } from 'react';
 import securityPoints from '../securityMatrix';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown, faCaretUp, faUserLock } from '@fortawesome/free-solid-svg-icons';
+import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
 import { SecuredComponents, SecuredLink } from './links';
 
 interface SubmenuItem {
@@ -69,7 +69,6 @@ export const NavigationBar: FunctionComponent = () => {
     return (
         <>
             <ul className="sidebar-nav">
-
                 <li className="mt-4">
                     <SecuredLink icon="faHome" to="/">Home</SecuredLink>
                 </li>
@@ -101,7 +100,6 @@ export const NavigationBar: FunctionComponent = () => {
                 {submenuItems.map((item, index) => (
                     <Submenu key={index} items={item} allowedRoles={item.allowedRoles} />
                 ))}
-
             </ul>
         </>
     );

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
@@ -34,6 +35,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             Supplier randomSupplier = await PostRandomSupplierAsync();
             string encryptedFilePath = encryptedFolder;
             string decryptedFilePath = decryptedFolder;
+
+            Document document = new Document
+            {
+                FileName = fileName,
+                DocumentData = Encoding.ASCII.GetBytes(GetRandomString()),
+            };
+
+            this.apiBroker.D
 
             IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(

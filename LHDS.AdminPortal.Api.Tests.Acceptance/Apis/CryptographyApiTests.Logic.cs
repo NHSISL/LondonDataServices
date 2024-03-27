@@ -1,13 +1,13 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
 
-namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Cryptographies
 {
     public partial class CryptographyApiTests
     {

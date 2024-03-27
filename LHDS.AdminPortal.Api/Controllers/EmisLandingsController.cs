@@ -2,19 +2,19 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
+using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
-using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 #if RELEASE
 using Microsoft.AspNetCore.Authorization;
 #endif
@@ -119,36 +119,35 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [HttpGet("decrypt/{fileName}")]
+        [HttpPut("decrypt/{ingestionTrackingId}")]
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<Document>> DecryptDocumentByFileNameAsync(string filename)
+        public async ValueTask<ActionResult> RedecryptDocumentByIngestionTrackingIdAsync(Guid ingestionTrackingId)
         {
             try
             {
-                throw new NotImplementedException();
-                //Document retrieveDownload = await emisLandingCoordinationService
-                //    .DecryptDocumentByFileNameAsync(filename);
+                await emisLandingCoordinationService
+                    .RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
 
-                //return Ok(retrieveDownload);
+                return Ok();
             }
-            catch (DownloadValidationException downloadValidationException)
-                when (downloadValidationException.InnerException is NotFoundDocumentException)
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+                when (ingestionTrackingValidationException.InnerException is NotFoundIngestionTrackingException)
             {
-                return NotFound(downloadValidationException.InnerException);
+                return NotFound(ingestionTrackingValidationException.InnerException);
             }
-            catch (DownloadValidationException dataSetValidationException)
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {
-                return BadRequest(dataSetValidationException.InnerException);
+                return BadRequest(ingestionTrackingValidationException.InnerException);
             }
-            catch (DownloadDependencyException downloadDependencyException)
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
-                return InternalServerError(downloadDependencyException);
+                return InternalServerError(ingestionTrackingDependencyException);
             }
-            catch (DownloadServiceException downloadServiceException)
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
             {
-                return InternalServerError(downloadServiceException);
+                return InternalServerError(ingestionTrackingServiceException);
             }
         }
     }

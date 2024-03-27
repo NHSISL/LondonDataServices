@@ -42,7 +42,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 DocumentData = Encoding.ASCII.GetBytes(GetRandomString()),
             };
 
-            this.apiBroker.D
+            this.apiBroker.docu
 
             IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(

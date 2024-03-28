@@ -1,8 +1,11 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
@@ -11,7 +14,6 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Documents;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
-using LHDS.Core.Services.Foundations.Documents;
 using Tynamix.ObjectFiller;
 using Xunit;
 using Xunit.Abstractions;
@@ -42,11 +44,116 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             this.output = output;
         }
 
+        private void CleanupDownloadFolder()
+        {
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+
+            if (!Directory.Exists(defaultFolderPath))
+            {
+                return;
+            }
+
+            string[] files = Directory.GetFiles(defaultFolderPath);
+            foreach (string file in files)
+            {
+                File.Delete(file);
+            }
+
+            // Delete all subfolders recursively
+            string[] subdirectories = Directory.GetDirectories(defaultFolderPath);
+            foreach (string subdirectory in subdirectories)
+            {
+                Directory.Delete(subdirectory, true);
+            }
+        }
+
+        private List<DocumentSource> PrepareAndAddFile(
+            Guid subscriberAgreementId,
+            DataSetSpecification dataSetSpecification,
+            bool createFiles,
+            int count)
+        {
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+
+            List<DocumentSource> randomFiles = new List<DocumentSource>();
+
+            for (int i = 0; i < count; i++)
+            {
+                string randomFileName = GetRandomFileName(subscriberAgreementId);
+                string randomFilePath = CreateRandomFilePath(subscriberAgreementId, randomFileName);
+                string filePath = Path.Combine(defaultFolderPath, randomFilePath);
+                FileInfo fileInfo = new FileInfo(filePath);
+
+                if (!fileInfo.Directory.Exists)
+                {
+                    fileInfo.Directory.Create();
+                }
+
+                File.WriteAllText(filePath, GetRandomString());
+                var relativeSourcePath = Path.GetRelativePath(defaultFolderPath, filePath).Replace("\\", "/");
+
+                var filename = relativeSourcePath.StartsWith('/')
+                    ? relativeSourcePath
+                    : "/" + relativeSourcePath;
+
+                string[] splitFileName = filename.Split('/');
+                string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}"; ;
+
+                var encryptedFilePath = $"/{landingConfiguration.EncryptedFolder}/{newFileName}"; ;
+
+                var relativeDecryptedPath =
+                    $"/{landingConfiguration.DecryptedFolder}" +
+                    $"/{dataSetSpecification.DataSet.DataSetName}" +
+                    $"/{dataSetSpecification.Id}" +
+                    $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
+                    $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
+                DocumentSource documentSource = new DocumentSource
+                {
+                    FtpPath = relativeSourcePath,
+                    EncryptedBlobPath = encryptedFilePath,
+                    DecryptedBlobPath = relativeDecryptedPath,
+                    FilePath = filePath
+                };
+
+                randomFiles.Add(documentSource);
+            }
+
+            return randomFiles;
+        }
+
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
+        private static string GetRandomFileName(Guid subscriberAgreementId)
+        {
+            string filename =
+                $"delta{GetRandomString()}" +
+                $"_{GetRandomNumber(min: 2, max: 1000)}" +
+                $"_Admin" +
+                $"_Location" +
+                $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}" +
+                $"_{subscriberAgreementId}.csv.gpg";
+
+            return filename;
+        }
+
+        private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
+        {
+            return $"emisnightingale-data-preprod-provider-extracts" +
+                $"/IM1" +
+                $"/sftp" +
+                $"/{subscriberAgreementId}" +
+                $"/{DateTime.Now.ToString("yyyyMMdd")}" +
+                $"/{fileName}";
+        }
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static string GetRandomString() =>
-            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+        private static int GetRandomNumber(int min = 2, int max = 10) =>
+            new IntRange(min, max).GetValue();
 
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();

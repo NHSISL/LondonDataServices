@@ -4,7 +4,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Text.Json;
 using Azure.Core.Extensions;
 using Azure.Core.Pipeline;
@@ -32,6 +34,7 @@ using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Providers.Downloads;
+using LHDS.Core.Providers.Downloads.DiskDownloads;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Providers.Downloads.FtpDownloads;
 using LHDS.Core.Services.Foundations.Cryptographies;
@@ -131,7 +134,20 @@ namespace LHDS.AdminPortal.Api
             AddFoundationServices(services, this.Configuration);
             AddOrchestrationServices(services, this.Configuration);
             AddProcessingServices(services, this.Configuration);
+
             services.AddLandingClient(this.Configuration);
+            services.Remove(new ServiceDescriptor(typeof(IDownloadProvider), typeof(FtpDownloadProvider)));
+
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp");
+
+            services.AddTransient<IDownloadProvider>(_ =>
+                new DiskDownloadProvider(new DiskDownloadProviderSettings
+                {
+                    IncludeSubDirectories = true,
+                    LocalRootFolder = defaultFolderPath
+                }));
+
             services.AddDecryptionClient(this.Configuration);
             services.UseFtpDownloadProvider(this.Configuration, builder => builder.AddFtpDownloadProvider());
 

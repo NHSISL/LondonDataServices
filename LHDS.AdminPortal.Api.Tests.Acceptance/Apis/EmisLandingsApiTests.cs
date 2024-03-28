@@ -11,6 +11,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Documents;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.EmisLandings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
@@ -26,6 +27,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         private readonly ApiBroker apiBroker;
         private readonly string encryptedFolder;
         private readonly string decryptedFolder;
+        private readonly string dropfolder = "landings";
         private readonly Guid supplierId;
         private readonly Guid dataSetId;
         private readonly Guid dataSetSpecificationId;
@@ -60,7 +62,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 File.Delete(file);
             }
 
-            // Delete all subfolders recursively
             string[] subdirectories = Directory.GetDirectories(defaultFolderPath);
             foreach (string subdirectory in subdirectories)
             {
@@ -68,64 +69,71 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             }
         }
 
-        private List<DocumentSource> PrepareAndAddFile(
-            Guid subscriberAgreementId,
-            DataSetSpecification dataSetSpecification,
-            bool createFiles,
-            int count)
-        {
-            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+        //private List<DocumentSource> PrepareAndAddFile(
+        //    Guid subscriberAgreementId,
+        //    string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        //    string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
 
-            List<DocumentSource> randomFiles = new List<DocumentSource>();
+        //    List<DocumentSource> randomFiles = new List<DocumentSource>();
 
-            for (int i = 0; i < count; i++)
-            {
-                string randomFileName = GetRandomFileName(subscriberAgreementId);
-                string randomFilePath = CreateRandomFilePath(subscriberAgreementId, randomFileName);
-                string filePath = Path.Combine(defaultFolderPath, randomFilePath);
-                FileInfo fileInfo = new FileInfo(filePath);
+        //    for (int i = 0; i < count; i++)
+        //    {
+        //        string randomFileName = GetRandomFileName(subscriberAgreementId);
+        //        string randomFilePath = CreateRandomFilePath(subscriberAgreementId, randomFileName);
+        //        string filePath = Path.Combine(defaultFolderPath, randomFilePath);
+        //        FileInfo fileInfo = new FileInfo(filePath);
 
-                if (!fileInfo.Directory.Exists)
-                {
-                    fileInfo.Directory.Create();
-                }
+        //        if (!fileInfo.Directory.Exists)
+        //        {
+        //            fileInfo.Directory.Create();
+        //        }
 
-                File.WriteAllText(filePath, GetRandomString());
-                var relativeSourcePath = Path.GetRelativePath(defaultFolderPath, filePath).Replace("\\", "/");
+        //        File.WriteAllText(filePath, GetRandomString());
+        //        var relativeSourcePath = Path.GetRelativePath(defaultFolderPath, filePath).Replace("\\", "/");
 
-                var filename = relativeSourcePath.StartsWith('/')
-                    ? relativeSourcePath
-                    : "/" + relativeSourcePath;
+        //        var filename = relativeSourcePath.StartsWith('/')
+        //            ? relativeSourcePath
+        //            : "/" + relativeSourcePath;
 
-                string[] splitFileName = filename.Split('/');
-                string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}"; ;
+        //        string[] splitFileName = filename.Split('/');
+        //        string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}";
 
-                var encryptedFilePath = $"/{landingConfiguration.EncryptedFolder}/{newFileName}"; ;
+        //        var encryptedFilePath = $"/Encrypted/{newFileName}";
 
-                var relativeDecryptedPath =
-                    $"/{landingConfiguration.DecryptedFolder}" +
-                    $"/{dataSetSpecification.DataSet.DataSetName}" +
-                    $"/{dataSetSpecification.Id}" +
-                    $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
-                    $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+        //        var relativeDecryptedPath =
+        //            $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}";
 
-                DocumentSource documentSource = new DocumentSource
-                {
-                    FtpPath = relativeSourcePath,
-                    EncryptedBlobPath = encryptedFilePath,
-                    DecryptedBlobPath = relativeDecryptedPath,
-                    FilePath = filePath
-                };
+        //        DocumentSource documentSource = new DocumentSource
+        //        {
+        //            FtpPath = relativeSourcePath,
+        //            EncryptedBlobPath = encryptedFilePath,
+        //            DecryptedBlobPath = relativeDecryptedPath,
+        //            FilePath = filePath
+        //        };
 
-                randomFiles.Add(documentSource);
-            }
+        //        randomFiles.Add(documentSource);
+        //    }
 
-            return randomFiles;
-        }
+        //    return randomFiles;
+        //}
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
+
+        private static string CreateRandomFilePath(Guid identifier)
+        {
+            return $"emisnightingale-data-preprod-provider-extracts" +
+                $"/IM1" +
+                $"/sftp" +
+                $"/{identifier}" +
+                $"/{DateTime.Now.ToString("yyyyMMdd")}" +
+                $"/delta{GetRandomString()}" +
+                $"_{GetRandomNumber(min: 2, max: 1000)}" +
+                $"_Admin" +
+                $"_Location" +
+                $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}" +
+                $"_{identifier}.csv.gpg";
+        }
 
         private static string GetRandomFileName(Guid subscriberAgreementId)
         {
@@ -149,6 +157,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 $"/{DateTime.Now.ToString("yyyyMMdd")}" +
                 $"/{fileName}";
         }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 

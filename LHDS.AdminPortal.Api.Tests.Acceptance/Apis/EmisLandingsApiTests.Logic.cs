@@ -23,17 +23,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);
-
-            string fileName =
-                $"{GetRandomString()}/{GetRandomString()}/{GetRandomString()}/{inputSubscriberCredential.Id}";
-
+            string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
+            string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
             Supplier randomSupplier = await PostRandomSupplierAsync();
             string encryptedFilePath = encryptedFolder;
             string decryptedFilePath = decryptedFolder;
 
             Document document = new Document
             {
-                FileName = fileName,
+                FileName = randomFileName,
                 DocumentData = Encoding.ASCII.GetBytes(GetRandomString()),
             };
 
@@ -42,7 +40,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(
                     randomSupplier.Id,
-                    fileName,
+                    randomFileName,
                     encryptedFilePath,
                     decryptedFilePath);
 

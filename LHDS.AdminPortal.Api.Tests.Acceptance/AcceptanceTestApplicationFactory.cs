@@ -1,4 +1,9 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Providers.Downloads.DiskDownloads;
@@ -7,26 +12,37 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
-public class AcceptanceTestApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
+namespace LHDS.AdminPortal.Api.Tests.Acceptance
 {
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    public class AcceptanceTestApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
-        string dropfolder = "landing";
-        base.ConfigureWebHost(builder);
-
-        builder.ConfigureServices(services =>
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            services.Remove(new ServiceDescriptor(typeof(IDownloadProvider), typeof(FtpDownloadProvider)));
+            string dropfolder = "landing";
+            base.ConfigureWebHost(builder);
 
-            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+            builder.ConfigureServices(services =>
+            {
+                var descriptorsToRemove = services
+                    .Where(descriptor =>
+                        descriptor.ServiceType == typeof(IDownloadProvider)
+                        && descriptor.ImplementationType == typeof(FtpDownloadProvider)).ToList();
 
-            services.AddTransient<IDownloadProvider>(_ =>
-                new DiskDownloadProvider(new DiskDownloadProviderSettings
+                foreach (var descriptor in descriptorsToRemove)
                 {
-                    IncludeSubDirectories = true,
-                    LocalRootFolder = defaultFolderPath
-                }));
-        });
+                    services.Remove(descriptor);
+                }
+
+                string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+
+                services.AddTransient<IDownloadProvider>(_ =>
+                    new DiskDownloadProvider(new DiskDownloadProviderSettings
+                    {
+                        IncludeSubDirectories = true,
+                        LocalRootFolder = defaultFolderPath
+                    }));
+            });
+        }
     }
 }

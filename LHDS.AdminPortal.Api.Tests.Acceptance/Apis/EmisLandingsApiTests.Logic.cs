@@ -3,14 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Downloads;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
@@ -29,7 +24,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);
 
-            string fileName = 
+            string fileName =
                 $"{GetRandomString()}/{GetRandomString()}/{GetRandomString()}/{inputSubscriberCredential.Id}";
 
             Supplier randomSupplier = await PostRandomSupplierAsync();

@@ -49,12 +49,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             //When
             string actualDecryptedFileName =
-                await this.apiBroker.ReLandDocumentByFileNameAsync(fileName);
+                await this.apiBroker.ReLandDocumentByFileNameAsync(randomFilePath);
 
             //Then
             actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
             await CleanupTask(expectedIngestionTracking.Id);
-            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(fileName, "emislanding");
+            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(randomFilePath, "emislanding");
         }
 
         [Fact]

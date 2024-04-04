@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LHDS.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDbMigration : Migration
+    public partial class AddInitial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -245,7 +245,7 @@ namespace LHDS.Core.Migrations
                     SupplierSharingAgreementGuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     FtpUserName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
                     FtpPublicKey = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    GpgPublicKey = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    GpgPublicKey = table.Column<string>(type: "nvarchar(2500)", maxLength: 2500, nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     LastPollStartDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     LastPollEndDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),

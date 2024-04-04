@@ -25,6 +25,9 @@ import { SpecificationObjectPage } from './pages/configuration/specificationObje
 import { ObjectColumnPage } from './pages/configuration/objectColumnPage';
 import { TerminologyArtifactPage } from './pages/terminologyArtifactPage';
 import { TerminologyArtifactDetailPage } from './pages/terminologyArtifactDetailPage';
+import { SubscriberAgreementPage } from './pages/subscriberAgreementPage';
+import { SubscriberAgreementDetailPage } from './pages/subscriberAgreementDetailPage';
+import { SubscriberAgreementAddPage } from './pages/subscriberAgreementAddPage';
 
 const App = ({ msalInstance }: any) => {
     return (
@@ -56,6 +59,10 @@ const App = ({ msalInstance }: any) => {
                     <Route path="/pdsUpload" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsUpload /></SecuredRoute >} />
                     <Route path="/terminologyArtifact" element={<SecuredRoute allowedRoles={securityPoints.terminologyArtifact.view}><TerminologyArtifactPage /></SecuredRoute>} />
                     <Route path="/terminologyArtifactDetail/:terminologyArtifactId" element={<SecuredRoute allowedRoles={securityPoints.terminologyArtifact.view}><TerminologyArtifactDetailPage /></SecuredRoute>} />
+                    <Route path="/subscriberAgreements" element={<SecuredRoute allowedRoles={securityPoints.subscriberAgreement.view}><SubscriberAgreementPage /></SecuredRoute>} />
+                    <Route path="/subscriberAgreement" element={<SecuredRoute allowedRoles={securityPoints.subscriberAgreement.add}><SubscriberAgreementAddPage /></SecuredRoute>} />
+                    <Route path="/subscriberAgreement/new" element={<SecuredRoute allowedRoles={securityPoints.subscriberAgreement.add}><SubscriberAgreementAddPage /></SecuredRoute>} />
+                    <Route path="/subscriberAgreementDetail/:subscriberAgreementId" element={<SecuredRoute allowedRoles={securityPoints.subscriberAgreement.view}><SubscriberAgreementDetailPage /></SecuredRoute>} />
                 </Routes>
 
                 <ReactQueryDevtools initialIsOpen={false} />

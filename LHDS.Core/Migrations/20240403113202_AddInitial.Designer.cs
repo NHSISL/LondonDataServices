@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LHDS.Core.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    [Migration("20240319101233_InitialDbMigration")]
-    partial class InitialDbMigration
+    [Migration("20240403113202_AddInitial")]
+    partial class AddInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1060,8 +1060,8 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("GpgPublicKey")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasMaxLength(2500)
+                        .HasColumnType("nvarchar(2500)");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()

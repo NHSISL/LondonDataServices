@@ -87,7 +87,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                     Document = new Document { FileName = randomDocument.FileName }
                 };
 
-                List<Download> retrievedDownloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
+                List<Download> retrievedDownloads =
+                    await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
+
                 await CleanupTask(randomDocument.FileName);
                 bool hasExisitingSupplier = (await this.apiBroker.FindSupplierByIdAsync(supplierId)).Any();
                 bool hasExisitingDataSet = (await this.apiBroker.FindDataSetByIdAsync(dataSetId)).Any();
@@ -163,6 +165,37 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             // then
             actualDownloads.Count.Should().BeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task ShouldRedecryptDocumentByIngestionTrackingAsync()
+        {
+            //given 
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            string fileName = GetRandomString(10);
+            string encryptedFilePath = "encrypted";
+            string decryptedFilePath = "decrypted";
+
+            IngestionTracking randomIngestionTracking =
+                CreateRandomIngestionTracking(
+                    supplierId: randomSupplier.Id,
+                    fileName,
+                    encryptedFilePath,
+                    decryptedFilePath);
+
+            randomIngestionTracking.Decrypted = true;
+            await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
+
+            // when
+            await this.apiBroker.RedecryptDocumentByIngestionTrackingIdAsync(randomIngestionTracking.Id);
+
+            // then
+            IngestionTracking redecryptedIngestionTracking =
+                await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+
+            redecryptedIngestionTracking.Decrypted.Should().BeFalse();
+            await CleanupTask(randomIngestionTracking.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
 
         private async ValueTask CleanupTask(string fileName)

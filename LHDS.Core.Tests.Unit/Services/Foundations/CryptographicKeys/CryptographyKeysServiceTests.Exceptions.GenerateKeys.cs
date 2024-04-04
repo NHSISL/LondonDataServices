@@ -39,9 +39,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
 
             this.cryptographyKeyBrokerMock.Setup(broker =>
                 broker.GenerateKeysAsync(
-                    It.IsAny<string>(), 
-                    It.IsAny<string>(), 
-                    It.IsAny<string>(), 
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
                     It.IsAny<string>()))
                         .ThrowsAsync(serviceException);
 
@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
             ValueTask<CryptographicKey> CryptographicKeyTask =
                 this.cryptographyKeyService.GenerateKeysAsync(
                 cryptographyType: cryptographyType,
-                publicKeyComment: publicKeyComment);
+                comment: publicKeyComment);
 
             CryptographyKeyServiceException actualCryptographyKeyServiceException =
                 await Assert.ThrowsAsync<CryptographyKeyServiceException>(async () =>
@@ -65,9 +65,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
 
             this.cryptographyKeyBrokerMock.Verify(broker =>
                 broker.GenerateKeysAsync(
-                    It.IsAny<string>(), 
-                    It.IsAny<string>(), 
-                    It.IsAny<string>(), 
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
                     It.IsAny<string>()),
                         Times.Once);
 

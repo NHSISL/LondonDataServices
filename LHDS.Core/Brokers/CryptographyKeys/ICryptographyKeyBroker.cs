@@ -4,13 +4,17 @@
 
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.CryptographicKeys;
-using static LHDS.Core.Models.Foundations.CryptographicKeys.CryptographicKey;
 
 namespace LHDS.Core.Brokers.CryptographyKeys
 {
     public interface ICryptographyKeyBroker
     {
         string CryptographyType { get; }
-        ValueTask<CryptographicKey> GenerateKeysAsync(string comment, string password = "", string userName = "", string email = "");
+
+        ValueTask<CryptographicKey> GenerateKeysAsync(
+            string comment,
+            string passPhrase = "",
+            string userName = "",
+            string email = "");
     }
 }

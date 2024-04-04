@@ -6,11 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LHDS.Core.Migrations
 {
     /// <inheritdoc />
-<<<<<<<< HEAD:LHDS.Core/Migrations/20240326101406_InitialMigration.cs
-    public partial class InitialMigration : Migration
-========
-    public partial class AddInitial : Migration
->>>>>>>> origin/main:LHDS.Core/Migrations/20240403113202_AddInitial.cs
+    public partial class AddInitialImport : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

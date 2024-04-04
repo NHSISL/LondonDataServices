@@ -8,7 +8,7 @@ export const ingestionTrackingAuditViewService = {
     useGetAllAudits: (ingestionTrackingId: string) => {
         try {
 
-            let query = `?$orderby=createdDate`;
+            let query = `?$orderby=CreatedDate`;
 
             if (ingestionTrackingId) {
                 query = query + `&$filter=ingestionTrackingId eq ${ingestionTrackingId}`;

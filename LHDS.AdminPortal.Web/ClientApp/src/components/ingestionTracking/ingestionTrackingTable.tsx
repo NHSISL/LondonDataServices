@@ -64,21 +64,11 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     );
 
     const relandDocument = ingestionTrackingHomeViewService.useRelandIngestionTracking();
-    const decryptDocument = ingestionTrackingHomeViewService.useRedecryptIngestionTracking();
     const downloadEncryptedDocument = ingestionTrackingHomeViewService.useDownloadEncryptedDocument();
     const downloadDecryptedDocument = ingestionTrackingHomeViewService.useDownloadDecryptedDocument();
 
     const handleRelanding = (ingestionTracking: IngestionTracking) => {
         return relandDocument.mutateAsync(ingestionTracking, {
-            onSuccess: () => {
-            },
-            onError: (error: any) => {
-            }
-        });
-    };
-
-    const handleRedecrypt = (ingestionTracking: IngestionTracking) => {
-        return decryptDocument.mutateAsync(ingestionTracking, {
             onSuccess: () => {
             },
             onError: (error: any) => {
@@ -105,7 +95,6 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     };
 
     const handleFilter = (supplier: SupplierView) => {
-        //alert(supplier.id);
         setSearchTerm(debouncedTerm);
         handleSupplierDebounce(supplier.id.toString());
     };
@@ -176,7 +165,6 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                                         key={ingestionTrackingHomeView.id}
                                                         ingestionTracking={ingestionTrackingHomeView}
                                                         onRelanding={handleRelanding}
-                                                        onRedecrypt={handleRedecrypt}
                                                         onEncryptedDownload={handleEncryptedDownload}
                                                         onDecryptedDownload={handleDecryptedDownload}
                                                     />

@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LHDS.Core.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-<<<<<<<< HEAD:LHDS.Core/Migrations/20240326101406_InitialMigration.Designer.cs
-    [Migration("20240326101406_InitialMigration")]
-    partial class InitialMigration
-========
-    [Migration("20240403113202_AddInitial")]
-    partial class AddInitial
->>>>>>>> origin/main:LHDS.Core/Migrations/20240403113202_AddInitial.Designer.cs
+    [Migration("20240404122340_AddInitialImport")]
+    partial class AddInitialImport
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

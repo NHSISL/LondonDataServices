@@ -31,7 +31,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.cryptographyKeyServiceMock.Setup(service =>
-                service.GenerateKeysAsync(It.IsAny<string>(), It.IsAny<string>()))
+                service.GenerateKeysAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
                     .ThrowsAsync(dependencyValidationException);
 
             // when
@@ -47,7 +52,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
                  .BeEquivalentTo(expectedDependencyException);
 
             this.cryptographyKeyServiceMock.Verify(service =>
-                service.GenerateKeysAsync(It.IsAny<string>(), It.IsAny<string>()),
+                service.GenerateKeysAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -76,7 +86,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
                     innerException: dependencyException.InnerException as Xeption);
 
             this.cryptographyKeyServiceMock.Setup(service =>
-                service.GenerateKeysAsync(It.IsAny<string>(), It.IsAny<string>()))
+                service.GenerateKeysAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
                     .ThrowsAsync(dependencyException);
 
             // when
@@ -92,7 +107,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
                 .BeEquivalentTo(expectedDependencyException);
 
             this.cryptographyKeyServiceMock.Verify(service =>
-                service.GenerateKeysAsync(It.IsAny<string>(), It.IsAny<string>()),
+                service.GenerateKeysAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -123,7 +143,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
                     innerException: failedSubscriberCredentialOrchestrationServiceException);
 
             this.cryptographyKeyServiceMock.Setup(service =>
-                service.GenerateKeysAsync(It.IsAny<string>(), It.IsAny<string>()))
+                service.GenerateKeysAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -139,7 +164,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
                  .BeEquivalentTo(expectedDependencyException);
 
             this.cryptographyKeyServiceMock.Verify(service =>
-                service.GenerateKeysAsync(It.IsAny<string>(), It.IsAny<string>()),
+                service.GenerateKeysAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

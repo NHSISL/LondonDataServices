@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Net.Http;
+using LHDS.Core.Brokers.Decryptions;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
     {
         private readonly WebApplicationFactory<Startup> webApplicationFactory;
         private readonly HttpClient httpClient;
+        private readonly ICryptographyBroker cryptographyBroker;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
         internal IConfiguration configuration;
         internal LandingConfiguration landingConfiguration;
@@ -26,6 +28,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             this.apiFactoryClient = new RESTFulApiFactoryClient(this.httpClient);
             this.configuration = this.webApplicationFactory.Services.GetService<IConfiguration>();
             this.landingConfiguration = this.webApplicationFactory.Services.GetService<LandingConfiguration>();
+            this.cryptographyBroker = this.webApplicationFactory.Services.GetService<ICryptographyBroker>();
         }
     }
 }

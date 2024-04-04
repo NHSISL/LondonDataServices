@@ -19,7 +19,11 @@ namespace LHDS.Core.Brokers.CryptographyKeys
     {
         public string CryptographyType => "GPG";
 
-        public async ValueTask<CryptographicKey> GenerateKeysAsync(string comment, string password, string name, string email)
+        public async ValueTask<CryptographicKey> GenerateKeysAsync(
+            string comment,
+            string passPhrase = "",
+            string userName = "",
+            string email = "")
         {
             RsaKeyPairGenerator rsaKeyPairGenerator = new RsaKeyPairGenerator();
             rsaKeyPairGenerator.Init(new KeyGenerationParameters(new SecureRandom(), 2048));
@@ -45,14 +49,14 @@ namespace LHDS.Core.Brokers.CryptographyKeys
                 algorithms: new[] { (int)HashAlgorithmTag.Sha256 });
 
             PgpSignatureSubpacketVector subpacketVector = subpacketGenerator.Generate();
-            var userId = $"{name} {comment} <{email}>";
+            var userId = $"{userName} {comment} <{email}>";
 
             PgpKeyRingGenerator keyRingGenerator = new PgpKeyRingGenerator(
                 certificationLevel: PgpSignature.DefaultCertification,
                 masterKey: pgpKeyPair,
                 id: userId,
                 encAlgorithm: SymmetricKeyAlgorithmTag.Aes256,
-                passPhrase: password.ToCharArray(),
+                passPhrase: passPhrase.ToCharArray(),
                 useSha1: true,
                 hashedPackets: subpacketVector,
                 unhashedPackets: null,
@@ -87,7 +91,7 @@ namespace LHDS.Core.Brokers.CryptographyKeys
             {
                 PrivateKey = privateKey,
                 PublicKey = publicKey,
-                Passphrase = password,
+                Passphrase = passPhrase,
             };
 
             return await ValueTask.FromResult(returnedKey);

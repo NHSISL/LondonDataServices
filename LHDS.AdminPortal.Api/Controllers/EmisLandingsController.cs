@@ -2,19 +2,19 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
+using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
-using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 #if RELEASE
 using Microsoft.AspNetCore.Authorization;
 #endif
@@ -90,14 +90,15 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<Document>> DownloadDocumentByFileNameAsync(string filename)
+        public async ValueTask<ActionResult<string>> DownloadDocumentByFileNameAsync(string filename)
         {
             try
             {
-                Document retrieveDownload = await emisLandingCoordinationService
-                    .RetrieveDownloadByFileNameAsync(filename);
+                throw new NotImplementedException();
+                //string retrieveDownload = await emisLandingCoordinationService
+                //    .DecryptDocumentByFileNameAsync(filename);
 
-                return Ok(retrieveDownload);
+                //return Ok(retrieveDownload);
             }
             catch (DownloadValidationException downloadValidationException)
                 when (downloadValidationException.InnerException is NotFoundDocumentException)
@@ -115,6 +116,38 @@ namespace LHDS.AdminPortal.Api.Controllers
             catch (DownloadServiceException downloadServiceException)
             {
                 return InternalServerError(downloadServiceException);
+            }
+        }
+
+        [HttpPut("decrypt/{ingestionTrackingId}")]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
+#endif
+        public async ValueTask<ActionResult> RedecryptDocumentByIngestionTrackingIdAsync(Guid ingestionTrackingId)
+        {
+            try
+            {
+                await emisLandingCoordinationService
+                    .RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
+
+                return Ok();
+            }
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+                when (ingestionTrackingValidationException.InnerException is NotFoundIngestionTrackingException)
+            {
+                return NotFound(ingestionTrackingValidationException.InnerException);
+            }
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+            {
+                return BadRequest(ingestionTrackingValidationException.InnerException);
+            }
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            {
+                return InternalServerError(ingestionTrackingDependencyException);
+            }
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            {
+                return InternalServerError(ingestionTrackingServiceException);
             }
         }
     }

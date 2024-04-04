@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
@@ -12,20 +13,19 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 {
     public partial class EmisLandingCoordinationServiceTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnProcessFileIfFileNameIsNullAndLogItAsync(string invalidData)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnRedecryptIfIngestionIdIsNullAndLogItAsync()
         {
             // given
+            Guid invalidId = Guid.Empty;
+
             var invalidArgumentEmisLandingCoordinationException =
                 new InvalidArgumentEmisLandingCoordinationException(
                     message: "Invalid Emis Landing coordination argument, please correct the errors and try again.");
 
             invalidArgumentEmisLandingCoordinationException.AddData(
-                key: "FileName",
-                values: "Text is required");
+                key: "ingestionTrackingId",
+                values: "Id is required");
 
             var expectedEmisLandingCoordinationValidationException =
                 new EmisLandingCoordinationValidationException(
@@ -33,12 +33,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: invalidArgumentEmisLandingCoordinationException);
 
             // when
-            ValueTask<string> processDataTask =
-                this.emisLandingCoordinationService.ProcessFileAsync(invalidData);
+            ValueTask redecryptTask =
+                this.emisLandingCoordinationService.RedecryptDocumentByIngestionIdAsync(invalidId);
 
             EmisLandingCoordinationValidationException actualEmisLandingCoordinationValidationException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(async () =>
-                    await processDataTask);
+                    await redecryptTask);
 
             // then
             actualEmisLandingCoordinationValidationException.Should()
@@ -50,8 +50,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
             this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
         }
     }
 }

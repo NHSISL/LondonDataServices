@@ -62,26 +62,6 @@ const Submenu: FunctionComponent<SubmenuProps> = (props) => {
 export const NavigationBar: FunctionComponent = () => {
     const submenuItems: SubmenuItem[] = [
         {
-            icon: 'address',
-            label: 'Opt-Out',
-            allowedRoles: [...securityPoints.optOut.view, 'securityPoints.admin.view'],
-            feature: FeatureDefinitions.SubscriberAgreement,
-            links: [
-                { to: '/optOutSearch', label: 'Search Opt-Out' },
-                securityPoints.optOut.upload && { to: '/optOutUpload', label: 'Upload Opt-Out' },
-            ].filter(Boolean) as { to: string; label: string }[],
-        },
-        {
-            icon: 'address',
-            label: 'Demographic Search',
-            allowedRoles: securityPoints.pds.view,
-            feature: FeatureDefinitions.Pds,
-            links: [
-                { to: '/pds', label: 'Search Pds Audit'},
-                securityPoints.pds.upload && { to: '/pdsUpload', label: 'Pds Upload' },
-            ].filter(Boolean) as { to: string; label: string }[],
-        },
-        {
             icon: 'config',
             label: 'Configuration',
             allowedRoles: securityPoints.configuration.view,
@@ -101,7 +81,6 @@ export const NavigationBar: FunctionComponent = () => {
     return (
         <>
             <ul className="sidebar-nav">
-
                 <li className="mt-4">
                     <SecuredLink icon="faHome" to="/">Home</SecuredLink>
                 </li>
@@ -109,7 +88,27 @@ export const NavigationBar: FunctionComponent = () => {
                 <FeatureSwitch feature={FeatureDefinitions.IngestionTracking}>
                     <li className="">
                         <SecuredComponents allowedRoles={securityPoints.ingestionTracking.view}>
-                            <SecuredLink to="/ingestionTracking">Ingestion Tracking</SecuredLink>
+                            <SecuredLink icon="ingestion" to="/ingestionTracking">Ingestion Tracking</SecuredLink>
+                        </SecuredComponents>
+                    </li>
+                </FeatureSwitch>
+
+                <li className="">
+                    <SecuredComponents allowedRoles={securityPoints.optOut.view}>
+                        <SecuredLink icon="optOut" to="/optOutSearch">Patient Opt Out</SecuredLink>
+                    </SecuredComponents>
+                </li>
+
+                <li className="">
+                    <SecuredComponents allowedRoles={securityPoints.pds.view}>
+                        <SecuredLink icon="address" to="/pds">Patient Demographic Search</SecuredLink>
+                    </SecuredComponents>
+                </li>
+
+                <FeatureSwitch feature={FeatureDefinitions.TerminologyArtifact}>
+                    <li className="">
+                        <SecuredComponents allowedRoles={securityPoints.terminologyArtifact.view}>
+                            <SecuredLink icon="terminology" to="/terminologyArtifact">Terminology Artifacts</SecuredLink>
                         </SecuredComponents>
                     </li>
                 </FeatureSwitch>
@@ -117,14 +116,6 @@ export const NavigationBar: FunctionComponent = () => {
                 {submenuItems.map((item, index) => (
                     <Submenu key={index} items={item} allowedRoles={item.allowedRoles} />
                 ))}
-
-                <FeatureSwitch feature={FeatureDefinitions.TerminologyArtifact}>
-                    <li className="">
-                        <SecuredComponents allowedRoles={securityPoints.terminologyArtifact.view}>
-                            <SecuredLink icon="" to="/terminologyArtifact">Terminology Artifacts</SecuredLink>
-                        </SecuredComponents>
-                    </li>
-                </FeatureSwitch>
             </ul>
         </>
     );

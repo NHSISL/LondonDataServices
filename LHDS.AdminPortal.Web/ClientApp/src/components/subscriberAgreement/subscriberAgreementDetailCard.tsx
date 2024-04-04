@@ -4,7 +4,6 @@ import CardBase from "../bases/components/Card/CardBase";
 import CardBaseBody from "../bases/components/Card/CardBase.Body";
 import CardBaseTitle from "../bases/components/Card/CardBase.Title";
 import CardBaseContent from "../bases/components/Card/CardBase.Content";
-import { SubscriberAgreementView } from "../../models/views/components/subscriberAgreements/subscriberAgreement";
 import { useNavigate } from "react-router-dom";
 import SubscriberAgreementDetailCardEdit from "./subscriberAgreementDetailCardEdit";
 import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";

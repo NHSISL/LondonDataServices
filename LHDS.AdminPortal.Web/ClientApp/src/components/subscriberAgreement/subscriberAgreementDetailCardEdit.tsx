@@ -11,7 +11,8 @@ import TextInputBase from "../bases/inputs/TextInputBase";
 import CheckboxBase from "../bases/inputs/CheckboxBase";
 import { Link } from "react-router-dom";
 import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
-import { Input } from "reactstrap";
+import { subscriberAgreementErrors } from "./subscriberAgreementErrors";
+import { subscriberAgreementValidation } from "./subscriberAgreementValidation";
 
 interface SubscriberAgreementDetailCardEditProps {
     subscriberCredential: SubscriberCredentialView;
@@ -34,7 +35,9 @@ const SubscriberAgreementDetailCardEdit: FunctionComponent<SubscriberAgreementDe
         apiError
     } = props;
 
-    const [editSubscriberCredential, setEditSubscriberCredential] = useState<SubscriberCredentialView>({ ...subscriberCredential});
+    const [editSubscriberCredential, setEditSubscriberCredential] = useState<SubscriberCredentialView>({ ...subscriberCredential });
+
+    const { errors, enableValidationMessages, processApiErrors, validate } = useValidation(subscriberAgreementErrors, subscriberAgreementValidation, editSubscriberCredential)
 
     const handleChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement> | ChangeEvent<HTMLSelectElement>) => {
         console.log("Handling change...");
@@ -49,36 +52,35 @@ const SubscriberAgreementDetailCardEdit: FunctionComponent<SubscriberAgreementDe
         setEditSubscriberCredential(updatedSubscriberCredential);
     };
 
-
     const handleCancel = () => {
-       setEditSubscriberCredential({ ...subscriberCredential });
-       onModeChange('VIEW')
-       // onCancel();
+        setEditSubscriberCredential({ ...subscriberCredential });
+        onModeChange('VIEW')
+        onCancel();
     };
 
     const handleSave = () => {
-       // if (!validate(editSubscriberAgreement)) {
-        onAdd(editSubscriberCredential)
-       // } else {
-        //    enableValidationMessages();
-       // }
+        if (!validate(editSubscriberCredential)) {
+            onAdd(editSubscriberCredential)
+        } else {
+            enableValidationMessages();
+        }
     }
 
     const handleUpdate = () => {
-       // if (!validate(editSubscriberAgreement)) {
-        onUpdate(editSubscriberCredential)
-       // } else {
-       //     enableValidationMessages();
-      //  }
+        if (!validate(editSubscriberCredential)) {
+            onUpdate(editSubscriberCredential)
+        } else {
+            enableValidationMessages();
+        }
     }
 
-    //useEffect(() => {
-    //    //processApiErrors(apiError)
-    //}, [apiError, processApiErrors])
+    useEffect(() => {
+        processApiErrors(apiError)
+    }, [apiError, processApiErrors])
 
-useEffect(() => {
-    setEditSubscriberCredential({ ...subscriberCredential });
-}, [subscriberCredential]);
+    useEffect(() => {
+        setEditSubscriberCredential({ ...subscriberCredential });
+    }, [subscriberCredential]);
 
     return (
         <>
@@ -91,6 +93,7 @@ useEffect(() => {
                             name="supplierSharingAgreementShortName"
                             placeholder="Supplier Sharing Agreement ShortName"
                             value={editSubscriberCredential.supplierSharingAgreementShortName}
+                            error={errors.SupplierSharingAgreementShortName}
                             onChange={handleChange} />
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>

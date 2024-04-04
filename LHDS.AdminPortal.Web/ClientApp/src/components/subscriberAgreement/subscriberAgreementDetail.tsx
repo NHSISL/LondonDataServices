@@ -1,8 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import SubscriberAgreementDetailCard from "./subscriberAgreementDetailCard";
-import { SubscriberAgreementView } from "../../models/views/components/subscriberAgreements/subscriberAgreement";
 import { Guid } from "guid-typescript";
-import { subscriberAgreementViewService } from "../../services/views/subscriberAgreements/subscriberAgreementViewService";
 import { subscriberCredentialViewService } from "../../services/views/subscriberCredentials/subscriberCredentialViewService";
 import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
 
@@ -29,11 +27,7 @@ const SubscriberAgreementDetail: FunctionComponent<SubscriberAgreementDetailProp
     const [subscriberCredential, setSubscriberCredential] = useState<SubscriberCredentialView>();
     const [mode, setMode] = useState<string>('VIEW');
 
-    const addSubscriberCredentialAndGenerateKeys =
-        subscriberCredentialViewService.useRegenerateKeysSubscriberCredential();
-
     const addSubscriberCredential = subscriberCredentialViewService.useCreateSubscriberCredential();
-
 
     const UpdateSubscriberCredentialAndGenerateKeys =
         subscriberCredentialViewService.useRegenerateKeysSubscriberCredential();

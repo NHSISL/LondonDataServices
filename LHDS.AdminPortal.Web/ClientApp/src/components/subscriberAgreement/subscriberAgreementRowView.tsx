@@ -1,4 +1,4 @@
-﻿import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from "react";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import ButtonBase from "../bases/buttons/ButtonBase";

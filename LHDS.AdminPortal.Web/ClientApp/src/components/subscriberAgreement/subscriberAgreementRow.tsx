@@ -1,4 +1,4 @@
-﻿import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from "react";
 import SubscriberRowView from "./subscriberAgreementRowView";
 import { SubscriberCredential } from "../../models/subscriberCredentials/subscriberCredentials";
 

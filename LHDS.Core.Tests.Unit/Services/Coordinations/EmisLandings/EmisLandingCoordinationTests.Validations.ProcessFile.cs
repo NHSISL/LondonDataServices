@@ -49,9 +49,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     expectedEmisLandingCoordinationValidationException))),
                         Times.Once);
 
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
             this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

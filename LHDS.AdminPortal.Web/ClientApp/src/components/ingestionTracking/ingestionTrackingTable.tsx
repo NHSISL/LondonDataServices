@@ -28,6 +28,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     const [debouncedSupplierTerm, setDebouncedSupplierTerm] = useState<string>("");
     const [showSpinner, setShowSpinner] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    
 
     const {
         mappedIngestionTrackings: ingestionTrackingsRetrieved,

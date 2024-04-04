@@ -1,7 +1,6 @@
-﻿import { debounce } from "lodash";
+import { debounce } from "lodash";
 import React, { FunctionComponent, useMemo, useState } from "react";
 import SubscriberAgreementRow from "./subscriberAgreementRow";
-import { SubscriberAgreementView } from "../../models/views/components/subscriberAgreements/subscriberAgreement";
 import CardBase from "../bases/components/Card/CardBase";
 import CardBaseBody from "../bases/components/Card/CardBase.Body";
 import CardBaseTitle from "../bases/components/Card/CardBase.Title";
@@ -15,15 +14,12 @@ import TableBaseHeader from "../bases/components/Table/TableBase.Header";
 import TableBaseTbody from "../bases/components/Table/TableBase.Tbody";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
-import ButtonBase from "../bases/buttons/ButtonBase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlusCircle, faRefresh } from "@fortawesome/free-solid-svg-icons";
-import SubscriberAgreementAdd from "./subscriberAgreementAdd";
 import { Link } from "react-router-dom";
 import { Row } from "react-bootstrap";
 import { subscriberCredentialViewService } from "../../services/views/subscriberCredentials/subscriberCredentialViewService";
 import { SubscriberCredentialView } from "../../models/views/components/subscriberCredentials/subscriberCredentialView";
-import { subscriberAgreementViewService } from "../../services/views/subscriberAgreements/subscriberAgreementViewService";
 
 type SubscriberAgreementTableProps = {};
 

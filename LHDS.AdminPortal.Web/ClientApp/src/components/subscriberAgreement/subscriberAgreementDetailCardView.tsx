@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from "react";
-import { SubscriberAgreementView } from "../../models/views/components/subscriberAgreements/subscriberAgreement";
 import SummaryListBase from "../bases/components/SummaryList/SummaryListBase";
 import SummaryListBaseRow from "../bases/components/SummaryList/SummaryListBase.Row";
 import SummaryListBaseKey from "../bases/components/SummaryList/SummaryListBase.Key";
@@ -193,7 +192,3 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
 }
 
 export default SubscriberAgreementDetailCardView;
-
-function UseEffect(arg0: () => () => void, arg1: any[]) {
-    throw new Error("Function not implemented.");
-}

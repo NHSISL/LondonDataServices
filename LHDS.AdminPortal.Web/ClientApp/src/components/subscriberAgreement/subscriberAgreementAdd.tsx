@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { Form } from "react-bootstrap";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import CardBase from "../bases/components/Card/CardBase";
@@ -18,15 +18,14 @@ interface SubscriberAgreementAddProps {
     children?: React.ReactNode;
 }
 
-const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (props) => {
-    const { children } = props;
+const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = () => {
 
     const navigate = useNavigate();
     const [subscriberAgreementShortName, setSubscriberAgreementShortName] = React.useState<string>("");
-    const [addApiError, setAddApiError] = useState<any>({});
+    const [setAddApiError] = useState<any>({});
     const [loading, setLoading] = useState<boolean>(false);
 
-    const [subscriberCredential, setSubscriberCredential] =
+    const [subscriberCredential] =
         useState<SubscriberCredentialView>(new SubscriberCredentialView(Guid.create()));
 
     const addSubscriberCredential = subscriberCredentialViewService.useCreateSubscriberCredential();
@@ -42,7 +41,7 @@ const SubscriberAgreementAdd: FunctionComponent<SubscriberAgreementAddProps> = (
                 setAddApiError(error?.response?.data?.errors);
             },
             onSettled: () => {
-                setLoading(false); // Set loading to false when the operation finishes
+                setLoading(false);
             }
         });
     };

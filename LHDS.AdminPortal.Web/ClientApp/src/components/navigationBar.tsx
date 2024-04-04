@@ -3,12 +3,15 @@ import securityPoints from '../securityMatrix';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
 import { SecuredComponents, SecuredLink } from './links';
+import { FeatureSwitch } from './accessControl/featureSwitch';
+import { FeatureDefinitions } from '../featureDefinitions';
 
 interface SubmenuItem {
     icon: string;
     label: string;
     allowedRoles: string[];
-    links: { to: string; label: string }[];
+    links: { to: string; label: string; feature?: FeatureDefinitions }[];
+    feature: FeatureDefinitions;
 }
 
 interface SubmenuProps {
@@ -29,26 +32,30 @@ const Submenu: FunctionComponent<SubmenuProps> = (props) => {
     };
 
     return (
-        <li style={{ cursor: "pointer" }} className={`pe-auto ${showSubmenu ? 'submenu-open' : ''}`}>
-            <SecuredComponents allowedRoles={allowedRoles}>
-                <>
-                    <div onClick={toggleSubmenu} className="text-white pe-auto">
-                        {items.label} {showSubmenu
-                            ? <FontAwesomeIcon icon={faCaretUp} className="ps-2" />
-                            : <FontAwesomeIcon icon={faCaretDown} className="ps-2" />}
-                    </div>
-                    {showSubmenu && (
-                        <ul className="">
-                            {items.links.map((link, index) => (
-                                <li key={index} className="nav-item">
-                                    <SecuredLink icon="" to={link.to}>{link.label}</SecuredLink>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </>
-            </SecuredComponents>
-        </li>
+        <FeatureSwitch feature={items.feature}>
+            <li style={{ cursor: "pointer" }} className={`pe-auto ${showSubmenu ? 'submenu-open' : ''}`}>
+                <SecuredComponents allowedRoles={allowedRoles}>
+                    <>
+                        <div onClick={toggleSubmenu} className="text-white pe-auto">
+                            {items.label} {showSubmenu
+                                ? <FontAwesomeIcon icon={faCaretUp} className="ps-2" />
+                                : <FontAwesomeIcon icon={faCaretDown} className="ps-2" />}
+                        </div>
+                        {showSubmenu && (
+                            <ul className="">
+                                {items.links.map((link, index) => (
+                                    <FeatureSwitch feature={items.feature}>
+                                        <li key={index} className="nav-item">
+                                            <SecuredLink icon="" to={link.to}>{link.label}</SecuredLink>
+                                        </li>
+                                    </FeatureSwitch>
+                                ))}
+                            </ul>
+                        )}
+                    </>
+                </SecuredComponents>
+            </li>
+        </FeatureSwitch>
     );
 };
 
@@ -58,10 +65,15 @@ export const NavigationBar: FunctionComponent = () => {
             icon: 'config',
             label: 'Configuration',
             allowedRoles: securityPoints.configuration.view,
+            feature: FeatureDefinitions.Configuration,
             links: [
                 { icon: 'ingestion', to: '/configuration/suppliers', label: 'Suppliers' },
-                { icon: 'ingestion', to: '/configuration/dataTypes', label: 'Data Types' },
-                { icon: 'ingestion', to: '/configuration/dataSets', label: 'Data Sets' },
+                { icon: 'ingestion', to: '/configuration/dataTypes', label: 'Data Types'},
+                { icon: 'ingestion', to: '/configuration/dataSets', label: 'Data Sets'},
+                {
+                    icon: 'subscriberAgreement', to: '/subscriberAgreements', label: 'Subscriber Agreements',
+                    feature: FeatureDefinitions.SubscriberAgreement
+                },
             ].filter(Boolean) as { to: string; label: string }[],
         },
     ];
@@ -73,11 +85,13 @@ export const NavigationBar: FunctionComponent = () => {
                     <SecuredLink icon="faHome" to="/">Home</SecuredLink>
                 </li>
 
-                <li className="">
-                    <SecuredComponents allowedRoles={securityPoints.ingestionTracking.view}>
-                        <SecuredLink icon="ingestion" to="/ingestionTracking">Ingestion Tracking</SecuredLink>
-                    </SecuredComponents>
-                </li>
+                <FeatureSwitch feature={FeatureDefinitions.IngestionTracking}>
+                    <li className="">
+                        <SecuredComponents allowedRoles={securityPoints.ingestionTracking.view}>
+                            <SecuredLink to="/ingestionTracking">Ingestion Tracking</SecuredLink>
+                        </SecuredComponents>
+                    </li>
+                </FeatureSwitch>
 
                 <li className="">
                     <SecuredComponents allowedRoles={securityPoints.optOut.view}>
@@ -91,11 +105,13 @@ export const NavigationBar: FunctionComponent = () => {
                     </SecuredComponents>
                 </li>
 
-                <li className="">
-                    <SecuredComponents allowedRoles={securityPoints.terminologyArtifact.view}>
-                        <SecuredLink icon="terminology" to="/terminologyArtifact">Terminology Artifacts</SecuredLink>
-                    </SecuredComponents>
-                </li>
+                <FeatureSwitch feature={FeatureDefinitions.TerminologyArtifact}>
+                    <li className="">
+                        <SecuredComponents allowedRoles={securityPoints.terminologyArtifact.view}>
+                            <SecuredLink icon="" to="/terminologyArtifact">Terminology Artifacts</SecuredLink>
+                        </SecuredComponents>
+                    </li>
+                </FeatureSwitch>
 
                 {submenuItems.map((item, index) => (
                     <Submenu key={index} items={item} allowedRoles={item.allowedRoles} />

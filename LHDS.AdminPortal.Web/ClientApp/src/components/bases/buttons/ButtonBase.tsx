@@ -1,7 +1,7 @@
 import React, { FunctionComponent, HTMLProps } from "react";
-import {Button } from 'nhsuk-react-components'
 import classNames from 'classnames';
 import "./ButtonBaseStyle.scss"
+import { Button } from "react-bootstrap";
 
 interface ButtonBaseProps extends HTMLProps<HTMLButtonElement> {
     id?: string;
@@ -17,6 +17,7 @@ interface ButtonBaseProps extends HTMLProps<HTMLButtonElement> {
     remove?: boolean;
     cancel?: boolean;
     view?: boolean;
+    info?: boolean
     as?: 'button';
 }
 
@@ -31,6 +32,7 @@ const ButtonBase: FunctionComponent<ButtonBaseProps> = (
         remove,
         cancel,
         view,
+        info,
         className,
         ...rest
     }
@@ -47,9 +49,9 @@ const ButtonBase: FunctionComponent<ButtonBaseProps> = (
                     { 'nhsuk-buttonRed': remove },
                     { 'nhsuk-buttonGrey': cancel },
                     { 'nhsuk-buttonGreen': view },
+                    { 'nhsuk-buttonYellow': info },
                     className,
                 )}
-                {...rest}
             >
                 {children}
             </Button >

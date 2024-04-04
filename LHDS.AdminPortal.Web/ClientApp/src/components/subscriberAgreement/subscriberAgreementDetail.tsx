@@ -32,11 +32,26 @@ const SubscriberAgreementDetail: FunctionComponent<SubscriberAgreementDetailProp
     const addSubscriberCredentialAndGenerateKeys =
         subscriberCredentialViewService.useRegenerateKeysSubscriberCredential();
 
+    const addSubscriberCredential = subscriberCredentialViewService.useCreateSubscriberCredential();
+
+
     const UpdateSubscriberCredentialAndGenerateKeys =
         subscriberCredentialViewService.useRegenerateKeysSubscriberCredential();
 
     const handleAdd = (subscriberCredential: SubscriberCredentialView) => {
-        return addSubscriberCredentialAndGenerateKeys.mutate(subscriberCredential);
+        addSubscriberCredential.mutate(subscriberCredential, {
+            onSuccess: () => {
+                alert("save")
+                //navigate('/subscriberAgreements');
+            },
+            onError: (error: any) => {
+                //setAddApiError(error?.response?.data?.errors);
+            },
+            onSettled: () => {
+                //setLoading(false); // Set loading to false when the operation finishes
+            }
+        });
+
     }
 
     const handleRegenerate = (subscriberCredential: SubscriberCredentialView) => {

@@ -13,7 +13,7 @@ exports.subscriberCredentialService = {
             var date = new Date();
             subscriberCredential.createdDate = subscriberCredential.updatedDate = date;
             subscriberCredential.createdBy = subscriberCredential.updatedBy = msal.accounts[0].username;
-            return broker.PostSubscriberCredentialAsync(subscriberCredential);
+            return broker.PostSubscriberCredentialAndRegenerateKeysAsync(subscriberCredential);
         }, {
             onSuccess: function (variables) {
                 queryClient.invalidateQueries("SubscriberCredentialGetAll");

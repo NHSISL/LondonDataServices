@@ -39,7 +39,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<SubscriberAgreement>()
                 .Property(subscriberAgreement => subscriberAgreement.GpgPublicKey)
-                .HasMaxLength(1000)
+                .HasMaxLength(2500)
                 .IsRequired(false);
 
             modelBuilder.Entity<SubscriberAgreement>()

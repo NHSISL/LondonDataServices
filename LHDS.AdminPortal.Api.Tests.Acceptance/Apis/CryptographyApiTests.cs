@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -10,7 +10,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
 using Xunit;
 
-namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Cryptographies
 {
     [Collection(nameof(ApiTestCollection))]
     public partial class CryptographyApiTests

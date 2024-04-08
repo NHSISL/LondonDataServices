@@ -9,6 +9,7 @@ using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using LHDS.Core.Services.Foundations.SubscriberAgreements;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
@@ -57,7 +58,13 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IQueryable<SubscriberAgreement>> GetAllSubscriberAgreements()
+#if !DEBUG
+                [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 5000)]
+#endif
+        public ActionResult<IQueryable<SubscriberAgreement>> Get()
         {
             try
             {
@@ -66,15 +73,35 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok(retrievedSubscriberAgreements);
             }
-            catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
+            catch (SubscriberAgreementDependencyException SubscriberAgreementDependencyException)
             {
-                return InternalServerError(subscriberAgreementDependencyException);
+                return InternalServerError(SubscriberAgreementDependencyException);
             }
-            catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
+            catch (SubscriberAgreementServiceException SubscriberAgreementServiceException)
             {
-                return InternalServerError(subscriberAgreementServiceException);
+                return InternalServerError(SubscriberAgreementServiceException);
             }
         }
+
+        //[HttpGet]
+        //public ActionResult<IQueryable<SubscriberAgreement>> GetAllSubscriberAgreements()
+        //{
+        //    try
+        //    {
+        //        IQueryable<SubscriberAgreement> retrievedSubscriberAgreements =
+        //            this.subscriberAgreementService.RetrieveAllSubscriberAgreements();
+
+        //        return Ok(retrievedSubscriberAgreements);
+        //    }
+        //    catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
+        //    {
+        //        return InternalServerError(subscriberAgreementDependencyException);
+        //    }
+        //    catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
+        //    {
+        //        return InternalServerError(subscriberAgreementServiceException);
+        //    }
+        //}
 
         [HttpGet("{subscriberAgreementId}")]
         public async ValueTask<ActionResult<SubscriberAgreement>> GetSubscriberAgreementByIdAsync(Guid subscriberAgreementId)

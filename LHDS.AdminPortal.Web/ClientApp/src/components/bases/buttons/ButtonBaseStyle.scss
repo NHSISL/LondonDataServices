@@ -23,15 +23,6 @@
 
 // Blue NHS Size Button
 
-.btn-primary {
-    @include buttonShape;
-    background: var( --primary-background) !important;
-    box-shadow: none;
-}
-
-.btn-primary:hover {
-    background: #6891B6 !important;
-}
 
 .nhsuk-buttonBlue {
     @include buttonShape;
@@ -79,4 +70,14 @@
     @include buttonShape;
     background-color: #005eb8;
     box-shadow: none;
+}
+
+.nhsuk-buttonYellow {
+    @include buttonShape;
+    background-color: #6610f2;
+    box-shadow: none;
+}
+
+.nhsuk-buttonYellow:hover {
+    background-color: #823bf5;
 }

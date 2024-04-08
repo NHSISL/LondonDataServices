@@ -82,8 +82,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);
             string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
             string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
-            Supplier randomSupplier = await PostRandomSupplierAsync();
-            DataSet randomDataSet = await PostRandomActiveDataSetAsync(randomSupplier.Id);
+            Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
+            DataSet randomDataSet = await PostRandomActiveDataSetAsync(emisSupplierId);
 
             DataSetSpecification randomDataSetSpecification = 
                 await PostRandomActiveDataSetSpecificationAsync(randomDataSet.Id);

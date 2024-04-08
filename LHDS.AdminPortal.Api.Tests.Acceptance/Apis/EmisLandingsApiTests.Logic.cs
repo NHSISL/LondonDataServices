@@ -88,8 +88,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             DataSetSpecification randomDataSetSpecification = 
                 await PostRandomActiveDataSetSpecificationAsync(randomDataSet.Id);
 
-            string encryptedFilePath = $"{encryptedFolder}/{randomFilePath}";
-            string decryptedFilePath = $"{decryptedFolder}/{randomFilePath}";
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
             string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
@@ -117,6 +115,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             //Then
             await CleanupTask(randomFilePath);
             await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(randomFilePath, "emislanding");
+            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
             File.Delete(testFilePath);
         }
 

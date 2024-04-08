@@ -19,7 +19,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
     public partial class EmisLandingsApiTests
     {
         [Fact]
-        public async Task ShouldLandDocumentByFileNameForExistingIngestionTrackingAsync()
+        public async Task ShouldReLandDocumentByFileNameForExistingIngestionTrackingAsync()
         {
             //Given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
@@ -28,23 +28,23 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
             string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            string encryptedFilePath = encryptedFolder;
-            string decryptedFilePath = decryptedFolder;
+            string encryptedFilePath = $"{encryptedFolder}/{randomFilePath}";
+            string decryptedFilePath = $"{decryptedFolder}/{randomFilePath}";
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
-            string filePath = Path.Combine(defaultFolderPath, randomFilePath);
-            FileInfo fileInfo = new FileInfo(filePath);
+            string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
+            FileInfo fileInfo = new FileInfo(testFilePath);
 
             if (!fileInfo.Directory.Exists)
             {
                 fileInfo.Directory.Create();
             }
 
-            File.WriteAllText(filePath, GetRandomString());
+            File.WriteAllText(testFilePath, GetRandomString());
 
             Document document = new Document
             {
-                FileName = randomFileName,
+                FileName = randomFilePath,
                 DocumentData = Encoding.ASCII.GetBytes(GetRandomString()),
             };
 
@@ -53,7 +53,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(
                     randomSupplier.Id,
-                    randomFileName,
+                    randomFilePath,
                     encryptedFilePath,
                     decryptedFilePath);
 
@@ -68,6 +68,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
             await CleanupTask(expectedIngestionTracking.Id);
             await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(randomFilePath, "emislanding");
+            File.Delete(testFilePath);
         }
 
         [Fact]

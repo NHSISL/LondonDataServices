@@ -38,7 +38,8 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
 
         public async ValueTask<Download> GetDocumentByFileNameAsync(Download download)
         {
-            string filePath = Path.Combine(diskDownloadProviderSettings.LocalRootFolder, download.Document.FileName);
+            string relativePath = download.Document.FileName.Replace("/", "\\");
+            string filePath = Path.Combine(diskDownloadProviderSettings.LocalRootFolder, relativePath);
             byte[] data = await File.ReadAllBytesAsync(filePath);
 
             var document = new Document()

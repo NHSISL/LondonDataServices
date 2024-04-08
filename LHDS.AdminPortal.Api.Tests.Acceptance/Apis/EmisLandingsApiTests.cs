@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -11,7 +10,6 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Documents;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.EmisLandings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
@@ -27,7 +25,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         private readonly ApiBroker apiBroker;
         private readonly string encryptedFolder;
         private readonly string decryptedFolder;
-        private readonly string dropfolder = "landings";
+        private readonly string dropfolder = "landing";
         private readonly Guid supplierId;
         private readonly Guid dataSetId;
         private readonly Guid dataSetSpecificationId;
@@ -69,54 +67,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             }
         }
 
-        //private List<DocumentSource> PrepareAndAddFile(
-        //    Guid subscriberAgreementId,
-        //    string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        //    string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
-
-        //    List<DocumentSource> randomFiles = new List<DocumentSource>();
-
-        //    for (int i = 0; i < count; i++)
-        //    {
-        //        string randomFileName = GetRandomFileName(subscriberAgreementId);
-        //        string randomFilePath = CreateRandomFilePath(subscriberAgreementId, randomFileName);
-        //        string filePath = Path.Combine(defaultFolderPath, randomFilePath);
-        //        FileInfo fileInfo = new FileInfo(filePath);
-
-        //        if (!fileInfo.Directory.Exists)
-        //        {
-        //            fileInfo.Directory.Create();
-        //        }
-
-        //        File.WriteAllText(filePath, GetRandomString());
-        //        var relativeSourcePath = Path.GetRelativePath(defaultFolderPath, filePath).Replace("\\", "/");
-
-        //        var filename = relativeSourcePath.StartsWith('/')
-        //            ? relativeSourcePath
-        //            : "/" + relativeSourcePath;
-
-        //        string[] splitFileName = filename.Split('/');
-        //        string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}";
-
-        //        var encryptedFilePath = $"/Encrypted/{newFileName}";
-
-        //        var relativeDecryptedPath =
-        //            $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}";
-
-        //        DocumentSource documentSource = new DocumentSource
-        //        {
-        //            FtpPath = relativeSourcePath,
-        //            EncryptedBlobPath = encryptedFilePath,
-        //            DecryptedBlobPath = relativeDecryptedPath,
-        //            FilePath = filePath
-        //        };
-
-        //        randomFiles.Add(documentSource);
-        //    }
-
-        //    return randomFiles;
-        //}
-
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
@@ -151,11 +101,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
         {
             return $"emisnightingale-data-preprod-provider-extracts" +
-                $"\\IM1" +
-                $"\\sftp" +
-                $"\\{subscriberAgreementId}" +
-                $"\\{DateTime.Now.ToString("yyyyMMdd")}" +
-                $"\\{fileName}";
+                $"/IM1" +
+                $"/sftp" +
+                $"/{subscriberAgreementId}" +
+                $"/{DateTime.Now.ToString("yyyyMMdd")}" +
+                $"/{fileName}";
         }
 
         private static int GetRandomNumber() =>

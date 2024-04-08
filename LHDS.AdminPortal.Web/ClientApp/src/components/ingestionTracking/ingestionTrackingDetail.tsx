@@ -33,10 +33,6 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
         toastSuccess("Re-Land");
     }
 
-    const handleReDecrypt = async (ingestionTrackingView: IngestionTrackingView) => {
-        toastSuccess("Re-Decrypt");
-    }
-
     const handleRefresh = async (ingestionTrackingView: IngestionTrackingView) => {}
 
     return (
@@ -48,7 +44,6 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
                         ingestionTracking={ingestionTrackingRetrieved}
                         onDownload={handleDownload}
                         onReLand={handleReLand}
-                        onReDecrypt={handleReDecrypt}
                         onRefresh={handleRefresh}>
 
                         {children}

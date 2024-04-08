@@ -5,13 +5,12 @@ import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileImport, faLockOpen, faFileDownload, faFileExport, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faFileImport, faFileDownload, faFileExport, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Dropdown } from "react-bootstrap";
 import moment from "moment";
 
 type IngestionTrackingRowProps = {
     onRelanding: (ingestionTracking: IngestionTracking) => void;
-    onRedecrypt: (ingestionTracking: IngestionTracking) => void;
     onEncryptedDownload: (ingestionTracking: IngestionTracking) => void;
     onDecryptedDownload: (ingestionTracking: IngestionTracking) => void;
     ingestionTracking: IngestionTracking;
@@ -20,7 +19,6 @@ type IngestionTrackingRowProps = {
 const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (props) => {
     const {
         onRelanding,
-        onRedecrypt,
         onEncryptedDownload,
         onDecryptedDownload,
         ingestionTracking
@@ -75,10 +73,6 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                         <Dropdown.Item onClick={() => onRelanding(ingestionTracking)}
                             style={{ color: "#121212" }}>
                             <FontAwesomeIcon icon={faFileImport} title="Re-Land" /> Re-Land File
-                        </Dropdown.Item>
-                        <Dropdown.Item onClick={() => onRedecrypt(ingestionTracking)}
-                            style={{ color: "#121212" }}>
-                            <FontAwesomeIcon icon={faLockOpen} /> Re-Decrypt File
                         </Dropdown.Item>
                         <Dropdown.Item onClick={() => onEncryptedDownload(ingestionTracking)}
                             style={{ color: "#121212" }}>

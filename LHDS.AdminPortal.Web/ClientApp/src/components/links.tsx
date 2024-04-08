@@ -1,7 +1,7 @@
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css'
-import { faHome, faDatabase, faCog, faMapMarker } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faDatabase, faCog, faMapMarker, faUserLock, faSitemap } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { ReactElement } from 'react';
 import { NavItem, NavLink } from 'react-bootstrap';
@@ -12,7 +12,9 @@ const iconMapping: Record<string, IconProp | undefined> = {
     faHome: faHome,
     ingestion: faDatabase,
     config: faCog,
-    address: faMapMarker
+    address: faMapMarker,
+    optOut: faUserLock,
+    terminology: faSitemap
 };
 
 type PublicLinkParameters = {
@@ -50,9 +52,7 @@ export const PublicLink = ({ to, children, className }: PublicLinkParameters): R
 }
 
 export const SecuredLink = ({ to, children, icon, allowedRoles = [], deniedRoles = [] }: SecuredLinkParameters): ReactElement => {
-    console.log(icon);
     const iconProp = icon ? iconMapping[icon] : undefined;
-    console.log('iconProp:', iconProp);
 
     const { accounts } = useMsal();
     const isAuthenticated = useIsAuthenticated();

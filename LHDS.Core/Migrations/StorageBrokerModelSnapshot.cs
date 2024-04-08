@@ -1057,8 +1057,8 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("GpgPublicKey")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasMaxLength(2500)
+                        .HasColumnType("nvarchar(2500)");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()

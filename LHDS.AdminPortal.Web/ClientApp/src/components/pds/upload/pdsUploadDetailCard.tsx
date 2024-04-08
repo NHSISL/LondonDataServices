@@ -21,7 +21,7 @@ const PdsUploadDetailCard: FunctionComponent<PdsUploadDetailCardProps> = (props)
             <CardBase>
                 <CardBaseBody>
                     <CardBaseTitle>
-                       Patient Opt-Out
+                       Patient Demographic Search Upload
                     </CardBaseTitle>
                     <CardBaseContent>
                         <PdsUploadDetailCardView

@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
@@ -81,6 +83,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
             string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
             Supplier randomSupplier = await PostRandomSupplierAsync();
+            DataSet randomDataSet = await PostRandomActiveDataSetAsync(randomSupplier.Id);
+
+            DataSetSpecification randomDataSetSpecification = 
+                await PostRandomActiveDataSetSpecificationAsync(randomDataSet.Id);
+
             string encryptedFilePath = $"{encryptedFolder}/{randomFilePath}";
             string decryptedFilePath = $"{decryptedFolder}/{randomFilePath}";
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);

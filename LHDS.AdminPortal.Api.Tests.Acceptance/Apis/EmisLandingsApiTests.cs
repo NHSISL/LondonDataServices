@@ -151,11 +151,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
         {
             return $"emisnightingale-data-preprod-provider-extracts" +
-                $"/IM1" +
-                $"/sftp" +
-                $"/{subscriberAgreementId}" +
-                $"/{DateTime.Now.ToString("yyyyMMdd")}" +
-                $"/{fileName}";
+                $"\\IM1" +
+                $"\\sftp" +
+                $"\\{subscriberAgreementId}" +
+                $"\\{DateTime.Now.ToString("yyyyMMdd")}" +
+                $"\\{fileName}";
         }
 
         private static int GetRandomNumber() =>

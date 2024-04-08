@@ -3,17 +3,15 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Documents;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Downloads;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using LHDS.Core.Models.Foundations.Documents;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
@@ -21,150 +19,56 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
     public partial class EmisLandingsApiTests
     {
         [Fact]
-        public async Task ShouldLandDocumentByFileNameForExistingIngestionTrackingAsync()
+        public async Task ShouldReLandDocumentByFileNameForExistingIngestionTrackingAsync()
         {
-            try
-            {
-                //Given
-                SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-                SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-                Document randomDocument = CreateRandomDocument();
-
-                Download inputDownload = new Download
-                {
-                    SubscriberCredential = inputSubscriberCredential,
-                    Document = new Document { FileName = randomDocument.FileName }
-                };
-
-                List<Download> downloads = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
-                Supplier randomSupplier = await PostRandomSupplierAsync();
-                string encryptedFilePath = encryptedFolder;
-                string decryptedFilePath = decryptedFolder;
-                await CleanupTask(randomDocument.FileName);
-
-                IngestionTracking randomIngestionTracking =
-                    await PostRandomIngestionTrackingAsync(
-                        randomSupplier.Id,
-                        randomDocument.FileName,
-                        encryptedFilePath,
-                        decryptedFilePath);
-
-                IngestionTracking inputIngestionTracking = randomIngestionTracking;
-                IngestionTracking expectedIngestionTracking = inputIngestionTracking;
-
-                //When
-                string actualDecryptedFileName =
-                    await this.apiBroker.ReLandDocumentByFileNameAsync(randomDocument.FileName);
-
-                //Then
-                actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
-                await CleanupTask(expectedIngestionTracking.Id);
-            }
-            catch (Exception ex)
-            {
-                output.WriteLine($"Error: {ex.Message}{Environment.NewLine}" +
-                    $"{ex?.StackTrace}{Environment.NewLine}" +
-                    $"{ex?.InnerException?.Message}{Environment.NewLine}" +
-                    $"{ex?.InnerException?.StackTrace}");
-
-                throw;
-            }
-        }
-
-        [Fact]
-        public async Task ShouldLandDocumentByFileNameForNewIngestionTrackingAsync()
-        {
-            try
-            {
-                //Given
-                SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-                SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-                Document randomDocument = CreateRandomDocument();
-
-                Download inputDownload = new Download
-                {
-                    SubscriberCredential = inputSubscriberCredential,
-                    Document = new Document { FileName = randomDocument.FileName }
-                };
-
-                List<Download> retrievedDownloads =
-                    await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
-
-                await CleanupTask(randomDocument.FileName);
-                bool hasExisitingSupplier = (await this.apiBroker.FindSupplierByIdAsync(supplierId)).Any();
-                bool hasExisitingDataSet = (await this.apiBroker.FindDataSetByIdAsync(dataSetId)).Any();
-                string decryptedFilePath = decryptedFolder;
-
-                bool hasExistingDataSetSpecification =
-                    (await this.apiBroker.FindtDataSetSpecificationByIdAsync(dataSetSpecificationId)).Any();
-
-                if (!hasExisitingSupplier)
-                {
-                    await PostLandingSupplierAsync(supplierId);
-                }
-
-                if (!hasExisitingDataSet)
-                {
-                    await PostDataSetAsync(supplierId, dataSetId);
-                }
-
-                if (!hasExistingDataSetSpecification)
-                {
-                    await PostDataSetSpecificationAsync(dataSetSpecificationId, dataSetId);
-                }
-
-
-                DataSet activeDataSet = await this.apiBroker.GetDataSetByIdAsync(dataSetId);
-
-                DataSetSpecification activeDataSetSpecification =
-                    await this.apiBroker.GetDataSetSpecificationByIdAsync(dataSetSpecificationId);
-
-                string expectedDecryptedFileName =
-                    $"/{decryptedFilePath}" +
-                    $"/{activeDataSet.DataSetName}" +
-                    $"/{activeDataSetSpecification.Id}" +
-                    $"/{randomDocument.FileName.Split('_')[3]}" +
-                    $"{randomDocument.FileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
-
-                //When
-                string actualDecryptedFileName =
-                    await this.apiBroker.ReLandDocumentByFileNameAsync(randomDocument.FileName);
-
-                //Then 
-                actualDecryptedFileName.Should().BeEquivalentTo(expectedDecryptedFileName);
-                await CleanupTask(randomDocument.FileName);
-            }
-            catch (Exception ex)
-            {
-                output.WriteLine($"Error: {ex.Message}{Environment.NewLine}" +
-                    $"{ex?.StackTrace}{Environment.NewLine}" +
-                    $"{ex?.InnerException?.Message}{Environment.NewLine}" +
-                    $"{ex?.InnerException?.StackTrace}");
-
-                throw;
-            }
-        }
-
-        [Fact]
-        public async Task ShouldRetrieveListOfDocumentsToProcessAsync()
-        {
-            //given 
+            //Given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            Document randomDocument = CreateRandomDocument();
+            await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);
+            string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
+            string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            string encryptedFilePath = $"{encryptedFolder}/{randomFilePath}";
+            string decryptedFilePath = $"{decryptedFolder}/{randomFilePath}";
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+            string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
+            FileInfo fileInfo = new FileInfo(testFilePath);
 
-            Download inputDownload = new Download
+            if (!fileInfo.Directory.Exists)
             {
-                SubscriberCredential = inputSubscriberCredential,
-                Document = new Document { FileName = randomDocument.FileName }
+                fileInfo.Directory.Create();
+            }
+
+            File.WriteAllText(testFilePath, GetRandomString());
+
+            Document document = new Document
+            {
+                FileName = randomFilePath,
+                DocumentData = Encoding.ASCII.GetBytes(GetRandomString()),
             };
 
-            // when
-            List<Download> actualDownloads =
-                await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
+            await this.apiBroker.documentService.AddDocumentAsync(document, "emislanding");
 
-            // then
-            actualDownloads.Count.Should().BeGreaterThan(0);
+            IngestionTracking randomIngestionTracking =
+                await PostRandomIngestionTrackingAsync(
+                    randomSupplier.Id,
+                    randomFilePath,
+                    encryptedFilePath,
+                    decryptedFilePath);
+
+            IngestionTracking inputIngestionTracking = randomIngestionTracking;
+            IngestionTracking expectedIngestionTracking = inputIngestionTracking;
+
+            //When
+            string actualDecryptedFileName =
+                await this.apiBroker.ReLandDocumentByFileNameAsync(randomFilePath);
+
+            //Then
+            actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
+            await CleanupTask(expectedIngestionTracking.Id);
+            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(randomFilePath, "emislanding");
+            File.Delete(testFilePath);
         }
 
         [Fact]

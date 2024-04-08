@@ -1,8 +1,10 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
@@ -23,6 +25,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         private readonly ApiBroker apiBroker;
         private readonly string encryptedFolder;
         private readonly string decryptedFolder;
+        private readonly string dropfolder = "landing";
         private readonly Guid supplierId;
         private readonly Guid dataSetId;
         private readonly Guid dataSetSpecificationId;
@@ -41,11 +44,75 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             this.output = output;
         }
 
+        private void CleanupDownloadFolder()
+        {
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+
+            if (!Directory.Exists(defaultFolderPath))
+            {
+                return;
+            }
+
+            string[] files = Directory.GetFiles(defaultFolderPath);
+            foreach (string file in files)
+            {
+                File.Delete(file);
+            }
+
+            string[] subdirectories = Directory.GetDirectories(defaultFolderPath);
+            foreach (string subdirectory in subdirectories)
+            {
+                Directory.Delete(subdirectory, true);
+            }
+        }
+
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
+        private static string CreateRandomFilePath(Guid identifier)
+        {
+            return $"emisnightingale-data-preprod-provider-extracts" +
+                $"/IM1" +
+                $"/sftp" +
+                $"/{identifier}" +
+                $"/{DateTime.Now.ToString("yyyyMMdd")}" +
+                $"/delta{GetRandomString()}" +
+                $"_{GetRandomNumber(min: 2, max: 1000)}" +
+                $"_Admin" +
+                $"_Location" +
+                $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}" +
+                $"_{identifier}.csv.gpg";
+        }
+
+        private static string GetRandomFileName(Guid subscriberAgreementId)
+        {
+            string filename =
+                $"delta{GetRandomString()}" +
+                $"_{GetRandomNumber(min: 2, max: 1000)}" +
+                $"_Admin" +
+                $"_Location" +
+                $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}" +
+                $"_{subscriberAgreementId}.csv.gpg";
+
+            return filename;
+        }
+
+        private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
+        {
+            return $"emisnightingale-data-preprod-provider-extracts" +
+                $"/IM1" +
+                $"/sftp" +
+                $"/{subscriberAgreementId}" +
+                $"/{DateTime.Now.ToString("yyyyMMdd")}" +
+                $"/{fileName}";
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static string GetRandomString() =>
-            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+        private static int GetRandomNumber(int min = 2, int max = 10) =>
+            new IntRange(min, max).GetValue();
 
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();

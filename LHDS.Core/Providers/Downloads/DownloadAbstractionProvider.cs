@@ -17,7 +17,8 @@ namespace LHDS.Core.Providers.Downloads
         public DownloadAbstractionProvider(IEnumerable<IDownloadProvider> providers, IConfiguration config)
         {
             bool useOfflineProvider = config.GetValue<bool>("UseOfflineProvider");
-            provider = providers.First(provider => provider.IsOfflineProvider == useOfflineProvider);
+            var orderedProvider = providers.OrderBy(p => p.IsOfflineProvider);
+            provider = orderedProvider.First(provider => provider.IsOfflineProvider == useOfflineProvider);
         }
 
         public async ValueTask<List<string>> GetListOfDownloadsToProcessAsync(Download download) =>

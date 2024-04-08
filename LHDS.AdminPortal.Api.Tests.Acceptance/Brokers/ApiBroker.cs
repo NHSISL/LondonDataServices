@@ -3,9 +3,8 @@
 // ---------------------------------------------------------
 
 using System.Net.Http;
-using LHDS.Core.Brokers.Decryptions;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
-using Microsoft.AspNetCore.Mvc.Testing;
+using LHDS.Core.Services.Foundations.Documents;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RESTFulSense.Clients;
@@ -14,21 +13,21 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {
-        private readonly WebApplicationFactory<Startup> webApplicationFactory;
+        private readonly AcceptanceTestApplicationFactory<Startup> acceptanceTestApplicationFactory;
         private readonly HttpClient httpClient;
-        private readonly ICryptographyBroker cryptographyBroker;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
+        internal readonly IDocumentService documentService;
         internal IConfiguration configuration;
         internal LandingConfiguration landingConfiguration;
 
         public ApiBroker()
         {
-            this.webApplicationFactory = new WebApplicationFactory<Startup>();
-            this.httpClient = this.webApplicationFactory.CreateClient();
+            this.acceptanceTestApplicationFactory = new AcceptanceTestApplicationFactory<Startup>();
+            this.httpClient = this.acceptanceTestApplicationFactory.CreateClient();
             this.apiFactoryClient = new RESTFulApiFactoryClient(this.httpClient);
-            this.configuration = this.webApplicationFactory.Services.GetService<IConfiguration>();
-            this.landingConfiguration = this.webApplicationFactory.Services.GetService<LandingConfiguration>();
-            this.cryptographyBroker = this.webApplicationFactory.Services.GetService<ICryptographyBroker>();
+            this.configuration = this.acceptanceTestApplicationFactory.Services.GetService<IConfiguration>();
+            this.landingConfiguration = this.acceptanceTestApplicationFactory.Services.GetService<LandingConfiguration>();
+            this.documentService = this.acceptanceTestApplicationFactory.Services.GetService<IDocumentService>();
         }
     }
 }

@@ -72,6 +72,48 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         }
 
         [Fact]
+        public async Task ShouldLandNewDocumentByFileNameForExistingIngestionTrackingAsync()
+        {
+            //Given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);
+            string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
+            string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            string encryptedFilePath = $"{encryptedFolder}/{randomFilePath}";
+            string decryptedFilePath = $"{decryptedFolder}/{randomFilePath}";
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+            string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
+            FileInfo fileInfo = new FileInfo(testFilePath);
+
+            if (!fileInfo.Directory.Exists)
+            {
+                fileInfo.Directory.Create();
+            }
+
+            File.WriteAllText(testFilePath, GetRandomString());
+
+            Document document = new Document
+            {
+                FileName = randomFilePath,
+                DocumentData = Encoding.ASCII.GetBytes(GetRandomString()),
+            };
+
+            await this.apiBroker.documentService.AddDocumentAsync(document, "emislanding");
+
+            //When
+            string actualDecryptedFileName =
+                await this.apiBroker.ReLandDocumentByFileNameAsync(randomFilePath);
+
+            //Then
+            await CleanupTask(randomFilePath);
+            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(randomFilePath, "emislanding");
+            File.Delete(testFilePath);
+        }
+
+        [Fact]
         public async Task ShouldRedecryptDocumentByIngestionTrackingAsync()
         {
             //given 

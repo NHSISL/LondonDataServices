@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -28,6 +30,17 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             Supplier randomSupplier = await PostRandomSupplierAsync();
             string encryptedFilePath = encryptedFolder;
             string decryptedFilePath = decryptedFolder;
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+            string filePath = Path.Combine(defaultFolderPath, randomFilePath);
+            FileInfo fileInfo = new FileInfo(filePath);
+
+            if (!fileInfo.Directory.Exists)
+            {
+                fileInfo.Directory.Create();
+            }
+
+            File.WriteAllText(filePath, GetRandomString());
 
             Document document = new Document
             {

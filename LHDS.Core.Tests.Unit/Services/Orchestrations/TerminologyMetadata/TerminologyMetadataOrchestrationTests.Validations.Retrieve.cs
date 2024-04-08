@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             string resourceType = GetRandomString();
             string invalidResourceURL = invalidString;
             TerminologyPoll termionologyPoll = CreateRandomTerminologyPoll(resourceType, dateTimeOffset);
-            this.terminologyMetadataConfiguration.ResourceURL = invalidResourceURL;
+            this.ontologyConfiguration.TerminologyServerResourceRelativeUrl = invalidResourceURL;
 
             this.terminologyPollProcessingServiceMock.Setup(service =>
                 service.RetrieveOrAddTerminologyPollAsync(resourceType))

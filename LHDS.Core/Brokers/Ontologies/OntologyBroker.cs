@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using RESTFulSense.Clients;
 
 namespace LHDS.Core.Brokers.Ontologies
 {
-    internal partial class OntologyBroker : IOntologyBroker
+    public partial class OntologyBroker : IOntologyBroker
     {
         private readonly OntologyConfiguration ontologyConfiguration;
         private IRESTFulApiFactoryClient? apiClient = null;

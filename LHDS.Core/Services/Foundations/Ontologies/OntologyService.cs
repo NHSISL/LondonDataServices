@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,7 +12,7 @@ using static Hl7.Fhir.Model.Bundle;
 
 namespace LHDS.Core.Services.Foundations.Ontologies
 {
-    internal partial class OntologyService : IOntologyService
+    public partial class OntologyService : IOntologyService
     {
         private readonly IOntologyBroker ontologyBroker;
         private readonly ILoggingBroker loggingBroker;

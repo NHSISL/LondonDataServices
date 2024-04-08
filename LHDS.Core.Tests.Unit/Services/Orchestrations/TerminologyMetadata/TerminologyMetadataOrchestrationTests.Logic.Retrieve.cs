@@ -1,6 +1,7 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -30,32 +31,32 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             this.terminologyPollProcessingServiceMock.Setup(service =>
                 service.RetrieveOrAddTerminologyPollAsync(resourceType)).
                     ReturnsAsync(retrievedTerminologyPoll);
-          
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTimeOffset);
 
-            string relativeUrl = this.terminologyMetadataConfiguration.ResourceURL;
+            string relativeUrl = this.ontologyConfiguration.TerminologyServerResourceRelativeUrl;
             relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
             relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll.ToString());
 
-            List<dynamic> randomArtifactPropertiesPageOne = 
+            List<dynamic> randomArtifactPropertiesPageOne =
                 CreateRandomArtifactProperties(resourceType, randomDateTimeOffset, randomId);
 
-            List<dynamic> randomArtifactPropertiesPageTwo = 
+            List<dynamic> randomArtifactPropertiesPageTwo =
                 CreateRandomArtifactProperties(resourceType, randomDateTimeOffset, randomId);
 
             List<dynamic> allRandomArifactProperties = new List<dynamic>();
             allRandomArifactProperties.AddRange(randomArtifactPropertiesPageOne);
             allRandomArifactProperties.AddRange(randomArtifactPropertiesPageTwo);
 
-            List<TerminologyArtifact> terminologyArtifacts = 
+            List<TerminologyArtifact> terminologyArtifacts =
                 CreateTerminologyArtiFactFromRandomData(allRandomArifactProperties);
 
             OntologyAssets pageOneOntologyAssets =
                 CreateOntologyAssetFromRandomData(randomArtifactPropertiesPageOne);
 
-            OntologyAssets pageTwoRetrievedOntologyAssets = 
+            OntologyAssets pageTwoRetrievedOntologyAssets =
                 CreateOntologyAssetFromRandomData(randomArtifactPropertiesPageTwo);
 
             pageTwoRetrievedOntologyAssets.NextPage = string.Empty;

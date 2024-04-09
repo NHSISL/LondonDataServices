@@ -57,13 +57,17 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                 string relativeUrl = this.ontologyConfiguration.TerminologyServerResourceRelativeUrl;
                 ValidateResourceURL(relativeUrl);
                 relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
-                relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll.ToString());
+
+                relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll
+                    .ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
 
                 DateTimeOffset currentDateTimeOffset =
                     this.dateTimeBroker.GetCurrentDateTimeOffset();
 
                 await ProcessArtifacts(relativeUrl);
                 retrievedTerminologyPoll.LastPoll = currentDateTimeOffset;
+                retrievedTerminologyPoll.UpdatedDate = currentDateTimeOffset;
+
                 await this.terminologyPollProcessingService.ModifyTerminologyPollAsync(retrievedTerminologyPoll);
             });
 

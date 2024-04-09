@@ -15,7 +15,7 @@ using NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
 using Xunit;
 
-namespace LHDS.Core.Tests.Acceptance.Clients.Pds
+namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
 {
     [Collection(nameof(CoreTestCollection))]
     public partial class TerminologyClients

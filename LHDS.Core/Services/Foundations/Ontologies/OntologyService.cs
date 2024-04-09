@@ -29,7 +29,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             TryCatch(async () =>
             {
                 ValidateArgs(relativeUrl);
-                Bundle codingSystems = await this.ontologyBroker.GetAllCodingSystemsAsync(relativeUrl);
+                Bundle codingSystems = await this.ontologyBroker.GetAllAsync(relativeUrl);
                 string? nextPageUrl = codingSystems.NextLink?.ToString();
 
                 var ontologyAssets = new OntologyAssets
@@ -62,7 +62,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             TryCatch(async () =>
             {
                 ValidateArgs(relativeUrl);
-                Bundle valueSets = await this.ontologyBroker.GetAllConceptMapsAsync(relativeUrl);
+                Bundle valueSets = await this.ontologyBroker.GetAllAsync(relativeUrl);
                 string? nextPageUrl = valueSets.NextLink?.ToString();
 
                 var ontologyAssets = new OntologyAssets
@@ -95,7 +95,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             TryCatch(async () =>
             {
                 ValidateArgs(relativeUrl);
-                Bundle valueSets = await this.ontologyBroker.GetAllValueSetsAsync(relativeUrl);
+                Bundle valueSets = await this.ontologyBroker.GetAllAsync(relativeUrl);
                 string? nextPageUrl = valueSets.NextLink?.ToString();
 
                 var ontologyAssets = new OntologyAssets

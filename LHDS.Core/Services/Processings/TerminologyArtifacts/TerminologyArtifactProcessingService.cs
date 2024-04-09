@@ -49,7 +49,8 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                 ValidateId(terminologyArtifact.Id);
 
                 var maybeTerminologyArtifact =
-                    await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(terminologyArtifact.Id);
+                    this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
+                        .FirstOrDefault(artifact => artifact.Id == terminologyArtifact.Id);
 
                 if (maybeTerminologyArtifact != null)
                 {

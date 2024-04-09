@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Hl7.Fhir.Model;
+using Hl7.Fhir.Serialization;
 using LHDS.Core.Models.Brokers.Ontologies;
 using Newtonsoft.Json;
 using RESTFulSense.Clients;
@@ -25,6 +27,18 @@ namespace LHDS.Core.Brokers.Ontologies
             this.ontologyAccessToken = null;
             this.apiClient = null;
         }
+
+        public async ValueTask<Bundle> GetAllAsync(string relativeUrl)
+        {
+            string jsonResponse = await GetAsync<string>(relativeUrl);
+            var parser = new FhirJsonParser();
+            Bundle bundle = parser.Parse<Bundle>(jsonResponse);
+
+            return bundle;
+        }
+
+        public async ValueTask<string> GetArtifactDetailsAsync(string relativeUrl) =>
+            await GetAsync<string>(relativeUrl);
 
         private async ValueTask<T> GetAsync<T>(string relativeUrl)
         {

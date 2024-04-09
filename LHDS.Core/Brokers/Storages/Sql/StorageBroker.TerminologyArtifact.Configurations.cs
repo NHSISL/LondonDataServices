@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Microsoft.EntityFrameworkCore;
@@ -23,9 +23,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .HasMaxLength(1000)
                 .IsRequired();
 
-            modelBuilder.Entity<TerminologyArtifact>()
-                .HasIndex(terminologyArtifact => terminologyArtifact.FullUrl)
-                .IsUnique();
+            //modelBuilder.Entity<TerminologyArtifact>()
+            //    .HasIndex(terminologyArtifact => terminologyArtifact.FullUrl)
+            //    .IsUnique();
 
             modelBuilder.Entity<TerminologyArtifact>()
                 .Property(terminologyArtifact => terminologyArtifact.ResourceType)
@@ -34,18 +34,18 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<TerminologyArtifact>()
                 .Property(terminologyArtifact => terminologyArtifact.Version)
-                .HasMaxLength(50)
-                .IsRequired();
+                .HasMaxLength(100)
+                .IsRequired(false);
 
             modelBuilder.Entity<TerminologyArtifact>()
                 .Property(terminologyArtifact => terminologyArtifact.Name)
-                .HasMaxLength(50)
+                .HasMaxLength(500)
                 .IsRequired();
 
             modelBuilder.Entity<TerminologyArtifact>()
                 .Property(terminologyArtifact => terminologyArtifact.Title)
-                .HasMaxLength(50)
-                .IsRequired();
+                .HasMaxLength(500)
+                .IsRequired(false);
 
             modelBuilder.Entity<TerminologyArtifact>()
                 .Property(terminologyArtifact => terminologyArtifact.Status)

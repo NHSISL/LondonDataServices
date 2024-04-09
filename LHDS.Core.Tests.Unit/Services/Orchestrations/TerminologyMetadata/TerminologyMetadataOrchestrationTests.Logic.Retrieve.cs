@@ -38,7 +38,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             string relativeUrl = this.ontologyConfiguration.TerminologyServerResourceRelativeUrl;
             relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
-            relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll.ToString());
+
+            relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll
+                .ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
 
             List<dynamic> randomArtifactPropertiesPageOne =
                 CreateRandomArtifactProperties(resourceType, randomDateTimeOffset, randomId);
@@ -79,6 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             TerminologyPoll updatedTerminologyPoll = retrievedTerminologyPoll.DeepClone();
             updatedTerminologyPoll.LastPoll = randomDateTimeOffset;
+            updatedTerminologyPoll.UpdatedDate = randomDateTimeOffset;
             TerminologyPoll storageTerminologyPoll = updatedTerminologyPoll.DeepClone();
 
             this.terminologyPollProcessingServiceMock.Setup(service =>

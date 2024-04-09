@@ -23,9 +23,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .HasMaxLength(1000)
                 .IsRequired();
 
-            //modelBuilder.Entity<TerminologyArtifact>()
-            //    .HasIndex(terminologyArtifact => terminologyArtifact.FullUrl)
-            //    .IsUnique();
+            modelBuilder.Entity<TerminologyArtifact>()
+                .HasIndex(terminologyArtifact => terminologyArtifact.FullUrl)
+                .IsUnique();
 
             modelBuilder.Entity<TerminologyArtifact>()
                 .Property(terminologyArtifact => terminologyArtifact.ResourceType)
@@ -40,7 +40,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
             modelBuilder.Entity<TerminologyArtifact>()
                 .Property(terminologyArtifact => terminologyArtifact.Name)
                 .HasMaxLength(500)
-                .IsRequired();
+                .IsRequired(false);
 
             modelBuilder.Entity<TerminologyArtifact>()
                 .Property(terminologyArtifact => terminologyArtifact.Title)

@@ -50,7 +50,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 
                 var maybeTerminologyArtifact =
                     this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
-                        .FirstOrDefault(artifact => artifact.Id == terminologyArtifact.Id);
+                        .FirstOrDefault(artifact => artifact.FullUrl == terminologyArtifact.FullUrl);
 
                 if (maybeTerminologyArtifact != null)
                 {

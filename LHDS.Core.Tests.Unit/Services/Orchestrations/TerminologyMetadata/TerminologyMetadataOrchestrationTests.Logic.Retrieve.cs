@@ -16,14 +16,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 {
     public partial class TerminologyMetadataOrchestrationTests
     {
-        [Fact]
-        public async Task ShouldRetrievePagedArtifactMetadataAsync()
+        [Theory]
+        [InlineData("CodeSystem")]
+        [InlineData("ValueSet")]
+        [InlineData("ConceptMap")]
+        public async Task ShouldRetrievePagedArtifactMetadataAsync(string inputResourceType)
         {
             // given
             Guid randomId = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string randomString = GetRandomString();
-            string resourceType = randomString;
+            string resourceType = inputResourceType;
 
             TerminologyPoll retrievedTerminologyPoll =
                 CreateRandomTerminologyPoll(resourceType, lastPoll: randomDateTimeOffset.AddDays(-3));
@@ -63,13 +66,50 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             pageTwoRetrievedOntologyAssets.NextPage = string.Empty;
 
-            this.ontologyProcessingServiceMock.Setup(service =>
-                service.RetrieveAllCodingSystemsAsync(relativeUrl))
-                    .ReturnsAsync(pageOneOntologyAssets);
+            switch (resourceType)
+            {
+                case "CodeSystem":
+                    {
+                        this.ontologyProcessingServiceMock.Setup(service =>
+                            service.RetrieveAllCodingSystemsAsync(relativeUrl))
+                                .ReturnsAsync(pageOneOntologyAssets);
 
-            this.ontologyProcessingServiceMock.Setup(service =>
-                service.RetrieveAllCodingSystemsAsync(pageOneOntologyAssets.NextPage))
-                    .ReturnsAsync(pageTwoRetrievedOntologyAssets);
+                        this.ontologyProcessingServiceMock.Setup(service =>
+                            service.RetrieveAllCodingSystemsAsync(pageOneOntologyAssets.NextPage))
+                                .ReturnsAsync(pageTwoRetrievedOntologyAssets);
+
+                        break;
+
+                    }
+
+                case "ValueSet":
+                    {
+                        this.ontologyProcessingServiceMock.Setup(service =>
+                            service.RetrieveAllValueSetsAsync(relativeUrl))
+                                .ReturnsAsync(pageOneOntologyAssets);
+
+                        this.ontologyProcessingServiceMock.Setup(service =>
+                            service.RetrieveAllValueSetsAsync(pageOneOntologyAssets.NextPage))
+                                .ReturnsAsync(pageTwoRetrievedOntologyAssets);
+                        break;
+                    }
+
+                case "ConceptMap":
+                    {
+                        this.ontologyProcessingServiceMock.Setup(service =>
+                            service.RetrieveAllConceptMapsAsync(relativeUrl))
+                                .ReturnsAsync(pageOneOntologyAssets);
+
+                        this.ontologyProcessingServiceMock.Setup(service =>
+                            service.RetrieveAllConceptMapsAsync(pageOneOntologyAssets.NextPage))
+                                .ReturnsAsync(pageTwoRetrievedOntologyAssets);
+
+                        break;
+                    }
+
+                default:
+                    throw new ArgumentException($"Unsupported resourceType: {resourceType}");
+            }
 
             List<OntologyAsset> assets = new List<OntologyAsset>();
             assets.AddRange(pageOneOntologyAssets.Assets);
@@ -96,13 +136,55 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 service.RetrieveOrAddTerminologyPollAsync(resourceType),
                     Times.Once);
 
-            this.ontologyProcessingServiceMock.Verify(service =>
-                service.RetrieveAllCodingSystemsAsync(relativeUrl),
-                    Times.Once);
 
-            this.ontologyProcessingServiceMock.Verify(service =>
-                service.RetrieveAllCodingSystemsAsync(pageOneOntologyAssets.NextPage),
-                    Times.Once);
+            switch (resourceType)
+            {
+                case "CodeSystem":
+                    {
+                        this.ontologyProcessingServiceMock.Verify(service =>
+                            service.RetrieveAllCodingSystemsAsync(relativeUrl),
+                                Times.Once);
+
+                        this.ontologyProcessingServiceMock.Verify(service =>
+                            service.RetrieveAllCodingSystemsAsync(pageOneOntologyAssets.NextPage),
+                                Times.Once);
+
+                        break;
+
+                    }
+
+                case "ValueSet":
+                    {
+                        this.ontologyProcessingServiceMock.Verify(service =>
+                            service.RetrieveAllValueSetsAsync(relativeUrl),
+                                Times.Once);
+
+                        this.ontologyProcessingServiceMock.Verify(service =>
+                            service.RetrieveAllValueSetsAsync(pageOneOntologyAssets.NextPage),
+                                Times.Once);
+
+                        break;
+                    }
+
+                case "ConceptMap":
+                    {
+                        this.ontologyProcessingServiceMock.Verify(service =>
+                            service.RetrieveAllConceptMapsAsync(relativeUrl),
+                                Times.Once);
+
+                        this.ontologyProcessingServiceMock.Verify(service =>
+                            service.RetrieveAllConceptMapsAsync(pageOneOntologyAssets.NextPage),
+                                Times.Once);
+
+                        break;
+                    }
+
+                default:
+                    throw new ArgumentException($"Unsupported resourceType: {resourceType}");
+            }
+
+
+
 
             for (int i = 0; i < assets.Count; i++)
             {

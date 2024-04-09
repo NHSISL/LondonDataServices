@@ -100,8 +100,8 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 }
             });
 
-        public async ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(Guid subscriberAgreementId) =>
-            await TryCatch(async () =>
+        public ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(Guid subscriberAgreementId) =>
+            TryCatch(async () =>
             {
                 ValidateArgsOnRetrieveListOfDocumentsToProcess(subscriberAgreementId);
 

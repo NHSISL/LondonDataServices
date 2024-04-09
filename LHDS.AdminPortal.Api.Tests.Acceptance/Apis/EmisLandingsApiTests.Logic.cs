@@ -125,10 +125,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         public async Task ShouldRetrieveListOfDocumentsToProcessAsync()
         {
             //given 
-            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            Guid randomSubscriberAgreementId = Guid.NewGuid();
+            await PostRandomSubscriberAgreementAsync(randomSubscriberAgreementId);
+
+            SubscriberCredential randomSubscriberCredential = 
+                CreateRandomSubscriberCredential(randomSubscriberAgreementId);
+
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);
-            Document randomDocument = CreateRandomDocument();
+            //Document randomDocument = CreateRandomDocument();
 
             // when
             List<string> actualDocuments =

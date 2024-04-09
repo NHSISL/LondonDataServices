@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Downloads;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
@@ -87,7 +86,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
             DataSet randomDataSet = await PostRandomActiveDataSetAsync(emisSupplierId);
 
-            DataSetSpecification randomDataSetSpecification = 
+            DataSetSpecification randomDataSetSpecification =
                 await PostRandomActiveDataSetSpecificationAsync(randomDataSet.Id);
 
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);

@@ -18,7 +18,6 @@ interface IngestionTrackingDetailCardViewProps {
     ingestionTracking: IngestionTrackingView;
     onDownload: (ingestionTracking: IngestionTrackingView) => void;
     onReLand: (ingestionTracking: IngestionTrackingView) => void;
-    onReDecrypt: (ingestionTracking: IngestionTrackingView) => void;
     onRefresh: (ingestionTracking: IngestionTrackingView) => void;
 }
 
@@ -26,8 +25,7 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
     const {
         ingestionTracking,
         onDownload,
-        onReLand,
-        onReDecrypt
+        onReLand
     } = props;
 
     return (
@@ -109,7 +107,7 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                     </CardBase>
                 </GridBase>
 
-                {ingestionTracking.supplier?.canDecryptIngestionTracking && (
+                {(ingestionTracking.supplier?.canDownloadIngestionTracking || ingestionTracking.supplier?.canRelandIngestionTracking) && (
                     <>
                         <GridBase size="One-Third">
                             <CardBase>
@@ -124,10 +122,6 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                                                 <p>Use this option to re-encrypt a file.</p>
                                             </li>
                                             <li>
-                                                <span>2</span> Re-Decrypt
-                                                <p>Use this option to re-decrypt a file.</p>
-                                            </li>
-                                            <li>
                                                 <span>3</span> Download Decrypted
                                                 <p>Use this option to download a successfully decrypted file.</p>
                                             </li>
@@ -135,10 +129,6 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
 
                                         <ButtonBase onClick={() => onReLand(ingestionTracking)} add>
                                             &nbsp;Re-Land
-                                        </ButtonBase>&nbsp;
-
-                                        <ButtonBase onClick={() => onReDecrypt(ingestionTracking)} add>
-                                            &nbsp;Re-Decrypt
                                         </ButtonBase>&nbsp;
 
                                         <ButtonBase onClick={() => onDownload(ingestionTracking)} add>

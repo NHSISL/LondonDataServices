@@ -523,9 +523,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             for (int i = 0; i < 10; i++)
             {
                 Guid id = Guid.NewGuid();
-
                 SubscriberAgreement subscriberAgreement = CreateRandomSubscriberAgreement(id);
-
                 subscriberAgreements.Add(subscriberAgreement);
             }
 

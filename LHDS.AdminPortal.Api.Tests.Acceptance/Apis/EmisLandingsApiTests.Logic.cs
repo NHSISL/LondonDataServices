@@ -128,6 +128,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             //given 
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);
             Document randomDocument = CreateRandomDocument();
 
             // when

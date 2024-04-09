@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Downloads;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
@@ -118,6 +119,28 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
             File.Delete(testFilePath);
+        }
+
+        [Fact]
+        public async Task ShouldRetrieveListOfDocumentsToProcessAsync()
+        {
+            //given 
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            Document randomDocument = CreateRandomDocument();
+
+            Download inputDownload = new Download
+            {
+                SubscriberCredential = inputSubscriberCredential,
+                Document = new Document { FileName = randomDocument.FileName }
+            };
+
+            // when
+            List<Download> actualDownloads =
+                await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
+
+            // then
+            actualDownloads.Count.Should().BeGreaterThan(0);
         }
 
         [Fact]

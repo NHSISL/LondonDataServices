@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -129,18 +130,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Document randomDocument = CreateRandomDocument();
 
-            Download inputDownload = new Download
-            {
-                SubscriberCredential = inputSubscriberCredential,
-                Document = new Document { FileName = randomDocument.FileName }
-            };
-
             // when
-            List<Download> actualDownloads =
-                await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputDownload);
+            List<string> actualDocuments =
+                await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputSubscriberCredential.Id);
 
             // then
-            actualDownloads.Count.Should().BeGreaterThan(0);
+            actualDocuments.Count.Should().BeGreaterThan(0);
         }
 
         [Fact]

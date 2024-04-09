@@ -4,7 +4,6 @@ import IngestionTrackingRowView from "./ingestionTrackingRowView";
 
 type IngestionTrackingRowProps = {
     onRelanding: (ingestionTracking: IngestionTracking) => void;
-    onRedecrypt: (ingestionTracking: IngestionTracking) => void;
     onEncryptedDownload: (ingestionTracking: IngestionTracking) => void;
     onDecryptedDownload: (ingestionTracking: IngestionTracking) => void;
     ingestionTracking: IngestionTracking;
@@ -13,7 +12,6 @@ type IngestionTrackingRowProps = {
 const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (props) => {
     const {
         onRelanding,
-        onRedecrypt,
         onEncryptedDownload,
         onDecryptedDownload,
         ingestionTracking
@@ -21,10 +19,6 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
 
     const handleRelanding = async (ingestionTracking: IngestionTracking) => {
         await onRelanding(ingestionTracking);
-    };
-
-    const handleRedecrypt = async (ingestionTracking: IngestionTracking) => {
-        await onRedecrypt(ingestionTracking);
     };
 
     const handleEncryptedDownload = async (ingestionTracking: IngestionTracking) => {
@@ -40,7 +34,6 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
             key={ingestionTracking.id.toString()}
             ingestionTracking={ingestionTracking}
             onRelanding={handleRelanding}
-            onRedecrypt={handleRedecrypt}
             onEncryptedDownload={handleEncryptedDownload}
             onDecryptedDownload={handleDecryptedDownload}
         />

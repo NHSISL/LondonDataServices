@@ -10,6 +10,7 @@ using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
@@ -92,7 +93,13 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IQueryable<SubscriberCredential>> GetAllSubscriberCredentials()
+#if !DEBUG
+[EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 5000)]
+#endif
+        public ActionResult<IQueryable<SubscriberCredential>> Get()
         {
             try
             {
@@ -112,6 +119,28 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(subscriberCredentialOrchestrationServiceException);
             }
         }
+
+        //[HttpGet]
+        //public ActionResult<IQueryable<SubscriberCredential>> GetAllSubscriberCredentials()
+        //{
+        //    try
+        //    {
+        //        IQueryable<SubscriberCredential> retrievedSubscriberCredentials =
+        //            this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentials();
+
+        //        return Ok(retrievedSubscriberCredentials);
+        //    }
+        //    catch (SubscriberCredentialDependencyOrchestrationException
+        //        subscriberCredentialDependencyOrchestrationException)
+        //    {
+        //        return InternalServerError(subscriberCredentialDependencyOrchestrationException);
+        //    }
+        //    catch (SubscriberCredentialOrchestrationServiceException
+        //        subscriberCredentialOrchestrationServiceException)
+        //    {
+        //        return InternalServerError(subscriberCredentialOrchestrationServiceException);
+        //    }
+        //}
 
         [HttpGet("{subscriberCredentialId}")]
         public async ValueTask<ActionResult<SubscriberCredential>> GetSubscriberCredentialByIdAsync(

@@ -1,8 +1,7 @@
 import React, { FunctionComponent, ChangeEvent } from "react";
-import { Label, Input } from 'nhsuk-react-components'
-import { InputGroup, Form } from "react-bootstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAsterisk } from "@fortawesome/free-solid-svg-icons";
+import { Form, InputGroup } from "react-bootstrap";
 
 interface TextInputBaseProps {
     id: string;
@@ -17,12 +16,13 @@ interface TextInputBaseProps {
     value?: string | number;
     error?: string;
     type?: string;
+    disabled?: boolean;
 }
 
 const TextInputBase: FunctionComponent<TextInputBaseProps> = (props) => {
     return (
         <Form.Group>
-            {props.label && (<b><Label htmlFor={props.id}>{props.label}</Label> </b>)}
+            {props.label && (<b><Form.Label htmlFor={props.id}>{props.label}</Form.Label> </b>)}
             <div>
                 <InputGroup>
                     {
@@ -31,14 +31,15 @@ const TextInputBase: FunctionComponent<TextInputBaseProps> = (props) => {
                         && (
                             <InputGroup.Text>{props.prependLabel}</InputGroup.Text>
                         )}
-                    <Input
+                    <Form.Control
                         id={props.id}
                         name={props.name}
                         value={props.value}
                         onChange={props.onChange}
-                        type={props.type}
+                        type={props.type || "text"}
                         placeholder={props.placeholder || ""}
-                        error={props.error}
+                        disabled={props.disabled}
+                        //error={props.error}
                     />
                     {
                         props.appendLabel !== undefined

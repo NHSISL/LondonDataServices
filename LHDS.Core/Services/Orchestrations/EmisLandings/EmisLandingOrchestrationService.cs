@@ -318,7 +318,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
                         $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
-
                     IngestionTracking newIngestionTracking =
                       new IngestionTracking
                       {
@@ -393,7 +392,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 ValidateIngestionTrackingId(ingestionTrackingId);
 
                 IngestionTracking retrievedIngestionTracking =
-                    await this.ingestionTrackingProcessingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
+                    await this.ingestionTrackingProcessingService.RetrieveIngestionTrackingByIdAsync(
+                        ingestionTrackingId);
 
                 retrievedIngestionTracking.Decrypted = false;
                 retrievedIngestionTracking.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();

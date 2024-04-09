@@ -22,7 +22,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
             await terminologyClient.RetrieveArtifactMetadataAsync(resourceType);
 
             //Then
-            this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

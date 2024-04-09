@@ -5,19 +5,27 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
+using Azure.Core.Pipeline;
+using Azure.Identity;
+using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Ontologies;
+using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Ontologies;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
+using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Ontologies;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Services.Orchestrations.TerminologyDetails;
 using LHDS.Core.Services.Orchestrations.TerminologyMetadata;
+using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Ontologies;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.TerminologyPolls;
@@ -40,7 +48,7 @@ namespace LHDS.Core.Clients.Extensions
             AddProcessingServices(services);
             AddOrchestrations(services);
             AddCoordinations(services);
-            AddClients(services);
+            AddClients(services, configuration);
 
             return services;
         }
@@ -50,6 +58,7 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
         {
+            services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
@@ -66,6 +75,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ITerminologyPollService, TerminologyPollService>();
             services.AddTransient<ITerminologyArtifactService, TerminologyArtifactService>();
             services.AddTransient<IOntologyService, OntologyService>();
+            services.AddTransient<IDocumentService, DocumentService>();
 
         }
 
@@ -74,6 +84,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ITerminologyPollProcessingService, TerminologyPollProcessingService>();
             services.AddTransient<ITerminologyArtifactProcessingService, TerminologyArtifactProcessingService>();
             services.AddTransient<IOntologyProcessingService, OntologyProcessingService>();
+            services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();
         }
 
         private static void AddOrchestrations(IServiceCollection services)
@@ -85,9 +96,47 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddCoordinations(IServiceCollection services)
         { }
 
-        private static void AddClients(IServiceCollection services)
+        private static void AddClients(IServiceCollection services, IConfiguration configuration)
         {
+            var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
+            ValidateBlobStorageSettings(blobStorageSettings);
+            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+
+            var blobServiceClientOptions = new BlobClientOptions()
+            {
+                Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
+                Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                EnableTenantDiscovery = true
+            };
+
+            services.AddSingleton(
+                new BlobServiceClient(
+                    serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
+                    credential: new DefaultAzureCredential(
+                        new DefaultAzureCredentialOptions
+                        {
+                            VisualStudioTenantId = blobStorageSettings.AzureTenantId,
+                        }),
+                    options: blobServiceClientOptions));
+
+            services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<ITerminologyClient, TerminologyClient>();
+        }
+
+        private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
+        {
+            if (blobStorageSettings == null)
+            {
+                throw new InvalidConfigurationException(
+                    "Configuration section 'blobStorage' not defined.");
+            }
+
+            Validate(
+                (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
+                    Parameter: "blobStorage__azureBlobServiceUri"),
+
+                (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
+                    Parameter: "blobStorage__azureTenantId"));
         }
 
         private static void ValidateOntologyConfiguration(

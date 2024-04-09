@@ -127,11 +127,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         {
             //given 
             Guid randomSubscriberAgreementId = Guid.NewGuid();
-            SubscriberAgreement randomSubscriberCredential = 
+
+            SubscriberAgreement randomSubscriberAgreement = 
                 await PostRandomSubscriberAgreementAsync(randomSubscriberAgreementId);
 
             SubscriberCredential randomSubscriberCredential = 
-                CreateRandomSubscriberCredential(randomSubscriberAgreementId);
+                CreateSubscriberCredentialFromAgreement(randomSubscriberAgreement);
 
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);

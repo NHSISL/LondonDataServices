@@ -129,6 +129,25 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             await this.apiBroker.PostSubscriberCredentialAndGenerateKeysAsync(inputSubscriberCredential);
+            string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
+            string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
+            Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
+            DataSet randomDataSet = await PostRandomActiveDataSetAsync(emisSupplierId);
+
+            DataSetSpecification randomDataSetSpecification =
+                await PostRandomActiveDataSetSpecificationAsync(randomDataSet.Id);
+
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+            string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
+            FileInfo fileInfo = new FileInfo(testFilePath);
+
+            if (!fileInfo.Directory.Exists)
+            {
+                fileInfo.Directory.Create();
+            }
+
+            File.WriteAllText(testFilePath, GetRandomString());
 
             // when
             List<string> actualDocuments =
@@ -136,7 +155,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             // then
             actualDocuments.Count.Should().BeGreaterThan(0);
+            await CleanupTask(randomFilePath);
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(inputSubscriberCredential.Id);
+            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+            File.Delete(testFilePath);
         }
 
         [Fact]

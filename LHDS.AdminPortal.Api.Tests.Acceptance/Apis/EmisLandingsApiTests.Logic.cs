@@ -126,17 +126,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         public async Task ShouldRetrieveListOfDocumentsToProcessAsync()
         {
             //given 
-            Guid randomSubscriberAgreementId = Guid.NewGuid();
-
-            SubscriberAgreement randomSubscriberAgreement = 
-                await PostRandomSubscriberAgreementAsync(randomSubscriberAgreementId);
-
-            SubscriberCredential randomSubscriberCredential = 
-                CreateSubscriberCredentialFromAgreement(randomSubscriberAgreement);
-
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);
-            //Document randomDocument = CreateRandomDocument();
+            await this.apiBroker.PostSubscriberCredentialAndGenerateKeysAsync(inputSubscriberCredential);
 
             // when
             List<string> actualDocuments =
@@ -144,6 +136,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             // then
             actualDocuments.Count.Should().BeGreaterThan(0);
+            await this.apiBroker.DeleteSubscriberCredentialByIdAsync(inputSubscriberCredential.Id);
         }
 
         [Fact]

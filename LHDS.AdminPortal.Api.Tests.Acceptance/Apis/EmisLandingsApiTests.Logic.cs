@@ -162,7 +162,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         }
 
         [Fact]
-        public async Task ShouldProcessDocumentsAsync()
+        public async Task ShouldProcessDocumentsWithNewIngestionTrackingAsync()
         {
             //given 
             for (int i = 0; i < GetRandomNumber(); i++)
@@ -170,6 +170,18 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
                 SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
                 await this.apiBroker.PostSubscriberCredentialAndGenerateKeysAsync(inputSubscriberCredential);
+                string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
+                string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
+                string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+                string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
+                FileInfo fileInfo = new FileInfo(testFilePath);
+
+                if (!fileInfo.Directory.Exists)
+                {
+                    fileInfo.Directory.Create();
+                }
+                File.WriteAllText(testFilePath, GetRandomString());
             }
 
             Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
@@ -177,21 +189,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             DataSetSpecification randomDataSetSpecification =
                 await PostRandomActiveDataSetSpecificationAsync(randomDataSet.Id);
-
-            //string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
-            //string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
-
-            //string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            //string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
-            //string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
-            //FileInfo fileInfo = new FileInfo(testFilePath);
-
-            //if (!fileInfo.Directory.Exists)
-            //{
-            //    fileInfo.Directory.Create();
-            //}
-
-            //File.WriteAllText(testFilePath, GetRandomString());
 
             // when
             List<string> actualDocuments =

@@ -1,12 +1,15 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
+using Moq;
 using Xunit;
-using System.Linq;
-using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 {
@@ -66,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                 service.RetrieveAllTerminologyPolls())
                     .Returns(storageTerminologyPolls);
 
-            this.dateTimeBrokerMock.Setup(broker => 
+            this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTimeOffset);
 
@@ -78,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             {
                 Id = randomId,
                 ResourceType = resouceType,
-                LastPoll = DateTimeOffset.MinValue,
+                LastPoll = DateTimeOffset.MinValue.AddMilliseconds(1),
                 CreatedBy = "System",
                 UpdatedBy = "System",
                 UpdatedDate = randomDateTimeOffset,

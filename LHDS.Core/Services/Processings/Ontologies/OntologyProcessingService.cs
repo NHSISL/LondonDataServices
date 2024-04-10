@@ -1,8 +1,7 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Ontologies;
@@ -10,7 +9,7 @@ using LHDS.Core.Services.Foundations.Ontologies;
 
 namespace LHDS.Core.Services.Processings.Ontologies
 {
-    internal partial class OntologyProcessingService : IOntologyProcessingService
+    public partial class OntologyProcessingService : IOntologyProcessingService
     {
         private readonly IOntologyService ontologyService;
         private readonly ILoggingBroker loggingBroker;

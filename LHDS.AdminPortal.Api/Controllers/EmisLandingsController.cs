@@ -86,19 +86,17 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [HttpGet("download/{fileName}")]
+        [HttpGet("download")]
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<string>> DownloadDocumentByFileNameAsync(string filename)
+        public async ValueTask<ActionResult<List<string>>> DownloadDocumentsAsync()
         {
             try
             {
-                throw new NotImplementedException();
-                //string retrieveDownload = await emisLandingCoordinationService
-                //    .DecryptDocumentByFileNameAsync(filename);
+                List<string> retrievedDownloads = await emisLandingCoordinationService.ProcessAsync();
 
-                //return Ok(retrieveDownload);
+                return Ok(retrievedDownloads);
             }
             catch (DownloadValidationException downloadValidationException)
                 when (downloadValidationException.InnerException is NotFoundDocumentException)

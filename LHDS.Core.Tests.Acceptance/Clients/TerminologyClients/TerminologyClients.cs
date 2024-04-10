@@ -36,12 +36,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
 
             serviceCollection.AddTerminologyClient(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
-
-
-            var x = serviceProvider.GetService<ITerminologyMetadataOrchestrationService>();
-
-
-
             this.terminologyClient = serviceProvider.GetService<ITerminologyClient>();
         }
 

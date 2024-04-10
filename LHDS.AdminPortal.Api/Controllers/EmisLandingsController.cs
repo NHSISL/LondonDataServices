@@ -30,7 +30,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public EmisLandingsController(IEmisLandingCoordinationService emisLandingCoordinationService) =>
             this.emisLandingCoordinationService = emisLandingCoordinationService;
 
-        [HttpGet]
+        [HttpGet("{subscriberAgreementId}")]
 #if !DEBUG
         [EnableQuery(PageSize = 50)]
 #endif

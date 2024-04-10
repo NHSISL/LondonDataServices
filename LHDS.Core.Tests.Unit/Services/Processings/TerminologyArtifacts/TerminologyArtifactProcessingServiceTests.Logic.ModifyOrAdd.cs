@@ -1,9 +1,10 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Moq;
@@ -14,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
     public partial class TerminologyArtifactProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldModifyTerminologyArtifactIfOneExistsAndNotAddAsync()
+        public async System.Threading.Tasks.Task ShouldModifyTerminologyArtifactIfOneExistsAndNotAddAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
@@ -30,9 +31,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTimeOffset);
 
+            List<TerminologyArtifact> terminologyArtifacts =
+                new List<TerminologyArtifact> { storageTerminologyArtifacts };
+
             this.terminologyArtifactServiceMock.Setup(service =>
-                service.RetrieveTerminologyArtifactByIdAsync(modifiedTerminologyArtifact.Id))
-                    .ReturnsAsync(storageTerminologyArtifacts);
+                service.RetrieveAllTerminologyArtifacts())
+                    .Returns(value: terminologyArtifacts.AsQueryable());
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.ModifyTerminologyArtifactAsync(modifiedTerminologyArtifact))
@@ -48,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveTerminologyArtifactByIdAsync(modifiedTerminologyArtifact.Id),
+                service.RetrieveAllTerminologyArtifacts(),
                     Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>
@@ -64,17 +68,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
         }
 
         [Fact]
-        public async Task ShouldAddTerminologyArtifactIfTerminologyArtifactDoesNotExistsAsync()
+        public async System.Threading.Tasks.Task ShouldAddTerminologyArtifactIfTerminologyArtifactDoesNotExistsAsync()
         {
             // Given
             TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact();
             TerminologyArtifact inputTerminologyArtifact = randomTerminologyArtifact;
             inputTerminologyArtifact.IsDownloaded = false;
             TerminologyArtifact storageTerminologyArtifact = inputTerminologyArtifact.DeepClone();
+            List<TerminologyArtifact> terminologyArtifacts = new List<TerminologyArtifact>();
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                service.RetrieveTerminologyArtifactByIdAsync(inputTerminologyArtifact.Id))
-                    .ReturnsAsync(value: null);
+                service.RetrieveAllTerminologyArtifacts())
+                    .Returns(value: terminologyArtifacts.AsQueryable());
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.AddTerminologyArtifactAsync(inputTerminologyArtifact))
@@ -86,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             // Then
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveTerminologyArtifactByIdAsync(inputTerminologyArtifact.Id),
+                service.RetrieveAllTerminologyArtifacts(),
                     Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>

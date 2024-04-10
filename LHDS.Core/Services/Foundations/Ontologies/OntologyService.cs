@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,7 +12,7 @@ using static Hl7.Fhir.Model.Bundle;
 
 namespace LHDS.Core.Services.Foundations.Ontologies
 {
-    internal partial class OntologyService : IOntologyService
+    public partial class OntologyService : IOntologyService
     {
         private readonly IOntologyBroker ontologyBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -29,7 +29,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             TryCatch(async () =>
             {
                 ValidateArgs(relativeUrl);
-                Bundle codingSystems = await this.ontologyBroker.GetAllCodingSystemsAsync(relativeUrl);
+                Bundle codingSystems = await this.ontologyBroker.GetAllAsync(relativeUrl);
                 string? nextPageUrl = codingSystems.NextLink?.ToString();
 
                 var ontologyAssets = new OntologyAssets
@@ -62,7 +62,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             TryCatch(async () =>
             {
                 ValidateArgs(relativeUrl);
-                Bundle valueSets = await this.ontologyBroker.GetAllConceptMapsAsync(relativeUrl);
+                Bundle valueSets = await this.ontologyBroker.GetAllAsync(relativeUrl);
                 string? nextPageUrl = valueSets.NextLink?.ToString();
 
                 var ontologyAssets = new OntologyAssets
@@ -95,7 +95,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             TryCatch(async () =>
             {
                 ValidateArgs(relativeUrl);
-                Bundle valueSets = await this.ontologyBroker.GetAllValueSetsAsync(relativeUrl);
+                Bundle valueSets = await this.ontologyBroker.GetAllAsync(relativeUrl);
                 string? nextPageUrl = valueSets.NextLink?.ToString();
 
                 var ontologyAssets = new OntologyAssets

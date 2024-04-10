@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -10,10 +10,10 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Ontologies;
 using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
-using LHDS.Core.Models.Orchestrations.TerminologyMetadatas;
 using LHDS.Core.Models.Processings.Ontologies.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
-        private readonly TerminologyMetadataConfiguration terminologyMetadataConfiguration;
+        private readonly OntologyConfiguration ontologyConfiguration;
         private readonly ITerminologyMetadataOrchestrationService terminologyMetadataOrchestrationService;
         private readonly ICompareLogic compareLogic;
 
@@ -50,9 +50,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             compareLogic = new CompareLogic();
             identifierBrokerMock = new Mock<IIdentifierBroker>();
 
-            terminologyMetadataConfiguration = new TerminologyMetadataConfiguration
+            ontologyConfiguration = new OntologyConfiguration
             {
-                ResourceURL = "/authoring/fhir/{{resourceType}}?_lastUpdated=ge{{datestamp}}" +
+                TerminologyServerResourceRelativeUrl = "/authoring/fhir/{{resourceType}}?_lastUpdated=ge{{datestamp}}" +
                     "&_name=dm+dCOMBINATION_PACK_IND&_elements=name,title,url,version,status&_count=10"
             };
 
@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 terminologyPollProcessingService: terminologyPollProcessingServiceMock.Object,
                 terminologyArtifactProcessingService: terminologyArtifactProcessingServiceMock.Object,
                 ontologyProcessingService: ontologyProcessingServiceMock.Object,
-                terminologyMetadataConfiguration: terminologyMetadataConfiguration,
+                ontologyConfiguration: ontologyConfiguration,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object);

@@ -1,11 +1,9 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -61,7 +59,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             {
                 ValidateTerminologyPollIsNotNull(terminologyPoll);
 
-                return await this.terminologyPollService.ModifyTerminologyPollAsync((TerminologyPoll)terminologyPoll);
+                return await this.terminologyPollService.ModifyTerminologyPollAsync(terminologyPoll);
             });
 
         public ValueTask<TerminologyPoll> RemoveTerminologyPollByIdAsync(Guid terminologyPollId) =>
@@ -77,7 +75,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             {
                 ValidateResourceType(resourceType);
 
-                IQueryable<TerminologyPoll> allTerminologyPolls = 
+                IQueryable<TerminologyPoll> allTerminologyPolls =
                     this.terminologyPollService.RetrieveAllTerminologyPolls();
 
                 TerminologyPoll maybeTerminologyPoll = allTerminologyPolls
@@ -92,7 +90,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                     {
                         Id = this.identifierBroker.GetIdentifier(),
                         ResourceType = resourceType,
-                        LastPoll = DateTimeOffset.MinValue,
+                        LastPoll = DateTimeOffset.MinValue.AddMilliseconds(1),
                         CreatedBy = "System",
                         UpdatedBy = "System",
                         UpdatedDate = dateTimeOffset,

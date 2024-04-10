@@ -1,0 +1,30 @@
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace LHDS.Core.Migrations
+{
+    /// <inheritdoc />
+    public partial class UpdatedTerminologyArtifactFullUrlUnique : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateIndex(
+                name: "IX_TerminologyArtifacts_FullUrl",
+                schema: "Ontology",
+                table: "TerminologyArtifacts",
+                column: "FullUrl",
+                unique: true);
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropIndex(
+                name: "IX_TerminologyArtifacts_FullUrl",
+                schema: "Ontology",
+                table: "TerminologyArtifacts");
+        }
+    }
+}

@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -10,7 +10,7 @@ using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Ontologies
 {
-    internal partial class OntologyService
+    public partial class OntologyService
     {
         private delegate ValueTask<OntologyAssets> ReturningOntologyAssetsFunction();
         private delegate ValueTask<string> ReturningStringFunction();

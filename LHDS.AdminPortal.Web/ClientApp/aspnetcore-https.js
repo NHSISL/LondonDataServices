@@ -17,6 +17,7 @@ if (!certificateName) {
 }
 
 const certFilePath = path.join(baseFolder, `${certificateName}.pem`);
+console.log(certFilePath);
 const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 
 if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {

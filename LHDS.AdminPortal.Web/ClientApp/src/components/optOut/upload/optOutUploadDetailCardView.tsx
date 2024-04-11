@@ -132,7 +132,7 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
     return (
         <>
             <div>
-                <input type="file" onChange={handleFileChange} /> <br />
+                <input type="file" onChange={handleFileChange} /> 
 
                 {!onUploadSuccess && nhsNumbers.length > 0 && (
                     <div>

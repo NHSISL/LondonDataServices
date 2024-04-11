@@ -1,5 +1,4 @@
 import React, { FunctionComponent, ChangeEvent } from "react";
-import { Label, Textarea } from 'nhsuk-react-components'
 import { InputGroup, Form } from "react-bootstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAsterisk } from "@fortawesome/free-solid-svg-icons";
@@ -19,14 +18,14 @@ interface TextAreaInputBaseProps {
     required?: boolean;
     showRemaingCount?: boolean;
     maxCharacters?: number;
-    error?: string;
-    width?: string | number | undefined
+    disabled?: boolean;
+    error?: string
 }
 
 const TextAreaInputBase: FunctionComponent<TextAreaInputBaseProps> = (props) => {
     return (
         <Form.Group>
-            {props.label && (<b><Label htmlFor={props.id}>{props.label}</Label></b>)}
+            {props.label && (<b><Form.Label htmlFor={props.id}>{props.label}</Form.Label></b>)}
             <div>
                 <InputGroup className="mb-0">
                     {
@@ -34,15 +33,15 @@ const TextAreaInputBase: FunctionComponent<TextAreaInputBaseProps> = (props) => 
                         && props.prependLabel.length > 0 
                         && <InputGroup.Text>{props.prependLabel}</InputGroup.Text>
                     }
-                    <Textarea as="textarea"
+                    <Form.Control as="textarea"
                         id={props.id}
                         name={props.name}
                         value={props.value || ""}
                         onChange={props.onChange}
                         rows={props.rows}
                         placeholder={props.placeholder || ""}
-                        error={props.error}
-                        width={props.width}
+                        disabled={props.disabled}
+                        //error={props.error}
                     />
                     {
                         props.appendLabel !== undefined 

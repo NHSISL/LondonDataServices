@@ -15,13 +15,13 @@
 }
 
 .summaryListKey {
-    width:35%;
+    min-width:30%;
     font-weight: 600;
 }
 
 .summaryListValue {
     width: 100%;
-    word-wrap: break-word;
+    word-wrap: anywhere;
     display: table-cell;
     padding-bottom: 8px;
     padding-right: 24px;

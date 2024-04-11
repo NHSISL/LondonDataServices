@@ -82,6 +82,40 @@ export const Home = () => {
                                         </div>
                                     </div>
                                 </FeatureSwitch>
+
+
+                                <FeatureSwitch feature={FeatureDefinitions.TerminologyArtifact}>
+                                    <div className="row">
+
+                                        <div className="col-lg-4 col-md-6 col-sm-12">
+                                            <SecuredComponents allowedRoles={securityPoints.terminologyArtifact.view}>
+                                                <CardBase>
+                                                    <CardBaseBody>
+                                                        <CardBaseContent>
+                                                            <div className="me-3 mt-3">
+                                                                <h5><PublicLink icon="" to="/terminologyArtifact">View Terminology Data</PublicLink></h5>
+                                                                <div className="text-muted small">
+                                                                    To search for the terminology data.
+                                                                </div>
+                                                            </div>
+                                                        </CardBaseContent>
+                                                    </CardBaseBody>
+                                                </CardBase>
+                                            </SecuredComponents>
+                                        </div>
+
+                                        <div className="col-lg-4 col-md-6 col-sm-12">
+                                           
+                                        </div>
+
+                                        <div className="col-lg-4 col-md-6 col-sm-12">
+                                            
+                                        </div>
+                                    </div>
+                                </FeatureSwitch>
+
+
+
                             </div>
                         </PageLayout>
                     ) : (

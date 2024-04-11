@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Text;
 using System.Threading.Tasks;
@@ -57,7 +57,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
 
                     Document artifactDetailDocument = new Document
                     {
-                        FileName = $"{artifact.ResourceType}/{artifact.Name}.json",
+                        FileName = $"{artifact.ResourceType}_{artifact.Id}.test",
                         DocumentData = artifactDetailData
                     };
 

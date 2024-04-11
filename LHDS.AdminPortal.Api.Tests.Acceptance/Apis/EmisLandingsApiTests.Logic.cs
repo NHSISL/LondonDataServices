@@ -165,11 +165,17 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         public async Task ShouldProcessDocumentsWithNewIngestionTrackingAsync()
         {
             //given 
-            for (int i = 0; i < GetRandomNumber(); i++)
+            int randomFilesNumber = GetRandomNumber();
+
+            List<Guid> subscriberCredentialIds = new List<Guid>();
+            List<string> testFilePaths = new List<string>();
+
+            for (int i = 0; i < randomFilesNumber; i++)
             {
                 SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
                 SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
                 await this.apiBroker.PostSubscriberCredentialAndGenerateKeysAsync(inputSubscriberCredential);
+                subscriberCredentialIds.Add(inputSubscriberCredential.Id);
                 string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
                 string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
                 string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -181,7 +187,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 {
                     fileInfo.Directory.Create();
                 }
+
                 File.WriteAllText(testFilePath, GetRandomString());
+                testFilePaths.Add(testFilePath);
             }
 
             Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
@@ -195,12 +203,21 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 await this.apiBroker.DownloadDocumentsAsync();
 
             // then
-            actualDocuments.Count.Should().BeGreaterThan(0);
-            //await CleanupTask(randomFilePath);
-            //await this.apiBroker.DeleteSubscriberCredentialByIdAsync(inputSubscriberCredential.Id);
+            actualDocuments.Count.Should().BeGreaterThanOrEqualTo(randomFilesNumber);
+
+            foreach (Guid id in subscriberCredentialIds)
+            {
+                await this.apiBroker.DeleteSubscriberCredentialByIdAsync(id);
+            };
+
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
-            //File.Delete(testFilePath);
+
+            foreach (string testFilePath in testFilePaths)
+            {
+                File.Delete(testFilePath);
+
+            }
         }
 
         [Fact]

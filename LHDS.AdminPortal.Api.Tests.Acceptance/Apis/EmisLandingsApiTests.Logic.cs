@@ -12,7 +12,6 @@ using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
@@ -160,6 +159,65 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
             File.Delete(testFilePath);
+        }
+
+        [Fact]
+        public async Task ShouldProcessDocumentsWithNewIngestionTrackingAsync()
+        {
+            //given 
+            int randomFilesNumber = GetRandomNumber();
+
+            List<Guid> subscriberCredentialIds = new List<Guid>();
+            List<string> testFilePaths = new List<string>();
+
+            for (int i = 0; i < randomFilesNumber; i++)
+            {
+                SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+                SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+                await this.apiBroker.PostSubscriberCredentialAndGenerateKeysAsync(inputSubscriberCredential);
+                subscriberCredentialIds.Add(inputSubscriberCredential.Id);
+                string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
+                string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
+                string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+                string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
+                FileInfo fileInfo = new FileInfo(testFilePath);
+
+                if (!fileInfo.Directory.Exists)
+                {
+                    fileInfo.Directory.Create();
+                }
+
+                File.WriteAllText(testFilePath, GetRandomString());
+                testFilePaths.Add(testFilePath);
+            }
+
+            Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
+            DataSet randomDataSet = await PostRandomActiveDataSetAsync(emisSupplierId);
+
+            DataSetSpecification randomDataSetSpecification =
+                await PostRandomActiveDataSetSpecificationAsync(randomDataSet.Id);
+
+            // when
+            List<string> actualDocuments =
+                await this.apiBroker.DownloadDocumentsAsync();
+
+            // then
+            actualDocuments.Count.Should().BeGreaterThanOrEqualTo(randomFilesNumber);
+
+            foreach (Guid id in subscriberCredentialIds)
+            {
+                await this.apiBroker.DeleteSubscriberCredentialByIdAsync(id);
+            };
+
+            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+
+            foreach (string testFilePath in testFilePaths)
+            {
+                File.Delete(testFilePath);
+
+            }
         }
 
         [Fact]

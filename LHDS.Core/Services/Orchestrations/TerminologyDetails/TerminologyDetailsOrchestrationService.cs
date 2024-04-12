@@ -48,23 +48,40 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                 while ((artifact =
                     await this.terminologyArtifactProcessingService.GetNonDownloadedArtifactAsync()) != null)
                 {
-                    string relativeUrl = artifact.FullUrl;
-
-                    string artifactDetail =
-                        await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(relativeUrl);
-
-                    byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
-
-                    Document artifactDetailDocument = new Document
+                    try
                     {
-                        FileName = $"{artifact.ResourceType}_{artifact.Id}.test",
-                        DocumentData = artifactDetailData
-                    };
+                        string relativeUrl = artifact.FullUrl;
 
-                    await this.documentProcessingService.AddDocumentAsync(artifactDetailDocument, "Terminology");
-                    artifact.IsDownloaded = true;
-                    artifact.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
-                    await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);
+                        string artifactDetail =
+                            await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(relativeUrl);
+
+                        byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
+
+                        Document artifactDetailDocument = new Document
+                        {
+                            FileName = $"{artifact.ResourceType}/{artifact.Name}.json",
+                            DocumentData = artifactDetailData
+                        };
+
+                        await this.documentProcessingService
+                            .AddDocumentAsync(artifactDetailDocument, blobContainers.Terminology);
+
+                        artifact.IsDownloaded = true;
+                        artifact.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                        await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);
+                    }
+                    catch (System.Exception ex)
+                    {
+                        artifact.IsDownloaded = false;
+                        artifact.IsErrorred = true;
+
+                        artifact.ErrorMessage = ex?.InnerException?.InnerException?.Message
+                            ?? ex?.InnerException?.Message
+                            ?? ex?.Message;
+
+                        await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);
+                        this.loggingBroker.LogError(ex);
+                    }
                 }
             });
     }

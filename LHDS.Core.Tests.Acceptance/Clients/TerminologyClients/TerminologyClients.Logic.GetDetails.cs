@@ -9,7 +9,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
 {
     public partial class TerminologyClients
     {
-        [Fact]
+        [Fact(Skip = "Add wiremock to this test and move duplicate test as is to integration tests")]
         public async Task ShouldRetrieveArtifactDetailsAsync()
         {
             //Given

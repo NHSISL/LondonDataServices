@@ -9,7 +9,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
 {
     public partial class TerminologyClients
     {
-        [Theory]
+        [Theory(Skip = "Add wiremock to this test and move duplicate test as is to integration tests")]
         [InlineData("CodeSystem")]
         [InlineData("ValueSet")]
         [InlineData("ConceptMap")]

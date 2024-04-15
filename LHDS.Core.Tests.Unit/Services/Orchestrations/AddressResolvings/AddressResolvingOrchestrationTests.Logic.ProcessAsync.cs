@@ -149,7 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
                     .ReturnsAsync(matchedAddress);
 
             // When
-            AddressNormalisation actualAddress =
+             AddressNormalisation actualAddress =
                 await this.addressResolvingOrchestrationService.ResolvedAddressAsync(inputNormalisedAddress);
 
             // Then

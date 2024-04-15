@@ -51,7 +51,8 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
                 ValidateNormalisedAddress(normalisedAddress);
 
                 (bool IsMatched, Guid? ItemId) isMatch =
-                    await resolvedAddressProcessingService.IsExactMatchForResolvedAddressAsync(normalisedAddress.PostalAddress);
+                    await resolvedAddressProcessingService.IsExactMatchForResolvedAddressAsync(
+                        normalisedAddress.PostalAddress);
 
                 if (isMatch.IsMatched)
                 {

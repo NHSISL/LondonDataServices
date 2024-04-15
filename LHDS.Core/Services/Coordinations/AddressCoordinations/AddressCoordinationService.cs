@@ -54,7 +54,6 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         public ValueTask<List<Address>> MatchAddressData(byte[] data) =>
             throw new System.NotImplementedException();
 
-
         public ValueTask<List<Address>> UploadResolvedAddresses() =>
             throw new System.NotImplementedException();
     }

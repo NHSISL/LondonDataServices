@@ -6,12 +6,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 
-namespace LHDS.Core.Clients
+namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 {
-    public interface IAddressClient
+    public interface IResolvedAddressOrchestrationService
     {
-        public ValueTask<List<Address>> LoadAddressData(byte[] data);
-        public ValueTask<List<Address>> MatchPatientAddressData(byte[] data);
-        public ValueTask<List<Address>> ProcessResolvedAddressData();
+        ValueTask<List<Address>> UploadResolvedAddressesAsync();
     }
 }

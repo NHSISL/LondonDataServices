@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressCoordinationService.ProcessData(nullData);
+                this.addressCoordinationService.LoadAddressData(nullData);
 
             AddressCoordinationValidationException actualAddressCoordinationValidationException =
                 await Assert.ThrowsAsync<AddressCoordinationValidationException>(async () =>

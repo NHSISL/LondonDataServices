@@ -93,7 +93,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            actualSubscriberCredential.Id.Should().Be(expectedSubscriberCredential.Id);
+            actualSubscriberCredential.FtpUserName.Should().BeEquivalentTo(expectedSubscriberCredential.FtpUserName);
+
+            actualSubscriberCredential.FtpPublicKey.Should().NotBeEquivalentTo(
+                expectedSubscriberCredential.FtpPublicKey);
+
+            actualSubscriberCredential.GpgPublicKey.Should().NotBeEquivalentTo(
+                expectedSubscriberCredential.GpgPublicKey);
+
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
@@ -123,7 +130,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            actualSubscriberCredential.Id.Should().Be(expectedSubscriberCredential.Id);
+            actualSubscriberCredential.FtpUserName.Should().BeEquivalentTo(expectedSubscriberCredential.FtpUserName);
+
+            actualSubscriberCredential.FtpPublicKey.Should().NotBeEquivalentTo(
+                expectedSubscriberCredential.FtpPublicKey);
+
+            actualSubscriberCredential.GpgPublicKey.Should().NotBeEquivalentTo(
+                expectedSubscriberCredential.GpgPublicKey);
+
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
@@ -203,7 +217,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            actualSubscriberCredential.FtpUserName.Should().Be(expectedSubscriberCredential.FtpUserName);
+            actualSubscriberCredential.FtpUserName.Should().BeEquivalentTo(expectedSubscriberCredential.FtpUserName);
+
+            actualSubscriberCredential.FtpPublicKey.Should().NotBeEquivalentTo(
+                expectedSubscriberCredential.FtpPublicKey);
+
+            actualSubscriberCredential.GpgPublicKey.Should().NotBeEquivalentTo(
+                expectedSubscriberCredential.GpgPublicKey);
+
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
@@ -233,7 +254,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            actualSubscriberCredential.Id.Should().Be(expectedSubscriberCredential.Id);
+            actualSubscriberCredential.FtpUserName.Should().BeEquivalentTo(expectedSubscriberCredential.FtpUserName);
+
+            actualSubscriberCredential.FtpPublicKey.Should().NotBeEquivalentTo(
+                expectedSubscriberCredential.FtpPublicKey);
+
+            actualSubscriberCredential.GpgPublicKey.Should().NotBeEquivalentTo(
+                expectedSubscriberCredential.GpgPublicKey);
+
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 

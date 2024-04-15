@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask<List<Address>> processDataTask = this.addressCoordinationService.ProcessData(randomData);
+            ValueTask<List<Address>> processDataTask = this.addressCoordinationService.LoadAddressData(randomData);
 
             AddressCoordinationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationDependencyValidationException>(processDataTask.AsTask);
@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<List<Address>> processDataTask = this.addressCoordinationService.ProcessData(randomData);
+            ValueTask<List<Address>> processDataTask = this.addressCoordinationService.LoadAddressData(randomData);
 
             AddressCoordinationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationDependencyException>(processDataTask.AsTask);
@@ -121,7 +121,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<List<Address>> processDataTask = this.addressCoordinationService.ProcessData(randomData);
+            ValueTask<List<Address>> processDataTask = this.addressCoordinationService.LoadAddressData(randomData);
 
             AddressCoordinationServiceException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationServiceException>(processDataTask.AsTask);

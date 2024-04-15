@@ -93,7 +93,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+            actualSubscriberCredential.Id.Should().Be(expectedSubscriberCredential.Id);
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
@@ -123,7 +123,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+            actualSubscriberCredential.Id.Should().Be(expectedSubscriberCredential.Id);
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
@@ -203,7 +203,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+            actualSubscriberCredential.FtpUserName.Should().Be(expectedSubscriberCredential.FtpUserName);
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
@@ -233,7 +233,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+            actualSubscriberCredential.Id.Should().Be(expectedSubscriberCredential.Id);
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 

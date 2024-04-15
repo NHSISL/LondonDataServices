@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
 
 namespace LHDS.Core.Models.Foundations.AddressMatchers
 {

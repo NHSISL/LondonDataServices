@@ -72,12 +72,16 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
                     List<Address> addressesByPostCode =
                         await addressProcessingService.RetrieveAddressByPostCodeAsync(postCode);
 
-                    HashSet<AddressMatch> addressesToMatch = addressesByPostCode.Select(address => new AddressMatch
+                    Address address = addressesByPostCode.FirstOrDefault();
+
+                    AddressMatch addressMatch = new AddressMatch
                     {
                         PostalAddress = address.PostalAddress,
                         JsonPostalAddress = address.JsonPostalAddress,
                         AddressComponents = GetComponents(address.JsonPostalAddress)
-                    }).ToHashSet();
+                    };
+
+                    HashSet<AddressMatch> addressesToMatch = addressMatch.ToHashSet();
 
                     AddressMatch matchedAddress =
                         await addressMatcherProcessingService.FindBestMatch(

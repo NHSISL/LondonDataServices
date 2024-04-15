@@ -72,41 +72,37 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
                     List<Address> addressesByPostCode =
                         await addressProcessingService.RetrieveAddressByPostCodeAsync(postCode);
 
-                    Address address = addressesByPostCode.FirstOrDefault();
-
-                    AddressMatch addressMatch = new AddressMatch
+                    List<AddressMatch> addressesToMatch = addressesByPostCode.Select(address => new AddressMatch
                     {
                         PostalAddress = address.PostalAddress,
                         JsonPostalAddress = address.JsonPostalAddress,
                         AddressComponents = GetComponents(address.JsonPostalAddress)
-                    };
+                    }).ToList();
 
-                    HashSet<AddressMatch> addressesToMatch = addressMatch.ToHashSet();
+                    //AddressMatch matchedAddress =
+                    //    await addressMatcherProcessingService.FindBestMatch(
+                    //        addressesToMatch,
+                    //        normalisedAddress.AddressComponents);
 
-                    AddressMatch matchedAddress =
-                        await addressMatcherProcessingService.FindBestMatch(
-                            addressesToMatch,
-                            normalisedAddress.AddressComponents);
+                    //ResolvedAddress finalResolvedAddress = new ResolvedAddress
+                    //{
+                    //    UPRN = matchedAddress.UPRN,
+                    //    UPSN = matchedAddress.UPSN,
+                    //    PostCode = postCode,
+                    //    PostalAddress = normalisedAddress.PostalAddress,
+                    //    JsonPostalAddress = normalisedAddress.JsonPostalAddress,
 
-                    ResolvedAddress finalResolvedAddress = new ResolvedAddress
-                    {
-                        UPRN = matchedAddress.UPRN,
-                        UPSN = matchedAddress.UPSN,
-                        PostCode = postCode,
-                        PostalAddress = normalisedAddress.PostalAddress,
-                        JsonPostalAddress = normalisedAddress.JsonPostalAddress,
+                    //    MatchAlgorithmUsed = (MatchAlgorithmEnum)Enum.Parse(typeof(MatchAlgorithmEnum),
+                    //        ((int)matchedAddress.BestMatch).ToString()),
 
-                        MatchAlgorithmUsed = (MatchAlgorithmEnum)Enum.Parse(typeof(MatchAlgorithmEnum),
-                            ((int)matchedAddress.BestMatch).ToString()),
+                    //    BestMatchType = matchedAddress.BestMatch,
+                    //    IsMatched = matchedAddress.IsMatched,
+                    //    MatchedWithPostalAddress = matchedAddress.PostalAddress,
+                    //    MatchedWithJsonPostalAddress = matchedAddress.JsonPostalAddress,
+                    //    IsProcessed = false
+                    //};
 
-                        BestMatchType = matchedAddress.BestMatch,
-                        IsMatched = matchedAddress.IsMatched,
-                        MatchedWithPostalAddress = matchedAddress.PostalAddress,
-                        MatchedWithJsonPostalAddress = matchedAddress.JsonPostalAddress,
-                        IsProcessed = false
-                    };
-
-                    await resolvedAddressProcessingService.AddResolvedAddressAsync(finalResolvedAddress);
+                    //await resolvedAddressProcessingService.AddResolvedAddressAsync(finalResolvedAddress);
 
                     return normalisedAddress;
                 }

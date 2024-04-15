@@ -22,8 +22,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="8.0.1" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.3.3">
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="8.0.3" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.4.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -45,6 +45,8 @@
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackings.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.optout.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.pds.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.subscriberagreement.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.subscriberCredentials.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.suppliers.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.terminologyArtifacts.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ts" />
@@ -129,6 +131,16 @@
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectValidations.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetail - Copy.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCardEdit.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementErrors.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementValidation.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierErrors.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowAdd.tsx" />
@@ -162,6 +174,10 @@
     <TypeScriptCompile Remove="ClientApp\src\models\pds\pds.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\pds\pdsHomeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\specificationObjects\specificationObject.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\subscriberAgreements\subscriberAgreementHomeView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\subscriberAgreements\subscriberAgreements.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\subscriberCredentials\subscriberCredentialHomeView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\subscriberCredentials\subscriberCredentials.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\terminologyArtifacts\terminologyArtifact.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\terminologyArtifacts\terminologyArtifactHomeView.ts" />
@@ -176,6 +192,8 @@
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\optOuts\optOutView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\pds\pdsView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\specificationObjects\specificationObjectView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\subscriberAgreements\subscriberAgreement.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\subscriberCredentials\subscriberCredentialView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\terminologyArtifacts\terminologyArtifactsView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
@@ -193,6 +211,8 @@
     <TypeScriptCompile Remove="ClientApp\src\pages\ownershipsPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\PdsSearch.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\PdsUpload.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\subscriberAgreementDetailPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\subscriberAgreementPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactDetailPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\documentService.ts" />
@@ -201,6 +221,8 @@
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\optoutService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\pdsService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\foundations\subscriberAgreementService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\foundations\subscriberCredentialService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\terminologyArtifactService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\auditViewService.ts" />
@@ -215,6 +237,8 @@
     <TypeScriptCompile Remove="ClientApp\src\services\views\pds\pdsHomeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\pds\pdsViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\specificationObjects\specificationObjectViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\subscriberAgreements\subscriberAgreementViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\subscriberCredentials\subscriberCredentialViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\supplierViewService .ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\terminologyArtifacts\terminologyArtifactHomeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\terminologyArtifacts\terminologyArtifactViewService.ts" />
@@ -230,6 +254,21 @@
     <Folder Include="ClientApp\dependencies\guid-typescript\node_modules\%40types\" />
     <Folder Include="ClientApp\src\components\bases\layouts\Navigation\" />
     <Folder Include="ClientApp\src\models\features\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

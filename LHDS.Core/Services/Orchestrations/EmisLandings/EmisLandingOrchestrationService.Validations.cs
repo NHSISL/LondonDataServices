@@ -1,10 +1,12 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
+using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 
 namespace LHDS.Core.Services.Orchestrations.Downloads
 {
@@ -19,12 +21,27 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 Parameter: "LandingConfiguration.SupplierId"));
         }
 
+        private void ValidateSubscriberCredentials(SubscriberCredential subscriberCredential)
+        {
+            if (subscriberCredential is null)
+            {
+                throw new NullSubscriberCredentialEmisLandingOrchestrationException(
+                    message: "Null subscriber credential EMIS landing orchestration exception, " +
+                        "please correct the errors and try again.");
+            }
+        }
+
+        public void ValidateIngestionTrackingId(Guid ingestionTrackingId)
+        {
+            Validate((Rule: IsInvalid(ingestionTrackingId), Parameter: "ingestionTrackingId"));
+        }
+        
         private void ValidateLandingConfigurationIsNotNull()
         {
             if (this.landingConfiguration is null)
             {
                 throw new NullLandingConfigurationEmisLandingOrchestrationException(
-                    message: "Null landing configuration download orchestration exception, " +
+                    message: "Null landing configuration EMIS landing orchestration exception, " +
                         "please correct the errors and try again.");
             }
         }
@@ -34,7 +51,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             if (this.blobContainers is null)
             {
                 throw new NullBlobContainersEmisLandingOrchestrationException(
-                    message: "Null blob container download orchestration exception, " +
+                    message: "Null blob container EMIS landing orchestration exception, " +
                         "please correct the errors and try again.");
             }
         }
@@ -44,9 +61,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
-        private static void ValidateStorageDownload(Document maybeDocument, string fileName)
+        private static void ValidateStorageDownload(Download maybeDownload, string fileName)
         {
-            if (maybeDocument is null)
+            if (maybeDownload is null)
             {
                 throw new NotFoundEmisLandingOrchestrationException(
                     message: $"Couldn't find download with file name: {fileName}.");

@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using FluentAssertions;
@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologies
             var expectedOntologyAssets = CreateArtiFactFromRandomData(randomArtifactProperties, nextPageUrl);
 
             this.ontologyBrokerMock.Setup(broker =>
-                broker.GetAllValueSetsAsync(inputRelativeUrl))
+                broker.GetAllAsync(inputRelativeUrl))
                     .ReturnsAsync(remoteValueSetBundle);
 
             // when
@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologies
             actualOntologyAssets.Should().BeEquivalentTo(expectedOntologyAssets);
 
             this.ontologyBrokerMock.Verify(broker =>
-                broker.GetAllValueSetsAsync(inputRelativeUrl),
+                broker.GetAllAsync(inputRelativeUrl),
                     Times.Once);
 
             this.ontologyBrokerMock.VerifyNoOtherCalls();

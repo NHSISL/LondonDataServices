@@ -24,7 +24,7 @@ type IngestionTrackingHomeViewServiceResponse = {
 export const ingestionTrackingHomeViewService = {
     useGetAllIngestionTrackings: (searchTerm?: string, supplierId?: string): IngestionTrackingHomeViewServiceResponse => {
         try {
-            let query = `?$orderby=createdDate desc&$expand=supplier`;
+            let query = `?$orderby=CreatedDate desc&$expand=supplier`;
 
             if (searchTerm) {
                 query = query + `&$filter=contains(fileName,'${searchTerm}') or contains(decryptedFileName,'${searchTerm}')`;

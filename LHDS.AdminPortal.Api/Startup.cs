@@ -1,10 +1,12 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Text.Json;
 using Azure.Core.Extensions;
 using Azure.Core.Pipeline;
@@ -29,11 +31,15 @@ using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.Suppliers;
-using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Providers.Downloads;
+using LHDS.Core.Providers.Downloads.DiskDownloads;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Providers.Downloads.FtpDownloads;
+using LHDS.Core.Services.Coordinations.Decryptions;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
@@ -44,6 +50,7 @@ using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.PdsAudits;
+using LHDS.Core.Services.Foundations.SecureDatas;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
@@ -56,6 +63,7 @@ using LHDS.Core.Services.Processings.Downloads;
 using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.OptOuts;
+using LHDS.Core.Services.Processings.SecureDatas;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -131,6 +139,7 @@ namespace LHDS.AdminPortal.Api
             AddFoundationServices(services, this.Configuration);
             AddOrchestrationServices(services, this.Configuration);
             AddProcessingServices(services, this.Configuration);
+            AddCoordinationServices(services, this.Configuration);
             services.AddLandingClient(this.Configuration);
             services.AddDecryptionClient(this.Configuration);
             services.UseFtpDownloadProvider(this.Configuration, builder => builder.AddFtpDownloadProvider());
@@ -201,6 +210,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
+            services.AddTransient<ISecureDataService, SecureDataService>();
         }
 
         private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)
@@ -220,6 +230,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IDataSetService, DataSetService>();
             services.AddTransient<ITerminologyArtifactService, TerminologyArtifactService>();
             services.AddTransient<ITerminologyPollService, TerminologyPollService>();
+
 
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
@@ -298,6 +309,7 @@ namespace LHDS.AdminPortal.Api
         private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IEmisLandingOrchestrationService, EmisLandingOrchestrationService>();
+            services.AddTransient<IEmisLandingOrchestrationService, EmisLandingOrchestrationService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services, IConfiguration configuration)
@@ -308,6 +320,12 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IDownloadProcessingService, DownloadProcessingService>();
             services.AddTransient<IIngestionTrackingProcessingService, IngestionTrackingProcessingService>();
             services.AddTransient<IIngestionTrackingAuditProcessingService, IngestionTrackingAuditProcessingService>();
+            services.AddTransient<ISecureDataProcessingService, SecureDataProcessingService>();
+        }
+
+        private static void AddCoordinationServices(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddTransient<IDecryptionCoordinationService, DecryptionCoordinationService>();
         }
 
         private IEdmModel GetEdmModel()
@@ -326,6 +344,8 @@ namespace LHDS.AdminPortal.Api
             builder.EntitySet<PdsAudit>("PdsAudits");
             builder.EntitySet<Supplier>("Suppliers");
             builder.EntitySet<TerminologyArtifact>("TerminologyArtifacts");
+            builder.EntitySet<SubscriberCredential>("SubscriberCredentials");
+            builder.EntitySet<SubscriberAgreement>("SubscriberAgreements");
             builder.EnableLowerCamelCase();
 
             return builder.GetEdmModel();
@@ -350,3 +370,4 @@ namespace LHDS.AdminPortal.Api
         }
     }
 }
+

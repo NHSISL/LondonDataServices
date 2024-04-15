@@ -1,10 +1,12 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Providers.Cryptography.Extensions;
+using LHDS.Core.Providers.Downloads;
+using LHDS.Core.Providers.Downloads.FtpDownloads;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.Extensions.Configuration;
@@ -44,6 +46,7 @@ namespace LHDS.Core.Tests.Integration.Decryptions
                 })
                 .AddDecryptionClient(configuration)
                 .UseGpgCryptographyProvider(configuration, builder => builder.AddGpgCryptographyProvider())
+                .AddTransient<IDownloadProvider, MockDownloadProvider>()
                 .BuildServiceProvider();
 
             decryptionClient = serviceProvider.GetService<IDecryptionClient>();

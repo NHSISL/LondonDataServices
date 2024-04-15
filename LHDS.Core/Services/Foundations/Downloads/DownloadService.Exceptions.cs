@@ -1,23 +1,22 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
-using Microsoft.Data.SqlClient;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Downloads
 {
     public partial class DownloadService
     {
-        private delegate ValueTask<List<Document>> ReturningDownloadsFunction();
-        private delegate ValueTask<Document> ReturningDownloadFunction();
+        private delegate ValueTask<List<string>> ReturningStringListFunction();
+        private delegate ValueTask<Download> ReturningDownloadFunction();
 
-        private async ValueTask<Document> TryCatch(ReturningDownloadFunction returningDownloadFunction)
+        private async ValueTask<Download> TryCatch(ReturningDownloadFunction returningDownloadFunction)
         {
             try
             {
@@ -26,6 +25,14 @@ namespace LHDS.Core.Services.Foundations.Downloads
             catch (NullDownloadException nullDownloadException)
             {
                 throw CreateAndLogValidationException(nullDownloadException);
+            }
+            catch (NullSubscriberCredentialException nullSubscriberCredentialException)
+            {
+                throw CreateAndLogValidationException(nullSubscriberCredentialException);
+            }
+            catch (NullDocumentException nullDocumentException)
+            {
+                throw CreateAndLogValidationException(nullDocumentException);
             }
             catch (InvalidDownloadException invalidDownloadException)
             {
@@ -39,33 +46,24 @@ namespace LHDS.Core.Services.Foundations.Downloads
             {
                 var failedDownloadServiceException =
                     new FailedDownloadServiceException(
-                        message: "Failed download service occurred, please contact support", 
+                        message: "Failed download service occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDownloadServiceException);
             }
         }
 
-        private async ValueTask<List<Document>> TryCatch(ReturningDownloadsFunction returningDownloadsFunction)
+        private async ValueTask<List<string>> TryCatch(ReturningStringListFunction returningStringListFunction)
         {
             try
             {
-                return await returningDownloadsFunction();
-            }
-            catch (SqlException sqlException)
-            {
-                var failedDownloadStorageException =
-                    new FailedDownloadStorageException(
-                        message: "Failed download storage error occurred, contact support.",
-                        innerException: sqlException);
-
-                throw CreateAndLogCriticalDependencyException(failedDownloadStorageException);
+                return await returningStringListFunction();
             }
             catch (Exception exception)
             {
                 var failedDownloadServiceException =
                     new FailedDownloadServiceException(
-                        message: "Failed download service occurred, please contact support", 
+                        message: "Failed download service occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDownloadServiceException);
@@ -86,7 +84,7 @@ namespace LHDS.Core.Services.Foundations.Downloads
         private DownloadDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
             var downloadDependencyException = new DownloadDependencyException(
-                message: "Download dependency error occurred, contact support.", 
+                message: "Download dependency error occurred, contact support.",
                 innerException: exception);
 
             this.loggingBroker.LogCritical(downloadDependencyException);
@@ -122,7 +120,7 @@ namespace LHDS.Core.Services.Foundations.Downloads
             Xeption exception)
         {
             var downloadServiceException = new DownloadServiceException(
-                message: "Download service error occurred, contact support.", 
+                message: "Download service error occurred, contact support.",
                 innerException: exception);
 
             this.loggingBroker.LogError(downloadServiceException);

@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Providers.FtpDownloads.Exceptions;
 using Renci.SshNet;
 
@@ -16,58 +17,104 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
 {
     public class FtpDownloadProvider : IDownloadProvider
     {
-        private readonly Renci.SshNet.SftpClient client;
         private readonly IFtpDownloadProviderSettings ftpDownloadProviderSettings;
         public string Name { get; private set; }
-        public bool IsMock { get; private set; }
+        public bool IsOfflineProvider { get; private set; }
 
         public FtpDownloadProvider(IFtpDownloadProviderSettings ftpDownloadProviderSettings)
         {
-
-            this.Name = "FtpDownloadProvider";
             this.ftpDownloadProviderSettings = ftpDownloadProviderSettings;
-            client = new SftpClient(GetConnectionInfo(ftpDownloadProviderSettings));
+            this.Name = "FtpDownloadProvider";
+            this.IsOfflineProvider = false;
         }
 
-        public async ValueTask<Document> GetDocumentByFileNameAsync(string fileName)
+        public async ValueTask<Download> GetDocumentByFileNameAsync(Download download)
         {
-            this.EnsureClientIsConnected();
-
-            var attrs = client.GetAttributes(fileName);
-            MemoryStream stream = new MemoryStream();
-            this.client.DownloadFile(fileName, stream);
-            byte[] data = stream.ToArray();
-
-            var document = new Document()
+            IFtpDownloadProviderSettings settings = new FtpDownloadProviderSettings
             {
-                FileName = fileName,
-                DocumentData = data
+                FtpServer = this.ftpDownloadProviderSettings.FtpServer,
+                FtpPort = this.ftpDownloadProviderSettings.FtpPort,
+                FtpRootFolder = this.ftpDownloadProviderSettings.FtpRootFolder,
+                IncludeSubDirectories = this.ftpDownloadProviderSettings.IncludeSubDirectories,
+                FtpUserName = download.SubscriberCredential.FtpUserName,
+                FtpPassword = download.SubscriberCredential.FtpPassword,
+                FtpPassPhrase = download.SubscriberCredential.FtpPassPhrase,
+                FtpPrivateKey = download.SubscriberCredential.FtpPrivateKey
             };
 
-            return await ValueTask.FromResult(document);
+            using (SftpClient client = new SftpClient(GetConnectionInfo(settings)))
+            {
+                this.EnsureClientIsConnected(client);
+
+                var attrs = client.GetAttributes(download.Document.FileName);
+                MemoryStream stream = new MemoryStream();
+                client.DownloadFile(download.Document.FileName, stream);
+                byte[] data = stream.ToArray();
+
+                var document = new Document()
+                {
+                    FileName = download.Document.FileName,
+                    DocumentData = data
+                };
+
+                var downloadedItem = new Download
+                {
+                    Document = document,
+                    SubscriberCredential = download.SubscriberCredential
+                };
+
+                client.Disconnect();
+                client.Dispose();
+
+                return await ValueTask.FromResult(downloadedItem);
+            }
         }
 
-        public async ValueTask<List<Document>> GetListOfDocumentsToProcessAsync()
+        public async ValueTask<List<string>> GetListOfDocumentsToProcessAsync(Download download)
         {
-            this.EnsureClientIsConnected();
+            IFtpDownloadProviderSettings settings = new FtpDownloadProviderSettings
+            {
+                FtpServer = this.ftpDownloadProviderSettings.FtpServer,
+                FtpPort = this.ftpDownloadProviderSettings.FtpPort,
+                FtpRootFolder = this.ftpDownloadProviderSettings.FtpRootFolder,
+                IncludeSubDirectories = this.ftpDownloadProviderSettings.IncludeSubDirectories,
+                FtpUserName = download.SubscriberCredential.FtpUserName,
+                FtpPassword = download.SubscriberCredential.FtpPassword,
+                FtpPassPhrase = download.SubscriberCredential.FtpPassPhrase,
+                FtpPrivateKey = download.SubscriberCredential.FtpPrivateKey
+            };
 
-            return await this.GetListOfDocumentsToProcessAsync(
-                path: ftpDownloadProviderSettings.FtpRootFolder,
-                includeSubDirectories: ftpDownloadProviderSettings.IncludeSubDirectories);
+            using (SftpClient client = new SftpClient(GetConnectionInfo(settings)))
+            {
+                this.EnsureClientIsConnected(client);
+
+                var items = await this.GetListOfDocumentsToProcessAsync(
+                    client,
+                    download,
+                    path: ftpDownloadProviderSettings.FtpRootFolder,
+                    includeSubDirectories: ftpDownloadProviderSettings.IncludeSubDirectories);
+
+                client.Disconnect();
+                client.Dispose();
+
+                return items;
+            }
         }
 
-        private async ValueTask<List<Document>> GetListOfDocumentsToProcessAsync(
+        private async ValueTask<List<string>> GetListOfDocumentsToProcessAsync(
+            SftpClient client,
+            Download download,
             string path,
             bool includeSubDirectories)
         {
-            var documents = new List<Document>();
+            var downloads = new List<string>();
 
-            var currDir = path == "/" ? this.client.WorkingDirectory : path;
-            var files = this.client.ListDirectory(currDir).ToList();
+            var currDir = path == "/" ? client.WorkingDirectory : path;
+            var files = client.ListDirectory(currDir).ToList();
 
             if (!includeSubDirectories)
             {
-                return files.Select(x => new Document { FileName = x.FullName }).ToList();
+                return files.Select(x => x.FullName).ToList();
             }
 
             foreach (var remotefile in files)
@@ -80,21 +127,23 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
                 if (remotefile.IsDirectory)
                 {
                     var items = await this.GetListOfDocumentsToProcessAsync(
+                        client,
+                        download,
                         path: remotefile.FullName,
                         includeSubDirectories);
 
-                    documents.AddRange(items);
+                    downloads.AddRange(items);
                 }
                 else
                 {
-                    documents.Add(new Document { FileName = remotefile.FullName });
+                    downloads.Add(remotefile.FullName);
                 }
             }
 
-            return await ValueTask.FromResult(documents);
+            return await ValueTask.FromResult(downloads);
         }
 
-        private void EnsureClientIsConnected()
+        private void EnsureClientIsConnected(SftpClient client)
         {
             var attempts = 0;
 
@@ -128,17 +177,17 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
                     password: ftpDownloadProviderSettings.FtpPassword));
             }
 
-            if (ftpDownloadProviderSettings.FtpKey != null && ftpDownloadProviderSettings.FtpPassPhrase != null)
+            if (ftpDownloadProviderSettings.FtpPrivateKey != null && ftpDownloadProviderSettings.FtpPassPhrase != null)
             {
-                var pkf = GetKeyFromB64(ftpDownloadProviderSettings.FtpKey, ftpDownloadProviderSettings.FtpPassPhrase);
+                var pkf = GetKeyFromB64(ftpDownloadProviderSettings.FtpPrivateKey, ftpDownloadProviderSettings.FtpPassPhrase);
                 methods.Add(new PrivateKeyAuthenticationMethod(ftpDownloadProviderSettings.FtpUserName, pkf));
             }
 
             return new ConnectionInfo(
-                                    ftpDownloadProviderSettings.FtpServer,
-                                    ftpDownloadProviderSettings.FtpPort,
-                                    ftpDownloadProviderSettings.FtpUserName,
-                                    methods.ToArray());
+                ftpDownloadProviderSettings.FtpServer,
+                ftpDownloadProviderSettings.FtpPort,
+                ftpDownloadProviderSettings.FtpUserName,
+                methods.ToArray());
         }
 
         private PrivateKeyFile GetKeyFromB64(string encodedKey, string passPhrase)
@@ -147,7 +196,12 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
 
             using (MemoryStream stream = new(bytes))
             {
-                var privateKeyFile = new PrivateKeyFile(stream, passPhrase);
+                var privateKeyFile = passPhrase switch
+                {
+                    "" => new PrivateKeyFile(stream),
+                    _ => new PrivateKeyFile(stream, passPhrase)
+                };
+
                 return privateKeyFile;
             }
         }

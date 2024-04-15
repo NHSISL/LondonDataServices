@@ -1,11 +1,11 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.Downloads;
 
 namespace LHDS.Core.Services.Processings.Downloads
@@ -23,17 +23,20 @@ namespace LHDS.Core.Services.Processings.Downloads
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<Document>> RetrieveListOfDocumentsToProcessAsync() =>
+        public ValueTask<List<string>> RetrieveListOfDownloadsToProcessAsync(Download download) =>
             TryCatch(async () =>
             {
-                return await this.downloadService.RetrieveListOfDocumentsToProcessAsync();
+                ValidateDownloadIsNotNull(download);
+
+                return await this.downloadService.RetrieveListOfDocumentsToProcessAsync(download);
             });
 
-        public ValueTask<Document> RetrieveDownloadByFileNameAsync(string fileName) =>
+        public ValueTask<Download> RetrieveDownloadByFileNameAsync(Download download) =>
             TryCatch(async () =>
             {
-                ValidateDownloadArgs(fileName);
-                return await this.downloadService.RetrieveDownloadByFileNameAsync(fileName);
+                ValidateDownloadIsNotNull(download);
+
+                return await this.downloadService.RetrieveDownloadByFileNameAsync(download);
             });
     }
 }

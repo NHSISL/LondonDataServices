@@ -17,7 +17,7 @@ namespace LHDS.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.1")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -1052,19 +1052,16 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("FtpPublicKey")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("FtpUserName")
-                        .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("GpgPublicKey")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasMaxLength(2500)
+                        .HasColumnType("nvarchar(2500)");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -1200,9 +1197,8 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("ResourceType")
                         .IsRequired()
@@ -1215,9 +1211,8 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -1228,9 +1223,8 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Version")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 

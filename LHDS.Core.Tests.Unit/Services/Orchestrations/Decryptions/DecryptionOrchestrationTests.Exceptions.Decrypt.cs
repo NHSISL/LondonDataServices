@@ -1,11 +1,12 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -20,6 +21,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             Xeption dependancyValidationException)
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string randomFileName = GetRandomMessage();
 
             var expectedDependencyException =
@@ -28,11 +31,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.ingestionTrackingServiceMock.Setup(service =>
-               service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
+               service.RetrieveIngestionTrackingByEncryptedFileNameAsync(randomFileName))
                    .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask<string> decryptTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
+            ValueTask<string> decryptTask = this.decryptionOrchestrationService.DecryptAsync(
+                randomFileName,
+                inputSubscriberCredential);
 
             DecryptionOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationDependencyValidationException>(decryptTask.AsTask);
@@ -42,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                  .BeEquivalentTo(expectedDependencyException);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-             service.RetrieveIngestionTrackingByFileNameAsync(randomFileName),
+             service.RetrieveIngestionTrackingByEncryptedFileNameAsync(randomFileName),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -64,6 +69,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             Xeption dependancyException)
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string randomFileName = GetRandomMessage();
 
             var expectedDependencyException =
@@ -72,11 +79,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     innerException: dependancyException.InnerException as Xeption);
 
             this.ingestionTrackingServiceMock.Setup(service =>
-              service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
+              service.RetrieveIngestionTrackingByEncryptedFileNameAsync(randomFileName))
                   .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask<string> decryptTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
+            ValueTask<string> decryptTask = this.decryptionOrchestrationService.DecryptAsync(
+                randomFileName,
+                inputSubscriberCredential);
 
             DecryptionOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationDependencyException>(decryptTask.AsTask);
@@ -85,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-             service.RetrieveIngestionTrackingByFileNameAsync(randomFileName),
+             service.RetrieveIngestionTrackingByEncryptedFileNameAsync(randomFileName),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -104,6 +113,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         public async Task ShouldThrowServiceExceptionOnProcessIfServiceErrorOccursAndLogItAsync()
         {
             //Given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string randomFileName = GetRandomMessage();
             var serviceException = new Exception();
 
@@ -118,11 +129,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     innerException: failedDecryptionOrchestrationServiceException);
 
             this.ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
+                service.RetrieveIngestionTrackingByEncryptedFileNameAsync(randomFileName))
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<string> processTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
+            ValueTask<string> processTask = this.decryptionOrchestrationService.DecryptAsync(
+                randomFileName,
+                inputSubscriberCredential);
 
             DecryptionOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationServiceException>(processTask.AsTask);
@@ -131,7 +144,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             actualException.Should().BeEquivalentTo(expectedDecryptionOrchestrationServiceException);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveIngestionTrackingByFileNameAsync(randomFileName),
+                service.RetrieveIngestionTrackingByEncryptedFileNameAsync(randomFileName),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

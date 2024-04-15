@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -36,7 +36,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                IngestionTracking addedIngestionTracking =
+                IngestionTracking addedIngestionTracking = 
                     await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 
                 return Created(addedIngestionTracking);
@@ -71,7 +71,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         [EnableQuery(PageSize = 50)]
 #endif
 #if DEBUG
-        [EnableQuery(PageSize = 5000)]
+        [EnableQuery(PageSize = 25)]
 #endif
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
@@ -103,7 +103,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                IngestionTracking ingestionTracking =
+                IngestionTracking ingestionTracking = 
                     await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
 
                 return Ok(ingestionTracking);
@@ -137,7 +137,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             {
                 string decodedFileName = HttpUtility.UrlDecode(fileName);
 
-                IngestionTracking ingestionTracking =
+                IngestionTracking ingestionTracking = 
                     await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(decodedFileName);
 
                 return Ok(ingestionTracking);
@@ -165,11 +165,12 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.IngestionTracking")]
 #endif
-        public async ValueTask<ActionResult<IngestionTracking>> PutIngestionTrackingAsync(IngestionTracking ingestionTracking)
+        public async ValueTask<ActionResult<IngestionTracking>> PutIngestionTrackingAsync(
+            IngestionTracking ingestionTracking)
         {
             try
             {
-                IngestionTracking modifiedIngestionTracking =
+                IngestionTracking modifiedIngestionTracking = 
                     await this.ingestionTrackingService.ModifyIngestionTrackingAsync(ingestionTracking);
 
                 return Ok(modifiedIngestionTracking);
@@ -189,7 +190,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return FailedDependency(ingestionTrackingValidationException.InnerException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
-               when (ingestionTrackingDependencyValidationException.InnerException is AlreadyExistsIngestionTrackingException)
+                when (ingestionTrackingDependencyValidationException.InnerException 
+                    is AlreadyExistsIngestionTrackingException)
             {
                 return Conflict(ingestionTrackingDependencyValidationException.InnerException);
             }
@@ -207,11 +209,12 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.IngestionTracking")]
 #endif
-        public async ValueTask<ActionResult<IngestionTracking>> DeleteIngestionTrackingByIdAsync(Guid ingestionTrackingId)
+        public async ValueTask<ActionResult<IngestionTracking>> DeleteIngestionTrackingByIdAsync(
+            Guid ingestionTrackingId)
         {
             try
             {
-                IngestionTracking deletedIngestionTracking =
+                IngestionTracking deletedIngestionTracking = 
                     await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTrackingId);
 
                 return Ok(deletedIngestionTracking);

@@ -1,18 +1,18 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 
 namespace LHDS.Core.Providers.Downloads
 {
     public interface IDownloadProvider
     {
         string Name { get; }
-        bool IsMock { get; }
-        ValueTask<List<Document>> GetListOfDocumentsToProcessAsync();
-        ValueTask<Document> GetDocumentByFileNameAsync(string fileName);
+        bool IsOfflineProvider { get; }
+        ValueTask<List<string>> GetListOfDocumentsToProcessAsync(Download download);
+        ValueTask<Download> GetDocumentByFileNameAsync(Download download);
     }
 }

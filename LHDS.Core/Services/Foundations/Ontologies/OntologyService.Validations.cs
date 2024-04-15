@@ -1,12 +1,12 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.Ontologies
 {
-    internal partial class OntologyService
+    public partial class OntologyService
     {
         public void ValidateArgs(string relativeUrl) =>
             Validate((Rule: IsInvalid(relativeUrl), Parameter: "relativeUrl"));

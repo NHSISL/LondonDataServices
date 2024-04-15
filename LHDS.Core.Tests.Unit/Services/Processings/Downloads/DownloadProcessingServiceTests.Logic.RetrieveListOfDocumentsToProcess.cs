@@ -1,11 +1,15 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xunit;
 
@@ -17,23 +21,26 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
         public async Task ShouldReturnDownloads()
         {
             // given
-            List<Document> randomDownloads = CreateRandomDocuments();
-            List<Document> externalDownloads = randomDownloads;
-            List<Document> expectedDownloads = externalDownloads;
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
+            List<Document> randomDocuments = CreateRandomDocuments();
+            List<string> externalDownloadList = randomDocuments.Select(document => document.FileName).ToList();
+            List<string> expectedDownloadList = externalDownloadList.DeepClone();
 
             this.downloadServiceMock.Setup(broker =>
-                broker.RetrieveListOfDocumentsToProcessAsync())
-                    .ReturnsAsync(externalDownloads);
+                broker.RetrieveListOfDocumentsToProcessAsync(inputDownload))
+                    .ReturnsAsync(externalDownloadList);
 
             // when
-            List<Document> actualDownloads =
-                await this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync();
+            List<string> actualDownloadList =
+                await this.downloadProcessingService.RetrieveListOfDownloadsToProcessAsync(inputDownload);
 
             // then
-            actualDownloads.Should().BeEquivalentTo(expectedDownloads);
+            actualDownloadList.Should().BeEquivalentTo(expectedDownloadList);
 
             this.downloadServiceMock.Verify(broker =>
-                broker.RetrieveListOfDocumentsToProcessAsync(),
+                broker.RetrieveListOfDocumentsToProcessAsync(inputDownload),
                     Times.Once);
 
             this.downloadServiceMock.VerifyNoOtherCalls();

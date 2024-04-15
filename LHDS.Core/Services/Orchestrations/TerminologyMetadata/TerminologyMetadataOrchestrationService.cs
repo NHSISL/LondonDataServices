@@ -1,16 +1,16 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Ontologies;
 using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
-using LHDS.Core.Models.Orchestrations.TerminologyMetadatas;
 using LHDS.Core.Services.Processings.Ontologies;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.TerminologyPolls;
@@ -22,17 +22,17 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
         private readonly ITerminologyPollProcessingService terminologyPollProcessingService;
         private readonly ITerminologyArtifactProcessingService terminologyArtifactProcessingService;
         private readonly IOntologyProcessingService ontologyProcessingService;
-        private readonly TerminologyMetadataConfiguration terminologyMetadataConfiguration;
+        private readonly OntologyConfiguration ontologyConfiguration;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
 
 
-        internal TerminologyMetadataOrchestrationService(
+        public TerminologyMetadataOrchestrationService(
             ITerminologyPollProcessingService terminologyPollProcessingService,
             ITerminologyArtifactProcessingService terminologyArtifactProcessingService,
             IOntologyProcessingService ontologyProcessingService,
-            TerminologyMetadataConfiguration terminologyMetadataConfiguration,
+            OntologyConfiguration ontologyConfiguration,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker)
@@ -40,7 +40,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
             this.terminologyPollProcessingService = terminologyPollProcessingService;
             this.terminologyArtifactProcessingService = terminologyArtifactProcessingService;
             this.ontologyProcessingService = ontologyProcessingService;
-            this.terminologyMetadataConfiguration = terminologyMetadataConfiguration;
+            this.ontologyConfiguration = ontologyConfiguration;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
@@ -54,23 +54,59 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                 TerminologyPoll retrievedTerminologyPoll =
                     await this.terminologyPollProcessingService.RetrieveOrAddTerminologyPollAsync(resourceType);
 
-                string relativeUrl = this.terminologyMetadataConfiguration.ResourceURL;
+                string relativeUrl = this.ontologyConfiguration.TerminologyServerResourceRelativeUrl;
                 ValidateResourceURL(relativeUrl);
                 relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
-                relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll.ToString());
 
-                DateTimeOffset currentDateTimeOffset = 
+                relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll
+                    .ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+
+                DateTimeOffset currentDateTimeOffset =
                     this.dateTimeBroker.GetCurrentDateTimeOffset();
-                    
-                await ProcessArtifacts(relativeUrl);
+
+                await ProcessArtifacts(relativeUrl, resourceType);
                 retrievedTerminologyPoll.LastPoll = currentDateTimeOffset;
+                retrievedTerminologyPoll.UpdatedDate = currentDateTimeOffset;
                 await this.terminologyPollProcessingService.ModifyTerminologyPollAsync(retrievedTerminologyPoll);
             });
 
-        private async ValueTask ProcessArtifacts(string relativeUrl)
+        private async ValueTask ProcessArtifacts(string relativeUrl, string resourceType)
         {
-            OntologyAssets retrievedOntologyAssets =
-                await this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(relativeUrl);
+
+            OntologyAssets? retrievedOntologyAssets = null;
+
+            switch (resourceType)
+            {
+                case "CodeSystem":
+                    {
+                        retrievedOntologyAssets =
+                            await this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(relativeUrl);
+                        break;
+
+                    }
+
+                case "ValueSet":
+                    {
+                        retrievedOntologyAssets =
+                            await this.ontologyProcessingService.RetrieveAllValueSetsAsync(relativeUrl);
+                        break;
+                    }
+
+                case "ConceptMap":
+                    {
+                        retrievedOntologyAssets =
+                            await this.ontologyProcessingService.RetrieveAllConceptMapsAsync(relativeUrl);
+                        break;
+                    }
+
+                default:
+                    throw new ArgumentException($"Unsupported resourceType: {resourceType}");
+            }
+
+            if (retrievedOntologyAssets == null)
+            {
+                return;
+            }
 
             foreach (var asset in retrievedOntologyAssets.Assets)
             {
@@ -100,7 +136,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
 
             if (!string.IsNullOrWhiteSpace(retrievedOntologyAssets.NextPage))
             {
-                await ProcessArtifacts(retrievedOntologyAssets.NextPage);
+                await ProcessArtifacts(retrievedOntologyAssets.NextPage, resourceType);
             }
         }
     }

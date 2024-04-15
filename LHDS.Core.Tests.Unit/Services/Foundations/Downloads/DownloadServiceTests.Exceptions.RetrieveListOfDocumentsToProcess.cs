@@ -1,13 +1,14 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xunit;
 
@@ -19,12 +20,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
         public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string exceptionMessage = GetRandomMessage();
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
+            string exceptionMessage = GetRandomString();
             var serviceException = new Exception(exceptionMessage);
 
             var failedDownloadServiceException =
                 new FailedDownloadServiceException(
-                    message: "Failed download service occurred, please contact support", 
+                    message: "Failed download service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedDownloadServiceException =
@@ -33,12 +37,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
                     innerException: failedDownloadServiceException);
 
             this.downloadBrokerMock.Setup(broker =>
-                broker.GetListOfDocumentsToProcessAsync())
+                broker.GetListOfDownloadsToProcessAsync(inputDownload))
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<List<Document>> RetrieveListOfDocumentsToProcessTask =
-                this.downloadService.RetrieveListOfDocumentsToProcessAsync();
+            ValueTask<List<string>> RetrieveListOfDocumentsToProcessTask =
+                this.downloadService.RetrieveListOfDocumentsToProcessAsync(inputDownload);
 
             DownloadServiceException actualDownloadServiceException =
                 await Assert.ThrowsAsync<DownloadServiceException>(RetrieveListOfDocumentsToProcessTask.AsTask);
@@ -48,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
                 .BeEquivalentTo(expectedDownloadServiceException);
 
             this.downloadBrokerMock.Verify(broker =>
-                broker.GetListOfDocumentsToProcessAsync(),
+                broker.GetListOfDownloadsToProcessAsync(inputDownload),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -16,11 +16,13 @@ using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
@@ -96,6 +98,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 landingConfiguration: landingConfiguration);
         }
 
+        private static List<string> GetRandomStrings(int count)
+        {
+            var messages = new List<string>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var message = GetRandomString();
+                messages.Add(message);
+            }
+
+            return messages;
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
@@ -112,40 +127,58 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         private static Filler<Document> CreateDocumentFiller()
         {
             var filler = new Filler<Document>();
-            string filename = GetRandomString(10);
-
-            for (int i = 0; i < 6; i++)
-            {
-                filename = $"{filename}_{GetRandomString(10)}";
-            }
-
-            filler.Setup()
-                .OnProperty(dataSet => dataSet.FileName).Use(filename);
+            Guid supplierAgreementId = Guid.NewGuid();
+            string filename = GetRandomFileName(supplierAgreementId);
+            string filePath = CreateRandomFilePath(supplierAgreementId, filename);
+            filler.Setup().OnProperty(document => document.FileName).Use(() => filePath);
 
             return filler;
         }
 
+        private static string GetRandomFileName(Guid subscriberAgreementId)
+        {
+            string filename =
+                $"delta" +
+                $"_{GetRandomNumber()}" +
+                $"_Admin" +
+                $"_Location" +
+                $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}" +
+                $"_{subscriberAgreementId}.csv.gpg";
+
+            return filename;
+        }
+
+        private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
+        {
+            return $"emisnightingale-data-preprod-provider-extracts" +
+                $"/IM1" +
+                $"/sftp" +
+                $"/{subscriberAgreementId}" +
+                $"/{DateTime.Now.ToString("yyyyMMdd")}" +
+                $"/{fileName}";
+        }
+
         private static string GetRandomString() =>
-          new MnemonicString().GetValue();
+            new MnemonicString().GetValue();
 
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
         private static string GetRandomMessage() =>
-           new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static List<IngestionTracking> CreateRandomIngestionTrackings(
             DateTimeOffset dateTimeOffset,
-            List<Document> documents)
+            List<string> fileNames)
         {
             List<IngestionTracking> items = new List<IngestionTracking>();
 
-            foreach (var document in documents)
+            foreach (var fileName in fileNames)
             {
-                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, document.FileName).Create());
+                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, fileName).Create());
             }
 
             return items;
@@ -159,6 +192,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         {
             return actualIngestionTracking =>
                 this.compareLogic.Compare(expectedIngestionTracking, actualIngestionTracking)
+                    .AreEqual;
+        }
+
+        private Expression<Func<Download, bool>> SameDownloadAs(
+            Download expectedDownload)
+        {
+            return actualDownload =>
+                this.compareLogic.Compare(expectedDownload, actualDownload)
                     .AreEqual;
         }
 
@@ -342,6 +383,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
                 .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
+
+            return filler;
+        }
+
+        private static SubscriberCredential CreateRandomSubscriberCredential() =>
+            CreateSubscriberCredentialFiller().Create();
+
+        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller()
+        {
+            var filler = new Filler<SubscriberCredential>();
+            string user = Guid.NewGuid().ToString();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
             return filler;
         }

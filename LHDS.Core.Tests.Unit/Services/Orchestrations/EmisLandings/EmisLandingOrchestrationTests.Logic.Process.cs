@@ -1,16 +1,21 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xunit;
 
@@ -22,11 +27,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         public async Task ShouldProcessNewDocumentsAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
             Guid randomGuid = Guid.NewGuid();
             Guid supplierId = landingConfiguration.LandingSupplierId;
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             List<Document> randomDocuments = CreateRandomDocuments();
-            List<Document> externalDocuments = randomDocuments;
+            List<string> externalDownloadList = randomDocuments.Select(document => document.FileName).ToList();
             List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking>();
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
             string randomHash = GetRandomString(64);
@@ -45,51 +53,74 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(randomGuid);
 
             this.downloadProcessingServiceMock.Setup(service =>
-               service.RetrieveListOfDocumentsToProcessAsync())
-                   .ReturnsAsync(externalDocuments);
+               service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
+                   .ReturnsAsync(externalDownloadList);
 
             this.dataSetSpecificationProcessingServiceMock.Setup(service =>
                 service.GetActiveDataSetSpecification(supplierId))
                     .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
 
-            foreach (var document in externalDocuments)
+            foreach (var externalFileName in externalDownloadList)
             {
+                Download inputFileDownload = new Download
+                {
+                    Document = new Document { FileName = externalFileName },
+                    SubscriberCredential = inputDownload.SubscriberCredential
+                };
+
+                Download storageFileDownload = inputFileDownload.DeepClone();
+
+                storageFileDownload.Document.DocumentData =
+                    Encoding.ASCII.GetBytes(storageFileDownload.Document.FileName);
+
                 this.ingestionTrackingProcessingServiceMock.Setup(service =>
                     service.RetrieveAllIngestionTrackings())
                         .Returns(externalIngestionTrackingsFound.AsQueryable());
 
                 this.downloadProcessingServiceMock.Setup(service =>
-                  service.RetrieveDownloadByFileNameAsync(document.FileName))
-                      .ReturnsAsync(document);
+                    service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputFileDownload))))
+                        .ReturnsAsync(storageFileDownload);
 
                 this.hashBrokerMock.Setup(broker =>
-                    broker.GenerateSha256Hash(document.DocumentData))
+                    broker.GenerateSha256Hash(storageFileDownload.Document.DocumentData))
                         .Returns(randomHash);
 
-                var filename = document.FileName.StartsWith('/')
-                    ? document.FileName
-                    : "/" + document.FileName;
+                var filename = externalFileName.StartsWith('/')
+                    ? externalFileName
+                    : "/" + externalFileName;
+
+                string[] splitFileName = filename.Split('/');
+                string newFileName = "";
+
+                if (splitFileName.Length < 6)
+                {
+                    throw new InvalidDocumentProcessingFileNameException(filename);
+                }
+                else
+                {
+                    newFileName = $"{inputSubscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
+                }
 
                 IngestionTracking newIngestionTracking =
                     new IngestionTracking
                     {
                         Id = randomGuid,
-                        FileName = document.FileName,
+                        FileName = externalFileName,
                         SupplierId = landingConfiguration.LandingSupplierId,
-                        EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+                        EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{filename}",
 
                         DecryptedFileName =
-                        $"/{landingConfiguration.DecryptedFolder}"
+                            $"/{landingConfiguration.DecryptedFolder}"
                             + $"/{randomDataSet.DataSetName}"
                             + $"/{randomDataSetSpecification.Id}"
-                            + $"/{filename.Split('_')[3]}"
-                            + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                            + $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}"
+                            + $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                         Decrypted = false,
                         LastSeen = randomDateTime,
                         FileDeleted = false,
                         RecordCount = 0,
-                        EncryptedFileSize = document.DocumentData.Length,
+                        EncryptedFileSize = storageFileDownload.Document.DocumentData.Length,
                         EncryptedFileSha256Hash = randomHash,
                         DecryptedFileSize = 0,
                         DecryptedFileSha256Hash = string.Empty,
@@ -107,51 +138,78 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             }
 
             // when
-            await this.emisLandingOrchestrationService.ProcessAsync();
+            await this.emisLandingOrchestrationService.ProcessAsync(subscriberCredential: inputSubscriberCredential);
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(),
+                service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))),
                     Times.Once);
 
-            foreach (var document in externalDocuments)
+            foreach (var externalFileName in externalDownloadList)
             {
+                Download inputNewFileDownload = new Download
+                {
+                    Document = new Document { FileName = externalFileName },
+                    SubscriberCredential = inputDownload.SubscriberCredential
+                };
+
+                Download storageNewFileDownload = inputNewFileDownload.DeepClone();
+
+                storageNewFileDownload.Document.DocumentData =
+                    Encoding.ASCII.GetBytes(storageNewFileDownload.Document.FileName);
+
                 this.ingestionTrackingProcessingServiceMock.Verify(service =>
                     service.RetrieveAllIngestionTrackings(),
                         Times.Exactly(2));
 
+                this.downloadProcessingServiceMock.Verify(service =>
+                    service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputNewFileDownload))),
+                        Times.Once);
+
                 this.hashBrokerMock.Verify(broker =>
-                    broker.GenerateSha256Hash(document.DocumentData),
+                    broker.GenerateSha256Hash(storageNewFileDownload.Document.DocumentData),
                         Times.Once);
 
                 this.dateTimeBrokerMock.Verify(broker =>
                     broker.GetCurrentDateTimeOffset(),
-                        Times.Exactly(externalDocuments.Count * 2));
+                        Times.Exactly(externalDownloadList.Count * 2));
 
-                var filename = document.FileName.StartsWith('/')
-                    ? document.FileName
-                    : "/" + document.FileName;
+                var filename = externalFileName.StartsWith('/')
+                    ? externalFileName
+                    : "/" + externalFileName;
+
+                string[] splitFileName = filename.Split('/');
+                string newFileName = "";
+
+                if (splitFileName.Length < 6)
+                {
+                    throw new InvalidDocumentProcessingFileNameException(filename);
+                }
+                else
+                {
+                    newFileName = $"{inputSubscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
+                }
 
                 IngestionTracking newIngestionTracking =
                   new IngestionTracking
                   {
                       Id = randomGuid,
-                      FileName = document.FileName,
+                      FileName = externalFileName,
                       SupplierId = landingConfiguration.LandingSupplierId,
-                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}",
 
                       DecryptedFileName =
                         $"/{landingConfiguration.DecryptedFolder}"
-                            + $"/{randomDataSet.DataSetName}"
-                            + $"/{randomDataSetSpecification.Id}"
-                            + $"/{filename.Split('_')[3]}"
-                            + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                        + $"/{randomDataSet.DataSetName}"
+                        + $"/{randomDataSetSpecification.Id}"
+                        + $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}"
+                        + $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                       Decrypted = false,
                       LastSeen = randomDateTime,
                       FileDeleted = false,
                       RecordCount = 0,
-                      EncryptedFileSize = document.DocumentData.Length,
+                      EncryptedFileSize = storageNewFileDownload.Document.DocumentData.Length,
                       EncryptedFileSha256Hash = randomHash,
                       DecryptedFileSize = 0,
                       DecryptedFileSha256Hash = string.Empty,
@@ -172,13 +230,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     service.GetActiveDataSetSpecification(supplierId),
                         Times.Once);
 
-                this.downloadProcessingServiceMock.Verify(service =>
-                    service.RetrieveDownloadByFileNameAsync(document.FileName),
-                        Times.Once);
-
                 Document newBlobDocument = new Document
                 {
-                    DocumentData = document.DocumentData,
+                    DocumentData = storageNewFileDownload.Document.DocumentData,
                     FileName = newIngestionTracking.EncryptedFileName
                 };
 
@@ -204,17 +258,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         public async Task ShouldNotProcessExistingDocumentsAsync()
         {
             // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
+            List<string> externalDownloadList = randomDocuments.Select(document => document.FileName).ToList();
             string randomHash = GetRandomString(64);
 
             List<IngestionTracking> externalIngestionTrackingsFound =
-                CreateRandomIngestionTrackings(randomDateTime, randomDocuments);
+                CreateRandomIngestionTrackings(dateTimeOffset: randomDateTime, fileNames: externalDownloadList);
 
             this.downloadProcessingServiceMock.Setup(service =>
-               service.RetrieveListOfDocumentsToProcessAsync())
-                   .ReturnsAsync(externalDocuments);
+               service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
+                   .ReturnsAsync(externalDownloadList);
 
             this.hashBrokerMock.Setup(broker =>
                 broker.GenerateSha256Hash(It.IsAny<byte[]>()))
@@ -224,19 +282,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTime);
 
-            foreach (var document in externalDocuments)
-            {
-                this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                    service.RetrieveAllIngestionTrackings())
-                        .Returns(externalIngestionTrackingsFound.AsQueryable());
-            }
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackings())
+                    .Returns(externalIngestionTrackingsFound.AsQueryable());
 
             // when
-            await this.emisLandingOrchestrationService.ProcessAsync();
+            await this.emisLandingOrchestrationService.ProcessAsync(subscriberCredential: inputSubscriberCredential);
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(),
+                service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))),
                     Times.Once);
 
             foreach (var document in externalDocuments)
@@ -269,230 +324,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         }
 
         [Fact]
-        public async Task ShouldProcessExistingNamedDocumentsAsync()
+        public async Task ShouldProcessDocumentsAndMarkUnavailableFilesAsDeletedAsync()
         {
             // given
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            Document randomDocument = CreateRandomDocument();
-            Document externalDocument = randomDocument;
-            IngestionTracking externalIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
-
-            List<IngestionTracking> externalIngestionTrackingsFound =
-                new List<IngestionTracking> { externalIngestionTracking };
-
-            this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Returns(externalIngestionTrackingsFound.AsQueryable());
-
-            this.downloadProcessingServiceMock.Setup(service =>
-                  service.RetrieveDownloadByFileNameAsync(externalIngestionTracking.FileName))
-                      .ReturnsAsync(externalDocument);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTime);
-
-            IngestionTracking updatedIngestionTracking = externalIngestionTracking.DeepClone();
-            updatedIngestionTracking.LastSeen = randomDateTime;
-            updatedIngestionTracking.EncryptedFileSize = externalDocument.DocumentData.Length;
-            IngestionTracking outputIngestionTracking = updatedIngestionTracking.DeepClone();
-
-            this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.ModifyIngestionTrackingAsync(updatedIngestionTracking))
-                    .ReturnsAsync(outputIngestionTracking);
-
-            // when
-            await this.emisLandingOrchestrationService.ProcessAsync(externalIngestionTracking.FileName);
-
-            // then
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
-                    Times.Once);
-
-            this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(externalIngestionTracking.FileName),
-                    Times.Once);
-
-            this.documentProcessingServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(
-                    externalIngestionTracking.EncryptedFileName, It.IsAny<string>()),
-                    Times.Once);
-
-            Document newBlobDocument = new Document
-            {
-                DocumentData = randomDocument.DocumentData,
-                FileName = externalIngestionTracking.EncryptedFileName
-            };
-
-            this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
-                    Times.Once);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Exactly(2));
-
-
-
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
-                    outputIngestionTracking))),
-                        Times.Once);
-
-            this.auditServiceMock.Verify(service =>
-                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
-                    Times.Once);
-
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldProcessNewNamedDocumentsAsync()
-        {
-            // given
-            Guid supplierId = landingConfiguration.LandingSupplierId;
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            Guid randomIdentifier = Guid.NewGuid();
-            Document randomDocument = CreateRandomDocument();
-            Document externalDocument = randomDocument;
-            DataSet randomDataSet = CreateRandomDataSet(supplierId);
-            string randomHash = GetRandomString(64);
-
-            IQueryable<DataSetSpecification> randomDataSetSpecificationList =
-                CreateRandomDataSetSpecifications(dataSet: randomDataSet);
-
-            DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
-
-            var filename = randomDocument.FileName.StartsWith('/')
-                ? randomDocument.FileName
-                : "/" + randomDocument.FileName;
-
-            this.dataSetSpecificationProcessingServiceMock.Setup(service =>
-                service.GetActiveDataSetSpecification(supplierId))
-                    .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
-
-            this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256Hash(externalDocument.DocumentData))
-                    .Returns(randomHash);
-
-            IngestionTracking newIngestionTracking = new IngestionTracking
-            {
-                Id = randomIdentifier,
-                FileName = externalDocument.FileName,
-                SupplierId = this.landingConfiguration.LandingSupplierId,
-                EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
-
-                DecryptedFileName =
-                    $"/{landingConfiguration.DecryptedFolder}"
-                    + $"/{randomDataSet.DataSetName}"
-                    + $"/{randomDataSetSpecification.Id}"
-                    + $"/{filename.Split('_')[3]}"
-                    + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
-
-                Decrypted = false,
-                LastSeen = randomDateTime,
-                FileDeleted = false,
-                RecordCount = 0,
-                EncryptedFileSize = externalDocument.DocumentData.Length,
-                EncryptedFileSha256Hash = randomHash,
-                DecryptedFileSize = 0,
-                DecryptedFileSha256Hash = string.Empty,
-                CreatedBy = "System",
-                CreatedDate = randomDateTime,
-                UpdatedBy = "System",
-                UpdatedDate = randomDateTime
-            };
-
-            List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking>();
-
-            this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Returns(externalIngestionTrackingsFound.AsQueryable());
-
-            this.downloadProcessingServiceMock.Setup(service =>
-                  service.RetrieveDownloadByFileNameAsync(newIngestionTracking.FileName))
-                      .ReturnsAsync(externalDocument);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTime);
-
-            this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(randomIdentifier);
-
-            IngestionTracking outputIngestionTracking = newIngestionTracking.DeepClone();
-
-            this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(newIngestionTracking))))
-                    .ReturnsAsync(outputIngestionTracking);
-
-            // when
-            await this.emisLandingOrchestrationService.ProcessAsync(newIngestionTracking.FileName);
-
-            // then
-            this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(newIngestionTracking.FileName),
-                    Times.Once);
-
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
-                    Times.Once);
-
-            Document newBlobDocument = new Document
-            {
-                DocumentData = randomDocument.DocumentData,
-                FileName = newIngestionTracking.EncryptedFileName
-            };
-
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
-                    outputIngestionTracking))),
-                        Times.Once);
-
-            this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(externalDocument.DocumentData),
-                    Times.Once);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Exactly(2));
-
-            this.dataSetSpecificationProcessingServiceMock.Verify(service =>
-                service.GetActiveDataSetSpecification(supplierId),
-                    Times.Once);
-
-            this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(
-                    It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
-                    Times.Once);
-
-            this.auditServiceMock.Verify(service =>
-                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
-                    Times.Once);
-
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldMarkUnavailableFilesAsDeletedAsync()
-        {
-            // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
             Guid randomGuid = Guid.NewGuid();
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             List<Document> externalDocuments = new List<Document>();
+            List<string> externalDownloadList = externalDocuments.Select(document => document.FileName).ToList();
 
             List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking>
             {
@@ -518,19 +359,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(randomGuid);
 
             this.downloadProcessingServiceMock.Setup(service =>
-               service.RetrieveListOfDocumentsToProcessAsync())
-                   .ReturnsAsync(externalDocuments);
+                service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
+                    .ReturnsAsync(externalDownloadList);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())
                     .Returns(externalIngestionTrackingsFound.AsQueryable());
 
             // when
-            await this.emisLandingOrchestrationService.ProcessAsync();
+            await this.emisLandingOrchestrationService.ProcessAsync(subscriberCredential: inputSubscriberCredential);
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>
-                service.RetrieveListOfDocumentsToProcessAsync(),
+                service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))),
                     Times.Once);
 
             DateTimeOffset expireTime = randomDateTime.AddMinutes(-15);

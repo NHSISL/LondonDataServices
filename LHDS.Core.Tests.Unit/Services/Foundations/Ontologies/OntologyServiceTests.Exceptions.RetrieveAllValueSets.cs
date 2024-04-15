@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologies
                     innerException: failedOntologyServiceException);
 
             this.ontologyBrokerMock.Setup(broker =>
-                broker.GetAllValueSetsAsync(It.IsAny<string>()))
+                broker.GetAllAsync(It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologies
                 .BeEquivalentTo(expectedOntologyServiceException);
 
             this.ontologyBrokerMock.Verify(broker =>
-                broker.GetAllValueSetsAsync(It.IsAny<string>()),
+                broker.GetAllAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -1,9 +1,10 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions;
 using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
 using Xeptions;
 
@@ -19,9 +20,13 @@ namespace LHDS.Core.Services.Foundations.Cryptographies
             {
                 return await returningCryptographyFunction();
             }
-            catch (NullCryptographyException nullCryptographyException)
+            catch (NullDataCryptographyException nullCryptographyException)
             {
                 throw CreateAndLogValidationException(nullCryptographyException);
+            }
+            catch (NullSubscriberCredentialCryptographyException nullSubscriberCredentialCryptographyException)
+            {
+                throw CreateAndLogValidationException(nullSubscriberCredentialCryptographyException);
             }
             catch (Exception exception)
             {

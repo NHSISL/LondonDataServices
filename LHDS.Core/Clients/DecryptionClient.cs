@@ -1,29 +1,29 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.DecryptClient.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
-using LHDS.Core.Services.Orchestrations.Decryptions;
+using LHDS.Core.Services.Coordinations.Decryptions;
 using Xeptions;
 
 namespace LHDS.Core.Clients
 {
     public class DecryptionClient : IDecryptionClient
     {
-        private readonly IDecryptionOrchestrationService decryptionOrchestrationService;
+        private readonly IDecryptionCoordinationService decryptionCoordinationService;
 
-        public DecryptionClient(IDecryptionOrchestrationService decryptionOrchestrationService)
+        public DecryptionClient(IDecryptionCoordinationService decryptionCoordinationService)
         {
-            this.decryptionOrchestrationService = decryptionOrchestrationService;
+            this.decryptionCoordinationService = decryptionCoordinationService;
         }
 
-        public async ValueTask<string> DecryptAsync(string fileName)
+        public async ValueTask<string> DecryptAsync(string encryptedFileName)
         {
             try
             {
-                return await decryptionOrchestrationService.DecryptAsync(fileName);
+                return await decryptionCoordinationService.DecryptAsync(encryptedFileName);
             }
             catch (DecryptionOrchestrationValidationException decryptionOrchestrationValidationException)
             {

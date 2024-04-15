@@ -13,10 +13,10 @@ export const supplierViewService = {
 
     useGetAllSuppliers: (searchTerm?: string) => {
         try {
-            let query = '?$orderby=name';
+            let query = '?$orderby=Name';
 
             if (searchTerm) {
-                query = query + `&$filter=contains(name,'${searchTerm}')`;
+                query = query + `&$filter=contains(Name,'${searchTerm}')`;
             }
 
             const response = supplierService.useGetAllSuppliers(query);

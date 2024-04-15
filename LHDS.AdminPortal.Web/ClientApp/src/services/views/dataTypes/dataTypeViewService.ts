@@ -11,10 +11,10 @@ export const dataTypeViewService = {
 
     useGetAllDataTypes: (searchTerm?: string) => {
         try {
-            let query = '?$orderby=name';
+            let query = '?$orderby=Name';
 
             if (searchTerm) {
-                query = query + `&$filter=contains(name,'${searchTerm}')`;
+                query = query + `&$filter=contains(Name,'${searchTerm}')`;
             }
 
             const response = dataTypeService.useRetrieveAllDataType(query);

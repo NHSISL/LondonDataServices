@@ -1,27 +1,25 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using Tynamix.ObjectFiller;
 
 namespace LHDS.Core.Providers.Downloads.FtpDownloads
 {
     public class MockDownloadProvider : IDownloadProvider
     {
-        private readonly Renci.SshNet.SftpClient client;
-        private readonly IFtpDownloadProviderSettings ftpDownloadProviderSettings;
-
         public string Name { get; private set; }
-        public bool IsMock { get; private set; }
+        public bool IsOfflineProvider { get; private set; }
 
         public MockDownloadProvider()
         {
             this.Name = "MockDownloadProvider";
-            this.IsMock = true;
+            this.IsOfflineProvider = true;
         }
 
         private static string GetRandomString() =>
@@ -30,45 +28,36 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        public async ValueTask<Document> GetDocumentByFileNameAsync(string fileName)
+        public async ValueTask<Download> GetDocumentByFileNameAsync(Download download)
         {
             string randomString = GetRandomString();
             byte[] data = Encoding.ASCII.GetBytes(randomString);
 
             var document = new Document()
             {
-                FileName = fileName,
+                FileName = download.Document.FileName,
                 DocumentData = data
             };
 
-            return await ValueTask.FromResult(document);
+            var downloadedItem = new Download
+            {
+                Document = document,
+                SubscriberCredential = download.SubscriberCredential
+            };
+
+            return await ValueTask.FromResult(downloadedItem);
         }
 
-        public async ValueTask<List<Document>> GetListOfDocumentsToProcessAsync()
+        public async ValueTask<List<string>> GetListOfDocumentsToProcessAsync(Download download)
         {
-            List<Document> documents = new List<Document>();
+            List<string> downloads = new List<string>();
 
             for (int i = 0; i < 1; i++)
             {
-                Document document = await GetRandomDocumentAsync();
-                documents.Add(document);
+                downloads.Add(GetRandomString());
             }
 
-            return documents;
-        }
-
-        private async ValueTask<Document> GetRandomDocumentAsync()
-        {
-            string randomString = GetRandomString();
-            byte[] data = Encoding.ASCII.GetBytes(randomString);
-
-            Document document = new Document()
-            {
-                FileName = GetRandomString(),
-                DocumentData = data
-            };
-
-            return document;
+            return downloads;
         }
     }
 }

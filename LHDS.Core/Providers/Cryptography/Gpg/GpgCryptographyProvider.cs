@@ -1,10 +1,11 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Org.BouncyCastle.Bcpg;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using Org.BouncyCastle.Security;
@@ -13,25 +14,16 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
 {
     public class GpgCryptographyProvider : ICryptographyProvider
     {
-        private readonly IGpgCryptographyProviderSettings gpgCryptographyProviderSettings;
-
-        public GpgCryptographyProvider(IGpgCryptographyProviderSettings gpgCryptographyProviderSettings)
+        public async ValueTask<byte[]> EncryptAsync(byte[] data, SubscriberCredential subscriberCredential)
         {
-            this.gpgCryptographyProviderSettings = gpgCryptographyProviderSettings;
-        }
-
-        public async ValueTask<byte[]> EncryptAsync(byte[] data)
-        {
-            var publicKeyDecoded = Convert.FromBase64String(gpgCryptographyProviderSettings.PublicKey);
+            var publicKeyDecoded = Convert.FromBase64String(subscriberCredential.GpgPublicKey);
 
             using (Stream inputFileStream = new MemoryStream(data))
             using (Stream publicKeyFileStream = new MemoryStream(publicKeyDecoded))
             using (MemoryStream encryptedFileStream = new MemoryStream())
             {
-                // Load the public key
                 PgpPublicKey publicKey = ReadPublicKey(publicKeyFileStream);
 
-                // Encrypt the file
                 PgpEncryptedDataGenerator encryptedDataGenerator =
                     new PgpEncryptedDataGenerator(SymmetricKeyAlgorithmTag.Cast5, true, new SecureRandom());
 
@@ -45,7 +37,12 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
                 PgpLiteralDataGenerator literalDataGenerator = new PgpLiteralDataGenerator();
 
                 Stream literalStream = literalDataGenerator
-                    .Open(compressedStream, PgpLiteralData.Binary, string.Empty, inputFileStream.Length, DateTime.UtcNow);
+                    .Open(
+                        outStr: compressedStream,
+                        format: PgpLiteralData.Binary,
+                        name: string.Empty,
+                        length: inputFileStream.Length,
+                        modificationTime: DateTime.UtcNow);
 
                 inputFileStream.CopyTo(literalStream);
                 literalStream.Close();
@@ -57,10 +54,10 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
             }
         }
 
-        public async ValueTask<byte[]> DecryptAsync(byte[] data)
+        public async ValueTask<byte[]> DecryptAsync(byte[] data, SubscriberCredential subscriberCredential)
         {
-            var privateKeyDecoded = Convert.FromBase64String(gpgCryptographyProviderSettings.PrivateKey);
-            char[] privateKeyPassphrase = gpgCryptographyProviderSettings.Passphrase.ToCharArray();
+            var privateKeyDecoded = Convert.FromBase64String(subscriberCredential.GpgPrivateKey);
+            char[] privateKeyPassphrase = subscriberCredential.GpgPassPhrase.ToCharArray();
 
             using (Stream encryptedFileStream = new MemoryStream(data))
             using (Stream privateKeyFileStream = new MemoryStream(privateKeyDecoded))
@@ -71,10 +68,13 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
                 PgpPrivateKey privateKey = null;
                 PgpPublicKeyEncryptedData encryptedData = null;
 
-                // Find the correct private key to use for decryption
                 foreach (PgpPublicKeyEncryptedData encryptedDataItem in encryptedDataList.GetEncryptedDataObjects())
                 {
-                    privateKey = FindPrivateKey(privateKeyFileStream, encryptedDataItem.KeyId, privateKeyPassphrase);
+                    privateKey = FindPrivateKey(
+                        privateKeyStream: privateKeyFileStream,
+                        keyId: encryptedDataItem.KeyId,
+                        passphrase: privateKeyPassphrase);
+
                     if (privateKey != null)
                     {
                         encryptedData = encryptedDataItem;
@@ -87,9 +87,8 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
                     throw new ArgumentException("Private key not found in the key file");
                 }
 
-                // Decrypt the file
                 Stream decryptedStream = encryptedData.GetDataStream(privateKey);
-                PgpObjectFactory decryptedFactory = new PgpObjectFactory(decryptedStream);
+                PgpObjectFactory decryptedFactory = new PgpObjectFactory(inputStream: decryptedStream);
                 PgpObject pgpObject = decryptedFactory.NextPgpObject();
 
                 if (pgpObject is PgpCompressedData)

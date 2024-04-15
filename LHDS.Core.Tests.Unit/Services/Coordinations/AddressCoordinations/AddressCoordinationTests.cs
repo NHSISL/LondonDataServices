@@ -1,17 +1,19 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
+using LHDS.Core.Services.Orchestrations.AddressNormalisations;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -23,7 +25,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
     public partial class AddressCoordinationServiceTests
     {
         private readonly Mock<IAddressExtractionOrchestrationService> addressExtractionOrchestrationServiceMock;
+        private readonly Mock<IAddressNormalisationOrchestrationService> addressNormalisationOrchestrationServiceMock;
         private readonly Mock<IAddressPersistanceOrchestrationService> addressPersistanceOrchestrationServiceMock;
+        private readonly Mock<IResolvedAddressOrchestrationService> resolvedAddressOrchestrationServiceMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly IAddressCoordinationService addressCoordinationService;
@@ -31,13 +36,19 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
         public AddressCoordinationServiceTests()
         {
             this.addressExtractionOrchestrationServiceMock = new Mock<IAddressExtractionOrchestrationService>();
+            this.addressNormalisationOrchestrationServiceMock = new Mock<IAddressNormalisationOrchestrationService>();
             this.addressPersistanceOrchestrationServiceMock = new Mock<IAddressPersistanceOrchestrationService>();
+            this.resolvedAddressOrchestrationServiceMock = new Mock<IResolvedAddressOrchestrationService>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
             this.addressCoordinationService = new AddressCoordinationService(
                 addressExtractionOrchestrationService: addressExtractionOrchestrationServiceMock.Object,
+                addressNormalisationOrchestrationService: addressNormalisationOrchestrationServiceMock.Object,
                 addressPersistanceOrchestrationService: addressPersistanceOrchestrationServiceMock.Object,
+                resolvedAddressOrchestrationService: resolvedAddressOrchestrationServiceMock.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
         }
 

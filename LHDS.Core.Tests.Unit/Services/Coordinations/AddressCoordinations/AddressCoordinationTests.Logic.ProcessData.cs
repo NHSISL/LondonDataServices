@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             List<Address> expectedAddresses = persistedAddresses.DeepClone();
 
             // When
-            List<Address> actualAddresses = await this.addressCoordinationService.ProcessData(inputData);
+            List<Address> actualAddresses = await this.addressCoordinationService.LoadAddressData(inputData);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);

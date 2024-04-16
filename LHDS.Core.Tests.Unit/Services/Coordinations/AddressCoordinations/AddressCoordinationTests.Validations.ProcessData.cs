@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                 .BeEquivalentTo(expectedAddressCoordinationValidationException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-                service.ProcessDataAsync(nullData),
+                service.ProcessAddressesAsync(nullData),
                     Times.Never());
 
             this.loggingBrokerMock.Verify(broker =>

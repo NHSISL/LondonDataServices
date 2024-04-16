@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using Moq;
 using Xeptions;
@@ -44,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressExtractionOrchestrationService.ProcessDataAsync(inputData);
+                this.addressExtractionOrchestrationService.ProcessAddressesAsync(inputData);
 
             AddressExtractionOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationDependencyValidationException>(
@@ -93,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressExtractionOrchestrationService.ProcessDataAsync(inputData);
+                this.addressExtractionOrchestrationService.ProcessAddressesAsync(inputData);
 
             AddressExtractionOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationDependencyException>(
@@ -145,7 +144,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressExtractionOrchestrationService.ProcessDataAsync(inputData);
+                this.addressExtractionOrchestrationService.ProcessAddressesAsync(inputData);
 
             AddressExtractionOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(

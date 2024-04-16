@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -29,5 +30,8 @@ namespace LHDS.Core.Services.Foundations.Audits
 
                 return await this.storageBroker.InsertAuditAsync(audit);
             });
+
+        public IQueryable<Audit> RetrieveAllAudits() =>
+            throw new System.NotImplementedException();
     }
 }

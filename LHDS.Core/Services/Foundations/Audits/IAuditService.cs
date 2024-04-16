@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.Audits
 {
     public interface IAuditService
     {
-        ValueTask<Audit> AddAudit(
+        ValueTask<Audit> AddAuditAsync(
             string auditType,
             string title,
             string? message,

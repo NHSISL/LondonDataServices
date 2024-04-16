@@ -30,7 +30,7 @@ namespace LHDS.Core.Clients
             try
             {
                 return await this.auditService
-                    .AddAudit(auditType, title, message, fileName, correlationId, logLevel);
+                    .AddAuditAsync(auditType, title, message, fileName, correlationId, logLevel);
             }
             catch (AuditValidationException auditValidationException)
             {

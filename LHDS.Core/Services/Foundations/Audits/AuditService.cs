@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -33,5 +34,8 @@ namespace LHDS.Core.Services.Foundations.Audits
 
         public IQueryable<Audit> RetrieveAllAudits() =>
             TryCatch(() => this.storageBroker.SelectAllAudits());
+
+        public ValueTask<Audit> RetrieveAuditByIdAsync(Guid auditId) =>
+            throw new NotImplementedException();
     }
 }

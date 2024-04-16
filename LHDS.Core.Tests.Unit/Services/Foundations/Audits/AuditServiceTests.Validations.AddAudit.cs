@@ -21,6 +21,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         public async Task ShouldThrowValidationExceptionOnAddAuditIfAuditIsInvalidAndLogItAsync(string invalidText)
         {
             // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Guid randomIdentifier = Guid.NewGuid();
             string randomAuditType = invalidText;
             string randomAuditTitle = invalidText;
             string randomMesssage = invalidText;
@@ -45,6 +47,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     message: "Audit validation errors occurred, please try again.",
                     innerException: invalidAuditException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(randomIdentifier);
+
             // when
             ValueTask<Audit> addAuditTask =
                 this.auditService.AddAuditAsync(
@@ -64,7 +74,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.Once());
+                    Times.Exactly(2));
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -75,10 +89,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.InsertAuditAsync(It.IsAny<Audit>()),
                     Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

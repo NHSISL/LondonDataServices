@@ -57,6 +57,5 @@ namespace LHDS.Core.Clients
                     auditServiceException.InnerException as Xeption);
             }
         }
-
     }
 }

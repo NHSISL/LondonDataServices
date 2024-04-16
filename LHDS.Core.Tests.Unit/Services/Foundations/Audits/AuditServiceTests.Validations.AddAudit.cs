@@ -14,19 +14,31 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 {
     public partial class AuditServiceTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnRemoveIfIdIsInvalidAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnAddAuditIfAuditIsInvalidAndLogItAsync(string invalidText)
         {
             // given
-            Guid invalidAuditId = Guid.Empty;
+            string randomAuditType = invalidText;
+            string randomAuditTitle = invalidText;
+            string randomMesssage = invalidText;
+            string randomFileName = invalidText;
+            string randomLogLevel = invalidText;
+            Guid? randomCorrelationId = null;
 
             var invalidAuditException =
                 new InvalidAuditException(
                     message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
-                key: nameof(Audit.Id),
-                values: "Id is required");
+                key: nameof(Audit.AuditType),
+                values: "Text is required");
+
+            invalidAuditException.AddData(
+                key: nameof(Audit.Title),
+                values: "Text is required");
 
             var expectedAuditValidationException =
                 new AuditValidationException(
@@ -34,16 +46,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     innerException: invalidAuditException);
 
             // when
-            ValueTask<Audit> removeAuditByIdTask =
-                this.auditService.RemoveAuditByIdAsync(invalidAuditId);
+            ValueTask<Audit> addAuditTask =
+                this.auditService.AddAuditAsync(
+                    auditType: randomAuditType,
+                    title: randomAuditTitle,
+                    message: randomMesssage,
+                    fileName: randomFileName,
+                    correlationId: randomCorrelationId,
+                    logLevel: randomLogLevel);
 
             AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(
-                    removeAuditByIdTask.AsTask);
+                await Assert.ThrowsAsync<AuditValidationException>(addAuditTask.AsTask);
 
             // then
             actualAuditValidationException.Should()
                 .BeEquivalentTo(expectedAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -51,13 +72,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.DeleteAuditAsync(It.IsAny<Audit>()),
+                broker.InsertAuditAsync(It.IsAny<Audit>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

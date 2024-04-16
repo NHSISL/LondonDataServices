@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -24,7 +24,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             var expectedDependencyException =
                 new TerminologyDetailOrchestrationDependencyValidationException(
                     message:
-                        "Terminology detail orchestration dependency validation error occurred, fix the errors and try again.",
+                        "Terminology detail orchestration dependency validation error occurred, " +
+                        "fix the errors and try again.",
                     dependancyValidationException.InnerException as Xeption);
 
             this.terminologyArtifactProcessingServiceMock.Setup(service =>
@@ -36,7 +37,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 this.terminologyDetailOrchestrationService.RetrieveArtifactDetailsAsync();
 
             TerminologyDetailOrchestrationDependencyValidationException actualException =
-                await Assert.ThrowsAsync<TerminologyDetailOrchestrationDependencyValidationException>(retrireveTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyDetailOrchestrationDependencyValidationException>(
+                    retrireveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
@@ -65,7 +67,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             // given
             var expectedDependencyException =
                 new TerminologyDetailOrchestrationDependencyException(
-                    message: "Terminology detail orchestration dependency error occurred, fix the errors and try again.",
+                    message: "Terminology detail orchestration dependency error occurred, " +
+                        "fix the errors and try again.",
                     innerException: dependancyException.InnerException as Xeption);
 
             this.terminologyArtifactProcessingServiceMock.Setup(service =>

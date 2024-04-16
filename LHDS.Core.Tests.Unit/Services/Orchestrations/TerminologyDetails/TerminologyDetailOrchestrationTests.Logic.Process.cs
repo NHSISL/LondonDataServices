@@ -1,6 +1,7 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
+
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             };
 
             this.documentProcessingServiceMock.Setup(service =>
-                service.AddDocumentAsync(artifactDetailDocument, "Terminology"))
+                service.AddDocumentAsync(artifactDetailDocument, blobContainers.Terminology))
                     .ReturnsAsync(outputFileName);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -71,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     Times.Once());
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is(SameDocumentAs(artifactDetailDocument)), "Terminology"),
+                service.AddDocumentAsync(It.Is(SameDocumentAs(artifactDetailDocument)), blobContainers.Terminology),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>

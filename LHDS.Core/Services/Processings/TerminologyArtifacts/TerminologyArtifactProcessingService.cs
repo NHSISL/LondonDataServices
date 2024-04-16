@@ -54,7 +54,6 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 
                 if (maybeTerminologyArtifact != null)
                 {
-                    terminologyArtifact.IsDownloaded = false;
                     terminologyArtifact.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
                     return await this.terminologyArtifactService.ModifyTerminologyArtifactAsync(terminologyArtifact);
@@ -80,7 +79,9 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             {
                 TerminologyArtifact nonDownloadedArtifact =
                      this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
-                        .FirstOrDefault(terminologyArtifact => !terminologyArtifact.IsDownloaded);
+                        .OrderBy(terminologyArtifact => terminologyArtifact.ResourceType)
+                        .FirstOrDefault(terminologyArtifact =>
+                            terminologyArtifact.IsDownloaded == false && terminologyArtifact.IsErrorred == false);
 
                 return nonDownloadedArtifact;
             });

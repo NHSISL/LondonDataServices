@@ -63,6 +63,11 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<TerminologyArtifact>()
+                .Property(terminologyArtifact => terminologyArtifact.IsErrorred)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<TerminologyArtifact>()
                 .Property(terminologyArtifact => terminologyArtifact.CreatedBy)
                 .HasMaxLength(255)
                 .IsRequired();

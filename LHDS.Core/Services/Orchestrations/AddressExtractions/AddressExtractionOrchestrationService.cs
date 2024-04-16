@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -11,8 +11,6 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits;
-using LHDS.Core.Services.Foundations.AddressExtractionAudits;
 using LHDS.Core.Services.Foundations.AddressParsers;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions
@@ -20,20 +18,17 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
     public partial class AddressExtractionOrchestrationService : IAddressExtractionOrchestrationService
     {
         private readonly IAddressParserService addressParserService;
-        private readonly IAddressExtractionAuditService addressExtractionAuditService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
 
         public AddressExtractionOrchestrationService(
             IAddressParserService addressParserService,
-            IAddressExtractionAuditService addressExtractionAuditService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker)
         {
             this.addressParserService = addressParserService;
-            this.addressExtractionAuditService = addressExtractionAuditService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
@@ -68,21 +63,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
                             addresses.AddRange(csvAddresses);
                             var dateStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
-                            var audit = new AddressExtractionAudit
-                            {
-                                Id = this.identifierBroker.GetIdentifier(),
-                                CorrelationId = this.identifierBroker.GetIdentifier(),
-                                FileName = $"{entry}",
-                                Message = "Success",
-                                MessageId = "",
-                                CreatedBy = "System",
-                                UpdatedBy = "System",
-                                UpdatedDate = dateStamp,
-                                CreatedDate = dateStamp,
-                            };
-
-                            await this.addressExtractionAuditService.AddAddressExtractionAuditAsync(audit);
                         }
                     }
                     else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))

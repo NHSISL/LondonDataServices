@@ -91,6 +91,15 @@ namespace LHDS.Core.Services.Foundations.Audits
 
                 throw CreateAndLogCriticalDependencyException(failedAuditStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedAuditServiceException =
+                    new FailedAuditServiceException(
+                        message: "Failed audit service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAuditServiceException);
+            }
         }
 
         private AuditValidationException CreateAndLogValidationException(Xeption exception)

@@ -24,7 +24,13 @@ namespace LHDS.Core.Services.Foundations.Audits
                     firstDate: audit.UpdatedDate,
                     secondDate: audit.CreatedDate,
                     secondDateName: nameof(Audit.CreatedDate)),
-                Parameter: nameof(Audit.UpdatedDate)));
+                Parameter: nameof(Audit.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: audit.UpdatedBy,
+                    secondId: audit.CreatedBy,
+                    secondIdName: nameof(Audit.CreatedBy)),
+                Parameter: nameof(Audit.UpdatedBy)));
         }
 
         private static void ValidateAuditIsNotNull(Audit audit)
@@ -61,6 +67,24 @@ namespace LHDS.Core.Services.Foundations.Audits
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
             };
+
+        private static dynamic IsNotSame(
+            Guid firstId,
+            Guid secondId,
+            string secondIdName) => new
+            {
+                Condition = firstId != secondId,
+                Message = $"Id is not the same as {secondIdName}"
+            };
+
+        private static dynamic IsNotSame(
+           string first,
+           string second,
+           string secondName) => new
+           {
+               Condition = first != second,
+               Message = $"Text is not the same as {secondName}"
+           };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

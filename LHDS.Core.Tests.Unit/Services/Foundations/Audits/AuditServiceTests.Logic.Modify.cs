@@ -28,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectAuditByIdAsync(auditId))
+                    .ReturnsAsync(storageAudit);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateAuditAsync(inputAudit))
                     .ReturnsAsync(updatedAudit);
 
@@ -43,12 +47,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectAuditByIdAsync(inputAudit.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateAuditAsync(inputAudit),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

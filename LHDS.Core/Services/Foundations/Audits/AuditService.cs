@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.Foundations.Audits;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.Audits
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 {
-    public partial class AuditService : IAuditService
+    public partial class AuditServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public AuditService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifyAuditAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Audit randomAudit = CreateRandomModifyAudit(randomDateTimeOffset);
+            Audit inputAudit = randomAudit;
+            Audit storageAudit = inputAudit.DeepClone();
+            storageAudit.UpdatedDate = randomAudit.CreatedDate;
+            Audit updatedAudit = inputAudit;
+            Audit expectedAudit = updatedAudit.DeepClone();
+            Guid auditId = inputAudit.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAuditByIdAsync(auditId))
+                    .ReturnsAsync(storageAudit);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateAuditAsync(inputAudit))
+                    .ReturnsAsync(updatedAudit);
+
+            // when
+            Audit actualAudit =
+                await this.auditService.ModifyAuditAsync(inputAudit);
+
+            // then
+            actualAudit.Should().BeEquivalentTo(expectedAudit);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAuditByIdAsync(inputAudit.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateAuditAsync(inputAudit),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<Audit> AddAuditAsync(Audit audit) =>
-            TryCatch(async () =>
-            {
-                ValidateAuditOnAdd(audit);
-
-                return await this.storageBroker.InsertAuditAsync(audit);
-            });
-
-        public IQueryable<Audit> RetrieveAllAudits() =>
-            TryCatch(() => this.storageBroker.SelectAllAudits());
-
-        public ValueTask<Audit> RetrieveAuditByIdAsync(Guid auditId) =>
-            TryCatch(async () =>
-            {
-                ValidateAuditId(auditId);
-
-                Audit maybeAudit = await this.storageBroker
-                    .SelectAuditByIdAsync(auditId);
-
-                ValidateStorageAudit(maybeAudit, auditId);
-
-                return maybeAudit;
-            });
-
-        public ValueTask<Audit> ModifyAuditAsync(Audit audit) =>
-            TryCatch(async () =>
-            {
-                ValidateAuditOnModify(audit);
-
-                return await this.storageBroker.UpdateAuditAsync(audit);
-            });
     }
 }

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using Xeptions;
@@ -23,6 +24,15 @@ namespace LHDS.Core.Services.Foundations.Audits
             {
                 throw CreateAndLogValidationException(invalidAuditException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedAuditStorageException =
+                    new FailedAuditStorageException(
+                        message: "Failed audit storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedAuditStorageException);
+            }
         }
 
         private AuditValidationException CreateAndLogValidationException(Xeption exception)
@@ -35,6 +45,18 @@ namespace LHDS.Core.Services.Foundations.Audits
             this.loggingBroker.LogError(auditValidationException);
 
             return auditValidationException;
+        }
+
+        private AuditDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var auditDependencyException = 
+                new AuditDependencyException(
+                    message: "Audit dependency error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogCritical(auditDependencyException);
+
+            return auditDependencyException;
         }
     }
 }

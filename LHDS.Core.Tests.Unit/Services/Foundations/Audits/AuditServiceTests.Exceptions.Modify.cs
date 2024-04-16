@@ -179,5 +179,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            Audit randomAudit = CreateRandomAudit();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedAuditException =
+                new LockedAuditException(
+                    message: "Locked audit record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedAuditDependencyValidationException =
+                new AuditDependencyValidationException(
+                    message: "Audit dependency validation occurred, please try again.",
+                    innerException: lockedAuditException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<Audit> modifyAuditTask =
+                this.auditService.ModifyAuditAsync(randomAudit);
+
+            AuditDependencyValidationException actualAuditDependencyValidationException =
+                await Assert.ThrowsAsync<AuditDependencyValidationException>(
+                    modifyAuditTask.AsTask);
+
+            // then
+            actualAuditDependencyValidationException.Should()
+                .BeEquivalentTo(expectedAuditDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAuditByIdAsync(randomAudit.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAuditDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateAuditAsync(randomAudit),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

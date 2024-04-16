@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +27,15 @@ namespace LHDS.Core.Services.Foundations.Audits
             this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
         }
+
+        public ValueTask<Audit> AddAudit(
+            string auditType,
+            string title,
+            string? message,
+            string? fileName,
+            Guid? correlationId,
+            string? logLevel = "Information") =>
+                throw new NotImplementedException();
 
         public ValueTask<Audit> AddAuditAsync(Audit audit) =>
             TryCatch(async () =>

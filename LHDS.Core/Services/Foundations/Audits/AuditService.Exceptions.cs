@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.Audits
             {
                 throw CreateAndLogValidationException(nullAuditException);
             }
+            catch (InvalidAuditException invalidAuditException)
+            {
+                throw CreateAndLogValidationException(invalidAuditException);
+            }
         }
 
         private AuditValidationException CreateAndLogValidationException(Xeption exception)

@@ -1,0 +1,188 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
+using Azure.Core.Pipeline;
+using Azure.Identity;
+using Azure.Storage.Blobs;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Blobs;
+using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Configurations;
+using LHDS.Core.Services.Coordinations.AddressCoordinations;
+using LHDS.Core.Services.Foundations.AddressExtractionAudits;
+using LHDS.Core.Services.Foundations.AddressLoadingAudits;
+using LHDS.Core.Services.Foundations.AddressNormalisations;
+using LHDS.Core.Services.Foundations.AddressParsers;
+using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.ResolvedAddresses;
+using LHDS.Core.Services.Orchestrations.AddressExtractions;
+using LHDS.Core.Services.Orchestrations.AddressNormalisations;
+using LHDS.Core.Services.Orchestrations.AddressPersistances;
+using LHDS.Core.Services.Processings.Addresses;
+using LHDS.Core.Services.Processings.AddressLoadingAudits;
+using LHDS.Core.Services.Processings.AddressNormalisations;
+using LHDS.Core.Services.Processings.Documents;
+using LHDS.Core.Services.Processings.ResolvedAddresses;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace LHDS.Core.Clients.Extensions
+{
+    public static class AddressClientServiceCollectionExtensions
+    {
+        public static IServiceCollection AddPdsClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            bool acceptanceTest)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
+
+            AddClients(services, configuration);
+            AddBrokers(services);
+            AddServices(services);
+            AddProcessings(services);
+            AddOrchestrations(services);
+            AddCoordinations(services);
+
+            return services;
+        }
+
+        private static void AddClients(
+            IServiceCollection services,
+            IConfiguration configuration)
+        {
+            var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
+            ValidateBlobStorageSettings(blobStorageSettings);
+            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+
+            var blobServiceClientOptions = new BlobClientOptions()
+            {
+                Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
+                Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                EnableTenantDiscovery = true
+            };
+
+            services.AddSingleton(
+                new BlobServiceClient(
+                    serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
+                    credential: new DefaultAzureCredential(
+                        new DefaultAzureCredentialOptions
+                        {
+                            VisualStudioTenantId = blobStorageSettings.AzureTenantId,
+                        }),
+                    options: blobServiceClientOptions));
+
+            services.AddTransient<IPdsClient, PdsClient>();
+            services.AddTransient<IAzureBlobClient, AzureBlobClient>();
+        }
+
+        private static void AddBrokers(IServiceCollection services)
+        {
+            services.AddTransient<ILoggingBroker, LoggingBroker>();
+            services.AddTransient<IDateTimeBroker, DateTimeBroker>();
+            services.AddTransient<IIdentifierBroker, IdentifierBroker>();
+            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+        }
+
+        private static void AddServices(IServiceCollection services)
+        {
+            services.AddTransient<IAddressParserService, AddressParserService>();
+            services.AddTransient<IAddressExtractionAuditService, AddressExtractionAuditService>();
+            services.AddTransient<IAddressNormalisationService, AddressNormalisationService>();
+            services.AddTransient<IAddressLoadingAuditService, AddressLoadingAuditService>();
+            services.AddTransient<IDocumentService, DocumentService>();
+            services.AddTransient<IResolvedAddressService, ResolvedAddressService>();
+
+        }
+
+        private static void AddProcessings(IServiceCollection services)
+        {
+            services.AddTransient<IAddressProcessingService, AddressProcessingService>();
+            services.AddTransient<IAddressNormalisationProcessingService, AddressNormalisationProcessingService>();
+            services.AddTransient<IAddressLoadingAuditProcessingService, AddressLoadingAuditProcessingService>();
+            services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();
+            services.AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>();
+        }
+
+        private static void AddOrchestrations(IServiceCollection services)
+        {
+            services.AddTransient<IAddressExtractionOrchestrationService, AddressExtractionOrchestrationService>();
+            services.AddTransient<IAddressNormalisationOrchestrationService, AddressNormalisationOrchestrationService>();
+            services.AddTransient<IAddressPersistanceOrchestrationService, AddressPersistanceOrchestrationService>();
+            services.AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>();
+        }
+
+        private static void AddCoordinations(IServiceCollection services)
+        {
+            services.AddTransient<IAddressCoordinationService, AddressCoordinationService>();
+        }
+
+        private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
+        {
+            if (blobStorageSettings == null)
+            {
+                throw new InvalidConfigurationException(
+                    "Configuration section 'blobStorage' not defined.");
+            }
+
+            Validate(
+                (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
+                    Parameter: "blobStorage__azureBlobServiceUri"),
+
+                (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
+                    Parameter: "blobStorage__azureTenantId"));
+        }
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Configuration value does not exist"
+        };
+
+        private static dynamic IsInvalid(bool value) => new
+        {
+            Condition = value == null,
+            Message = "Configuration value does not exist"
+        };
+
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        {
+            StringBuilder validationErrors = new StringBuilder();
+            validationErrors.AppendLine("Configuration error(s):");
+            IDictionary errors = new Dictionary<string, List<string>>();
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    validationErrors.AppendLine(
+                        $"{parameter} -> Configuration value does not exist or does not meet validation criteria");
+
+                    if (errors.Contains(parameter))
+                    {
+                        (errors[parameter] as List<string>)?.Add(rule.Message);
+                        return;
+                    }
+
+                    errors.Add(parameter, new List<string> { rule.Message });
+                }
+            }
+
+            var invalidConfigurationException = new InvalidConfigurationException(
+                message: validationErrors.ToString(),
+                data: errors);
+
+            invalidConfigurationException.ThrowIfContainsErrors();
+        }
+    }
+}

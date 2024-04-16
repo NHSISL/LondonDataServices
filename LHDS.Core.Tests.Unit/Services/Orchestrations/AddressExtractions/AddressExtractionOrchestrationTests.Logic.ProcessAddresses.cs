@@ -34,30 +34,56 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
             List<Address> outputAddresses = randomAddresses.DeepClone();
-            List<AddressNormalisation> outputAddressNormalisations
 
             this.addressParserServiceMock.Setup(service =>
                 service.ProcessCsvAsync(inputData))
                     .ReturnsAsync(outputAddresses);
 
-            foreach(Address address in outputAddresses) 
-            {
-                this.addressNormalisationServiceMock
-            }
+            List<Address> expectedAddresses = new List<Address>();
 
-            List<Address> expectedAddresses = outputAddresses.DeepClone();
+            foreach (Address address in outputAddresses) 
+            {
+                string stringAddress = address.ToString();
+
+                AddressNormalisation addressNormalisation = new AddressNormalisation
+                {
+                    PostalAddress = GetRandomString(),
+                    JsonPostalAddress = GetRandomString()
+                };
+
+                this.addressNormalisationServiceMock.Setup(service =>
+                    service.GetNormalisedAddress(stringAddress))
+                        .ReturnsAsync(addressNormalisation);
+
+                address.PostalAddress = addressNormalisation.PostalAddress;
+                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+
+                expectedAddresses.Add(address);
+            }
 
             // When
             List<Address> actualAddresses = await this.addressExtractionOrchestrationService
-                .ProcessDataAsync(inputData);
+                .ProcessAddressesAsync(inputData);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
                 options.Excluding(address => address.Id));
 
-            await VerifyMocksForProvidedZips(randomDateTimeOffset, randomId, inputData);
+            this.addressParserServiceMock.Verify(service =>
+                service.ProcessCsvAsync(inputData), 
+                    Times.Once());
+
+            foreach (Address address in outputAddresses)
+            {
+                string stringAddress = address.ToString();
+
+                this.addressNormalisationServiceMock.Verify(service =>
+                    service.GetNormalisedAddress(stringAddress),
+                        Times.Once());
+            }
 
             this.addressParserServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

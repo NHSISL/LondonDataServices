@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.Audits
             {
                 var failedAuditStorageException =
                     new FailedAuditStorageException(
-                    message: "Failed audit storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed audit storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedAuditStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedAuditServiceException =
+                    new FailedAuditServiceException(
+                        message: "Failed audit service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAuditServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.Audits
             this.loggingBroker.LogError(auditDependencyException);
 
             return auditDependencyException;
+        }
+
+        private AuditServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var auditServiceException = 
+                new AuditServiceException(
+                    message: "Audit service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(auditServiceException);
+
+            return auditServiceException;
         }
     }
 }

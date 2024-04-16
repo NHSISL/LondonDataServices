@@ -1,10 +1,14 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
@@ -62,10 +66,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             // given 
             var invalidAudit = new Audit
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                AuditType = invalidText,
+                Title = invalidText
             };
 
-            var invalidAuditException = 
+            var invalidAuditException =
                 new InvalidAuditException(
                     message: "Invalid audit. Please correct the errors and try again.");
 
@@ -73,11 +78,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 key: nameof(Audit.Id),
                 values: "Id is required");
 
-            //invalidAuditException.AddData(
-            //    key: nameof(Audit.Name),
-            //    values: "Text is required");
+            invalidAuditException.AddData(
+                key: nameof(Audit.AuditType),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the Audit model
+            invalidAuditException.AddData(
+                key: nameof(Audit.Title),
+                values: "Text is required");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.CreatedDate),
@@ -141,8 +148,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Audit randomAudit = CreateRandomAudit(randomDateTimeOffset);
             Audit invalidAudit = randomAudit;
-            
-            var invalidAuditException = 
+
+            var invalidAuditException =
                 new InvalidAuditException(
                     message: "Invalid audit. Please correct the errors and try again.");
 
@@ -198,7 +205,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Audit randomAudit = CreateRandomAudit(randomDateTimeOffset);
             randomAudit.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidAuditException = 
+            var invalidAuditException =
                 new InvalidAuditException(
                     message: "Invalid audit. Please correct the errors and try again.");
 
@@ -312,8 +319,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Audit storageAudit = invalidAudit.DeepClone();
             storageAudit.CreatedDate = storageAudit.CreatedDate.AddMinutes(randomMinutes);
             storageAudit.UpdatedDate = storageAudit.UpdatedDate.AddMinutes(randomMinutes);
-            
-            var invalidAuditException = 
+
+            var invalidAuditException =
                 new InvalidAuditException(
                     message: "Invalid audit. Please correct the errors and try again.");
 
@@ -375,7 +382,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             invalidAudit.CreatedBy = Guid.NewGuid().ToString();
             storageAudit.UpdatedDate = storageAudit.CreatedDate;
 
-            var invalidAuditException = 
+            var invalidAuditException =
                 new InvalidAuditException(
                     message: "Invalid audit. Please correct the errors and try again.");
 
@@ -434,7 +441,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Audit invalidAudit = randomAudit;
             Audit storageAudit = randomAudit.DeepClone();
 
-            var invalidAuditException = 
+            var invalidAuditException =
                 new InvalidAuditException(
                     message: "Invalid audit. Please correct the errors and try again.");
 

@@ -1,9 +1,13 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
@@ -55,7 +59,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             // given
             var invalidAudit = new Audit
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                AuditType = invalidText,
+                Title = invalidText
             };
 
             var invalidAuditException =
@@ -66,11 +71,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 key: nameof(Audit.Id),
                 values: "Id is required");
 
-            //invalidAuditException.AddData(
-            //    key: nameof(Audit.Name),
-            //    values: "Text is required");
+            invalidAuditException.AddData(
+                key: nameof(Audit.AuditType),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the Audit model
+            invalidAuditException.AddData(
+                key: nameof(Audit.Title),
+                values: "Text is required");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.CreatedDate),
@@ -135,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             invalidAudit.UpdatedDate =
                 invalidAudit.CreatedDate.AddDays(randomNumber);
 
-            var invalidAuditException = 
+            var invalidAuditException =
                 new InvalidAuditException(
                     message: "Invalid audit. Please correct the errors and try again.");
 

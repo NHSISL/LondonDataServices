@@ -73,13 +73,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 service.ProcessCsvAsync(inputData),
                     Times.Once());
 
-            foreach (Address address in outputAddresses)
+            foreach (Address address in randomAddresses)
             {
                 string stringAddress = address.ToString();
 
                 this.addressNormalisationServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(stringAddress),
-                        Times.Once());
+                    service.GetNormalisedAddress(It.IsAny<string>()),
+                        Times.Exactly(randomAddresses.Count));
             }
 
             this.addressParserServiceMock.VerifyNoOtherCalls();

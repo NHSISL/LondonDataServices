@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressParsers;
@@ -37,7 +39,22 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
         {
             List<Address> addresses = await this.addressParserService.ProcessCsvAsync(data);
 
-            return addresses;
+            List<Address> result = new List<Address>();
+
+            foreach(Address address in addresses)
+            {
+                string addressString = address.GetFormattedAddress();
+
+                AddressNormalisation addressNormalisation = 
+                    await this.addressNormalisationService.GetNormalisedAddress(addressString);
+
+                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                address.PostalAddress = addressNormalisation.PostalAddress;
+
+                result.Add(address);
+            }
+
+            return result;
         }
 
         public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data) =>

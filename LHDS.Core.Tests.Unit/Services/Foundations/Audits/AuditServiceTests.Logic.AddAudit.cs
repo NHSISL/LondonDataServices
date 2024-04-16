@@ -54,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     .Returns(randomIdentifier);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.InsertAuditAsync(inputAudit))
+                broker.InsertAuditAsync(It.Is(SameAuditAs(inputAudit))))
                     .ReturnsAsync(storageAudit);
 
             // when
@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     Times.Once());
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertAuditAsync(inputAudit),
+                broker.InsertAuditAsync(It.Is(SameAuditAs(inputAudit))),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

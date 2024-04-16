@@ -47,5 +47,8 @@ namespace LHDS.Core.Services.Foundations.Audits
 
                 return maybeAudit;
             });
+
+        public ValueTask<Audit> ModifyAuditAsync(Audit audit) =>
+            throw new NotImplementedException();
     }
 }

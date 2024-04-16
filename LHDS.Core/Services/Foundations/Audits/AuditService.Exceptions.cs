@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.Audits
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsAuditException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidAuditReferenceException =
+                    new InvalidAuditReferenceException(
+                        message: "Invalid audit reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidAuditReferenceException);
+            }
         }
 
         private AuditValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.Audits
             var auditDependencyException = 
                 new AuditDependencyException(
                     message: "Audit dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(auditDependencyException);
 

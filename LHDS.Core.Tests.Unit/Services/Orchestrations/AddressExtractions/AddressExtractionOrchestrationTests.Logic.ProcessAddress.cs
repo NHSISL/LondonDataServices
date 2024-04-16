@@ -12,13 +12,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
-    public partial class AddressExctractionOrchestrationServiceTests
+    public partial class AddressExtractionOrchestrationServiceTests
     {
         [Fact]
         public async Task ShouldProcessZipFileWithOnlyCsvAddressesDataAndLogAsync()
@@ -58,7 +57,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             this.addressParserServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -100,7 +98,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             this.addressParserServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -174,23 +171,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                                     service.ProcessCsvAsync(csvData),
                                         Times.Once);
                             }
-
-                            var audit = new AddressExtractionAudit
-                            {
-                                Id = randomId,
-                                CorrelationId = randomId,
-                                FileName = $"{entry}",
-                                Message = "Success",
-                                MessageId = "",
-                                CreatedBy = "System",
-                                UpdatedBy = "System",
-                                UpdatedDate = randomDateTimeOffset,
-                                CreatedDate = randomDateTimeOffset,
-                            };
-
-                            this.addressExtractionAuditServiceMock.Verify(service =>
-                                service.AddAddressExtractionAuditAsync(It.Is(SameAddressExtractionAuditAs(audit))),
-                                    Times.Once);
                         }
                         else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                         {

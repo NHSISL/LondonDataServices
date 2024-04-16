@@ -18,7 +18,6 @@ using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
-using LHDS.Core.Services.Foundations.AddressExtractionAudits;
 using LHDS.Core.Services.Foundations.AddressLoadingAudits;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressParsers;
@@ -97,7 +96,6 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddServices(IServiceCollection services)
         {
             services.AddTransient<IAddressParserService, AddressParserService>();
-            services.AddTransient<IAddressExtractionAuditService, AddressExtractionAuditService>();
             services.AddTransient<IAddressNormalisationService, AddressNormalisationService>();
             services.AddTransient<IAddressLoadingAuditService, AddressLoadingAuditService>();
             services.AddTransient<IDocumentService, DocumentService>();

@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -11,9 +11,7 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
-using LHDS.Core.Services.Foundations.AddressExtractionAudits;
 using LHDS.Core.Services.Foundations.AddressParsers;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using Moq;
@@ -24,10 +22,9 @@ using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
-    public partial class AddressExctractionOrchestrationServiceTests
+    public partial class AddressExtractionOrchestrationServiceTests
     {
         private readonly Mock<IAddressParserService> addressParserServiceMock;
-        private readonly Mock<IAddressExtractionAuditService> addressExtractionAuditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
@@ -35,10 +32,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
         private readonly ITestOutputHelper output;
 
-        public AddressExctractionOrchestrationServiceTests(ITestOutputHelper output)
+        public AddressExtractionOrchestrationServiceTests(ITestOutputHelper output)
         {
             this.addressParserServiceMock = new Mock<IAddressParserService>();
-            this.addressExtractionAuditServiceMock = new Mock<IAddressExtractionAuditService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -47,7 +43,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             this.addressExtractionOrchestrationService = new AddressExtractionOrchestrationService(
                 addressParserService: addressParserServiceMock.Object,
-                addressExtractionAuditService: addressExtractionAuditServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object);
@@ -111,14 +106,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 new AddressParserDependencyValidationException(
                     message: "Address normalisation processing dependency validation error occurred, please try again.",
                     innerException),
-
-                new AddressExtractionAuditValidationException(
-                    message: "Audit validation error occurred, please try again.",
-                    innerException),
-
-                new AddressExtractionAuditDependencyValidationException(
-                    message: "Audit dependency validation error occurred, please try again.",
-                    innerException)
             };
         }
 
@@ -137,14 +124,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 new AddressParserServiceException(
                     message: "Address parser service error occurred, contact support.",
                     innerException),
-
-                new AddressExtractionAuditDependencyException(
-                    message: "Audit dependency error occurred, contact support.",
-                    innerException),
-
-                new AddressExtractionAuditServiceException(
-                    message: "Audit service error occurred, contact support.",
-                    innerException)
             };
         }
     }

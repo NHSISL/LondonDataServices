@@ -1,9 +1,8 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -13,7 +12,7 @@ using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
-    public partial class AddressExctractionOrchestrationServiceTests
+    public partial class AddressExtractionOrchestrationServiceTests
     {
         [Fact]
         public async Task ShouldThrowValidationExceptionOnProcessDataIfDataIsNullAndLogItAsync()
@@ -49,7 +48,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressParserServiceMock.VerifyNoOtherCalls();
-            this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }

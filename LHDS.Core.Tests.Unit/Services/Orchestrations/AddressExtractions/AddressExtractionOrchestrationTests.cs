@@ -12,6 +12,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
+using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressParsers;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using Moq;
@@ -25,9 +26,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
     public partial class AddressExtractionOrchestrationServiceTests
     {
         private readonly Mock<IAddressParserService> addressParserServiceMock;
+        private readonly Mock<IAddressNormalisationService> addressNormalisationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
-        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
         private readonly ITestOutputHelper output;
@@ -35,17 +36,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         public AddressExtractionOrchestrationServiceTests(ITestOutputHelper output)
         {
             this.addressParserServiceMock = new Mock<IAddressParserService>();
+            this.addressNormalisationServiceMock = new Mock<IAddressNormalisationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
-            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.compareLogic = new CompareLogic();
             this.output = output;
 
             this.addressExtractionOrchestrationService = new AddressExtractionOrchestrationService(
                 addressParserService: addressParserServiceMock.Object,
+                addressNormalisationService: addressNormalisationServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object,
-                identifierBroker: identifierBrokerMock.Object);
+                dateTimeBroker: dateTimeBrokerMock.Object);
         }
 
         private static string GetRandomString() =>
@@ -59,14 +60,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
-
-        private Expression<Func<AddressExtractionAudit, bool>> SameAddressExtractionAuditAs(
-            AddressExtractionAudit expectedAddressExtractionAudit)
-        {
-            return actualAddressExtractionAudit =>
-                this.compareLogic.Compare(expectedAddressExtractionAudit, actualAddressExtractionAudit)
-                    .AreEqual;
-        }
 
         private static IQueryable<Address> CreateRandomAddresses()
         {
@@ -100,11 +93,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             return new TheoryData<Xeption>
             {
                 new AddressParserValidationException(
-                    message: "Address normalisation processing validation error occured, please try again",
+                    message: "Address parser validation error occured, please try again",
                     innerException),
 
                 new AddressParserDependencyValidationException(
-                    message: "Address normalisation processing dependency validation error occurred, please try again.",
+                    message: "Address parser dependency validation error occurred, please try again.",
                     innerException),
             };
         }

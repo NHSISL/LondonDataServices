@@ -1,16 +1,16 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using Moq;
@@ -41,9 +41,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             List<Address> expectedAddresses = new List<Address>();
 
-            foreach (Address address in outputAddresses) 
+            foreach (Address address in outputAddresses)
             {
-                string stringAddress = address.ToString();
+                string stringAddress = address.GetFormattedAddress();
 
                 AddressNormalisation addressNormalisation = new AddressNormalisation
                 {
@@ -70,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 options.Excluding(address => address.Id));
 
             this.addressParserServiceMock.Verify(service =>
-                service.ProcessCsvAsync(inputData), 
+                service.ProcessCsvAsync(inputData),
                     Times.Once());
 
             foreach (Address address in outputAddresses)

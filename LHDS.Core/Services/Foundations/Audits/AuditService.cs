@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Foundations.Audits
         public IQueryable<Audit> RetrieveAllAudits() =>
             TryCatch(() => this.storageBroker.SelectAllAudits());
 
-        public ValueTask<Audit> RetrieveAuditByIdAsync(Guid auditId) =>
-            throw new NotImplementedException();
+        public async ValueTask<Audit> RetrieveAuditByIdAsync(Guid auditId) =>
+            await this.storageBroker.SelectAuditByIdAsync(auditId);
     }
 }

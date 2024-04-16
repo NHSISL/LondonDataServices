@@ -39,7 +39,27 @@ namespace LHDS.Core.Services.Foundations.Audits
             string? fileName,
             Guid? correlationId,
             string? logLevel = "Information") =>
-                throw new NotImplementedException();
+            TryCatch(async () =>
+            {
+                DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                Audit audit = new Audit
+                {
+                    Id = this.identifierBroker.GetIdentifier(),
+                    AuditType = auditType,
+                    Title = title,
+                    Message = message,
+                    CorrelationId = correlationId,
+                    FileName = fileName,
+                    LogLevel = logLevel,
+                    CreatedBy = "System",
+                    CreatedDate = dateTimeOffset,
+                    UpdatedBy = "System",
+                    UpdatedDate = dateTimeOffset,
+                };
+
+                return await this.storageBroker.InsertAuditAsync(audit);
+            });
 
         public ValueTask<Audit> AddAuditAsync(Audit audit) =>
             TryCatch(async () =>

@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -27,6 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IAuditService auditService;
+        private readonly ICompareLogic compareLogic;
 
         public AuditServiceTests()
         {
@@ -34,6 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.compareLogic = new CompareLogic();
 
             this.auditService = new AuditService(
                 storageBroker: this.storageBrokerMock.Object,
@@ -44,6 +47,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
+
+        private Expression<Func<Audit, bool>> SameAuditAs(Audit expectedAudit) =>
+            actualAudit => this.compareLogic.Compare(expectedAudit, actualAudit).AreEqual;
 
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();

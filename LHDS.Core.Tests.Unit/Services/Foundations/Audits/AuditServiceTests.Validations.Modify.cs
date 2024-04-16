@@ -184,9 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.SelectAuditByIdAsync(invalidAudit.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -198,8 +198,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Audit randomAudit = CreateRandomAudit(randomDateTimeOffset);
             randomAudit.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidAuditException =
-                new InvalidAuditException();
+            var invalidAuditException = 
+                new InvalidAuditException(
+                    message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.UpdatedDate),
@@ -294,8 +295,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     expectedAuditValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -358,8 +359,69 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                    expectedAuditValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserDontMacthStorageAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Audit randomAudit = CreateRandomModifyAudit(randomDateTimeOffset);
+            Audit invalidAudit = randomAudit.DeepClone();
+            Audit storageAudit = invalidAudit.DeepClone();
+            invalidAudit.CreatedBy = Guid.NewGuid().ToString();
+            storageAudit.UpdatedDate = storageAudit.CreatedDate;
+
+            var invalidAuditException = 
+                new InvalidAuditException(
+                    message: "Invalid audit. Please correct the errors and try again.");
+
+            invalidAuditException.AddData(
+                key: nameof(Audit.CreatedBy),
+                values: $"Text is not the same as {nameof(Audit.CreatedBy)}");
+
+            var expectedAuditValidationException =
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException: invalidAuditException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAuditByIdAsync(invalidAudit.Id))
+                .ReturnsAsync(storageAudit);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<Audit> modifyAuditTask =
+                this.auditService.ModifyAuditAsync(invalidAudit);
+
+            AuditValidationException actualAuditValidationException =
+                await Assert.ThrowsAsync<AuditValidationException>(
+                    modifyAuditTask.AsTask);
+
+            // then
+            actualAuditValidationException.Should().BeEquivalentTo(expectedAuditValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAuditByIdAsync(invalidAudit.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedAuditValidationException))),
+                       Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

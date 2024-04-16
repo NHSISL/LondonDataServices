@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.Audits
 
                 throw CreateAndLogDependencyValidationException(invalidAuditReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedAuditException = 
+                    new LockedAuditException(
+                        message: "Locked audit record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedAuditException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedAuditStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.Audits
             var auditDependencyException = 
                 new AuditDependencyException(
                     message: "Audit dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(auditDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.Audits
             var auditDependencyException = 
                 new AuditDependencyException(
                     message: "Audit dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(auditDependencyException);
 

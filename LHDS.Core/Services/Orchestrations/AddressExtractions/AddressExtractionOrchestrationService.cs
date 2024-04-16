@@ -35,27 +35,29 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask<List<Address>> ProcessAddressesAsync(byte[] data)
-        {
-            List<Address> addresses = await this.addressParserService.ProcessCsvAsync(data);
-
-            List<Address> result = new List<Address>();
-
-            foreach(Address address in addresses)
+        public ValueTask<List<Address>> ProcessAddressesAsync(byte[] data) =>
+            TryCatch(async () =>
             {
-                string addressString = address.GetFormattedAddress();
+                ValidateDataOnProcessData(data);
+                List<Address> addresses = await this.addressParserService.ProcessCsvAsync(data);
 
-                AddressNormalisation addressNormalisation = 
-                    await this.addressNormalisationService.GetNormalisedAddress(addressString);
+                List<Address> result = new List<Address>();
 
-                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                address.PostalAddress = addressNormalisation.PostalAddress;
+                foreach (Address address in addresses)
+                {
+                    string addressString = address.GetFormattedAddress();
 
-                result.Add(address);
-            }
+                    AddressNormalisation addressNormalisation =
+                        await this.addressNormalisationService.GetNormalisedAddress(addressString);
 
-            return result;
-        }
+                    address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                    address.PostalAddress = addressNormalisation.PostalAddress;
+
+                    result.Add(address);
+                }
+
+                return result;
+            });
 
         public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data) =>
             throw new NotImplementedException(); 

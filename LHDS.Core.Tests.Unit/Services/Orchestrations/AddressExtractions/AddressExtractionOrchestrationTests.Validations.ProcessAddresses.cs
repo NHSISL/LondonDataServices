@@ -15,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
     public partial class AddressExtractionOrchestrationServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnProcessDataIfDataIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnProcessAddressIfDataIsNullAndLogItAsync()
         {
             // given
             byte[] someData = null;
@@ -48,6 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressParserServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }

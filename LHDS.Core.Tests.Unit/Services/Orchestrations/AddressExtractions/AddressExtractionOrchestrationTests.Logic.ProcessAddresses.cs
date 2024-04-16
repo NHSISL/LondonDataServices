@@ -75,11 +75,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (Address address in randomAddresses)
             {
-                string stringAddress = address.ToString();
+                string stringAddress = address.GetFormattedAddress();
 
                 this.addressNormalisationServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(It.IsAny<string>()),
-                        Times.Exactly(randomAddresses.Count));
+                    service.GetNormalisedAddress(stringAddress),
+                        Times.Once);
             }
 
             this.addressParserServiceMock.VerifyNoOtherCalls();

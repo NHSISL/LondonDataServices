@@ -1,0 +1,12 @@
+using System;
+using Xeptions;
+
+namespace LHDS.Core.Models.Foundations.Audits.Exceptions
+{
+    public class FailedAuditServiceException : Xeption
+    {
+        public FailedAuditServiceException(string message, Exception innerException)
+            : base(message, innerException)
+        { }
+    }
+}

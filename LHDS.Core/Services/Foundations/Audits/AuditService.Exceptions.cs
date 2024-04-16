@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.Audits
     public partial class AuditService
     {
         private delegate ValueTask<Audit> ReturningAuditFunction();
+        private delegate IQueryable<Audit> ReturningAuditsFunction();
 
         private async ValueTask<Audit> TryCatch(ReturningAuditFunction returningAuditFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.Audits
             }
         }
 
+        private IQueryable<Audit> TryCatch(ReturningAuditsFunction returningAuditsFunction)
+        {
+            try
+            {
+                return returningAuditsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedAuditStorageException =
+                    new FailedAuditStorageException(
+                        message: "Failed audit storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedAuditStorageException);
+            }
+        }
+
         private AuditValidationException CreateAndLogValidationException(Xeption exception)
         {
             var auditValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.Audits
             var auditDependencyException = 
                 new AuditDependencyException(
                     message: "Audit dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(auditDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.Audits
             var auditDependencyException = 
                 new AuditDependencyException(
                     message: "Audit dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(auditDependencyException);
 

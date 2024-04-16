@@ -88,7 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             invalidAuditException.AddData(
                 key: nameof(Audit.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(Audit.CreatedDate)}"
+                });
 
             invalidAuditException.AddData(
                 key: nameof(Audit.UpdatedBy),
@@ -131,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Audit randomAudit = CreateRandomAudit(randomDateTimeOffset);
             Audit invalidAudit = randomAudit;
+            
             var invalidAuditException = 
                 new InvalidAuditException(
                     message: "Invalid audit. Please correct the errors and try again.");

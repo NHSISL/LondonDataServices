@@ -33,8 +33,12 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask<List<Address>> ProcessAddressesAsync(byte[] data) =>
-            throw new NotImplementedException();
+        public async ValueTask<List<Address>> ProcessAddressesAsync(byte[] data)
+        {
+            List<Address> addresses = await this.addressParserService.ProcessCsvAsync(data);
+
+            return addresses;
+        }
 
         public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data) =>
             throw new NotImplementedException(); 

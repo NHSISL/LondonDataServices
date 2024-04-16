@@ -1,11 +1,15 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using LHDS.Core.Models.Foundations.Audits;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
@@ -27,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             var expectedAuditDependencyException =
                 new AuditDependencyException(
                     message: "Audit dependency error occurred, contact support.",
-                    innerException: failedAuditStorageException); 
+                    innerException: failedAuditStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(randomAudit.Id))
@@ -65,6 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -118,6 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -135,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             var expectedAuditDependencyException =
                 new AuditDependencyException(
                     message: "Audit dependency error occurred, contact support.",
-                    innerException: failedAuditStorageException); 
+                    innerException: failedAuditStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(It.IsAny<Guid>()))
@@ -165,6 +171,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -176,7 +183,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             var failedAuditServiceException =
                 new FailedAuditServiceException(
-                    message: "Failed audit service occurred, please contact support", 
+                    message: "Failed audit service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedAuditServiceException =
@@ -212,6 +219,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

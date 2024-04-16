@@ -1,7 +1,11 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System.Linq;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.Audits;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
@@ -33,6 +37,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

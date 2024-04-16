@@ -18,7 +18,13 @@ namespace LHDS.Core.Services.Foundations.Audits
                 (Rule: IsInvalid(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)),
                 (Rule: IsInvalid(audit.CreatedBy), Parameter: nameof(Audit.CreatedBy)),
                 (Rule: IsInvalid(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)),
-                (Rule: IsInvalid(audit.UpdatedBy), Parameter: nameof(Audit.UpdatedBy)));
+                (Rule: IsInvalid(audit.UpdatedBy), Parameter: nameof(Audit.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    firstDate: audit.UpdatedDate,
+                    secondDate: audit.CreatedDate,
+                    secondDateName: nameof(Audit.CreatedDate)),
+                Parameter: nameof(Audit.UpdatedDate)));
         }
 
         private static void ValidateAuditIsNotNull(Audit audit)
@@ -46,6 +52,15 @@ namespace LHDS.Core.Services.Foundations.Audits
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

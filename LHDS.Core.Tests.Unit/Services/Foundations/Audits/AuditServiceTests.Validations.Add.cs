@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 this.auditService.AddAuditAsync(nullAudit);
 
             AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(
-                    addAuditTask.AsTask);
+                await Assert.ThrowsAsync<AuditValidationException>(() =>
+                    addAuditTask.AsTask());
 
             // then
             actualAuditValidationException.Should()
@@ -98,12 +98,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 this.auditService.AddAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(
-                    addAuditTask.AsTask);
+                await Assert.ThrowsAsync<AuditValidationException>(() =>
+                    addAuditTask.AsTask());
 
             // then
             actualAuditValidationException.Should()
                 .BeEquivalentTo(expectedAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -144,17 +148,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     message: "Audit validation errors occurred, please try again.",
                     innerException: invalidAuditException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<Audit> addAuditTask =
                 this.auditService.AddAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(
-                    addAuditTask.AsTask);
+                await Assert.ThrowsAsync<AuditValidationException>(() =>
+                    addAuditTask.AsTask());
 
             // then
             actualAuditValidationException.Should()
                 .BeEquivalentTo(expectedAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -165,9 +177,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.InsertAuditAsync(It.IsAny<Audit>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -192,17 +204,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     message: "Audit validation errors occurred, please try again.",
                     innerException: invalidAuditException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<Audit> addAuditTask =
                 this.auditService.AddAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(
-                    addAuditTask.AsTask);
+                await Assert.ThrowsAsync<AuditValidationException>(() =>
+                    addAuditTask.AsTask());
 
             // then
             actualAuditValidationException.Should()
                 .BeEquivalentTo(expectedAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -254,8 +274,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 this.auditService.AddAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(
-                    addAuditTask.AsTask);
+                await Assert.ThrowsAsync<AuditValidationException>(() =>
+                    addAuditTask.AsTask());
 
             // then
             actualAuditValidationException.Should()

@@ -27,10 +27,12 @@ namespace LHDS.Core.Services.Foundations.Audits
                 Parameter: nameof(Audit.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: audit.UpdatedBy,
-                    secondId: audit.CreatedBy,
-                    secondIdName: nameof(Audit.CreatedBy)),
-                Parameter: nameof(Audit.UpdatedBy)));
+                    first: audit.UpdatedBy,
+                    second: audit.CreatedBy,
+                    secondName: nameof(Audit.CreatedBy)),
+                Parameter: nameof(Audit.UpdatedBy)),
+
+                (Rule: IsNotRecent(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)));
         }
 
         private static void ValidateAuditIsNotNull(Audit audit)
@@ -85,6 +87,23 @@ namespace LHDS.Core.Services.Foundations.Audits
                Condition = first != second,
                Message = $"Text is not the same as {secondName}"
            };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

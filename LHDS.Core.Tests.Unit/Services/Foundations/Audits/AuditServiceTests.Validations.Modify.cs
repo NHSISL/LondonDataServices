@@ -223,7 +223,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     modifyAuditTask.AsTask);
 
             // then
-            actualAuditValidationException.Should().BeEquivalentTo(expectedAuditValidatonException);
+            actualAuditValidationException.Should()
+                .BeEquivalentTo(expectedAuditValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -241,6 +242,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfAuditDoesNotExistAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Audit randomAudit = CreateRandomModifyAudit(randomDateTimeOffset);
+            Audit nonExistAudit = randomAudit;
+            Audit nullAudit = null;
+
+            var notFoundAuditException =
+                new NotFoundAuditException(nonExistAudit.Id);
+
+            var expectedAuditValidationException =
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException: notFoundAuditException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAuditByIdAsync(nonExistAudit.Id))
+                .ReturnsAsync(nullAudit);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when 
+            ValueTask<Audit> modifyAuditTask =
+                this.auditService.ModifyAuditAsync(nonExistAudit);
+
+            AuditValidationException actualAuditValidationException =
+                await Assert.ThrowsAsync<AuditValidationException>(
+                    modifyAuditTask.AsTask);
+
+            // then
+            actualAuditValidationException.Should()
+                .BeEquivalentTo(expectedAuditValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAuditByIdAsync(nonExistAudit.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAuditValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

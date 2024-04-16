@@ -33,8 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 this.auditService.AddAuditAsync(nullAudit);
 
             AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(() =>
-                    addAuditTask.AsTask());
+                await Assert.ThrowsAsync<AuditValidationException>(addAuditTask.AsTask);
 
             // then
             actualAuditValidationException.Should()
@@ -48,6 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -105,8 +105,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 this.auditService.AddAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(() =>
-                    addAuditTask.AsTask());
+                await Assert.ThrowsAsync<AuditValidationException>(addAuditTask.AsTask);
 
             // then
             actualAuditValidationException.Should()
@@ -128,6 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -164,8 +164,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 this.auditService.AddAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(() =>
-                    addAuditTask.AsTask());
+                await Assert.ThrowsAsync<AuditValidationException>(addAuditTask.AsTask);
 
             // then
             actualAuditValidationException.Should()
@@ -187,6 +186,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -220,8 +220,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 this.auditService.AddAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(() =>
-                    addAuditTask.AsTask());
+                await Assert.ThrowsAsync<AuditValidationException>(addAuditTask.AsTask);
 
             // then
             actualAuditValidationException.Should()
@@ -243,6 +242,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -281,8 +281,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 this.auditService.AddAuditAsync(invalidAudit);
 
             AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(() =>
-                    addAuditTask.AsTask());
+                await Assert.ThrowsAsync<AuditValidationException>(addAuditTask.AsTask);
 
             // then
             actualAuditValidationException.Should()
@@ -304,6 +303,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

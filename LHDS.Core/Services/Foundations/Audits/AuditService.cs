@@ -58,6 +58,8 @@ namespace LHDS.Core.Services.Foundations.Audits
                     UpdatedDate = dateTimeOffset,
                 };
 
+                ValidateAuditOnAdd(audit);
+
                 return await this.storageBroker.InsertAuditAsync(audit);
             });
 

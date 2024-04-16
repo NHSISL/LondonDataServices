@@ -35,6 +35,11 @@ namespace LHDS.Core.Services.Foundations.Audits
                 (Rule: IsNotRecent(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)));
         }
 
+        private void ValidateAuditOnModify(Audit audit)
+        {
+            ValidateAuditIsNotNull(audit);
+        }
+
         public void ValidateAuditId(Guid auditId) =>
             Validate((Rule: IsInvalid(auditId), Parameter: nameof(Audit.Id)));
 
@@ -89,7 +94,7 @@ namespace LHDS.Core.Services.Foundations.Audits
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-
+        
         private static dynamic IsNotSame(
            string first,
            string second,

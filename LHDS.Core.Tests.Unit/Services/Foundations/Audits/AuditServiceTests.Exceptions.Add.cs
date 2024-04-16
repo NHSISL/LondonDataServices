@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             var expectedAuditDependencyException =
                 new AuditDependencyException(
                     message: "Audit dependency error occurred, contact support.",
-                    innerException: failedAuditStorageException);             
+                    innerException: failedAuditStorageException); 
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -115,6 +115,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            Audit someAudit = CreateRandomAudit();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidAuditReferenceException =
+                new InvalidAuditReferenceException(
+                    message: "Invalid audit reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            var expectedAuditValidationException =
+                new AuditDependencyValidationException(
+                    message: "Audit dependency validation occurred, please try again.",
+                    innerException: invalidAuditReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<Audit> addAuditTask =
+                this.auditService.AddAuditAsync(someAudit);
+
+            // then
+            AuditDependencyValidationException actualAuditDependencyValidationException =
+                await Assert.ThrowsAsync<AuditDependencyValidationException>(
+                    addAuditTask.AsTask);
+
+            actualAuditDependencyValidationException.Should().BeEquivalentTo(expectedAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAuditValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertAuditAsync(someAudit),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

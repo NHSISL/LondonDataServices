@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
@@ -12,9 +16,8 @@ namespace LHDS.Core.Services.Foundations.Audits
 
             Validate(
                 (Rule: IsInvalid(audit.Id), Parameter: nameof(Audit.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(audit.AuditType), Parameter: nameof(Audit.AuditType)),
+                (Rule: IsInvalid(audit.Title), Parameter: nameof(Audit.Title)),
                 (Rule: IsInvalid(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)),
                 (Rule: IsInvalid(audit.CreatedBy), Parameter: nameof(Audit.CreatedBy)),
                 (Rule: IsInvalid(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)),
@@ -41,9 +44,8 @@ namespace LHDS.Core.Services.Foundations.Audits
 
             Validate(
                 (Rule: IsInvalid(audit.Id), Parameter: nameof(Audit.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(audit.AuditType), Parameter: nameof(Audit.AuditType)),
+                (Rule: IsInvalid(audit.Title), Parameter: nameof(Audit.Title)),
                 (Rule: IsInvalid(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)),
                 (Rule: IsInvalid(audit.CreatedBy), Parameter: nameof(Audit.CreatedBy)),
                 (Rule: IsInvalid(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)),
@@ -172,7 +174,7 @@ namespace LHDS.Core.Services.Foundations.Audits
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidAuditException = 
+            var invalidAuditException =
                 new InvalidAuditException(
                     message: "Invalid audit. Please correct the errors and try again.");
 

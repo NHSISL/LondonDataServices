@@ -22,7 +22,12 @@ namespace LHDS.Core.Services.Foundations.Audits
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<Audit> AddAuditAsync(Audit audit) =>
-            await this.storageBroker.InsertAuditAsync(audit);
+        public ValueTask<Audit> AddAuditAsync(Audit audit) =>
+            TryCatch(async () =>
+            {
+                ValidateAuditOnAdd(audit);
+
+                return await this.storageBroker.InsertAuditAsync(audit);
+            });
     }
 }

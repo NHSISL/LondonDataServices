@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.Audits
                     firstDate: audit.UpdatedDate,
                     secondDate: audit.CreatedDate,
                     secondDateName: nameof(Audit.CreatedDate)),
-                Parameter: nameof(Audit.UpdatedDate)));
+                Parameter: nameof(Audit.UpdatedDate)),
+
+                (Rule: IsNotRecent(audit.UpdatedDate), Parameter: nameof(audit.UpdatedDate)));
         }
 
         public void ValidateAuditId(Guid auditId) =>

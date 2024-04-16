@@ -115,6 +115,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             actualAuditValidationException.Should()
                 .BeEquivalentTo(expectedAuditValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedAuditValidationException))),
@@ -124,9 +128,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.UpdateAuditAsync(It.IsAny<Audit>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -136,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Audit randomAudit = CreateRandomAudit(randomDateTimeOffset);
             Audit invalidAudit = randomAudit;
-            
+
             var invalidAuditException = 
                 new InvalidAuditException(
                     message: "Invalid audit. Please correct the errors and try again.");
@@ -150,6 +154,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     message: "Audit validation errors occurred, please try again.",
                     innerException: invalidAuditException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<Audit> modifyAuditTask =
                 this.auditService.ModifyAuditAsync(invalidAudit);
@@ -162,6 +170,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             actualAuditValidationException.Should()
                 .BeEquivalentTo(expectedAuditValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedAuditValidationException))),
@@ -171,9 +183,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 broker.SelectAuditByIdAsync(invalidAudit.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]

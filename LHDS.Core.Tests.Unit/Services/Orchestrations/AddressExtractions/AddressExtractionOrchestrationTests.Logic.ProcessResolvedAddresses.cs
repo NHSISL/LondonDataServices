@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualResolvedAddress.Should().BeEquivalentTo(expectedResolvedAddresses, options =>
                 options.Excluding(address => address.Id));
 
-            this.addressParserServiceMock.Verify(service =>
+            this.resolvedAddressParserServiceMock.Verify(service =>
                 service.ProcessCsvAsync(inputData),
                     Times.Once());
 

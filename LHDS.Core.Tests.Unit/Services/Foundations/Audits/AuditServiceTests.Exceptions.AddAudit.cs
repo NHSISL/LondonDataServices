@@ -18,10 +18,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
     public partial class AuditServiceTests
     {
         [Fact]
-        public async Task ShouldThrowCriticalDependencyExceptionOnAddIfSqlErrorOccursAndLogItAsync()
+        public async Task ShouldThrowCriticalDependencyExceptionOnAddAuditIfSqlErrorOccursAndLogItAsync()
         {
             // given
-            Audit someAudit = CreateRandomAudit();
             SqlException sqlException = GetSqlException();
 
             var failedAuditStorageException =
@@ -40,7 +39,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> addAuditTask =
-                this.auditService.AddAuditAsync(someAudit);
+                this.auditService.AddAuditAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<string>());
 
             AuditDependencyException actualAuditDependencyException =
                 await Assert.ThrowsAsync<AuditDependencyException>(
@@ -69,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         }
 
         [Fact]
-        public async Task ShouldThrowDependencyValidationExceptionOnAddIfAuditAlreadyExsitsAndLogItAsync()
+        public async Task ShouldThrowDependencyValidationExceptionOnAddAuditIfAuditAlreadyExsitsAndLogItAsync()
         {
             // given
             Audit randomAudit = CreateRandomAudit();
@@ -95,7 +100,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> addAuditTask =
-                this.auditService.AddAuditAsync(alreadyExistsAudit);
+                this.auditService.AddAuditAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<string>());
 
             // then
             AuditDependencyValidationException actualAuditDependencyValidationException =
@@ -125,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        public async void ShouldThrowDependencyValidationExceptionOnAddAuditIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             Audit someAudit = CreateRandomAudit();
@@ -151,7 +162,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> addAuditTask =
-                this.auditService.AddAuditAsync(someAudit);
+                this.auditService.AddAuditAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<string>());
 
             // then
             AuditDependencyValidationException actualAuditDependencyValidationException =
@@ -181,7 +198,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         }
 
         [Fact]
-        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        public async Task ShouldThrowDependencyExceptionOnAddAuditIfDatabaseUpdateErrorOccursAndLogItAsync()
         {
             // given
             Audit someAudit = CreateRandomAudit();
@@ -205,7 +222,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> addAuditTask =
-                this.auditService.AddAuditAsync(someAudit);
+                this.auditService.AddAuditAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<string>());
 
             AuditDependencyException actualAuditDependencyException =
                 await Assert.ThrowsAsync<AuditDependencyException>(
@@ -235,7 +258,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnAddAuditIfServiceErrorOccursAndLogItAsync()
         {
             // given
             Audit someAudit = CreateRandomAudit();
@@ -257,7 +280,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             // when
             ValueTask<Audit> addAuditTask =
-                this.auditService.AddAuditAsync(someAudit);
+                this.auditService.AddAuditAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<string>());
 
             AuditServiceException actualAuditServiceException =
                 await Assert.ThrowsAsync<AuditServiceException>(

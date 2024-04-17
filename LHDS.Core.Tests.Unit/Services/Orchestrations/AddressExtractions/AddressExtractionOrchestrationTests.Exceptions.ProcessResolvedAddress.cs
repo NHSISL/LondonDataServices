@@ -19,7 +19,7 @@ using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
-    public partial class AddressExctractionOrchestrationServiceTests
+    public partial class AddressExtractionOrchestrationServiceTests
     {
         [Theory]
         [MemberData(nameof(AddressExtractionOrchestrationDependencyValidationExceptions))]
@@ -119,7 +119,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         [Theory]
         [MemberData(nameof(AddressExtractionDependencyExceptions))]
         public async Task
-            ShouldThrowAggregateDependencyExceptionOnProcessAddressesIfErrorsInLoopAndLogItAsync(
+            ShouldThrowAggregateDependencyExceptionOnProcessResolvedAddressesIfErrorsInLoopAndLogItAsync(
             Xeption dependencyException)
         {
             // Given
@@ -212,7 +212,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         }
 
         [Fact]
-        public async Task ShouldThrowAggregateServiceExceptionOnProcessAddressIfErrorsInLoopAndLogItAsync()
+        public async Task ShouldThrowAggregateServiceExceptionOnProcessResolvedAddressesIfErrorsInLoopAndLogItAsync()
         {
             // Given
             byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
@@ -341,10 +341,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
              service.ProcessCsvAsync(It.IsAny<byte[]>()),
                  Times.Once);
 
-            this.addressExtractionAuditServiceMock.Verify(service =>
-             service.AddAddressExtractionAuditAsync(It.IsAny<AddressExtractionAudit>()),
-                 Times.Never);
-
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
                    expectedDependencyException))),
@@ -354,7 +350,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.addressParserServiceMock.VerifyNoOtherCalls();
-            this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -397,10 +392,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
              service.ProcessCsvAsync(It.IsAny<byte[]>()),
                  Times.Once);
 
-            this.addressExtractionAuditServiceMock.Verify(service =>
-             service.AddAddressExtractionAuditAsync(It.IsAny<AddressExtractionAudit>()),
-                 Times.Never);
-
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
                    expectedDependencyException))),
@@ -410,7 +401,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.addressParserServiceMock.VerifyNoOtherCalls();
-            this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -456,10 +446,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
              service.ProcessCsvAsync(It.IsAny<byte[]>()),
                  Times.Once);
 
-            this.addressExtractionAuditServiceMock.Verify(service =>
-             service.AddAddressExtractionAuditAsync(It.IsAny<AddressExtractionAudit>()),
-                 Times.Never);
-
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
                    expectedAddressExtractionOrchestrationServiceException))),
@@ -469,7 +455,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.addressParserServiceMock.VerifyNoOtherCalls();
-            this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }

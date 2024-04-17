@@ -16,7 +16,7 @@ using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
-    public partial class AddressExctractionOrchestrationServiceTests
+    public partial class AddressExtractionOrchestrationServiceTests
     {
         [Fact]
         public async Task ShouldProcessResolvedAddressesAsync()

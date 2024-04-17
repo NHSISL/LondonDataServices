@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             string inputFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
-                @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessAddressesAsync.csv");
+                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessResolvedAddressesAsync.csv");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             List<Address> randomAddresses = CreateRandomAddresses().ToList();

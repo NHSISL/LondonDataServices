@@ -12,8 +12,6 @@ using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Models.Foundations.SubscriberAgreements;
-using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressParsers;
 
@@ -83,6 +81,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             });
 
         public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data) =>
-            throw new NotImplementedException(); 
+            throw new NotImplementedException();
     }
 }

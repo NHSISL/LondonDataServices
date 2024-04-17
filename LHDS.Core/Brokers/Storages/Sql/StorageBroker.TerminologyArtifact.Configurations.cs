@@ -63,7 +63,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<TerminologyArtifact>()
-                .Property(terminologyArtifact => terminologyArtifact.IsErrorred)
+                .Property(terminologyArtifact => terminologyArtifact.IsError)
                 .HasDefaultValue(false)
                 .IsRequired();
 

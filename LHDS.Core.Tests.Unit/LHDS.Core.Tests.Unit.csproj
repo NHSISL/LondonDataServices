@@ -9,11 +9,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Services\Foundations\ResolvedAddressParser\ShouldProcessResolvedAddressCsvAsync.csv" />
 	  <None Remove="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessAddressesAsync.csv" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Content Include="Resources\Services\Foundations\AddressParser\ShouldProcessAddressCsvAsync.csv">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Services\Foundations\ResolvedAddressParser\ShouldProcessResolvedAddressCsvAsync.csv">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessAddressesAsync.csv">

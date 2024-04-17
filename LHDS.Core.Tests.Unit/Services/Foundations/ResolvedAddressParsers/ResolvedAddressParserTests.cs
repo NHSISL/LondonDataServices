@@ -7,28 +7,28 @@ using System.Linq.Expressions;
 using LHDS.Core.Brokers.CsvMappers;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Services.Foundations.AddressParsers;
+using LHDS.Core.Services.Foundations.ResolvedAddressParsers;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
+namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
 {
-    public partial class AddressParserTests
+    public partial class ResolvedAddressParserTests
     {
-        private readonly Mock<ICsvMapperBroker> csvMapperBrokerMock;
-        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
-        private readonly AddressParserService addressParserService;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly ICsvMapperBroker csvMapperBroker;
+        private readonly ResolvedAddressParserService addressParserService;
 
-        public AddressParserTests()
+        public ResolvedAddressParserTests()
         {
-            this.csvMapperBrokerMock = new Mock<ICsvMapperBroker>();
-            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
+            this.csvMapperBroker = new CsvMapperBroker();
 
-            this.addressParserService = new AddressParserService(
-                csvMapperBroker: this.csvMapperBrokerMock.Object,
+            this.addressParserService = new ResolvedAddressParserService(
+                csvMapperBroker: this.csvMapperBroker,
                 identifierBroker: this.identifierBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }

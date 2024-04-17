@@ -1,0 +1,93 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.ResolvedAddressParsers.Exceptions;
+using Moq;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
+{
+    public partial class ResolvedAddressParserTests
+    {
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnProcessCsvIfDataIsNullAndLogItAsync()
+        {
+            // given
+            byte[] nullResolvedAddresses = null;
+
+            var invalidArgumentResolvedAddressParserException =
+                new InvalidArgumentResolvedAddressParserException(message: "ResolvedAddress parser is null.");
+
+            var expectedResolvedAddressParserValidationException =
+                new ResolvedAddressParserValidationException(
+                    message: "ResolvedAddress parser validation errors occurred, please try again.",
+                    innerException: invalidArgumentResolvedAddressParserException);
+
+            // when
+            ValueTask<List<ResolvedAddress>> processCSVResolvedAddressTask =
+                this.addressParserService.ProcessCsvAsync(nullResolvedAddresses);
+
+            ResolvedAddressParserValidationException actualResolvedAddressParserValidationException =
+                await Assert.ThrowsAsync<ResolvedAddressParserValidationException>(async () =>
+                    await processCSVResolvedAddressTask);
+
+            // then
+            actualResolvedAddressParserValidationException.Should().BeEquivalentTo(expectedResolvedAddressParserValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedResolvedAddressParserValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnProcessCsvIfDataIsInvalidAndLogItAsync(
+            string invalidText)
+        {
+            // given
+            string invalidResolvedAddress = invalidText;
+
+            var invalidArgumentResolvedAddressParserException =
+                new InvalidArgumentResolvedAddressParserException(
+                    message: "Invalid argument. Please correct the errors and try again.");
+
+            invalidArgumentResolvedAddressParserException.AddData(
+                key: "data",
+                values: "Text is required");
+
+            var expectedResolvedAddressParserValidationException =
+                new ResolvedAddressParserValidationException(
+                    message: "ResolvedAddress parser validation errors occurred, please try again.",
+                    innerException: invalidArgumentResolvedAddressParserException);
+
+            // when
+            ValueTask<List<ResolvedAddress>> processCSVResolvedAddressTask =
+                this.addressParserService.ProcessCsvAsync(invalidResolvedAddress);
+
+            ResolvedAddressParserValidationException actualResolvedAddressParserValidationException =
+                await Assert.ThrowsAsync<ResolvedAddressParserValidationException>(async () =>
+                    await processCSVResolvedAddressTask);
+
+            // then
+            actualResolvedAddressParserValidationException.Should()
+                .BeEquivalentTo(expectedResolvedAddressParserValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedResolvedAddressParserValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

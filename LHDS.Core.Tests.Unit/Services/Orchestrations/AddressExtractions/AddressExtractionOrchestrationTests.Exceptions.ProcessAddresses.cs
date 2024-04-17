@@ -88,8 +88,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (Address address in randomAddresses)
             {
+                string addressString = address.GetFormattedAddress();
+                
                 this.addressNormalisationServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(It.IsAny<string>()),
+                    service.GetNormalisedAddress(addressString),
                         Times.Once);
             }
 
@@ -180,8 +182,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (Address address in randomAddresses)
             {
+                string addressString = address.GetFormattedAddress();
+
                 this.addressNormalisationServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(It.IsAny<string>()),
+                    service.GetNormalisedAddress(addressString),
                         Times.Once);
             }
 
@@ -257,39 +261,40 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     innerException: failedAddressExtractionOrchestrationServiceException);
 
             // When
-            ValueTask<List<string>> processDataTask = this.emisLandingCoordinationService.ProcessAsync();
+            ValueTask<List<Address>> processAddressTask =
+                this.addressExtractionOrchestrationService.ProcessAddressesAsync(randomData);
 
-            EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await processDataTask);
+            AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
+                await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
+                    await processAddressTask);
 
             // Then
-            actualEmisLandingCoordinationValidationException.Should()
-                .BeEquivalentTo(expectedEmisLandingCoordinationServiceException);
+            actualAddressExtractionOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
 
-            this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds(),
+            this.addressParserServiceMock.Verify(service =>
+                service.ProcessCsvAsync(randomData),
                     Times.Once);
 
-            foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
+            foreach (Address address in randomAddresses)
             {
-                this.subscriberCredentialOrchestrationMock.Verify(service =>
-                    service.RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, It.IsAny<bool>()),
+                this.addressNormalisationServiceMock.Verify(service =>
+                    service.GetNormalisedAddress(It.IsAny<string>()),
                         Times.Once);
             }
 
             this.loggingBrokerMock.Verify(broker =>
-                    broker.LogError(It.Is(IsSameExceptionAs(
-                        innerEmisLandingCoordinationServiceException))),
-                            Times.Exactly(randomActiveSubscriberAgreementIds.Count));
+                broker.LogError(It.Is(SameExceptionAs(
+                    innerAddressExtractionOrchestrationServiceException))),
+                        Times.Exactly(randomAddresses.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                    broker.LogError(It.Is(IsSameExceptionAs(
-                        expectedEmisLandingCoordinationServiceException))),
-                            Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressExtractionOrchestrationServiceException))),
+                        Times.Once);
 
-            this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
-            this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.addressParserServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -338,6 +343,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                        Times.Once);
 
             this.addressParserServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
@@ -387,6 +393,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                        Times.Once);
 
             this.addressParserServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
@@ -439,6 +446,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                        Times.Once);
 
             this.addressParserServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }

@@ -9,10 +9,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessResolvedAddressesAsync.csv" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <Content Include="Resources\Services\Foundations\AddressParser\ShouldProcessAddressCsvAsync.csv">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>

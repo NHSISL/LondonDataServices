@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Linq;
@@ -18,15 +18,16 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
         public async Task ShouldGetNonDownloadedTerminologyArtifact()
         {
             // given
-            IQueryable<TerminologyArtifact> randomTerminologyArtifacts = CreateRandomTerminologyArtifacts();
+            List<TerminologyArtifact> randomTerminologyArtifacts = CreateRandomTerminologyArtifacts();
             List<TerminologyArtifact> artifactsList = randomTerminologyArtifacts.ToList();
             artifactsList.Last().IsDownloaded = false;
+            artifactsList.Last().IsError = false;
             TerminologyArtifact expectedTerminologyArtifact = artifactsList.Last();
-            IQueryable<TerminologyArtifact> outputTerminologyArtifacts = artifactsList.AsQueryable();
+            List<TerminologyArtifact> outputTerminologyArtifacts = artifactsList;
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.RetrieveAllTerminologyArtifacts())
-                    .Returns(outputTerminologyArtifacts);
+                    .Returns(outputTerminologyArtifacts.AsQueryable());
 
             // when
             TerminologyArtifact? actualTerminologyArtifact =

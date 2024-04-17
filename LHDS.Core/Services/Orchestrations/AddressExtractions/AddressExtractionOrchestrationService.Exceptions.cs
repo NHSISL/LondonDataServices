@@ -66,7 +66,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                 var failedAddressExtractionOrchestrationServiceException =
                     new FailedAddressExtractionOrchestrationServiceException(
                         message: "Failed address extraction aggregate orchestration service occurred, " +
-                        "please contact support.",
+                            "please contact support.",
                         innerException: aggregateException);
 
                 throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
@@ -76,7 +76,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                 var failedAddressExtractionOrchestrationServiceException =
                     new FailedAddressExtractionOrchestrationServiceException(
                         message: "Failed address extraction orchestration service error occurred, " +
-                        "please contact support",
+                            "please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
@@ -126,12 +126,22 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyException(addressNormalisationServiceException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedAddressExtractionOrchestrationServiceException =
+                    new FailedAddressExtractionOrchestrationServiceException(
+                        message: "Failed address extraction aggregate orchestration service occurred, " +
+                        "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
+            }
             catch (Exception exception)
             {
                 var failedAddressExtractionOrchestrationServiceException =
                     new FailedAddressExtractionOrchestrationServiceException(
                         message: "Failed address extraction orchestration service error occurred, " +
-                        "please contact support",
+                        "please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);

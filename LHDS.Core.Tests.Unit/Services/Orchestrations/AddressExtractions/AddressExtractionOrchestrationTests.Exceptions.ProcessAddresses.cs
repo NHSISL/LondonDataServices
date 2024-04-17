@@ -98,7 +98,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             var addressExtractionOrchestrationDependencyValidationLoggingException =
                 new AddressExtractionOrchestrationDependencyValidationException(
                     message: "Address extraction orchestration dependency validation error occurred, " +
-                    "please try again.",
+                    "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -192,7 +192,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             var addressExtractionOrchestrationDependencyLoggingException =
                 new AddressExtractionOrchestrationDependencyException(
                     message: "Address extraction orchestration dependency error occurred, " +
-                    "please try again.",
+                    "fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -225,7 +225,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             var innerFailedAddressExtractionOrchestrationServiceException =
                 new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction orchestration service occurred, please contact support.",
+                    message: "Failed address extraction orchestration service error occurred, please contact support.",
                     innerException: serviceException);
 
             var innerAddressExtractionOrchestrationServiceException =
@@ -252,7 +252,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             var failedAddressExtractionOrchestrationServiceException =
                 new FailedAddressExtractionOrchestrationServiceException(
                     message: "Failed address extraction aggregate orchestration service occurred, " +
-                    "please contact support.",
+                        "please contact support.",
                     innerException: aggregateException);
 
             var expectedAddressExtractionOrchestrationServiceException =
@@ -278,9 +278,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (Address address in randomAddresses)
             {
+                string addressString = address.GetFormattedAddress();
 
                 this.addressNormalisationServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(It.IsAny<string>()),
+                    service.GetNormalisedAddress(addressString),
                         Times.Once);
             }
 
@@ -413,7 +414,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             var failedAddressPersistanceOrchestrationServiceException =
                 new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction orchestration service error occurred, please contact support",
+                    message: "Failed address extraction orchestration service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedAddressExtractionOrchestrationServiceException =

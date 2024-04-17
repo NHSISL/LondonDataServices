@@ -9,6 +9,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.AddressExtractionAudits;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
@@ -48,7 +49,25 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
         public async ValueTask<List<Address>> ProcessAddressesAsync(byte[] data) =>
            throw new NotImplementedException();
 
-        public async ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data) =>
-            throw new NotImplementedException();
+        public async ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data)
+        {
+            List<ResolvedAddress> resolvedAddresses = await this.resolvedAddressParserService.ProcessCsvAsync(data);
+
+            List<ResolvedAddress> result = new List<ResolvedAddress>();
+
+            foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
+            {
+                string addressString = resolvedAddress.UnstructuredPostalAddress;
+
+                AddressNormalisation addressNormalisation = 
+                    await this.addressNormalisationService.GetNormalisedAddress(addressString);
+
+                resolvedAddress.PostalAddress = addressNormalisation.PostalAddress;
+                resolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                result.Add(resolvedAddress);
+            }
+
+            return result;
+        }
     }
 }

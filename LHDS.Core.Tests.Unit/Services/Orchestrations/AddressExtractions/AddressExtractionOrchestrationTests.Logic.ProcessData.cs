@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // When
             List<Address> actualAddresses = await this.addressExtractionOrchestrationService
-                .ProcessDataAsync(inputData);
+                .ProcessAddressesAsync(inputData);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
@@ -90,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // When
             List<Address> actualAddresses = await this.addressExtractionOrchestrationService
-                .ProcessDataAsync(inputData);
+                .ProcessAddressesAsync(inputData);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>

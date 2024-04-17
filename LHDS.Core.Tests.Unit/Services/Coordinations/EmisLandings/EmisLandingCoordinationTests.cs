@@ -68,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
           actualException => actualException.SameExceptionAs(expectedException);
 
         private static Expression<Func<Xeption, bool>> IsSameExceptionAs(Xeption expectedException) =>
-            actualException => actualException.IsSameExceptionAs(expectedException);
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static List<Guid> CreateRandomActiveSubscriberAgreementIds(int number)
         {

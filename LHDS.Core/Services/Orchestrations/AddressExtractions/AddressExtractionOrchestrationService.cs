@@ -1,18 +1,20 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits;
-using LHDS.Core.Services.Foundations.AddressExtractionAudits;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressParsers;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions
@@ -20,95 +22,67 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
     public partial class AddressExtractionOrchestrationService : IAddressExtractionOrchestrationService
     {
         private readonly IAddressParserService addressParserService;
-        private readonly IAddressExtractionAuditService addressExtractionAuditService;
+        private readonly IAddressNormalisationService addressNormalisationService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly IIdentifierBroker identifierBroker;
 
         public AddressExtractionOrchestrationService(
             IAddressParserService addressParserService,
-            IAddressExtractionAuditService addressExtractionAuditService,
+            IAddressNormalisationService addressNormalisationService,
             ILoggingBroker loggingBroker,
-            IDateTimeBroker dateTimeBroker,
-            IIdentifierBroker identifierBroker)
+            IDateTimeBroker dateTimeBroker)
         {
             this.addressParserService = addressParserService;
-            this.addressExtractionAuditService = addressExtractionAuditService;
+            this.addressNormalisationService = addressNormalisationService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
-            this.identifierBroker = identifierBroker;
         }
 
-        public ValueTask<List<Address>> ProcessDataAsync(byte[] data) =>
+        public ValueTask<List<Address>> ProcessAddressesAsync(byte[] data) =>
             TryCatch(async () =>
             {
                 ValidateDataOnProcessData(data);
-                return await ProcessAddressDataAsync(data);
-            });
+                List<Address> addresses = await this.addressParserService.ProcessCsvAsync(data);
+                List<Address> processedAddresses = new List<Address>();
+                var exceptions = new List<Exception>();
 
-        private async ValueTask<List<Address>> ProcessAddressDataAsync(byte[] data)
-        {
-            List<Address> addresses = new List<Address>();
-
-            using (MemoryStream memoryStream = new MemoryStream(data))
-            using (ZipArchive archive = new ZipArchive(memoryStream))
-            {
-                foreach (ZipArchiveEntry entry in archive.Entries)
+                foreach (Address address in addresses)
                 {
-                    if (entry.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+                    try
                     {
-                        using (var entryStream = entry.Open())
-                        using (var tempMemoryStream = new MemoryStream())
+                        Address processedAddress = await TryCatch(async () =>
                         {
-                            await entryStream.CopyToAsync(tempMemoryStream);
-                            byte[] csvData = tempMemoryStream.ToArray();
+                            Address inputAddress = address;
+                            string addressString = inputAddress.GetFormattedAddress();
 
-                            List<Address> csvAddresses =
-                                await this.addressParserService.ProcessCsvAsync(csvData);
+                            AddressNormalisation addressNormalisation =
+                                await this.addressNormalisationService.GetNormalisedAddress(addressString);
 
-                            addresses.AddRange(csvAddresses);
-                            var dateStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                            inputAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                            inputAddress.PostalAddress = addressNormalisation.PostalAddress;
 
-                            var audit = new AddressExtractionAudit
-                            {
-                                Id = this.identifierBroker.GetIdentifier(),
-                                CorrelationId = this.identifierBroker.GetIdentifier(),
-                                FileName = $"{entry}",
-                                Message = "Success",
-                                MessageId = "",
-                                CreatedBy = "System",
-                                UpdatedBy = "System",
-                                UpdatedDate = dateStamp,
-                                CreatedDate = dateStamp,
-                            };
+                            return inputAddress;
+                        });
 
-                            await this.addressExtractionAuditService.AddAddressExtractionAuditAsync(audit);
-                        }
+                        processedAddresses.Add(processedAddress);
                     }
-                    else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                    catch (Exception ex)
                     {
-                        byte[] nestedZipData;
-
-                        using (MemoryStream nestedMemoryStream = new MemoryStream())
-                        using (Stream entryStream = entry.Open())
-                        {
-                            entryStream.CopyTo(nestedMemoryStream);
-                            nestedZipData = nestedMemoryStream.ToArray();
-                        }
-
-                        if (nestedZipData.Length <= 0)
-                        {
-                            Console.WriteLine($"nestedZipData is null");
-                            throw new Exception($"nestedZipData is null");
-                        }
-
-                        List<Address> nestedAddresses = await ProcessAddressDataAsync(nestedZipData);
-                        addresses.AddRange(nestedAddresses);
+                        exceptions.Add(ex);
                     }
                 }
-            }
 
-            return addresses;
-        }
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to normalise address for {exceptions.Count} addresses",
+                        exceptions);
+                }
+
+                return processedAddresses;
+            });
+
+        public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data) =>
+            throw new NotImplementedException(); 
     }
 }

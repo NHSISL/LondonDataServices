@@ -44,7 +44,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 ValidateDataOnProcessData(data);
 
                 List<Address> extractedAddress =
-                    await this.addressExtractionOrchestrationService.ProcessDataAsync(data);
+                    await this.addressExtractionOrchestrationService.ProcessAddressesAsync(data);
 
                 ValidateAddressListIsNotNull(extractedAddress);
 

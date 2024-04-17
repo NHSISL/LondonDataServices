@@ -12,6 +12,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.AddressExtractionAudits;
@@ -141,20 +142,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             return new TheoryData<Xeption>
             {
                 new AddressParserValidationException(
-                    message: "Address normalisation processing validation error occured, please try again",
+                    message: "Address parser validation error occured, please try again",
                     innerException),
 
                 new AddressParserDependencyValidationException(
-                    message: "Address normalisation processing dependency validation error occurred, please try again.",
+                    message: "Address parser dependency validation error occurred, please try again.",
                     innerException),
 
-                new AddressExtractionAuditValidationException(
-                    message: "Audit validation error occurred, please try again.",
+                new AddressNormalisationValidationException(
+                    message: "Address normalisation validation error occured, please try again",
                     innerException),
 
-                new AddressExtractionAuditDependencyValidationException(
-                    message: "Audit dependency validation error occurred, please try again.",
-                    innerException)
+                new AddressNormalisationDependencyValidationException(
+                    message: "Address normalisation dependency validation error occurred, please try again.",
+                    innerException),
             };
         }
 
@@ -174,13 +175,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     message: "Address parser service error occurred, contact support.",
                     innerException),
 
-                new AddressExtractionAuditDependencyException(
-                    message: "Audit dependency error occurred, contact support.",
+                new AddressNormalisationDependencyException(
+                    message: "Address normalisation dependency error occurred, contact support.",
                     innerException),
 
-                new AddressExtractionAuditServiceException(
-                    message: "Audit service error occurred, contact support.",
-                    innerException)
+                new AddressNormalisationServiceException(
+                    message: "Address normalisation service error occurred, contact support.",
+                    innerException),
             };
         }
     }

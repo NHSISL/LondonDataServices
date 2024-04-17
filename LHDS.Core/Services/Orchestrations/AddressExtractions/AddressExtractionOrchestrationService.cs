@@ -4,10 +4,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
@@ -54,22 +56,43 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 ValidateDataOnProcessData(data);
                 List<ResolvedAddress> resolvedAddresses = await this.resolvedAddressParserService.ProcessCsvAsync(data);
-
-                List<ResolvedAddress> result = new List<ResolvedAddress>();
+                List<ResolvedAddress> processedResolvedAddresses = new List<ResolvedAddress>();
+                var exceptions = new List<Exception>();
 
                 foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
                 {
-                    string addressString = resolvedAddress.UnstructuredPostalAddress;
+                    try
+                    {
+                        ResolvedAddress processedResolvedAddress = await TryCatch(async () =>
+                        {
+                            ResolvedAddress inputResolvedAddress = resolvedAddress;
+                            string addressString = inputResolvedAddress.UnstructuredPostalAddress;
 
-                    AddressNormalisation addressNormalisation =
-                        await this.addressNormalisationService.GetNormalisedAddress(addressString);
+                            AddressNormalisation addressNormalisation =
+                                await this.addressNormalisationService.GetNormalisedAddress(addressString);
 
-                    resolvedAddress.PostalAddress = addressNormalisation.PostalAddress;
-                    resolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                    result.Add(resolvedAddress);
+                            inputResolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                            inputResolvedAddress.PostalAddress = addressNormalisation.PostalAddress;
+
+                            return inputResolvedAddress;
+                        });
+
+                        processedResolvedAddresses.Add(processedResolvedAddress);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
                 }
 
-                return result;
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to normalise address for {exceptions.Count} resolved addresses",
+                        exceptions);
+                }
+
+                return processedResolvedAddresses;
             });
     }
 }

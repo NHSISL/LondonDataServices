@@ -11,6 +11,7 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressParsers;
@@ -103,6 +104,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 new AddressParserDependencyValidationException(
                     message: "Address parser dependency validation error occurred, please try again.",
                     innerException),
+
+                new AddressNormalisationValidationException(
+                    message: "Address normalisation validation error occured, please try again",
+                    innerException),
+
+                new AddressNormalisationDependencyValidationException(
+                    message: "Address normalisation dependency validation error occurred, please try again.",
+                    innerException),
             };
         }
 
@@ -120,6 +129,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
                 new AddressParserServiceException(
                     message: "Address parser service error occurred, contact support.",
+                    innerException),
+
+                new AddressNormalisationDependencyException(
+                    message: "Address normalisation dependency error occurred, contact support.",
+                    innerException),
+
+                new AddressNormalisationServiceException(
+                    message: "Address normalisation service error occurred, contact support.",
                     innerException),
             };
         }

@@ -1,8 +1,9 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.DateTimes;
@@ -46,11 +47,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static IQueryable<TerminologyArtifact> CreateRandomTerminologyArtifacts()
+        private static List<TerminologyArtifact> CreateRandomTerminologyArtifacts()
         {
             return CreateTerminologyArtifactFiller()
                 .Create(count: GetRandomNumber())
-                    .AsQueryable();
+                    .ToList();
         }
 
         private static TerminologyArtifact CreateRandomTerminologyArtifact() =>

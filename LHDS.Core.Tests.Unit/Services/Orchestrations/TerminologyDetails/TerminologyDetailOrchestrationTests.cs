@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -46,14 +46,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             compareLogic = new CompareLogic();
 
-            terminologyDetailOrchestrationService = new TerminologyDetailOrchestrationService(
-                terminologyArtifactProcessingService: terminologyArtifactProcessingServiceMock.Object,
-                ontologyProcessingService: ontologyProcessingServiceMock.Object,
-                documentProcessingService: documentProcessingServiceMock.Object,
-                blobContainers: this.blobContainers,
-                loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object);
-
             blobContainers = new BlobContainers
             {
                 EmisLanding = "emislanding",
@@ -62,6 +54,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 Pds = "pds",
                 Terminology = "terminology",
             };
+
+            terminologyDetailOrchestrationService = new TerminologyDetailOrchestrationService(
+                terminologyArtifactProcessingService: terminologyArtifactProcessingServiceMock.Object,
+                ontologyProcessingService: ontologyProcessingServiceMock.Object,
+                documentProcessingService: documentProcessingServiceMock.Object,
+                blobContainers: this.blobContainers,
+                loggingBroker: loggingBrokerMock.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object);
         }
 
         private static int GetRandomNumber() =>

@@ -1,9 +1,13 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
@@ -16,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             // given
             Guid invalidAuditId = Guid.Empty;
 
-            var invalidAuditException = 
+            var invalidAuditException =
                 new InvalidAuditException(
                     message: "Invalid audit. Please correct the errors and try again.");
 
@@ -53,6 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -81,7 +81,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                      this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
                         .OrderBy(terminologyArtifact => terminologyArtifact.ResourceType)
                         .FirstOrDefault(terminologyArtifact =>
-                            terminologyArtifact.IsDownloaded == false && terminologyArtifact.IsErrorred == false);
+                            terminologyArtifact.IsDownloaded == false && terminologyArtifact.IsError == false);
 
                 return nonDownloadedArtifact;
             });

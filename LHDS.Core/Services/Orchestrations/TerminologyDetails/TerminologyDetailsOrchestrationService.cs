@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                     catch (System.Exception ex)
                     {
                         artifact.IsDownloaded = false;
-                        artifact.IsErrorred = true;
+                        artifact.IsError = true;
 
                         artifact.ErrorMessage = ex?.InnerException?.InnerException?.Message
                             ?? ex?.InnerException?.Message

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -11,6 +12,8 @@ using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressParsers;
 
@@ -40,23 +43,43 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 ValidateDataOnProcessData(data);
                 List<Address> addresses = await this.addressParserService.ProcessCsvAsync(data);
-
-                List<Address> result = new List<Address>();
+                List<Address> processedAddresses = new List<Address>();
+                var exceptions = new List<Exception>();
 
                 foreach (Address address in addresses)
                 {
-                    string addressString = address.GetFormattedAddress();
+                    try
+                    {
+                        Address processedAddress = await TryCatch(async () =>
+                        {
+                            Address inputAddress = address;
+                            string addressString = inputAddress.GetFormattedAddress();
 
-                    AddressNormalisation addressNormalisation =
-                        await this.addressNormalisationService.GetNormalisedAddress(addressString);
+                            AddressNormalisation addressNormalisation =
+                                await this.addressNormalisationService.GetNormalisedAddress(addressString);
 
-                    address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                    address.PostalAddress = addressNormalisation.PostalAddress;
+                            inputAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                            inputAddress.PostalAddress = addressNormalisation.PostalAddress;
 
-                    result.Add(address);
+                            return inputAddress;
+                        });
+
+                        processedAddresses.Add(processedAddress);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
                 }
 
-                return result;
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to normalise address for {exceptions.Count} addresses",
+                        exceptions);
+                }
+
+                return processedAddresses;
             });
 
         public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data) =>

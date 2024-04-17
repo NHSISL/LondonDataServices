@@ -16,12 +16,78 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
     public partial class AddressExtractionOrchestrationService
     {
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
+        private delegate ValueTask<Address> ReturningAddressFunction();
 
         private async ValueTask<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
         {
             try
             {
                 return await returningAddressListFunction();
+            }
+            catch (InvalidArgumentAddressExtractionOrchestrationException
+                invalidArgumentAddressExtractionOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressExtractionOrchestrationException);
+            }
+            catch (AddressParserValidationException addressParserValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressParserValidationException);
+            }
+            catch (AddressParserDependencyValidationException addressParserDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressParserDependencyValidationException);
+            }
+            catch (AddressNormalisationValidationException addressNormalisationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationValidationException);
+            }
+            catch (AddressNormalisationDependencyValidationException addressNormalisationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
+            }
+            catch (AddressParserDependencyException addressParserDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressParserDependencyException);
+            }
+            catch (AddressParserServiceException addressParserServiceException)
+            {
+                throw CreateAndLogDependencyException(addressParserServiceException);
+            }
+            catch (AddressNormalisationDependencyException addressNormalisationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationDependencyException);
+            }
+            catch (AddressNormalisationServiceException addressNormalisationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationServiceException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedAddressExtractionOrchestrationServiceException =
+                    new FailedAddressExtractionOrchestrationServiceException(
+                        message: "Failed address extraction aggregate orchestration service occurred, " +
+                        "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressExtractionOrchestrationServiceException =
+                    new FailedAddressExtractionOrchestrationServiceException(
+                        message: "Failed address extraction orchestration service error occurred, " +
+                        "please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
+            }
+        }
+
+        private async ValueTask<Address> TryCatch(ReturningAddressFunction returningAddressFunction)
+        {
+            try
+            {
+                return await returningAddressFunction();
             }
             catch (InvalidArgumentAddressExtractionOrchestrationException
                 invalidArgumentAddressExtractionOrchestrationException)

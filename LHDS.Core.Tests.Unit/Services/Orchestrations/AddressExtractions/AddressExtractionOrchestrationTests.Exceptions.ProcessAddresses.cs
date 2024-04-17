@@ -278,6 +278,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (Address address in randomAddresses)
             {
+
                 this.addressNormalisationServiceMock.Verify(service =>
                     service.GetNormalisedAddress(It.IsAny<string>()),
                         Times.Once);

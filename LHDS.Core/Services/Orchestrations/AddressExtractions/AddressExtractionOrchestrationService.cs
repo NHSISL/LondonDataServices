@@ -49,25 +49,27 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
         public async ValueTask<List<Address>> ProcessAddressesAsync(byte[] data) =>
            throw new NotImplementedException();
 
-        public async ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data)
-        {
-            List<ResolvedAddress> resolvedAddresses = await this.resolvedAddressParserService.ProcessCsvAsync(data);
-
-            List<ResolvedAddress> result = new List<ResolvedAddress>();
-
-            foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
+        public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data) =>
+            TryCatch(async () =>
             {
-                string addressString = resolvedAddress.UnstructuredPostalAddress;
+                ValidateDataOnProcessData(data);
+                List<ResolvedAddress> resolvedAddresses = await this.resolvedAddressParserService.ProcessCsvAsync(data);
 
-                AddressNormalisation addressNormalisation = 
-                    await this.addressNormalisationService.GetNormalisedAddress(addressString);
+                List<ResolvedAddress> result = new List<ResolvedAddress>();
 
-                resolvedAddress.PostalAddress = addressNormalisation.PostalAddress;
-                resolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                result.Add(resolvedAddress);
-            }
+                foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
+                {
+                    string addressString = resolvedAddress.UnstructuredPostalAddress;
 
-            return result;
-        }
+                    AddressNormalisation addressNormalisation =
+                        await this.addressNormalisationService.GetNormalisedAddress(addressString);
+
+                    resolvedAddress.PostalAddress = addressNormalisation.PostalAddress;
+                    resolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                    result.Add(resolvedAddress);
+                }
+
+                return result;
+            });
     }
 }

@@ -27,6 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
     public partial class AddressExctractionOrchestrationServiceTests
     {
         private readonly Mock<IAddressParserService> addressParserServiceMock;
+        private readonly Mock<IAddressParserService> addressParserServiceMock;
+        private readonly Mock<IAddressParserService> addressParserServiceMock;
         private readonly Mock<IAddressExtractionAuditService> addressExtractionAuditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;

@@ -1,26 +1,28 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.AddressNormalisations;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.AddressExtractionAudits;
+using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressParsers;
+using LHDS.Core.Services.Foundations.ResolvedAddresses;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationService : IAddressExtractionOrchestrationService
     {
         private readonly IAddressParserService addressParserService;
+        private readonly IAddressNormalisationService addressNormalisationService;
+        private readonly IResolvedAddressService resolvedAddressService;
         private readonly IAddressExtractionAuditService addressExtractionAuditService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -28,12 +30,16 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
         public AddressExtractionOrchestrationService(
             IAddressParserService addressParserService,
+            IAddressNormalisationService addressNormalisationService,
+            IResolvedAddressService resolvedAddressService,
             IAddressExtractionAuditService addressExtractionAuditService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker)
         {
             this.addressParserService = addressParserService;
+            this.addressNormalisationService = addressNormalisationService;
+            this.resolvedAddressService = resolvedAddressService;
             this.addressExtractionAuditService = addressExtractionAuditService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using Xeptions;
@@ -35,6 +36,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyValidationException(addressParserDependencyValidationException);
             }
+            catch (AddressNormalisationValidationException addressNormalisationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationValidationException);
+            }
+            catch (AddressNormalisationDependencyValidationException addressNormalisationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
+            }
             catch (AddressParserDependencyException addressParserDependencyException)
             {
                 throw CreateAndLogDependencyException(addressParserDependencyException);
@@ -42,6 +51,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             catch (AddressParserServiceException addressParserServiceException)
             {
                 throw CreateAndLogDependencyException(addressParserServiceException);
+            }
+            catch (AddressNormalisationDependencyException addressNormalisationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationDependencyException);
+            }
+            catch (AddressNormalisationServiceException addressNormalisationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationServiceException);
             }
             catch (Exception exception)
             {

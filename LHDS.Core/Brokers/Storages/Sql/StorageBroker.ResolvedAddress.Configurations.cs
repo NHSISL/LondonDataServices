@@ -15,6 +15,19 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .ToTable("ResolvedAddress", "UPRN");
 
             modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.UniqueReference)
+                .IsRequired();
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.PostCode)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.UnstructuredPostalAddress)
+                .IsRequired();
+
+            modelBuilder.Entity<ResolvedAddress>()
                 .Property(address => address.UPRN)
                 .HasMaxLength(15)
                 .IsRequired(false);
@@ -25,13 +38,8 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired(false);
 
             modelBuilder.Entity<ResolvedAddress>()
-                .Property(address => address.PostCode)
-                .HasMaxLength(255)
-                .IsRequired(false);
-
-            modelBuilder.Entity<ResolvedAddress>()
                 .Property(address => address.PostalAddress)
-                .IsRequired(false);
+                .IsRequired();
 
             modelBuilder.Entity<ResolvedAddress>()
                 .Property(address => address.JsonPostalAddress)

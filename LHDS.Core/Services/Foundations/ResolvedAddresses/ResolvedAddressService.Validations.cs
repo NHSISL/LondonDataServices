@@ -16,6 +16,11 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
             Validate(
                 (Rule: IsInvalid(resolvedAddress.Id), Parameter: nameof(ResolvedAddress.Id)),
+                (Rule: IsInvalid(resolvedAddress.UniqueReference), Parameter: nameof(ResolvedAddress.UniqueReference)),
+
+                (Rule: IsInvalid(resolvedAddress.UnstructuredPostalAddress),
+                    Parameter: nameof(ResolvedAddress.UnstructuredPostalAddress)),
+
                 (Rule: IsInvalid(resolvedAddress.CreatedDate), Parameter: nameof(ResolvedAddress.CreatedDate)),
                 (Rule: IsInvalid(resolvedAddress.CreatedBy), Parameter: nameof(ResolvedAddress.CreatedBy)),
                 (Rule: IsInvalid(resolvedAddress.UpdatedDate), Parameter: nameof(ResolvedAddress.UpdatedDate)),
@@ -42,6 +47,11 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
             Validate(
                 (Rule: IsInvalid(resolvedAddress.Id), Parameter: nameof(ResolvedAddress.Id)),
+                (Rule: IsInvalid(resolvedAddress.UniqueReference), Parameter: nameof(ResolvedAddress.UniqueReference)),
+
+                (Rule: IsInvalid(resolvedAddress.UnstructuredPostalAddress),
+                    Parameter: nameof(ResolvedAddress.UnstructuredPostalAddress)),
+
                 (Rule: IsInvalid(resolvedAddress.CreatedDate), Parameter: nameof(ResolvedAddress.CreatedDate)),
                 (Rule: IsInvalid(resolvedAddress.CreatedBy), Parameter: nameof(ResolvedAddress.CreatedBy)),
                 (Rule: IsInvalid(resolvedAddress.UpdatedDate), Parameter: nameof(ResolvedAddress.UpdatedDate)),

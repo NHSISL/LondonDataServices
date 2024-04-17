@@ -25,6 +25,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
             Guid randomId = Guid.NewGuid();
             string assembly = Assembly.GetExecutingAssembly().Location;
 
+            dynamic randomDynamicAddreses = GetRandomDynamicAddreses(identifier: randomId);
+
+            string inputStringAddresses =
+                CreateStringAddressFromDynamic(data: randomDynamicAddreses);
+
+
+            List<ResolvedAddress> outputResolvedAddress =
+                CreateResolvedAddressFromDynamic(data: randomDynamicAddreses);
+
             string inputFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
                 @"Resources/Services/Foundations/ResolvedAddressParser/ShouldProcessResolvedAddressCsvAsync.csv");
@@ -48,20 +57,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
 
             foreach (string line in lines)
             {
-                if (line.StartsWith("28,"))
+                string[] index = line.Split(",");
+
+                ResolvedAddress address = new ResolvedAddress
                 {
-                    string[] index = line.Split(",");
+                    Id = randomId,
+                    UniqueReference = Guid.Parse(index[0]),
+                    PostCode = index[1],
+                    UnstructuredPostalAddress = index[2],
+                };
 
-                    ResolvedAddress address = new ResolvedAddress
-                    {
-                        Id = randomId,
-                        UniqueReference = Guid.Parse(index[0]),
-                        PostCode = index[1],
-                        UnstructuredPostalAddress = index[2],
-                    };
-
-                    expectedResolvedAddresses.Add(address);
-                }
+                expectedResolvedAddresses.Add(address);
             }
 
             this.identifierBrokerMock.Setup(broker =>
@@ -116,20 +122,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
 
             foreach (string line in lines)
             {
-                if (line.StartsWith("28,"))
+                string[] index = line.Split(",");
+
+                ResolvedAddress address = new ResolvedAddress
                 {
-                    string[] index = line.Split(",");
+                    Id = randomId,
+                    UniqueReference = Guid.Parse(index[0]),
+                    PostCode = index[1],
+                    UnstructuredPostalAddress = index[2],
+                };
 
-                    ResolvedAddress address = new ResolvedAddress
-                    {
-                        Id = randomId,
-                        UniqueReference = Guid.Parse(index[0]),
-                        PostCode = index[1],
-                        UnstructuredPostalAddress = index[2],
-                    };
-
-                    expectedResolvedAddresses.Add(address);
-                }
+                expectedResolvedAddresses.Add(address);
             }
 
             this.identifierBrokerMock.Setup(broker =>

@@ -1,7 +1,8 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -17,8 +18,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
         public void ShouldRetrieveTerminologyArtifactsByOntologyAsset()
         {
             // given
-            IQueryable<TerminologyArtifact> randomTerminologyArtifacts = CreateRandomTerminologyArtifacts();
-            IQueryable<TerminologyArtifact> outputTerminologyArtifacts = randomTerminologyArtifacts;
+            List<TerminologyArtifact> randomTerminologyArtifacts = CreateRandomTerminologyArtifacts();
+            IQueryable<TerminologyArtifact> outputTerminologyArtifacts = randomTerminologyArtifacts.AsQueryable();
             IQueryable<TerminologyArtifact> expectedTerminologyArtifacts = outputTerminologyArtifacts.DeepClone();
 
             this.terminologyArtifactServiceMock.Setup(service =>

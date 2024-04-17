@@ -19,7 +19,7 @@ namespace LHDS.Core.Models.Foundations.TerminologyArtifacts
         public DateTimeOffset? LastUpdated { get; set; }
         public bool IsCore { get; set; }
         public bool IsDownloaded { get; set; }
-        public bool IsErrorred { get; set; }
+        public bool IsError { get; set; }
         public string? ErrorMessage { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;

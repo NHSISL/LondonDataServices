@@ -50,7 +50,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressParserServiceMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
-            this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressParserServiceMock.VerifyNoOtherCalls();
         }
     }

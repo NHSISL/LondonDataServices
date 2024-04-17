@@ -43,17 +43,11 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
         }
 
         public ValueTask<List<Address>> ProcessAddressesAsync(byte[] data) =>
-
-
-        public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data) =>
             TryCatch(async () =>
             {
                 ValidateDataOnProcessData(data);
                 List<Address> addresses = await this.addressParserService.ProcessCsvAsync(data);
                 List<Address> processedAddresses = new List<Address>();
-                var exceptions = new List<Exception>();
-                List<ResolvedAddress> resolvedAddresses = await this.resolvedAddressParserService.ProcessCsvAsync(data);
-                List<ResolvedAddress> processedResolvedAddresses = new List<ResolvedAddress>();
                 var exceptions = new List<Exception>();
 
                 foreach (Address address in addresses)
@@ -64,29 +58,16 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                         {
                             Address inputAddress = address;
                             string addressString = inputAddress.GetFormattedAddress();
-                foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
-                {
-                    try
-                    {
-                        ResolvedAddress processedResolvedAddress = await TryCatch(async () =>
-                        {
-                            ResolvedAddress inputResolvedAddress = resolvedAddress;
-                            string addressString = inputResolvedAddress.UnstructuredPostalAddress;
 
                             AddressNormalisation addressNormalisation =
                                 await this.addressNormalisationService.GetNormalisedAddress(addressString);
 
                             inputAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
                             inputAddress.PostalAddress = addressNormalisation.PostalAddress;
-                            inputResolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                            inputResolvedAddress.PostalAddress = addressNormalisation.PostalAddress;
 
                             return inputAddress;
                         });
-                            return inputResolvedAddress;
-                        });
 
-                        processedResolvedAddresses.Add(processedResolvedAddress);
                         processedAddresses.Add(processedAddress);
                     }
                     catch (Exception ex)
@@ -104,6 +85,41 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
                 return processedAddresses;
             });
+
+        public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data) =>
+            TryCatch(async () =>
+            {
+                ValidateDataOnProcessData(data);
+                List<ResolvedAddress> resolvedAddresses = await this.resolvedAddressParserService.ProcessCsvAsync(data);
+                List<ResolvedAddress> processedResolvedAddresses = new List<ResolvedAddress>();
+                var exceptions = new List<Exception>();
+
+                foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
+                {
+                    try
+                    {
+                        ResolvedAddress processedResolvedAddress = await TryCatch(async () =>
+                        {
+                            ResolvedAddress inputResolvedAddress = resolvedAddress;
+                            string addressString = inputResolvedAddress.UnstructuredPostalAddress;
+
+                            AddressNormalisation addressNormalisation =
+                                await this.addressNormalisationService.GetNormalisedAddress(addressString);
+
+                            inputResolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                            inputResolvedAddress.PostalAddress = addressNormalisation.PostalAddress;
+
+                            return inputResolvedAddress;
+                        });
+
+                        processedResolvedAddresses.Add(processedResolvedAddress);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
                 if (exceptions.Any())
                 {
                     throw new AggregateException(

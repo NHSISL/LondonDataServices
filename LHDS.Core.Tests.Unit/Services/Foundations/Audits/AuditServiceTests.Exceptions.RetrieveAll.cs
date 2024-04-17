@@ -1,8 +1,12 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
@@ -52,6 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -63,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             var failedAuditServiceException =
                 new FailedAuditServiceException(
-                    message: "Failed audit service occurred, please contact support", 
+                    message: "Failed audit service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedAuditServiceException =
@@ -97,6 +102,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

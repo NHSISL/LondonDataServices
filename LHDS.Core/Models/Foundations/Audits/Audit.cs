@@ -10,12 +10,12 @@ namespace LHDS.Core.Models.Foundations.Audits
     public class Audit : IKey, IAudit
     {
         public Guid Id { get; set; }
-        public Guid CorrelationId { get; set; }
+        public Guid? CorrelationId { get; set; }
         public string AuditType { get; set; } = string.Empty;
-        public string? LogLevel { get; set; } = string.Empty;
-        public string? FileName { get; set; }
-        public string? Title { get; set; }
+        public string Title { get; set; } = string.Empty;
         public string? Message { get; set; } = string.Empty;
+        public string? FileName { get; set; }
+        public string? LogLevel { get; set; } = "Information";
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }

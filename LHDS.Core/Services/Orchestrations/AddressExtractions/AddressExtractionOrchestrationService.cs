@@ -7,13 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Services.Foundations.AddressExtractionAudits;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressParsers;
 using LHDS.Core.Services.Foundations.ResolvedAddressParsers;
@@ -25,40 +25,45 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
         private readonly IAddressParserService addressParserService;
         private readonly IAddressNormalisationService addressNormalisationService;
         private readonly IResolvedAddressParserService resolvedAddressParserService;
-        private readonly IAddressExtractionAuditService addressExtractionAuditService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly IIdentifierBroker identifierBroker;
 
         public AddressExtractionOrchestrationService(
             IAddressParserService addressParserService,
             IAddressNormalisationService addressNormalisationService,
             IResolvedAddressParserService resolvedAddressParserService,
-            IAddressExtractionAuditService addressExtractionAuditService,
             ILoggingBroker loggingBroker,
-            IDateTimeBroker dateTimeBroker,
-            IIdentifierBroker identifierBroker)
+            IDateTimeBroker dateTimeBroker)
         {
             this.addressParserService = addressParserService;
             this.addressNormalisationService = addressNormalisationService;
             this.resolvedAddressParserService = resolvedAddressParserService;
-            this.addressExtractionAuditService = addressExtractionAuditService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
-            this.identifierBroker = identifierBroker;
         }
 
-        public async ValueTask<List<Address>> ProcessAddressesAsync(byte[] data) =>
-           throw new NotImplementedException();
+        public ValueTask<List<Address>> ProcessAddressesAsync(byte[] data) =>
+
 
         public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data) =>
             TryCatch(async () =>
             {
                 ValidateDataOnProcessData(data);
+                List<Address> addresses = await this.addressParserService.ProcessCsvAsync(data);
+                List<Address> processedAddresses = new List<Address>();
+                var exceptions = new List<Exception>();
                 List<ResolvedAddress> resolvedAddresses = await this.resolvedAddressParserService.ProcessCsvAsync(data);
                 List<ResolvedAddress> processedResolvedAddresses = new List<ResolvedAddress>();
                 var exceptions = new List<Exception>();
 
+                foreach (Address address in addresses)
+                {
+                    try
+                    {
+                        Address processedAddress = await TryCatch(async () =>
+                        {
+                            Address inputAddress = address;
+                            string addressString = inputAddress.GetFormattedAddress();
                 foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
                 {
                     try
@@ -71,13 +76,18 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                             AddressNormalisation addressNormalisation =
                                 await this.addressNormalisationService.GetNormalisedAddress(addressString);
 
+                            inputAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                            inputAddress.PostalAddress = addressNormalisation.PostalAddress;
                             inputResolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
                             inputResolvedAddress.PostalAddress = addressNormalisation.PostalAddress;
 
+                            return inputAddress;
+                        });
                             return inputResolvedAddress;
                         });
 
                         processedResolvedAddresses.Add(processedResolvedAddress);
+                        processedAddresses.Add(processedAddress);
                     }
                     catch (Exception ex)
                     {
@@ -85,6 +95,15 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                     }
                 }
 
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to normalise address for {exceptions.Count} addresses",
+                        exceptions);
+                }
+
+                return processedAddresses;
+            });
                 if (exceptions.Any())
                 {
                     throw new AggregateException(

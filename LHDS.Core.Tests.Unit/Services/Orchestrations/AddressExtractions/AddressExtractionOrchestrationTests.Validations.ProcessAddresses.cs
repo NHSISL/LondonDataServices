@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using Moq;
 using Xunit;
@@ -15,8 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
     public partial class AddressExtractionOrchestrationServiceTests
     {
         [Fact]
-
-        public async Task ShouldThrowValidationExceptionOnProcessResolvedAddressIfDataIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnProcessAddressIfDataIsNullAndLogItAsync()
         {
             // given
             byte[] someData = null;
@@ -32,12 +31,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     innerException: invalidArgumentAddressExtractionOrchestrationException);
 
             // when
-            ValueTask<List<ResolvedAddress>> processResolvedAddressTask =
-                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(someData);
+            ValueTask<List<Address>> processDataTask =
+                this.addressExtractionOrchestrationService.ProcessAddressesAsync(someData);
 
             AddressExtractionValidationOrchestrationException actualException =
                 await Assert.ThrowsAsync<AddressExtractionValidationOrchestrationException>(
-                    processResolvedAddressTask.AsTask);
+                    processDataTask.AsTask);
 
             // then
             actualException.Should()
@@ -49,10 +48,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.resolvedAddressParserServiceMock.VerifyNoOtherCalls();
+            this.addressParserServiceMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
-            this.addressParserServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressParserServiceMock.VerifyNoOtherCalls();
         }
     }
 }

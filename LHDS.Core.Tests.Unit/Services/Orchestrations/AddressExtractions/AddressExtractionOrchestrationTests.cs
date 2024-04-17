@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -11,11 +11,10 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
+using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Services.Foundations.AddressExtractionAudits;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressParsers;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
@@ -29,28 +28,24 @@ using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
-    public partial class AddressExctractionOrchestrationServiceTests
+    public partial class AddressExtractionOrchestrationServiceTests
     {
         private readonly Mock<IAddressParserService> addressParserServiceMock;
         private readonly Mock<IAddressNormalisationService> addressNormalisationServiceMock;
         private readonly Mock<IResolvedAddressParserService> resolvedAddressParserServiceMock;
-        private readonly Mock<IAddressExtractionAuditService> addressExtractionAuditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
-        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
         private readonly ITestOutputHelper output;
 
-        public AddressExctractionOrchestrationServiceTests(ITestOutputHelper output)
+        public AddressExtractionOrchestrationServiceTests(ITestOutputHelper output)
         {
             this.addressParserServiceMock = new Mock<IAddressParserService>();
             this.addressNormalisationServiceMock = new Mock<IAddressNormalisationService>();
             this.resolvedAddressParserServiceMock = new Mock<IResolvedAddressParserService>();
-            this.addressExtractionAuditServiceMock = new Mock<IAddressExtractionAuditService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
-            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.compareLogic = new CompareLogic();
             this.output = output;
 
@@ -58,10 +53,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 addressParserService: addressParserServiceMock.Object,
                 addressNormalisationService: addressNormalisationServiceMock.Object,
                 resolvedAddressParserService: resolvedAddressParserServiceMock.Object,
-                addressExtractionAuditService: addressExtractionAuditServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object,
-                identifierBroker: identifierBrokerMock.Object);
+                dateTimeBroker: dateTimeBrokerMock.Object);
         }
 
         private static string GetRandomString() =>
@@ -76,14 +69,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        private Expression<Func<AddressExtractionAudit, bool>> SameAddressExtractionAuditAs(
-            AddressExtractionAudit expectedAddressExtractionAudit)
-        {
-            return actualAddressExtractionAudit =>
-                this.compareLogic.Compare(expectedAddressExtractionAudit, actualAddressExtractionAudit)
-                    .AreEqual;
-        }
-
         private static IQueryable<Address> CreateRandomAddresses()
         {
             return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
@@ -97,10 +82,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
+            string normalised = null;
             var filler = new Filler<Address>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(address => address.JsonPostalAddress).IgnoreIt()
+                .OnProperty(address => address.PostalAddress).IgnoreIt()
+                .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.UpdatedBy).Use(user);
 

@@ -53,9 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
-            this.addressLoadingAuditProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }

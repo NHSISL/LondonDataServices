@@ -1,17 +1,13 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
-using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
-using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
-using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.AddressPersistances
@@ -31,14 +27,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressPersistanceOrchestrationException);
             }
-            catch (AddressNormalisationProcessingValidationException addressNormalisationProcessingValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(addressNormalisationProcessingValidationException);
-            }
-            catch (AddressNormalisationDependencyValidationException addressNormalisationDependencyValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
-            }
             catch (AddressProcessingValidationException addressProcessingValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressProcessingValidationException);
@@ -47,24 +35,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             {
                 throw CreateAndLogDependencyValidationException(addressProcessingDependencyValidationException);
             }
-            catch (AddressLoadingAuditValidationException addressLoadingAuditValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(addressLoadingAuditValidationException);
-            }
-            catch (AddressLoadingAuditProcessingDependencyValidationException
-                addressLoadingAuditProcessingDependencyValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(
-                    addressLoadingAuditProcessingDependencyValidationException);
-            }
-            catch (AddressNormalisationProcessingDependencyException addressNormalisationProcessingDependencyException)
-            {
-                throw CreateAndLogDependencyException(addressNormalisationProcessingDependencyException);
-            }
-            catch (AddressNormalisationProcessingServiceException addressNormalisationProcessingServiceException)
-            {
-                throw CreateAndLogDependencyException(addressNormalisationProcessingServiceException);
-            }
             catch (AddressProcessingDependencyException addressProcessingDependencyException)
             {
                 throw CreateAndLogDependencyException(addressProcessingDependencyException);
@@ -72,14 +42,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             catch (AddressProcessingServiceException addressProcessingServiceException)
             {
                 throw CreateAndLogDependencyException(addressProcessingServiceException);
-            }
-            catch (AddressLoadingAuditProcessingDependencyException addressLoadingAuditProcessingDependencyException)
-            {
-                throw CreateAndLogDependencyException(addressLoadingAuditProcessingDependencyException);
-            }
-            catch (AddressLoadingAuditProcessingServiceException addressLoadingAuditProcessingServiceException)
-            {
-                throw CreateAndLogDependencyException(addressLoadingAuditProcessingServiceException);
             }
             catch (Exception exception)
             {

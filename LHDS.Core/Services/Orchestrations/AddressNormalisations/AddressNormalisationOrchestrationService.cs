@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -60,7 +60,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
                     {
                         var normalisedAddress = await TryCatch(async () =>
                         {
-                            List<string> addressList = new List<string> 
+                            List<string> addressList = new List<string>
                             {
                                 address.OrganisationName,
                                 address.DepartmentName,

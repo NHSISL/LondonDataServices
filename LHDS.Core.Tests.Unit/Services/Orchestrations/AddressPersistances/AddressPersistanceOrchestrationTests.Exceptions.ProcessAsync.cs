@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -23,14 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             Xeption dependencyValidationException)
         {
             // given
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            List<Address> randomAddresses = CreateRandomAddresses(GetRandomNumber()).ToList();
             Address address = randomAddresses[0];
-
-            var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
-                        $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
-                        $"{address.DependentThoroughfare},{address.Thoroughfare}," +
-                        $"{address.DoubleDependentLocality}," +
-                        $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
 
             var expectedDependencyException =
                 new AddressPersistanceOrchestrationDependencyValidationException(
@@ -38,13 +32,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                         "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.addressNormalisationProcessingServiceMock.Setup(service =>
-                service.GetNormalisedAddress(stringAddress))
-                    .ThrowsAsync(dependencyValidationException);
+            this.addressProcessingServiceMock.Setup(service =>
+              service.ModifyOrAddAddressAsync(address))
+                  .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<List<Address>> processTask =
-                this.addressPersistanceOrchestrationService.ProcessAsync(randomAddresses);
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
 
             AddressPersistanceOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressPersistanceOrchestrationDependencyValidationException>(
@@ -54,10 +48,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
-            this.addressNormalisationProcessingServiceMock.Verify(service =>
-             service.GetNormalisedAddress(stringAddress),
-                 Times.Once);
-
             this.addressProcessingServiceMock.Verify(service =>
              service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
                  Times.Never);
@@ -67,9 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                    expectedDependencyException))),
                        Times.Once);
 
-            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
-            this.addressLoadingAuditProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -79,14 +67,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             Xeption dependencyException)
         {
             // given
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            List<Address> randomAddresses = CreateRandomAddresses(1).ToList();
             Address address = randomAddresses[0];
-
-            var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
-                        $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
-                        $"{address.DependentThoroughfare},{address.Thoroughfare}," +
-                        $"{address.DoubleDependentLocality}," +
-                        $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
 
             var expectedDependencyException =
                 new AddressPersistanceOrchestrationDependencyException(
@@ -94,13 +76,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                         "fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
-            this.addressNormalisationProcessingServiceMock.Setup(service =>
-                service.GetNormalisedAddress(stringAddress))
+            this.addressProcessingServiceMock.Setup(service =>
+                service.ModifyOrAddAddressAsync(address))
                     .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<List<Address>> processTask =
-                this.addressPersistanceOrchestrationService.ProcessAsync(randomAddresses);
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
 
             AddressPersistanceOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressPersistanceOrchestrationDependencyException>(
@@ -110,22 +92,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
-            this.addressNormalisationProcessingServiceMock.Verify(service =>
-             service.GetNormalisedAddress(stringAddress),
-                 Times.Once);
-
             this.addressProcessingServiceMock.Verify(service =>
              service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
-                 Times.Never);
+                 Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
-            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
-            this.addressLoadingAuditProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -133,15 +109,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         public async Task ShouldThrowServiceExceptionOnAddressPersistanceIfServiceErrorOccursAndLogItAsync()
         {
             //Given
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            List<Address> randomAddresses = CreateRandomAddresses(1).ToList();
             Address address = randomAddresses[0];
-
-            var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
-                        $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
-                        $"{address.DependentThoroughfare},{address.Thoroughfare}," +
-                        $"{address.DoubleDependentLocality}," +
-                        $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
-
             var serviceException = new Exception();
 
             var failedAddressPersistanceOrchestrationServiceException =
@@ -154,13 +123,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     message: "Address persistance orchestration service error occurred, contact support.",
                     innerException: failedAddressPersistanceOrchestrationServiceException);
 
-            this.addressNormalisationProcessingServiceMock.Setup(service =>
-                service.GetNormalisedAddress(stringAddress))
+            this.addressProcessingServiceMock.Setup(processing =>
+                processing.ModifyOrAddAddressAsync(address))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<Address>> processTask =
-                this.addressPersistanceOrchestrationService.ProcessAsync(randomAddresses);
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
 
             AddressPersistanceOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<AddressPersistanceOrchestrationServiceException>(
@@ -169,22 +138,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             // then
             actualException.Should().BeEquivalentTo(expectedAddressPersistanceOrchestrationServiceException);
 
-            this.addressNormalisationProcessingServiceMock.Verify(service =>
-             service.GetNormalisedAddress(stringAddress),
-                 Times.Once);
-
             this.addressProcessingServiceMock.Verify(service =>
              service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
-                 Times.Never);
+                 Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
                    expectedAddressPersistanceOrchestrationServiceException))),
                        Times.Once);
 
-            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
-            this.addressLoadingAuditProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

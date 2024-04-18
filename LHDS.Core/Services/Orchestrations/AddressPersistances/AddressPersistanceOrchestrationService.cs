@@ -34,6 +34,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             TryCatch(async () =>
             {
                 ValidateAddressListOrchestrationOnProcess(addresses);
+
                 List<Address> processedAddresses = new List<Address>();
                 List<Exception> exceptions = new List<Exception>();
 
@@ -41,10 +42,15 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                 {
                     try
                     {
-                        Address processedAddress =
-                            await this.addressProcessingService.ModifyOrAddAddressAsync(address);
+                        var processAddress = await TryCatch(async () =>
+                        {
+                            Address processAddress =
+                                await this.addressProcessingService.ModifyOrAddAddressAsync(address);
 
-                        processedAddresses.Add(processedAddress);
+                            return processAddress;
+                        });
+
+                        processedAddresses.Add(processAddress);
                     }
                     catch (Exception ex)
                     {

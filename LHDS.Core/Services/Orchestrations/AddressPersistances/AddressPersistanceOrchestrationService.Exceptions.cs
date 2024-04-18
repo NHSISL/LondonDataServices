@@ -15,6 +15,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
     internal partial class AddressPersistanceOrchestrationService
     {
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
+        private delegate ValueTask<Address> ReturningAddressFunction();
 
         private async ValueTask<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
         {
@@ -22,8 +23,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             {
                 return await returningAddressListFunction();
             }
-            catch (InvalidArgumentAddressPersistanceOrchestrationException
-                invalidArgumentAddressPersistanceOrchestrationException)
+            catch (InvalidArgumentAddressPersistanceOrchestrationException invalidArgumentAddressPersistanceOrchestrationException)
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressPersistanceOrchestrationException);
             }
@@ -54,6 +54,45 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                 throw CreateAndLogServiceException(failedAddressPersistanceOrchestrationServiceException);
             }
         }
+
+        private async ValueTask<Address> TryCatch(ReturningAddressFunction returningAddressFunction)
+        {
+            try
+            {
+                return await returningAddressFunction();
+            }
+            catch (InvalidArgumentAddressPersistanceOrchestrationException invalidArgumentAddressPersistanceOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressPersistanceOrchestrationException);
+            }
+            catch (AddressProcessingValidationException addressProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressProcessingValidationException);
+            }
+            catch (AddressProcessingDependencyValidationException addressProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressProcessingDependencyValidationException);
+            }
+            catch (AddressProcessingDependencyException addressProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressProcessingDependencyException);
+            }
+            catch (AddressProcessingServiceException addressProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(addressProcessingServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressPersistanceOrchestrationServiceException =
+                    new FailedAddressPersistanceOrchestrationServiceException(
+                        message: "Failed address persistance orchestration service error occurred, " +
+                        "please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressPersistanceOrchestrationServiceException);
+            }
+        }
+
         private AddressPersistanceOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var addressPersistanceOrchestrationValidationException =

@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -9,11 +9,7 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
-using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
-using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
-using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressLoadingAudits;
@@ -72,10 +68,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     .AreEqual;
         }
 
-        private static IQueryable<Address> CreateRandomAddresses()
+        private static IQueryable<Address> CreateRandomAddresses(int addressCount)
         {
             return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
+                .Create(count: addressCount)
                     .AsQueryable();
         }
 
@@ -103,14 +99,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             return new TheoryData<Xeption>
             {
-                new AddressNormalisationProcessingValidationException(
-                    message: "Address normalisation processing validation errors occured, please try again",
-                    innerException),
-
-                new AddressNormalisationDependencyValidationException(
-                    message: "Address normalisation processing dependency validation occurred, please try again.",
-                    innerException),
-
                 new AddressProcessingValidationException(
                     message: "Address processing validation errors occurred, please try again.",
                     innerException),
@@ -118,14 +106,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 new AddressProcessingDependencyValidationException(
                     message: "Address processing dependency validation occurred, please try again.",
                     innerException),
-
-                new AddressLoadingAuditValidationException(
-                    message: "Audit validation errors occurred, please try again.",
-                    innerException),
-
-                new AddressLoadingAuditProcessingDependencyValidationException(
-                    message: "Audit dependency validation occurred, please try again.",
-                    innerException)
             };
         }
 
@@ -137,14 +117,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             return new TheoryData<Xeption>
             {
-                new AddressNormalisationProcessingDependencyException(
-                    message: "Address normalisation processing dependency error occurred, contact support.",
-                    innerException),
-
-                new AddressNormalisationProcessingServiceException(
-                    message: "Address Normalisation processing service error occurred, contact support.",
-                    innerException),
-
                 new AddressProcessingDependencyException(
                     message: "Address processing dependency error occurred, contact support.",
                     innerException),
@@ -152,14 +124,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 new AddressProcessingServiceException(
                     message: "Address processing service error occurred, contact support.",
                     innerException),
-
-                new AddressLoadingAuditProcessingDependencyException(
-                    message: "Audit dependency error occurred, contact support.",
-                    innerException),
-
-                new AddressLoadingAuditProcessingServiceException(
-                    message: "Audit service error occurred, contact support.",
-                    innerException)
             };
         }
     }

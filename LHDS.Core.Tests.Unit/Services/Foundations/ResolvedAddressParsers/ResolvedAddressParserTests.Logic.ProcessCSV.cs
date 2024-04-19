@@ -4,12 +4,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Moq;
 using Xunit;
@@ -22,53 +20,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
         public async Task ShouldProcessByteResolvedAddressCsvAsync()
         {
             // given
+            int randomNumber = 1; //GetRandomNumber();
             Guid randomId = Guid.NewGuid();
-            string assembly = Assembly.GetExecutingAssembly().Location;
+            bool hasHeaderRecord = true;
+            string filename = GetRandomString();
 
-            dynamic randomDynamicAddreses = GetRandomDynamicAddreses(identifier: randomId);
+            List<dynamic> randomDynamicAddreses =
+                GetRandomDynamicAddreses(identifier: randomId, count: randomNumber);
 
             string inputStringAddresses =
-                CreateStringAddressFromDynamic(data: randomDynamicAddreses);
+                CreateStringAddressFromDynamic(data: randomDynamicAddreses, hasHeaderRecord);
 
+            List<string[]> oututAdresses = CreateStringArrayFromDynamic(data: randomDynamicAddreses);
+
+            byte[] inputByteResolvedAddressesCsv =
+            Encoding.GetEncoding("UTF-8").GetBytes(inputStringAddresses);
 
             List<ResolvedAddress> outputResolvedAddress =
                 CreateResolvedAddressFromDynamic(data: randomDynamicAddreses);
 
-            string inputFilePath = Path.Combine(
-                Path.GetDirectoryName(assembly),
-                @"Resources/Services/Foundations/ResolvedAddressParser/ShouldProcessResolvedAddressCsvAsync.csv");
+            List<ResolvedAddress> expectedResolvedAddresses = outputResolvedAddress.DeepClone();
 
-            string randomCsvFormattedResolvedAddresses;
-
-            using (StreamReader reader = new StreamReader(inputFilePath))
-            {
-                randomCsvFormattedResolvedAddresses = reader.ReadToEnd();
-            }
-
-            string inputCsvFormattedResolvedAddresses = randomCsvFormattedResolvedAddresses;
-
-            byte[] inputByteResolvedAddressesCsv =
-                Encoding.GetEncoding("UTF-8").GetBytes(inputCsvFormattedResolvedAddresses);
-
-            List<string> lines =
-                inputCsvFormattedResolvedAddresses.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-            List<ResolvedAddress> expectedResolvedAddresses = new List<ResolvedAddress>();
-
-            foreach (string line in lines)
-            {
-                string[] index = line.Split(",");
-
-                ResolvedAddress address = new ResolvedAddress
-                {
-                    Id = randomId,
-                    UniqueReference = Guid.Parse(index[0]),
-                    PostCode = index[1],
-                    UnstructuredPostalAddress = index[2],
-                };
-
-                expectedResolvedAddresses.Add(address);
-            }
+            this.csvMapperBrokerMock.Setup(broker =>
+                broker.MapCsvToListArrayAsync(inputStringAddresses, hasHeaderRecord))
+                    .ReturnsAsync(oututAdresses);
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifier())
@@ -76,20 +51,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
 
             // when
             List<ResolvedAddress> actualResolvedAddresses = await this.addressParserService
-                .ProcessCsvAsync(data: inputByteResolvedAddressesCsv);
+                .ProcessCsvAsync(data: inputByteResolvedAddressesCsv, filename);
 
             // then
-            actualResolvedAddresses.Should().BeEquivalentTo(expectedResolvedAddresses, options =>
-                options.Excluding(address => address.Id));
+            actualResolvedAddresses.Should().BeEquivalentTo(expectedResolvedAddresses);
 
-            var allResolvedAddressIds = actualResolvedAddresses.Select(addr => addr.Id).ToList();
-            var uniqueResolvedAddressIds = allResolvedAddressIds.Distinct().ToList();
-            Assert.Equal(allResolvedAddressIds.Count, uniqueResolvedAddressIds.Count);
+            this.csvMapperBrokerMock.Verify(broker =>
+                broker.MapCsvToListArrayAsync(inputStringAddresses, hasHeaderRecord),
+                    Times.Once);
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifier(),
-                    Times.Once);
+                    Times.Exactly(randomNumber));
 
+            this.csvMapperBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
@@ -98,42 +73,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
         public async Task ShouldProcessStringResolvedAddressCsvAsync()
         {
             // given
+            int randomNumber = 1; // GetRandomNumber();
             Guid randomId = Guid.NewGuid();
-            string assembly = Assembly.GetExecutingAssembly().Location;
+            bool hasHeaderRecord = true;
+            string filename = GetRandomString();
 
-            string inputFilePath = Path.Combine(
-                Path.GetDirectoryName(assembly),
-                @"Resources/Services/Foundations/ResolvedAddressParser/ShouldProcessResolvedAddressCsvAsync.csv");
+            List<dynamic> randomDynamicAddreses =
+                GetRandomDynamicAddreses(identifier: randomId, count: randomNumber);
 
-            string randomCsvFormattedResolvedAddresses;
+            string inputStringAddresses =
+                CreateStringAddressFromDynamic(data: randomDynamicAddreses, hasHeaderRecord);
 
-            using (StreamReader reader = new StreamReader(inputFilePath))
-            {
-                randomCsvFormattedResolvedAddresses = reader.ReadToEnd();
-            }
+            List<string[]> oututAdresses = CreateStringArrayFromDynamic(data: randomDynamicAddreses);
 
-            string inputCsvFormattedResolvedAddresses = randomCsvFormattedResolvedAddresses;
-            string inputStringResolvedAddressesCsv = inputCsvFormattedResolvedAddresses;
+            List<ResolvedAddress> outputResolvedAddress =
+                CreateResolvedAddressFromDynamic(data: randomDynamicAddreses);
 
-            List<string> lines =
-                inputCsvFormattedResolvedAddresses.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+            List<ResolvedAddress> expectedResolvedAddresses = outputResolvedAddress.DeepClone();
 
-            List<ResolvedAddress> expectedResolvedAddresses = new List<ResolvedAddress>();
-
-            foreach (string line in lines)
-            {
-                string[] index = line.Split(",");
-
-                ResolvedAddress address = new ResolvedAddress
-                {
-                    Id = randomId,
-                    UniqueReference = Guid.Parse(index[0]),
-                    PostCode = index[1],
-                    UnstructuredPostalAddress = index[2],
-                };
-
-                expectedResolvedAddresses.Add(address);
-            }
+            this.csvMapperBrokerMock.Setup(broker =>
+                broker.MapCsvToListArrayAsync(inputStringAddresses, hasHeaderRecord))
+                    .ReturnsAsync(oututAdresses);
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifier())
@@ -141,20 +101,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
 
             // when
             List<ResolvedAddress> actualResolvedAddresses = await this.addressParserService
-                .ProcessCsvAsync(data: inputStringResolvedAddressesCsv);
+                .ProcessCsvAsync(data: inputStringAddresses, filename);
 
             // then
-            actualResolvedAddresses.Should().BeEquivalentTo(expectedResolvedAddresses, options =>
-                options.Excluding(address => address.Id));
+            actualResolvedAddresses.Should().BeEquivalentTo(expectedResolvedAddresses);
 
-            var allResolvedAddressIds = actualResolvedAddresses.Select(addr => addr.Id).ToList();
-            var uniqueResolvedAddressIds = allResolvedAddressIds.Distinct().ToList();
-            Assert.Equal(allResolvedAddressIds.Count, uniqueResolvedAddressIds.Count);
+            this.csvMapperBrokerMock.Verify(broker =>
+                broker.MapCsvToListArrayAsync(inputStringAddresses, hasHeaderRecord),
+                    Times.Once);
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifier(),
-                    Times.Once);
+                    Times.Exactly(randomNumber));
 
+            this.csvMapperBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }

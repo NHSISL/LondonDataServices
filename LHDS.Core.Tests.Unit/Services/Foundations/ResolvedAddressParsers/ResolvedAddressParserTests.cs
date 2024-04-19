@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvMappers;
 using LHDS.Core.Brokers.Identifiers;
@@ -21,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
     {
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
-        private readonly ICsvMapperBroker csvMapperBroker;
+        private readonly Mock<ICsvMapperBroker> csvMapperBrokerMock;
         private readonly ResolvedAddressParserService addressParserService;
         private readonly ICompareLogic compareLogic;
 
@@ -29,11 +30,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
         {
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
-            this.csvMapperBroker = new CsvMapperBroker();
+            this.csvMapperBrokerMock = new Mock<ICsvMapperBroker>();
             this.compareLogic = new CompareLogic();
 
             this.addressParserService = new ResolvedAddressParserService(
-                csvMapperBroker: this.csvMapperBroker,
+                csvMapperBroker: this.csvMapperBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
@@ -54,37 +55,84 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
-        private static List<dynamic> GetRandomDynamicAddreses(Guid identifier)
+        private static List<dynamic> GetRandomDynamicAddreses(Guid identifier, int count)
         {
-            return new List<dynamic>
+            List<dynamic> addresses = new List<dynamic>();
+
+            for (int i = 0; i < count; i++)
             {
-                new
+                dynamic address = new
                 {
                     Id = identifier,
                     UniqueReference = Guid.NewGuid(),
                     PostCode = GetRandomString(),
                     UnstructuredPostalAddress = GetRandomString()
-                },
-                new
-                {
-                    Id = identifier,
-                    UniqueReference = Guid.NewGuid(),
-                    PostCode = GetRandomString(),
-                    UnstructuredPostalAddress = GetRandomString()
-                }
-            };
+                };
+
+                addresses.Add(address);
+            }
+
+            return addresses;
         }
 
-        private string CreateStringAddressFromDynamic(List<dynamic> data)
+        private List<string[]> CreateStringArrayFromDynamic(List<dynamic> data)
         {
-            throw new NotImplementedException();
+            List<string[]> addresses = new List<string[]>();
+
+            foreach (dynamic item in data)
+            {
+                string[] address = new string[]
+                {
+                    item.UniqueReference.ToString(),
+                    item.PostCode,
+                    item.UnstructuredPostalAddress
+                };
+
+                addresses.Add(address);
+            }
+
+            return addresses;
+        }
+
+        private string CreateStringAddressFromDynamic(List<dynamic> data, bool hasHeaderRecord)
+        {
+            StringBuilder addresses = new StringBuilder();
+
+            if (hasHeaderRecord)
+            {
+                addresses.AppendLine("UniqueReference,PostCode,UnstructuredPostalAddress");
+            }
+
+            foreach (dynamic item in data)
+            {
+                string uniqueReference = item.UniqueReference.ToString();
+                string postCode = item.PostCode;
+                string unstructuredPostalAddress = item.UnstructuredPostalAddress;
+
+                addresses.AppendLine($"{uniqueReference},{postCode},{unstructuredPostalAddress}");
+            }
+
+            return addresses.ToString();
         }
 
         private List<ResolvedAddress> CreateResolvedAddressFromDynamic(List<dynamic> data)
         {
-            throw new NotImplementedException();
+            List<ResolvedAddress> addresses = new List<ResolvedAddress>();
+
+            foreach (dynamic item in data)
+            {
+                ResolvedAddress address = new ResolvedAddress
+                {
+                    Id = item.Id,
+                    UniqueReference = item.UniqueReference,
+                    PostCode = item.PostCode,
+                    UnstructuredPostalAddress = item.UnstructuredPostalAddress
+                };
+
+                addresses.Add(address);
+            }
+
+            return addresses;
         }
-
-
     }
 }

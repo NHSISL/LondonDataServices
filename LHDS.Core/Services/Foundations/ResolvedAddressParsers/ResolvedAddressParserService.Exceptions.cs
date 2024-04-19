@@ -26,6 +26,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddressParsers
             {
                 throw CreateAndLogValidationException(invalidArgumentResolvedAddressParserException);
             }
+            catch (FailedToParseResolvedAddressParserException failedToParseResolvedAddressParserException)
+            {
+                throw CreateAndLogValidationException(failedToParseResolvedAddressParserException);
+            }
             catch (Exception exception)
             {
                 var failedResolvedAddressParserServiceException =

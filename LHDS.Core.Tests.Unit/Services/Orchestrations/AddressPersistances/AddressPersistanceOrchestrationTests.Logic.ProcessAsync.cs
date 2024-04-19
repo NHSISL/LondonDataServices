@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Linq;
@@ -57,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // Where
             List<Address> actualAddresses =
-                await this.addressPersistanceOrchestrationService.ProcessAsync(randomAddresses);
+                await this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
 
             // Then
             actualAddresses.Should().HaveCount(expectedAddress.Count);

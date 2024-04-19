@@ -49,8 +49,24 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 return await this.addressPersistanceOrchestrationService.PersistAddressAsync(extractedAddress);
             });
 
-        public async ValueTask<List<ResolvedAddress>> MatchAddressDataAsync(byte[] data, string filename) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<List<ResolvedAddress>> MatchAddressDataAsync(byte[] data, string filename)
+        {
+            List<ResolvedAddress> extractedResolvedAddresses = 
+                await this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(data, filename);
+
+            List<ResolvedAddress> matchedAddresses = new List<ResolvedAddress>();
+
+            foreach(var resolvedAddress in extractedResolvedAddresses)
+            {
+                ResolvedAddress matchedAddress = 
+                    await this.addressPersistanceOrchestrationService.
+                        MatchAndPersistResolvedAddressAsync(resolvedAddress);
+
+                matchedAddresses.Add(matchedAddress);
+            }
+
+            return matchedAddresses;
+        }
 
         //Call extraction -> resolved addresses
         //loop over resolved addresses -> aggregate exceptions

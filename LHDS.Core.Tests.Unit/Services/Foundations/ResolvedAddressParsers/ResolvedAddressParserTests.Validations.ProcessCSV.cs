@@ -14,48 +14,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
 {
     public partial class ResolvedAddressParserTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnProcessCsvIfDataIsNullAndLogItAsync()
-        {
-            // given
-            byte[] nullResolvedAddresses = null;
-
-            var invalidArgumentResolvedAddressParserException =
-                new InvalidArgumentResolvedAddressParserException(message: "ResolvedAddress parser is null.");
-
-            var expectedResolvedAddressParserValidationException =
-                new ResolvedAddressParserValidationException(
-                    message: "ResolvedAddress parser validation errors occurred, please try again.",
-                    innerException: invalidArgumentResolvedAddressParserException);
-
-            // when
-            ValueTask<List<ResolvedAddress>> processCSVResolvedAddressTask =
-                this.addressParserService.ProcessCsvAsync(nullResolvedAddresses);
-
-            ResolvedAddressParserValidationException actualResolvedAddressParserValidationException =
-                await Assert.ThrowsAsync<ResolvedAddressParserValidationException>(async () =>
-                    await processCSVResolvedAddressTask);
-
-            // then
-            actualResolvedAddressParserValidationException.Should().BeEquivalentTo(expectedResolvedAddressParserValidationException);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedResolvedAddressParserValidationException))),
-                        Times.Once);
-
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnProcessCsvIfDataIsInvalidAndLogItAsync(
-            string invalidText)
+        public async Task ShouldThrowValidationExceptionOnProcessCsvIfDataIsNullAndLogItAsync(string invalidText)
         {
             // given
-            string invalidResolvedAddress = invalidText;
+            byte[] nullResolvedAddresses = null;
+            string invalidFileName = invalidText;
 
             var invalidArgumentResolvedAddressParserException =
                 new InvalidArgumentResolvedAddressParserException(
@@ -63,6 +30,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
 
             invalidArgumentResolvedAddressParserException.AddData(
                 key: "data",
+                values: "Data is required");
+
+            invalidArgumentResolvedAddressParserException.AddData(
+                key: "filename",
                 values: "Text is required");
 
             var expectedResolvedAddressParserValidationException =
@@ -72,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
 
             // when
             ValueTask<List<ResolvedAddress>> processCSVResolvedAddressTask =
-                this.addressParserService.ProcessCsvAsync(invalidResolvedAddress);
+                this.addressParserService.ProcessCsvAsync(nullResolvedAddresses, invalidFileName);
 
             ResolvedAddressParserValidationException actualResolvedAddressParserValidationException =
                 await Assert.ThrowsAsync<ResolvedAddressParserValidationException>(async () =>
@@ -88,6 +59,56 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddressParsers
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvMapperBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnProcessCsvIfDataIsInvalidAndLogItAsync(
+            string invalidText)
+        {
+            // given
+            string invalidResolvedAddress = invalidText;
+            string invalidFileName = invalidText;
+
+            var invalidArgumentResolvedAddressParserException =
+                new InvalidArgumentResolvedAddressParserException(
+                    message: "Invalid argument. Please correct the errors and try again.");
+
+            invalidArgumentResolvedAddressParserException.AddData(
+                key: "data",
+                values: "Text is required");
+
+            invalidArgumentResolvedAddressParserException.AddData(
+                key: "filename",
+                values: "Text is required");
+
+            var expectedResolvedAddressParserValidationException =
+                new ResolvedAddressParserValidationException(
+                    message: "ResolvedAddress parser validation errors occurred, please try again.",
+                    innerException: invalidArgumentResolvedAddressParserException);
+
+            // when
+            ValueTask<List<ResolvedAddress>> processCSVResolvedAddressTask =
+                this.addressParserService.ProcessCsvAsync(invalidResolvedAddress, invalidFileName);
+
+            ResolvedAddressParserValidationException actualResolvedAddressParserValidationException =
+                await Assert.ThrowsAsync<ResolvedAddressParserValidationException>(async () =>
+                    await processCSVResolvedAddressTask);
+
+            // then
+            actualResolvedAddressParserValidationException.Should()
+                .BeEquivalentTo(expectedResolvedAddressParserValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedResolvedAddressParserValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvMapperBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

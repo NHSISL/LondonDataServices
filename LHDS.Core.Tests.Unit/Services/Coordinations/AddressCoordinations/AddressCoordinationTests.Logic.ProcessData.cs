@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ReturnsAsync(extractedAddresses);
 
             this.addressPersistanceOrchestrationServiceMock.Setup(service =>
-                service.ProcessAsync(extractedAddresses))
+                service.PersistAddressAsync(extractedAddresses))
                     .ReturnsAsync(persistedAddresses);
 
             List<Address> expectedAddresses = persistedAddresses.DeepClone();
@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     Times.Once());
 
             this.addressPersistanceOrchestrationServiceMock.Verify(service =>
-                service.ProcessAsync(extractedAddresses),
+                service.PersistAddressAsync(extractedAddresses),
                     Times.Once());
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();

@@ -16,7 +16,6 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
     public partial class AddressCoordinationService : IAddressCoordinationService
     {
         private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
-        private readonly IAddressNormalisationOrchestrationService addressNormalisationOrchestrationService;
         private readonly IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -25,14 +24,12 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 
         public AddressCoordinationService(
             IAddressExtractionOrchestrationService addressExtractionOrchestrationService,
-            IAddressNormalisationOrchestrationService addressNormalisationOrchestrationService,
             IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService,
             IResolvedAddressOrchestrationService resolvedAddressOrchestrationService,
             IDateTimeBroker dateTimeBroker,
             ILoggingBroker loggingBroker)
         {
             this.addressExtractionOrchestrationService = addressExtractionOrchestrationService;
-            this.addressNormalisationOrchestrationService = addressNormalisationOrchestrationService;
             this.addressPersistanceOrchestrationService = addressPersistanceOrchestrationService;
             this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;

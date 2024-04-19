@@ -10,6 +10,7 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using LHDS.Core.Services.Orchestrations.AddressNormalisations;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
+using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 
 namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 {

@@ -15,6 +15,7 @@ using LHDS.Core.Services.Coordinations.AddressCoordinations;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using LHDS.Core.Services.Orchestrations.AddressNormalisations;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
+using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;

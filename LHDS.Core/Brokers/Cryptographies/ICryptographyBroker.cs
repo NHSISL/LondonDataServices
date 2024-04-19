@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
-namespace LHDS.Core.Brokers.Decryptions
+namespace LHDS.Core.Brokers.Cryptographies
 {
     public interface ICryptographyBroker
     {

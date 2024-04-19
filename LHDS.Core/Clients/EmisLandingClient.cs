@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.LandingClient.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
-using LHDS.Core.Services.Orchestrations.EmisLandings;
+using LHDS.Core.Services.Coordinations.EmisLandings;
 using Xeptions;
 
 namespace LHDS.Core.Clients

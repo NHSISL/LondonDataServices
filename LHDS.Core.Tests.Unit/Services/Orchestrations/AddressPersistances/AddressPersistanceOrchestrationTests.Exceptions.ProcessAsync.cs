@@ -77,13 +77,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             var addressPersistanceDependencyValidationException =
                 new AddressPersistenceOrchestrationDependencyValidationException(
                     message: "Address persistence orchestration dependency validation error occurred, " +
-                    "please try again.",
+                        "please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      addressPersistanceDependencyValidationException))),
-                         Times.Exactly(randomAddresses.Count));
+                         Times.Exactly(2));
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(

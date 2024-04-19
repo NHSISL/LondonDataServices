@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // when
             ValueTask<List<Address>> processTask =
-                this.addressPersistanceOrchestrationService.ProcessAsync(randomAddresses);
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
 
             AddressPersistanceOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressPersistanceOrchestrationDependencyValidationException>(
@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // when
             ValueTask<List<Address>> processTask =
-                this.addressPersistanceOrchestrationService.ProcessAsync(randomAddresses);
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
 
             AddressPersistanceOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressPersistanceOrchestrationDependencyException>(
@@ -160,7 +160,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // when
             ValueTask<List<Address>> processTask =
-                this.addressPersistanceOrchestrationService.ProcessAsync(randomAddresses);
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
 
             AddressPersistanceOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<AddressPersistanceOrchestrationServiceException>(

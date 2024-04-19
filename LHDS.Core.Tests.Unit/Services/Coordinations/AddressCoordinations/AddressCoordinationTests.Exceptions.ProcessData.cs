@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -23,6 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             Xeption dependancyValidationException)
         {
             // given
+            string someFilename = GetRandomString();
             byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
 
             var expectedDependencyException =
@@ -31,11 +32,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: dependancyValidationException);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessAddressesAsync(randomData))
+                service.ProcessAddressesAsync(randomData, someFilename))
                     .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask<List<Address>> processDataTask = this.addressCoordinationService.LoadAddressData(randomData);
+            ValueTask<List<Address>> processDataTask =
+                this.addressCoordinationService.LoadAddressData(randomData, someFilename);
 
             AddressCoordinationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationDependencyValidationException>(processDataTask.AsTask);
@@ -45,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                  .BeEquivalentTo(expectedDependencyException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-             service.ProcessAddressesAsync(randomData),
+             service.ProcessAddressesAsync(randomData, someFilename),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -64,6 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             Xeption dependencyException)
         {
             // given
+            string someFilename = GetRandomString();
             byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
 
             var expectedDependencyException =
@@ -72,11 +75,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: dependencyException);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessAddressesAsync(randomData))
+                service.ProcessAddressesAsync(randomData, someFilename))
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<List<Address>> processDataTask = this.addressCoordinationService.LoadAddressData(randomData);
+            ValueTask<List<Address>> processDataTask =
+                this.addressCoordinationService.LoadAddressData(randomData, someFilename);
 
             AddressCoordinationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationDependencyException>(processDataTask.AsTask);
@@ -86,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                  .BeEquivalentTo(expectedDependencyException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-             service.ProcessAddressesAsync(randomData),
+             service.ProcessAddressesAsync(randomData, someFilename),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -103,6 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
         public async Task ShouldThrowServiceExceptionOnProcessIfServiceErrorOccursAndLogItAsync()
         {
             // given
+            string someFilename = GetRandomString();
             byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
             var serviceException = new Exception();
 
@@ -117,11 +122,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: failedAddressCoordinationServiceException);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessAddressesAsync(randomData))
+                service.ProcessAddressesAsync(randomData, someFilename))
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<List<Address>> processDataTask = this.addressCoordinationService.LoadAddressData(randomData);
+            ValueTask<List<Address>> processDataTask = this.addressCoordinationService
+                .LoadAddressData(randomData, someFilename);
 
             AddressCoordinationServiceException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationServiceException>(processDataTask.AsTask);
@@ -130,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             actualException.Should().BeEquivalentTo(expectedAddressCoordinationServiceException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-                service.ProcessAddressesAsync(randomData),
+                service.ProcessAddressesAsync(randomData, someFilename),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

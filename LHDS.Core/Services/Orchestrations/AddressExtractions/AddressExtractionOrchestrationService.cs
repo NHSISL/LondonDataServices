@@ -12,8 +12,6 @@ using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Models.Foundations.SubscriberAgreements;
-using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressParsers;
 
@@ -38,11 +36,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<List<Address>> ProcessAddressesAsync(byte[] data) =>
+        public ValueTask<List<Address>> ProcessAddressesAsync(byte[] data, string filename) =>
             TryCatch(async () =>
             {
-                ValidateDataOnProcessData(data);
-                List<Address> addresses = await this.addressParserService.ProcessCsvAsync(data);
+                ValidateDataOnProcessData(data, filename);
+
+                List<Address> addresses = await this.addressParserService
+                    .ProcessCsvAsync(data, filename);
+
                 List<Address> processedAddresses = new List<Address>();
                 var exceptions = new List<Exception>();
 
@@ -82,7 +83,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                 return processedAddresses;
             });
 
-        public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data) =>
-            throw new NotImplementedException(); 
+        public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data, string filename) =>
+            throw new NotImplementedException();
     }
 }

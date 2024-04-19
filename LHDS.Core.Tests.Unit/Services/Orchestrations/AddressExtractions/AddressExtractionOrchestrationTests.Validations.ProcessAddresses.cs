@@ -14,16 +14,28 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationServiceTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnProcessAddressIfDataIsNullAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnProcessAddressIfDataIsNullAndLogItAsync(string invalidText)
         {
             // given
-            byte[] someData = null;
+            byte[] invalidData = null;
+            string invalidFileName = invalidText;
 
             var invalidArgumentAddressExtractionOrchestrationException =
                 new InvalidArgumentAddressExtractionOrchestrationException(
                     message: "Invalid argument address extraction orchestration exception, " +
                         "please correct the errors and try again.");
+
+            invalidArgumentAddressExtractionOrchestrationException.AddData(
+                key: "data",
+                values: "Data is required");
+
+            invalidArgumentAddressExtractionOrchestrationException.AddData(
+                key: "filename",
+                values: "Text is required");
 
             var expectedAddressExtractionValidationOrchestrationException =
                 new AddressExtractionValidationOrchestrationException(
@@ -32,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressExtractionOrchestrationService.ProcessAddressesAsync(someData);
+                this.addressExtractionOrchestrationService.ProcessAddressesAsync(invalidData, invalidFileName);
 
             AddressExtractionValidationOrchestrationException actualException =
                 await Assert.ThrowsAsync<AddressExtractionValidationOrchestrationException>(processDataTask.AsTask);

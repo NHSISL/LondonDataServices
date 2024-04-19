@@ -12,8 +12,6 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Processings.Addresses;
-using LHDS.Core.Services.Processings.AddressLoadingAudits;
-using LHDS.Core.Services.Processings.AddressNormalisations;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -97,9 +95,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     message: "Address processing validation errors occurred, please try again.",
                     innerException),
 
-                //new AddressProcessingDependencyValidationException(
-                //    message: "Address processing dependency validation occurred, please try again.",
-                //    innerException),
+                new AddressProcessingDependencyValidationException(
+                    message: "Address processing dependency validation occurred, please try again.",
+                    innerException),
             };
         }
 

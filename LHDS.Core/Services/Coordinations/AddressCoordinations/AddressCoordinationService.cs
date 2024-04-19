@@ -48,7 +48,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 
                 ValidateAddressListIsNotNull(extractedAddress);
 
-                return await this.addressPersistanceOrchestrationService.ProcessAsync(extractedAddress);
+                return await this.addressPersistanceOrchestrationService.PersistAddressAsync(extractedAddress);
             });
 
         public ValueTask<List<Address>> MatchAddressData(byte[] data) =>

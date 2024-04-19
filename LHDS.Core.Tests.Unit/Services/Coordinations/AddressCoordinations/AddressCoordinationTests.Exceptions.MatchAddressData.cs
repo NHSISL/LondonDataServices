@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -43,8 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
                 var addressCoordinationDependencyValidationException =
                     new AddressCoordinationDependencyValidationException(
-                        message: "Address coordination dependency validation error occurred, " +
-                        "please try again.",
+                        message: "Address coordination dependency validation error occurred, please try again.",
                         innerException: dependencyValidationException.InnerException as Xeption);
 
                 exceptions.Add(addressCoordinationDependencyValidationException);
@@ -52,31 +50,31 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to normalise address for {exceptions.Count} addresses",
+                    $"Unable to match address for {exceptions.Count} address files",
                     exceptions);
 
-            var failedAddressExtractionOrchestrationServiceException =
+            var failedAddressCoordinationServiceException =
                 new FailedAddressCoordinationServiceException(
                     message: "Failed address coordination service aggregate error occurred, " +
                     "please contact support.",
                     innerException: aggregateException);
 
-            var expectedAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
+            var expectedAddressCoordinationServiceException =
+                new AddressCoordinationServiceException(
                     message: "Address coordination service error occurred, contact support.",
-                    innerException: failedAddressExtractionOrchestrationServiceException);
+                    innerException: failedAddressCoordinationServiceException);
 
             // When
-            ValueTask<List<ResolvedAddress>> processAddressTask =
+            ValueTask<List<ResolvedAddress>> matchAddressTask =
                 this.addressCoordinationService.MatchAddressDataAsync(randomData, someFilename);
 
-            AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
-                await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
-                    await processAddressTask);
+            AddressCoordinationServiceException actualAddressCoordinationServiceException =
+                await Assert.ThrowsAsync<AddressCoordinationServiceException>(async () =>
+                    await matchAddressTask);
 
             // Then
-            actualAddressExtractionOrchestrationServiceException.Should()
-                .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
+            actualAddressCoordinationServiceException.Should()
+                .BeEquivalentTo(expectedAddressCoordinationServiceException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
                 service.ProcessResolvedAddressesAsync(randomData, someFilename),
@@ -89,20 +87,19 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                         Times.Once);
             }
 
-            var addressExtractionOrchestrationDependencyValidationLoggingException =
-                new AddressExtractionOrchestrationDependencyValidationException(
-                    message: "Address coordination dependency validation error occurred, " +
-                    "fix the errors and try again.",
+            var addressCoordinationDependencyValidationLoggingException =
+                new AddressCoordinationDependencyValidationException(
+                    message: "Address coordination dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    addressExtractionOrchestrationDependencyValidationLoggingException))),
+                    addressCoordinationDependencyValidationLoggingException))),
                         Times.Exactly(randomAddresses.Count));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    actualAddressExtractionOrchestrationServiceException))),
+                    expectedAddressCoordinationServiceException))),
                         Times.Once);
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
@@ -133,8 +130,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
                 var addressCoordinationDependencyException =
                     new AddressCoordinationDependencyException(
-                        message: "Address coordination dependency error occurred, " +
-                        "please try again.",
+                        message: "Address coordination dependency error occurred, please try again.",
                         innerException: dependencyException.InnerException as Xeption);
 
                 exceptions.Add(addressCoordinationDependencyException);
@@ -142,31 +138,31 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to normalise address for {exceptions.Count} addresses",
+                    $"Unable to match address for {exceptions.Count} address files",
                     exceptions);
 
-            var failedAddressExtractionOrchestrationServiceException =
+            var failedAddressCoordinationServiceException =
                 new FailedAddressCoordinationServiceException(
                     message: "Failed address coordination service aggregate error occurred, " +
                     "please contact support.",
                     innerException: aggregateException);
 
-            var expectedAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
+            var expectedAddressCoordinationServiceException =
+                new AddressCoordinationServiceException(
                     message: "Address coordination service error occurred, contact support.",
-                    innerException: failedAddressExtractionOrchestrationServiceException);
+                    innerException: failedAddressCoordinationServiceException);
 
             // When
-            ValueTask<List<ResolvedAddress>> processAddressTask =
+            ValueTask<List<ResolvedAddress>> matchAddressTask =
                 this.addressCoordinationService.MatchAddressDataAsync(randomData, someFilename);
 
-            AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
-                await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
-                    await processAddressTask);
+            AddressCoordinationServiceException actualAddressCoordinationServiceException =
+                await Assert.ThrowsAsync<AddressCoordinationServiceException>(async () =>
+                    await matchAddressTask);
 
             // Then
-            actualAddressExtractionOrchestrationServiceException.Should()
-                .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
+            actualAddressCoordinationServiceException.Should()
+                .BeEquivalentTo(expectedAddressCoordinationServiceException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
                 service.ProcessResolvedAddressesAsync(randomData, someFilename),
@@ -179,20 +175,19 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                         Times.Once);
             }
 
-            var addressExtractionOrchestrationDependencyException =
-                new AddressExtractionOrchestrationDependencyException(
-                    message: "Address coordination dependency validation error occurred, " +
-                    "fix the errors and try again.",
+            var addressCoordinationDependencyLoggingException =
+                new AddressCoordinationDependencyException(
+                    message: "Address coordination dependency error occurred, please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    addressExtractionOrchestrationDependencyException))),
+                    addressCoordinationDependencyLoggingException))),
                         Times.Exactly(randomAddresses.Count));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    actualAddressExtractionOrchestrationServiceException))),
+                    expectedAddressCoordinationServiceException))),
                         Times.Once);
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
@@ -238,28 +233,28 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     $"Unable to match address for {exceptions.Count} address files",
                     exceptions);
 
-            var failedAddressExtractionOrchestrationServiceException =
+            var failedAddressCoordinationServiceException =
                 new FailedAddressCoordinationServiceException(
-                    message: "Failed address coordination service aggregate erroroccurred, " +
-                        "please contact support.",
+                    message: "Failed address coordination service aggregate error occurred, " +
+                    "please contact support.",
                     innerException: aggregateException);
 
-            var expectedAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
-                    innerException: failedAddressExtractionOrchestrationServiceException);
+            var expectedAddressCoordinationServiceException =
+                new AddressCoordinationServiceException(
+                    message: "Address coordination service error occurred, contact support.",
+                    innerException: failedAddressCoordinationServiceException);
 
             // When
-            ValueTask<List<ResolvedAddress>> processAddressTask =
+            ValueTask<List<ResolvedAddress>> matchAddressTask =
                 this.addressCoordinationService.MatchAddressDataAsync(randomData, someFilename);
 
-            AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
-                await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
-                    await processAddressTask);
+            AddressCoordinationServiceException actualAddressCoordinationServiceException =
+                await Assert.ThrowsAsync<AddressCoordinationServiceException>(async () =>
+                    await matchAddressTask);
 
             // Then
-            actualAddressExtractionOrchestrationServiceException.Should()
-                .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
+            actualAddressCoordinationServiceException.Should()
+                .BeEquivalentTo(expectedAddressCoordinationServiceException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
                 service.ProcessResolvedAddressesAsync(randomData, someFilename),
@@ -279,7 +274,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedAddressExtractionOrchestrationServiceException))),
+                    expectedAddressCoordinationServiceException))),
                         Times.Once);
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
@@ -383,7 +378,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             var failedAddressCoordinationServiceException =
                 new FailedAddressCoordinationServiceException(
-                    message: "Failed address coordination service error occurred, please contact support",
+                    message: "Failed address coordination service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedAddressCoordinationServiceException =

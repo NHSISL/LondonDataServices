@@ -18,6 +18,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
     {
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
         private delegate ValueTask<List<ResolvedAddress>> ReturningResolvedAddressListFunction();
+        private delegate ValueTask<ResolvedAddress> ReturningResolvedAddressFunction();
 
         private async ValueTask<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
         {
@@ -85,6 +86,77 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             try
             {
                 return await returningResolvedAddressListFunction();
+            }
+            catch (InvalidArgumentAddressCoordinationException invalidArgumentAddressCoordinationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressCoordinationException);
+            }
+            catch (AddressExtractionValidationOrchestrationException addressExtractionValidationOrchestrationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressExtractionValidationOrchestrationException);
+            }
+            catch (AddressExtractionOrchestrationDependencyValidationException
+                addressExtractionOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    addressExtractionOrchestrationDependencyValidationException);
+            }
+            catch (AddressPersistanceOrchestrationValidationException
+                addressPersistanceOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
+            }
+            catch (AddressPersistanceOrchestrationDependencyValidationException
+                addressPersistanceOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    addressPersistanceOrchestrationDependencyValidationException);
+            }
+            catch (AddressExtractionOrchestrationServiceException addressExtractionOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressExtractionOrchestrationServiceException);
+            }
+            catch (AddressExtractionOrchestrationDependencyException
+                addressExtractionOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
+            }
+            catch (AddressPersistanceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
+            }
+            catch (AddressPersistanceOrchestrationDependencyException
+                addressPersistanceOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedAddressCoordinationServiceException =
+                    new FailedAddressCoordinationServiceException(
+                        message: "Failed address coordination service aggregate error occurred, " +
+                            "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedAddressCoordinationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedDecryptServiceException =
+                    new FailedAddressCoordinationServiceException(
+                        message: "Failed address coordination service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDecryptServiceException);
+            }
+        }
+
+        private async ValueTask<ResolvedAddress> TryCatch(
+            ReturningResolvedAddressFunction returningResolvedAddressFunction)
+        {
+            try
+            {
+                return await returningResolvedAddressFunction();
             }
             catch (InvalidArgumentAddressCoordinationException invalidArgumentAddressCoordinationException)
             {

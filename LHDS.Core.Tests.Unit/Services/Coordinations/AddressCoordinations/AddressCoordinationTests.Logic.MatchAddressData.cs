@@ -1,0 +1,66 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using Moq;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
+{
+    public partial class AddressCoordinationServiceTests
+    {
+        [Fact]
+        public async Task ShouldMatchAddressDataAsync()
+        {
+            // Given
+            string someFilename = GetRandomString();
+            byte[] inputData = Encoding.UTF8.GetBytes(GetRandomString());
+            List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses().ToList();
+            List<ResolvedAddress> extractedAddresses = randomAddresses.DeepClone();
+            List<ResolvedAddress> expectedAddresses = new List<ResolvedAddress>();
+
+            this.addressExtractionOrchestrationServiceMock.Setup(service =>
+                service.ProcessResolvedAddressesAsync(inputData, someFilename))
+                    .ReturnsAsync(extractedAddresses);
+
+            foreach (var address in extractedAddresses)
+            {
+                this.addressPersistanceOrchestrationServiceMock.Setup(service =>
+                    service.MatchAndPersistResolvedAddressAsync(address))
+                        .ReturnsAsync(address);
+
+                expectedAddresses.Add(address);
+            }
+
+            // When
+            List<ResolvedAddress> actualAddresses =
+                await this.addressCoordinationService.MatchAddressDataAsync(inputData, someFilename);
+
+            // Then
+            actualAddresses.Should().BeEquivalentTo(expectedAddresses);
+
+            this.addressExtractionOrchestrationServiceMock.Verify(service =>
+                service.ProcessResolvedAddressesAsync(inputData, someFilename),
+                    Times.Once());
+
+            foreach (var address in extractedAddresses)
+            {
+                this.addressPersistanceOrchestrationServiceMock.Verify(service =>
+                    service.MatchAndPersistResolvedAddressAsync(address),
+                        Times.Once());
+            }
+
+            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}
+

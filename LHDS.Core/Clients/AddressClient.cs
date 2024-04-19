@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.AddressClient.Exceptions;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
 using Xeptions;
 
@@ -56,11 +57,11 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<List<Address>> MatchPatientAddressData(byte[] data, string filename)
+        public async ValueTask<List<ResolvedAddress>> MatchPatientAddressData(byte[] data, string filename)
         {
             try
             {
-                return await this.addressCoordinationService.MatchAddressData(data, filename);
+                return await this.addressCoordinationService.MatchAddressDataAsync(data, filename);
             }
             catch (AddressCoordinationValidationException addressCoordinationValidationException)
             {

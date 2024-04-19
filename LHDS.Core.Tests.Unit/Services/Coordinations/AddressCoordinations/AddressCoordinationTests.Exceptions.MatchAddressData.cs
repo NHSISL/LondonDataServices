@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             var failedAddressCoordinationServiceException =
                 new FailedAddressCoordinationServiceException(
                     message: "Failed address coordination service aggregate error occurred, " +
-                    "please contact support.",
+                        "please contact support.",
                     innerException: aggregateException);
 
             var expectedAddressCoordinationServiceException =
@@ -144,7 +144,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             var failedAddressCoordinationServiceException =
                 new FailedAddressCoordinationServiceException(
                     message: "Failed address coordination service aggregate error occurred, " +
-                    "please contact support.",
+                        "please contact support.",
                     innerException: aggregateException);
 
             var expectedAddressCoordinationServiceException =
@@ -236,7 +236,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             var failedAddressCoordinationServiceException =
                 new FailedAddressCoordinationServiceException(
                     message: "Failed address coordination service aggregate error occurred, " +
-                    "please contact support.",
+                        "please contact support.",
                     innerException: aggregateException);
 
             var expectedAddressCoordinationServiceException =

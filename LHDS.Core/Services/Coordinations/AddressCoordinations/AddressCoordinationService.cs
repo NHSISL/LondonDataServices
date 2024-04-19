@@ -49,30 +49,28 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 return await this.addressPersistanceOrchestrationService.PersistAddressAsync(extractedAddress);
             });
 
-        public async ValueTask<List<ResolvedAddress>> MatchAddressDataAsync(byte[] data, string filename)
-        {
-            List<ResolvedAddress> extractedResolvedAddresses = 
-                await this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(data, filename);
-
-            List<ResolvedAddress> matchedAddresses = new List<ResolvedAddress>();
-
-            foreach(var resolvedAddress in extractedResolvedAddresses)
+        public ValueTask<List<ResolvedAddress>> MatchAddressDataAsync(byte[] data, string filename) =>
+            TryCatch(async () =>
             {
-                ResolvedAddress matchedAddress = 
-                    await this.addressPersistanceOrchestrationService.
-                        MatchAndPersistResolvedAddressAsync(resolvedAddress);
+                ValidateDataOnProcessData(data, filename);
 
-                matchedAddresses.Add(matchedAddress);
-            }
+                List<ResolvedAddress> extractedResolvedAddresses =
+                    await this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(data, filename);
 
-            return matchedAddresses;
-        }
+                List<ResolvedAddress> matchedAddresses = new List<ResolvedAddress>();
 
-        //Call extraction -> resolved addresses
-        //loop over resolved addresses -> aggregate exceptions
-        //send them to persistance orc MatchAndPersistResolvedAddressAsync -> 
-        //return resolved address
-        //Handle errored files -> remove from in folder and add to error folder
+                foreach (var resolvedAddress in extractedResolvedAddresses)
+                {
+                    ResolvedAddress matchedAddress =
+                        await this.addressPersistanceOrchestrationService.
+                            MatchAndPersistResolvedAddressAsync(resolvedAddress);
+
+                    matchedAddresses.Add(matchedAddress);
+                }
+
+                return matchedAddresses;
+                //Handle errored files -> remove from in folder and add to error folder
+            });
 
         public ValueTask<List<Address>> UploadResolvedAddresses() =>
             throw new System.NotImplementedException();

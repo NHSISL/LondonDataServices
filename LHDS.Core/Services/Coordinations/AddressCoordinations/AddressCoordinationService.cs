@@ -2,11 +2,15 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
@@ -57,15 +61,35 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 List<ResolvedAddress> extractedResolvedAddresses =
                     await this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(data, filename);
 
+                var exceptions = new List<Exception>();
                 List<ResolvedAddress> matchedAddresses = new List<ResolvedAddress>();
-
+                
                 foreach (var resolvedAddress in extractedResolvedAddresses)
                 {
-                    ResolvedAddress matchedAddress =
-                        await this.addressPersistanceOrchestrationService.
-                            MatchAndPersistResolvedAddressAsync(resolvedAddress);
+                    try
+                    {
+                        ResolvedAddress matchedResolvedAddress = await TryCatch(async () =>
+                        {
+                            ResolvedAddress matchedAddress =
+                                await this.addressPersistanceOrchestrationService.
+                                    MatchAndPersistResolvedAddressAsync(resolvedAddress);
 
-                    matchedAddresses.Add(matchedAddress);
+                            return matchedAddress;
+                        });
+
+                        matchedAddresses.Add(matchedResolvedAddress);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to match address for {exceptions.Count} address files",
+                        exceptions);
                 }
 
                 return matchedAddresses;

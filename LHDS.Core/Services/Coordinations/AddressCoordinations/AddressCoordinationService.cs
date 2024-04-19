@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
-using LHDS.Core.Services.Orchestrations.AddressNormalisations;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 
@@ -49,8 +49,14 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 return await this.addressPersistanceOrchestrationService.PersistAddressAsync(extractedAddress);
             });
 
-        public ValueTask<List<Address>> MatchAddressData(byte[] data, string filename) =>
+        public async ValueTask<List<ResolvedAddress>> MatchAddressDataAsync(byte[] data, string filename) =>
             throw new System.NotImplementedException();
+
+        //Call extraction -> resolved addresses
+        //loop over resolved addresses -> aggregate exceptions
+        //send them to persistance orc MatchAndPersistResolvedAddressAsync -> 
+        //return resolved address
+        //Handle errored files -> remove from in folder and add to error folder
 
         public ValueTask<List<Address>> UploadResolvedAddresses() =>
             throw new System.NotImplementedException();

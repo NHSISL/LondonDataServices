@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
 
@@ -33,6 +34,12 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         }
 
         public ValueTask<List<Address>> UploadResolvedAddressesAsync() =>
+            throw new NotImplementedException();
+
+        public ValueTask RemoveDocumentByFileNameAsync(string filename, string container) => 
+            throw new NotImplementedException();
+
+        public ValueTask<string> AddDocumentAsync(Document document, string container) =>
             throw new NotImplementedException();
     }
 }

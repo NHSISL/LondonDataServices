@@ -9,6 +9,7 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
@@ -80,6 +81,32 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static IQueryable<ResolvedAddress> CreateRandomResolvedAddresses()
+        {
+            return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
+        private static ResolvedAddress CreateRandomResolvedAddress() =>
+            CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static ResolvedAddress CreateRandomResolvedAddress(DateTimeOffset dateTimeOffset) =>
+            CreateResolvedAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<ResolvedAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 
             return filler;
         }

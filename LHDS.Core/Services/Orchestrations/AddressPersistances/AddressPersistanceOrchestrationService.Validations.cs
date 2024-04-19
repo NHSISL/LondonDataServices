@@ -25,9 +25,9 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidArgumentAddressPersistanceOrchestrationException =
-                new InvalidArgumentAddressPersistanceOrchestrationException(
+                new InvalidArgumentAddressPersistenceOrchestrationException(
                     message:
-                    "Invalid address persistance orchestration argument, please correct the errors and try again.");
+                    "Invalid address persistence orchestration argument, please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

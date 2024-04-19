@@ -61,7 +61,9 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 
                 if (exceptions.Any())
                 {
-                    throw new AggregateException("One or more addresses failed processing.", exceptions);
+                    throw new AggregateException(
+                        $"Unable to add or modify {exceptions.Count} address(es)",
+                        exceptions);
                 }
 
                 return processedAddresses;

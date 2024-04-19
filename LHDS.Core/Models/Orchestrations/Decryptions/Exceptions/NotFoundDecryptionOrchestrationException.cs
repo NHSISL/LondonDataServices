@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions
+namespace LHDS.Core.Models.Orchestrations.Decryptions.Exceptions
 {
     public class NotFoundDecryptionOrchestrationException : Xeption
     {

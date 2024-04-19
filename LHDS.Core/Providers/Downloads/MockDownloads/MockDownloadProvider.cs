@@ -9,7 +9,7 @@ using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using Tynamix.ObjectFiller;
 
-namespace LHDS.Core.Providers.Downloads.FtpDownloads
+namespace LHDS.Core.Providers.Downloads.MockDownloads
 {
     public class MockDownloadProvider : IDownloadProvider
     {
@@ -18,8 +18,8 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
 
         public MockDownloadProvider()
         {
-            this.Name = "MockDownloadProvider";
-            this.IsOfflineProvider = true;
+            Name = "MockDownloadProvider";
+            IsOfflineProvider = true;
         }
 
         private static string GetRandomString() =>

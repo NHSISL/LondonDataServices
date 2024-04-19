@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 
-namespace LHDS.Core.Services.Orchestrations.EmisLandings
+namespace LHDS.Core.Services.Coordinations.EmisLandings
 {
     public interface IEmisLandingCoordinationService
     {

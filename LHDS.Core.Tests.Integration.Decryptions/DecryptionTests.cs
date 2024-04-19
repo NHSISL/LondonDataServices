@@ -6,7 +6,7 @@ using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Providers.Cryptography.Extensions;
 using LHDS.Core.Providers.Downloads;
-using LHDS.Core.Providers.Downloads.FtpDownloads;
+using LHDS.Core.Providers.Downloads.MockDownloads;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.Extensions.Configuration;

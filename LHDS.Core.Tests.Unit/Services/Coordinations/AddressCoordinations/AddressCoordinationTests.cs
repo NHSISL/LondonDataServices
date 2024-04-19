@@ -103,11 +103,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     message: "Address extraction orchestration dependency validation error occurred, please try again.",
                     innerException),
 
-                new AddressPersistanceOrchestrationValidationException(
+                new AddressPersistenceOrchestrationValidationException(
                     message: "Address persistance orchestration validation error occured, please try again",
                     innerException),
 
-                new AddressPersistanceOrchestrationDependencyValidationException(
+                new AddressPersistenceOrchestrationDependencyValidationException(
                     message: "Address persistance orchestration dependency validation error occurred, " +
                     "please try again.",
                     innerException),
@@ -130,11 +130,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     message: "Address extraction orchestration error occured, please try again",
                     innerException),
 
-                new AddressPersistanceOrchestrationDependencyException(
+                new AddressPersistenceOrchestrationDependencyException(
                     message: "Address persistance orchestration dependency error occurred, please try again.",
                     innerException),
 
-                new AddressPersistanceOrchestrationServiceException(
+                new AddressPersistenceOrchestrationServiceException(
                     message: "Address persistance orchestration service error occured, please try again",
                     innerException),
             };

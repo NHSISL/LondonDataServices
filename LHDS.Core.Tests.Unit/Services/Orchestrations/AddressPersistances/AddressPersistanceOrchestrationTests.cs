@@ -85,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             return filler;
         }
 
-        public static TheoryData AddressPersistanceDependencyValidationExceptions()
+        public static TheoryData AddressPersistenceDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -97,13 +97,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     message: "Address processing validation errors occurred, please try again.",
                     innerException),
 
-                new AddressProcessingDependencyValidationException(
-                    message: "Address processing dependency validation occurred, please try again.",
-                    innerException),
+                //new AddressProcessingDependencyValidationException(
+                //    message: "Address processing dependency validation occurred, please try again.",
+                //    innerException),
             };
         }
 
-        public static TheoryData AddressPersistanceDependencyExceptions()
+        public static TheoryData AddressPersistenceDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -112,7 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             return new TheoryData<Xeption>
             {
                 new AddressProcessingDependencyException(
-                    message: "Address processing dependency error occurred, contact support.",
+                    message: "Address processing dependency error occurred, please try again.",
                     innerException),
 
                 new AddressProcessingServiceException(

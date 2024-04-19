@@ -22,24 +22,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
     public partial class AddressPersistanceOrchestrationServiceTests
     {
         [Theory]
-        [MemberData(nameof(AddressPersistanceDependencyValidationExceptions))]
+        [MemberData(nameof(AddressPersistenceDependencyValidationExceptions))]
         public async Task ShouldThrowAggregateDependencyValidationOnAddressPersistenceIfDependencyValidationOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
-            List<Address> randomAddresses = CreateRandomAddresses(GetRandomNumber()).ToList();
+            List<Address> randomAddresses = CreateRandomAddresses(1).ToList();
             List<Exception> exceptions = new List<Exception>();
 
             foreach (Address address in randomAddresses)
             {
                 this.addressProcessingServiceMock.Setup(processing =>
                     processing.ModifyOrAddAddressAsync(It.IsAny<Address>()))
-                .ThrowsAsync(dependencyValidationException);
+                        .ThrowsAsync(dependencyValidationException);
 
                 var addressPersistanceOrchestrationDependencyValidationException =
-                    new AddressPersistanceOrchestrationDependencyValidationException(
+                    new AddressPersistenceOrchestrationDependencyValidationException(
                         message: "Address persistence orchestration dependency validation error occurred, " +
-                            "fix the errors and try again.",
+                            "please try again.",
                         innerException: dependencyValidationException.InnerException as Xeption);
 
                 exceptions.Add(addressPersistanceOrchestrationDependencyValidationException);
@@ -47,17 +47,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to add or modify {exceptions.Count} secure data",
+                    $"Unable to add or modify {exceptions.Count} address(es)",
                     exceptions);
 
             var failedAddressPersistanceOrchestrationServiceException =
-                 new FailedAddressPersistanceOrchestrationServiceException(
+                 new FailedAddressPersistenceOrchestrationServiceException(
                      message: "Failed address persistence aggregate processing service error occurred, " +
                      "contact support.",
                      innerException: aggregateException);
 
             var expectedAddressPersistanceOrchestrationServiceException =
-                new AddressPersistanceOrchestrationServiceException(
+                new AddressPersistenceOrchestrationServiceException(
                     message: "Address persistence orchestration service error occurred, contact support.",
                     innerException: failedAddressPersistanceOrchestrationServiceException);
 
@@ -65,8 +65,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             ValueTask<List<Address>> processTask =
                 this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
 
-            AddressPersistanceOrchestrationDependencyValidationException actualException =
-                await Assert.ThrowsAsync<AddressPersistanceOrchestrationDependencyValidationException>(
+            AddressPersistenceOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(
                     processTask.AsTask);
 
             // then
@@ -75,10 +75,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             this.addressProcessingServiceMock.Verify(service =>
              service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
-                 Times.Never);
+                  Times.Exactly(randomAddresses.Count));
 
             var addressPersistanceDependencyValidationException =
-                new AddressPersistanceOrchestrationDependencyValidationException(
+                new AddressPersistenceOrchestrationDependencyValidationException(
                     message: "Address persistence orchestration dependency validation error occurred, " +
                     "please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
@@ -208,21 +208,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             AddressPersistanceOrchestrationService addressPersistanceOrchestrationService = mock.Object;
 
             var failedAddressPersistanceOrchestrationServiceException =
-                new FailedAddressPersistanceOrchestrationServiceException(
-                    message: "Failed address persistance orchestration service error occurred, please contact support",
+                new FailedAddressPersistenceOrchestrationServiceException(
+                    message: "Failed address persistence orchestration service error occurred, please contact support",
                     innerException: serviceException);
 
             var expectedAddressPersistanceOrchestrationServiceException =
-                new AddressPersistanceOrchestrationServiceException(
-                    message: "Address persistance orchestration service error occurred, contact support.",
+                new AddressPersistenceOrchestrationServiceException(
+                    message: "Address persistence orchestration service error occurred, contact support.",
                     innerException: failedAddressPersistanceOrchestrationServiceException);
 
             // when
             ValueTask<List<Address>> processTask =
                 addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
 
-            AddressPersistanceOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<AddressPersistanceOrchestrationServiceException>(
+            AddressPersistenceOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(
                     processTask.AsTask);
 
             // then

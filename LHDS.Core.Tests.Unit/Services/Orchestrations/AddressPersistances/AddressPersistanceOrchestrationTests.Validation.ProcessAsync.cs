@@ -21,8 +21,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             List<Address> nullAddressList = null;
 
             var invalidArgumentAddressPersistanceOrchestrationException =
-                new InvalidArgumentAddressPersistanceOrchestrationException(
-                    message: "Invalid address persistance orchestration argument, " +
+                new InvalidArgumentAddressPersistenceOrchestrationException(
+                    message: "Invalid address persistence orchestration argument, " +
                         "please correct the errors and try again.");
 
             invalidArgumentAddressPersistanceOrchestrationException.AddData(
@@ -30,17 +30,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 values: "Address list is required");
 
             var expectedAddressPersistanceOrchestrationValidationException =
-                new AddressPersistanceOrchestrationValidationException(
-                    message: "Address persistance orchestration validation error occured, please try again",
+                new AddressPersistenceOrchestrationValidationException(
+                    message: "Address persistence orchestration validation error occurred, please try again",
                     innerException: invalidArgumentAddressPersistanceOrchestrationException);
 
             // when
             ValueTask<List<Address>> processAddressesTask =
                 this.addressPersistanceOrchestrationService.PersistAddressAsync(nullAddressList);
 
-            AddressPersistanceOrchestrationValidationException
+            AddressPersistenceOrchestrationValidationException
                 actualAddressPersistanceOrchestrationValidationException =
-                    await Assert.ThrowsAsync<AddressPersistanceOrchestrationValidationException>(
+                    await Assert.ThrowsAsync<AddressPersistenceOrchestrationValidationException>(
                         processAddressesTask.AsTask);
 
             //then

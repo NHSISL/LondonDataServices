@@ -9,10 +9,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
-using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
-using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
-using LHDS.Core.Services.Processings.AddressMatchers;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -209,7 +206,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var failedAddressPersistanceOrchestrationServiceException =
                 new FailedAddressPersistenceOrchestrationServiceException(
-                    message: "Failed address persistence orchestration service error occurred, please contact support",
+                    message: "Failed address persistence orchestration service error occurred, contact support.",
                     innerException: serviceException);
 
             var expectedAddressPersistanceOrchestrationServiceException =

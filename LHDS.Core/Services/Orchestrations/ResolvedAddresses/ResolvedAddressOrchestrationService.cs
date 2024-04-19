@@ -11,7 +11,7 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
 
-namespace LHDS.Core.Services.Orchestrations.AddressPersistances
+namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 {
     internal partial class ResolvedAddressOrchestrationService : IResolvedAddressOrchestrationService
     {

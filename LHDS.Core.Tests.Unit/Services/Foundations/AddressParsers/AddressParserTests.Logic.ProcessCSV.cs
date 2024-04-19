@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,6 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
-using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
@@ -22,6 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
         public async Task ShouldProcessByteAddressCsvAsync()
         {
             // given
+            string inputFilename = GetRandomString();
             string assembly = Assembly.GetExecutingAssembly().Location;
 
             string inputFilePath = Path.Combine(
@@ -70,10 +70,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
                     expectedAddresses.Add(address);
                 }
             }
-            
+
             // when
             List<Address> actualAddresses = await this.addressParserService
-                .ProcessCsvAsync(data: inputByteAddressesCsv);
+                .ProcessCsvAsync(data: inputByteAddressesCsv, filename: inputFilename);
 
             // then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
@@ -90,6 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
         public async Task ShouldProcessStringAddressCsvAsync()
         {
             // given
+            string inputFilename = GetRandomString();
             string assembly = Assembly.GetExecutingAssembly().Location;
 
             string inputFilePath = Path.Combine(
@@ -141,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
 
             // when
             List<Address> actualAddresses = await this.addressParserService
-                .ProcessCsvAsync(data: inputStringAddressesCsv);
+                .ProcessCsvAsync(data: inputStringAddressesCsv, filename: inputFilename);
 
             // then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>

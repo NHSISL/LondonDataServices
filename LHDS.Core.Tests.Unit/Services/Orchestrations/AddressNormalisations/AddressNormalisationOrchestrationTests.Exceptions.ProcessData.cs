@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Orchestrations.AddressNormalisations.Exceptions;
-using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -24,8 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
             Xeption dependencyValidationException)
         {
             // given
-            var randomAddress = GetRandomString();
-            string inputAddress = randomAddress;
+            string someAddress = GetRandomString();
+            string someFilename = GetRandomString();
 
             var expectedAddressNormalisationOrchestrationDependencyValidationException =
                 new AddressNormalisationOrchestrationDependencyValidationException(
@@ -33,12 +32,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.addressParserProcessingServiceMock.Setup(processing =>
-                processing.ProcessCsvAsync(It.IsAny<string>()))
+                processing.ProcessCsvAsync(It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(dependencyValidationException);
 
             // when
             ValueTask<List<AddressNormalisation>> actualAddressesTask =
-                this.addressNormalisationOrchestrationService.ProcessDataAsync(inputAddress);
+                this.addressNormalisationOrchestrationService.ProcessDataAsync(someAddress);
 
             AddressNormalisationOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressNormalisationOrchestrationDependencyValidationException>(
@@ -49,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
                 expectedAddressNormalisationOrchestrationDependencyValidationException);
 
             this.addressParserProcessingServiceMock.Verify(processing =>
-                processing.ProcessCsvAsync(It.IsAny<string>()),
+                processing.ProcessCsvAsync(It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -77,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
                     innerException: dependencyException.InnerException as Xeption);
 
             this.addressParserProcessingServiceMock.Setup(processing =>
-               processing.ProcessCsvAsync(It.IsAny<string>()))
+               processing.ProcessCsvAsync(It.IsAny<string>(), It.IsAny<string>()))
                    .Throws(dependencyException);
 
             // when
@@ -92,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
             actualException.Should().BeEquivalentTo(expectedAddressNormalisationOrchestrationDependencyException);
 
             this.addressParserProcessingServiceMock.Verify(processing =>
-                processing.ProcessCsvAsync(It.IsAny<string>()),
+                processing.ProcessCsvAsync(It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -123,7 +122,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
                     innerException: failedAddressNormalisationOrchestrationServiceException);
 
             this.addressParserProcessingServiceMock.Setup(processing =>
-               processing.ProcessCsvAsync(It.IsAny<string>()))
+               processing.ProcessCsvAsync(It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(serviceException);
 
             // when;
@@ -138,7 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
             actualException.Should().BeEquivalentTo(expectedAddressNormalisationOrchestrationServiveException);
 
             this.addressParserProcessingServiceMock.Verify(processing =>
-                 processing.ProcessCsvAsync(It.IsAny<string>()),
+                 processing.ProcessCsvAsync(It.IsAny<string>(), It.IsAny<string>()),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

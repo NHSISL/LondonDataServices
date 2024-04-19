@@ -39,20 +39,20 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<Address>> LoadAddressData(byte[] data) =>
+        public ValueTask<List<Address>> LoadAddressData(byte[] data, string filename) =>
             TryCatch(async () =>
             {
-                ValidateDataOnProcessData(data);
+                ValidateDataOnProcessData(data, filename);
 
                 List<Address> extractedAddress =
-                    await this.addressExtractionOrchestrationService.ProcessAddressesAsync(data);
+                    await this.addressExtractionOrchestrationService.ProcessAddressesAsync(data, filename);
 
                 ValidateAddressListIsNotNull(extractedAddress);
 
                 return await this.addressPersistanceOrchestrationService.PersistAddressAsync(extractedAddress);
             });
 
-        public ValueTask<List<Address>> MatchAddressData(byte[] data) =>
+        public ValueTask<List<Address>> MatchAddressData(byte[] data, string filename) =>
             throw new System.NotImplementedException();
 
         public ValueTask<List<Address>> UploadResolvedAddresses() =>

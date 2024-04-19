@@ -21,11 +21,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
         public async Task ShouldThrowServiceExceptionOnProcessByteIfServiceErrorOccursAndLogItAsync()
         {
             // given
+            string someFilename = GetRandomString();
             var mock = new Mock<AddressParserService>(loggingBrokerMock.Object) { CallBase = true };
             byte[] someData = Encoding.GetEncoding("UTF-8").GetBytes(GetRandomString());
             var serviceException = new Exception();
 
-            mock.Setup(x => x.ValidateAddressParserOnProcessCSV(It.IsAny<byte[]>()))
+            mock.Setup(x => x.ValidateAddressParserOnProcessCSV(It.IsAny<byte[]>(), It.IsAny<string>()))
                 .Throws(serviceException);
 
             AddressParserService addressParserService = mock.Object;
@@ -42,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
 
             // when
             ValueTask<List<Address>> processCSVTask =
-                addressParserService.ProcessCsvAsync(someData);
+                addressParserService.ProcessCsvAsync(someData, someFilename);
 
             AddressParserServiceException actualAddressParserServiceException =
                 await Assert.ThrowsAsync<AddressParserServiceException>(async () =>
@@ -63,11 +64,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
         public async Task ShouldThrowServiceExceptionOnProcessStringIfServiceErrorOccursAndLogItAsync()
         {
             // given
+            string someFilename = GetRandomString();
             var mock = new Mock<AddressParserService>(loggingBrokerMock.Object) { CallBase = true };
             string someData = GetRandomString();
             var serviceException = new Exception();
 
-            mock.Setup(x => x.ValidateAddressParserOnProcessCSV(It.IsAny<string>()))
+            mock.Setup(x => x.ValidateAddressParserOnProcessCSV(It.IsAny<string>(), It.IsAny<string>()))
                 .Throws(serviceException);
 
             AddressParserService addressParserService = mock.Object;
@@ -84,7 +86,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
 
             // when
             ValueTask<List<Address>> processCSVTask =
-                addressParserService.ProcessCsvAsync(someData);
+                addressParserService.ProcessCsvAsync(someData, someFilename);
 
             AddressParserServiceException actualAddressParserServiceException =
                 await Assert.ThrowsAsync<AddressParserServiceException>(async () =>

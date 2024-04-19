@@ -1,15 +1,13 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using LHDS.Core.Models.Processings.AddressParsers.Exceptions;
-using LHDS.Core.Services.Processings.AddressMatchers;
 using LHDS.Core.Services.Processings.AddressParsers;
 using Moq;
 using Xunit;
@@ -24,13 +22,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressParsers
             // given
             var mock = new Mock<AddressParserProcessingService>(
                 addressParserServiceMock.Object,
-                loggingBrokerMock.Object) 
+                loggingBrokerMock.Object)
             { CallBase = true };
 
             string someAddress = GetRandomString();
+            string someFilename = GetRandomString();
             var serviceException = new Exception();
 
-            mock.Setup(x => x.ValidateAddressParserArgs(It.IsAny<string>()))
+            mock.Setup(x => x.ValidateAddressParserArgs(It.IsAny<string>(), It.IsAny<string>()))
                 .Throws(serviceException);
 
             AddressParserProcessingService addressParserProcessingService = mock.Object;
@@ -46,15 +45,16 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressParsers
                     innerException: failedAddressParserProcessingServiceException);
 
             // when
-            ValueTask<List<Address>> processCsvTask = 
-                addressParserProcessingService.ProcessCsvAsync(someAddress);
+            ValueTask<List<Address>> processCsvTask =
+                addressParserProcessingService.ProcessCsvAsync(someAddress, someFilename);
 
             AddressParserProcessingServiceException actualAddressParserProcessingServiceException =
                 await Assert.ThrowsAsync<AddressParserProcessingServiceException>(
                     processCsvTask.AsTask);
 
             // then
-            actualAddressParserProcessingServiceException.Should().BeEquivalentTo(expectedAddresParserProcessingServiceException);
+            actualAddressParserProcessingServiceException.Should()
+                .BeEquivalentTo(expectedAddresParserProcessingServiceException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

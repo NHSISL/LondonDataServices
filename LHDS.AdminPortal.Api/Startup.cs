@@ -38,7 +38,7 @@ using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Providers.Downloads.DiskDownloads;
 using LHDS.Core.Providers.Downloads.Extensions;
-using LHDS.Core.Providers.Downloads.FtpDownloads;
+using LHDS.Core.Providers.Downloads.MockDownloads;
 using LHDS.Core.Services.Coordinations.Decryptions;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.DataSets;

@@ -10,8 +10,8 @@ namespace LHDS.Core.Clients
 {
     public interface IAddressClient
     {
-        public ValueTask<List<Address>> LoadAddressData(byte[] data);
-        public ValueTask<List<Address>> MatchPatientAddressData(byte[] data);
+        public ValueTask<List<Address>> LoadAddressData(byte[] data, string filename);
+        public ValueTask<List<Address>> MatchPatientAddressData(byte[] data, string filename);
         public ValueTask<List<Address>> ProcessResolvedAddressData();
     }
 }

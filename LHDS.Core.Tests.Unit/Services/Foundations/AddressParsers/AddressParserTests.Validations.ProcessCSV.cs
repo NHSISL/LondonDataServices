@@ -14,14 +14,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
 {
     public partial class AddressParserTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnProcessCsvIfDataIsNullAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnProcessCsvIfDataIsNullAndLogItAsync(string invalidText)
         {
             // given
-            byte[] nullAddresses = null;
+            byte[] nullData = null;
+            string invalidFileName = invalidText;
 
             var invalidArgumentAddressParserException =
-                new InvalidArgumentAddressParserException(message: "Address parser is null.");
+                new InvalidArgumentAddressParserException(
+                    message: "Invalid arguments. Please correct the errors and try again.");
+
+            invalidArgumentAddressParserException.AddData(
+                key: "data",
+                values: "Data is required");
+
+            invalidArgumentAddressParserException.AddData(
+                key: "filename",
+                values: "Text is required");
 
             var expectedAddressParserValidationException =
                 new AddressParserValidationException(
@@ -30,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
 
             // when
             ValueTask<List<Address>> processCSVAddressTask =
-                this.addressParserService.ProcessCsvAsync(nullAddresses);
+                this.addressParserService.ProcessCsvAsync(nullData, invalidFileName);
 
             AddressParserValidationException actualAddressParserValidationException =
                 await Assert.ThrowsAsync<AddressParserValidationException>(async () =>
@@ -56,13 +69,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
         {
             // given
             string invalidAddress = invalidText;
+            string invalidFileName = invalidText;
 
             var invalidArgumentAddressParserException =
                 new InvalidArgumentAddressParserException(
-                    message: "Invalid argument. Please correct the errors and try again.");
+                    message: "Invalid arguments. Please correct the errors and try again.");
 
             invalidArgumentAddressParserException.AddData(
                 key: "data",
+                values: "Text is required");
+
+            invalidArgumentAddressParserException.AddData(
+                key: "filename",
                 values: "Text is required");
 
             var expectedAddressParserValidationException =
@@ -72,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
 
             // when
             ValueTask<List<Address>> processCSVAddressTask =
-                this.addressParserService.ProcessCsvAsync(invalidAddress);
+                this.addressParserService.ProcessCsvAsync(invalidAddress, invalidFileName);
 
             AddressParserValidationException actualAddressParserValidationException =
                 await Assert.ThrowsAsync<AddressParserValidationException>(async () =>

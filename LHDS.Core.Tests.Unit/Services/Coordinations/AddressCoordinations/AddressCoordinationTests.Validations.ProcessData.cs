@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,15 +14,27 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 {
     public partial class AddressCoordinationServiceTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnProcessDataIfDataIsNullAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnProcessDataIfDataIsNullAndLogItAsync(string invalidText)
         {
             // given
             byte[] nullData = null;
+            string invalidFilename = invalidText;
 
             var invalidArgumentAddressCoordinationException =
                 new InvalidArgumentAddressCoordinationException(
                     message: "Invalid address coordination argument, please correct the errors and try again.");
+
+            invalidArgumentAddressCoordinationException.AddData(
+                key: "data",
+                values: "Data is required");
+
+            invalidArgumentAddressCoordinationException.AddData(
+                key: "filename",
+                values: "Text is required");
 
             var expectedAddressCoordinationValidationException =
                 new AddressCoordinationValidationException(
@@ -31,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressCoordinationService.LoadAddressData(nullData);
+                this.addressCoordinationService.LoadAddressData(nullData, invalidFilename);
 
             AddressCoordinationValidationException actualAddressCoordinationValidationException =
                 await Assert.ThrowsAsync<AddressCoordinationValidationException>(async () =>
@@ -42,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                 .BeEquivalentTo(expectedAddressCoordinationValidationException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-                service.ProcessAddressesAsync(nullData),
+                service.ProcessAddressesAsync(nullData, invalidFilename),
                     Times.Never());
 
             this.loggingBrokerMock.Verify(broker =>

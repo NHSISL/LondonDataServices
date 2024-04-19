@@ -3,7 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.Decryptions;
+using LHDS.Core.Brokers.Cryptographies;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 

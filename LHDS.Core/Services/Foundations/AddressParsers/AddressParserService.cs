@@ -1,12 +1,14 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.CsvMappers;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 
@@ -14,26 +16,33 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
 {
     public partial class AddressParserService : IAddressParserService
     {
+        private readonly ICsvMapperBroker csvMapperBroker;
+        private readonly IIdentifierBroker identifierBroker;
         private readonly ILoggingBroker loggingBroker;
 
-        public AddressParserService(ILoggingBroker loggingBroker)
+        public AddressParserService(
+            ICsvMapperBroker csvMapperBroker,
+            IIdentifierBroker identifierBroker,
+            ILoggingBroker loggingBroker)
         {
+            this.csvMapperBroker = csvMapperBroker;
+            this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<Address>> ProcessCsvAsync(byte[] data) =>
+        public ValueTask<List<Address>> ProcessCsvAsync(byte[] data, string filename) =>
             TryCatch(async () =>
             {
-                ValidateAddressParserOnProcessCSV(data);
+                ValidateAddressParserOnProcessCSV(data, filename);
                 string stringData = Encoding.UTF8.GetString(data);
 
-                return await this.ProcessCsvAsync(stringData);
+                return await this.ProcessCsvAsync(stringData, filename);
             });
 
-        public ValueTask<List<Address>> ProcessCsvAsync(string data) =>
+        public ValueTask<List<Address>> ProcessCsvAsync(string data, string filename) =>
            TryCatch(async () =>
            {
-               ValidateAddressParserOnProcessCSV(data);
+               ValidateAddressParserOnProcessCSV(data, filename);
 
                return await Task.Run(() =>
                {

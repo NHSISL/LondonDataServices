@@ -1,9 +1,13 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
@@ -16,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             // given
             Guid invalidTerminologyPollId = Guid.Empty;
 
-            var invalidTerminologyPollException = 
+            var invalidTerminologyPollException =
                 new InvalidTerminologyPollException(
                     message: "Invalid terminologyPoll. Please correct the errors and try again.");
 

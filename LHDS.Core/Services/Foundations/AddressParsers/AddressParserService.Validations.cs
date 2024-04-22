@@ -1,8 +1,7 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
-using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using System;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using Xeptions;
@@ -11,16 +10,20 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
 {
     public partial class AddressParserService
     {
-        virtual internal void ValidateAddressParserOnProcessCSV(byte[] data)
-        {
-            ValidateAddressParserIsNotNull(data);
-        }
-
-        virtual internal void ValidateAddressParserOnProcessCSV(string data)
+        virtual internal void ValidateAddressParserOnProcessCSV(byte[] data, string filename)
         {
             Validate<InvalidArgumentAddressParserException>(
-                message: "Invalid argument. Please correct the errors and try again.",
-                    (Rule: IsInvalid(data), Parameter: "data"));
+                message: "Invalid arguments. Please correct the errors and try again.",
+                    (Rule: IsInvalid(data), Parameter: "data"),
+                    (Rule: IsInvalid(filename), Parameter: "filename"));
+        }
+
+        virtual internal void ValidateAddressParserOnProcessCSV(string data, string filename)
+        {
+            Validate<InvalidArgumentAddressParserException>(
+                message: "Invalid arguments. Please correct the errors and try again.",
+                    (Rule: IsInvalid(data), Parameter: "data"),
+                    (Rule: IsInvalid(filename), Parameter: "filename"));
         }
 
         private static dynamic IsInvalid(string text) => new
@@ -29,13 +32,11 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
             Message = "Text is required"
         };
 
-        private static void ValidateAddressParserIsNotNull(byte[] data)
+        private static dynamic IsInvalid(byte[] data) => new
         {
-            if (data is null)
-            {
-                throw new InvalidArgumentAddressParserException(message: "Address parser is null.");
-            }
-        }
+            Condition = data is null || data.Length == 0,
+            Message = "Data is required"
+        };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
              where T : Xeption

@@ -93,7 +93,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
 
             foreach (SubscriberAgreement subscriberAgreement in subscriberAgreements)
             {
-                SubscriberCredential subscriberCredential = 
+                SubscriberCredential subscriberCredential =
                     CreateSubscriberCredentialFromAgreement(subscriberAgreement);
 
                 subscriberCredentials.Add(subscriberCredential);

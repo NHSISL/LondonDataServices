@@ -10,7 +10,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
-using LHDS.Core.Services.Foundations.CryptographicKeys;
+using LHDS.Core.Services.Processings.CryptographicKeys;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
 

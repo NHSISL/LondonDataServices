@@ -1,9 +1,13 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
@@ -16,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             // given
             var invalidSpecificationObjectId = Guid.Empty;
 
-            var invalidSpecificationObjectException = 
+            var invalidSpecificationObjectException =
                 new InvalidSpecificationObjectException(
                     message: "Invalid specificationObject. Please correct the errors and try again.");
 

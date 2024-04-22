@@ -11,9 +11,11 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses
     public class ResolvedAddress : IKey, IAudit
     {
         public Guid Id { get; set; }
+        public Guid UniqueReference { get; set; }
+        public string UnstructuredPostalAddress { get; set; }
+        public string? PostCode { get; set; }
         public string? UPRN { get; set; }
         public string? UPSN { get; set; }
-        public string? PostCode { get; set; }
         public string? PostalAddress { get; set; }
         public string? JsonPostalAddress { get; set; }
         public MatchAlgorithmEnum MatchAlgorithmUsed { get; set; }

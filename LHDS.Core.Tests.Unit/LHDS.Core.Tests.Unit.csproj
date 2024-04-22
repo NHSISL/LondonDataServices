@@ -9,7 +9,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Services\Foundations\ResolvedAddressParser\ShouldProcessResolvedAddressCsvAsync.csv" />
+	  <None Remove="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessAddressesAsync.csv" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Content Include="Resources\Services\Foundations\AddressParser\ShouldProcessAddressCsvAsync.csv">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Services\Foundations\ResolvedAddressParser\ShouldProcessResolvedAddressCsvAsync.csv">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessAddressesAsync.csv">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithOnlyCsvAddressesData.zip">
@@ -31,7 +42,7 @@
 		<PackageReference Include="CleanMoq" Version="42.42.42" />
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.8" />
 		<PackageReference Include="Xeption" Version="2.6.0" />
-		<PackageReference Include="xunit" Version="2.7.0" />
+		<PackageReference Include="xunit" Version="2.7.1" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.5.7">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>

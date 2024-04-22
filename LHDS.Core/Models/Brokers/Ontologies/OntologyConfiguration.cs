@@ -11,5 +11,7 @@ namespace LHDS.Core.Models.Brokers.Ontologies
         public string TerminologyServerResourceRelativeUrl { get; set; } = string.Empty;
         public string ClientId { get; set; } = string.Empty;
         public string ClientSecret { get; set; } = string.Empty;
+        public int MaxResponseContentBufferSizeInMegaBytes { get; set; } = 500;
+        public int TimeoutInSeconds { get; set; } = 180;
     }
 }

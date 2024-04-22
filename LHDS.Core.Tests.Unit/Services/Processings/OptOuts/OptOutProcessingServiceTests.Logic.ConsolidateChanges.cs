@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 {
                     delta.Add(item);
                 }
-                
+
                 item.UpdatedDate = randomDateTimeOffset;
                 item.CacheTime = randomDateTimeOffset;
                 item.LastSentToMesh = randomDateTimeOffset;
@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             // when
             List<OptOut> actualOptOutList = await this.optOutProcessingService
                 .ConsolidateOptOutChangesAndReturnChangesOnly(
-                currentOptOutInputList, 
+                currentOptOutInputList,
                 consentedIdentifiers: consentedNhsNumbers);
 
             // then
@@ -183,7 +183,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             // when
             List<OptOut> actualOptOutList = await this.optOutProcessingService
                 .ConsolidateOptOutChangesAndReturnChangesOnly(
-                currentOptOutInputList, 
+                currentOptOutInputList,
                 consentedIdentifiers: consentedNhsNumbers);
 
             // then

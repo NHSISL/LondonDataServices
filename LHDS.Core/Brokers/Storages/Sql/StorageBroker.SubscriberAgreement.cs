@@ -2,9 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using Microsoft.EntityFrameworkCore;
 

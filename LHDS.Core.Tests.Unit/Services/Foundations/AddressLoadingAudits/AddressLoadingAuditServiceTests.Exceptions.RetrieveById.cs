@@ -1,10 +1,14 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Data.SqlClient;
-using Moq;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
+using Microsoft.Data.SqlClient;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
@@ -67,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
 
             var failedAddressLoadingAuditServiceException =
                 new FailedAddressLoadingAuditServiceException(
-                    message: "Failed addressLoadingAudit service occurred, please contact support", 
+                    message: "Failed addressLoadingAudit service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedAddressLoadingAuditServiceException =

@@ -1,10 +1,14 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Data.SqlClient;
-using Moq;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
+using Microsoft.Data.SqlClient;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
@@ -67,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             var failedDataTypeServiceException =
                 new FailedDataTypeServiceException(
-                    message: "Failed dataType service occurred, please contact support", 
+                    message: "Failed dataType service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedDataTypeServiceException =

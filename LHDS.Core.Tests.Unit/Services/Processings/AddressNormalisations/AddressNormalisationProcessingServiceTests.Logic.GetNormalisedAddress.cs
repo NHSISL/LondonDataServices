@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
             var expectedNormalisedAddress = addressNormalisation.DeepClone();
 
             // When
-            AddressNormalisation actualNormalisedAddress = 
+            AddressNormalisation actualNormalisedAddress =
                 await this.addressNormalisationProcessingService.GetNormalisedAddress(inputAddress);
 
             // Then

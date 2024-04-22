@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using LHDS.Core.Services.Processings.CryptographicKeys;
 
 namespace LHDS.Core.Services.Foundations.CryptographicKeys
 {

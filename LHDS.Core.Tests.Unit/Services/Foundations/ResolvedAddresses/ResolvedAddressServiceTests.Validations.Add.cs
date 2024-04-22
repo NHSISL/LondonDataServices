@@ -68,6 +68,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 values: "Id is required");
 
             invalidResolvedAddressException.AddData(
+                key: nameof(ResolvedAddress.UniqueReference),
+                values: "Id is required");
+
+            invalidResolvedAddressException.AddData(
+                key: nameof(ResolvedAddress.UnstructuredPostalAddress),
+                values: "Text is required");
+
+            invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.CreatedDate),
                 values: "Date is required");
 

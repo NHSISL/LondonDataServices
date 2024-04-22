@@ -1,12 +1,16 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using LHDS.Core.Models.Foundations.ObjectColumns;
-using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
@@ -28,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             var expectedObjectColumnDependencyException =
                 new ObjectColumnDependencyException(
                     message: "ObjectColumn dependency error occurred, contact support.",
-                    innerException: failedObjectColumnStorageException); 
+                    innerException: failedObjectColumnStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -81,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             var invalidObjectColumnReferenceException =
                 new InvalidObjectColumnReferenceException(
-                    message: "Invalid objectColumn reference error occurred.", 
+                    message: "Invalid objectColumn reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
             ObjectColumnDependencyValidationException expectedObjectColumnDependencyValidationException =
@@ -141,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             var expectedObjectColumnDependencyException =
                 new ObjectColumnDependencyException(
                     message: "ObjectColumn dependency error occurred, contact support.",
-                    innerException: failedObjectColumnStorageException); 
+                    innerException: failedObjectColumnStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -245,7 +249,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             var failedObjectColumnServiceException =
                 new FailedObjectColumnServiceException(
-                    message: "Failed objectColumn service occurred, please contact support", 
+                    message: "Failed objectColumn service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedObjectColumnServiceException =

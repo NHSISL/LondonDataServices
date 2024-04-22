@@ -1,13 +1,13 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 using Moq;
 using Xunit;
 
@@ -404,7 +404,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             OptOut nonExistOptOut = randomOptOut;
             OptOut nullOptOut = null;
 
-            var notFoundOptOutException = 
+            var notFoundOptOutException =
                 new NotFoundOptOutException(message: $"Couldn't find optOut with optOutId: {nonExistOptOut.Id}.");
 
             var expectedOptOutValidationException =

@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             IQueryable<OptOut> randomOptOuts = CreateRandomOptOuts(expireDate);
             IQueryable<OptOut> retrievedOptOuts = randomOptOuts.DeepClone();
 
-            List<OptOut> expectedOptOuts = retrievedOptOuts 
+            List<OptOut> expectedOptOuts = retrievedOptOuts
                 .Where(optOut => optOut.CacheTime < expireDate)
                     .ToList();
 

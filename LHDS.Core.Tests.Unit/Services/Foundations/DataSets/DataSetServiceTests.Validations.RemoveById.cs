@@ -1,9 +1,13 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
@@ -16,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             // given
             Guid invalidDataSetId = Guid.Empty;
 
-            var invalidDataSetException = 
+            var invalidDataSetException =
                 new InvalidDataSetException(
                     message: "Invalid dataSet. Please correct the errors and try again.");
 

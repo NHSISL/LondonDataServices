@@ -1,9 +1,13 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
@@ -16,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             // given
             Guid invalidSubscriberAgreementId = Guid.Empty;
 
-            var invalidSubscriberAgreementException = 
+            var invalidSubscriberAgreementException =
                 new InvalidSubscriberAgreementException(
                     message: "Invalid subscriberAgreement. Please correct the errors and try again.");
 

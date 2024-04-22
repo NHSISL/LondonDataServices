@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 innerException: sqlException);
 
             var expectedOptOutDependencyException = new OptOutDependencyException(
-                message: "OptOut dependency error occurred, contact support.", 
+                message: "OptOut dependency error occurred, contact support.",
                 innerException: failedOptOutStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -79,11 +79,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             var alreadyExistsOptOutException =
                 new AlreadyExistsOptOutException(
-                    message: "OptOut with the same Id already exists.", 
+                    message: "OptOut with the same Id already exists.",
                     innerException: duplicateKeyException);
 
             var expectedOptOutDependencyValidationException = new OptOutDependencyValidationException(
-                message: "OptOut dependency validation occurred, please try again.", 
+                message: "OptOut dependency validation occurred, please try again.",
                 innerException: alreadyExistsOptOutException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 innerException: foreignKeyConstraintConflictException);
 
             var expectedOptOutValidationException = new OptOutDependencyValidationException(
-                message: "OptOut dependency validation occurred, please try again.", 
+                message: "OptOut dependency validation occurred, please try again.",
                 innerException: invalidOptOutReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>

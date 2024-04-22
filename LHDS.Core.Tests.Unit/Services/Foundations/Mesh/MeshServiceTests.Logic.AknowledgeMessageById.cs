@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -12,7 +12,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-public async Task ShouldAknowledgeMessageByIdAsync()
+        public async Task ShouldAknowledgeMessageByIdAsync()
         {
             // given
             string randomMessageId = GetRandomString();

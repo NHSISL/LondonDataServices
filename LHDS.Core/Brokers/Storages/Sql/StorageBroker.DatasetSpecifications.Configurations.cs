@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using Microsoft.EntityFrameworkCore;

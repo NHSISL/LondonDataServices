@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
 
             var invalidArgumentAddressNormalisationProcessingException =
                 new InvalidArgumentAddressNormalisationProcessingException(
-                    message: 
+                    message:
                     "Invalid address normalisation processing argument. Please correct the errors and try again.");
 
             invalidArgumentAddressNormalisationProcessingException.AddData(

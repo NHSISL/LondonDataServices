@@ -4,7 +4,6 @@
 
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
-using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
 namespace LHDS.Core.Services.Orchestrations.Decryptions

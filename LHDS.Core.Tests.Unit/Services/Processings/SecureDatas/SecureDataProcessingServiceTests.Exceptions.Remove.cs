@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using Moq;
 using Xeptions;
@@ -32,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                 "GpgPassPhrase",
                 "GpgPrivateKey"
             };
-          
+
             List<Exception> exceptions = new List<Exception>();
 
             foreach (string keyType in keyTypes)

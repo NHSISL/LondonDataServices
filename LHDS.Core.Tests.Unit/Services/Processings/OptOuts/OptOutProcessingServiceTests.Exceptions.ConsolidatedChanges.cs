@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task 
+        public async Task
             ShouldThrowDependencyValidationExceptionOnConsolidateChangesOptOutsIfDependencyValidationErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             // when
             ValueTask<List<OptOut>> ConsolidateChangesOptOutTask =
                 this.optOutProcessingService.ConsolidateOptOutChangesAndReturnChangesOnly(
-                    randomOptOutsList, 
+                    randomOptOutsList,
                     randomStringList);
 
             OptOutProcessingDependencyValidationException actualException =
@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             // when
             ValueTask<List<OptOut>> ConsolidateChangesOptOutTask =
                 this.optOutProcessingService.ConsolidateOptOutChangesAndReturnChangesOnly(
-                    randomOptOutsList, 
+                    randomOptOutsList,
                     randomStringList);
 
             OptOutProcessingDependencyException actualException =

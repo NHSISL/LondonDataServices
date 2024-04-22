@@ -4,7 +4,6 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions;
 using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;

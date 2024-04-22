@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.AddressMatchers.Exceptions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using Moq;
 using Xunit;

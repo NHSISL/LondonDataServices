@@ -1,9 +1,13 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
@@ -16,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             // given
             Guid invalidResolvedAddressId = Guid.Empty;
 
-            var invalidResolvedAddressException = 
+            var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
                     message: "Invalid resolvedAddress. Please correct the errors and try again.");
 

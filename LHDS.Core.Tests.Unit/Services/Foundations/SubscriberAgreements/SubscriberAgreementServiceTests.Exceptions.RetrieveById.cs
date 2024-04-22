@@ -1,10 +1,14 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Data.SqlClient;
-using Moq;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
+using Microsoft.Data.SqlClient;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
@@ -67,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             var failedSubscriberAgreementServiceException =
                 new FailedSubscriberAgreementServiceException(
-                    message: "Failed subscriberAgreement service occurred, please contact support", 
+                    message: "Failed subscriberAgreement service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedSubscriberAgreementServiceException =

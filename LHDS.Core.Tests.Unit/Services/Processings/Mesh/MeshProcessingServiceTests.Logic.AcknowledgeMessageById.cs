@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             // given
             MeshMessage randomMessage = CreateRandomMessage();
             MeshMessage storageMessage = randomMessage;
-            bool isAcknowledged= true;
+            bool isAcknowledged = true;
 
             this.meshServiceMock.Setup(service =>
                 service.AcknowledgeMessageByIdAsync(randomMessage.MessageId))

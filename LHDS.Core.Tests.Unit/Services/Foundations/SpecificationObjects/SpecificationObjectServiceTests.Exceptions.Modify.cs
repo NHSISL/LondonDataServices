@@ -1,12 +1,16 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using LHDS.Core.Models.Foundations.SpecificationObjects;
-using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
@@ -28,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             var expectedSpecificationObjectDependencyException =
                 new SpecificationObjectDependencyException(
                     message: "SpecificationObject dependency error occurred, contact support.",
-                    innerException: failedSpecificationObjectStorageException); 
+                    innerException: failedSpecificationObjectStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -81,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var invalidSpecificationObjectReferenceException =
                 new InvalidSpecificationObjectReferenceException(
-                    message: "Invalid specificationObject reference error occurred.", 
+                    message: "Invalid specificationObject reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
             SpecificationObjectDependencyValidationException expectedSpecificationObjectDependencyValidationException =
@@ -141,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             var expectedSpecificationObjectDependencyException =
                 new SpecificationObjectDependencyException(
                     message: "SpecificationObject dependency error occurred, contact support.",
-                    innerException: failedSpecificationObjectStorageException); 
+                    innerException: failedSpecificationObjectStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -245,7 +249,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var failedSpecificationObjectServiceException =
                 new FailedSpecificationObjectServiceException(
-                    message: "Failed specificationObject service occurred, please contact support", 
+                    message: "Failed specificationObject service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedSpecificationObjectServiceException =

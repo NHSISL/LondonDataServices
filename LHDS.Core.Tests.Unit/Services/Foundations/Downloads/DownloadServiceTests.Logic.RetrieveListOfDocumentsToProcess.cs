@@ -3,10 +3,8 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
@@ -24,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
-            List<string> externalDownloadList = GetRandomStrings(randomNumber); 
+            List<string> externalDownloadList = GetRandomStrings(randomNumber);
             List<string> expectedDownloadList = externalDownloadList;
 
             this.downloadBrokerMock.Setup(broker =>

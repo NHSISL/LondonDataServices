@@ -1,8 +1,12 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
-using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
@@ -63,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var failedSpecificationObjectServiceException =
                 new FailedSpecificationObjectServiceException(
-                    message: "Failed specificationObject service occurred, please contact support", 
+                    message: "Failed specificationObject service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedSpecificationObjectServiceException =

@@ -36,7 +36,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                IngestionTracking addedIngestionTracking = 
+                IngestionTracking addedIngestionTracking =
                     await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 
                 return Created(addedIngestionTracking);
@@ -103,7 +103,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                IngestionTracking ingestionTracking = 
+                IngestionTracking ingestionTracking =
                     await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
 
                 return Ok(ingestionTracking);
@@ -137,7 +137,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             {
                 string decodedFileName = HttpUtility.UrlDecode(fileName);
 
-                IngestionTracking ingestionTracking = 
+                IngestionTracking ingestionTracking =
                     await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(decodedFileName);
 
                 return Ok(ingestionTracking);
@@ -170,7 +170,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                IngestionTracking modifiedIngestionTracking = 
+                IngestionTracking modifiedIngestionTracking =
                     await this.ingestionTrackingService.ModifyIngestionTrackingAsync(ingestionTracking);
 
                 return Ok(modifiedIngestionTracking);
@@ -190,7 +190,7 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return FailedDependency(ingestionTrackingValidationException.InnerException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
-                when (ingestionTrackingDependencyValidationException.InnerException 
+                when (ingestionTrackingDependencyValidationException.InnerException
                     is AlreadyExistsIngestionTrackingException)
             {
                 return Conflict(ingestionTrackingDependencyValidationException.InnerException);
@@ -214,7 +214,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                IngestionTracking deletedIngestionTracking = 
+                IngestionTracking deletedIngestionTracking =
                     await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTrackingId);
 
                 return Ok(deletedIngestionTracking);

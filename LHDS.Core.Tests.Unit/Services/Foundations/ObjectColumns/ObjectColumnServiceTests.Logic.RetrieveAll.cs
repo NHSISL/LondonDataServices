@@ -1,7 +1,11 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System.Linq;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.ObjectColumns;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns

@@ -12,7 +12,7 @@ using LHDS.Core.Services.Processings.ResolvedAddresses;
 
 namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 {
-    internal partial class ResolvedAddressOrchestrationService : IResolvedAddressOrchestrationService
+    public partial class ResolvedAddressOrchestrationService : IResolvedAddressOrchestrationService
     {
         private readonly IDocumentProcessingService documentProcessingService;
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
@@ -31,16 +31,19 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask AddDocumentAsync(byte[] data, string fileName, string container)
-        {
-            Document document = new Document
+        public ValueTask AddDocumentAsync(byte[] data, string fileName, string container) =>
+            TryCatch(async () =>
             {
-                FileName = fileName,
-                DocumentData = data
-            };
+                ValidateResolvedAddressArgsOnAdd(data, fileName, container);
 
-            await this.documentProcessingService.AddDocumentAsync(document, container);
-        }
+                Document document = new Document
+                {
+                    FileName = fileName,
+                    DocumentData = data
+                };
+
+                await this.documentProcessingService.AddDocumentAsync(document, container);
+            });
 
         public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
             throw new NotImplementedException();

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Orchestrations.AddressNormalisations.Exceptions;
-using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using Moq;
 using Xunit;
 

@@ -26,6 +26,7 @@ using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using LHDS.Core.Services.Orchestrations.AddressNormalisations;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
+using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressLoadingAudits;
 using LHDS.Core.Services.Processings.AddressNormalisations;

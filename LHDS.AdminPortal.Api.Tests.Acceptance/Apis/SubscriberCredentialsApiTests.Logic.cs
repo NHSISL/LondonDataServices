@@ -243,7 +243,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             // given
             List<SubscriberAgreement> subscriberAgreements = CreateRandomSubscriberAgreements();
 
-            foreach(SubscriberAgreement subscriberAgreement in subscriberAgreements)
+            foreach (SubscriberAgreement subscriberAgreement in subscriberAgreements)
             {
                 await this.apiBroker.PostSubscriberAgreementAsync(subscriberAgreement);
             }
@@ -279,7 +279,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             SubscriberAgreement subscriberAgreement = CreateRandomSubscriberAgreement(subscriberAgreementId);
             await this.apiBroker.PostSubscriberAgreementAsync(subscriberAgreement);
 
-            SubscriberCredential expectedSubscriberCredential = 
+            SubscriberCredential expectedSubscriberCredential =
                 CreateSubscriberCredentialFromAgreement(subscriberAgreement);
 
             // when

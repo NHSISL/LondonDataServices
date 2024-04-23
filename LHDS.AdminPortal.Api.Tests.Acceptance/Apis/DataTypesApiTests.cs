@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -42,7 +42,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
 
             return filler.Create();
         }
-      
+
         private static IQueryable<DataType> CreateRandomDataTypes()
         {
             return CreateDataTypeFiller()

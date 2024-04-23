@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Linq;
@@ -20,33 +20,35 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
         public async Task ShouldProcessDataAndLogAsync()
         {
             // Given
+            string someFilename = GetRandomString();
             byte[] inputData = Encoding.UTF8.GetBytes(GetRandomString());
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
             List<Address> extractedAddresses = randomAddresses.DeepClone();
             List<Address> persistedAddresses = extractedAddresses.DeepClone();
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessAddressesAsync(inputData))
+                service.ProcessAddressesAsync(inputData, someFilename))
                     .ReturnsAsync(extractedAddresses);
 
             this.addressPersistanceOrchestrationServiceMock.Setup(service =>
-                service.ProcessAsync(extractedAddresses))
+                service.PersistAddressAsync(extractedAddresses))
                     .ReturnsAsync(persistedAddresses);
 
             List<Address> expectedAddresses = persistedAddresses.DeepClone();
 
             // When
-            List<Address> actualAddresses = await this.addressCoordinationService.LoadAddressData(inputData);
+            List<Address> actualAddresses =
+                await this.addressCoordinationService.LoadAddressData(inputData, someFilename);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-                service.ProcessAddressesAsync(inputData),
+                service.ProcessAddressesAsync(inputData, someFilename),
                     Times.Once());
 
             this.addressPersistanceOrchestrationServiceMock.Verify(service =>
-                service.ProcessAsync(extractedAddresses),
+                service.PersistAddressAsync(extractedAddresses),
                     Times.Once());
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();

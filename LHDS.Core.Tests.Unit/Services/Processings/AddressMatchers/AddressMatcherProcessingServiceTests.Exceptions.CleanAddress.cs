@@ -4,6 +4,7 @@
 
 using System;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.AddressMatchers.Exceptions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using LHDS.Core.Services.Processings.AddressMatchers;
 using Moq;

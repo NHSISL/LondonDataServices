@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,35 @@ namespace LHDS.Core.Brokers.CsvMappers
 {
     public class CsvMapperBroker : ICsvMapperBroker
     {
+        public async ValueTask<List<string[]>> MapCsvToListArrayAsync(string data, bool hasHeaderRecord)
+        {
+            List<string[]> records = new List<string[]>();
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = hasHeaderRecord,
+                MissingFieldFound = null
+            };
+
+            using (var reader = new StringReader(data))
+            using (var csv = new CsvReader(reader, config))
+            {
+                while (await csv.ReadAsync())
+                {
+                    var recordValues = new List<string>();
+
+                    for (int i = 0; i < csv.Parser.Record.Length; i++)
+                    {
+                        recordValues.Add(csv.GetField(i));
+                    }
+
+                    records.Add(recordValues.ToArray());
+                }
+            }
+
+            return records;
+        }
+
         public async ValueTask<List<T>> MapCsvToObjectAsync<T>(string data, bool hasHeaderRecord)
         {
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)

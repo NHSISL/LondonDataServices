@@ -46,7 +46,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             });
 
         public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
-            throw new NotImplementedException();
+            TryCatch(async () =>
+            {
+                await this.documentProcessingService.RemoveDocumentByFileNameAsync(fileName, container);
+            });
 
         public ValueTask<Guid> UploadResolvedAddressesAsync() =>
             throw new NotImplementedException();

@@ -29,11 +29,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         {
             // Given
             byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            string randomFilename = GetRandomString();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
             List<Exception> exceptions = new List<Exception>();
 
             this.resolvedAddressParserServiceMock.Setup(service =>
-                service.ProcessCsvAsync(randomData))
+                service.ProcessCsvAsync(randomData, randomFilename))
                     .ReturnsAsync(randomResolvedAddresses);
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
@@ -71,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // When
             ValueTask<List<ResolvedAddress>> processResolvedAddressTask =
-                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(randomData);
+                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(randomData, randomFilename);
 
             AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
@@ -82,7 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
 
             this.resolvedAddressParserServiceMock.Verify(service =>
-                service.ProcessCsvAsync(randomData),
+                service.ProcessCsvAsync(randomData, randomFilename),
                     Times.Once);
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
@@ -124,11 +125,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         {
             // Given
             byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            string randomFilename = GetRandomString();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
             List<Exception> exceptions = new List<Exception>();
 
             this.resolvedAddressParserServiceMock.Setup(service =>
-                service.ProcessCsvAsync(randomData))
+                service.ProcessCsvAsync(randomData, randomFilename))
                     .ReturnsAsync(randomResolvedAddresses);
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
@@ -166,7 +168,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // When
             ValueTask<List<ResolvedAddress>> processResolvedAddressTask =
-                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(randomData);
+                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(randomData, randomFilename);
 
             AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
@@ -177,7 +179,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
 
             this.resolvedAddressParserServiceMock.Verify(service =>
-                service.ProcessCsvAsync(randomData),
+                service.ProcessCsvAsync(randomData, randomFilename),
                     Times.Once);
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
@@ -216,12 +218,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         {
             // Given
             byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            string randomFilename = GetRandomString();
             var serviceException = new Exception();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
             List<Exception> exceptions = new List<Exception>();
 
             this.resolvedAddressParserServiceMock.Setup(service =>
-                service.ProcessCsvAsync(randomData))
+                service.ProcessCsvAsync(randomData, randomFilename))
                     .ReturnsAsync(randomResolvedAddresses);
 
             var innerFailedAddressExtractionOrchestrationServiceException =
@@ -263,7 +266,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // When
             ValueTask<List<ResolvedAddress>> processResolvedAddressTask =
-                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(randomData);
+                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(randomData, randomFilename);
 
             AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
@@ -274,7 +277,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
 
             this.resolvedAddressParserServiceMock.Verify(service =>
-                service.ProcessCsvAsync(randomData),
+                service.ProcessCsvAsync(randomData, randomFilename),
                     Times.Once);
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
@@ -314,6 +317,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithOnlyCsvAddressesData.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+            string randomFilename = GetRandomString();
 
             var expectedDependencyException =
                 new AddressExtractionOrchestrationDependencyValidationException(
@@ -322,12 +326,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.resolvedAddressParserServiceMock.Setup(service =>
-                service.ProcessCsvAsync(It.IsAny<byte[]>()))
+                service.ProcessCsvAsync(It.IsAny<byte[]>(), It.IsAny<string>()))
                     .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<List<ResolvedAddress>> processDataTask =
-                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(inputData);
+                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(inputData, randomFilename);
 
             AddressExtractionOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationDependencyValidationException>(
@@ -338,7 +342,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                  .BeEquivalentTo(expectedDependencyException);
 
             this.resolvedAddressParserServiceMock.Verify(service =>
-             service.ProcessCsvAsync(It.IsAny<byte[]>()),
+             service.ProcessCsvAsync(It.IsAny<byte[]>(), It.IsAny<string>()),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -365,6 +369,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithOnlyCsvAddressesData.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+            string randomFilename = GetRandomString();
 
             var expectedDependencyException =
                 new AddressExtractionOrchestrationDependencyException(
@@ -373,12 +378,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     innerException: dependencyException.InnerException as Xeption);
 
             this.resolvedAddressParserServiceMock.Setup(service =>
-                service.ProcessCsvAsync(It.IsAny<byte[]>()))
+                service.ProcessCsvAsync(It.IsAny<byte[]>(), It.IsAny<string>()))
                     .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<List<ResolvedAddress>> processDataTask =
-                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(inputData);
+                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(inputData, randomFilename);
 
             AddressExtractionOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationDependencyException>(
@@ -389,7 +394,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                  .BeEquivalentTo(expectedDependencyException);
 
             this.resolvedAddressParserServiceMock.Verify(service =>
-             service.ProcessCsvAsync(It.IsAny<byte[]>()),
+             service.ProcessCsvAsync(It.IsAny<byte[]>(), It.IsAny<string>()),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -414,6 +419,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithOnlyCsvAddressesData.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+            string randomFilename = GetRandomString();
             var serviceException = new Exception();
 
             var failedAddressPersistanceOrchestrationServiceException =
@@ -427,12 +433,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     innerException: failedAddressPersistanceOrchestrationServiceException);
 
             this.resolvedAddressParserServiceMock.Setup(service =>
-                service.ProcessCsvAsync(It.IsAny<byte[]>()))
+                service.ProcessCsvAsync(It.IsAny<byte[]>(), It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<ResolvedAddress>> processDataTask =
-                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(inputData);
+                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(inputData, randomFilename);
 
             AddressExtractionOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(
@@ -443,7 +449,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                  .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
 
             this.resolvedAddressParserServiceMock.Verify(service =>
-             service.ProcessCsvAsync(It.IsAny<byte[]>()),
+             service.ProcessCsvAsync(It.IsAny<byte[]>(), It.IsAny<string>()),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

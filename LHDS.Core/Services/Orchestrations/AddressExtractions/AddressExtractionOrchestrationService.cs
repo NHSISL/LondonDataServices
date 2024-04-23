@@ -87,11 +87,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                 return processedAddresses;
             });
 
-        public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data) =>
+        public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data, string filename) =>
             TryCatch(async () =>
             {
-                ValidateDataOnProcessData(data);
-                List<ResolvedAddress> resolvedAddresses = await this.resolvedAddressParserService.ProcessCsvAsync(data);
+                ValidateDataOnProcessData(data, filename);
+
+                List<ResolvedAddress> resolvedAddresses = 
+                    await this.resolvedAddressParserService.ProcessCsvAsync(data, filename);
+
                 List<ResolvedAddress> processedResolvedAddresses = new List<ResolvedAddress>();
                 var exceptions = new List<Exception>();
 

@@ -94,7 +94,6 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 }
 
                 return matchedAddresses;
-                //Handle errored files -> remove from in folder and add to error folder
             });
 
         public ValueTask<List<Address>> UploadResolvedAddresses() =>

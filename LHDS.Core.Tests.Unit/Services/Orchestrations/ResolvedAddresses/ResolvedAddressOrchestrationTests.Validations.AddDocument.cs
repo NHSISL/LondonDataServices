@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var invalidArgumentResolvedAddressOrchestrationException =
                 new InvalidArgumentResolvedAddressOrchestrationException(
-                    message: $"Invalid resolved address orchestration argument. " +
+                    message: $"Invalid resolved address orchestration argument.  " +
                         $"Please correct the errors and try again.");
 
             invalidArgumentResolvedAddressOrchestrationException.AddData(

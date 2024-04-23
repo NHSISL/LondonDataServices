@@ -37,6 +37,14 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                 if (parts.Length > 0)
                 {
                     string extractSubscriberCredentialIdString = parts[2];
+                    Guid subscriberCredentialId;
+
+                    if (!Guid.TryParse(extractSubscriberCredentialIdString, out subscriberCredentialId))
+                    {
+                        throw new InvalidArgumentDecryptionCoordinationException(
+                            $"Failed to parse {extractSubscriberCredentialIdString} to Guid. " +
+                            $"Encrypted File Name is {encryptedFileName}.");
+                    }
 
                     SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
                         .RetrieveSubscriberCredentialByIdAsync(

@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -49,7 +49,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
                 ValidateAddressNormalisationArgs(data);
 
                 List<Address> parsedAddress =
-                    await this.addressParserProcessingService.ProcessCsvAsync(data);
+                    await this.addressParserProcessingService.ProcessCsvAsync(data, string.Empty);
 
                 List<AddressNormalisation> processedNormalisedAddresses = new List<AddressNormalisation>();
                 List<Exception> exceptions = new List<Exception>();
@@ -60,7 +60,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
                     {
                         var normalisedAddress = await TryCatch(async () =>
                         {
-                            List<string> addressList = new List<string> 
+                            List<string> addressList = new List<string>
                             {
                                 address.OrganisationName,
                                 address.DepartmentName,

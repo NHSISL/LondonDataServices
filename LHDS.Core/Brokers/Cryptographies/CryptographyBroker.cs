@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
 
-namespace LHDS.Core.Brokers.Decryptions
+namespace LHDS.Core.Brokers.Cryptographies
 {
     public class CryptographyBroker : ICryptographyBroker
     {
@@ -18,9 +18,9 @@ namespace LHDS.Core.Brokers.Decryptions
         }
 
         public ValueTask<byte[]> EncryptAsync(byte[] data, SubscriberCredential subscriberCredential) =>
-            this.decryptionAbstractProvider.EncryptAsync(data, subscriberCredential);
+            decryptionAbstractProvider.EncryptAsync(data, subscriberCredential);
 
         public ValueTask<byte[]> DecryptAsync(byte[] data, SubscriberCredential subscriberCredential) =>
-            this.decryptionAbstractProvider.DecryptAsync(data, subscriberCredential);
+            decryptionAbstractProvider.DecryptAsync(data, subscriberCredential);
     }
 }

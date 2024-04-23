@@ -1,9 +1,11 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq.Expressions;
+using LHDS.Core.Brokers.CsvMappers;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Services.Foundations.AddressParsers;
 using Moq;
@@ -14,14 +16,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
 {
     public partial class AddressParserTests
     {
+        private readonly Mock<ICsvMapperBroker> csvMapperBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly AddressParserService addressParserService;
 
         public AddressParserTests()
         {
+            this.csvMapperBrokerMock = new Mock<ICsvMapperBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.addressParserService = new AddressParserService(
+                csvMapperBroker: this.csvMapperBrokerMock.Object,
+                identifierBroker: this.identifierBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 

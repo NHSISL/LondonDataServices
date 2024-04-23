@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var invalidArgumentAddressPersistanceOrchestrationException =
                 new InvalidArgumentAddressPersistanceOrchestrationException(
-                    message: "Invalid address persistance orchestration argument, " + 
+                    message: "Invalid address persistance orchestration argument, " +
                         "please correct the errors and try again.");
 
             invalidArgumentAddressPersistanceOrchestrationException.AddData(
@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // when
             ValueTask<List<Address>> processAddressesTask =
-                this.addressPersistanceOrchestrationService.ProcessAsync(nullAddressList);
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(nullAddressList);
 
             AddressPersistanceOrchestrationValidationException
                 actualAddressPersistanceOrchestrationValidationException =

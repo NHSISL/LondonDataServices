@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
@@ -172,7 +176,7 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidAddressLoadingAuditException = 
+            var invalidAddressLoadingAuditException =
                 new InvalidAddressLoadingAuditException(
                     message: "Invalid addressLoadingAudit. Please correct the errors and try again.");
 

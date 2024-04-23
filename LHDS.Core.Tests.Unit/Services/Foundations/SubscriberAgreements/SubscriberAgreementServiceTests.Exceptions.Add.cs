@@ -1,12 +1,16 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
+using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using LHDS.Core.Models.Foundations.SubscriberAgreements;
-using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
@@ -28,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             var expectedSubscriberAgreementDependencyException =
                 new SubscriberAgreementDependencyException(
                     message: "SubscriberAgreement dependency error occurred, contact support.",
-                    innerException: failedSubscriberAgreementStorageException); 
+                    innerException: failedSubscriberAgreementStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -132,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             var invalidSubscriberAgreementReferenceException =
                 new InvalidSubscriberAgreementReferenceException(
-                    message: "Invalid subscriberAgreement reference error occurred.", 
+                    message: "Invalid subscriberAgreement reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
             var expectedSubscriberAgreementValidationException =
@@ -191,7 +195,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             var expectedSubscriberAgreementDependencyException =
                 new SubscriberAgreementDependencyException(
                     message: "SubscriberAgreement dependency error occurred, contact support.",
-                    innerException: failedSubscriberAgreementStorageException); 
+                    innerException: failedSubscriberAgreementStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -236,7 +240,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             var failedSubscriberAgreementServiceException =
                 new FailedSubscriberAgreementServiceException(
-                    message: "Failed subscriberAgreement service occurred, please contact support", 
+                    message: "Failed subscriberAgreement service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedSubscriberAgreementServiceException =

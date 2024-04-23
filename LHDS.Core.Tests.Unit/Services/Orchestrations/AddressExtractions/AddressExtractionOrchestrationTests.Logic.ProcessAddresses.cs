@@ -25,6 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         {
             // Given
             Guid randomId = Guid.NewGuid();
+            string inputFilename = GetRandomString();
             string assembly = Assembly.GetExecutingAssembly().Location;
 
             string inputFilePath = Path.Combine(
@@ -36,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             List<Address> outputAddresses = randomAddresses.DeepClone();
 
             this.addressParserServiceMock.Setup(service =>
-                service.ProcessCsvAsync(inputData))
+                service.ProcessCsvAsync(inputData, inputFilename))
                     .ReturnsAsync(outputAddresses);
 
             List<Address> expectedAddresses = new List<Address>();
@@ -63,14 +64,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // When
             List<Address> actualAddresses = await this.addressExtractionOrchestrationService
-                .ProcessAddressesAsync(inputData);
+                .ProcessAddressesAsync(inputData, inputFilename);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
                 options.Excluding(address => address.Id));
 
             this.addressParserServiceMock.Verify(service =>
-                service.ProcessCsvAsync(inputData),
+                service.ProcessCsvAsync(inputData, inputFilename),
                     Times.Once());
 
             foreach (Address address in randomAddresses)

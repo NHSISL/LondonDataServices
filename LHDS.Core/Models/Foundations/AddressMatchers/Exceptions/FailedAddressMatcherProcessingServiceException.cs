@@ -5,7 +5,7 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Processings.AddressMatchers.Exceptions
+namespace LHDS.Core.Models.Foundations.AddressMatchers.Exceptions
 {
     public class FailedAddressMatcherProcessingServiceException : Xeption
     {

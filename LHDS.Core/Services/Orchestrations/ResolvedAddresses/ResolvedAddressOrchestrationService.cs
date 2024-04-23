@@ -3,11 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 
@@ -32,13 +30,13 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<string> AddDocumentAsync(byte[] data, string fileName, string container) =>
+        public ValueTask AddDocumentAsync(byte[] data, string fileName, string container) =>
             throw new NotImplementedException();
 
         public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
             throw new NotImplementedException();
 
-        public ValueTask<List<ResolvedAddress>> UploadResolvedAddressesAsync() =>
+        public ValueTask<Guid> UploadResolvedAddressesAsync() =>
             throw new NotImplementedException();
     }
 }

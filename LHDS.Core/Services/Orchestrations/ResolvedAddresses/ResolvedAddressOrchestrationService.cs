@@ -7,32 +7,38 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Services.Foundations.Documents;
-using LHDS.Core.Services.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Services.Processings.Documents;
+using LHDS.Core.Services.Processings.ResolvedAddresses;
 
 namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 {
     internal partial class ResolvedAddressOrchestrationService : IResolvedAddressOrchestrationService
     {
-        private readonly IDocumentService documentService;
-        private readonly IResolvedAddressService resolvedAddressService;
+        private readonly IDocumentProcessingService documentProcessingService;
+        private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
 
         public ResolvedAddressOrchestrationService(
-            IDocumentService documentService,
-            IResolvedAddressService resolvedAddressService,
+            IDocumentProcessingService documentProcessingService,
+            IResolvedAddressProcessingService resolvedAddressProcessingService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
-            this.documentService = documentService;
-            this.resolvedAddressService = resolvedAddressService;
+            this.documentProcessingService = documentProcessingService;
+            this.resolvedAddressProcessingService = resolvedAddressProcessingService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<List<Address>> UploadResolvedAddressesAsync() =>
+        public ValueTask<string> AddDocumentAsync(byte[] data, string fileName, string container) =>
+            throw new NotImplementedException();
+
+        public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
+            throw new NotImplementedException();
+
+        public ValueTask<List<ResolvedAddress>> UploadResolvedAddressesAsync() =>
             throw new NotImplementedException();
     }
 }

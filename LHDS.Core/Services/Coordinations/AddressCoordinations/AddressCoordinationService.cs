@@ -8,9 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
@@ -63,7 +61,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 
                 var exceptions = new List<Exception>();
                 List<ResolvedAddress> matchedAddresses = new List<ResolvedAddress>();
-                
+
                 foreach (var resolvedAddress in extractedResolvedAddresses)
                 {
                     try
@@ -90,6 +88,9 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                     throw new AggregateException(
                         $"Unable to match address for {exceptions.Count} address files",
                         exceptions);
+
+
+
                 }
 
                 return matchedAddresses;

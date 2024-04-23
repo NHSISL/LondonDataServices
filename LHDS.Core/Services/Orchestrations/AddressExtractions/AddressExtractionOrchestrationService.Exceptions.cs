@@ -320,7 +320,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
             this.loggingBroker.LogError(addressExtractionOrchestrationDependencyException);
 
-            throw addressExtractionOrchestrationDependencyException;
+            return addressExtractionOrchestrationDependencyException;
         }
 
         private AddressExtractionOrchestrationServiceException CreateAndLogServiceException(Xeption exception)

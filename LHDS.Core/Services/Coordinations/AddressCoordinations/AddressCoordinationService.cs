@@ -5,9 +5,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Coordinations.AddressCoordinations;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
@@ -23,19 +26,24 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
-
+        private readonly AddressConfiguration addressConfiguration;
+        private readonly BlobContainers blobContainers;
 
         public AddressCoordinationService(
             IAddressExtractionOrchestrationService addressExtractionOrchestrationService,
             IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService,
             IResolvedAddressOrchestrationService resolvedAddressOrchestrationService,
             IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            AddressConfiguration addressConfiguration,
+            BlobContainers blobContainers)
         {
             this.addressExtractionOrchestrationService = addressExtractionOrchestrationService;
             this.addressPersistanceOrchestrationService = addressPersistanceOrchestrationService;
             this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
+            this.addressConfiguration = addressConfiguration;
+            this.blobContainers = blobContainers;
         }
 
         public ValueTask<List<Address>> LoadAddressData(byte[] data, string filename) =>
@@ -85,12 +93,21 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 
                 if (exceptions.Any())
                 {
+                    string[] splitFilePath = filename.Split("/");
+                    splitFilePath[3] = this.addressConfiguration.ErrorFolder;
+                    string errorPath = String.Join("/", splitFilePath);
+                    string addressContainer = this.blobContainers.Addresses;
+
+                    await this.resolvedAddressOrchestrationService.
+                        AddDocumentAsync(data, fileName: errorPath, container: addressContainer);
+
+                    await this.resolvedAddressOrchestrationService.
+                        RemoveDocumentByFileNameAsync(filename, container: addressContainer);
+
                     throw new AggregateException(
-                        $"Unable to match address for {exceptions.Count} address files",
+                        $"Unable to match {exceptions.Count} address in file {filename}. " +
+                        $"File has been moved to the error folder.",
                         exceptions);
-
-
-
                 }
 
                 return matchedAddresses;

@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,9 +9,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Extensions.Addresses;
-using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Moq;
 using Xunit;
 
@@ -21,30 +19,29 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
     public partial class AddressExtractionOrchestrationServiceTests
     {
         [Fact]
-        public async Task ShouldProcessAddressesAsync()
+        public async Task ShouldProcessResolvedAddressesAsync()
         {
             // Given
-            Guid randomId = Guid.NewGuid();
-            string inputFilename = GetRandomString();
             string assembly = Assembly.GetExecutingAssembly().Location;
 
             string inputFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
-                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessResolvedAddressesAsync.csv");
+                @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessResolvedAddressesAsync.csv");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
-            List<Address> outputAddresses = randomAddresses.DeepClone();
+            string randomFilename = GetRandomString();
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
+            List<ResolvedAddress> outputResolvedAddresses = randomResolvedAddresses.DeepClone();
 
-            this.addressParserServiceMock.Setup(service =>
-                service.ProcessCsvAsync(inputData, inputFilename))
-                    .ReturnsAsync(outputAddresses);
+            this.resolvedAddressParserServiceMock.Setup(service =>
+                service.ProcessCsvAsync(inputData, randomFilename))
+                    .ReturnsAsync(outputResolvedAddresses);
 
-            List<Address> expectedAddresses = new List<Address>();
+            List<ResolvedAddress> expectedResolvedAddresses = new List<ResolvedAddress>();
 
-            foreach (Address address in outputAddresses)
+            foreach (ResolvedAddress resolvedAddress in outputResolvedAddresses)
             {
-                string stringAddress = address.GetFormattedAddress();
+                string stringAddress = resolvedAddress.UnstructuredPostalAddress;
 
                 AddressNormalisation addressNormalisation = new AddressNormalisation
                 {
@@ -56,35 +53,35 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     service.GetNormalisedAddress(stringAddress))
                         .ReturnsAsync(addressNormalisation);
 
-                address.PostalAddress = addressNormalisation.PostalAddress;
-                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-
-                expectedAddresses.Add(address);
+                resolvedAddress.PostalAddress = addressNormalisation.PostalAddress;
+                resolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                expectedResolvedAddresses.Add(resolvedAddress);
             }
 
             // When
-            List<Address> actualAddresses = await this.addressExtractionOrchestrationService
-                .ProcessAddressesAsync(inputData, inputFilename);
+            List<ResolvedAddress> actualResolvedAddress = await this.addressExtractionOrchestrationService
+                .ProcessResolvedAddressesAsync(inputData, randomFilename);
 
             // Then
-            actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
+            actualResolvedAddress.Should().BeEquivalentTo(expectedResolvedAddresses, options =>
                 options.Excluding(address => address.Id));
 
-            this.addressParserServiceMock.Verify(service =>
-                service.ProcessCsvAsync(inputData, inputFilename),
+            this.resolvedAddressParserServiceMock.Verify(service =>
+                service.ProcessCsvAsync(inputData, randomFilename),
                     Times.Once());
 
-            foreach (Address address in randomAddresses)
+            foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
-                string stringAddress = address.GetFormattedAddress();
+                string stringAddress = resolvedAddress.UnstructuredPostalAddress;
 
                 this.addressNormalisationServiceMock.Verify(service =>
                     service.GetNormalisedAddress(stringAddress),
                         Times.Once);
             }
 
-            this.addressParserServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressParserServiceMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.addressParserServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

@@ -105,7 +105,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
             this.loggingBroker.LogError(resolvedAddressOrchestrationDependencyException);
 
-            throw resolvedAddressOrchestrationDependencyException;
+            return resolvedAddressOrchestrationDependencyException;
         }
 
         private ResolvedAddressOrchestrationServiceException CreateAndLogServiceException(Xeption exception)
@@ -117,7 +117,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
             this.loggingBroker.LogError(resolvedAddressOrchestrationServiceException);
 
-            throw resolvedAddressOrchestrationServiceException;
+            return resolvedAddressOrchestrationServiceException;
         }
     }
 }

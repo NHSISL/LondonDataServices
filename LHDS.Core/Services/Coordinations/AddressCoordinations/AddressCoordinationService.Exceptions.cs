@@ -201,14 +201,24 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedAddressCoordinationServiceException =
+                    new FailedAddressCoordinationServiceException(
+                        message: "Failed address coordination service aggregate error occurred, " +
+                            "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedAddressCoordinationServiceException);
+            }
             catch (Exception exception)
             {
-                var failedDecryptServiceException =
+                var failedAddressCoordinationServiceException =
                     new FailedAddressCoordinationServiceException(
-                        message: "Failed address coordination service error occurred, please contact support",
+                        message: "Failed address coordination service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDecryptServiceException);
+                throw CreateAndLogServiceException(failedAddressCoordinationServiceException);
             }
         }
 
@@ -230,7 +240,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             var addressCoordinationDependencyValidationException =
                 new AddressCoordinationDependencyValidationException(
                     message: "Address coordination dependency validation error occurred, please try again.",
-                    innerException: exception);
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(addressCoordinationDependencyValidationException);
 
@@ -242,7 +252,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             var addressCoordinationDependencyException =
                 new AddressCoordinationDependencyException(
                     message: "Address coordination dependency error occurred, please try again.",
-                    innerException: exception);
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(addressCoordinationDependencyException);
 

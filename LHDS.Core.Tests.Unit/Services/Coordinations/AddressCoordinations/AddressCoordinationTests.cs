@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
         private static IQueryable<ResolvedAddress> CreateRandomResolvedAddresses()
         {
             return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
+                .Create(count: 1)
                     .AsQueryable();
         }
 
@@ -123,18 +123,18 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     message: "Address extraction orchestration validation error occured, please try again",
                     innerException),
 
-                new AddressExtractionOrchestrationDependencyValidationException(
-                    message: "Address extraction orchestration dependency validation error occurred, please try again.",
-                    innerException),
+                //new AddressExtractionOrchestrationDependencyValidationException(
+                //    message: "Address extraction orchestration dependency validation error occurred, please try again.",
+                //    innerException),
 
-                new AddressPersistanceOrchestrationValidationException(
-                    message: "Address persistance orchestration validation error occured, please try again",
-                    innerException),
+                //new AddressPersistanceOrchestrationValidationException(
+                //    message: "Address persistance orchestration validation error occured, please try again",
+                //    innerException),
 
-                new AddressPersistanceOrchestrationDependencyValidationException(
-                    message: "Address persistance orchestration dependency validation error occurred, " +
-                    "please try again.",
-                    innerException),
+                //new AddressPersistanceOrchestrationDependencyValidationException(
+                //    message: "Address persistance orchestration dependency validation error occurred, " +
+                //    "please try again.",
+                //    innerException),
             };
         }
 

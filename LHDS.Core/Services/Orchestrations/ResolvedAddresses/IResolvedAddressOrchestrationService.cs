@@ -12,8 +12,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
     public interface IResolvedAddressOrchestrationService
     {
         ValueTask<List<Address>> UploadResolvedAddressesAsync();
+        ValueTask AddDocumentAsync(byte[] data,string filename, string container);
         ValueTask RemoveDocumentByFileNameAsync(string filename, string container);
-        ValueTask<string> AddDocumentAsync(Document document, string container);
-
     }
 }

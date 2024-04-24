@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             // Given
             string someFilename = GetRandomString();
             byte[] inputData = Encoding.UTF8.GetBytes(GetRandomString());
-            List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses().ToList();
+            List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses();
             List<ResolvedAddress> extractedAddresses = randomAddresses.DeepClone();
             List<ResolvedAddress> expectedAddresses = new List<ResolvedAddress>();
 
@@ -59,6 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

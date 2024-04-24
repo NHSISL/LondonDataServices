@@ -22,11 +22,11 @@ namespace LHDS.Core.Clients
             this.addressCoordinationService = addressCoordinationService;
         }
 
-        public async ValueTask<List<Address>> LoadAddressData(byte[] data, string filename)
+        public async ValueTask<List<Address>> LoadAddressDataAsync(byte[] data, string filename)
         {
             try
             {
-                return await this.addressCoordinationService.LoadAddressData(data, filename);
+                return await this.addressCoordinationService.LoadAddressDataAsync(data, filename);
             }
             catch (AddressCoordinationValidationException addressCoordinationValidationException)
             {
@@ -57,7 +57,7 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<List<ResolvedAddress>> MatchPatientAddressData(byte[] data, string filename)
+        public async ValueTask<List<ResolvedAddress>> MatchPatientAddressDataAsync(byte[] data, string filename)
         {
             try
             {
@@ -92,11 +92,11 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<List<Address>> ProcessResolvedAddressData()
+        public async ValueTask<List<Address>> ProcessResolvedAddressDataAsync()
         {
             try
             {
-                return await this.addressCoordinationService.UploadResolvedAddresses();
+                return await this.addressCoordinationService.UploadResolvedAddressesAsync();
             }
             catch (AddressCoordinationValidationException addressCoordinationValidationException)
             {

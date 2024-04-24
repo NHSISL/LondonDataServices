@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressCoordinationService.LoadAddressData(randomData, someFilename);
+                this.addressCoordinationService.LoadAddressDataAsync(randomData, someFilename);
 
             AddressCoordinationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationDependencyValidationException>(processDataTask.AsTask);
@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressCoordinationService.LoadAddressData(randomData, someFilename);
+                this.addressCoordinationService.LoadAddressDataAsync(randomData, someFilename);
 
             AddressCoordinationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationDependencyException>(processDataTask.AsTask);
@@ -127,7 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             // when
             ValueTask<List<Address>> processDataTask = this.addressCoordinationService
-                .LoadAddressData(randomData, someFilename);
+                .LoadAddressDataAsync(randomData, someFilename);
 
             AddressCoordinationServiceException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationServiceException>(processDataTask.AsTask);
@@ -147,6 +147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

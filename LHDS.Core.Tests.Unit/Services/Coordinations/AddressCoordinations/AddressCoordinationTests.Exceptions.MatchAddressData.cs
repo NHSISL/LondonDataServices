@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -30,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             string errorFolder = this.addressConfiguration.ErrorFolder;
             string errorFileName = CreateErrorFileName(someFilename, errorFolder);
             byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
-            List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses().ToList();
+            List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses();
             List<Exception> exceptions = new List<Exception>();
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
@@ -135,7 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             string errorFolder = this.addressConfiguration.ErrorFolder;
             string errorFileName = CreateErrorFileName(someFilename, errorFolder);
             byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
-            List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses().ToList();
+            List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses();
             List<Exception> exceptions = new List<Exception>();
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
@@ -220,11 +219,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowAggregateServiceExceptionOnProcessAddressIfErrorsInLoopAndLogItAsync()
+        public async Task ShouldThrowAggregateServiceExceptionOnMatchAddressIfErrorsInLoopAndLogItAsync()
         {
             // Given
             string someFilename = CreateRandomFileName();
@@ -233,7 +233,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             string errorFileName = CreateErrorFileName(someFilename, errorFolder);
             byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
             var serviceException = new Exception();
-            List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses().ToList();
+            List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses();
             List<Exception> exceptions = new List<Exception>();
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
@@ -318,6 +318,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -362,6 +363,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -405,6 +407,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -451,6 +454,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

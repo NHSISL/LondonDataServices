@@ -31,6 +31,9 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddressParsers
             this.loggingBroker = loggingBroker;
         }
 
+        public ValueTask<byte[]> ParseResolvedAddressesToCsvAsync(List<ResolvedAddress> resolvedAddresses) =>
+            throw new NotImplementedException();
+
         public ValueTask<List<ResolvedAddress>> ProcessCsvAsync(byte[] data, string filename) =>
             TryCatch(async () =>
             {

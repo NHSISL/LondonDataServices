@@ -42,7 +42,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: invalidArgumentAddressCoordinationException);
 
             // when
-            this.addressCoordinationService.MatchAddressDataAsync(nullData, invalidFilename);
+            ValueTask matchAddressDataTask = 
+                this.addressCoordinationService.MatchAddressDataAsync(nullData, invalidFilename);
 
             AddressCoordinationValidationException actualAddressCoordinationValidationException =
                 await Assert.ThrowsAsync<AddressCoordinationValidationException>(async () =>

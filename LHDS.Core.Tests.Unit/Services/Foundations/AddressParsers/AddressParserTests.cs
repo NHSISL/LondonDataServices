@@ -16,19 +16,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
 {
     public partial class AddressParserTests
     {
-        private readonly Mock<ICsvMapperBroker> csvMapperBrokerMock;
+        private readonly ICsvMapperBroker csvMapperBroker;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly AddressParserService addressParserService;
 
         public AddressParserTests()
         {
-            this.csvMapperBrokerMock = new Mock<ICsvMapperBroker>();
+            this.csvMapperBroker = new CsvMapperBroker();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.addressParserService = new AddressParserService(
-                csvMapperBroker: this.csvMapperBrokerMock.Object,
+                csvMapperBroker: this.csvMapperBroker,
                 identifierBroker: this.identifierBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }

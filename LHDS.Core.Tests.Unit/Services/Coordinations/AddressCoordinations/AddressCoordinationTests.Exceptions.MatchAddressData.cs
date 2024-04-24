@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: failedAddressCoordinationServiceException);
 
             // When
-            ValueTask<List<ResolvedAddress>> matchAddressTask =
+            ValueTask matchAddressTask =
                 this.addressCoordinationService.MatchAddressDataAsync(randomData, someFilename);
 
             AddressCoordinationServiceException actualAddressCoordinationServiceException =
@@ -172,7 +172,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: failedAddressCoordinationServiceException);
 
             // When
-            ValueTask<List<ResolvedAddress>> matchAddressTask =
+            ValueTask matchAddressTask =
                 this.addressCoordinationService.MatchAddressDataAsync(randomData, someFilename);
 
             AddressCoordinationServiceException actualAddressCoordinationServiceException =
@@ -276,7 +276,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: failedAddressCoordinationServiceException);
 
             // When
-            ValueTask<List<ResolvedAddress>> matchAddressTask =
+            ValueTask matchAddressTask =
                 this.addressCoordinationService.MatchAddressDataAsync(randomData, someFilename);
 
             AddressCoordinationServiceException actualAddressCoordinationServiceException =
@@ -341,7 +341,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask<List<ResolvedAddress>> matchAddressDataTask =
+            ValueTask matchAddressDataTask =
                 this.addressCoordinationService.MatchAddressDataAsync(randomData, someFilename);
 
             AddressCoordinationDependencyValidationException actualException =
@@ -385,7 +385,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<List<ResolvedAddress>> matchAddressDataTask =
+            ValueTask matchAddressDataTask =
                 this.addressCoordinationService.MatchAddressDataAsync(randomData, someFilename);
 
             AddressCoordinationDependencyException actualException =
@@ -433,7 +433,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<List<ResolvedAddress>> matchAddressDataTask = this.addressCoordinationService
+            ValueTask matchAddressDataTask = this.addressCoordinationService
                 .MatchAddressDataAsync(randomData, someFilename);
 
             AddressCoordinationServiceException actualException =

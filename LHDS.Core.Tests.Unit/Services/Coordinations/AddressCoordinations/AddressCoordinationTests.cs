@@ -31,7 +31,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
         private readonly Mock<IAddressExtractionOrchestrationService> addressExtractionOrchestrationServiceMock;
         private readonly Mock<IAddressPersistanceOrchestrationService> addressPersistanceOrchestrationServiceMock;
         private readonly Mock<IResolvedAddressOrchestrationService> resolvedAddressOrchestrationServiceMock;
-        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly AddressConfiguration addressConfiguration;
         private readonly BlobContainers blobContainers;
@@ -43,7 +42,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             this.addressExtractionOrchestrationServiceMock = new Mock<IAddressExtractionOrchestrationService>();
             this.addressPersistanceOrchestrationServiceMock = new Mock<IAddressPersistanceOrchestrationService>();
             this.resolvedAddressOrchestrationServiceMock = new Mock<IResolvedAddressOrchestrationService>();
-            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
@@ -62,7 +60,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                 addressExtractionOrchestrationService: addressExtractionOrchestrationServiceMock.Object,
                 addressPersistanceOrchestrationService: addressPersistanceOrchestrationServiceMock.Object,
                 resolvedAddressOrchestrationService: resolvedAddressOrchestrationServiceMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 addressConfiguration: addressConfiguration,
                 blobContainers: blobContainers);

@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -40,6 +39,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         {
             this.addressExtractionOrchestrationService = addressExtractionOrchestrationService;
             this.addressPersistanceOrchestrationService = addressPersistanceOrchestrationService;
+            this.resolvedAddressOrchestrationService = resolvedAddressOrchestrationService;
             this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
             this.addressConfiguration = addressConfiguration;

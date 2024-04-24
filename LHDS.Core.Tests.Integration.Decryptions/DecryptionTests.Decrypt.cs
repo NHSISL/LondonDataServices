@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Integration.Decryptions
         public async Task ShouldDecryptAsync()
         {
             // given
-            string encryptedFileContainer = "versioner";
+            string decryptedFileContainer = "versioner";
 
             var items = ingestionTrackingService.RetrieveAllIngestionTrackings()
                 .Where(ingestionTrackingService => ingestionTrackingService.Decrypted == false);
@@ -25,17 +25,14 @@ namespace LHDS.Core.Tests.Integration.Decryptions
             // when
             foreach (IngestionTracking item in items)
             {
-                string[] encryptedParts = item.EncryptedFileName.Split("/");
-                string formatedFileName = "/encrypted/" + encryptedParts[2] + "/" + encryptedParts[3] + "/" + encryptedParts[4];
-
-                string fileName = await decryptionClient.DecryptAsync(formatedFileName);
+                string fileName = await decryptionClient.DecryptAsync(item.EncryptedFileName);
 
                 // then
                 fileName.Should().NotBeNullOrWhiteSpace();
                 item.DecryptedFileName.Should().BeEquivalentTo(fileName);
 
                 Document document = await this.documentService
-                    .RetrieveDocumentByFileNameAsync(fileName, encryptedFileContainer);
+                    .RetrieveDocumentByFileNameAsync(fileName, decryptedFileContainer);
 
                 document.Should().NotBeNull();
                 document.FileName.Should().BeEquivalentTo(fileName);

@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             // When
             List<Address> actualAddresses =
-                await this.addressCoordinationService.LoadAddressData(inputData, someFilename);
+                await this.addressCoordinationService.LoadAddressDataAsync(inputData, someFilename);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
@@ -53,6 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

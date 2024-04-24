@@ -46,7 +46,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             this.blobContainers = blobContainers;
         }
 
-        public ValueTask<List<Address>> LoadAddressData(byte[] data, string filename) =>
+        public ValueTask<List<Address>> LoadAddressDataAsync(byte[] data, string filename) =>
             TryCatch(async () =>
             {
                 ValidateDataOnProcessData(data, filename);
@@ -113,7 +113,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 return matchedAddresses;
             });
 
-        public ValueTask<List<Address>> UploadResolvedAddresses() =>
+        public ValueTask<List<Address>> UploadResolvedAddressesAsync() =>
             throw new System.NotImplementedException();
     }
 }

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
@@ -126,11 +127,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             return filler;
         }
 
-        private static IQueryable<ResolvedAddress> CreateRandomResolvedAddresses()
+        private static List<ResolvedAddress> CreateRandomResolvedAddresses()
         {
             return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
                 .Create(count: 1)
-                    .AsQueryable();
+                    .ToList();
         }
 
         private static ResolvedAddress CreateRandomResolvedAddress() =>

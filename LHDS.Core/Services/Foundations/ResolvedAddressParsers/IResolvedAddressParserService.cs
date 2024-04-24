@@ -12,5 +12,6 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddressParsers
     {
         ValueTask<List<ResolvedAddress>> ProcessCsvAsync(byte[] data, string filename);
         ValueTask<List<ResolvedAddress>> ProcessCsvAsync(string data, string filename);
+        ValueTask<byte[]> ParseResolvedAddressesToCsvAsync(List<ResolvedAddress> resolvedAddresses);
     }
 }

@@ -11,6 +11,7 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses
     {
         public Guid Id { get; set; }
         public Guid UniqueReference { get; set; }
+        public Guid? BatchReference { get; set; }
         public string UnstructuredPostalAddress { get; set; }
         public string? PostCode { get; set; }
         public string? UPRN { get; set; }

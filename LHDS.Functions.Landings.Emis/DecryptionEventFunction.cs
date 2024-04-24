@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.IO;
@@ -44,7 +44,7 @@ namespace LHDS.Functions.Landings.Emis
 
                     if (Path.GetExtension(name) == ".gpg")
                     {
-                        await this.decryptionClient.DecryptAsync($"/{name}");
+                        await this.decryptionClient.DecryptAsync($"/encrypted{name}");
                     }
                 }).Wait();
             }

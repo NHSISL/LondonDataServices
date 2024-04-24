@@ -58,6 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -101,6 +102,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]

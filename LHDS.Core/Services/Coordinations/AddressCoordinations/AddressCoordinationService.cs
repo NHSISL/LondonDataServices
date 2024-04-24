@@ -23,7 +23,6 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
         private readonly IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
-        private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly AddressConfiguration addressConfiguration;
         private readonly BlobContainers blobContainers;
@@ -32,7 +31,6 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             IAddressExtractionOrchestrationService addressExtractionOrchestrationService,
             IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService,
             IResolvedAddressOrchestrationService resolvedAddressOrchestrationService,
-            IDateTimeBroker dateTimeBroker,
             ILoggingBroker loggingBroker,
             AddressConfiguration addressConfiguration,
             BlobContainers blobContainers)
@@ -40,7 +38,6 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             this.addressExtractionOrchestrationService = addressExtractionOrchestrationService;
             this.addressPersistanceOrchestrationService = addressPersistanceOrchestrationService;
             this.resolvedAddressOrchestrationService = resolvedAddressOrchestrationService;
-            this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
             this.addressConfiguration = addressConfiguration;
             this.blobContainers = blobContainers;

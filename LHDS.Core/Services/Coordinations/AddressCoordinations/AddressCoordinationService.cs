@@ -59,7 +59,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 return await this.addressPersistanceOrchestrationService.PersistAddressAsync(extractedAddress);
             });
 
-        public ValueTask<List<ResolvedAddress>> MatchAddressDataAsync(byte[] data, string filename) =>
+        public ValueTask MatchAddressDataAsync(byte[] data, string filename) =>
             TryCatch(async () =>
             {
                 ValidateDataOnProcessData(data, filename);
@@ -68,7 +68,6 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                     await this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(data, filename);
 
                 var exceptions = new List<Exception>();
-                List<ResolvedAddress> matchedAddresses = new List<ResolvedAddress>();
 
                 foreach (var resolvedAddress in extractedResolvedAddresses)
                 {
@@ -82,8 +81,6 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 
                             return matchedAddress;
                         });
-
-                        matchedAddresses.Add(matchedResolvedAddress);
                     }
                     catch (Exception ex)
                     {
@@ -109,8 +106,6 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                         $"File has been moved to the error folder.",
                         exceptions);
                 }
-
-                return matchedAddresses;
             });
 
         public ValueTask<List<Address>> UploadResolvedAddressesAsync() =>

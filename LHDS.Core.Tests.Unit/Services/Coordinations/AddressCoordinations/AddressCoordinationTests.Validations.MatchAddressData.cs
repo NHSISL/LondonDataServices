@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
-using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Moq;
 using Xunit;
@@ -43,8 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: invalidArgumentAddressCoordinationException);
 
             // when
-            ValueTask<List<ResolvedAddress>> matchAddressDataTask =
-                this.addressCoordinationService.MatchAddressDataAsync(nullData, invalidFilename);
+            this.addressCoordinationService.MatchAddressDataAsync(nullData, invalidFilename);
 
             AddressCoordinationValidationException actualAddressCoordinationValidationException =
                 await Assert.ThrowsAsync<AddressCoordinationValidationException>(async () =>

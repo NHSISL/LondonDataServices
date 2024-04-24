@@ -3,10 +3,8 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Moq;
@@ -24,7 +22,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             byte[] inputData = Encoding.UTF8.GetBytes(GetRandomString());
             List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses();
             List<ResolvedAddress> extractedAddresses = randomAddresses.DeepClone();
-            List<ResolvedAddress> expectedAddresses = new List<ResolvedAddress>();
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
                 service.ProcessResolvedAddressesAsync(inputData, someFilename))
@@ -35,17 +32,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                 this.addressPersistanceOrchestrationServiceMock.Setup(service =>
                     service.MatchAndPersistResolvedAddressAsync(address))
                         .ReturnsAsync(address);
-
-                expectedAddresses.Add(address);
             }
 
             // When
-            List<ResolvedAddress> actualAddresses =
-                await this.addressCoordinationService.MatchAddressDataAsync(inputData, someFilename);
+            await this.addressCoordinationService.MatchAddressDataAsync(inputData, someFilename);
 
             // Then
-            actualAddresses.Should().BeEquivalentTo(expectedAddresses);
-
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
                 service.ProcessResolvedAddressesAsync(inputData, someFilename),
                     Times.Once());

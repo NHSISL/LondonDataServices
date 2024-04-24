@@ -101,13 +101,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     message: "Address coordination dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            //this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-            //    service.AddDocumentAsync(randomData, errorFileName, addressContainer),
-            //        Times.Once);
+            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
+                service.AddDocumentAsync(randomData, errorFileName, addressContainer),
+                    Times.Once);
 
-            //this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-            //    service.RemoveDocumentByFileNameAsync(someFilename, addressContainer),
-            //        Times.Once);
+            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(someFilename, addressContainer),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

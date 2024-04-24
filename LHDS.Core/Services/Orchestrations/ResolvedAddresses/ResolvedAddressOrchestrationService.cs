@@ -33,10 +33,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         public ValueTask<Guid> UploadResolvedAddressesAsync() =>
             throw new NotImplementedException();
         
-        public ValueTask AddDocumentAsync(byte[] data, string filename, string container) =>
+        public async ValueTask AddDocumentAsync(byte[] data, string filename, string container) =>
             throw new NotImplementedException();
 
-        public ValueTask RemoveDocumentByFileNameAsync(string filename, string container) =>
+        public async ValueTask RemoveDocumentByFileNameAsync(string filename, string container) =>
             throw new NotImplementedException();
     }
 }

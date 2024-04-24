@@ -25,7 +25,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             Xeption dependencyValidationException)
         {
             // Given
-            string someFilename = GetRandomString();
+            string someFilename = CreateRandomFileName();
+            string addressContainer = this.blobContainers.Addresses;
+            string errorFolder = this.addressConfiguration.ErrorFolder;
+            string errorFileName = CreateErrorFileName(someFilename, errorFolder);
             byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
             List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses().ToList();
             List<Exception> exceptions = new List<Exception>();
@@ -47,6 +50,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
                 exceptions.Add(addressCoordinationDependencyValidationException);
             }
+
+            this.resolvedAddressOrchestrationServiceMock.Setup(service =>
+                service.AddDocumentAsync(randomData, errorFileName, addressContainer));
+
+            this.resolvedAddressOrchestrationServiceMock.Setup(service =>
+                service.RemoveDocumentByFileNameAsync(someFilename, addressContainer));
 
             var aggregateException =
                 new AggregateException(
@@ -92,6 +101,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     message: "Address coordination dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
+            //this.resolvedAddressOrchestrationServiceMock.Verify(service =>
+            //    service.AddDocumentAsync(randomData, errorFileName, addressContainer),
+            //        Times.Once);
+
+            //this.resolvedAddressOrchestrationServiceMock.Verify(service =>
+            //    service.RemoveDocumentByFileNameAsync(someFilename, addressContainer),
+            //        Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     addressCoordinationDependencyValidationLoggingException))),
@@ -113,7 +130,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             ShouldThrowAggregateDependencyExceptionOnMatchAddressesIfErrorsInLoopAndLogItAsync(
             Xeption dependencyException)
         {
-            string someFilename = GetRandomString();
+            string someFilename = CreateRandomFileName();
+            string addressContainer = this.blobContainers.Addresses;
+            string errorFolder = this.addressConfiguration.ErrorFolder;
+            string errorFileName = CreateErrorFileName(someFilename, errorFolder);
             byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
             List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses().ToList();
             List<Exception> exceptions = new List<Exception>();
@@ -180,6 +200,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     message: "Address coordination dependency error occurred, please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
+            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
+                service.AddDocumentAsync(randomData, errorFileName, addressContainer),
+                    Times.Once);
+
+            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(someFilename, addressContainer),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     addressCoordinationDependencyLoggingException))),
@@ -199,7 +227,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
         public async Task ShouldThrowAggregateServiceExceptionOnProcessAddressIfErrorsInLoopAndLogItAsync()
         {
             // Given
-            string someFilename = GetRandomString();
+            string someFilename = CreateRandomFileName();
+            string addressContainer = this.blobContainers.Addresses;
+            string errorFolder = this.addressConfiguration.ErrorFolder;
+            string errorFileName = CreateErrorFileName(someFilename, errorFolder);
             byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
             var serviceException = new Exception();
             List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses().ToList();
@@ -266,6 +297,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     service.MatchAndPersistResolvedAddressAsync(address),
                         Times.Once);
             }
+
+            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
+                service.AddDocumentAsync(randomData, errorFileName, addressContainer),
+                    Times.Once);
+
+            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(someFilename, addressContainer),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

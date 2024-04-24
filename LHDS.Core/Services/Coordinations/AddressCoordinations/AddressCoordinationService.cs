@@ -94,7 +94,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 if (exceptions.Any())
                 {
                     string[] splitFilePath = filename.Split("/");
-                    splitFilePath[3] = this.addressConfiguration.ErrorFolder;
+                    splitFilePath[2] = this.addressConfiguration.ErrorFolder;
                     string errorPath = String.Join("/", splitFilePath);
                     string addressContainer = this.blobContainers.Addresses;
 

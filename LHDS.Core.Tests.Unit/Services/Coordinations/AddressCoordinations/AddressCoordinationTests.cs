@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -47,13 +48,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
-            addressConfiguration = new AddressConfiguration
+            this.addressConfiguration = new AddressConfiguration
             {
                 InFolder = "In",
                 ErrorFolder = "Error"
             };
 
-            blobContainers = new BlobContainers
+            this.blobContainers = new BlobContainers
             {
                 Addresses = "addresses"
             };
@@ -70,6 +71,30 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
         private static string GetRandomString() =>
            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+
+        private static string GetRandomWordString() =>
+           new MnemonicString(wordCount: 1).GetValue();
+
+        private static string CreateRandomFileName()
+        {
+            string fileName = GetRandomWordString();
+
+            for (int i = 0; i < 6; i++)
+            {
+                fileName += "/" + GetRandomWordString();
+            }
+
+            return fileName;
+        }
+
+        private static string CreateErrorFileName(string fileName, string errorFolder)
+        {
+            string[] splitFileName = fileName.Split('/');
+            splitFileName[2] = errorFolder;
+            string errorFileName = String.Join("/", splitFileName);
+
+            return errorFileName;
+        }
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
@@ -141,18 +166,18 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     message: "Address extraction orchestration validation error occured, please try again",
                     innerException),
 
-                //new AddressExtractionOrchestrationDependencyValidationException(
-                //    message: "Address extraction orchestration dependency validation error occurred, please try again.",
-                //    innerException),
+                new AddressExtractionOrchestrationDependencyValidationException(
+                    message: "Address extraction orchestration dependency validation error occurred, please try again.",
+                    innerException),
 
-                //new AddressPersistanceOrchestrationValidationException(
-                //    message: "Address persistance orchestration validation error occured, please try again",
-                //    innerException),
+                new AddressPersistanceOrchestrationValidationException(
+                    message: "Address persistance orchestration validation error occured, please try again",
+                    innerException),
 
-                //new AddressPersistanceOrchestrationDependencyValidationException(
-                //    message: "Address persistance orchestration dependency validation error occurred, " +
-                //    "please try again.",
-                //    innerException),
+                new AddressPersistanceOrchestrationDependencyValidationException(
+                    message: "Address persistance orchestration dependency validation error occurred, " +
+                    "please try again.",
+                    innerException),
             };
         }
 

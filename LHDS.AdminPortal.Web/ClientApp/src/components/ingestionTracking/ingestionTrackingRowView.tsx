@@ -43,7 +43,6 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
             <TableBaseData>
                 FileName: {trimString(ingestionTracking.fileName)}
                 <br />
-
                 <span>
                     Decrypted: {ingestionTracking.decrypted ? <FontAwesomeIcon icon={faCheck} className="text-success" />
                         : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;

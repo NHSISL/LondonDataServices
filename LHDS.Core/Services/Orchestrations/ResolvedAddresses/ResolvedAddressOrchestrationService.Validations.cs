@@ -19,6 +19,14 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 (Rule: IsInvalid(container), Parameter: "container"));
         }
 
+        public void ValidateResolvedAddressArgsOnRemove(string fileName, string container)
+        {
+            Validate<InvalidArgumentResolvedAddressOrchestrationException>(
+                message: "Invalid resolved address orchestration argument.  Please correct the errors and try again.",
+                (Rule: IsInvalid(fileName), Parameter: "fileName"),
+                (Rule: IsInvalid(container), Parameter: "container"));
+        }
+
         private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),

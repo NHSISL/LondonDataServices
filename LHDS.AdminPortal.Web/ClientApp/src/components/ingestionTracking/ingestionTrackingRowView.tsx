@@ -32,7 +32,7 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
 
     return (
         <TableBaseRow>
-            
+
             <TableBaseData>
                 <div className="p-2 rounded al text-center">
                     {ingestionTracking.supplier?.name}
@@ -43,19 +43,13 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
             <TableBaseData>
                 FileName: {trimString(ingestionTracking.fileName)}
                 <br />
-
-                {ingestionTracking.supplier?.canDecryptIngestionTracking && (
-                    <span>
-                        Decrypted: {ingestionTracking.decrypted ? <FontAwesomeIcon icon={faCheck} className="text-success" />
-                            : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;
-                    </span>
-                )}
-
-                Deleted: {ingestionTracking.fileDeleted ? <FontAwesomeIcon icon={faCheck} className="text-success" />
-
-                    : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;
-                Record Count: {ingestionTracking.recordCount} &nbsp;
-
+                <span>
+                    Decrypted: {ingestionTracking.decrypted ? <FontAwesomeIcon icon={faCheck} className="text-success" />
+                        : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;
+                </span>
+                <span>
+                    Record Count: {ingestionTracking.recordCount} &nbsp;
+                </span>
             </TableBaseData>
 
             <TableBaseData>
@@ -95,7 +89,7 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                     </ButtonBase>
                 </Link>
             </TableBaseData>
-            
+
         </TableBaseRow>
     );
 }

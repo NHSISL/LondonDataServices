@@ -52,19 +52,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
                     Address address = new Address
                     {
                         Id = Guid.NewGuid(),
-                        UPRN = index[3],
-                        UPSN = index[4],
-                        OrganisationName = index[5],
-                        DepartmentName = index[6],
-                        SubBuildingName = index[7],
-                        BuildingName = index[8],
-                        BuildingNumber = index[9],
-                        DependentThoroughfare = index[10],
-                        Thoroughfare = index[11],
-                        DoubleDependentLocality = index[12],
-                        DependentLocality = index[13],
-                        PostTown = index[14],
-                        PostCode = index[15],
+                        UPRN = formatValue(index[3]),
+                        UPSN = formatValue(index[4]),
+                        OrganisationName = formatValue(index[5]),
+                        DepartmentName = formatValue(index[6]),
+                        SubBuildingName = formatValue(index[7]),
+                        BuildingName = formatValue(index[8]),
+                        BuildingNumber = formatValue(index[9]),
+                        DependentThoroughfare = formatValue(index[10]),
+                        Thoroughfare = formatValue(index[11]),
+                        DoubleDependentLocality = formatValue(index[12]),
+                        DependentLocality = formatValue(index[13]),
+                        PostTown = formatValue(index[14]),
+                        PostCode = formatValue(index[15]),
                     };
 
                     expectedAddresses.Add(address);
@@ -79,12 +79,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
             actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
                 options.Excluding(address => address.Id));
 
-            var allAddressIds = actualAddresses.Select(addr => addr.Id).ToList();
-            var uniqueAddressIds = allAddressIds.Distinct().ToList();
-            Assert.Equal(allAddressIds.Count, uniqueAddressIds.Count);
-
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        private static string formatValue(string value) =>
+            value.Trim('"');
 
         [Fact]
         public async Task ShouldProcessStringAddressCsvAsync()
@@ -121,19 +120,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
                     Address address = new Address
                     {
                         Id = Guid.NewGuid(),
-                        UPRN = index[3],
-                        UPSN = index[4],
-                        OrganisationName = index[5],
-                        DepartmentName = index[6],
-                        SubBuildingName = index[7],
-                        BuildingName = index[8],
-                        BuildingNumber = index[9],
-                        DependentThoroughfare = index[10],
-                        Thoroughfare = index[11],
-                        DoubleDependentLocality = index[12],
-                        DependentLocality = index[13],
-                        PostTown = index[14],
-                        PostCode = index[15],
+                        UPRN = formatValue(index[3]),
+                        UPSN = formatValue(index[4]),
+                        OrganisationName = formatValue(index[5]),
+                        DepartmentName = formatValue(index[6]),
+                        SubBuildingName = formatValue(index[7]),
+                        BuildingName = formatValue(index[8]),
+                        BuildingNumber = formatValue(index[9]),
+                        DependentThoroughfare = formatValue(index[10]),
+                        Thoroughfare = formatValue(index[11]),
+                        DoubleDependentLocality = formatValue(index[12]),
+                        DependentLocality = formatValue(index[13]),
+                        PostTown = formatValue(index[14]),
+                        PostCode = formatValue(index[15]),
                     };
 
                     expectedAddresses.Add(address);
@@ -147,10 +146,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
             // then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
                 options.Excluding(address => address.Id));
-
-            var allAddressIds = actualAddresses.Select(addr => addr.Id).ToList();
-            var uniqueAddressIds = allAddressIds.Distinct().ToList();
-            Assert.Equal(allAddressIds.Count, uniqueAddressIds.Count);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

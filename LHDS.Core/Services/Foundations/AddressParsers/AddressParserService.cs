@@ -35,50 +35,72 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
             {
                 ValidateAddressParserOnProcessCSV(data, filename);
                 string stringData = Encoding.UTF8.GetString(data);
+                List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
 
-                return await this.ProcessCsvAsync(stringData, filename);
+                List<string> filteredRecords = records.Where(record =>
+                   record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
+
+                string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+
+                Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                {
+                    { "UPRN", 3 },
+                    { "UPSN", 4 },
+                    { "OrganisationName", 5 },
+                    { "DepartmentName", 6 },
+                    { "SubBuildingName", 7 },
+                    { "BuildingName", 8 },
+                    { "BuildingNumber", 9 },
+                    { "DependentThoroughfare", 10 },
+                    { "Thoroughfare", 11 },
+                    { "DoubleDependentLocality", 12 },
+                    { "DependentLocality", 13 },
+                    { "PostTown", 14 },
+                    { "PostCode", 15 }
+                };
+
+                List<Address> results = await this.csvMapperBroker.MapCsvToObjectAsync<Address>(
+                    stringRecords,
+                    fieldMappings,
+                    hasHeaderRecord: false);
+
+                return results;
             });
 
         public ValueTask<List<Address>> ProcessCsvAsync(string data, string filename) =>
-           TryCatch(async () =>
-           {
-               ValidateAddressParserOnProcessCSV(data, filename);
+            TryCatch(async () =>
+            {
+                ValidateAddressParserOnProcessCSV(data, filename);
+                List<string> records = data.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
 
-               return await Task.Run(() =>
-               {
-                   List<string> recods = data.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-                   List<Address> returnedAddresses = new List<Address>();
+                List<string> filteredRecords = records.Where(record =>
+                   record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
 
-                   foreach (string record in recods)
-                   {
-                       if (record.StartsWith("28,"))
-                       {
-                           string[] index = record.Split(",");
+                string stringRecords = string.Join(Environment.NewLine, filteredRecords);
 
-                           Address address = new Address
-                           {
-                               Id = Guid.NewGuid(),
-                               UPRN = index[3],
-                               UPSN = index[4],
-                               OrganisationName = index[5],
-                               DepartmentName = index[6],
-                               SubBuildingName = index[7],
-                               BuildingName = index[8],
-                               BuildingNumber = index[9],
-                               DependentThoroughfare = index[10],
-                               Thoroughfare = index[11],
-                               DoubleDependentLocality = index[12],
-                               DependentLocality = index[13],
-                               PostTown = index[14],
-                               PostCode = index[15],
-                           };
+                Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                {
+                    { "UPRN", 3 },
+                    { "UPSN", 4 },
+                    { "OrganisationName", 5 },
+                    { "DepartmentName", 6 },
+                    { "SubBuildingName", 7 },
+                    { "BuildingName", 8 },
+                    { "BuildingNumber", 9 },
+                    { "DependentThoroughfare", 10 },
+                    { "Thoroughfare", 11 },
+                    { "DoubleDependentLocality", 12 },
+                    { "DependentLocality", 13 },
+                    { "PostTown", 14 },
+                    { "PostCode", 15 }
+                };
 
-                           returnedAddresses.Add(address);
-                       }
-                   }
+                List<Address> results = await this.csvMapperBroker.MapCsvToObjectAsync<Address>(
+                    stringRecords,
+                    fieldMappings,
+                    hasHeaderRecord: false);
 
-                   return returnedAddresses;
-               });
-           });
+                return results;
+            });
     }
 }

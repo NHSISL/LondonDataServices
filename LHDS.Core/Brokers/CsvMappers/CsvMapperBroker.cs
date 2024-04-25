@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -61,6 +62,27 @@ namespace LHDS.Core.Brokers.CsvMappers
             }
         }
 
+        public async ValueTask<List<T>> MapCsvToObjectAsync<T>(
+            string data,
+            Dictionary<string, int> fieldMappings,
+            bool hasHeaderRecord)
+        {
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = hasHeaderRecord,
+                MissingFieldFound = null
+            };
+
+            using (var reader = new StringReader(data))
+            using (var csv = new CsvReader(reader, config))
+            {
+                csv.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
+                var records = csv.GetRecords<T>().ToList();
+
+                return await ValueTask.FromResult(records);
+            }
+        }
+
         public async ValueTask<string> MapObjectToCsvAsync<T>(
             List<T> @object,
             bool addHeaderRecord,
@@ -91,6 +113,46 @@ namespace LHDS.Core.Brokers.CsvMappers
                 var csv = stringWriter.ToString();
 
                 return await ValueTask.FromResult(csv);
+            }
+        }
+
+        private static object GetField(IReaderRow row, int index)
+        {
+            try
+            {
+                return row.GetField(index);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+    }
+
+    internal class CustomMap<T> : ClassMap<T>
+    {
+        public CustomMap(Dictionary<string, int> fieldMappings)
+        {
+            foreach (var mapping in fieldMappings)
+            {
+                try
+                {
+                    var parameter = Expression.Parameter(typeof(T), "x");
+                    var property = Expression.Property(parameter, mapping.Key);
+                    var funcType = typeof(Func<,>).MakeGenericType(typeof(T), property.Type);
+                    var lambda = Expression.Lambda(funcType, property, parameter);
+
+                    var mapMethods = typeof(ClassMap<T>).GetMethods().Where(m => m.Name == "Map" && m.IsGenericMethod);
+                    var mapMethod = mapMethods.First(m => m.GetParameters().First().ParameterType.GetGenericTypeDefinition() == typeof(Expression<>));
+                    mapMethod = mapMethod.MakeGenericMethod(property.Type);
+
+                    var memberMap = (MemberMap)mapMethod.Invoke(this, new object[] { lambda, true });
+                    memberMap.Index(mapping.Value);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
             }
         }
     }

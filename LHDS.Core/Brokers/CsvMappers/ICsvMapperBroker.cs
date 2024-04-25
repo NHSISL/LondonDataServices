@@ -12,6 +12,11 @@ namespace LHDS.Core.Brokers.CsvMappers
         ValueTask<List<string[]>> MapCsvToListArrayAsync(string data, bool hasHeaderRecord);
         ValueTask<List<T>> MapCsvToObjectAsync<T>(string data, bool hasHeaderRecord);
 
+        ValueTask<List<T>> MapCsvToObjectAsync<T>(
+            string data,
+            Dictionary<string, int> fieldMappings,
+            bool hasHeaderRecord);
+
         ValueTask<string> MapObjectToCsvAsync<T>(
             List<T> @object,
             bool addHeaderRecord,

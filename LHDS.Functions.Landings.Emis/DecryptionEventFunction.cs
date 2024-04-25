@@ -44,7 +44,7 @@ namespace LHDS.Functions.Landings.Emis
 
                     if (Path.GetExtension(name) == ".gpg")
                     {
-                        await this.decryptionClient.DecryptAsync($"/encrypted{name}");
+                        await this.decryptionClient.DecryptAsync($"/encrypted/{name}");
                     }
                 }).Wait();
             }

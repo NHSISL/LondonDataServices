@@ -3,12 +3,10 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Moq;
 using Xunit;
 
@@ -17,39 +15,39 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
     public partial class AddressCoordinationServiceTests
     {
         [Fact]
-        public async Task ShouldProcessDataAndLogAsync()
+        public async Task ShouldMatchAddressDataAsync()
         {
             // Given
             string someFilename = GetRandomString();
             byte[] inputData = Encoding.UTF8.GetBytes(GetRandomString());
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
-            List<Address> extractedAddresses = randomAddresses.DeepClone();
-            List<Address> persistedAddresses = extractedAddresses.DeepClone();
+            List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses();
+            List<ResolvedAddress> extractedAddresses = randomAddresses.DeepClone();
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessAddressesAsync(inputData, someFilename))
+                service.ProcessResolvedAddressesAsync(inputData, someFilename))
                     .ReturnsAsync(extractedAddresses);
 
-            this.addressPersistanceOrchestrationServiceMock.Setup(service =>
-                service.PersistAddressAsync(extractedAddresses))
-                    .ReturnsAsync(persistedAddresses);
-
-            List<Address> expectedAddresses = persistedAddresses.DeepClone();
+            foreach (var address in extractedAddresses)
+            {
+                this.addressPersistanceOrchestrationServiceMock.Setup(service =>
+                    service.MatchAndPersistResolvedAddressAsync(address))
+                        .ReturnsAsync(address);
+            }
 
             // When
-            List<Address> actualAddresses =
-                await this.addressCoordinationService.LoadAddressDataAsync(inputData, someFilename);
+            await this.addressCoordinationService.MatchAddressDataAsync(inputData, someFilename);
 
             // Then
-            actualAddresses.Should().BeEquivalentTo(expectedAddresses);
-
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-                service.ProcessAddressesAsync(inputData, someFilename),
+                service.ProcessResolvedAddressesAsync(inputData, someFilename),
                     Times.Once());
 
-            this.addressPersistanceOrchestrationServiceMock.Verify(service =>
-                service.PersistAddressAsync(extractedAddresses),
-                    Times.Once());
+            foreach (var address in extractedAddresses)
+            {
+                this.addressPersistanceOrchestrationServiceMock.Verify(service =>
+                    service.MatchAndPersistResolvedAddressAsync(address),
+                        Times.Once());
+            }
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
@@ -58,4 +56,3 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
         }
     }
 }
-

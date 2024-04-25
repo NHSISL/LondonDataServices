@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
-using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Moq;
 using Xunit;
 
@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnProcessDataIfDataIsNullAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnMatchAddressDataIfDataIsNullAndLogItAsync(string invalidText)
         {
             // given
             byte[] nullData = null;
@@ -42,19 +42,19 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: invalidArgumentAddressCoordinationException);
 
             // when
-            ValueTask<List<Address>> processDataTask =
-                this.addressCoordinationService.LoadAddressDataAsync(nullData, invalidFilename);
+            ValueTask matchAddressDataTask = 
+                this.addressCoordinationService.MatchAddressDataAsync(nullData, invalidFilename);
 
             AddressCoordinationValidationException actualAddressCoordinationValidationException =
                 await Assert.ThrowsAsync<AddressCoordinationValidationException>(async () =>
-                    await processDataTask);
+                    await matchAddressDataTask);
 
             // then
             actualAddressCoordinationValidationException.Should()
                 .BeEquivalentTo(expectedAddressCoordinationValidationException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-                service.ProcessAddressesAsync(nullData, invalidFilename),
+                service.ProcessResolvedAddressesAsync(nullData, invalidFilename),
                     Times.Never());
 
             this.loggingBrokerMock.Verify(broker =>

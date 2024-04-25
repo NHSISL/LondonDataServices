@@ -5,13 +5,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 
 namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 {
     public interface IAddressCoordinationService
     {
-        public ValueTask<List<Address>> LoadAddressData(byte[] data, string filename);
-        public ValueTask<List<Address>> MatchAddressData(byte[] data, string filename);
-        public ValueTask<List<Address>> UploadResolvedAddresses();
+        public ValueTask<List<Address>> LoadAddressDataAsync(byte[] data, string filename);
+        public ValueTask MatchAddressDataAsync(byte[] data, string filename);
+        public ValueTask<List<Address>> UploadResolvedAddressesAsync();
     }
 }

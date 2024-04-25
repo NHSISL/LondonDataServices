@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             var expectedDependencyException =
                 new AddressCoordinationDependencyValidationException(
                     message: "Address coordination dependency validation error occurred, please try again.",
-                    innerException: dependancyValidationException);
+                    innerException: dependancyValidationException.InnerException as Xeption);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
                 service.ProcessAddressesAsync(randomData, someFilename))
@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressCoordinationService.LoadAddressData(randomData, someFilename);
+                this.addressCoordinationService.LoadAddressDataAsync(randomData, someFilename);
 
             AddressCoordinationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationDependencyValidationException>(processDataTask.AsTask);
@@ -58,6 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -72,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             var expectedDependencyException =
                 new AddressCoordinationDependencyException(
                     message: "Address coordination dependency error occurred, please try again.",
-                    innerException: dependencyException);
+                    innerException: dependencyException.InnerException as Xeption);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
                 service.ProcessAddressesAsync(randomData, someFilename))
@@ -80,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressCoordinationService.LoadAddressData(randomData, someFilename);
+                this.addressCoordinationService.LoadAddressDataAsync(randomData, someFilename);
 
             AddressCoordinationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationDependencyException>(processDataTask.AsTask);
@@ -101,6 +102,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -127,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             // when
             ValueTask<List<Address>> processDataTask = this.addressCoordinationService
-                .LoadAddressData(randomData, someFilename);
+                .LoadAddressDataAsync(randomData, someFilename);
 
             AddressCoordinationServiceException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationServiceException>(processDataTask.AsTask);
@@ -147,6 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -10,16 +10,23 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 {
     internal partial class AddressPersistanceOrchestrationService
     {
-        private static void ValidateAddressListOrchestrationOnProcess(List<Address> addressList)
+        private static void ValidateAddressPersistanceOrchestration(List<Address> addressList, string fileName)
         {
             Validate(
-                (Rule: IsInvalid(addressList), Parameter: "AddressList"));
+                (Rule: IsInvalid(addressList), Parameter: "AddressList"),
+                (Rule: IsInvalid(fileName), Parameter: "fileName"));
         }
 
         private static dynamic IsInvalid(List<Address> addressList) => new
         {
             Condition = addressList == null,
             Message = "Address list is required"
+        };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

@@ -10,12 +10,13 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
 {
     public partial class AddressNormalisationOrchestrationService
     {
-        public void ValidateAddressNormalisationArgs(string data)
+        public void ValidateAddressNormalisationArgs(string data, string fileName)
         {
             Validate<InvalidArgumentAddressNormalisationOrchestrationException>(
                 message: "Invalid address normalisation orchestration argument. " +
                 "Please correct the errors and try again.",
-                (Rule: IsInvalid(data), Parameter: "address"));
+                (Rule: IsInvalid(data), Parameter: "address"),
+                (Rule: IsInvalid(fileName), Parameter: "fileName"));
         }
 
         private static dynamic IsInvalid(string text) => new

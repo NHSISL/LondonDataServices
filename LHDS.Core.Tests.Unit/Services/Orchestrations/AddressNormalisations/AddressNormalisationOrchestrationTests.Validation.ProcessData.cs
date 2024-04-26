@@ -23,6 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
         {
             // given
             string invalidAddress = invalidText;
+            string invalidFileName = invalidText;
 
             var invalidArgumentAddressNormalisationOrchestrationException =
                 new InvalidArgumentAddressNormalisationOrchestrationException(
@@ -33,6 +34,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
                 key: "address",
                 values: "Text is required");
 
+            invalidArgumentAddressNormalisationOrchestrationException.AddData(
+                key: "fileName",
+                values: "Text is required");
+
             var expectedAddressNormalisationOrchestrationValidationException =
                 new AddressNormalisationOrchestrationValidationException(
                     message: "Address normalisation orchestration validation errors occurred, please try again.",
@@ -40,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
 
             // when
             ValueTask<List<AddressNormalisation>> addAddressNormalisationTask =
-                this.addressNormalisationOrchestrationService.ProcessDataAsync(invalidAddress);
+                this.addressNormalisationOrchestrationService.ProcessDataAsync(invalidAddress, invalidFileName);
 
             AddressNormalisationOrchestrationValidationException actualAddressNormalisationOrchestrationValidationException =
                 await Assert.ThrowsAsync<AddressNormalisationOrchestrationValidationException>(() =>

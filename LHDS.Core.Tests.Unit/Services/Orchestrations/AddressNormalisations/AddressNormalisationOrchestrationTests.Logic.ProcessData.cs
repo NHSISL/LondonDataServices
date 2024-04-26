@@ -54,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
 
             // Where
             List<AddressNormalisation> actualAddresses =
-                 await this.addressNormalisationOrchestrationService.ProcessDataAsync(inputData);
+                 await this.addressNormalisationOrchestrationService.ProcessDataAsync(inputData, someFilename);
 
             // Then
             actualAddresses.Should().HaveCount(expectedAddress.Count);

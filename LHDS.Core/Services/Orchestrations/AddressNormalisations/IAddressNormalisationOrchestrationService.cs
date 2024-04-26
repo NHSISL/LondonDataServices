@@ -10,6 +10,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
 {
     public interface IAddressNormalisationOrchestrationService
     {
-        public ValueTask<List<AddressNormalisation>> ProcessDataAsync(string data);
+        public ValueTask<List<AddressNormalisation>> ProcessDataAsync(string data, string fileName);
     }
 }

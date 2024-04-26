@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -20,6 +21,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
     {
         private readonly IAddressParserProcessingService addressParserProcessingService;
         private readonly IAddressNormalisationProcessingService addressNormalisationProcessingService;
+        private readonly IAuditBroker auditBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
@@ -27,21 +29,23 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
         public AddressNormalisationOrchestrationService(
             IAddressParserProcessingService addressParserProcessingService,
             IAddressNormalisationProcessingService addressNormalisationProcessingService,
+            IAuditBroker auditBroker,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker)
         {
             this.addressParserProcessingService = addressParserProcessingService;
             this.addressNormalisationProcessingService = addressNormalisationProcessingService;
+            this.auditBroker = auditBroker;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
         }
 
-        public ValueTask<List<AddressNormalisation>> ProcessDataAsync(string data) =>
+        public ValueTask<List<AddressNormalisation>> ProcessDataAsync(string data, string fileName) =>
             TryCatch(async () =>
             {
-                ValidateAddressNormalisationArgs(data);
+                ValidateAddressNormalisationArgs(data, fileName);
 
                 List<Address> parsedAddress =
                     await this.addressParserProcessingService.ProcessCsvAsync(data, string.Empty);
@@ -74,6 +78,13 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
 
                             AddressNormalisation normalisedAddress =
                                 await this.addressNormalisationProcessingService.GetNormalisedAddress(stringAddress);
+
+                            await this.auditBroker.LogInformation(
+                                auditType: "Address",
+                                title: "Successfully normalised address from Ordinance Database",
+                                message: $"Successfully normalised address with id: {address.Id} from file: {fileName}",
+                                fileName,
+                                correlationId: address.Id);
 
                             return normalisedAddress;
                         });

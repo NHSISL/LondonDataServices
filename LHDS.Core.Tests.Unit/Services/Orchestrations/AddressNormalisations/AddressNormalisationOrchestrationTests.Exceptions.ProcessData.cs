@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
 
             // when
             ValueTask<List<AddressNormalisation>> actualAddressesTask =
-                this.addressNormalisationOrchestrationService.ProcessDataAsync(someAddress);
+                this.addressNormalisationOrchestrationService.ProcessDataAsync(someAddress, someFilename);
 
             AddressNormalisationOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressNormalisationOrchestrationDependencyValidationException>(
@@ -58,6 +58,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
 
             this.addressParserProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -67,6 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
         {
             // given
             var randomAddress = GetRandomString();
+            string someFilename = GetRandomString();
             string inputAddress = randomAddress;
             var randomMessage = GetRandomString();
 
@@ -81,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
 
             // when
             ValueTask<List<AddressNormalisation>> actualAddressesTask =
-                this.addressNormalisationOrchestrationService.ProcessDataAsync(inputAddress);
+                this.addressNormalisationOrchestrationService.ProcessDataAsync(inputAddress, someFilename);
 
             AddressNormalisationOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressNormalisationOrchestrationDependencyException>(
@@ -108,6 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
         {
             // given
             var randomAddress = GetRandomString();
+            var someFilename = GetRandomString();
             string inputAddress = randomAddress;
             var serviceException = new Exception();
 
@@ -127,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
 
             // when;
             ValueTask<List<AddressNormalisation>> actualAddressesTask =
-               this.addressNormalisationOrchestrationService.ProcessDataAsync(inputAddress);
+               this.addressNormalisationOrchestrationService.ProcessDataAsync(inputAddress, someFilename);
 
             AddressNormalisationOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<AddressNormalisationOrchestrationServiceException>(

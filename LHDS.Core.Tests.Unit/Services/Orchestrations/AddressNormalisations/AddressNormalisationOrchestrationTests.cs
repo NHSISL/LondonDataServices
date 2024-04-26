@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -27,6 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
     {
         private readonly Mock<IAddressParserProcessingService> addressParserProcessingServiceMock;
         private readonly Mock<IAddressNormalisationProcessingService> addressNormalisationProcessingServiceMock;
+        private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
@@ -38,6 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
         {
             this.addressParserProcessingServiceMock = new Mock<IAddressParserProcessingService>();
             this.addressNormalisationProcessingServiceMock = new Mock<IAddressNormalisationProcessingService>();
+            this.auditBrokerMock = new Mock<IAuditBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -47,6 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
             this.addressNormalisationOrchestrationService = new AddressNormalisationOrchestrationService(
                 addressParserProcessingService: addressParserProcessingServiceMock.Object,
                 addressNormalisationProcessingService: addressNormalisationProcessingServiceMock.Object,
+                auditBroker: auditBrokerMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object);

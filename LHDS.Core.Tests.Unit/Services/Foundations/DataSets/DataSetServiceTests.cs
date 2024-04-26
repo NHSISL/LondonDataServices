@@ -98,7 +98,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
         private static Filler<DataSet> CreateDataSetFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
-            var filler = new Filler<Models.Foundations.DataSets.DataSet>();
+            var filler = new Filler<DataSet>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)

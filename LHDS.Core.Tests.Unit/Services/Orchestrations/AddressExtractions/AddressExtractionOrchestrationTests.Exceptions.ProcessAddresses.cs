@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
             List<Exception> exceptions = new List<Exception>();
 
-            this.addressParserServiceMock.Setup(service =>
+            this.csvMapperServiceMock.Setup(service =>
                 service.ProcessCsvAsync(randomData, someFilename))
                     .ReturnsAsync(randomAddresses);
 

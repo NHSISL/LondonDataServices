@@ -4,10 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.CsvMappers.Exceptions;
-using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Tests.Unit.Models.Foundations.CsvMappers;
 using Moq;
 using Xunit;
 
@@ -16,12 +17,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
     public partial class CsvMapperTests
     {
         [Fact]
+
         public async Task ShouldThrowServiceExceptionOnMapObjectToCsvIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            List<OptOut> randomOptOuts = CreateRandomOptOuts();
-            List<OptOut> inputOptOuts = randomOptOuts;
+            int count = GetRandomNumber();
+            List<Car> randomCars = CreateRandomCars();
             bool withHeaderRecord = true;
+            Dictionary<string, int> fieldMappings = null;
             bool shouldAddTrailingComma = true;
             var serviceException = new Exception();
 
@@ -36,13 +39,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
                     innerException: failedCsvMapperServiceException);
 
             this.csvMapperBrokerMock.Setup(broker =>
-                broker.MapObjectToCsvAsync<OptOut>(inputOptOuts, withHeaderRecord, shouldAddTrailingComma))
-                    .ThrowsAsync(serviceException);
+                broker.CreateCsvWriter(It.IsAny<StringWriter>(), It.IsAny<bool>()))
+                    .Throws(serviceException);
 
             // when
-            ValueTask<string> mapCsvToObjectTask = this.csvMapperService.MapObjectToCsvAsync<OptOut>(
-                @object: inputOptOuts,
-                addHeaderRecord: withHeaderRecord,
+            ValueTask<string> mapCsvToObjectTask = this.csvMapperService.MapObjectToCsvAsync<Car>(
+                @object: randomCars,
+                hasHeaderRecord: withHeaderRecord,
+                fieldMappings,
                 shouldAddTrailingComma);
 
             CsvMapperServiceException actualCsvMapperServiceException =
@@ -57,8 +61,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
                         Times.Once);
 
             this.csvMapperBrokerMock.Verify(broker =>
-                broker.MapObjectToCsvAsync<OptOut>(inputOptOuts, withHeaderRecord, shouldAddTrailingComma),
-                    Times.Once());
+                broker.CreateCsvWriter(It.IsAny<StringWriter>(), It.IsAny<bool>()),
+                        Times.Once());
 
             this.csvMapperBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                         "please correct the errors and try again.");
 
             invalidArgumentAddressPersistanceOrchestrationException.AddData(
-                key: "AddressList",
+                key: "addressList",
                 values: "Address list is required");
 
             invalidArgumentAddressPersistanceOrchestrationException.AddData(

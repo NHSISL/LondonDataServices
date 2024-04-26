@@ -13,7 +13,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
         private static void ValidateAddressPersistanceOrchestration(List<Address> addressList, string fileName)
         {
             Validate(
-                (Rule: IsInvalid(addressList), Parameter: "AddressList"),
+                (Rule: IsInvalid(addressList), Parameter: "addressList"),
                 (Rule: IsInvalid(fileName), Parameter: "fileName"));
         }
 

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using Moq;
 using Xunit;
@@ -79,13 +78,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                         Times.Once());
             }
 
-            this.addressLoadingAuditProcessingServiceMock.Verify(service =>
-                service.AddAddressLoadingAuditAsync(It.IsAny<AddressLoadingAudit>()),
-                    Times.Exactly(inputAddresses.Count));
-
             this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
-            this.addressLoadingAuditProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

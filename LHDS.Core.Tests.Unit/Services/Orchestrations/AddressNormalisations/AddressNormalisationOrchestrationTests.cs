@@ -11,10 +11,8 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Services.Orchestrations.AddressNormalisations;
-using LHDS.Core.Services.Processings.AddressLoadingAudits;
 using LHDS.Core.Services.Processings.AddressNormalisations;
 using LHDS.Core.Services.Processings.AddressParsers;
 using Moq;
@@ -29,7 +27,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
     {
         private readonly Mock<IAddressParserProcessingService> addressParserProcessingServiceMock;
         private readonly Mock<IAddressNormalisationProcessingService> addressNormalisationProcessingServiceMock;
-        private readonly Mock<IAddressLoadingAuditProcessingService> addressLoadingAuditProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
@@ -41,7 +38,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
         {
             this.addressParserProcessingServiceMock = new Mock<IAddressParserProcessingService>();
             this.addressNormalisationProcessingServiceMock = new Mock<IAddressNormalisationProcessingService>();
-            this.addressLoadingAuditProcessingServiceMock = new Mock<IAddressLoadingAuditProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -51,7 +47,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
             this.addressNormalisationOrchestrationService = new AddressNormalisationOrchestrationService(
                 addressParserProcessingService: addressParserProcessingServiceMock.Object,
                 addressNormalisationProcessingService: addressNormalisationProcessingServiceMock.Object,
-                addressLoadingAuditProcessingService: addressLoadingAuditProcessingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object);
@@ -120,21 +115,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
             return filler;
         }
 
-        private static AddressLoadingAudit CreateRandomAddressLoadingAudit(DateTimeOffset dateTimeOffset) =>
-           CreateAddressLoadingAuditFiller(dateTimeOffset).Create();
-
-        private static Filler<AddressLoadingAudit> CreateAddressLoadingAuditFiller(DateTimeOffset dateTimeOffset)
-        {
-            string user = Guid.NewGuid().ToString();
-            var filler = new Filler<AddressLoadingAudit>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(addressLoadingAudit => addressLoadingAudit.CreatedBy).Use(user)
-                .OnProperty(addressLoadingAudit => addressLoadingAudit.UpdatedBy).Use(user);
-
-            return filler;
-        }
         public static TheoryData DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();

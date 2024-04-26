@@ -23,10 +23,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             Guid identifier = Guid.NewGuid();
             List<OptOutIdentifier> optOutIdentifiers = CreateRandomOptOutIdentifiersList();
             bool hasHeaderRecord = optOutConfiguration.OptOutFileHasHeader;
+            Dictionary<string, int> fieldMappings = null;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
 
             string csvData = await this.csvMapperBroker
-                .MapObjectToCsvAsync(optOutIdentifiers, hasHeaderRecord, shouldAddTrailingComma);
+                .MapObjectToCsvAsync(optOutIdentifiers, hasHeaderRecord, fieldMappings, shouldAddTrailingComma);
 
             byte[] optOutFile = Encoding.ASCII.GetBytes(csvData);
             string fileName = GetRandomString();

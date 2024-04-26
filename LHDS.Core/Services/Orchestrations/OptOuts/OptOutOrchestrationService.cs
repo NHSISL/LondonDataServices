@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -76,6 +76,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 bool withHeader =
                     optOutConfiguration.OptOutFileHasHeader;
 
+                Dictionary<string, int> fieldMappings = null;
+
                 bool shouldAddTrailingComma =
                     optOutConfiguration.OptOutFileRequireTrailingComma;
 
@@ -111,7 +113,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 }
 
                 var processedData = await this.csvMapperProcessingService
-                    .MapObjectToCsvAsync(processedOptOuts, withHeader, shouldAddTrailingComma);
+                    .MapObjectToCsvAsync(processedOptOuts, withHeader, fieldMappings, shouldAddTrailingComma);
 
                 var processedBytes = Encoding.ASCII.GetBytes(processedData);
 

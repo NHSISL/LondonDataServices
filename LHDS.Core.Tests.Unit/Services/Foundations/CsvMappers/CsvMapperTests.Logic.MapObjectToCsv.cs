@@ -3,9 +3,14 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
+using CsvHelper;
+using CsvHelper.Configuration;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.OptOuts;
+using Force.DeepCloner;
+using LHDS.Core.Tests.Unit.Models.Foundations.CsvMappers;
 using Moq;
 using Xunit;
 
@@ -13,32 +18,54 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
 {
     public partial class CsvMapperTests
     {
-        [Fact]
-        public async Task ShouldMapObjectToCsvAsync()
+        [Theory]
+        [InlineData(true, false)]
+        [InlineData(false, false)]
+        [InlineData(true, true)]
+        [InlineData(false, true)]
+        public async Task ShouldMapObjectToCsvWithoutFieldMappingsAsync(
+            bool withHeader,
+            bool withTrailingComma)
         {
             // given
-            List<OptOut> randomOptouts = CreateRandomOptOuts();
-            List<OptOut> inputOptOuts = randomOptouts;
-            string randomCsvFormattedOptOutData = GetRandomString();
-            string expectedCsvFormattedOptOutData = randomCsvFormattedOptOutData;
-            bool withHeaderRecord = true;
-            bool shouldAddTrailingComma = true;
+            int count = GetRandomNumber();
+            List<Car> randomCars = CreateRandomCars();
+
+            string randomCsvFormattedcars = GetCsvRepresentationOfCar(
+                cars: randomCars,
+                hasHeaderRow: withHeader,
+                shouldAddTrailingComma: withTrailingComma);
+
+            string expectedCsvFormattedCars = randomCsvFormattedcars.DeepClone();
+
+            List<Car> inputCars = randomCars;
+            Dictionary<string, int> fieldMappings = null;
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = withHeader,
+                MissingFieldFound = null
+            };
+
+            using StringWriter stringWriter = new StringWriter();
+            using CsvWriter writer = new CsvWriter(stringWriter, config);
 
             this.csvMapperBrokerMock.Setup(broker =>
-                broker.MapObjectToCsvAsync<OptOut>(inputOptOuts, withHeaderRecord, shouldAddTrailingComma))
-                    .ReturnsAsync(expectedCsvFormattedOptOutData);
+                broker.CreateCsvWriter(stringWriter, withHeader))
+                    .Returns(writer);
 
             // when
-            string actualCsvFormattedOptOutData = await this.csvMapperService.MapObjectToCsvAsync<OptOut>(
-                @object: inputOptOuts,
-                addHeaderRecord: withHeaderRecord,
-                shouldAddTrailingComma);
+            string actualCsvFormattedCars = await this.csvMapperService.MapObjectToCsvAsync<Car>(
+                @object: inputCars,
+                hasHeaderRecord: withHeader,
+                fieldMappings,
+                shouldAddTrailingComma: withTrailingComma);
 
             // then
-            actualCsvFormattedOptOutData.Should().BeEquivalentTo(expectedCsvFormattedOptOutData);
+            actualCsvFormattedCars.Should().BeEquivalentTo(expectedCsvFormattedCars);
 
             this.csvMapperBrokerMock.Verify(broker =>
-                broker.MapObjectToCsvAsync<OptOut>(inputOptOuts, withHeaderRecord, shouldAddTrailingComma),
+                broker.CreateCsvWriter(stringWriter, withHeader),
                     Times.Once());
 
             this.csvMapperBrokerMock.VerifyNoOtherCalls();

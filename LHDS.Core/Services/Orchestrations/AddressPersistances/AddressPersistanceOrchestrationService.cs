@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
@@ -58,19 +57,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                     address.PostalAddress = normalisedAddress.PostalAddress;
                     address.JsonPostalAddress = normalisedAddress.JsonPostalAddress;
                     Address processedAddress = await this.addressProcessingService.ModifyOrAddAddressAsync(address);
-
-                    var audit = new AddressLoadingAudit
-                    {
-                        Id = Guid.NewGuid(),
-                        CorrelationId = Guid.NewGuid(),
-                        FileName = "",
-                        Message = "Success",
-                        MessageId = "",
-                        CreatedBy = "System",
-                        UpdatedBy = "System",
-                        UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                        CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                    };
 
                     processedAddresses.Add(processedAddress);
                 }

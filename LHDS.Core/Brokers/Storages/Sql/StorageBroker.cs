@@ -29,7 +29,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddConfigurations(ModelBuilder modelBuilder)
         {
             AddAddressConfigurations(modelBuilder);
-            AddAddressLoadingAuditConfigurations(modelBuilder);
             AddDataSetConfigurations(modelBuilder);
             AddDataSetSpecificationConfigurations(modelBuilder);
             AddDataTypeConfigurations(modelBuilder);

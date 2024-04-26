@@ -9,7 +9,6 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
@@ -113,10 +112,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
                 new AddressProcessingDependencyValidationException(
                     message: "Address processing dependency validation occurred, please try again.",
-                    innerException),
-
-                new AddressLoadingAuditValidationException(
-                    message: "Audit validation errors occurred, please try again.",
                     innerException),
 
                 new AddressLoadingAuditProcessingDependencyValidationException(

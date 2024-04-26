@@ -63,7 +63,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressParserProcessingServiceMock.VerifyNoOtherCalls();
             this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
-            this.addressLoadingAuditProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }

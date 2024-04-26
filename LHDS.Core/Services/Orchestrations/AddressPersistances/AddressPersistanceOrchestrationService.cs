@@ -12,7 +12,6 @@ using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
-using LHDS.Core.Services.Processings.AddressLoadingAudits;
 using LHDS.Core.Services.Processings.AddressNormalisations;
 
 namespace LHDS.Core.Services.Orchestrations.AddressPersistances
@@ -21,20 +20,17 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
     {
         private readonly IAddressProcessingService addressProcessingService;
         private readonly IAddressNormalisationProcessingService addressNormalisationProcessingService;
-        private readonly IAddressLoadingAuditProcessingService auditProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
 
         public AddressPersistanceOrchestrationService(
             IAddressProcessingService addressProcessingService,
             IAddressNormalisationProcessingService addressNormalisationProcessingService,
-            IAddressLoadingAuditProcessingService auditProcessingService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
             this.addressProcessingService = addressProcessingService;
             this.addressNormalisationProcessingService = addressNormalisationProcessingService;
-            this.auditProcessingService = auditProcessingService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }
@@ -76,7 +72,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                         CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
                     };
 
-                    await this.auditProcessingService.AddAddressLoadingAuditAsync(audit);
                     processedAddresses.Add(processedAddress);
                 }
 

@@ -11,7 +11,6 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Services.Orchestrations.AddressNormalisations;
 using LHDS.Core.Services.Processings.AddressNormalisations;
@@ -116,21 +115,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
             return filler;
         }
 
-        private static AddressLoadingAudit CreateRandomAddressLoadingAudit(DateTimeOffset dateTimeOffset) =>
-           CreateAddressLoadingAuditFiller(dateTimeOffset).Create();
-
-        private static Filler<AddressLoadingAudit> CreateAddressLoadingAuditFiller(DateTimeOffset dateTimeOffset)
-        {
-            string user = Guid.NewGuid().ToString();
-            var filler = new Filler<AddressLoadingAudit>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(addressLoadingAudit => addressLoadingAudit.CreatedBy).Use(user)
-                .OnProperty(addressLoadingAudit => addressLoadingAudit.UpdatedBy).Use(user);
-
-            return filler;
-        }
         public static TheoryData DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();

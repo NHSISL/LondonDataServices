@@ -12,7 +12,6 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
-using LHDS.Core.Services.Processings.AddressLoadingAudits;
 using LHDS.Core.Services.Processings.AddressNormalisations;
 using LHDS.Core.Services.Processings.AddressParsers;
 
@@ -22,7 +21,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
     {
         private readonly IAddressParserProcessingService addressParserProcessingService;
         private readonly IAddressNormalisationProcessingService addressNormalisationProcessingService;
-        private readonly IAddressLoadingAuditProcessingService addressLoadingAuditProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
@@ -30,14 +28,12 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
         public AddressNormalisationOrchestrationService(
             IAddressParserProcessingService addressParserProcessingService,
             IAddressNormalisationProcessingService addressNormalisationProcessingService,
-            IAddressLoadingAuditProcessingService addressLoadingAuditProcessingService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker)
         {
             this.addressParserProcessingService = addressParserProcessingService;
             this.addressNormalisationProcessingService = addressNormalisationProcessingService;
-            this.addressLoadingAuditProcessingService = addressLoadingAuditProcessingService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
@@ -92,9 +88,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
                                 UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
                                 CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
                             };
-
-                            await this.addressLoadingAuditProcessingService
-                                .AddAddressLoadingAuditAsync(addressLoadingAudit);
 
                             return normalisedAddress;
                         });

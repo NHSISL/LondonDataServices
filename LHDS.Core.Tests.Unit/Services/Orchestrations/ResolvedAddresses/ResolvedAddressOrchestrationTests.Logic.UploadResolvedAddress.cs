@@ -49,10 +49,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.MapObjectToCsvAsync(storageResolvedAddresses, false, true))
                     .ReturnsAsync(ouputCsv);
 
-            this.documentProcessingServiceMock.Setup(service =>
-                service.AddDocumentAsync(inputDocument, container))
-                    .ReturnsAsync(fileName);
-
             foreach(ResolvedAddress resolvedAddress in updatedResolvedAddresses)
             {
                 resolvedAddress.BatchReference = batchReference;
@@ -81,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(inputDocument, container),
+                service.AddDocumentAsync(It.Is(SameDocumentAs(inputDocument)), container),
                     Times.Once);
 
             foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
@@ -92,6 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             }
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

@@ -46,6 +46,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static List<dynamic> CreateDynamicCars(List<Car> cars)
+        {
+            return cars
+                .Select(car => new
+                {
+                    Make = car.Make,
+                    Model = car.Model,
+                    Year = car.Year,
+                    Color = car.Color
+                })
+                .ToList<dynamic>();
+        }
+
+
         private static List<Car> CreateRandomCars()
         {
             return CreateCarFiller()

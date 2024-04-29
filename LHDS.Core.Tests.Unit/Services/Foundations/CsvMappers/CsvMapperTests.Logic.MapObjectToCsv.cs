@@ -150,5 +150,68 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
             this.csvMapperBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(false, true)]
+        public async Task ShouldMapDynamicToCsvWithNoFieldMappingsAsync(
+            bool withHeader,
+            bool withTrailingComma)
+        {
+            // given
+            int count = GetRandomNumber();
+            List<Car> randomCars = CreateRandomCars();
+            List<dynamic> dynamicCars = CreateDynamicCars(randomCars);
+
+            string randomCsvFormattedcars = GetCsvRepresentationOfCar(
+                cars: randomCars,
+                hasHeaderRow: withHeader,
+                shouldAddTrailingComma: withTrailingComma);
+
+            string expectedCsvFormattedCars = randomCsvFormattedcars.DeepClone();
+            List<Car> inputCars = randomCars;
+
+            Dictionary<string, int> fieldMappings = null;
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = withHeader,
+                NewLine = Environment.NewLine,
+                MissingFieldFound = null
+            };
+
+            using StringWriter stringWriter = new StringWriter();
+            using CsvWriter csvWriter = new CsvWriter(stringWriter, config);
+
+            this.csvMapperBrokerMock.Setup(broker =>
+                broker.CreateStringWriter())
+                    .Returns(stringWriter);
+
+            this.csvMapperBrokerMock.Setup(broker =>
+                broker.CreateCsvWriter(It.IsAny<StringWriter>(), withHeader))
+                    .Returns(csvWriter);
+
+            // when
+            string actualCsvFormattedCars = await this.csvMapperService.MapObjectToCsvAsync<dynamic>(
+                @object: dynamicCars,
+                hasHeaderRecord: withHeader,
+                fieldMappings,
+                shouldAddTrailingComma: withTrailingComma);
+
+            // then
+            actualCsvFormattedCars.Should().BeEquivalentTo(expectedCsvFormattedCars);
+
+            this.csvMapperBrokerMock.Verify(broker =>
+                broker.CreateStringWriter(),
+                    Times.Once);
+
+            this.csvMapperBrokerMock.Verify(broker =>
+                broker.CreateCsvWriter(It.IsAny<StringWriter>(), withHeader),
+                    Times.Once());
+
+            this.csvMapperBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

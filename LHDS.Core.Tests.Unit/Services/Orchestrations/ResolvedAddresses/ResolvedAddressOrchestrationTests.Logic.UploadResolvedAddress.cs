@@ -23,6 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Given
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses();
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
+            List<ResolvedAddress> verifyResolvedAddresses = randomResolvedAddresses.DeepClone();
             string ouputCsv = GetRandomString();
             byte[] inputData = Encoding.UTF8.GetBytes(ouputCsv);
             Guid batchReference = Guid.NewGuid();
@@ -47,6 +48,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.AddDocumentAsync(inputDocument, container))
                     .ReturnsAsync(fileName);
 
+            foreach(ResolvedAddress resolvedAddress in storageResolvedAddresses)
+            {
+                resolvedAddress.BatchReference = batchReference;
+                resolvedAddress.IsProcessed = true;
+
+                this.resolvedAddressProcessingServiceMock.Setup(service => 
+                    service.ModifyResolvedAddressAsync(resolvedAddress))
+                        .ReturnsAsync(resolvedAddress);
+            }
+
             // When
             Guid actualBatchReference =
                 await this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
@@ -63,6 +74,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(inputDocument, container),
                     Times.Once);
+
+            foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
+            {
+                this.resolvedAddressProcessingServiceMock.Verify(service =>
+                    service.ModifyResolvedAddressAsync(resolvedAddress), 
+                        Times.Once);
+            }
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();

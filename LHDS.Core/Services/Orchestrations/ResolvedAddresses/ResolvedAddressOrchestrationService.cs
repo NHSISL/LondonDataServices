@@ -71,40 +71,41 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 await this.documentProcessingService.RemoveDocumentByFileNameAsync(fileName, container);
             });
 
-        public async ValueTask<Guid> UploadResolvedAddressesAsync()
-        {
-            List<ResolvedAddress> resolvedAddresses = 
-                this.resolvedAddressProcessingService.RetrieveAllResolvedAddresses().
-                    Where(resolvedAddresses => resolvedAddresses.IsMatched == true && 
-                        resolvedAddresses.IsProcessed == false).ToList();
-
-            string resolvedAddressesCsv = 
-                await this.csvMapperProcessingService.MapObjectToCsvAsync(resolvedAddresses, false, true);
-
-            Guid batchReferenceId = identifierBroker.GetIdentifier();
-            string fileName = $"{batchReferenceId}.csv";
-            byte[] documentData = Encoding.UTF8.GetBytes(resolvedAddressesCsv);
-            string container = blobContainers.Addresses;
-
-            Document resolvedAddressesDocument = new Document
+        public ValueTask<Guid> UploadResolvedAddressesAsync() =>
+            TryCatch(async () =>
             {
-                FileName = fileName,
-                DocumentData = documentData
-            };
+                List<ResolvedAddress> resolvedAddresses =
+                    this.resolvedAddressProcessingService.RetrieveAllResolvedAddresses().
+                        Where(resolvedAddresses => resolvedAddresses.IsMatched == true &&
+                            resolvedAddresses.IsProcessed == false).ToList();
 
-            //string addedFileName = 
-            await this.documentProcessingService.
-                AddDocumentAsync(resolvedAddressesDocument, container);
+                string resolvedAddressesCsv =
+                    await this.csvMapperProcessingService.MapObjectToCsvAsync(resolvedAddresses, false, true);
 
-            foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
-            {
-                resolvedAddress.IsProcessed = true;
-                resolvedAddress.BatchReference = batchReferenceId;
+                Guid batchReferenceId = identifierBroker.GetIdentifier();
+                string fileName = $"{batchReferenceId}.csv";
+                byte[] documentData = Encoding.UTF8.GetBytes(resolvedAddressesCsv);
+                string container = blobContainers.Addresses;
 
-                await this.resolvedAddressProcessingService.ModifyResolvedAddressAsync(resolvedAddress);
-            }
+                Document resolvedAddressesDocument = new Document
+                {
+                    FileName = fileName,
+                    DocumentData = documentData
+                };
 
-            return batchReferenceId;
-        }
+                //string addedFileName = 
+                await this.documentProcessingService.
+                    AddDocumentAsync(resolvedAddressesDocument, container);
+
+                foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
+                {
+                    resolvedAddress.IsProcessed = true;
+                    resolvedAddress.BatchReference = batchReferenceId;
+
+                    await this.resolvedAddressProcessingService.ModifyResolvedAddressAsync(resolvedAddress);
+                }
+
+                return batchReferenceId;
+            });
     }
 }

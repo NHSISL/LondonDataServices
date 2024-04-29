@@ -35,8 +35,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             ValueTask<Guid> documentAddTask =
                 this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
-            ResolvedAddressOrchestrationDependencyException actualException =
-                await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyException>(documentAddTask.AsTask);
+            ResolvedAddressOrchestrationDependencyValidationException actualException =
+                await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyValidationException>(
+                    documentAddTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationDependencyValidationException);

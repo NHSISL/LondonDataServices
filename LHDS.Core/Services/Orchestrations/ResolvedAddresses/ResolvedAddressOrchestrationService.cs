@@ -82,9 +82,9 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 await this.csvMapperProcessingService.MapObjectToCsvAsync(resolvedAddresses, false, true);
 
             Guid batchReferenceId = identifierBroker.GetIdentifier();
-            string batchReferenceString = batchReferenceId.ToString();
-            string fileName = $"{batchReferenceString}.csv";
+            string fileName = $"{batchReferenceId}.csv";
             byte[] documentData = Encoding.UTF8.GetBytes(resolvedAddressesCsv);
+            string container = blobContainers.Addresses;
 
             Document resolvedAddressesDocument = new Document
             {
@@ -92,9 +92,9 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 DocumentData = documentData
             };
 
-            string addedFileName = 
-                await this.documentProcessingService.
-                    AddDocumentAsync(resolvedAddressesDocument, blobContainers.Addresses);
+            //string addedFileName = 
+            await this.documentProcessingService.
+                AddDocumentAsync(resolvedAddressesDocument, container);
 
             foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
             {

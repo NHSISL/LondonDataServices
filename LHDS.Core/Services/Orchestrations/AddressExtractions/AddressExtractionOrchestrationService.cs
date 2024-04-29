@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -23,6 +24,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
     {
         private readonly ICsvMapperService csvMapperService;
         private readonly IAddressNormalisationService addressNormalisationService;
+        private readonly IAuditBroker auditBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
@@ -30,12 +32,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
         public AddressExtractionOrchestrationService(
             ICsvMapperService csvMapperService,
             IAddressNormalisationService addressNormalisationService,
+            IAuditBroker auditBroker,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker)
         {
             this.csvMapperService = csvMapperService;
             this.addressNormalisationService = addressNormalisationService;
+            this.auditBroker = auditBroker;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
@@ -96,6 +100,13 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                         });
 
                         processedAddresses.Add(processedAddress);
+
+                        await this.auditBroker.LogInformation(
+                            auditType: "Address",
+                            title: "Successfully extracted address from Ordinance Database",
+                            message: $"Successfully extracted address with id: {address.Id} from file: {filename}",
+                            filename,
+                            correlationId: address.Id);
                     }
                     catch (Exception ex)
                     {
@@ -149,6 +160,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
                             inputResolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
                             inputResolvedAddress.PostalAddress = addressNormalisation.PostalAddress;
+
+                            await this.auditBroker.LogInformation(
+                                auditType: "Address",
+                                title: "Successfully extracted address from Ordinance Database",
+                                message: $"Successfully extracted address with id: {inputResolvedAddress.Id}" +
+                                    $" from file: {filename}",
+                                filename,
+                                correlationId: resolvedAddress.Id);
 
                             return inputResolvedAddress;
                         });

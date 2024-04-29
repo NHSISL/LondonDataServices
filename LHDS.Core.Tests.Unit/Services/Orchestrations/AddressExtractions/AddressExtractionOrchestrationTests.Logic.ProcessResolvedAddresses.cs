@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,6 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             string stringData = Encoding.UTF8.GetString(inputData);
             bool hasHeaderRecord = true;
             string randomFilename = GetRandomString();
+            Guid identifier = Guid.NewGuid();
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
                 {
@@ -43,6 +45,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
             List<ResolvedAddress> outputResolvedAddresses = randomResolvedAddresses.DeepClone();
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(identifier);
 
             this.csvMapperServiceMock.Setup(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(stringData, hasHeaderRecord, fieldMappings))
@@ -90,8 +96,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                         Times.Once);
             }
 
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformation(
+                    "Address",
+                    "Successfully extracted address from Ordinance Database",
+                    $"Successfully extracted address with id: {identifier} from file: {randomFilename}",
+                    randomFilename,
+                    identifier),
+                        Times.Exactly(randomResolvedAddresses.Count));
+
             this.csvMapperServiceMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

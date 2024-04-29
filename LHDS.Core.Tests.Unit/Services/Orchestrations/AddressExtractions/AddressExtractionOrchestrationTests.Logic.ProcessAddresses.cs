@@ -85,7 +85,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
                 address.PostalAddress = addressNormalisation.PostalAddress;
                 address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-
                 expectedAddresses.Add(address);
             }
 
@@ -108,10 +107,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 this.addressNormalisationServiceMock.Verify(service =>
                     service.GetNormalisedAddress(stringAddress),
                         Times.Once);
+
+                this.auditBrokerMock.Verify(broker =>
+                    broker.LogInformation(
+                        "Address",
+                        "Successfully extracted address from Ordinance Database",
+                        $"Successfully extracted address with id: {address.Id} from file: {inputFilename}",
+                        inputFilename,
+                        address.Id),
+                            Times.Once);
             }
 
             this.csvMapperServiceMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

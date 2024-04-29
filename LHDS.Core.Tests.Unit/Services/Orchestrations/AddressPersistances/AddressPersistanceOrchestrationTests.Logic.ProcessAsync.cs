@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using Moq;
 using Xunit;
@@ -23,6 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             // Given
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
             List<Address> inputAddresses = randomAddresses.DeepClone();
+            string someFileName = GetRandomString();
             List<Address> processedAddresses = new List<Address>();
 
             foreach (Address address in inputAddresses)
@@ -57,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // Where
             List<Address> actualAddresses =
-                await this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
+                await this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
 
             // Then
             actualAddresses.Should().HaveCount(expectedAddress.Count);
@@ -77,15 +77,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 this.addressProcessingServiceMock.Verify(service =>
                     service.ModifyOrAddAddressAsync(It.Is(SameAddressAs(address))),
                         Times.Once());
-            }
 
-            this.addressLoadingAuditProcessingServiceMock.Verify(service =>
-                service.AddAddressLoadingAuditAsync(It.IsAny<AddressLoadingAudit>()),
-                    Times.Exactly(inputAddresses.Count));
+                this.auditBrokerMock.Verify(broker => 
+                    broker.LogInformation(
+                        "Address", 
+                        "Successfully loaded address from Ordinance Database",
+                        $"Successfully loaded address with id: {address.Id} from file: {someFileName}",
+                        someFileName,
+                        address.Id), 
+                            Times.Once());
+            }
 
             this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
-            this.addressLoadingAuditProcessingServiceMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

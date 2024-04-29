@@ -1,12 +1,11 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
@@ -46,10 +45,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             catch (AddressProcessingDependencyValidationException addressProcessingDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressProcessingDependencyValidationException);
-            }
-            catch (AddressLoadingAuditValidationException addressLoadingAuditValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(addressLoadingAuditValidationException);
             }
             catch (AddressLoadingAuditProcessingDependencyValidationException
                 addressLoadingAuditProcessingDependencyValidationException)

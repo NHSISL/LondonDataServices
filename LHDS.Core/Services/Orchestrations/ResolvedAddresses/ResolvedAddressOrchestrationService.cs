@@ -3,10 +3,19 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs.Models;
+using CsvHelper.Configuration;
+using Hl7.Fhir.Model;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.CsvMappers;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
@@ -20,19 +29,25 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         private readonly ICsvMapperProcessingService csvMapperProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IIdentifierBroker identifierBroker;
+        private readonly BlobContainers blobContainers;
 
         public ResolvedAddressOrchestrationService(
             IDocumentProcessingService documentProcessingService,
             IResolvedAddressProcessingService resolvedAddressProcessingService,
             ICsvMapperProcessingService csvMapperProcessingService,
             ILoggingBroker loggingBroker,
-            IDateTimeBroker dateTimeBroker)
+            IDateTimeBroker dateTimeBroker,
+            IIdentifierBroker identifierBroker,
+            BlobContainers blobContainers)
         {
             this.documentProcessingService = documentProcessingService;
             this.resolvedAddressProcessingService = resolvedAddressProcessingService;
             this.csvMapperProcessingService = csvMapperProcessingService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.identifierBroker = identifierBroker;
+            this.blobContainers = blobContainers;
         }
 
         public ValueTask AddDocumentAsync(byte[] data, string fileName, string container) =>
@@ -56,7 +71,35 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 await this.documentProcessingService.RemoveDocumentByFileNameAsync(fileName, container);
             });
 
-        public ValueTask<Guid> UploadResolvedAddressesAsync() =>
-            throw new NotImplementedException();
+        public async ValueTask<Guid> UploadResolvedAddressesAsync()
+        {
+            List<ResolvedAddress> resolvedAddresses = 
+                this.resolvedAddressProcessingService.RetrieveAllResolvedAddresses().
+                    Where(resolvedAddresses => resolvedAddresses.IsMatched == true && 
+                        resolvedAddresses.IsProcessed == false).ToList();
+
+            string resolvedAddressesCsv = 
+                await this.csvMapperProcessingService.MapObjectToCsvAsync(resolvedAddresses, false, true);
+
+            Guid batchReference = identifierBroker.GetIdentifier();
+
+            Document resolvedAddressesDocument = new Document
+            {
+                FileName = $"{batchReference}.csv",
+                DocumentData = Encoding.UTF8.GetBytes(resolvedAddressesCsv)
+            };
+
+            await this.documentProcessingService.AddDocumentAsync(resolvedAddressesDocument, blobContainers.Addresses);
+
+            foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
+            {
+                resolvedAddress.IsProcessed = true;
+                resolvedAddress.BatchReference = batchReference;
+
+                await this.resolvedAddressProcessingService.ModifyResolvedAddressAsync(resolvedAddress);
+            }
+
+            return batchReference;
+        }
     }
 }

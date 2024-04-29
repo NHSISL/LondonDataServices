@@ -40,6 +40,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.RetrieveAllResolvedAddresses()).
                     Returns(storageResolvedAddresses.AsQueryable());
 
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(batchReference);
+
             this.csvMapperProcessingServiceMock.Setup(service =>
                 service.MapObjectToCsvAsync(storageResolvedAddresses, false, true))
                     .ReturnsAsync(ouputCsv);
@@ -65,6 +69,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Then
             this.resolvedAddressProcessingServiceMock.Verify(service =>
                 service.RetrieveAllResolvedAddresses(),
+                    Times.Once);
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
                     Times.Once);
 
             this.csvMapperProcessingServiceMock.Verify(service =>

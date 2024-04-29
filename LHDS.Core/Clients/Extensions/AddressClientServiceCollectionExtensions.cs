@@ -23,7 +23,6 @@ using LHDS.Core.Services.Foundations.AddressParsers;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
-using LHDS.Core.Services.Orchestrations.AddressNormalisations;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
@@ -112,7 +111,6 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddOrchestrations(IServiceCollection services)
         {
             services.AddTransient<IAddressExtractionOrchestrationService, AddressExtractionOrchestrationService>();
-            services.AddTransient<IAddressNormalisationOrchestrationService, AddressNormalisationOrchestrationService>();
             services.AddTransient<IAddressPersistanceOrchestrationService, AddressPersistanceOrchestrationService>();
             services.AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>();
         }

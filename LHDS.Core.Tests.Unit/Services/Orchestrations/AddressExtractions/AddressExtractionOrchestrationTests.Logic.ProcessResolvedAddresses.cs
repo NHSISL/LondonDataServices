@@ -77,11 +77,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 this.addressNormalisationServiceMock.Verify(service =>
                     service.GetNormalisedAddress(stringAddress),
                         Times.Once);
+
+                this.auditBrokerMock.Verify(broker =>
+                    broker.LogInformation(
+                        "Address",
+                        "Successfully extracted address from Ordinance Database",
+                        $"Successfully extracted address with id: {resolvedAddress.Id} from file: {randomFilename}",
+                        randomFilename,
+                        resolvedAddress.Id),
+                            Times.Once);
             }
 
             this.resolvedAddressParserServiceMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.addressParserServiceMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 {
     public interface IAddressPersistanceOrchestrationService
     {
-        ValueTask<List<Address>> PersistAddressAsync(List<Address> addresses);
+        ValueTask<List<Address>> PersistAddressAsync(List<Address> addresses, string fileName);
         ValueTask<ResolvedAddress> MatchAndPersistResolvedAddressAsync(ResolvedAddress resolvedAddresses);
     }
 }

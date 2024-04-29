@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -19,17 +20,20 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
     {
         private readonly IAddressProcessingService addressProcessingService;
         private readonly IAddressNormalisationProcessingService addressNormalisationProcessingService;
+        private readonly IAuditBroker auditBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
 
         public AddressPersistanceOrchestrationService(
             IAddressProcessingService addressProcessingService,
             IAddressNormalisationProcessingService addressNormalisationProcessingService,
+            IAuditBroker auditBroker,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
             this.addressProcessingService = addressProcessingService;
             this.addressNormalisationProcessingService = addressNormalisationProcessingService;
+            this.auditBroker = auditBroker;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }
@@ -37,10 +41,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
         public ValueTask<ResolvedAddress> MatchAndPersistResolvedAddressAsync(ResolvedAddress resolvedAddresses) =>
             throw new NotImplementedException();
 
-        public ValueTask<List<Address>> PersistAddressAsync(List<Address> addresses) =>
+        public ValueTask<List<Address>> PersistAddressAsync(List<Address> addresses, string fileName) =>
             TryCatch(async () =>
             {
-                ValidateAddressListOrchestrationOnProcess(addresses);
+                ValidateAddressPersistanceOrchestration(addresses, fileName);
                 List<Address> processedAddresses = new List<Address>();
 
                 foreach (var address in addresses)
@@ -57,6 +61,13 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                     address.PostalAddress = normalisedAddress.PostalAddress;
                     address.JsonPostalAddress = normalisedAddress.JsonPostalAddress;
                     Address processedAddress = await this.addressProcessingService.ModifyOrAddAddressAsync(address);
+
+                    await this.auditBroker.LogInformation(
+                        auditType: "Address",
+                        title: "Successfully loaded address from Ordinance Database",
+                        message: $"Successfully loaded address with id: {address.Id} from file: {fileName}",
+                        fileName,
+                        correlationId: address.Id);
 
                     processedAddresses.Add(processedAddress);
                 }

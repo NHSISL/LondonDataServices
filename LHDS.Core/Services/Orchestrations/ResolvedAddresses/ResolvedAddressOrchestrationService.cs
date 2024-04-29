@@ -81,12 +81,14 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             string resolvedAddressesCsv = 
                 await this.csvMapperProcessingService.MapObjectToCsvAsync(resolvedAddresses, false, true);
 
-            Guid batchReference = identifierBroker.GetIdentifier();
+            Guid batchReferenceId = identifierBroker.GetIdentifier();
+            string batchReferenceString = batchReferenceId.ToString();
+            byte[] documentData = Encoding.ASCII.GetBytes(resolvedAddressesCsv);
 
             Document resolvedAddressesDocument = new Document
             {
-                FileName = $"{batchReference}.csv",
-                DocumentData = Encoding.UTF8.GetBytes(resolvedAddressesCsv)
+                FileName = $"{batchReferenceString}.csv",
+                DocumentData = documentData
             };
 
             await this.documentProcessingService.AddDocumentAsync(resolvedAddressesDocument, blobContainers.Addresses);
@@ -94,12 +96,12 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
             {
                 resolvedAddress.IsProcessed = true;
-                resolvedAddress.BatchReference = batchReference;
+                resolvedAddress.BatchReference = batchReferenceId;
 
                 await this.resolvedAddressProcessingService.ModifyResolvedAddressAsync(resolvedAddress);
             }
 
-            return batchReference;
+            return batchReferenceId;
         }
     }
 }

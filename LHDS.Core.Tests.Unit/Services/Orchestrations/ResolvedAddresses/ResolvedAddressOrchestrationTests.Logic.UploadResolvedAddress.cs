@@ -23,12 +23,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Given
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses();
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
+            List<ResolvedAddress> updatedResolvedAddresses = randomResolvedAddresses.DeepClone();
             List<ResolvedAddress> verifyResolvedAddresses = randomResolvedAddresses.DeepClone();
             string ouputCsv = GetRandomString();
             byte[] inputData = Encoding.UTF8.GetBytes(ouputCsv);
             Guid batchReference = Guid.NewGuid();
             string fileName = $"{batchReference}.csv";
-            string container = "Addresses";
+            string container = blobContainers.Addresses;
 
             Document inputDocument = new Document
             {
@@ -52,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.AddDocumentAsync(inputDocument, container))
                     .ReturnsAsync(fileName);
 
-            foreach(ResolvedAddress resolvedAddress in storageResolvedAddresses)
+            foreach(ResolvedAddress resolvedAddress in updatedResolvedAddresses)
             {
                 resolvedAddress.BatchReference = batchReference;
                 resolvedAddress.IsProcessed = true;

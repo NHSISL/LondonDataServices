@@ -14,12 +14,68 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
     public partial class ResolvedAddressOrchestrationService
     {
         private delegate ValueTask ReturningNothingFunction();
+        private delegate ValueTask<Guid> ReturningGuidFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
             try
             {
                 await returningNothingFunction();
+            }
+            catch (InvalidArgumentResolvedAddressOrchestrationException
+                invalidArgumentResolvedAddressOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentResolvedAddressOrchestrationException);
+            }
+            catch (DocumentProcessingValidationException documentProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(documentProcessingValidationException);
+            }
+            catch (DocumentProcessingDependencyValidationException documentProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(documentProcessingDependencyValidationException);
+            }
+            catch (ResolvedAddressProcessingValidationException resolvedAddressProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressProcessingValidationException);
+            }
+            catch (ResolvedAddressProcessingDependencyValidationException
+                resolvedAddressProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressProcessingDependencyValidationException);
+            }
+            catch (DocumentProcessingDependencyException documentProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(documentProcessingDependencyException);
+            }
+            catch (DocumentProcessingServiceException documentProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(documentProcessingServiceException);
+            }
+            catch (ResolvedAddressProcessingDependencyException resolvedAddressProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressProcessingDependencyException);
+            }
+            catch (ResolvedAddressProcessingServiceException resolvedAddressProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressProcessingServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedResolvedAddressOrchestrationServiceException =
+                    new FailedResolvedAddressOrchestrationServiceException(
+                        message: "Failed resolved address orchestration service occurred, please contact support.",
+                        exception);
+
+                throw CreateAndLogServiceException(failedResolvedAddressOrchestrationServiceException);
+            }
+        }
+
+        private async ValueTask<Guid> TryCatch(ReturningGuidFunction returningGuidFunction)
+        {
+            try
+            {
+                return await returningGuidFunction();
             }
             catch (InvalidArgumentResolvedAddressOrchestrationException
                 invalidArgumentResolvedAddressOrchestrationException)

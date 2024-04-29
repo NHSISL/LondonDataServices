@@ -14,11 +14,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 {
     public partial class AddressPersistanceOrchestrationServiceTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionsOnProcessIfAddressListIsNullAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionsOnProcessIfAddressListIsNullAndLogItAsync(string invalidText)
         {
             // given
             List<Address> nullAddressList = null;
+            string invalidFileName = invalidText;
 
             var invalidArgumentAddressPersistanceOrchestrationException =
                 new InvalidArgumentAddressPersistanceOrchestrationException(
@@ -26,8 +30,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                         "please correct the errors and try again.");
 
             invalidArgumentAddressPersistanceOrchestrationException.AddData(
-                key: "AddressList",
+                key: "addressList",
                 values: "Address list is required");
+
+            invalidArgumentAddressPersistanceOrchestrationException.AddData(
+                key: "fileName",
+                values: "Text is required");
 
             var expectedAddressPersistanceOrchestrationValidationException =
                 new AddressPersistanceOrchestrationValidationException(
@@ -36,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // when
             ValueTask<List<Address>> processAddressesTask =
-                this.addressPersistanceOrchestrationService.PersistAddressAsync(nullAddressList);
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(nullAddressList, invalidFileName);
 
             AddressPersistanceOrchestrationValidationException
                 actualAddressPersistanceOrchestrationValidationException =

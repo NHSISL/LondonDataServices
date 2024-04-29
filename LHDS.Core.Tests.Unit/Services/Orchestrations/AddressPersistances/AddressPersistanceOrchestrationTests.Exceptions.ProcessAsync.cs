@@ -24,6 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             // given
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            string someFileName = GetRandomString();
             Address address = randomAddresses[0];
 
             var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
@@ -44,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // when
             ValueTask<List<Address>> processTask =
-                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
 
             AddressPersistanceOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressPersistanceOrchestrationDependencyValidationException>(
@@ -79,6 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             // given
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            string someFileName = GetRandomString();
             Address address = randomAddresses[0];
 
             var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
@@ -99,7 +101,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // when
             ValueTask<List<Address>> processTask =
-                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
 
             AddressPersistanceOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressPersistanceOrchestrationDependencyException>(
@@ -132,6 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             //Given
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            string someFileName = GetRandomString();
             Address address = randomAddresses[0];
 
             var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
@@ -158,7 +161,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // when
             ValueTask<List<Address>> processTask =
-                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
 
             AddressPersistanceOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<AddressPersistanceOrchestrationServiceException>(

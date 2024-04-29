@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -27,6 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
     {
         private readonly Mock<IAddressProcessingService> addressProcessingServiceMock;
         private readonly Mock<IAddressNormalisationProcessingService> addressNormalisationProcessingServiceMock;
+        private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ICompareLogic compareLogic;
@@ -36,6 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             this.addressProcessingServiceMock = new Mock<IAddressProcessingService>();
             this.addressNormalisationProcessingServiceMock = new Mock<IAddressNormalisationProcessingService>();
+            this.auditBrokerMock = new Mock<IAuditBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
@@ -43,6 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.addressPersistanceOrchestrationService = new AddressPersistanceOrchestrationService(
                 addressProcessingService: addressProcessingServiceMock.Object,
                 addressNormalisationProcessingService: addressNormalisationProcessingServiceMock.Object,
+                auditBroker: auditBrokerMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object);
         }

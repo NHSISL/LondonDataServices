@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Services.Processings.CsvMappers;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 
@@ -16,17 +17,20 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
     {
         private readonly IDocumentProcessingService documentProcessingService;
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
+        private readonly ICsvMapperProcessingService csvMapperProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
 
         public ResolvedAddressOrchestrationService(
             IDocumentProcessingService documentProcessingService,
             IResolvedAddressProcessingService resolvedAddressProcessingService,
+            ICsvMapperProcessingService csvMapperProcessingService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
             this.documentProcessingService = documentProcessingService;
             this.resolvedAddressProcessingService = resolvedAddressProcessingService;
+            this.csvMapperProcessingService = csvMapperProcessingService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }

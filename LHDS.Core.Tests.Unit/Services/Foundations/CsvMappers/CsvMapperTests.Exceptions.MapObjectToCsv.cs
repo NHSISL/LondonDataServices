@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.CsvMappers.Exceptions;
@@ -39,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
                     innerException: failedCsvMapperServiceException);
 
             this.csvMapperBrokerMock.Setup(broker =>
-                broker.CreateCsvWriter(It.IsAny<StringWriter>(), It.IsAny<bool>()))
+                broker.CreateStringWriter())
                     .Throws(serviceException);
 
             // when
@@ -61,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
                         Times.Once);
 
             this.csvMapperBrokerMock.Verify(broker =>
-                broker.CreateCsvWriter(It.IsAny<StringWriter>(), It.IsAny<bool>()),
+                broker.CreateStringWriter(),
                         Times.Once());
 
             this.csvMapperBrokerMock.VerifyNoOtherCalls();

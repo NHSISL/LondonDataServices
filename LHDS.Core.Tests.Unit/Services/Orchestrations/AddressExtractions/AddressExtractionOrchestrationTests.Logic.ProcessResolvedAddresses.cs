@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -29,12 +30,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessResolvedAddressesAsync.csv");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+            string stringData = Encoding.UTF8.GetString(inputData);
+            bool hasHeaderRecord = true;
             string randomFilename = GetRandomString();
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                {
+                    { nameof(ResolvedAddress.UniqueReference), 0 },
+                    { nameof(ResolvedAddress.PostCode), 1 },
+                    { nameof(ResolvedAddress.UnstructuredPostalAddress), 2 }
+                };
+
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
             List<ResolvedAddress> outputResolvedAddresses = randomResolvedAddresses.DeepClone();
 
-            this.resolvedAddressParserServiceMock.Setup(service =>
-                service.ProcessCsvAsync(inputData, randomFilename))
+            this.csvMapperServiceMock.Setup(service =>
+                service.MapCsvToObjectAsync<ResolvedAddress>(stringData, hasHeaderRecord, fieldMappings))
                     .ReturnsAsync(outputResolvedAddresses);
 
             List<ResolvedAddress> expectedResolvedAddresses = new List<ResolvedAddress>();
@@ -66,8 +77,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualResolvedAddress.Should().BeEquivalentTo(expectedResolvedAddresses, options =>
                 options.Excluding(address => address.Id));
 
-            this.resolvedAddressParserServiceMock.Verify(service =>
-                service.ProcessCsvAsync(inputData, randomFilename),
+            this.csvMapperServiceMock.Verify(service =>
+                service.MapCsvToObjectAsync<ResolvedAddress>(stringData, hasHeaderRecord, fieldMappings),
                     Times.Once());
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
@@ -79,9 +90,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                         Times.Once);
             }
 
-            this.resolvedAddressParserServiceMock.VerifyNoOtherCalls();
+            this.csvMapperServiceMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
-            this.addressParserServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

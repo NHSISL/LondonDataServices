@@ -19,7 +19,6 @@ using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
-using LHDS.Core.Services.Foundations.AddressLoadingAudits;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.CsvMappers;
 using LHDS.Core.Services.Foundations.Documents;
@@ -28,7 +27,6 @@ using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
-using LHDS.Core.Services.Processings.AddressLoadingAudits;
 using LHDS.Core.Services.Processings.AddressNormalisations;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
@@ -98,7 +96,6 @@ namespace LHDS.Core.Clients.Extensions
         {
             services.AddTransient<ICsvMapperService, CsvMapperService>();
             services.AddTransient<IAddressNormalisationService, AddressNormalisationService>();
-            services.AddTransient<IAddressLoadingAuditService, AddressLoadingAuditService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IResolvedAddressService, ResolvedAddressService>();
 
@@ -108,7 +105,6 @@ namespace LHDS.Core.Clients.Extensions
         {
             services.AddTransient<IAddressProcessingService, AddressProcessingService>();
             services.AddTransient<IAddressNormalisationProcessingService, AddressNormalisationProcessingService>();
-            services.AddTransient<IAddressLoadingAuditProcessingService, AddressLoadingAuditProcessingService>();
             services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();
             services.AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>();
         }

@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -28,6 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
     {
         private readonly Mock<ICsvMapperService> csvMapperServiceMock;
         private readonly Mock<IAddressNormalisationService> addressNormalisationServiceMock;
+        private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
@@ -39,6 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         {
             this.csvMapperServiceMock = new Mock<ICsvMapperService>();
             this.addressNormalisationServiceMock = new Mock<IAddressNormalisationService>();
+            this.auditBrokerMock = new Mock<IAuditBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -48,6 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.addressExtractionOrchestrationService = new AddressExtractionOrchestrationService(
                 csvMapperService: csvMapperServiceMock.Object,
                 addressNormalisationService: addressNormalisationServiceMock.Object,
+                auditBroker: auditBrokerMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object);

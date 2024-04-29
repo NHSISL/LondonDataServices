@@ -83,15 +83,18 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
             Guid batchReferenceId = identifierBroker.GetIdentifier();
             string batchReferenceString = batchReferenceId.ToString();
-            byte[] documentData = Encoding.ASCII.GetBytes(resolvedAddressesCsv);
+            string fileName = $"{batchReferenceString}.csv";
+            byte[] documentData = Encoding.UTF8.GetBytes(resolvedAddressesCsv);
 
             Document resolvedAddressesDocument = new Document
             {
-                FileName = $"{batchReferenceString}.csv",
+                FileName = fileName,
                 DocumentData = documentData
             };
 
-            await this.documentProcessingService.AddDocumentAsync(resolvedAddressesDocument, blobContainers.Addresses);
+            string addedFileName = 
+                await this.documentProcessingService.
+                    AddDocumentAsync(resolvedAddressesDocument, blobContainers.Addresses);
 
             foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
             {

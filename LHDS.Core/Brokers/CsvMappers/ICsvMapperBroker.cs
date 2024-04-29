@@ -11,5 +11,6 @@ namespace LHDS.Core.Brokers.CsvMappers
     {
         CsvReader CreateCsvReader(StringReader reader, bool hasHeaderRecord);
         CsvWriter CreateCsvWriter(StringWriter writer, bool hasHeaderRecord);
+        StringWriter CreateStringWriter();
     }
 }

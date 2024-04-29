@@ -10,7 +10,6 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Tests.Unit.Models.Foundations.CsvMappers;
 using Moq;
 using Xunit;
@@ -51,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
             using CsvReader csvReader = new CsvReader(stringReader, config);
 
             this.csvMapperBrokerMock.Setup(broker =>
-                broker.CreateCsvReader(stringReader, hasHeaderRecord))
+                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord))
                     .Returns(csvReader);
 
             // when
@@ -64,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
             actualCars.Should().BeEquivalentTo(expectedCars);
 
             this.csvMapperBrokerMock.Verify(broker =>
-                broker.CreateCsvReader(stringReader, hasHeaderRecord),
+                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord),
                     Times.Once());
 
             this.csvMapperBrokerMock.VerifyNoOtherCalls();
@@ -110,11 +109,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
             using CsvReader csvReader = new CsvReader(stringReader, config);
 
             this.csvMapperBrokerMock.Setup(broker =>
-                broker.CreateCsvReader(stringReader, hasHeaderRecord))
+                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord))
                     .Returns(csvReader);
 
             // when
-            List<OptOut> actualOptOuts = await this.csvMapperService.MapCsvToObjectAsync<OptOut>(
+            List<Car> actualOptOuts = await this.csvMapperService.MapCsvToObjectAsync<Car>(
                 data: inputCsvFormattedCars,
                 hasHeaderRecord: hasHeaderRecord,
                 fieldMappings);
@@ -123,7 +122,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
             actualOptOuts.Should().BeEquivalentTo(expectedCars);
 
             this.csvMapperBrokerMock.Verify(broker =>
-                broker.CreateCsvReader(stringReader, hasHeaderRecord),
+                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord),
                     Times.Once());
 
             this.csvMapperBrokerMock.VerifyNoOtherCalls();

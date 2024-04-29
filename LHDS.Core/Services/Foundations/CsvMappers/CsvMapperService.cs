@@ -30,14 +30,14 @@ namespace LHDS.Core.Brokers.CsvMappers
                 ValidateMapCsvToObjectArguments(data, hasHeaderRecord);
 
                 using (var reader = new StringReader(data))
-                using (var csv = this.csvMapperBroker.CreateCsvReader(reader, hasHeaderRecord))
+                using (var csvReader = this.csvMapperBroker.CreateCsvReader(reader, hasHeaderRecord))
                 {
                     if (fieldMappings != null)
                     {
-                        csv.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
+                        csvReader.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
                     }
 
-                    var records = csv.GetRecords<T>().ToList();
+                    var records = csvReader.GetRecords<T>().ToList();
 
                     return await ValueTask.FromResult(records);
                 }
@@ -52,9 +52,15 @@ namespace LHDS.Core.Brokers.CsvMappers
         {
             ValidateMapObjectToCsvArguments(@object, hasHeaderRecord);
 
-            using (var writer = new StringWriter())
-            using (var csvWriter = this.csvMapperBroker.CreateCsvWriter(writer, hasHeaderRecord))
+            using (var stringWriter = this.csvMapperBroker.CreateStringWriter())
+            using (var csvWriter = this.csvMapperBroker.CreateCsvWriter(stringWriter, hasHeaderRecord))
             {
+
+                if (fieldMappings != null)
+                {
+                    csvWriter.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
+                }
+
                 if (hasHeaderRecord)
                 {
                     csvWriter.WriteHeader<T>();
@@ -73,7 +79,10 @@ namespace LHDS.Core.Brokers.CsvMappers
                     csvWriter.NextRecord();
                 }
 
-                return await ValueTask.FromResult(writer.ToString());
+                stringWriter.Flush();
+                var csv = stringWriter.ToString();
+
+                return await ValueTask.FromResult(csv);
             }
         });
     }

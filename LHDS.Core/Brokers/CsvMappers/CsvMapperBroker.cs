@@ -28,11 +28,17 @@ namespace LHDS.Core.Brokers.CsvMappers
             return new CsvReader(reader, config);
         }
 
+        public StringWriter CreateStringWriter()
+        {
+            return new StringWriter();
+        }
+
         public CsvWriter CreateCsvWriter(StringWriter writer, bool hasHeaderRecord)
         {
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = hasHeaderRecord,
+                NewLine = Environment.NewLine,
                 MissingFieldFound = null
             };
 

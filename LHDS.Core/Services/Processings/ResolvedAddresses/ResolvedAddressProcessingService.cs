@@ -96,6 +96,5 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
 
                 return await ValueTask.FromResult(result);
             });
-
     }
 }

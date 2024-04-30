@@ -21,6 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         public async Task ShouldUploadResolvedAddressAsync()
         {
             // Given
+            DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses();
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
             List<ResolvedAddress> updatedResolvedAddresses = randomResolvedAddresses.DeepClone();
@@ -53,6 +54,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             {
                 resolvedAddress.BatchReference = batchReference;
                 resolvedAddress.IsProcessed = true;
+                resolvedAddress.UpdatedDate = dateTimeOffset;
+
+                this.dateTimeBrokerMock.Setup(broker =>
+                    broker.GetCurrentDateTimeOffset()).Returns(dateTimeOffset);
 
                 this.resolvedAddressProcessingServiceMock.Setup(service => 
                     service.ModifyResolvedAddressAsync(resolvedAddress))
@@ -82,6 +87,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
             {
+                this.dateTimeBrokerMock.Verify(broker =>
+                    broker.GetCurrentDateTimeOffset(), 
+                        Times.Once);
+
                 this.resolvedAddressProcessingServiceMock.Verify(service =>
                     service.ModifyResolvedAddressAsync(resolvedAddress), 
                         Times.Once);

@@ -73,9 +73,9 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             TryCatch(async () =>
             {
                 List<ResolvedAddress> resolvedAddresses =
-                    this.resolvedAddressProcessingService.RetrieveAllResolvedAddresses().
-                        Where(resolvedAddresses => resolvedAddresses.IsMatched == true &&
-                            resolvedAddresses.IsProcessed == false).ToList();
+                    this.resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
+                        .Where(resolvedAddresses => resolvedAddresses.IsMatched == true
+                            && resolvedAddresses.IsProcessed == false).ToList();
 
                 string resolvedAddressesCsv =
                     await this.csvMapperProcessingService.MapObjectToCsvAsync(resolvedAddresses, false, null, true);
@@ -116,7 +116,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 if (exceptions.Any())
                 {
                     throw new AggregateException(
-                        $"Unable to modify resolved address for {exceptions.Count} resolved addresses",
+                        message: $"Unable to modify resolved address for {exceptions.Count} resolved addresses " +
+                            $"in batch: {batchReferenceId}",
                         exceptions);
                 }
 

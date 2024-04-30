@@ -76,7 +76,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var aggregateException =
                 new AggregateException(
-                    message: $"Unable to modify resolved address for {exceptions.Count} resolved addresses",
+                    message: $"Unable to modify resolved address for {exceptions.Count} resolved addresses " +
+                        $"in batch: {batchReference}",
                     exceptions);
 
             var failedResolvedAddressOrchestrationServiceException =
@@ -207,7 +208,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to modify resolved address for {exceptions.Count} resolved addresses",
+                    message: $"Unable to modify resolved address for {exceptions.Count} resolved addresses " +
+                        $"in batch: {batchReference}",
                     exceptions);
 
             var failedResolvedAddressOrchestrationServiceException =
@@ -341,7 +343,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to modify resolved address for {exceptions.Count} resolved addresses",
+                    message: $"Unable to modify resolved address for {exceptions.Count} resolved addresses " +
+                        $"in batch: {batchReference}",
                     exceptions);
 
             var failedResolvedAddressOrchestrationServiceException =

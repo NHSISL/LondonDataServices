@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -33,11 +34,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                  @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessResolvedAddressesAsync.csv");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+            string stringData = Encoding.UTF8.GetString(inputData);
+            List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+
+            List<string> filteredRecords = records.Where(record =>
+               record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
+
+            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+            bool hasHeaderRecord = false;
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                {
+                    { "UPRN", 3 },
+                    { "UPSN", 4 },
+                    { "OrganisationName", 5 },
+                    { "DepartmentName", 6 },
+                    { "SubBuildingName", 7 },
+                    { "BuildingName", 8 },
+                    { "BuildingNumber", 9 },
+                    { "DependentThoroughfare", 10 },
+                    { "Thoroughfare", 11 },
+                    { "DoubleDependentLocality", 12 },
+                    { "DependentLocality", 13 },
+                    { "PostTown", 14 },
+                    { "PostCode", 15 }
+                };
+
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
             List<Address> outputAddresses = randomAddresses.DeepClone();
 
-            this.addressParserServiceMock.Setup(service =>
-                service.ProcessCsvAsync(inputData, inputFilename))
+            this.csvMapperServiceMock.Setup(service =>
+                service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings))
                     .ReturnsAsync(outputAddresses);
 
             List<Address> expectedAddresses = new List<Address>();
@@ -69,8 +96,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
                 options.Excluding(address => address.Id));
 
-            this.addressParserServiceMock.Verify(service =>
-                service.ProcessCsvAsync(inputData, inputFilename),
+            this.csvMapperServiceMock.Verify(service =>
+                service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings),
                     Times.Once());
 
             foreach (Address address in randomAddresses)
@@ -91,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                             Times.Once);
             }
 
-            this.addressParserServiceMock.VerifyNoOtherCalls();
+            this.csvMapperServiceMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

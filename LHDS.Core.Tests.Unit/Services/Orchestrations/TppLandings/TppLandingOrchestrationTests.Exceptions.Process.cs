@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
 using Moq;
 using Xeptions;
@@ -20,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
              Xeption dependancyValidationException)
         {
             // given
-            Models.Foundations.Documents.Document randomDocument = CreateRandomDocument();
+            Document randomDocument = CreateRandomDocument();
 
             var expectedDependencyException =
                 new TppLandingOrchestrationDependencyValidationException(
@@ -64,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
           Xeption dependancyException)
         {
             // given
-            Models.Foundations.Documents.Document randomDocument = CreateRandomDocument();
+            Document randomDocument = CreateRandomDocument();
 
             var expectedDependencyException =
                 new TppLandingOrchestrationDependencyException(
@@ -106,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         public async Task ShouldThrowServiceExceptionOnProcessIfServiceErrorOccursAndLogItAsync()
         {
             //Given
-            Models.Foundations.Documents.Document randomDocument = CreateRandomDocument();
+            Document randomDocument = CreateRandomDocument();
             var serviceException = new Exception();
 
             var failedTppOrchestrationServiceException =

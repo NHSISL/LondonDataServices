@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.CsvMappers.Exceptions;
-using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Tests.Unit.Models.Foundations.CsvMappers;
 using Moq;
 using Xunit;
 
@@ -18,15 +18,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
         public async Task ShouldThrowValidationExceptionOnMapObjectToCsvIfInputsIsInvalidAndLogItAsync()
         {
             // given
-            List<OptOut> nullOptOuts = null;
+            List<Car> nullCars = null;
             string randomCsvFormattedOptOutData = GetRandomString();
-            string expectedCsvFormattedOptOutData = randomCsvFormattedOptOutData;
             bool withHeaderRecord = true;
+            Dictionary<string, int> fieldMappings = null;
             bool shouldAddTrailingComma = true;
-
-            this.csvMapperBrokerMock.Setup(broker =>
-                broker.MapObjectToCsvAsync<OptOut>(nullOptOuts, withHeaderRecord, shouldAddTrailingComma))
-                    .ReturnsAsync(expectedCsvFormattedOptOutData);
 
             var invalidCsvMapperArgumentsException = new InvalidCsvMapperArgumentsException(
                 message: "Invalid CSV mapper arguments. Please fix the errors and try again.");
@@ -41,9 +37,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
                     innerException: invalidCsvMapperArgumentsException);
 
             // when
-            ValueTask<string> mapObjectToCsvTask = this.csvMapperService.MapObjectToCsvAsync<OptOut>(
-                @object: nullOptOuts,
-                addHeaderRecord: withHeaderRecord,
+            ValueTask<string> mapObjectToCsvTask = this.csvMapperService.MapObjectToCsvAsync<Car>(
+                @object: nullCars,
+                hasHeaderRecord: withHeaderRecord,
+                fieldMappings,
                 shouldAddTrailingComma);
 
             CsvMapperValidationException actualCsvMapperValidationException =
@@ -56,10 +53,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedCsvMapperValidationException))),
                         Times.Once);
-
-            this.csvMapperBrokerMock.Verify(broker =>
-                broker.MapObjectToCsvAsync<OptOut>(nullOptOuts, withHeaderRecord, shouldAddTrailingComma),
-                    Times.Never());
 
             this.csvMapperBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

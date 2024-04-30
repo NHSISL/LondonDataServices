@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.CsvMappers.Exceptions;
-using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Tests.Unit.Models.Foundations.CsvMappers;
 using Moq;
 using Xunit;
 
@@ -24,13 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
             // given
             string randomCsvFormattedOptOutData = invalidText;
             string inputCsvFormattedOptOutData = randomCsvFormattedOptOutData;
-            List<OptOut> randomOptouts = CreateRandomOptOuts();
-            List<OptOut> expectedOptOuts = randomOptouts;
             bool withHeaderRecord = true;
-
-            this.csvMapperBrokerMock.Setup(broker =>
-                broker.MapCsvToObjectAsync<OptOut>(inputCsvFormattedOptOutData, withHeaderRecord))
-                    .ReturnsAsync(expectedOptOuts);
 
             var invalidCsvMapperArgumentsException = new InvalidCsvMapperArgumentsException(
                 message: "Invalid CSV mapper arguments. Please fix the errors and try again.");
@@ -45,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
                     innerException: invalidCsvMapperArgumentsException);
 
             // when
-            ValueTask<List<OptOut>> mapCsvToObjectTask = this.csvMapperService.MapCsvToObjectAsync<OptOut>(
+            ValueTask<List<Car>> mapCsvToObjectTask = this.csvMapperService.MapCsvToObjectAsync<Car>(
                 data: inputCsvFormattedOptOutData,
                 hasHeaderRecord: withHeaderRecord);
 
@@ -59,10 +53,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedCsvMapperValidationException))),
                         Times.Once);
-
-            this.csvMapperBrokerMock.Verify(broker =>
-                broker.MapCsvToObjectAsync<OptOut>(inputCsvFormattedOptOutData, withHeaderRecord),
-                    Times.Never());
 
             this.csvMapperBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

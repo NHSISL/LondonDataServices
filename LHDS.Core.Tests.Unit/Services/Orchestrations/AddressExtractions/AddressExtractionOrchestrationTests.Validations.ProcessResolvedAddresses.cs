@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         [InlineData("")]
         [InlineData(" ")]
 
-        public async Task 
+        public async Task
             ShouldThrowValidationExceptionOnProcessResolvedAddressIfDataIsNullAndLogItAsync(string invalidText)
         {
             // given
@@ -62,9 +62,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.resolvedAddressParserServiceMock.VerifyNoOtherCalls();
+            this.csvMapperServiceMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
-            this.addressParserServiceMock.VerifyNoOtherCalls();
         }
     }
 }

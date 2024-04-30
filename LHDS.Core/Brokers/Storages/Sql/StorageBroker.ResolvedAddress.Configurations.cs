@@ -28,12 +28,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<ResolvedAddress>()
-                .Property(address => address.UPRN)
+                .Property(address => address.MatchedUPRN)
                 .HasMaxLength(15)
                 .IsRequired(false);
 
             modelBuilder.Entity<ResolvedAddress>()
-                .Property(address => address.UPSN)
+                .Property(address => address.MatchedUPSN)
                 .HasMaxLength(15)
                 .IsRequired(false);
 

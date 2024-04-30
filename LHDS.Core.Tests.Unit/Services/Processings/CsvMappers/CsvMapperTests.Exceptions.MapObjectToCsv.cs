@@ -26,6 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             List<OptOut> randomOptOuts = CreateRandomOptOuts();
             List<OptOut> inputOptOuts = randomOptOuts;
             bool withHeaderRecord = true;
+            Dictionary<string, int> fieldMappings = null;
             bool shouldAddTrailingComma = true;
 
             var expectedCsvMapperProcessingDependencyValidationException =
@@ -34,13 +35,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                     dependancyValidationException.InnerException as Xeption);
 
             this.csvMapperServiceMock.Setup(service =>
-                service.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), It.IsAny<bool>(), It.IsAny<bool>()))
-                    .ThrowsAsync(dependancyValidationException);
+                service.MapObjectToCsvAsync(
+                    It.IsAny<List<OptOut>>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()))
+                        .ThrowsAsync(dependancyValidationException);
 
             // when
             ValueTask<string> mapCsvToObjectTask = this.csvMapperProcessingService.MapObjectToCsvAsync<OptOut>(
                 @object: inputOptOuts,
                 addHeaderRecord: withHeaderRecord,
+                fieldMappings,
                 shouldAddTrailingComma);
 
             CsvMapperProcessingDependencyValidationException actualCsvMapperProcessingDependencyValidationException =
@@ -56,8 +62,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                         Times.Once);
 
             this.csvMapperServiceMock.Verify(service =>
-                service.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), It.IsAny<bool>(), It.IsAny<bool>()),
-                    Times.Once());
+                service.MapObjectToCsvAsync(
+                    It.IsAny<List<OptOut>>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()),
+                        Times.Once());
 
             this.csvMapperServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -72,6 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             List<OptOut> randomOptOuts = CreateRandomOptOuts();
             List<OptOut> inputOptOuts = randomOptOuts;
             bool withHeaderRecord = true;
+            Dictionary<string, int> fieldMappings = null;
             bool shouldAddTrailingComma = true;
 
             var expectedCsvMapperProcessingDependencyException =
@@ -80,13 +91,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                     dependancyException.InnerException as Xeption);
 
             this.csvMapperServiceMock.Setup(service =>
-                service.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), It.IsAny<bool>(), It.IsAny<bool>()))
-                    .ThrowsAsync(dependancyException);
+                service.MapObjectToCsvAsync(
+                    It.IsAny<List<OptOut>>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()))
+                        .ThrowsAsync(dependancyException);
 
             // when
             ValueTask<string> mapCsvToObjectTask = this.csvMapperProcessingService.MapObjectToCsvAsync<OptOut>(
                 @object: inputOptOuts,
                 addHeaderRecord: withHeaderRecord,
+                fieldMappings,
                 shouldAddTrailingComma);
 
             CsvMapperProcessingDependencyException actualCsvMapperProcessingDependencyException =
@@ -101,8 +117,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                         Times.Once);
 
             this.csvMapperServiceMock.Verify(service =>
-                service.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), It.IsAny<bool>(), It.IsAny<bool>()),
-                    Times.Once());
+                service.MapObjectToCsvAsync(
+                    It.IsAny<List<OptOut>>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()),
+                        Times.Once());
 
             this.csvMapperServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -116,6 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             List<OptOut> inputOptOuts = randomOptOuts;
             bool withHeaderRecord = true;
             bool shouldAddTrailingComma = true;
+            Dictionary<string, int> fieldMappings = null;
             var serviceException = new Exception();
 
             var failedCsvMapperServiceException =
@@ -129,13 +150,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                     failedCsvMapperServiceException);
 
             this.csvMapperServiceMock.Setup(service =>
-                service.MapObjectToCsvAsync<OptOut>(inputOptOuts, withHeaderRecord, shouldAddTrailingComma))
-                    .ThrowsAsync(serviceException);
+                service.MapObjectToCsvAsync<OptOut>(
+                    inputOptOuts,
+                    withHeaderRecord,
+                    fieldMappings,
+                    shouldAddTrailingComma))
+                        .ThrowsAsync(serviceException);
 
             // when
             ValueTask<string> mapCsvToObjectTask = this.csvMapperProcessingService.MapObjectToCsvAsync<OptOut>(
                 @object: inputOptOuts,
                 addHeaderRecord: withHeaderRecord,
+                fieldMappings,
                 shouldAddTrailingComma);
 
             CsvMapperProcessingServiceException actualCsvMapperServiceException =
@@ -150,8 +176,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                         Times.Once);
 
             this.csvMapperServiceMock.Verify(service =>
-                service.MapObjectToCsvAsync<OptOut>(inputOptOuts, withHeaderRecord, shouldAddTrailingComma),
-                    Times.Once());
+                service.MapObjectToCsvAsync<OptOut>(
+                    inputOptOuts,
+                    withHeaderRecord,
+                    fieldMappings,
+                    shouldAddTrailingComma),
+                        Times.Once());
 
             this.csvMapperServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

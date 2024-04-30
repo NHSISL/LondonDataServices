@@ -31,13 +31,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<ResolvedAddress> MatchAndPersistResolvedAddressAsync(ResolvedAddress resolvedAddresses) =>
-            throw new NotImplementedException();
-
         public ValueTask<List<Address>> PersistAddressAsync(List<Address> addresses, string fileName) =>
             TryCatch(async () =>
             {
-                ValidateAddressPersistanceOrchestration(addresses, fileName);
+                ValidateAddressPersistenceOrchestration(addresses, fileName);
                 List<Address> processedAddresses = new List<Address>();
                 List<Exception> exceptions = new List<Exception>();
 
@@ -53,13 +50,20 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                             return processAddress;
                         });
 
-                    await this.auditBroker.LogInformation(
-                        auditType: "Address",
-                        title: "Successfully loaded address from Ordinance Database",
-                        message: $"Successfully loaded address with id: {address.Id} from file: {fileName}",
-                        fileName,
-                        correlationId: address.Id);
-
+                        //await this.auditBroker.LogInformation(
+                        //    auditType: "Address",
+                        //    title: "Successfully loaded address from Ordinance Database",
+                        //    message: $"Successfully loaded address with id: {address.Id} from file: {fileName}",
+                        //    fileName,
+                        //    correlationId: address.Id);
+                        processedAddresses.Add(processAddress);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.loggingBroker.LogError(ex);
+                        exceptions.Add(ex);
+                    }
+                }
                 if (exceptions.Any())
                 {
                     throw new AggregateException(

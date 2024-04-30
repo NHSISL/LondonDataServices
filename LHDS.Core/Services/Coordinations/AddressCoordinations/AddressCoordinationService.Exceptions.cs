@@ -101,12 +101,12 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 throw CreateAndLogDependencyValidationException(
                     addressExtractionOrchestrationDependencyValidationException);
             }
-            catch (AddressPersistanceOrchestrationValidationException
+            catch (AddressPersistenceOrchestrationValidationException
                 addressPersistanceOrchestrationValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
             }
-            catch (AddressPersistanceOrchestrationDependencyValidationException
+            catch (AddressPersistenceOrchestrationDependencyValidationException
                 addressPersistanceOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
@@ -121,11 +121,11 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
             }
-            catch (AddressPersistanceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            catch (AddressPersistenceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
             }
-            catch (AddressPersistanceOrchestrationDependencyException
+            catch (AddressPersistenceOrchestrationDependencyException
                 addressPersistanceOrchestrationDependencyException)
             {
                 throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
@@ -172,12 +172,12 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 throw CreateAndLogDependencyValidationException(
                     addressExtractionOrchestrationDependencyValidationException);
             }
-            catch (AddressPersistanceOrchestrationValidationException
+            catch (AddressPersistenceOrchestrationValidationException
                 addressPersistanceOrchestrationValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
             }
-            catch (AddressPersistanceOrchestrationDependencyValidationException
+            catch (AddressPersistenceOrchestrationDependencyValidationException
                 addressPersistanceOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
@@ -192,11 +192,11 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
             }
-            catch (AddressPersistanceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            catch (AddressPersistenceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
             }
-            catch (AddressPersistanceOrchestrationDependencyException
+            catch (AddressPersistenceOrchestrationDependencyException
                 addressPersistanceOrchestrationDependencyException)
             {
                 throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);

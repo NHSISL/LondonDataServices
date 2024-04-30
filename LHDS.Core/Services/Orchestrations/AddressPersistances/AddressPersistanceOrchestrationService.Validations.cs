@@ -10,7 +10,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 {
     internal partial class AddressPersistanceOrchestrationService
     {
-        private static void ValidateAddressPersistanceOrchestration(List<Address> addressList, string fileName)
+        virtual internal void ValidateAddressPersistenceOrchestration(List<Address> addressList, string fileName)
         {
             Validate(
                 (Rule: IsInvalid(addressList), Parameter: "addressList"),

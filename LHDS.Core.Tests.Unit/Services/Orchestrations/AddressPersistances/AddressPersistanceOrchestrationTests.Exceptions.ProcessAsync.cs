@@ -28,6 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             // given
             List<Address> randomAddresses = CreateRandomAddresses(1).ToList();
+            string someFileName = GetRandomString();
             List<Exception> exceptions = new List<Exception>();
 
             foreach (Address address in randomAddresses)
@@ -63,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // when
             ValueTask<List<Address>> processTask =
-                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
 
             AddressPersistenceOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(
@@ -200,16 +201,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             List<Address> randomAddresses = CreateRandomAddresses(1).ToList();
             Address address = randomAddresses[0];
             string exceptionMessage = GetRandomString();
+            string someFileName = GetRandomString();
             var serviceException = new Exception(exceptionMessage);
 
-            mock.Setup(x => x.ValidateAddressListOrchestrationOnProcess(randomAddresses))
+            mock.Setup(x => x.ValidateAddressPersistenceOrchestration(randomAddresses, someFileName))
                 .Throws(serviceException);
 
             AddressPersistanceOrchestrationService addressPersistanceOrchestrationService = mock.Object;
 
             var failedAddressPersistanceOrchestrationServiceException =
                 new FailedAddressPersistenceOrchestrationServiceException(
-                    message: "Failed address persistence orchestration service error occurred, please contact support",
+                    message: "Failed address persistence orchestration service error occurred, contact support.",
                     innerException: serviceException);
 
             var expectedAddressPersistanceOrchestrationServiceException =
@@ -219,7 +221,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // when
             ValueTask<List<Address>> processTask =
-                addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
+                addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
 
             AddressPersistenceOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(

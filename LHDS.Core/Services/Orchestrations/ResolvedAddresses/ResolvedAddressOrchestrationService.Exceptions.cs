@@ -156,7 +156,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             var resolvedAddressOrchestrationDependencyValidationException =
                 new ResolvedAddressOrchestrationDependencyValidationException(
-                    message: "Resolved address orchestration dependency validation occurred, please try again.",
+                    message: "Resolved address orchestration dependency validation error occurred, please try again.",
                     exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(resolvedAddressOrchestrationDependencyValidationException);

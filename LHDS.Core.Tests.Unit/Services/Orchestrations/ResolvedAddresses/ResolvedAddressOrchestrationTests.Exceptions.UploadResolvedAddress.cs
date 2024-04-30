@@ -59,11 +59,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             {
                 this.resolvedAddressProcessingServiceMock.Setup(service =>
                     service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
-                        .ReturnsAsync(resolvedAddress);
+                        .ThrowsAsync(dependencyValidationException);
 
                 var resolvedAddressOrchestrationDependencyValidationException =
                     new ResolvedAddressOrchestrationDependencyValidationException(
-                        message: "Resolved address orchestration dependency validation occurred, please try again.",
+                        message: "Resolved address orchestration dependency validation error occurred, " +
+                            "please try again.",
                         innerException: dependencyValidationException.InnerException as Xeption);
 
                 exceptions.Add(resolvedAddressOrchestrationDependencyValidationException);
@@ -71,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to modify resolved address for {exceptions.Count} resolved addresses",
+                    message: $"Unable to modify resolved address for {exceptions.Count} resolved addresses",
                     exceptions);
 
             var failedResolvedAddressOrchestrationServiceException =
@@ -90,12 +91,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException
-                actuaResolvedAddressOrchestrationDependencyValidationException =
+                actualResolvedAddressOrchestrationServiceException =
                     await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
                         await uploadResolvedAddressTask);
 
             // Then
-            actuaResolvedAddressOrchestrationDependencyValidationException.Should()
+            actualResolvedAddressOrchestrationServiceException.Should()
                 .BeEquivalentTo(expectedResolvedAddressOrchestrationServiceException);
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>
@@ -120,7 +121,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var resolvedAddressOrchestrationDependencyValidationLoggingException =
                 new ResolvedAddressOrchestrationDependencyValidationException(
-                    message: "Resolved address orchestration dependency validation occurred, please try again.",
+                    message: "Resolved address orchestration dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -130,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    actuaResolvedAddressOrchestrationDependencyValidationException))),
+                    actualResolvedAddressOrchestrationServiceException))),
                         Times.Once);
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
@@ -179,7 +180,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             {
                 this.resolvedAddressProcessingServiceMock.Setup(service =>
                     service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
-                        .ReturnsAsync(resolvedAddress);
+                        .ThrowsAsync(dependencyException);
 
                 var resolvedAddressOrchestrationDependencyException =
                     new ResolvedAddressOrchestrationDependencyException(
@@ -387,7 +388,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // given
             var expectedResolvedAddressOrchestrationDependencyValidationException =
                 new ResolvedAddressOrchestrationDependencyValidationException(
-                    message: "Resolved address orchestration dependency validation occurred, please try again.",
+                    message: "Resolved address orchestration dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.resolvedAddressProcessingServiceMock.Setup(service =>

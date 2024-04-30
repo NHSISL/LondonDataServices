@@ -116,7 +116,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var failedResolvedAddressOrchestrationServiceException =
                 new FailedResolvedAddressOrchestrationServiceException(
-                    message: "Failed resolved address orchestration service occurred, please contact support.",
+                    message: "Failed resolved address orchestration service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedResolvedAddressOrchestrationServiveException =

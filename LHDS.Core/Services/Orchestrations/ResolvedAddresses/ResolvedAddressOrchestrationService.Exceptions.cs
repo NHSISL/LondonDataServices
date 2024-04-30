@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
@@ -64,7 +65,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
                 var failedResolvedAddressOrchestrationServiceException =
                     new FailedResolvedAddressOrchestrationServiceException(
-                        message: "Failed resolved address orchestration service occurred, please contact support.",
+                        message: "Failed resolved address orchestration service error occurred, " +
+                            "please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(failedResolvedAddressOrchestrationServiceException);
@@ -115,11 +117,22 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
                 throw CreateAndLogDependencyException(resolvedAddressProcessingServiceException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedFailedResolvedAddressOrchestrationServiceException =
+                    new FailedResolvedAddressOrchestrationServiceException(
+                        message: "Failed resolved address aggregate orchestration service error occurred, " +
+                            "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedFailedResolvedAddressOrchestrationServiceException);
+            }
             catch (Exception exception)
             {
                 var failedResolvedAddressOrchestrationServiceException =
                     new FailedResolvedAddressOrchestrationServiceException(
-                        message: "Failed resolved address orchestration service occurred, please contact support.",
+                        message: "Failed resolved address orchestration service error occurred, " +
+                            "please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(failedResolvedAddressOrchestrationServiceException);

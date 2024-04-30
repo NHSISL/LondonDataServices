@@ -103,6 +103,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         {
                             resolvedAddress.IsProcessed = true;
                             resolvedAddress.BatchReference = batchReferenceId;
+                            resolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
                             await this.resolvedAddressProcessingService.ModifyResolvedAddressAsync(resolvedAddress);
                         });
                     }

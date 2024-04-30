@@ -27,6 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             Xeption dependencyValidationException)
         {
             // Given
+            DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
             List<Exception> exceptions = new List<Exception>();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses();
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
@@ -57,6 +58,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
             {
+                this.dateTimeBrokerMock.Setup(broker =>
+                    broker.GetCurrentDateTimeOffset()).Returns(dateTimeOffset);
+
                 this.resolvedAddressProcessingServiceMock.Setup(service =>
                     service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
                         .ThrowsAsync(dependencyValidationException);
@@ -116,6 +120,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
                     Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Exactly(storageResolvedAddresses.Count));
+
             this.resolvedAddressProcessingServiceMock.Verify(service =>
                 service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
                     Times.Exactly(storageResolvedAddresses.Count));
@@ -150,6 +158,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             Xeption dependencyException)
         {
             // Given
+            DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
             List<Exception> exceptions = new List<Exception>();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses();
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
@@ -166,8 +175,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             };
 
             this.resolvedAddressProcessingServiceMock.Setup(service =>
-                service.RetrieveAllResolvedAddresses()).
-                    Returns(storageResolvedAddresses.AsQueryable());
+                service.RetrieveAllResolvedAddresses())
+                    .Returns(storageResolvedAddresses.AsQueryable());
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifier())
@@ -180,6 +189,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
             {
+                this.dateTimeBrokerMock.Setup(broker =>
+                    broker.GetCurrentDateTimeOffset())
+                        .Returns(dateTimeOffset);
+
                 this.resolvedAddressProcessingServiceMock.Setup(service =>
                     service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
                         .ThrowsAsync(dependencyException);
@@ -237,6 +250,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
                     Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Exactly(storageResolvedAddresses.Count));
+
             this.resolvedAddressProcessingServiceMock.Verify(service =>
                 service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
                     Times.Exactly(storageResolvedAddresses.Count));
@@ -269,6 +286,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         public async Task ShouldThrowAggregateServiceExceptionOnProcessResolvedAddressesIfErrorsInLoopAndLogItAsync()
         {
             // Given
+            DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
             List<Exception> exceptions = new List<Exception>();
             var serviceException = new Exception();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses();
@@ -310,6 +328,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
             {
+                this.dateTimeBrokerMock.Setup(broker =>
+                    broker.GetCurrentDateTimeOffset())
+                        .Returns(dateTimeOffset);
+
                 this.resolvedAddressProcessingServiceMock.Setup(service =>
                     service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
                         .ThrowsAsync(serviceException);
@@ -361,6 +383,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
                     Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Exactly(storageResolvedAddresses.Count));
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>
                 service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()),

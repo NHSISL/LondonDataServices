@@ -52,8 +52,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Returns(batchReference);
 
             this.csvMapperProcessingServiceMock.Setup(service =>
-                service.MapObjectToCsvAsync(It.IsAny<List<ResolvedAddress>>(), It.IsAny<bool>(), It.IsAny<bool>()))
-                    .ReturnsAsync(ouputCsv);
+                service.MapObjectToCsvAsync(
+                    It.IsAny<List<ResolvedAddress>>(), It.IsAny<bool>(), null, It.IsAny<bool>()))
+                        .ReturnsAsync(ouputCsv);
 
             foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
             {
@@ -108,7 +109,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Once);
 
             this.csvMapperProcessingServiceMock.Verify(service =>
-                service.MapObjectToCsvAsync(It.IsAny<List<ResolvedAddress>>(), It.IsAny<bool>(), It.IsAny<bool>()),
+                service.MapObjectToCsvAsync(
+                    It.IsAny<List<ResolvedAddress>>(), It.IsAny<bool>(), null, It.IsAny<bool>()),
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
@@ -173,8 +175,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Returns(batchReference);
 
             this.csvMapperProcessingServiceMock.Setup(service =>
-                service.MapObjectToCsvAsync(It.IsAny<List<ResolvedAddress>>(), It.IsAny<bool>(), It.IsAny<bool>()))
-                    .ReturnsAsync(ouputCsv);
+                service.MapObjectToCsvAsync(
+                    It.IsAny<List<ResolvedAddress>>(), It.IsAny<bool>(), null, It.IsAny<bool>()))
+                        .ReturnsAsync(ouputCsv);
 
             foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
             {
@@ -227,8 +230,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Once);
 
             this.csvMapperProcessingServiceMock.Verify(service =>
-                service.MapObjectToCsvAsync(It.IsAny<List<ResolvedAddress>>(), It.IsAny<bool>(), It.IsAny<bool>()),
-                    Times.Once);
+                service.MapObjectToCsvAsync(
+                    It.IsAny<List<ResolvedAddress>>(), It.IsAny<bool>(), null, It.IsAny<bool>()),
+                        Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
@@ -291,8 +295,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Returns(batchReference);
 
             this.csvMapperProcessingServiceMock.Setup(service =>
-                service.MapObjectToCsvAsync(It.IsAny<List<ResolvedAddress>>(), It.IsAny<bool>(), It.IsAny<bool>()))
-                    .ReturnsAsync(ouputCsv);
+                service.MapObjectToCsvAsync(
+                    It.IsAny<List<ResolvedAddress>>(), It.IsAny<bool>(), null, It.IsAny<bool>()))
+                        .ReturnsAsync(ouputCsv);
 
             var innerFailedResolvedAddressOrchestrationServiceException =
                 new FailedResolvedAddressOrchestrationServiceException(
@@ -350,8 +355,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Once);
 
             this.csvMapperProcessingServiceMock.Verify(service =>
-                service.MapObjectToCsvAsync(It.IsAny<List<ResolvedAddress>>(), It.IsAny<bool>(), It.IsAny<bool>()),
-                    Times.Once);
+                service.MapObjectToCsvAsync(
+                    It.IsAny<List<ResolvedAddress>>(), It.IsAny<bool>(), null, It.IsAny<bool>()),
+                        Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),

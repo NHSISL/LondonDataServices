@@ -12,21 +12,25 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
+using LHDS.Core.Services.Processings.AddressMatchers;
 
 namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 {
     internal partial class AddressPersistanceOrchestrationService : IAddressPersistanceOrchestrationService
     {
         private readonly IAddressProcessingService addressProcessingService;
+        private readonly IAddressMatcherProcessingService addressMatcherProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
 
         public AddressPersistanceOrchestrationService(
             IAddressProcessingService addressProcessingService,
+            IAddressMatcherProcessingService addressMatcherProcessingService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
             this.addressProcessingService = addressProcessingService;
+            this.addressMatcherProcessingService = addressMatcherProcessingService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }

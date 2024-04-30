@@ -10,9 +10,11 @@ using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Processings.Addresses;
+using LHDS.Core.Services.Processings.AddressMatchers;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -23,6 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
     public partial class AddressPersistanceOrchestrationServiceTests
     {
         private readonly Mock<IAddressProcessingService> addressProcessingServiceMock;
+        private readonly Mock<IAddressMatcherProcessingService> addressMatcherProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ICompareLogic compareLogic;
@@ -31,12 +34,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         public AddressPersistanceOrchestrationServiceTests()
         {
             this.addressProcessingServiceMock = new Mock<IAddressProcessingService>();
+            this.addressMatcherProcessingServiceMock = new Mock<IAddressMatcherProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
 
             this.addressPersistanceOrchestrationService = new AddressPersistanceOrchestrationService(
                 addressProcessingService: addressProcessingServiceMock.Object,
+                addressMatcherProcessingService: addressMatcherProcessingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object);
         }
@@ -80,6 +85,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static ResolvedAddress CreateRandomResolvedAddress(DateTimeOffset dateTimeOffset) =>
+            CreateResolvedAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<ResolvedAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 
             return filler;
         }

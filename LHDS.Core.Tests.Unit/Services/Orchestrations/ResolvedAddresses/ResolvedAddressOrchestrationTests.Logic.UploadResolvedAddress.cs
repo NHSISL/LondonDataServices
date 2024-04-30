@@ -26,6 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
             List<ResolvedAddress> updatedResolvedAddresses = randomResolvedAddresses.DeepClone();
             List<ResolvedAddress> verifyResolvedAddresses = randomResolvedAddresses.DeepClone();
+            List<ResolvedAddressReturn> returnResolvedAddresses = MapToResolvedAddressReturn(storageResolvedAddresses);
             string ouputCsv = GetRandomString();
             byte[] inputData = Encoding.UTF8.GetBytes(ouputCsv);
             Guid batchReference = Guid.NewGuid();
@@ -47,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Returns(batchReference);
 
             this.csvMapperProcessingServiceMock.Setup(service =>
-                service.MapObjectToCsvAsync(storageResolvedAddresses, false, null, true))
+                service.MapObjectToCsvAsync(returnResolvedAddresses, false, null, true))
                     .ReturnsAsync(ouputCsv);
 
             foreach(ResolvedAddress resolvedAddress in updatedResolvedAddresses)
@@ -78,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Once);
 
             this.csvMapperProcessingServiceMock.Verify(service =>
-                service.MapObjectToCsvAsync(storageResolvedAddresses, false, null, true),
+                service.MapObjectToCsvAsync(returnResolvedAddresses, false, null, true),
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>

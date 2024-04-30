@@ -110,6 +110,29 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             return filler;
         }
 
+        private static List<ResolvedAddressReturn> MapToResolvedAddressReturn(List<ResolvedAddress> resolvedAddresses)
+        {
+            List<ResolvedAddressReturn> returnAddresses = resolvedAddresses.Select(resolvedAddress =>
+                    new ResolvedAddressReturn
+                    {
+                        UPRN = resolvedAddress.MatchedUPRN,
+                        UPSN = resolvedAddress.MatchedUPSN,
+                        OrganisationName = resolvedAddress.MatchedOrganisationName,
+                        DepartmentName = resolvedAddress.MatchedDepartmentName,
+                        SubBuildingName = resolvedAddress.MatchedSubBuildingName,
+                        BuildingName = resolvedAddress.MatchedBuildingName,
+                        BuildingNumber = resolvedAddress.MatchedBuildingNumber,
+                        DependentThoroughfare = resolvedAddress.MatchedDependentThoroughfare,
+                        Thoroughfare = resolvedAddress.MatchedThoroughfare,
+                        DoubleDependentLocality = resolvedAddress.MatchedDoubleDependentLocality,
+                        DependentLocality = resolvedAddress.MatchedDependentLocality,
+                        PostTown = resolvedAddress.MatchedPostTown,
+                        PostCode = resolvedAddress.MatchedPostCode,
+                    }).ToList();
+
+            return returnAddresses;
+        }
+
         public static TheoryData DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();

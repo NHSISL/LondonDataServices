@@ -77,8 +77,26 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         .Where(resolvedAddresses => resolvedAddresses.IsMatched == true
                             && resolvedAddresses.IsProcessed == false).ToList();
 
+                List<ResolvedAddressReturn> returnAddresses = resolvedAddresses.Select(resolvedAddress =>
+                    new ResolvedAddressReturn
+                    {
+                        UPRN = resolvedAddress.MatchedUPRN,
+                        UPSN = resolvedAddress.MatchedUPSN,
+                        OrganisationName = resolvedAddress.MatchedOrganisationName,
+                        DepartmentName = resolvedAddress.MatchedDepartmentName,
+                        SubBuildingName = resolvedAddress.MatchedSubBuildingName,
+                        BuildingName = resolvedAddress.MatchedBuildingName,
+                        BuildingNumber = resolvedAddress.MatchedBuildingNumber,
+                        DependentThoroughfare = resolvedAddress.MatchedDependentThoroughfare,
+                        Thoroughfare = resolvedAddress.MatchedThoroughfare,
+                        DoubleDependentLocality = resolvedAddress.MatchedDoubleDependentLocality,
+                        DependentLocality = resolvedAddress.MatchedDependentLocality,
+                        PostTown = resolvedAddress.MatchedPostTown,
+                        PostCode = resolvedAddress.MatchedPostCode,
+                    }).ToList();
+
                 string resolvedAddressesCsv =
-                    await this.csvMapperProcessingService.MapObjectToCsvAsync(resolvedAddresses, false, null, true);
+                    await this.csvMapperProcessingService.MapObjectToCsvAsync(returnAddresses, false, null, true);
 
                 Guid batchReferenceId = identifierBroker.GetIdentifier();
                 string fileName = $"{batchReferenceId}.csv";

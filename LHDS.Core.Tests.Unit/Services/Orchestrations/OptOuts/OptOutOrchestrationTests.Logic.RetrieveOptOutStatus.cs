@@ -20,6 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             // given
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+            Dictionary<string, int> fieldMappings = null;
             Guid identifier = Guid.NewGuid();
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             var randomString = GetRandomString();
@@ -32,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<OptOutIdentifier> outputOptOuts = randomOptOuts;
 
             this.csvMapperProcessingServiceMock.Setup(processing =>
-                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, false))
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))
                     .ReturnsAsync(outputOptOuts);
 
             this.identifierBrokerMock.Setup(processing =>
@@ -72,6 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 processings.MapObjectToCsvAsync(
                     It.Is(SameOptOutListAs(processedOptOuts)),
                     withHeader,
+                    fieldMappings,
                     shouldAddTrailingComma))
                         .ReturnsAsync(processedString);
 
@@ -95,7 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // then
             this.csvMapperProcessingServiceMock.Verify(processing =>
-                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, false),
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings),
                     Times.Once);
 
             foreach (var optOut in outputOptOuts)
@@ -127,8 +129,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     Times.Exactly(outputOptOuts.Count));
 
             this.csvMapperProcessingServiceMock.Verify(processings =>
-                processings.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), withHeader, shouldAddTrailingComma),
-                    Times.Once);
+                processings.MapObjectToCsvAsync(
+                    It.IsAny<List<OptOut>>(),
+                    withHeader,
+                    fieldMappings,
+                    shouldAddTrailingComma),
+                        Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.Is(SameDocumentAs(document)), It.IsAny<string>()),

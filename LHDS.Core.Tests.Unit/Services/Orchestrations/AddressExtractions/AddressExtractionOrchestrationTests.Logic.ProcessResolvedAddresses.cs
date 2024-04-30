@@ -2,10 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -29,12 +31,27 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessResolvedAddressesAsync.csv");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+            string stringData = Encoding.UTF8.GetString(inputData);
+            bool hasHeaderRecord = true;
             string randomFilename = GetRandomString();
+            Guid identifier = Guid.NewGuid();
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                {
+                    { nameof(ResolvedAddress.UniqueReference), 0 },
+                    { nameof(ResolvedAddress.PostCode), 1 },
+                    { nameof(ResolvedAddress.UnstructuredPostalAddress), 2 }
+                };
+
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
             List<ResolvedAddress> outputResolvedAddresses = randomResolvedAddresses.DeepClone();
 
-            this.resolvedAddressParserServiceMock.Setup(service =>
-                service.ProcessCsvAsync(inputData, randomFilename))
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(identifier);
+
+            this.csvMapperServiceMock.Setup(service =>
+                service.MapCsvToObjectAsync<ResolvedAddress>(stringData, hasHeaderRecord, fieldMappings))
                     .ReturnsAsync(outputResolvedAddresses);
 
             List<ResolvedAddress> expectedResolvedAddresses = new List<ResolvedAddress>();
@@ -66,8 +83,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualResolvedAddress.Should().BeEquivalentTo(expectedResolvedAddresses, options =>
                 options.Excluding(address => address.Id));
 
-            this.resolvedAddressParserServiceMock.Verify(service =>
-                service.ProcessCsvAsync(inputData, randomFilename),
+            this.csvMapperServiceMock.Verify(service =>
+                service.MapCsvToObjectAsync<ResolvedAddress>(stringData, hasHeaderRecord, fieldMappings),
                     Times.Once());
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
@@ -77,20 +94,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 this.addressNormalisationServiceMock.Verify(service =>
                     service.GetNormalisedAddress(stringAddress),
                         Times.Once);
-
-                this.auditBrokerMock.Verify(broker =>
-                    broker.LogInformation(
-                        "Address",
-                        "Successfully extracted address from Ordinance Database",
-                        $"Successfully extracted address with id: {resolvedAddress.Id} from file: {randomFilename}",
-                        randomFilename,
-                        resolvedAddress.Id),
-                            Times.Once);
             }
 
-            this.resolvedAddressParserServiceMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformation(
+                    "Address",
+                    "Successfully extracted address from Ordinance Database",
+                    $"Successfully extracted address with id: {identifier} from file: {randomFilename}",
+                    randomFilename,
+                    identifier),
+                        Times.Exactly(randomResolvedAddresses.Count));
+
+            this.csvMapperServiceMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
-            this.addressParserServiceMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

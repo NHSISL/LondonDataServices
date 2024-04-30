@@ -27,9 +27,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             List<OptOut> randomOptouts = CreateRandomOptOuts();
             List<OptOut> expectedOptOuts = randomOptouts;
             bool withHeaderRecord = true;
+            Dictionary<string, int> fieldMappings = null;
 
             this.csvMapperServiceMock.Setup(service =>
-                service.MapCsvToObjectAsync<OptOut>(inputString, withHeaderRecord))
+                service.MapCsvToObjectAsync<OptOut>(inputString, withHeaderRecord, fieldMappings))
                     .ReturnsAsync(expectedOptOuts);
 
             var invalidCsvMapperArgumentsException = new InvalidCsvMapperArgumentsException(
@@ -47,7 +48,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             // when
             ValueTask<List<OptOut>> mapCsvToObjectTask = this.csvMapperProcessingService.MapCsvToObjectAsync<OptOut>(
                 data: invalidString,
-                hasHeaderRecord: withHeaderRecord);
+                hasHeaderRecord: withHeaderRecord,
+                fieldMappings);
 
             CsvMapperValidationException actualCsvMapperValidationException =
                 await Assert.ThrowsAsync<CsvMapperValidationException>(mapCsvToObjectTask.AsTask);
@@ -61,8 +63,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                         Times.Once);
 
             this.csvMapperServiceMock.Verify(service =>
-                service.MapCsvToObjectAsync<OptOut>(inputString, withHeaderRecord),
-                    Times.Never());
+                service.MapCsvToObjectAsync<OptOut>(
+                    inputString,
+                    withHeaderRecord,
+                    fieldMappings),
+                        Times.Never());
 
             this.csvMapperServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using LHDS.Core.Models.Foundations.CsvMappers.Exceptions;
@@ -17,7 +17,7 @@ namespace LHDS.Core.Brokers.CsvMappers
                     (Rule: IsInvalid(data), Parameter: "Data"));
         }
 
-        private static void ValidateMapObjectToCsvArguments<T>(T @object, bool addHeaderRecord)
+        private static void ValidateMapObjectToCsvArguments<T>(T @object, bool hasHeaderRecord)
         {
             Validate<InvalidCsvMapperArgumentsException>(
                     message: "Invalid CSV mapper arguments. Please fix the errors and try again.",

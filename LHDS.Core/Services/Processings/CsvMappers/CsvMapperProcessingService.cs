@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,24 +22,27 @@ namespace LHDS.Core.Services.Processings.CsvMappers
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<T>> MapCsvToObjectAsync<T>(string data, bool hasHeaderRecord) =>
+        public ValueTask<List<T>> MapCsvToObjectAsync<T>(string data,
+            bool hasHeaderRecord,
+            Dictionary<string, int>? fieldMappings = null) =>
             TryCatch(async () =>
             {
                 ValidateMapCsvToObjectArguments(data, hasHeaderRecord);
 
-                return await this.csvMapperService.MapCsvToObjectAsync<T>(data, hasHeaderRecord);
+                return await this.csvMapperService.MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);
             });
 
         public ValueTask<string> MapObjectToCsvAsync<T>(
             List<T> @object,
             bool addHeaderRecord,
-            bool shouldAddTrailingComma) =>
+            Dictionary<string, int>? fieldMappings = null,
+            bool? shouldAddTrailingComma = false) =>
             TryCatch(async () =>
             {
                 ValidateMapObjectToCsvArguments(@object, addHeaderRecord);
 
                 return await this.csvMapperService
-                    .MapObjectToCsvAsync(@object, addHeaderRecord, shouldAddTrailingComma);
+                    .MapObjectToCsvAsync(@object, addHeaderRecord, fieldMappings, shouldAddTrailingComma);
             });
     }
 }

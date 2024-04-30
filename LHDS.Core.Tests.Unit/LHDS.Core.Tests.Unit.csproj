@@ -9,6 +9,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Services\Foundations\AddressParsers\AddressParserTests.cs" />
+	  <Compile Remove="Services\Foundations\AddressParsers\AddressParserTests.Exceptions.ProcessCSV.cs" />
+	  <Compile Remove="Services\Foundations\AddressParsers\AddressParserTests.Logic.ProcessCSV.cs" />
+	  <Compile Remove="Services\Foundations\AddressParsers\AddressParserTests.Validations.ProcessCSV.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessAddressesAsync.csv" />
 	</ItemGroup>
 
@@ -57,6 +64,10 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\LHDS.Core\LHDS.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Services\Foundations\AddressParsers\" />
 	</ItemGroup>
 
 </Project>

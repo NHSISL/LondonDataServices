@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -25,6 +25,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             // Given
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+            Dictionary<string, int> fieldMappings = null;
+            bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<string> outputMessageIds = GetRandomStrings(count: GetRandomNumber());
             List<string> randomConsentedIdentifiers = CreateRandomListOfConsentedIdentifiers(count: GetRandomNumber());
@@ -93,8 +95,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 csvMapperProcessingServiceMock.Setup(processings =>
                     processings.MapObjectToCsvAsync<OptOutIdentifier>(
                         It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
-                        this.optOutConfiguration.OptOutFileHasHeader,
-                        this.optOutConfiguration.OptOutFileRequireTrailingComma))
+                        withHeader,
+                        fieldMappings,
+                        shouldAddTrailingComma))
                             .ReturnsAsync(csvDifferences);
             }
 
@@ -149,8 +152,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 csvMapperProcessingServiceMock.Verify(processings =>
                     processings.MapObjectToCsvAsync<OptOutIdentifier>(
                         It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
-                        this.optOutConfiguration.OptOutFileHasHeader,
-                        this.optOutConfiguration.OptOutFileRequireTrailingComma),
+                        withHeader,
+                        fieldMappings,
+                        shouldAddTrailingComma),
                             Times.Exactly(outputMessageIds.Count));
 
                 Document testDocument = new Document
@@ -181,6 +185,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 // Given
                 bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+                Dictionary<string, int> fieldMappings = null;
+                bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
                 List<string> outputMessageIds = GetRandomStrings(count: GetRandomNumber());
                 List<string> randomConsentedIdentifiers = CreateRandomListOfConsentedIdentifiers(count: GetRandomNumber());
                 List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, randomConsentedIdentifiers);
@@ -240,8 +246,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     this.csvMapperProcessingServiceMock.Setup(processings =>
                         processings.MapObjectToCsvAsync<OptOutIdentifier>(
                             It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
-                            this.optOutConfiguration.OptOutFileHasHeader,
-                            this.optOutConfiguration.OptOutFileRequireTrailingComma))
+                            withHeader,
+                            fieldMappings,
+                            shouldAddTrailingComma))
                                 .ReturnsAsync(csvDifferences);
 
                     Document document = new Document
@@ -293,8 +300,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     csvMapperProcessingServiceMock.Verify(processings =>
                         processings.MapObjectToCsvAsync<OptOutIdentifier>(
                             It.IsAny<List<OptOutIdentifier>>(),
-                            It.IsAny<bool>(),
-                            It.IsAny<bool>()),
+                            withHeader,
+                            fieldMappings,
+                            shouldAddTrailingComma),
                                 Times.Never);
 
                     documentProcessingServiceMock.Verify(processings =>

@@ -9,7 +9,6 @@ using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
-using LHDS.Core.Services.Orchestrations.EmisLandings;
 using Xeptions;
 
 namespace LHDS.Core.Services.Coordinations.EmisLandings

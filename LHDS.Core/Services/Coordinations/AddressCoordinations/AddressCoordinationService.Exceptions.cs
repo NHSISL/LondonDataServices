@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using Xeptions;
@@ -16,6 +17,8 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
     public partial class AddressCoordinationService
     {
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
+        private delegate ValueTask ReturningNothingFunction();
+        private delegate ValueTask<ResolvedAddress> ReturningResolvedAddressFunction();
 
         private async ValueTask<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
         {
@@ -77,6 +80,148 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             }
         }
 
+        private async ValueTask TryCatch(
+            ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (InvalidArgumentAddressCoordinationException invalidArgumentAddressCoordinationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressCoordinationException);
+            }
+            catch (AddressExtractionValidationOrchestrationException addressExtractionValidationOrchestrationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressExtractionValidationOrchestrationException);
+            }
+            catch (AddressExtractionOrchestrationDependencyValidationException
+                addressExtractionOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    addressExtractionOrchestrationDependencyValidationException);
+            }
+            catch (AddressPersistanceOrchestrationValidationException
+                addressPersistanceOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
+            }
+            catch (AddressPersistanceOrchestrationDependencyValidationException
+                addressPersistanceOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    addressPersistanceOrchestrationDependencyValidationException);
+            }
+            catch (AddressExtractionOrchestrationServiceException addressExtractionOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressExtractionOrchestrationServiceException);
+            }
+            catch (AddressExtractionOrchestrationDependencyException
+                addressExtractionOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
+            }
+            catch (AddressPersistanceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
+            }
+            catch (AddressPersistanceOrchestrationDependencyException
+                addressPersistanceOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedAddressCoordinationServiceException =
+                    new FailedAddressCoordinationServiceException(
+                        message: "Failed address coordination service aggregate error occurred, " +
+                            "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedAddressCoordinationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedDecryptServiceException =
+                    new FailedAddressCoordinationServiceException(
+                        message: "Failed address coordination service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDecryptServiceException);
+            }
+        }
+
+        private async ValueTask<ResolvedAddress> TryCatch(
+            ReturningResolvedAddressFunction returningResolvedAddressFunction)
+        {
+            try
+            {
+                return await returningResolvedAddressFunction();
+            }
+            catch (InvalidArgumentAddressCoordinationException invalidArgumentAddressCoordinationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressCoordinationException);
+            }
+            catch (AddressExtractionValidationOrchestrationException addressExtractionValidationOrchestrationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressExtractionValidationOrchestrationException);
+            }
+            catch (AddressExtractionOrchestrationDependencyValidationException
+                addressExtractionOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    addressExtractionOrchestrationDependencyValidationException);
+            }
+            catch (AddressPersistanceOrchestrationValidationException
+                addressPersistanceOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
+            }
+            catch (AddressPersistanceOrchestrationDependencyValidationException
+                addressPersistanceOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    addressPersistanceOrchestrationDependencyValidationException);
+            }
+            catch (AddressExtractionOrchestrationServiceException addressExtractionOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressExtractionOrchestrationServiceException);
+            }
+            catch (AddressExtractionOrchestrationDependencyException
+                addressExtractionOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
+            }
+            catch (AddressPersistanceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
+            }
+            catch (AddressPersistanceOrchestrationDependencyException
+                addressPersistanceOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedAddressCoordinationServiceException =
+                    new FailedAddressCoordinationServiceException(
+                        message: "Failed address coordination service aggregate error occurred, " +
+                            "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedAddressCoordinationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressCoordinationServiceException =
+                    new FailedAddressCoordinationServiceException(
+                        message: "Failed address coordination service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressCoordinationServiceException);
+            }
+        }
+
         private AddressCoordinationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var addressCoordinationValidationException =
@@ -95,7 +240,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             var addressCoordinationDependencyValidationException =
                 new AddressCoordinationDependencyValidationException(
                     message: "Address coordination dependency validation error occurred, please try again.",
-                    innerException: exception);
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(addressCoordinationDependencyValidationException);
 
@@ -107,7 +252,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             var addressCoordinationDependencyException =
                 new AddressCoordinationDependencyException(
                     message: "Address coordination dependency error occurred, please try again.",
-                    innerException: exception);
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(addressCoordinationDependencyException);
 

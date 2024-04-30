@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -30,11 +30,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     nullDocumentProcessingException);
 
             // when
-            ValueTask<string> AddDocumentTask =
+            ValueTask<string> addDocumentTask =
                 this.documentProcessingService.AddDocumentAsync(document: nullDocument, container: randomContainer);
 
             DocumentProcessingValidationException actualDocumentProcessingValidationException =
-                await Assert.ThrowsAsync<DocumentProcessingValidationException>(AddDocumentTask.AsTask);
+                await Assert.ThrowsAsync<DocumentProcessingValidationException>(addDocumentTask.AsTask);
 
             //then
             actualDocumentProcessingValidationException.Should()

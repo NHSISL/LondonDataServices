@@ -1,16 +1,16 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Brokers.CsvMappers;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Services.Foundations.AddressParsers;
-using LHDS.Core.Services.Processings.AddressMatchers;
 using Moq;
 using Xunit;
 
@@ -22,14 +22,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
         public async Task ShouldThrowServiceExceptionOnProcessByteIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            var mock = new Mock<AddressParserService>(loggingBrokerMock.Object) { CallBase = true };
+            string someFilename = GetRandomString();
             byte[] someData = Encoding.GetEncoding("UTF-8").GetBytes(GetRandomString());
             var serviceException = new Exception();
+            Mock<ICsvMapperBroker> csvMapperBrokerMock = new Mock<ICsvMapperBroker>();
 
-            mock.Setup(x => x.ValidateAddressParserOnProcessCSV(It.IsAny<byte[]>()))
-                .Throws(serviceException);
+            AddressParserService addressParserService = new AddressParserService(
+                csvMapperBroker: csvMapperBrokerMock.Object,
+                identifierBroker: this.identifierBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object);
 
-            AddressParserService addressParserService = mock.Object;
+            csvMapperBrokerMock.Setup(x => x.MapCsvToObjectAsync<Address>(
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, int>>(),
+                It.IsAny<bool>()))
+                    .Throws(serviceException);
 
             var failedAddressParserServiceException =
                 new FailedAddressParserServiceException(
@@ -43,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
 
             // when
             ValueTask<List<Address>> processCSVTask =
-                addressParserService.ProcessCsvAsync(someData);
+                addressParserService.ProcessCsvAsync(someData, someFilename);
 
             AddressParserServiceException actualAddressParserServiceException =
                 await Assert.ThrowsAsync<AddressParserServiceException>(async () =>
@@ -52,11 +59,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
             // then
             actualAddressParserServiceException.Should().BeEquivalentTo(expectedAddressParserServiceException);
 
+            csvMapperBrokerMock.Verify(x => x.MapCsvToObjectAsync<Address>(
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, int>>(),
+                It.IsAny<bool>()),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
                    expectedAddressParserServiceException))),
                         Times.Once);
 
+            csvMapperBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -64,14 +78,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
         public async Task ShouldThrowServiceExceptionOnProcessStringIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            var mock = new Mock<AddressParserService>(loggingBrokerMock.Object) { CallBase = true };
+            string someFilename = GetRandomString();
             string someData = GetRandomString();
             var serviceException = new Exception();
+            Mock<ICsvMapperBroker> csvMapperBrokerMock = new Mock<ICsvMapperBroker>();
 
-            mock.Setup(x => x.ValidateAddressParserOnProcessCSV(It.IsAny<string>()))
-                .Throws(serviceException);
+            AddressParserService addressParserService = new AddressParserService(
+                csvMapperBroker: csvMapperBrokerMock.Object,
+                identifierBroker: this.identifierBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object);
 
-            AddressParserService addressParserService = mock.Object;
+            csvMapperBrokerMock.Setup(x => x.MapCsvToObjectAsync<Address>(
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, int>>(),
+                It.IsAny<bool>()))
+                    .Throws(serviceException);
 
             var failedAddressParserServiceException =
                 new FailedAddressParserServiceException(
@@ -85,7 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
 
             // when
             ValueTask<List<Address>> processCSVTask =
-                addressParserService.ProcessCsvAsync(someData);
+                addressParserService.ProcessCsvAsync(someData, someFilename);
 
             AddressParserServiceException actualAddressParserServiceException =
                 await Assert.ThrowsAsync<AddressParserServiceException>(async () =>
@@ -94,11 +115,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
             // then
             actualAddressParserServiceException.Should().BeEquivalentTo(expectedAddressParserServiceException);
 
+            csvMapperBrokerMock.Verify(x => x.MapCsvToObjectAsync<Address>(
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, int>>(),
+                It.IsAny<bool>()),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
                    expectedAddressParserServiceException))),
                         Times.Once);
 
+            csvMapperBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

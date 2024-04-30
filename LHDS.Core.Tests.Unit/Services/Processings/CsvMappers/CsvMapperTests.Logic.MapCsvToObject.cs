@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,13 +21,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             string inputString = randomString;
             byte[] randomBytes = System.Text.Encoding.UTF8.GetBytes(inputString);
             byte[] inputBytes = randomBytes;
-
             List<OptOut> randomOptouts = CreateRandomOptOuts();
             List<OptOut> expectedOptOuts = randomOptouts;
             bool withHeaderRecord = true;
+            Dictionary<string, int> fieldMappings = null;
 
             this.csvMapperServiceMock.Setup(service =>
-                service.MapCsvToObjectAsync<OptOut>(inputString, withHeaderRecord))
+                service.MapCsvToObjectAsync<OptOut>(inputString, withHeaderRecord, fieldMappings))
                     .ReturnsAsync(expectedOptOuts);
 
             // when
@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             actualOptOuts.Should().BeEquivalentTo(expectedOptOuts);
 
             this.csvMapperServiceMock.Verify(service =>
-                service.MapCsvToObjectAsync<OptOut>(inputString, withHeaderRecord),
+                service.MapCsvToObjectAsync<OptOut>(inputString, withHeaderRecord, fieldMappings),
                     Times.Once());
 
             this.csvMapperServiceMock.VerifyNoOtherCalls();

@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,7 +19,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
         public async ValueTask<SubscriberCredential> PostSubscriberCredentialAndGenerateKeysAsync(
             SubscriberCredential subscriberCredential) =>
-                await this.apiFactoryClient.PostContentAsync($"{subscriberCredentialsRelativeUrl}/regeneratekeys", 
+                await this.apiFactoryClient.PostContentAsync($"{subscriberCredentialsRelativeUrl}/regeneratekeys",
                     subscriberCredential);
 
         public async ValueTask<SubscriberCredential> GetSubscriberCredentialByIdAsync(Guid subscriberCredentialId) =>

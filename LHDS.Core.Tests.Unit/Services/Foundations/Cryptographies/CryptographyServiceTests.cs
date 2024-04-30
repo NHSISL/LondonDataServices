@@ -5,7 +5,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Text;
-using LHDS.Core.Brokers.Decryptions;
+using LHDS.Core.Brokers.Cryptographies;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.Cryptographies;

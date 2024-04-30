@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -81,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     innerException),
 
                 new OptOutDependencyValidationException(
-                    message: "OptOut dependency validation occurred, please try again.", 
+                    message: "OptOut dependency validation occurred, please try again.",
                     innerException)
             };
         }
@@ -94,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             return new TheoryData<Xeption>
             {
                 new OptOutDependencyException(
-                    message: "OptOut dependency error occurred, contact support.", 
+                    message: "OptOut dependency error occurred, contact support.",
                     innerException),
 
                 new OptOutServiceException(message: "OptOut service error occurred, contact support.", innerException)

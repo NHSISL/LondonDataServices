@@ -1,13 +1,13 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
-using LHDS.Core.Brokers.Decryptions;
+using LHDS.Core.Brokers.Cryptographies;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Tynamix.ObjectFiller;
 using Xunit;

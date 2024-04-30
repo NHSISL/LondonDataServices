@@ -1,6 +1,7 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,12 +24,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         {
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            Models.Foundations.Documents.Document randomDocument = CreateRandomDocument();
+            Document randomDocument = CreateRandomDocument();
             string randomHash = GetRandomString(64);
             randomDocument.SHA256Hash = randomHash;
             int randomNumber = GetRandomNumber();
 
-            List<Models.Foundations.Documents.Document> randomDocuments = CreateRandomDocuments(randomNumber);
+            List<Document> randomDocuments = CreateRandomDocuments(randomNumber);
             randomDocuments[randomNumber - 1].FileName = randomDocument.FileName;
 
             List<IngestionTracking> randomIngestionTrackings =
@@ -115,12 +116,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         {
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            Models.Foundations.Documents.Document randomDocument = CreateRandomDocument();
+            Document randomDocument = CreateRandomDocument();
             string randomHash = GetRandomString(64);
             randomDocument.SHA256Hash = randomHash;
             int randomNumber = GetRandomNumber();
 
-            List<Models.Foundations.Documents.Document> randomDocuments = CreateRandomDocuments(randomNumber);
+            List<Document> randomDocuments = CreateRandomDocuments(randomNumber);
             randomDocuments[randomNumber - 1].FileName = randomDocument.FileName;
 
             List<IngestionTracking> randomIngestionTrackings =

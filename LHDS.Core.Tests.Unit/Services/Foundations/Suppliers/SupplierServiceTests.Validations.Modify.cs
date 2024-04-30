@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -147,7 +147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Supplier randomSupplier = CreateRandomSupplier(randomDateTimeOffset);
             Supplier invalidSupplier = randomSupplier;
-            
+
             var invalidSupplierException = new InvalidSupplierException(
                 message: "Invalid supplier. Please correct the errors and try again.");
 

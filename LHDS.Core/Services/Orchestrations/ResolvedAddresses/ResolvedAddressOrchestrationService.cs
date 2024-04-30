@@ -78,7 +78,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             resolvedAddresses.IsProcessed == false).ToList();
 
                 string resolvedAddressesCsv =
-                    await this.csvMapperProcessingService.MapObjectToCsvAsync(resolvedAddresses, false, true);
+                    await this.csvMapperProcessingService.MapObjectToCsvAsync(resolvedAddresses, false, null, true);
 
                 Guid batchReferenceId = identifierBroker.GetIdentifier();
                 string fileName = $"{batchReferenceId}.csv";

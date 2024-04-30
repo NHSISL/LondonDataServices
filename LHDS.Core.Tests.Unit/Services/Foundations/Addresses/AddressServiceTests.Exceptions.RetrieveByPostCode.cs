@@ -1,12 +1,16 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Data.SqlClient;
-using Moq;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
+using Microsoft.Data.SqlClient;
+using Moq;
 using Xunit;
-using System.Collections.Generic;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 {

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -30,11 +31,13 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<List<Address>> PersistAddressAsync(List<Address> addresses) =>
+        public ValueTask<ResolvedAddress> MatchAndPersistResolvedAddressAsync(ResolvedAddress resolvedAddresses) =>
+            throw new NotImplementedException();
+
+        public ValueTask<List<Address>> PersistAddressAsync(List<Address> addresses, string fileName) =>
             TryCatch(async () =>
             {
-                ValidateAddressListOrchestrationOnProcess(addresses);
-
+                ValidateAddressPersistanceOrchestration(addresses, fileName);
                 List<Address> processedAddresses = new List<Address>();
                 List<Exception> exceptions = new List<Exception>();
 
@@ -50,14 +53,12 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                             return processAddress;
                         });
 
-                        processedAddresses.Add(processAddress);
-                    }
-                    catch (Exception ex)
-                    {
-                        this.loggingBroker.LogError(ex);
-                        exceptions.Add(ex);
-                    }
-                }
+                    await this.auditBroker.LogInformation(
+                        auditType: "Address",
+                        title: "Successfully loaded address from Ordinance Database",
+                        message: $"Successfully loaded address with id: {address.Id} from file: {fileName}",
+                        fileName,
+                        correlationId: address.Id);
 
                 if (exceptions.Any())
                 {

@@ -2,59 +2,110 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Coordinations.AddressCoordinations;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
-using LHDS.Core.Services.Orchestrations.AddressNormalisations;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
+using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 
 namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 {
     public partial class AddressCoordinationService : IAddressCoordinationService
     {
         private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
-        private readonly IAddressNormalisationOrchestrationService addressNormalisationOrchestrationService;
         private readonly IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
-        private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
-
+        private readonly AddressConfiguration addressConfiguration;
+        private readonly BlobContainers blobContainers;
 
         public AddressCoordinationService(
             IAddressExtractionOrchestrationService addressExtractionOrchestrationService,
-            IAddressNormalisationOrchestrationService addressNormalisationOrchestrationService,
             IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService,
             IResolvedAddressOrchestrationService resolvedAddressOrchestrationService,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            AddressConfiguration addressConfiguration,
+            BlobContainers blobContainers)
         {
             this.addressExtractionOrchestrationService = addressExtractionOrchestrationService;
-            this.addressNormalisationOrchestrationService = addressNormalisationOrchestrationService;
             this.addressPersistanceOrchestrationService = addressPersistanceOrchestrationService;
-            this.dateTimeBroker = dateTimeBroker;
+            this.resolvedAddressOrchestrationService = resolvedAddressOrchestrationService;
             this.loggingBroker = loggingBroker;
+            this.addressConfiguration = addressConfiguration;
+            this.blobContainers = blobContainers;
         }
 
-        public ValueTask<List<Address>> LoadAddressData(byte[] data) =>
+        public ValueTask<List<Address>> LoadAddressDataAsync(byte[] data, string filename) =>
             TryCatch(async () =>
             {
-                ValidateDataOnProcessData(data);
+                ValidateDataOnProcessData(data, filename);
 
                 List<Address> extractedAddress =
-                    await this.addressExtractionOrchestrationService.ProcessDataAsync(data);
+                    await this.addressExtractionOrchestrationService.ProcessAddressesAsync(data, filename);
 
                 ValidateAddressListIsNotNull(extractedAddress);
 
-                return await this.addressPersistanceOrchestrationService.PersistAddressAsync(extractedAddress);
+                return await this.addressPersistanceOrchestrationService
+                    .PersistAddressAsync(extractedAddress, filename);
             });
 
-        public ValueTask<List<Address>> MatchAddressData(byte[] data) =>
-            throw new System.NotImplementedException();
+        public ValueTask MatchAddressDataAsync(byte[] data, string filename) =>
+            TryCatch(async () =>
+            {
+                ValidateDataOnProcessData(data, filename);
 
-        public ValueTask<List<Address>> UploadResolvedAddresses() =>
+                List<ResolvedAddress> extractedResolvedAddresses =
+                    await this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(data, filename);
+
+                var exceptions = new List<Exception>();
+
+                foreach (var resolvedAddress in extractedResolvedAddresses)
+                {
+                    try
+                    {
+                        ResolvedAddress matchedResolvedAddress = await TryCatch(async () =>
+                        {
+                            ResolvedAddress matchedAddress =
+                                await this.addressPersistanceOrchestrationService.
+                                    MatchAndPersistResolvedAddressAsync(resolvedAddress);
+
+                            return matchedAddress;
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if (exceptions.Any())
+                {
+                    string[] splitFilePath = filename.Split("/");
+                    splitFilePath[2] = this.addressConfiguration.ErrorFolder;
+                    string errorPath = String.Join("/", splitFilePath);
+                    string addressContainer = this.blobContainers.Addresses;
+
+                    await this.resolvedAddressOrchestrationService.
+                        AddDocumentAsync(data, fileName: errorPath, container: addressContainer);
+
+                    await this.resolvedAddressOrchestrationService.
+                        RemoveDocumentByFileNameAsync(filename, container: addressContainer);
+
+                    throw new AggregateException(
+                        $"Unable to match {exceptions.Count} address in file {filename}. " +
+                        $"File has been moved to the error folder.",
+                        exceptions);
+                }
+            });
+
+        public ValueTask<List<Address>> UploadResolvedAddressesAsync() =>
             throw new System.NotImplementedException();
     }
 }

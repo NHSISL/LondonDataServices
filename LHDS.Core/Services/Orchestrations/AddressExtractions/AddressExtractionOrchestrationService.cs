@@ -1,114 +1,193 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits;
-using LHDS.Core.Services.Foundations.AddressExtractionAudits;
-using LHDS.Core.Services.Foundations.AddressParsers;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Services.Foundations.AddressNormalisations;
+using LHDS.Core.Services.Foundations.CsvMappers;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationService : IAddressExtractionOrchestrationService
     {
-        private readonly IAddressParserService addressParserService;
-        private readonly IAddressExtractionAuditService addressExtractionAuditService;
+        private readonly ICsvMapperService csvMapperService;
+        private readonly IAddressNormalisationService addressNormalisationService;
+        private readonly IAuditBroker auditBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
 
         public AddressExtractionOrchestrationService(
-            IAddressParserService addressParserService,
-            IAddressExtractionAuditService addressExtractionAuditService,
+            ICsvMapperService csvMapperService,
+            IAddressNormalisationService addressNormalisationService,
+            IAuditBroker auditBroker,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker)
         {
-            this.addressParserService = addressParserService;
-            this.addressExtractionAuditService = addressExtractionAuditService;
+            this.csvMapperService = csvMapperService;
+            this.addressNormalisationService = addressNormalisationService;
+            this.auditBroker = auditBroker;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
         }
 
-        public ValueTask<List<Address>> ProcessDataAsync(byte[] data) =>
+        public ValueTask<List<Address>> ProcessAddressesAsync(byte[] data, string filename) =>
             TryCatch(async () =>
             {
-                ValidateDataOnProcessData(data);
-                return await ProcessAddressDataAsync(data);
-            });
+                ValidateDataOnProcessData(data, filename);
 
-        private async ValueTask<List<Address>> ProcessAddressDataAsync(byte[] data)
-        {
-            List<Address> addresses = new List<Address>();
+                string stringData = Encoding.UTF8.GetString(data);
+                List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
 
-            using (MemoryStream memoryStream = new MemoryStream(data))
-            using (ZipArchive archive = new ZipArchive(memoryStream))
-            {
-                foreach (ZipArchiveEntry entry in archive.Entries)
+                List<string> filteredRecords = records.Where(record =>
+                   record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
+
+                string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+
+                Dictionary<string, int> fieldMappings = new Dictionary<string, int>
                 {
-                    if (entry.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+                    { "UPRN", 3 },
+                    { "UPSN", 4 },
+                    { "OrganisationName", 5 },
+                    { "DepartmentName", 6 },
+                    { "SubBuildingName", 7 },
+                    { "BuildingName", 8 },
+                    { "BuildingNumber", 9 },
+                    { "DependentThoroughfare", 10 },
+                    { "Thoroughfare", 11 },
+                    { "DoubleDependentLocality", 12 },
+                    { "DependentLocality", 13 },
+                    { "PostTown", 14 },
+                    { "PostCode", 15 }
+                };
+
+                List<Address> addresses = await this.csvMapperService
+                    .MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord: false, fieldMappings);
+
+                List<Address> processedAddresses = new List<Address>();
+                var exceptions = new List<Exception>();
+
+                foreach (Address address in addresses)
+                {
+                    try
                     {
-                        using (var entryStream = entry.Open())
-                        using (var tempMemoryStream = new MemoryStream())
+                        Address processedAddress = await TryCatch(async () =>
                         {
-                            await entryStream.CopyToAsync(tempMemoryStream);
-                            byte[] csvData = tempMemoryStream.ToArray();
+                            Address inputAddress = address;
+                            string addressString = inputAddress.GetFormattedAddress();
 
-                            List<Address> csvAddresses =
-                                await this.addressParserService.ProcessCsvAsync(csvData);
+                            AddressNormalisation addressNormalisation =
+                                await this.addressNormalisationService.GetNormalisedAddress(addressString);
 
-                            addresses.AddRange(csvAddresses);
-                            var dateStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                            inputAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                            inputAddress.PostalAddress = addressNormalisation.PostalAddress;
 
-                            var audit = new AddressExtractionAudit
-                            {
-                                Id = this.identifierBroker.GetIdentifier(),
-                                CorrelationId = this.identifierBroker.GetIdentifier(),
-                                FileName = $"{entry}",
-                                Message = "Success",
-                                MessageId = "",
-                                CreatedBy = "System",
-                                UpdatedBy = "System",
-                                UpdatedDate = dateStamp,
-                                CreatedDate = dateStamp,
-                            };
+                            return inputAddress;
+                        });
 
-                            await this.addressExtractionAuditService.AddAddressExtractionAuditAsync(audit);
-                        }
+                        processedAddresses.Add(processedAddress);
+
+                        await this.auditBroker.LogInformation(
+                            auditType: "Address",
+                            title: "Successfully extracted address from Ordinance Database",
+                            message: $"Successfully extracted address with id: {address.Id} from file: {filename}",
+                            filename,
+                            correlationId: address.Id);
                     }
-                    else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                    catch (Exception ex)
                     {
-                        byte[] nestedZipData;
-
-                        using (MemoryStream nestedMemoryStream = new MemoryStream())
-                        using (Stream entryStream = entry.Open())
-                        {
-                            entryStream.CopyTo(nestedMemoryStream);
-                            nestedZipData = nestedMemoryStream.ToArray();
-                        }
-
-                        if (nestedZipData.Length <= 0)
-                        {
-                            Console.WriteLine($"nestedZipData is null");
-                            throw new Exception($"nestedZipData is null");
-                        }
-
-                        List<Address> nestedAddresses = await ProcessAddressDataAsync(nestedZipData);
-                        addresses.AddRange(nestedAddresses);
+                        exceptions.Add(ex);
                     }
                 }
-            }
 
-            return addresses;
-        }
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to normalise address for {exceptions.Count} addresses",
+                        exceptions);
+                }
+
+                return processedAddresses;
+            });
+
+        public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data, string filename) =>
+            TryCatch(async () =>
+            {
+                ValidateDataOnProcessData(data, filename);
+
+                Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                {
+                    { nameof(ResolvedAddress.UniqueReference), 0 },
+                    { nameof(ResolvedAddress.PostCode), 1 },
+                    { nameof(ResolvedAddress.UnstructuredPostalAddress), 2 }
+                };
+
+                List<ResolvedAddress> resolvedAddresses = await this.csvMapperService
+                    .MapCsvToObjectAsync<ResolvedAddress>(
+                        data: Encoding.UTF8.GetString(data),
+                        hasHeaderRecord: true,
+                        fieldMappings);
+
+                List<ResolvedAddress> processedResolvedAddresses = new List<ResolvedAddress>();
+                var exceptions = new List<Exception>();
+
+                foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
+                {
+                    try
+                    {
+                        ResolvedAddress processedResolvedAddress = await TryCatch(async () =>
+                        {
+                            ResolvedAddress inputResolvedAddress = resolvedAddress;
+                            inputResolvedAddress.Id = this.identifierBroker.GetIdentifier();
+                            string addressString = inputResolvedAddress.UnstructuredPostalAddress;
+
+                            AddressNormalisation addressNormalisation =
+                                await this.addressNormalisationService.GetNormalisedAddress(addressString);
+
+                            inputResolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                            inputResolvedAddress.PostalAddress = addressNormalisation.PostalAddress;
+
+                            await this.auditBroker.LogInformation(
+                                auditType: "Address",
+                                title: "Successfully extracted address from Ordinance Database",
+                                message: $"Successfully extracted address with id: {inputResolvedAddress.Id}" +
+                                    $" from file: {filename}",
+                                filename,
+                                correlationId: resolvedAddress.Id);
+
+                            return inputResolvedAddress;
+                        });
+
+                        processedResolvedAddresses.Add(processedResolvedAddress);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to normalise address for {exceptions.Count} resolved addresses",
+                        exceptions);
+                }
+
+                return processedResolvedAddresses;
+            });
     }
 }

@@ -6,12 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using LHDS.Core.Services.Processings.SecureDatas;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Moq;
 using Xunit;
 

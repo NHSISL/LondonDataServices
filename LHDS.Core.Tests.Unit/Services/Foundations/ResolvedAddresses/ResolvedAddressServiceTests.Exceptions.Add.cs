@@ -1,12 +1,16 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
@@ -28,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             var expectedResolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
                     message: "ResolvedAddress dependency error occurred, contact support.",
-                    innerException: failedResolvedAddressStorageException); 
+                    innerException: failedResolvedAddressStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -132,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var invalidResolvedAddressReferenceException =
                 new InvalidResolvedAddressReferenceException(
-                    message: "Invalid resolvedAddress reference error occurred.", 
+                    message: "Invalid resolvedAddress reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
             var expectedResolvedAddressValidationException =
@@ -191,7 +195,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             var expectedResolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
                     message: "ResolvedAddress dependency error occurred, contact support.",
-                    innerException: failedResolvedAddressStorageException); 
+                    innerException: failedResolvedAddressStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -236,7 +240,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var failedResolvedAddressServiceException =
                 new FailedResolvedAddressServiceException(
-                    message: "Failed resolvedAddress service occurred, please contact support", 
+                    message: "Failed resolvedAddress service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedResolvedAddressServiceException =

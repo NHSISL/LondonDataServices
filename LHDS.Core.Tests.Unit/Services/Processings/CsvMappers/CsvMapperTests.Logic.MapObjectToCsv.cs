@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,24 +22,34 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             string randomCsvFormattedOptOutData = GetRandomString();
             string expectedCsvFormattedOptOutData = randomCsvFormattedOptOutData;
             bool withHeaderRecord = true;
+            Dictionary<string, int> fieldMappings = null;
             bool shouldAddTrailingComma = true;
 
             this.csvMapperServiceMock.Setup(service =>
-                service.MapObjectToCsvAsync<OptOut>(inputOptOuts, withHeaderRecord, shouldAddTrailingComma))
-                    .ReturnsAsync(expectedCsvFormattedOptOutData);
+                service.MapObjectToCsvAsync<OptOut>(
+                    inputOptOuts,
+                    withHeaderRecord,
+                    fieldMappings,
+                    shouldAddTrailingComma))
+                        .ReturnsAsync(expectedCsvFormattedOptOutData);
 
             // when
             string actualCsvFormattedOptOutData = await this.csvMapperProcessingService.MapObjectToCsvAsync<OptOut>(
                 @object: inputOptOuts,
                 addHeaderRecord: withHeaderRecord,
+                fieldMappings,
                 shouldAddTrailingComma);
 
             // then
             actualCsvFormattedOptOutData.Should().BeEquivalentTo(expectedCsvFormattedOptOutData);
 
             this.csvMapperServiceMock.Verify(service =>
-                service.MapObjectToCsvAsync<OptOut>(inputOptOuts, withHeaderRecord, shouldAddTrailingComma),
-                    Times.Once());
+                service.MapObjectToCsvAsync<OptOut>(
+                    inputOptOuts,
+                    withHeaderRecord,
+                    fieldMappings,
+                    shouldAddTrailingComma),
+                        Times.Once());
 
             this.csvMapperServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

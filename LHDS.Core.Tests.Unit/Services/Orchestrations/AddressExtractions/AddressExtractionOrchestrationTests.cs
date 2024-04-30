@@ -1,20 +1,21 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
-using LHDS.Core.Services.Foundations.AddressExtractionAudits;
-using LHDS.Core.Services.Foundations.AddressParsers;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Services.Foundations.AddressNormalisations;
+using LHDS.Core.Services.Foundations.CsvMappers;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -24,10 +25,11 @@ using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
-    public partial class AddressExctractionOrchestrationServiceTests
+    public partial class AddressExtractionOrchestrationServiceTests
     {
-        private readonly Mock<IAddressParserService> addressParserServiceMock;
-        private readonly Mock<IAddressExtractionAuditService> addressExtractionAuditServiceMock;
+        private readonly Mock<ICsvMapperService> csvMapperServiceMock;
+        private readonly Mock<IAddressNormalisationService> addressNormalisationServiceMock;
+        private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
@@ -35,10 +37,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
         private readonly ITestOutputHelper output;
 
-        public AddressExctractionOrchestrationServiceTests(ITestOutputHelper output)
+        public AddressExtractionOrchestrationServiceTests(ITestOutputHelper output)
         {
-            this.addressParserServiceMock = new Mock<IAddressParserService>();
-            this.addressExtractionAuditServiceMock = new Mock<IAddressExtractionAuditService>();
+            this.csvMapperServiceMock = new Mock<ICsvMapperService>();
+            this.addressNormalisationServiceMock = new Mock<IAddressNormalisationService>();
+            this.auditBrokerMock = new Mock<IAuditBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -46,8 +49,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.output = output;
 
             this.addressExtractionOrchestrationService = new AddressExtractionOrchestrationService(
-                addressParserService: addressParserServiceMock.Object,
-                addressExtractionAuditService: addressExtractionAuditServiceMock.Object,
+                csvMapperService: csvMapperServiceMock.Object,
+                addressNormalisationService: addressNormalisationServiceMock.Object,
+                auditBroker: auditBrokerMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object);
@@ -65,14 +69,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        private Expression<Func<AddressExtractionAudit, bool>> SameAddressExtractionAuditAs(
-            AddressExtractionAudit expectedAddressExtractionAudit)
-        {
-            return actualAddressExtractionAudit =>
-                this.compareLogic.Compare(expectedAddressExtractionAudit, actualAddressExtractionAudit)
-                    .AreEqual;
-        }
-
         private static IQueryable<Address> CreateRandomAddresses()
         {
             return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
@@ -86,12 +82,42 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
+            string normalised = null;
             var filler = new Filler<Address>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(address => address.JsonPostalAddress).IgnoreIt()
+                .OnProperty(address => address.PostalAddress).IgnoreIt()
+                .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static IQueryable<ResolvedAddress> CreateRandomResolvedAddresses()
+        {
+            return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
+        private static ResolvedAddress CreateRandomResolvedAddress() =>
+            CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static ResolvedAddress CreateRandomResolvedAddress(DateTimeOffset dateTimeOffset) =>
+            CreateResolvedAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<ResolvedAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 
             return filler;
         }
@@ -105,20 +131,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             return new TheoryData<Xeption>
             {
                 new AddressParserValidationException(
-                    message: "Address normalisation processing validation error occured, please try again",
+                    message: "Address parser validation error occured, please try again",
                     innerException),
 
                 new AddressParserDependencyValidationException(
-                    message: "Address normalisation processing dependency validation error occurred, please try again.",
+                    message: "Address parser dependency validation error occurred, please try again.",
                     innerException),
 
-                new AddressExtractionAuditValidationException(
-                    message: "Audit validation error occurred, please try again.",
+                new AddressNormalisationValidationException(
+                    message: "Address normalisation validation error occured, please try again",
                     innerException),
 
-                new AddressExtractionAuditDependencyValidationException(
-                    message: "Audit dependency validation error occurred, please try again.",
-                    innerException)
+                new AddressNormalisationDependencyValidationException(
+                    message: "Address normalisation dependency validation error occurred, please try again.",
+                    innerException),
             };
         }
 
@@ -138,13 +164,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     message: "Address parser service error occurred, contact support.",
                     innerException),
 
-                new AddressExtractionAuditDependencyException(
-                    message: "Audit dependency error occurred, contact support.",
+                new AddressNormalisationDependencyException(
+                    message: "Address normalisation dependency error occurred, contact support.",
                     innerException),
 
-                new AddressExtractionAuditServiceException(
-                    message: "Audit service error occurred, contact support.",
-                    innerException)
+                new AddressNormalisationServiceException(
+                    message: "Address normalisation service error occurred, contact support.",
+                    innerException),
             };
         }
     }

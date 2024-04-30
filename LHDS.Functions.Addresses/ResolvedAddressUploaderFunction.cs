@@ -31,7 +31,7 @@ namespace LHDS.Functions.Addresses
 
             try
             {
-                await addressClient.ProcessResolvedAddressData();
+                await addressClient.ProcessResolvedAddressDataAsync();
             }
             catch (Exception ex)
             {

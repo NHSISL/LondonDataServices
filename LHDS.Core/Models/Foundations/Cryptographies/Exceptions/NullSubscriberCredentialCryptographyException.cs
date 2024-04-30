@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions
+namespace LHDS.Core.Models.Foundations.Cryptographies.Exceptions
 {
     public class NullSubscriberCredentialCryptographyException : Xeption
     {

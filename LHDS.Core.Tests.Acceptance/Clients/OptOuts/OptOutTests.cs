@@ -1,10 +1,11 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using LHDS.Core.Brokers.CsvMappers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Mesh;
@@ -202,6 +203,36 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             string checkNumber = total.ToString();
 
             return $"{formattedNhsNumber}{checkNumber}";
+        }
+
+        public static string GenerateCsv(
+            List<OptOutIdentifier> optOutIdentifiers,
+            bool hasHeaderRecord,
+            bool shouldAddTrailingComma)
+        {
+            StringBuilder csvBuilder = new StringBuilder();
+
+            if (hasHeaderRecord)
+            {
+                csvBuilder.AppendLine("UniqueReference,NHSNo,Status,StatusChangedDateTime");
+            }
+
+            foreach (var optOutIdentifier in optOutIdentifiers)
+            {
+                csvBuilder.Append($"{optOutIdentifier.UniqueReference},");
+                csvBuilder.Append($"{optOutIdentifier.NhsNumber},");
+                csvBuilder.Append($"{optOutIdentifier.Status},");
+                string statusChangedDateTime = $"{optOutIdentifier.StatusChangedDateTime}";
+
+                if (shouldAddTrailingComma)
+                {
+                    statusChangedDateTime += ",";
+                }
+
+                csvBuilder.AppendLine(statusChangedDateTime);
+            }
+
+            return csvBuilder.ToString();
         }
     }
 }

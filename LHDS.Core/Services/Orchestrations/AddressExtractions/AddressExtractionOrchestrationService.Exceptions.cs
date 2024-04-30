@@ -1,13 +1,14 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using Xeptions;
 
@@ -16,6 +17,9 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
     public partial class AddressExtractionOrchestrationService
     {
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
+        private delegate ValueTask<List<ResolvedAddress>> ReturningResolvedAddressListFunction();
+        private delegate ValueTask<ResolvedAddress> ReturningResolvedAddressFunction();
+        private delegate ValueTask<Address> ReturningAddressFunction();
 
         private async ValueTask<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
         {
@@ -36,14 +40,13 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyValidationException(addressParserDependencyValidationException);
             }
-            catch (AddressExtractionAuditValidationException addressExtractionAuditValidationException)
+            catch (AddressNormalisationValidationException addressNormalisationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(addressExtractionAuditValidationException);
+                throw CreateAndLogDependencyValidationException(addressNormalisationValidationException);
             }
-            catch (AddressExtractionAuditDependencyValidationException
-                addressExtractionAuditDependencyValidationException)
+            catch (AddressNormalisationDependencyValidationException addressNormalisationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(addressExtractionAuditDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
             }
             catch (AddressParserDependencyException addressParserDependencyException)
             {
@@ -53,20 +56,227 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyException(addressParserServiceException);
             }
-            catch (AddressExtractionAuditDependencyException addressExtractionAuditDependencyException)
+            catch (AddressNormalisationDependencyException addressNormalisationDependencyException)
             {
-                throw CreateAndLogDependencyException(addressExtractionAuditDependencyException);
+                throw CreateAndLogDependencyException(addressNormalisationDependencyException);
             }
-            catch (AddressExtractionAuditServiceException addressExtractionAuditServiceException)
+            catch (AddressNormalisationServiceException addressNormalisationServiceException)
             {
-                throw CreateAndLogDependencyException(addressExtractionAuditServiceException);
+                throw CreateAndLogDependencyException(addressNormalisationServiceException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedAddressExtractionOrchestrationServiceException =
+                    new FailedAddressExtractionOrchestrationServiceException(
+                        message: "Failed address extraction aggregate orchestration service occurred, " +
+                            "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
             }
             catch (Exception exception)
             {
                 var failedAddressExtractionOrchestrationServiceException =
                     new FailedAddressExtractionOrchestrationServiceException(
                         message: "Failed address extraction orchestration service error occurred, " +
-                        "please contact support",
+                            "please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
+            }
+        }
+
+        private async ValueTask<List<ResolvedAddress>> TryCatch(
+            ReturningResolvedAddressListFunction returningResolvedAddressListFunction)
+        {
+            try
+            {
+                return await returningResolvedAddressListFunction();
+            }
+            catch (InvalidArgumentAddressExtractionOrchestrationException
+                invalidArgumentAddressExtractionOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressExtractionOrchestrationException);
+            }
+            catch (AddressParserValidationException addressParserValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressParserValidationException);
+            }
+            catch (AddressParserDependencyValidationException addressParserDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressParserDependencyValidationException);
+            }
+            catch (AddressNormalisationValidationException addressNormalisationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationValidationException);
+            }
+            catch (AddressNormalisationDependencyValidationException addressNormalisationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
+            }
+            catch (AddressParserDependencyException addressParserDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressParserDependencyException);
+            }
+            catch (AddressParserServiceException addressParserServiceException)
+            {
+                throw CreateAndLogDependencyException(addressParserServiceException);
+            }
+            catch (AddressNormalisationDependencyException addressNormalisationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationDependencyException);
+            }
+            catch (AddressNormalisationServiceException addressNormalisationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationServiceException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedAddressExtractionOrchestrationServiceException =
+                    new FailedAddressExtractionOrchestrationServiceException(
+                        message: "Failed address extraction aggregate orchestration service occurred, " +
+                            "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressExtractionOrchestrationServiceException =
+                    new FailedAddressExtractionOrchestrationServiceException(
+                        message: "Failed address extraction orchestration service error occurred, " +
+                            "please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
+            }
+        }
+
+        private async ValueTask<ResolvedAddress> TryCatch(
+            ReturningResolvedAddressFunction returningResolvedAddressFunction)
+        {
+            try
+            {
+                return await returningResolvedAddressFunction();
+            }
+            catch (InvalidArgumentAddressExtractionOrchestrationException
+                invalidArgumentAddressExtractionOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressExtractionOrchestrationException);
+            }
+            catch (AddressParserValidationException addressParserValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressParserValidationException);
+            }
+            catch (AddressParserDependencyValidationException addressParserDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressParserDependencyValidationException);
+            }
+            catch (AddressNormalisationValidationException addressNormalisationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationValidationException);
+            }
+            catch (AddressNormalisationDependencyValidationException addressNormalisationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
+            }
+            catch (AddressParserDependencyException addressParserDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressParserDependencyException);
+            }
+            catch (AddressParserServiceException addressParserServiceException)
+            {
+                throw CreateAndLogDependencyException(addressParserServiceException);
+            }
+            catch (AddressNormalisationDependencyException addressNormalisationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationDependencyException);
+            }
+            catch (AddressNormalisationServiceException addressNormalisationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationServiceException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedAddressExtractionOrchestrationServiceException =
+                    new FailedAddressExtractionOrchestrationServiceException(
+                        message: "Failed address extraction aggregate orchestration service occurred, " +
+                            "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressExtractionOrchestrationServiceException =
+                    new FailedAddressExtractionOrchestrationServiceException(
+                        message: "Failed address extraction orchestration service error occurred, " +
+                            "please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
+            }
+        }
+
+        private async ValueTask<Address> TryCatch(ReturningAddressFunction returningAddressFunction)
+        {
+            try
+            {
+                return await returningAddressFunction();
+            }
+            catch (InvalidArgumentAddressExtractionOrchestrationException
+                invalidArgumentAddressExtractionOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressExtractionOrchestrationException);
+            }
+            catch (AddressParserValidationException addressParserValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressParserValidationException);
+            }
+            catch (AddressParserDependencyValidationException addressParserDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressParserDependencyValidationException);
+            }
+            catch (AddressNormalisationValidationException addressNormalisationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationValidationException);
+            }
+            catch (AddressNormalisationDependencyValidationException addressNormalisationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
+            }
+            catch (AddressParserDependencyException addressParserDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressParserDependencyException);
+            }
+            catch (AddressParserServiceException addressParserServiceException)
+            {
+                throw CreateAndLogDependencyException(addressParserServiceException);
+            }
+            catch (AddressNormalisationDependencyException addressNormalisationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationDependencyException);
+            }
+            catch (AddressNormalisationServiceException addressNormalisationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationServiceException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedAddressExtractionOrchestrationServiceException =
+                    new FailedAddressExtractionOrchestrationServiceException(
+                        message: "Failed address extraction aggregate orchestration service occurred, " +
+                        "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressExtractionOrchestrationServiceException =
+                    new FailedAddressExtractionOrchestrationServiceException(
+                        message: "Failed address extraction orchestration service error occurred, " +
+                        "please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
@@ -110,7 +320,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
             this.loggingBroker.LogError(addressExtractionOrchestrationDependencyException);
 
-            throw addressExtractionOrchestrationDependencyException;
+            return addressExtractionOrchestrationDependencyException;
         }
 
         private AddressExtractionOrchestrationServiceException CreateAndLogServiceException(Xeption exception)

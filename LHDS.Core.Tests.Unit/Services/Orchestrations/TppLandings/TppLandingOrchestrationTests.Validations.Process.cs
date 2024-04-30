@@ -1,9 +1,11 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
 using Moq;
 using Xunit;
@@ -16,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         public async Task ShouldThrowValidationExceptionIfDocumentIsNullAndLogItAsync()
         {
             // given
-            Models.Foundations.Documents.Document randonNullDocument = null;
+            Document randonNullDocument = null;
 
             var nullTppDocumentException =
                 new NullDocumentTppLandingException(
@@ -58,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         public async Task ShouldThrowValidationExceptionIfDocumentFileNameIsNullAndLogItAsync(string invalidText)
         {
             // given
-            Models.Foundations.Documents.Document randomDocument = CreateRandomDocument();
+            Document randomDocument = CreateRandomDocument();
             randomDocument.FileName = invalidText;
 
             var invalidArgumentException =

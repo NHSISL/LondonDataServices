@@ -21,6 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             // Given
             List<Address> randomAddresses = CreateRandomAddresses(GetRandomNumber()).ToList();
             List<Address> inputAddresses = randomAddresses.DeepClone();
+            string someFileName = GetRandomString();
             List<Address> processedAddresses = new List<Address>();
 
             foreach (Address address in inputAddresses)
@@ -46,6 +47,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 this.addressProcessingServiceMock.Verify(service =>
                     service.ModifyOrAddAddressAsync(It.Is(SameAddressAs(address))),
                         Times.Once());
+
+                this.auditBrokerMock.Verify(broker => 
+                    broker.LogInformation(
+                        "Address", 
+                        "Successfully loaded address from Ordinance Database",
+                        $"Successfully loaded address with id: {address.Id} from file: {someFileName}",
+                        someFileName,
+                        address.Id), 
+                            Times.Once());
             }
 
             this.addressProcessingServiceMock.VerifyNoOtherCalls();

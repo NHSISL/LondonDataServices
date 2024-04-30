@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 namespace LHDS.Core.Models.Brokers.Storages.Blobs
 {
@@ -12,5 +12,6 @@ namespace LHDS.Core.Models.Brokers.Storages.Blobs
         public string Pds { get; set; } = string.Empty;
         public string Terminology { get; set; } = string.Empty;
         public string TppLanding { get; set; } = string.Empty;
+        public string Addresses { get; set; } = string.Empty;
     }
 }

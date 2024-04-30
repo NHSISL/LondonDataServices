@@ -1,11 +1,16 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
+using CsvHelper;
+using CsvHelper.Configuration;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.OptOuts;
+using Force.DeepCloner;
+using LHDS.Core.Tests.Unit.Models.Foundations.CsvMappers;
 using Moq;
 using Xunit;
 
@@ -13,30 +18,111 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
 {
     public partial class CsvMapperTests
     {
-        [Fact]
-        public async Task ShouldMapCsvToObjectAsync()
+
+        [Theory]
+        [InlineData(true, false)]
+        [InlineData(false, false)]
+        [InlineData(true, true)]
+        [InlineData(false, true)]
+        public async Task ShouldMapCsvToObjectWithNoFieldMappingsAsync(bool withHeader, bool withTrailingComma)
         {
             // given
-            string randomCsvFormattedOptOutData = GetRandomString();
-            string inputCsvFormattedOptOutData = randomCsvFormattedOptOutData;
-            List<OptOut> randomOptouts = CreateRandomOptOuts();
-            List<OptOut> expectedOptOuts = randomOptouts;
-            bool withHeaderRecord = true;
+            int count = GetRandomNumber();
+            List<Car> randomCars = CreateRandomCars();
+
+            string randomCsvFormattedcars = GetCsvRepresentationOfCar(
+                cars: randomCars,
+                hasHeaderRow: withHeader,
+                shouldAddTrailingComma: withTrailingComma);
+
+            string inputCsvFormattedCars = randomCsvFormattedcars;
+            List<Car> expectedCars = randomCars.DeepClone();
+            bool hasHeaderRecord = withHeader;
+            Dictionary<string, int> fieldMappings = null;
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = hasHeaderRecord,
+                MissingFieldFound = null
+            };
+
+            using StringReader stringReader = new StringReader(inputCsvFormattedCars);
+            using CsvReader csvReader = new CsvReader(stringReader, config);
 
             this.csvMapperBrokerMock.Setup(broker =>
-                broker.MapCsvToObjectAsync<OptOut>(inputCsvFormattedOptOutData, withHeaderRecord))
-                    .ReturnsAsync(expectedOptOuts);
+                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord))
+                    .Returns(csvReader);
 
             // when
-            List<OptOut> actualOptOuts = await this.csvMapperService.MapCsvToObjectAsync<OptOut>(
-                data: inputCsvFormattedOptOutData,
-                hasHeaderRecord: withHeaderRecord);
+            List<Car> actualCars = await this.csvMapperService.MapCsvToObjectAsync<Car>(
+                data: inputCsvFormattedCars,
+                hasHeaderRecord,
+                fieldMappings);
 
             // then
-            actualOptOuts.Should().BeEquivalentTo(expectedOptOuts);
+            actualCars.Should().BeEquivalentTo(expectedCars);
 
             this.csvMapperBrokerMock.Verify(broker =>
-                broker.MapCsvToObjectAsync<OptOut>(inputCsvFormattedOptOutData, withHeaderRecord),
+                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord),
+                    Times.Once());
+
+            this.csvMapperBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+
+
+        [Theory]
+        [InlineData(true, false)]
+        [InlineData(false, false)]
+        [InlineData(true, true)]
+        [InlineData(false, true)]
+        public async Task ShouldMapCsvToObjectWithFieldMappingsAsync(bool withHeader, bool withTrailingComma)
+        {
+            // given
+            List<Car> randomCars = CreateRandomCars();
+
+            string randomCsvFormattedcars = GetCsvRepresentationOfCarInReverse(
+                cars: randomCars,
+                hasHeaderRow: withHeader,
+                shouldAddTrailingComma: withTrailingComma);
+
+            string inputCsvFormattedCars = randomCsvFormattedcars;
+            List<Car> expectedCars = randomCars.DeepClone();
+            bool hasHeaderRecord = withHeader;
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { nameof(Car.Make), 3 },
+                { nameof(Car.Model), 2 },
+                { nameof(Car.Year), 1 },
+                { nameof(Car.Color), 0 }
+            };
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = hasHeaderRecord,
+                MissingFieldFound = null
+            };
+
+            using StringReader stringReader = new StringReader(inputCsvFormattedCars);
+            using CsvReader csvReader = new CsvReader(stringReader, config);
+
+            this.csvMapperBrokerMock.Setup(broker =>
+                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord))
+                    .Returns(csvReader);
+
+            // when
+            List<Car> actualOptOuts = await this.csvMapperService.MapCsvToObjectAsync<Car>(
+                data: inputCsvFormattedCars,
+                hasHeaderRecord: hasHeaderRecord,
+                fieldMappings);
+
+            // then
+            actualOptOuts.Should().BeEquivalentTo(expectedCars);
+
+            this.csvMapperBrokerMock.Verify(broker =>
+                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord),
                     Times.Once());
 
             this.csvMapperBrokerMock.VerifyNoOtherCalls();

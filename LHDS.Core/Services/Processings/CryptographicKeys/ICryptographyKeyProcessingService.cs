@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
-namespace LHDS.Core.Services.Foundations.CryptographicKeys
+namespace LHDS.Core.Services.Processings.CryptographicKeys
 {
     public interface ICryptographyKeyProcessingService
     {

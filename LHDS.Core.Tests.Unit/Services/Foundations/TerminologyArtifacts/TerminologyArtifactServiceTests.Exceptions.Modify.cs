@@ -1,12 +1,16 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using LHDS.Core.Models.Foundations.TerminologyArtifacts;
-using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
@@ -28,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             var expectedTerminologyArtifactDependencyException =
                 new TerminologyArtifactDependencyException(
                     message: "TerminologyArtifact dependency error occurred, contact support.",
-                    innerException: failedTerminologyArtifactStorageException); 
+                    innerException: failedTerminologyArtifactStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -81,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             var invalidTerminologyArtifactReferenceException =
                 new InvalidTerminologyArtifactReferenceException(
-                    message: "Invalid terminologyArtifact reference error occurred.", 
+                    message: "Invalid terminologyArtifact reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
             TerminologyArtifactDependencyValidationException expectedTerminologyArtifactDependencyValidationException =
@@ -141,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             var expectedTerminologyArtifactDependencyException =
                 new TerminologyArtifactDependencyException(
                     message: "TerminologyArtifact dependency error occurred, contact support.",
-                    innerException: failedTerminologyArtifactStorageException); 
+                    innerException: failedTerminologyArtifactStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -245,7 +249,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             var failedTerminologyArtifactServiceException =
                 new FailedTerminologyArtifactServiceException(
-                    message: "Failed terminologyArtifact service occurred, please contact support", 
+                    message: "Failed terminologyArtifact service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedTerminologyArtifactServiceException =

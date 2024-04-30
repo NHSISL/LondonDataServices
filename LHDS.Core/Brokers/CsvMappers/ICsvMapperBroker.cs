@@ -1,19 +1,16 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.IO;
+using CsvHelper;
 
 namespace LHDS.Core.Brokers.CsvMappers
 {
     public interface ICsvMapperBroker
     {
-        ValueTask<List<T>> MapCsvToObjectAsync<T>(string data, bool hasHeaderRecord);
-
-        ValueTask<string> MapObjectToCsvAsync<T>(
-            List<T> @object,
-            bool addHeaderRecord,
-            bool shouldAddTrailingComma);
+        CsvReader CreateCsvReader(StringReader reader, bool hasHeaderRecord);
+        CsvWriter CreateCsvWriter(StringWriter writer, bool hasHeaderRecord);
+        StringWriter CreateStringWriter();
     }
 }

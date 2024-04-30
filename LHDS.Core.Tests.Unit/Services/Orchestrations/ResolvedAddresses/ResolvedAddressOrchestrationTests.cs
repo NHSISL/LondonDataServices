@@ -82,6 +82,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .ToList();
         }
 
+        private Expression<Func<List<ResolvedAddressReturn>, bool>> SameResolvedAddressReturnsAs(
+            List<ResolvedAddressReturn> expectedResolvedAddressReturns)
+        {
+            return actualResolvedAddressReturns =>
+                this.compareLogic.Compare(expectedResolvedAddressReturns, actualResolvedAddressReturns)
+                    .AreEqual;
+        }
+
         private Expression<Func<Document, bool>> SameDocumentAs(Document expectedDocument)
         {
             return actualDocument =>

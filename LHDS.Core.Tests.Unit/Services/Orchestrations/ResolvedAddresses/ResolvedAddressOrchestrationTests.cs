@@ -78,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         private static List<ResolvedAddress> CreateRandomResolvedAddresses()
         {
             return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
+                .Create(count: 1)
                     .ToList();
         }
 

@@ -63,8 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
                 var resolvedAddressOrchestrationDependencyValidationException =
                     new ResolvedAddressOrchestrationDependencyValidationException(
-                        message: "Resolved address orchestration dependency validation error occurred, " +
-                        "please try again.",
+                        message: "Resolved address orchestration dependency validation occurred, please try again.",
                         innerException: dependencyValidationException.InnerException as Xeption);
 
                 exceptions.Add(resolvedAddressOrchestrationDependencyValidationException);
@@ -77,13 +76,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var failedResolvedAddressOrchestrationServiceException =
                 new FailedResolvedAddressOrchestrationServiceException(
-                    message: "Failed resolved address aggregate orchestration service occurred, " +
-                    "please contact support.",
+                    message: "Failed resolved address aggregate orchestration service error occurred, " +
+                        "please contact support.",
                     innerException: aggregateException);
 
             var expectedResolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
+                    message: "Resolved address orchestration service error occurred, contact support.",
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
@@ -115,17 +114,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
                     Times.Once);
 
-            foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
-            {
-                this.resolvedAddressProcessingServiceMock.Verify(service =>
-                    service.ModifyOrAddResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
-                        Times.Once);
-            }
+            this.resolvedAddressProcessingServiceMock.Verify(service =>
+                service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                    Times.Exactly(storageResolvedAddresses.Count));
 
             var resolvedAddressOrchestrationDependencyValidationLoggingException =
                 new ResolvedAddressOrchestrationDependencyValidationException(
-                    message: "Resolved address orchestration dependency validation error occurred, " +
-                    "fix the errors and try again.",
+                    message: "Resolved address orchestration dependency validation occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -188,8 +183,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
                 var resolvedAddressOrchestrationDependencyException =
                     new ResolvedAddressOrchestrationDependencyException(
-                        message: "Resolved address orchestration dependency error occurred, " +
-                        "please try again.",
+                        message: "Resolved address orchestration dependency error occurred, please try again.",
                         innerException: dependencyException.InnerException as Xeption);
 
                 exceptions.Add(resolvedAddressOrchestrationDependencyException);
@@ -202,13 +196,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var failedResolvedAddressOrchestrationServiceException =
                 new FailedResolvedAddressOrchestrationServiceException(
-                    message: "Failed resolved address aggregate orchestration service occurred, " +
-                    "please contact support.",
+                    message: "Failed resolved address aggregate orchestration service error occurred, " +
+                        "please contact support.",
                     innerException: aggregateException);
 
             var expectedResolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
+                    message: "Resolved address orchestration service error occurred, contact support.",
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
@@ -239,17 +233,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
                     Times.Once);
 
-            foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
-            {
-                this.resolvedAddressProcessingServiceMock.Verify(service =>
-                    service.ModifyOrAddResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
-                        Times.Once);
-            }
+            this.resolvedAddressProcessingServiceMock.Verify(service =>
+                service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                    Times.Exactly(storageResolvedAddresses.Count));
 
             var resolvedAddressOrchestrationDependencyLoggingException =
                 new ResolvedAddressOrchestrationDependencyException(
                     message: "Resolved address orchestration dependency error occurred, " +
-                    "fix the errors and try again.",
+                        "please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -316,38 +307,38 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             {
                 this.resolvedAddressProcessingServiceMock.Setup(service =>
                     service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
-                        .ReturnsAsync(resolvedAddress);
+                        .ThrowsAsync(serviceException);
 
                 exceptions.Add(innerResolvedAddressOrchestrationServiceException);
             }
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to re address for {exceptions.Count} resolved addresses",
+                    $"Unable to modify resolved address for {exceptions.Count} resolved addresses",
                     exceptions);
 
-            var failedAddressExtractionOrchestrationServiceException =
-                new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction aggregate orchestration service occurred, " +
+            var failedResolvedAddressOrchestrationServiceException =
+                new FailedResolvedAddressOrchestrationServiceException(
+                    message: "Failed resolved address aggregate orchestration service error occurred, " +
                         "please contact support.",
                     innerException: aggregateException);
 
-            var expectedAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
-                    innerException: failedAddressExtractionOrchestrationServiceException);
+            var expectedResolvedAddressOrchestrationServiceException =
+                new ResolvedAddressOrchestrationServiceException(
+                    message: "Resolved address orchestration service error occurred, contact support.",
+                    innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
             ValueTask<Guid> uploadResolvedAddressTask =
                   this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
-            AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
-                await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
+            ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
+                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
                     await uploadResolvedAddressTask);
 
             // Then
-            actualAddressExtractionOrchestrationServiceException.Should()
-                .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
+            actualResolvedAddressOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedResolvedAddressOrchestrationServiceException);
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>
                service.RetrieveAllResolvedAddresses(),
@@ -365,12 +356,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
                     Times.Once);
 
-            foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
-            {
-                this.resolvedAddressProcessingServiceMock.Verify(service =>
-                    service.ModifyOrAddResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
-                        Times.Once);
-            }
+            this.resolvedAddressProcessingServiceMock.Verify(service =>
+                service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                    Times.Exactly(storageResolvedAddresses.Count));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -379,7 +367,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedAddressExtractionOrchestrationServiceException))),
+                    expectedResolvedAddressOrchestrationServiceException))),
                         Times.Once);
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
@@ -484,7 +472,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var failedResolvedAddressOrchestrationServiceException =
                 new FailedResolvedAddressOrchestrationServiceException(
-                    message: "Failed resolved address orchestration service occurred, please contact support.",
+                    message: "Failed resolved address orchestration service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedResolvedAddressOrchestrationServiveException =

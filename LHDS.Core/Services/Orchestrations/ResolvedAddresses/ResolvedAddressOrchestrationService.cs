@@ -7,13 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Azure.Storage.Blobs.Models;
-using CsvHelper.Configuration;
-using Hl7.Fhir.Model;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.CsvMappers;
@@ -86,6 +84,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 string fileName = $"{batchReferenceId}.csv";
                 byte[] documentData = Encoding.UTF8.GetBytes(resolvedAddressesCsv);
                 string container = blobContainers.Addresses;
+                var exceptions = new List<Exception>();
 
                 Document resolvedAddressesDocument = new Document
                 {
@@ -93,16 +92,31 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     DocumentData = documentData
                 };
 
-                //string addedFileName = 
                 await this.documentProcessingService.
                     AddDocumentAsync(resolvedAddressesDocument, container);
 
                 foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
                 {
-                    resolvedAddress.IsProcessed = true;
-                    resolvedAddress.BatchReference = batchReferenceId;
+                    try
+                    {
+                        await TryCatch(async () =>
+                        {
+                            resolvedAddress.IsProcessed = true;
+                            resolvedAddress.BatchReference = batchReferenceId;
+                            await this.resolvedAddressProcessingService.ModifyResolvedAddressAsync(resolvedAddress);
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
 
-                    await this.resolvedAddressProcessingService.ModifyResolvedAddressAsync(resolvedAddress);
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to modify resolved address for {exceptions.Count} resolved addresses",
+                        exceptions);
                 }
 
                 return batchReferenceId;

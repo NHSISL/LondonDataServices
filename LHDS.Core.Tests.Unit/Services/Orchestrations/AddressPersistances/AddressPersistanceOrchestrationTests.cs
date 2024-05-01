@@ -3,19 +3,24 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text.Json;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AddressMatchers;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressMatchers;
+using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Moq;
+using Newtonsoft.Json;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -26,6 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
     {
         private readonly Mock<IAddressProcessingService> addressProcessingServiceMock;
         private readonly Mock<IAddressMatcherProcessingService> addressMatcherProcessingServiceMock;
+        private readonly Mock<IResolvedAddressProcessingService> resolvedAddressProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ICompareLogic compareLogic;
@@ -35,6 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             this.addressProcessingServiceMock = new Mock<IAddressProcessingService>();
             this.addressMatcherProcessingServiceMock = new Mock<IAddressMatcherProcessingService>();
+            this.resolvedAddressProcessingServiceMock = new Mock<IResolvedAddressProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
@@ -42,6 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.addressPersistanceOrchestrationService = new AddressPersistanceOrchestrationService(
                 addressProcessingService: addressProcessingServiceMock.Object,
                 addressMatcherProcessingService: addressMatcherProcessingServiceMock.Object,
+                resolvedAddressProcessingService: resolvedAddressProcessingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object);
         }
@@ -73,21 +81,73 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     .AsQueryable();
         }
 
-        private static Address CreateRandomAddress(DateTimeOffset dateTimeOffset) =>
-            CreateAddressFiller(dateTimeOffset).Create();
+        static string ConvertToJSONString(List<KeyValuePair<string, string>> keyValuePairs)
+        {
+            var jsonString = System.Text.Json.JsonSerializer.Serialize(keyValuePairs);
+            return jsonString;
+        }
+
+        public static string ConvertToString(List<KeyValuePair<string, string>> keyValuePairs)
+        {
+            return string.Join(" ", keyValuePairs.Select(kvp => kvp.Value)).Trim();
+        }
+
+        private static List<Address> CreateRandomAddressList(int addressCount)
+        {
+            return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: addressCount)
+                    .ToList();
+        }
 
         private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
+            List<KeyValuePair<string, string>> compomnents = GenerateRandomKeyValuePairAddress();
             var filler = new Filler<Address>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(address => address.PostalAddress).Use(() => ConvertToString(compomnents))
+                .OnProperty(address => address.JsonPostalAddress).Use(() => ConvertToJSONString(compomnents))
                 .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.UpdatedBy).Use(user);
 
             return filler;
         }
+
+        static List<KeyValuePair<string, string>> GenerateRandomKeyValuePairAddress()
+        {
+            return new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("OrganisationName", GetRandomString()),
+                new KeyValuePair<string, string>("DepartmentName", GetRandomString()),
+                new KeyValuePair<string, string>("SubBuildingName", GetRandomString())
+                //new KeyValuePair<string, string>("house_number", GetRandomNumber().ToString()),
+                //new KeyValuePair<string, string>("road", GetRandomString()),
+                //new KeyValuePair<string, string>("city_district", GetRandomString()),
+                //new KeyValuePair<string, string>("city", GetRandomString()),
+                //new KeyValuePair<string, string>("postcode", GetRandomString()),
+                //new KeyValuePair<string, string>("country", GetRandomString())
+            };
+        }
+
+        static List<KeyValuePair<string, string>> GenerateRandomKeyValuePairAddressFromJson(string jsonPostalAddress)
+        {
+            var keyValuePairs = new List<KeyValuePair<string, string>>();
+            var items = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(jsonPostalAddress);
+
+            foreach (var item in items)
+            {
+                var key = item["Key"];
+                var value = item["Value"];
+                keyValuePairs.Add(new KeyValuePair<string, string>(key, value));
+            }
+
+            return keyValuePairs;
+        }
+
+        private static Address CreateRandomAddress(DateTimeOffset dateTimeOffset) =>
+            CreateAddressFiller(dateTimeOffset).Create();
 
         private static ResolvedAddress CreateRandomResolvedAddress(DateTimeOffset dateTimeOffset) =>
             CreateResolvedAddressFiller(dateTimeOffset).Create();
@@ -95,14 +155,38 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         private static Filler<ResolvedAddress> CreateResolvedAddressFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
+            List<KeyValuePair<string, string>> compomnents = GenerateRandomKeyValuePairAddress();
             var filler = new Filler<ResolvedAddress>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(address => address.PostalAddress).Use(() => ConvertToString(compomnents))
+                .OnProperty(address => address.JsonPostalAddress).Use(() => ConvertToJSONString(compomnents))
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        public static ResolvedAddress UpdateResolvedAddress(ResolvedAddress inputResolvedAddress, AddressMatch matchedAddress)
+        {
+            inputResolvedAddress.IsMatched = matchedAddress.IsMatched;
+            inputResolvedAddress.MatchAlgorithmEnum = MatchAlgorithmEnum.Exact;
+            inputResolvedAddress.MatchedWithPostalAddress = matchedAddress.PostalAddress;
+            inputResolvedAddress.MatchedWithJsonPostalAddress = matchedAddress.JsonPostalAddress;
+            inputResolvedAddress.MatchedUPRN = matchedAddress.UPRN;
+            inputResolvedAddress.MatchedUPSN = matchedAddress.UPSN;
+
+            inputResolvedAddress.MatchedOrganisationName = 
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "OrganisationName").Value;
+
+            inputResolvedAddress.MatchedOrganisationName =
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "DepartmentName").Value;
+
+            inputResolvedAddress.MatchedOrganisationName =
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "SubBuildingName").Value;
+
+            return inputResolvedAddress;
         }
 
         public static TheoryData AddressPersistenceDependencyValidationExceptions()

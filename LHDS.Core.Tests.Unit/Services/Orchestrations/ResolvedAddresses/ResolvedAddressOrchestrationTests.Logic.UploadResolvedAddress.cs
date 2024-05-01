@@ -88,12 +88,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.AddDocumentAsync(It.Is(SameDocumentAs(inputDocument)), container),
                     Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(), 
+                    Times.Exactly(storageResolvedAddresses.Count));
+
             foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
             {
-                this.dateTimeBrokerMock.Verify(broker =>
-                    broker.GetCurrentDateTimeOffset(), 
-                        Times.Once);
-
                 this.resolvedAddressProcessingServiceMock.Verify(service =>
                     service.ModifyResolvedAddressAsync(resolvedAddress), 
                         Times.Once);

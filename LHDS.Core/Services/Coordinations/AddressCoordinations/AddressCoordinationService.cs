@@ -108,9 +108,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         public ValueTask<Guid> UploadResolvedAddressesAsync() =>
             TryCatch(async () =>
             {
-                Guid batchReference = await this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
-
-                return batchReference;
+                return await this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
             });
     }
 }

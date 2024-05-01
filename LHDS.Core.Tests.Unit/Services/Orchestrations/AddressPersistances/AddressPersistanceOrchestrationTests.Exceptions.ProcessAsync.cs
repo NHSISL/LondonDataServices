@@ -102,6 +102,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             // given
             List<Address> randomAddresses = CreateRandomAddresses(1).ToList();
+            string someFileName = GetRandomString();
             List<Exception> exceptions = new List<Exception>();
 
             foreach (Address address in randomAddresses)
@@ -137,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // when
             ValueTask<List<Address>> processTask =
-                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
 
             AddressPersistenceOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(
@@ -176,6 +177,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             // given
             List<Address> randomAddresses = CreateRandomAddresses(1).ToList();
+            string someFileName = GetRandomString();
             var serviceException = new Exception();
             List<Exception> exceptions = new List<Exception>();
 
@@ -218,7 +220,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // when
             ValueTask<List<Address>> processTask =
-                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses);
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
 
             AddressPersistenceOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(

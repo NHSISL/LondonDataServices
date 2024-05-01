@@ -105,7 +105,11 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 }
             });
 
-        public ValueTask<Guid> UploadResolvedAddressesAsync() =>
-            throw new System.NotImplementedException();
+        public async ValueTask<Guid> UploadResolvedAddressesAsync()
+        {
+            Guid batchReference = await this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
+
+            return batchReference;
+        }
     }
 }

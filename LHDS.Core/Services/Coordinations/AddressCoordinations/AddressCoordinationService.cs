@@ -105,11 +105,12 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 }
             });
 
-        public async ValueTask<Guid> UploadResolvedAddressesAsync()
-        {
-            Guid batchReference = await this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
+        public ValueTask<Guid> UploadResolvedAddressesAsync() =>
+            TryCatch(async () =>
+            {
+                Guid batchReference = await this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
-            return batchReference;
-        }
+                return batchReference;
+            });
     }
 }

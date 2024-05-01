@@ -23,8 +23,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             Xeption dependancyValidationException)
         {
             // given
-            Guid batchReference = Guid.NewGuid();
-
             var expectedDependencyException =
                 new AddressCoordinationDependencyValidationException(
                     message: "Address coordination dependency validation error occurred, please try again.",
@@ -66,9 +64,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             Xeption dependencyException)
         {
             // given
-            string someFilename = GetRandomString();
-            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
-
             var expectedDependencyException =
                 new AddressCoordinationDependencyException(
                     message: "Address coordination dependency error occurred, please try again.",
@@ -108,13 +103,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
         public async Task ShouldThrowServiceExceptionOnUploadIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string someFilename = GetRandomString();
-            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
             var serviceException = new Exception();
 
             var failedAddressCoordinationServiceException =
                 new FailedAddressCoordinationServiceException(
-                    message: "Failed address coordination service error occurred, please contact support",
+                    message: "Failed address coordination service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedAddressCoordinationServiceException =

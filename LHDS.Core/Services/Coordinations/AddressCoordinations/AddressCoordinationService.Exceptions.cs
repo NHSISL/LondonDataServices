@@ -19,6 +19,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<ResolvedAddress> ReturningResolvedAddressFunction();
+        private delegate ValueTask<Guid> ReturningGuidFunction();
 
         private async ValueTask<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
         {
@@ -210,6 +211,67 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                         innerException: aggregateException);
 
                 throw CreateAndLogServiceException(failedAddressCoordinationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressCoordinationServiceException =
+                    new FailedAddressCoordinationServiceException(
+                        message: "Failed address coordination service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressCoordinationServiceException);
+            }
+        }
+
+        private async ValueTask<Guid> TryCatch(
+            ReturningGuidFunction returningGuidFunction)
+        {
+            try
+            {
+                return await returningGuidFunction();
+            }
+            catch (InvalidArgumentAddressCoordinationException invalidArgumentAddressCoordinationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressCoordinationException);
+            }
+            catch (AddressExtractionValidationOrchestrationException addressExtractionValidationOrchestrationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressExtractionValidationOrchestrationException);
+            }
+            catch (AddressExtractionOrchestrationDependencyValidationException
+                addressExtractionOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    addressExtractionOrchestrationDependencyValidationException);
+            }
+            catch (AddressPersistanceOrchestrationValidationException
+                addressPersistanceOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
+            }
+            catch (AddressPersistanceOrchestrationDependencyValidationException
+                addressPersistanceOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    addressPersistanceOrchestrationDependencyValidationException);
+            }
+            catch (AddressExtractionOrchestrationServiceException addressExtractionOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressExtractionOrchestrationServiceException);
+            }
+            catch (AddressExtractionOrchestrationDependencyException
+                addressExtractionOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
+            }
+            catch (AddressPersistanceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
+            }
+            catch (AddressPersistanceOrchestrationDependencyException
+                addressPersistanceOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
             }
             catch (Exception exception)
             {

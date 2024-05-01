@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
 
 namespace LHDS.Core.Clients
 {

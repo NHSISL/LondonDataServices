@@ -23,11 +23,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ReturnsAsync(expectedBatchReference);
 
             // When
-            ValueTask<Guid> actualBatchReference =
-                this.addressCoordinationService.UploadResolvedAddressesAsync();
+            Guid actualBatchReference =
+                await this.addressCoordinationService.UploadResolvedAddressesAsync();
 
             // Then
-            actualBatchReference.Should().BeEquivalentTo(expectedBatchReference);
+            actualBatchReference.Should().Be(expectedBatchReference);
 
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
                 service.UploadResolvedAddressesAsync(),

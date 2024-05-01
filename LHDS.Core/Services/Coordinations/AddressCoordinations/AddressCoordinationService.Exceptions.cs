@@ -223,8 +223,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             }
         }
 
-        private async ValueTask<Guid> TryCatch(
-            ReturningGuidFunction returningGuidFunction)
+        private async ValueTask<Guid> TryCatch(ReturningGuidFunction returningGuidFunction)
         {
             try
             {

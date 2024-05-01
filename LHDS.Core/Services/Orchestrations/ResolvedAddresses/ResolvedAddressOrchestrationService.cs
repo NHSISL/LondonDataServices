@@ -110,8 +110,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     DocumentData = documentData
                 };
 
-                await this.documentProcessingService.
-                    AddDocumentAsync(resolvedAddressesDocument, container);
+                await this.documentProcessingService
+                    .AddDocumentAsync(resolvedAddressesDocument, container);
 
                 foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
                 {

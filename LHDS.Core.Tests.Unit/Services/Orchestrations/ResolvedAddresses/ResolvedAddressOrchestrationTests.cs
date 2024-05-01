@@ -3,12 +3,20 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
+using LHDS.Core.Services.Processings.CsvMappers;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Moq;
@@ -22,22 +30,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
     {
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
         private readonly Mock<IResolvedAddressProcessingService> resolvedAddressProcessingServiceMock;
+        private readonly Mock<ICsvMapperProcessingService> csvMapperProcessingServiceMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly ICompareLogic compareLogic;
+        private readonly BlobContainers blobContainers;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
 
         public ResolvedAddressOrchestrationTests()
         {
             this.documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
             this.resolvedAddressProcessingServiceMock = new Mock<IResolvedAddressProcessingService>();
+            this.csvMapperProcessingServiceMock = new Mock<ICsvMapperProcessingService>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
+            this.compareLogic = new CompareLogic();
+
+            this.blobContainers = new BlobContainers
+            {
+                Addresses = "addresses"
+            };
 
             this.resolvedAddressOrchestrationService = new ResolvedAddressOrchestrationService(
                 documentProcessingService: this.documentProcessingServiceMock.Object,
                 resolvedAddressProcessingService: this.resolvedAddressProcessingServiceMock.Object,
+                csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
-                loggingBroker: this.loggingBrokerMock.Object);
+                loggingBroker: this.loggingBrokerMock.Object,
+                identifierBroker: this.identifierBrokerMock.Object,
+                blobContainers: blobContainers);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
@@ -45,6 +68,78 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
+
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static List<ResolvedAddress> CreateRandomResolvedAddresses()
+        {
+            return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: 1)
+                    .ToList();
+        }
+
+        private Expression<Func<List<ResolvedAddressReturn>, bool>> SameResolvedAddressReturnsAs(
+            List<ResolvedAddressReturn> expectedResolvedAddressReturns)
+        {
+            return actualResolvedAddressReturns =>
+                this.compareLogic.Compare(expectedResolvedAddressReturns, actualResolvedAddressReturns)
+                    .AreEqual;
+        }
+
+        private Expression<Func<Document, bool>> SameDocumentAs(Document expectedDocument)
+        {
+            return actualDocument =>
+                this.compareLogic.Compare(expectedDocument, actualDocument)
+                    .AreEqual;
+        }
+
+        private static ResolvedAddress CreateRandomResolvedAddress() =>
+            CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static ResolvedAddress CreateRandomResolvedAddress(DateTimeOffset dateTimeOffset) =>
+            CreateResolvedAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<ResolvedAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(resolvedAddress => resolvedAddress.IsMatched).Use(true)
+                .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static List<ResolvedAddressReturn> MapToResolvedAddressReturn(List<ResolvedAddress> resolvedAddresses)
+        {
+            List<ResolvedAddressReturn> returnAddresses = resolvedAddresses.Select(resolvedAddress =>
+                    new ResolvedAddressReturn
+                    {
+                        UPRN = resolvedAddress.MatchedUPRN,
+                        UPSN = resolvedAddress.MatchedUPSN,
+                        OrganisationName = resolvedAddress.MatchedOrganisationName,
+                        DepartmentName = resolvedAddress.MatchedDepartmentName,
+                        SubBuildingName = resolvedAddress.MatchedSubBuildingName,
+                        BuildingName = resolvedAddress.MatchedBuildingName,
+                        BuildingNumber = resolvedAddress.MatchedBuildingNumber,
+                        DependentThoroughfare = resolvedAddress.MatchedDependentThoroughfare,
+                        Thoroughfare = resolvedAddress.MatchedThoroughfare,
+                        DoubleDependentLocality = resolvedAddress.MatchedDoubleDependentLocality,
+                        DependentLocality = resolvedAddress.MatchedDependentLocality,
+                        PostTown = resolvedAddress.MatchedPostTown,
+                        PostCode = resolvedAddress.MatchedPostCode,
+                    }).ToList();
+
+            return returnAddresses;
+        }
 
         public static TheoryData DependencyValidationExceptions()
         {

@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
@@ -145,6 +146,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 new AddressNormalisationDependencyValidationException(
                     message: "Address normalisation dependency validation error occurred, please try again.",
                     innerException),
+
+                new CsvHelperClientValidationException(innerException),
             };
         }
 
@@ -171,6 +174,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 new AddressNormalisationServiceException(
                     message: "Address normalisation service error occurred, contact support.",
                     innerException),
+
+                new CsvHelperClientDependencyException(innerException),
+                new CsvHelperClientServiceException(innerException)
             };
         }
     }

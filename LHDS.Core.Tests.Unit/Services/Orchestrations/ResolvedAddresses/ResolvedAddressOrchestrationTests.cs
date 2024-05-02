@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
@@ -164,6 +165,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 new ResolvedAddressProcessingDependencyValidationException(
                     message: "Resolved address processing dependency validation error occurred, please try again.",
                     innerException),
+
+                new CsvHelperClientValidationException(innerException),
             };
         }
 
@@ -190,6 +193,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 new ResolvedAddressProcessingServiceException(
                     message: "Resolved address processing service error occurred, contact support.",
                     innerException),
+
+                new CsvHelperClientDependencyException(innerException),
+                new CsvHelperClientServiceException(innerException)
             };
         }
 

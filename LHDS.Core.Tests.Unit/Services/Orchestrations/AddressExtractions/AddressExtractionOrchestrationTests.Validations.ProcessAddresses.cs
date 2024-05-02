@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
         }
     }

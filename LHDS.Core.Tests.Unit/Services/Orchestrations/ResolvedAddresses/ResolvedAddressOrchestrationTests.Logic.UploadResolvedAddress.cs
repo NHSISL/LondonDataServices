@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier())
                     .Returns(batchReference);
 
-            this.csvMapperProcessingServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapObjectToCsvAsync(
                     It.Is(SameResolvedAddressReturnsAs(returnResolvedAddresses)), false, null, true))
                         .ReturnsAsync(ouputCsv);
@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier(),
                     Times.Once);
 
-            this.csvMapperProcessingServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapObjectToCsvAsync(
                     It.Is(SameResolvedAddressReturnsAs(returnResolvedAddresses)), false, null, true),
                         Times.Once);
@@ -101,7 +101,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -39,9 +39,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             HashSet<AddressMatch> addressesToMatch = storageAddresses.Select(address => new AddressMatch
             {
-                PostalAddress = ConvertToString(randomAddressComponents),
-                JsonPostalAddress = jsonAddress,
-                AddressComponents = GenerateRandomKeyValuePairAddressFromJson(jsonAddress)
+                PostalAddress = address.PostalAddress,
+                JsonPostalAddress = address.JsonPostalAddress,
+                AddressComponents = GenerateRandomKeyValuePairAddressFromJson(address.JsonPostalAddress)
             }).ToHashSet();
 
             HashSet<AddressMatch> resolvedMatchedAddresses = addressesToMatch.DeepClone();
@@ -56,16 +56,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     .Returns(postCode);
 
             this.addressProcessingServiceMock.Setup(processing =>
-                processing.RetrieveAddressByPostCodeAsync(inputResolvedAddress.PostCode))
+                processing.RetrieveAddressByPostCodeAsync(postCode))
                     .ReturnsAsync(storageAddresses); 
 
-            this.addressProcessingServiceMock.Setup(processing =>
-                processing.RetrieveAddressByPostCodeAsync(inputResolvedAddress.PostCode))
-                    .ReturnsAsync(storageAddresses); //returns List of Addresses
-
             this.addressMatcherProcessingServiceMock.Setup(processing =>
-                processing.FindBestMatch(addressesToMatch, randomResolvedAddressComponents))
-                    .ReturnsAsync(matchedAddress);
+                processing.FindBestMatch(
+                    It.Is(SameAddressToMatchAs(addressesToMatch)), 
+                    It.Is(SameResolvedAddressAs(randomResolvedAddressComponents))))
+                        .ReturnsAsync(matchedAddress);
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
                 processing.ModifyResolvedAddressAsync(updatedResolvedAddress))
@@ -73,21 +71,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             // When
             ResolvedAddress actualResolvedAddress =
-                await this.addressPersistanceOrchestrationService.MatchAndPersistResolvedAddressAsync(inputResolvedAddress);
+                await this.addressPersistanceOrchestrationService
+                    .MatchAndPersistResolvedAddressAsync(inputResolvedAddress);
 
             // Then
             actualResolvedAddress.Should().BeEquivalentTo(updatedResolvedAddress);
 
             this.addressMatcherProcessingServiceMock.Verify(processing =>
-                processing.ExtractPostCode(postCode),
+                processing.ExtractPostCode(inputResolvedAddress.PostalAddress),
                     Times.Once);
 
             this.addressProcessingServiceMock.Verify(processing =>
-                processing.RetrieveAddressByPostCodeAsync(inputResolvedAddress.PostCode),
+                processing.RetrieveAddressByPostCodeAsync(postCode),
                     Times.Once);
 
             this.addressMatcherProcessingServiceMock.Verify(processing =>
-                processing.FindBestMatch(addressesToMatch, randomResolvedAddressComponents),
+                processing.FindBestMatch(
+                    It.Is(SameAddressToMatchAs(addressesToMatch)),
+                    It.Is(SameResolvedAddressAs(randomResolvedAddressComponents))),
                     Times.Once);
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>

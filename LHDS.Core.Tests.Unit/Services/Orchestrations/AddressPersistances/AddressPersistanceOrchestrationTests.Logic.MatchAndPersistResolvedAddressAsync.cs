@@ -59,6 +59,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 processing.RetrieveAddressByPostCodeAsync(inputResolvedAddress.PostCode))
                     .ReturnsAsync(storageAddresses); 
 
+            this.addressProcessingServiceMock.Setup(processing =>
+                processing.RetrieveAddressByPostCodeAsync(inputResolvedAddress.PostCode))
+                    .ReturnsAsync(storageAddresses); //returns List of Addresses
+
             this.addressMatcherProcessingServiceMock.Setup(processing =>
                 processing.FindBestMatch(addressesToMatch, randomResolvedAddressComponents))
                     .ReturnsAsync(matchedAddress);

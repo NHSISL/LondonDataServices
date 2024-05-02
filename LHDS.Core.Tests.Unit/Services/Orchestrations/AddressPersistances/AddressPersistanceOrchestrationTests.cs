@@ -167,15 +167,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             return filler;
         }
-
-        public static ResolvedAddress UpdateResolvedAddress(
-            ResolvedAddress inputResolvedAddress, 
-            AddressMatch matchedAddress)
+        public static ResolvedAddress UpdateResolvedAddress(ResolvedAddress inputResolvedAddress, AddressMatch matchedAddress)
         {
             inputResolvedAddress.IsMatched = matchedAddress.IsMatched;
             MatchAlgorithmEnum matchAlgorithmEnum = MatchAlgorithmEnum.Human;
             Enum.TryParse(((int)matchedAddress.BestMatch).ToString(), ignoreCase: true, out matchAlgorithmEnum);
             inputResolvedAddress.MatchAlgorithmEnum = matchAlgorithmEnum;
+            inputResolvedAddress.IsMatched = matchedAddress.IsMatched;
+            inputResolvedAddress.MatchAlgorithmEnum = MatchAlgorithmEnum.Exact;
             inputResolvedAddress.MatchedWithPostalAddress = matchedAddress.PostalAddress;
             inputResolvedAddress.MatchedWithJsonPostalAddress = matchedAddress.JsonPostalAddress;
             inputResolvedAddress.MatchedUPRN = matchedAddress.UPRN;
@@ -213,6 +212,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             inputResolvedAddress.MatchedPostTown =
                 matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedPostTown").Value;
+
+            inputResolvedAddress.MatchedPostCode =
+                matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedPostCode").Value;
 
             return inputResolvedAddress;
         }

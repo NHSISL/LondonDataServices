@@ -20,7 +20,6 @@ using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts;
-using LHDS.Core.Models.Processings.CsvMappers.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
@@ -490,12 +489,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 new MeshProcessingDependencyValidationException(
                     message: "Mesh processing dependency validation occurred, please try again.",
                     innerException),
-
-                new CsvMapperProcessingValidationException(innerException),
-
-                new CsvMapperProcessingDependencyValidationException(
-                    message: "Csv Mapper processing dependency validation occurred, please try again.",
-                    innerException),
             };
         }
 
@@ -555,13 +548,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     message: "Mesh processing service error occurred, contact support.",
                     innerException),
 
-                new CsvMapperProcessingDependencyException(
-                    message: "Csv Mapper processing dependency validation occurred, please try again.",
-                    innerException),
-
-                new CsvMapperProcessingServiceException(
-                    message: "Csv Mapper processing service error occurred, contact support.",
-                    innerException)
             };
         }
 

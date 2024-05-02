@@ -171,7 +171,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                 matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedPostCode").Value;
 
             return resolvedAddresses;
-
         }
 
         public static List<KeyValuePair<string, string>> GenerateKeyValuePairAddressFromJson(string jsonPostalAddress)

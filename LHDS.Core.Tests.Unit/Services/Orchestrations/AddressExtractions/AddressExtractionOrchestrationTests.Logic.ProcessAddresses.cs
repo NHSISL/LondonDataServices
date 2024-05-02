@@ -63,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
             List<Address> outputAddresses = randomAddresses.DeepClone();
 
-            this.csvMapperServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings))
                     .ReturnsAsync(outputAddresses);
 
@@ -96,7 +96,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
                 options.Excluding(address => address.Id));
 
-            this.csvMapperServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings),
                     Times.Once());
 
@@ -118,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                             Times.Once);
             }
 
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

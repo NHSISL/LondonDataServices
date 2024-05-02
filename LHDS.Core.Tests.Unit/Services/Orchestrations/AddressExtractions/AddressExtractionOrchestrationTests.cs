@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
+using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -27,32 +28,32 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationServiceTests
     {
-        private readonly Mock<ICsvMapperService> csvMapperServiceMock;
         private readonly Mock<IAddressNormalisationService> addressNormalisationServiceMock;
         private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
         private readonly ITestOutputHelper output;
 
         public AddressExtractionOrchestrationServiceTests(ITestOutputHelper output)
         {
-            this.csvMapperServiceMock = new Mock<ICsvMapperService>();
             this.addressNormalisationServiceMock = new Mock<IAddressNormalisationService>();
             this.auditBrokerMock = new Mock<IAuditBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.compareLogic = new CompareLogic();
             this.output = output;
 
             this.addressExtractionOrchestrationService = new AddressExtractionOrchestrationService(
-                csvMapperService: csvMapperServiceMock.Object,
                 addressNormalisationService: addressNormalisationServiceMock.Object,
                 auditBroker: auditBrokerMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
+                csvHelperBroker: csvHelperBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object);
         }

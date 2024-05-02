@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Audits;
+using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -16,31 +17,30 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
-using LHDS.Core.Services.Foundations.CsvMappers;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationService : IAddressExtractionOrchestrationService
     {
-        private readonly ICsvMapperService csvMapperService;
         private readonly IAddressNormalisationService addressNormalisationService;
         private readonly IAuditBroker auditBroker;
         private readonly ILoggingBroker loggingBroker;
+        private readonly ICsvHelperBroker csvHelperBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
 
         public AddressExtractionOrchestrationService(
-            ICsvMapperService csvMapperService,
             IAddressNormalisationService addressNormalisationService,
             IAuditBroker auditBroker,
             ILoggingBroker loggingBroker,
+            ICsvHelperBroker csvHelperBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker)
         {
-            this.csvMapperService = csvMapperService;
             this.addressNormalisationService = addressNormalisationService;
             this.auditBroker = auditBroker;
             this.loggingBroker = loggingBroker;
+            this.csvHelperBroker = csvHelperBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
         }
@@ -75,7 +75,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                     { "PostCode", 15 }
                 };
 
-                List<Address> addresses = await this.csvMapperService
+                List<Address> addresses = await this.csvHelperBroker
                     .MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord: false, fieldMappings);
 
                 List<Address> processedAddresses = new List<Address>();
@@ -136,7 +136,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                     { nameof(ResolvedAddress.UnstructuredPostalAddress), 2 }
                 };
 
-                List<ResolvedAddress> resolvedAddresses = await this.csvMapperService
+                List<ResolvedAddress> resolvedAddresses = await this.csvHelperBroker
                     .MapCsvToObjectAsync<ResolvedAddress>(
                         data: Encoding.UTF8.GetString(data),
                         hasHeaderRecord: true,

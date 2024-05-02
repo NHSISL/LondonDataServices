@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<OptOutIdentifier> randomOptOuts = CreateRandomOptOutIdentifiersList();
             List<OptOutIdentifier> outputOptOuts = randomOptOuts;
 
-            this.csvMapperProcessingServiceMock.Setup(processing =>
+            this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))
                     .ReturnsAsync(outputOptOuts);
 
@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var randomOptOutData = GetRandomString();
             var processedString = randomOptOutData;
 
-            this.csvMapperProcessingServiceMock.Setup(processings =>
+            this.csvHelperBrokerMock.Setup(processings =>
                 processings.MapObjectToCsvAsync(
                     It.Is(SameOptOutListAs(processedOptOuts)),
                     withHeader,
@@ -96,7 +96,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputBytes, randomRecieveName);
 
             // then
-            this.csvMapperProcessingServiceMock.Verify(processing =>
+            this.csvHelperBrokerMock.Verify(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings),
                     Times.Once);
 
@@ -128,7 +128,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 processing.GetIdentifier(),
                     Times.Exactly(outputOptOuts.Count));
 
-            this.csvMapperProcessingServiceMock.Verify(processings =>
+            this.csvHelperBrokerMock.Verify(processings =>
                 processings.MapObjectToCsvAsync(
                     It.IsAny<List<OptOut>>(),
                     withHeader,
@@ -141,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();

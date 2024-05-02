@@ -126,7 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             }
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
         }
 
@@ -159,7 +159,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
         }
     }

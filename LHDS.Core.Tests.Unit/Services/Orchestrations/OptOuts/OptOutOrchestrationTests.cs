@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -24,7 +25,6 @@ using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 using LHDS.Core.Services.Orchestrations.OptOuts;
-using LHDS.Core.Services.Processings.CsvMappers;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Mesh;
 using LHDS.Core.Services.Processings.OptOuts;
@@ -42,9 +42,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private readonly Mock<IOptOutProcessingService> optOutProcessingServiceMock;
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
         private readonly Mock<IMeshProcessingService> meshProcessingServiceMock;
-        private readonly Mock<ICsvMapperProcessingService> csvMapperProcessingServiceMock;
         private readonly OptOutOrchestrationService optOutOrchestrationService;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly ICompareLogic compareLogic;
@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.optOutProcessingServiceMock = new Mock<IOptOutProcessingService>();
             this.documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
             this.meshProcessingServiceMock = new Mock<IMeshProcessingService>();
-            this.csvMapperProcessingServiceMock = new Mock<ICsvMapperProcessingService>();
+            this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -134,9 +134,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 optOutProcessingService: this.optOutProcessingServiceMock.Object,
                 documentProcessingService: this.documentProcessingServiceMock.Object,
                 meshProcessingService: this.meshProcessingServiceMock.Object,
-                csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
                 blobContainers: this.blobContainers,
                 loggingBroker: this.loggingBrokerMock.Object,
+                csvHelperBroker: this.csvHelperBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
                 optOutConfiguration: this.optOutConfiguration,

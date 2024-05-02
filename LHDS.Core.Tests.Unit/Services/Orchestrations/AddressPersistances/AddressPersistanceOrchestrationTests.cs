@@ -168,7 +168,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             return filler;
         }
-        public static ResolvedAddress UpdateResolvedAddress(ResolvedAddress inputResolvedAddress, AddressMatch matchedAddress)
+        public static ResolvedAddress UpdateResolvedAddress(
+            ResolvedAddress inputResolvedAddress, 
+            AddressMatch matchedAddress)
         {
             inputResolvedAddress.IsMatched = matchedAddress.IsMatched;
             MatchAlgorithmEnum matchAlgorithmEnum = MatchAlgorithmEnum.Human;

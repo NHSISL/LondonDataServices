@@ -121,13 +121,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             {
                 new KeyValuePair<string, string>("OrganisationName", GetRandomString()),
                 new KeyValuePair<string, string>("DepartmentName", GetRandomString()),
-                new KeyValuePair<string, string>("SubBuildingName", GetRandomString())
-                //new KeyValuePair<string, string>("house_number", GetRandomNumber().ToString()),
-                //new KeyValuePair<string, string>("road", GetRandomString()),
-                //new KeyValuePair<string, string>("city_district", GetRandomString()),
-                //new KeyValuePair<string, string>("city", GetRandomString()),
-                //new KeyValuePair<string, string>("postcode", GetRandomString()),
-                //new KeyValuePair<string, string>("country", GetRandomString())
+                new KeyValuePair<string, string>("SubBuildingName", GetRandomString()),
+                new KeyValuePair<string, string>("BuildingNumber", GetRandomString()),
+                new KeyValuePair<string, string>("DependentThoroughfare", GetRandomString()),
+                new KeyValuePair<string, string>("Thoroughfare", GetRandomString()),
+                new KeyValuePair<string, string>("DoubleDependentLocality", GetRandomString()),
+                new KeyValuePair<string, string>("DependentLocality", GetRandomString()),
+                new KeyValuePair<string, string>("PostTown", GetRandomString()),
+                new KeyValuePair<string, string>("PostCode", GetRandomString())
             };
         }
 
@@ -217,6 +218,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedPostCode").Value;
 
             return inputResolvedAddress;
+        }
+
+        private Expression<Func<HashSet<AddressMatch>, bool>> SameAddressToMatchAs(
+           HashSet<AddressMatch> expectedAddressToMatch)
+        {
+            return actualAddressToMatch =>
+                this.compareLogic.Compare(expectedAddressToMatch, actualAddressToMatch)
+                    .AreEqual;
+        }
+
+        private Expression<Func<List<KeyValuePair<string, string>>, bool>> SameResolvedAddressAs(
+            List<KeyValuePair<string, string>> expectedResolvedAddress)
+        {
+            return actualResolvedAddress =>
+                this.compareLogic.Compare(expectedResolvedAddress, actualResolvedAddress)
+                    .AreEqual;
         }
 
         public static TheoryData AddressPersistenceDependencyValidationExceptions()

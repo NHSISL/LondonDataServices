@@ -10,9 +10,12 @@ using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AddressMatchers;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressMatchers;
+using LHDS.Core.Services.Processings.ResolvedAddresses;
+using Newtonsoft.Json;
 
 namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 {
@@ -20,17 +23,20 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
     {
         private readonly IAddressProcessingService addressProcessingService;
         private readonly IAddressMatcherProcessingService addressMatcherProcessingService;
+        private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
 
         public AddressPersistanceOrchestrationService(
             IAddressProcessingService addressProcessingService,
             IAddressMatcherProcessingService addressMatcherProcessingService,
+            IResolvedAddressProcessingService resolvedAddressProcessingService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
             this.addressProcessingService = addressProcessingService;
             this.addressMatcherProcessingService = addressMatcherProcessingService;
+            this.resolvedAddressProcessingService = resolvedAddressProcessingService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }
@@ -79,6 +85,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             });
 
         public ValueTask<ResolvedAddress> MatchAndPersistResolvedAddressAsync(ResolvedAddress resolvedAddresses) =>
-            throw new NotImplementedException();
+            throw new NotImplementedException();  
     }
 }

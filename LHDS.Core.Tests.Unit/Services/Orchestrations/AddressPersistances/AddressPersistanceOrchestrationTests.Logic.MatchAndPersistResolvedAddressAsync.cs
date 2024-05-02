@@ -32,9 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             List<Address> randomAddresses = CreateRandomAddressList(GetRandomNumber());
             List<Address> storageAddresses = randomAddresses;
             string postCode = GetRandomString();
-
             List<KeyValuePair<string, string>> randomAddressComponents = GenerateRandomKeyValuePairAddress();
-
             string jsonAddress = ConvertToJSONString(randomAddressComponents);
 
             HashSet<AddressMatch> addressesToMatch = storageAddresses.Select(address => new AddressMatch
@@ -48,7 +46,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             AddressMatch matchedAddress = resolvedMatchedAddresses.First();
             matchedAddress.IsMatched = true;
             matchedAddress.BestMatch = BestMatchEnum.Single;
-
             ResolvedAddress updatedResolvedAddress = UpdateResolvedAddress(inputResolvedAddress, matchedAddress);
 
             this.addressMatcherProcessingServiceMock.Setup(processing =>

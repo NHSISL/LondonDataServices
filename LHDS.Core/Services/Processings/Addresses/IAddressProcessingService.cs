@@ -19,7 +19,7 @@ namespace LHDS.Core.Services.Processings.Addresses
         ValueTask<Address> ModifyOrAddAddressAsync(Address address);
         ValueTask<Address> ModifyAddressAsync(Address address);
         ValueTask<Address> RemoveAddressByIdAsync(Guid addressId);
-        ValueTask<List<Address>> RetrieveAddressByPostCodeAsync(string postCode);
+        ValueTask<List<Address>> RetrieveAddressesByPostCodeAsync(string postCode);
         ValueTask<bool> IsExactMatchForAddressAsync(string addressToMatch);
     }
 }

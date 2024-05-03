@@ -1,0 +1,68 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
+using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
+using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
+using LHDS.Core.Services.Orchestrations.AddressPersistances;
+using Moq;
+using Xeptions;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
+{
+    public partial class AddressPersistanceOrchestrationServiceTests
+    {
+        [Theory]
+        [MemberData(nameof(AddressPersistenceDependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationExceptionOnMatchAndPersistIfDependencyValidationErrorOccursAndLogItAsync(
+           Xeption dependencyValidationException)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
+
+            var expectedAddressPersistenceOrchestrationDependencyValidationException =
+                new AddressPersistenceOrchestrationDependencyValidationException(
+                    message: "Address persistence orchestration dependency validation error occurred, please try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
+
+            this.addressMatcherProcessingServiceMock.Setup(processing =>
+                processing.ExtractPostCode(It.IsAny<string>()))
+                    .Throws(dependencyValidationException);
+
+            // when
+            ValueTask<ResolvedAddress> PersistTask = this.addressPersistanceOrchestrationService
+                    .MatchAndPersistResolvedAddressAsync(randomResolvedAddress);
+
+            AddressPersistenceOrchestrationDependencyValidationException actualException =
+                await Assert.ThrowsAsync<AddressPersistenceOrchestrationDependencyValidationException>(
+                    PersistTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedAddressPersistenceOrchestrationDependencyValidationException);
+
+            this.addressMatcherProcessingServiceMock.Verify(processing =>
+                processing.ExtractPostCode(It.IsAny<string>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedAddressPersistenceOrchestrationDependencyValidationException))),
+                         Times.Once);
+
+            this.addressMatcherProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

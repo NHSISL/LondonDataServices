@@ -125,6 +125,31 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressPersistanceOrchestrationException);
             }
+            catch (AddressProcessingValidationException addressProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressProcessingValidationException);
+            }
+            catch (AddressProcessingDependencyValidationException addressProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressProcessingDependencyValidationException);
+            }
+            catch (AddressProcessingDependencyException addressProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressProcessingDependencyException);
+            }
+            catch (AddressProcessingServiceException addressProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(addressProcessingServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressPersistanceOrchestrationServiceException =
+                    new FailedAddressPersistenceOrchestrationServiceException(
+                        message: "Failed address persistence orchestration service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressPersistanceOrchestrationServiceException);
+            }
         }
         private AddressPersistenceOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {

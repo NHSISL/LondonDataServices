@@ -32,6 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         private readonly Mock<IAddressProcessingService> addressProcessingServiceMock;
         private readonly Mock<IAddressMatcherProcessingService> addressMatcherProcessingServiceMock;
         private readonly Mock<IResolvedAddressProcessingService> resolvedAddressProcessingServiceMock;
+        private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ICompareLogic compareLogic;
@@ -42,6 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.addressProcessingServiceMock = new Mock<IAddressProcessingService>();
             this.addressMatcherProcessingServiceMock = new Mock<IAddressMatcherProcessingService>();
             this.resolvedAddressProcessingServiceMock = new Mock<IResolvedAddressProcessingService>();
+            this.auditBrokerMock = new Mock<IAuditBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
@@ -50,6 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 addressProcessingService: addressProcessingServiceMock.Object,
                 addressMatcherProcessingService: addressMatcherProcessingServiceMock.Object,
                 resolvedAddressProcessingService: resolvedAddressProcessingServiceMock.Object,
+                auditBroker: auditBrokerMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object);
         }

@@ -24,6 +24,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
         private readonly IAddressProcessingService addressProcessingService;
         private readonly IAddressMatcherProcessingService addressMatcherProcessingService;
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
+        private readonly IAuditBroker auditBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
 
@@ -31,12 +32,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             IAddressProcessingService addressProcessingService,
             IAddressMatcherProcessingService addressMatcherProcessingService,
             IResolvedAddressProcessingService resolvedAddressProcessingService,
+            IAuditBroker auditBroker,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
             this.addressProcessingService = addressProcessingService;
             this.addressMatcherProcessingService = addressMatcherProcessingService;
             this.resolvedAddressProcessingService = resolvedAddressProcessingService;
+            this.auditBroker = auditBroker;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }
@@ -60,12 +63,12 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                             return processAddress;
                         });
 
-                        //await this.auditBroker.LogInformation(
-                        //    auditType: "Address",
-                        //    title: "Successfully loaded address from Ordinance Database",
-                        //    message: $"Successfully loaded address with id: {address.Id} from file: {fileName}",
-                        //    fileName,
-                        //    correlationId: address.Id);
+                        await this.auditBroker.LogInformation(
+                            auditType: "Address",
+                            title: "Successfully persisted Address to Database",
+                            message: $"Successfully persisted address with id: {address.Id} from file: {fileName}",
+                            fileName,
+                            correlationId: address.Id);
                         processedAddresses.Add(processAddress);
                     }
                     catch (Exception ex)
@@ -95,7 +98,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             // Validate Compare postcode match
 
             List<Address> retrieveAddressesByPostCode =
-                await addressProcessingService.RetrieveAddressByPostCodeAsync(postCode);
+                await addressProcessingService.RetrieveAddressesByPostCodeAsync(postCode);
 
             // If retrieveAddressesByPostCode count = 0 or null default to unmatched else return unmatched
 
@@ -115,6 +118,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                     addressComponents: resolvedAddressComponents);
 
             ResolvedAddress UpdateFromMatch = populateMatchedAddress(resolvedAddresses, matchedAddress);
+            UpdateFromMatch.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
             ResolvedAddress updatedResolvedAddress =
                 await resolvedAddressProcessingService.ModifyResolvedAddressAsync(UpdateFromMatch);

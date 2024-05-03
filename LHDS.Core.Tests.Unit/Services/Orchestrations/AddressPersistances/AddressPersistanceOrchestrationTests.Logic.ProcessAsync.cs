@@ -48,17 +48,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     service.ModifyOrAddAddressAsync(It.Is(SameAddressAs(address))),
                         Times.Once());
 
-                //this.auditBrokerMock.Verify(broker => 
-                //    broker.LogInformation(
-                //        "Address", 
-                //        "Successfully loaded address from Ordinance Database",
-                //        $"Successfully loaded address with id: {address.Id} from file: {someFileName}",
-                //        someFileName,
-                //        address.Id), 
-                //            Times.Once());
+                this.auditBrokerMock.Verify(broker =>
+                    broker.LogInformation(
+                        "Address",
+                        "Successfully persisted Address to Database",
+                        $"Successfully persisted address with id: {address.Id} from file: {someFileName}",
+                        someFileName,
+                        address.Id),
+                            Times.Once());
             }
 
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

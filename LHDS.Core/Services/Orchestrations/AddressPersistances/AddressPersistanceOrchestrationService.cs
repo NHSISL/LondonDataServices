@@ -123,6 +123,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             ResolvedAddress updatedResolvedAddress =
                 await resolvedAddressProcessingService.ModifyResolvedAddressAsync(UpdateFromMatch);
 
+            await this.auditBroker.LogInformation(
+                "Resolved Address",
+                "Successfully resolved and address to the database",
+                $"Successfully persisted address with id: " +
+                    $"{updatedResolvedAddress.Id} with a {updatedResolvedAddress.MatchAlgorithmEnum} match",
+                updatedResolvedAddress.MatchAlgorithmEnum.ToString(),
+                updatedResolvedAddress.Id);
+
             return updatedResolvedAddress;
         }
 

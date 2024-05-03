@@ -96,52 +96,53 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
              ValidateJsonPostalAddress(resolvedAddresses.JsonPostalAddress);
 
              string postCode = addressMatcherProcessingService.ExtractPostCode(resolvedAddresses.PostalAddress);
-            // Validate postcode is not null
-            // Validate Compare postcode match
+             ValidatePostCode(postCode);
 
-            List<Address> retrieveAddressesByPostCode =
-                await addressProcessingService.RetrieveAddressesByPostCodeAsync(postCode);
+             //ValidateMatchingPostcodes(resolvedAddresses.PostCode, postcode);
 
-            List<KeyValuePair<string, string>> resolvedAddressComponents =
-               GenerateKeyValuePairAddressFromJson(resolvedAddresses.JsonPostalAddress);
+             List<Address> retrieveAddressesByPostCode =
+                 await addressProcessingService.RetrieveAddressesByPostCodeAsync(postCode);
 
-            HashSet<AddressMatch> addressesToMatch = retrieveAddressesByPostCode.Select(address => new AddressMatch
-            {
-                PostalAddress = address.PostalAddress,
-                JsonPostalAddress = address.JsonPostalAddress,
-                AddressComponents = GenerateKeyValuePairAddressFromJson(address.JsonPostalAddress)
-            }).ToHashSet();
+             List<KeyValuePair<string, string>> resolvedAddressComponents =
+                GenerateKeyValuePairAddressFromJson(resolvedAddresses.JsonPostalAddress);
 
-            AddressMatch matchedAddress =
-                await addressMatcherProcessingService.FindBestMatch(
-                    matchedAddresses: addressesToMatch,
-                    addressComponents: resolvedAddressComponents);
+             HashSet<AddressMatch> addressesToMatch = retrieveAddressesByPostCode.Select(address => new AddressMatch
+             {
+                 PostalAddress = address.PostalAddress,
+                 JsonPostalAddress = address.JsonPostalAddress,
+                 AddressComponents = GenerateKeyValuePairAddressFromJson(address.JsonPostalAddress)
+             }).ToHashSet();
 
-            ResolvedAddress UpdateFromMatch = populateMatchedAddress(resolvedAddresses, matchedAddress);
-            UpdateFromMatch.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+             AddressMatch matchedAddress =
+                 await addressMatcherProcessingService.FindBestMatch(
+                     matchedAddresses: addressesToMatch,
+                     addressComponents: resolvedAddressComponents);
 
-            ResolvedAddress updatedResolvedAddress =
-                await resolvedAddressProcessingService.ModifyResolvedAddressAsync(UpdateFromMatch);
+             ResolvedAddress UpdateFromMatch = populateMatchedAddress(resolvedAddresses, matchedAddress);
+             UpdateFromMatch.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-            await this.auditBroker.LogInformation(
-                "Resolved Address",
-                "Successfully resolved and address to the database",
-                $"Successfully persisted address with id: " +
-                    $"{updatedResolvedAddress.Id} with a {updatedResolvedAddress.MatchAlgorithmEnum} match",
-                updatedResolvedAddress.MatchAlgorithmEnum.ToString(),
-                updatedResolvedAddress.Id);
+             ResolvedAddress updatedResolvedAddress =
+                 await resolvedAddressProcessingService.ModifyResolvedAddressAsync(UpdateFromMatch);
 
-            return updatedResolvedAddress;
+             await this.auditBroker.LogInformation(
+                 "Resolved Address",
+                 "Successfully resolved and address to the database",
+                 $"Successfully persisted address with id: " +
+                     $"{updatedResolvedAddress.Id} with a {updatedResolvedAddress.MatchAlgorithmEnum} match",
+                 updatedResolvedAddress.MatchAlgorithmEnum.ToString(),
+                 updatedResolvedAddress.Id);
+
+             return updatedResolvedAddress;
          });
 
         private static ResolvedAddress populateMatchedAddress(
-            ResolvedAddress resolvedAddresses, 
+            ResolvedAddress resolvedAddresses,
             AddressMatch matchedAddress)
         {
             MatchAlgorithmEnum matchAlgorithmEnum = MatchAlgorithmEnum.Human;
             Enum.TryParse(((int)matchedAddress.BestMatch).ToString(), ignoreCase: true, out matchAlgorithmEnum);
             resolvedAddresses.MatchAlgorithmEnum = matchAlgorithmEnum;
-            resolvedAddresses.IsMatched = matchedAddress.IsMatched; 
+            resolvedAddresses.IsMatched = matchedAddress.IsMatched;
             resolvedAddresses.MatchedWithPostalAddress = matchedAddress.PostalAddress;
             resolvedAddresses.MatchedWithJsonPostalAddress = matchedAddress.JsonPostalAddress;
             resolvedAddresses.MatchedUPRN = matchedAddress.UPRN;

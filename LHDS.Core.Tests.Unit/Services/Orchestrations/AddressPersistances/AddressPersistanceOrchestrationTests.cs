@@ -179,49 +179,51 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             MatchAlgorithmEnum matchAlgorithmEnum = MatchAlgorithmEnum.Human;
             Enum.TryParse(((int)matchedAddress.BestMatch).ToString(), ignoreCase: true, out matchAlgorithmEnum);
             inputResolvedAddress.MatchAlgorithmEnum = matchAlgorithmEnum;
-            inputResolvedAddress.IsMatched = matchedAddress.IsMatched;
-            inputResolvedAddress.MatchAlgorithmEnum = MatchAlgorithmEnum.Exact;
-            inputResolvedAddress.MatchedWithPostalAddress = matchedAddress.PostalAddress;
-            inputResolvedAddress.MatchedWithJsonPostalAddress = matchedAddress.JsonPostalAddress;
-            inputResolvedAddress.MatchedUPRN = matchedAddress.UPRN;
-            inputResolvedAddress.MatchedUPSN = matchedAddress.UPSN;
 
-            inputResolvedAddress.MatchedOrganisationName = 
-                matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "OrganisationName").Value;
+            if (matchedAddress.AddressComponents.Count() > 0)
+            {
+                inputResolvedAddress.MatchAlgorithmEnum = MatchAlgorithmEnum.Exact;
+                inputResolvedAddress.MatchedWithPostalAddress = matchedAddress.PostalAddress;
+                inputResolvedAddress.MatchedWithJsonPostalAddress = matchedAddress.JsonPostalAddress;
+                inputResolvedAddress.MatchedUPRN = matchedAddress.UPRN;
+                inputResolvedAddress.MatchedUPSN = matchedAddress.UPSN;
 
-            inputResolvedAddress.MatchedOrganisationName =
-                matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "DepartmentName").Value;
+                inputResolvedAddress.MatchedOrganisationName =
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "OrganisationName").Value;
 
-            inputResolvedAddress.MatchedOrganisationName =
-                matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "SubBuildingName").Value;
+                inputResolvedAddress.MatchedOrganisationName =
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "DepartmentName").Value;
 
-            inputResolvedAddress.MatchedBuildingName =
-                matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedBuildingName").Value;
+                inputResolvedAddress.MatchedOrganisationName =
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "SubBuildingName").Value;
 
-            inputResolvedAddress.MatchedBuildingNumber =
-                matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedBuildingNumber").Value;
+                inputResolvedAddress.MatchedBuildingName =
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedBuildingName").Value;
 
-            inputResolvedAddress.MatchedDependentThoroughfare =
-                matchedAddress.AddressComponents
-                    .FirstOrDefault(pair => pair.Key == "MatchedDependentThoroughfare").Value;
+                inputResolvedAddress.MatchedBuildingNumber =
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedBuildingNumber").Value;
 
-            inputResolvedAddress.MatchedThoroughfare =
-                matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedThoroughfare").Value;
+                inputResolvedAddress.MatchedDependentThoroughfare =
+                    matchedAddress.AddressComponents
+                        .FirstOrDefault(pair => pair.Key == "MatchedDependentThoroughfare").Value;
 
-            inputResolvedAddress.MatchedDoubleDependentLocality =
-                matchedAddress.AddressComponents
-                    .FirstOrDefault(pair => pair.Key == "MatchedDoubleDependentLocality").Value;
+                inputResolvedAddress.MatchedThoroughfare =
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedThoroughfare").Value;
 
-            inputResolvedAddress.MatchedDependentLocality =
-                matchedAddress.AddressComponents
-                    .FirstOrDefault(pair => pair.Key == "MatchedDependentLocality").Value;
+                inputResolvedAddress.MatchedDoubleDependentLocality =
+                    matchedAddress.AddressComponents
+                        .FirstOrDefault(pair => pair.Key == "MatchedDoubleDependentLocality").Value;
 
-            inputResolvedAddress.MatchedPostTown =
-                matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedPostTown").Value;
+                inputResolvedAddress.MatchedDependentLocality =
+                    matchedAddress.AddressComponents
+                        .FirstOrDefault(pair => pair.Key == "MatchedDependentLocality").Value;
 
-            inputResolvedAddress.MatchedPostCode =
-                matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedPostCode").Value;
+                inputResolvedAddress.MatchedPostTown =
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedPostTown").Value;
 
+                inputResolvedAddress.MatchedPostCode =
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedPostCode").Value;
+            }
             return inputResolvedAddress;
         }
 

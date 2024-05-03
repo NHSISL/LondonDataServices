@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                         "please correct the errors and try again.");
 
             invalidArgumentAddressPersistanceOrchestrationException.AddData(
-                key: "JsonPostalAddress",
+                key: "jsonPostalAddress",
                 values: "Text is required");
 
             var expectedAddressPersistanceOrchestrationValidationException =

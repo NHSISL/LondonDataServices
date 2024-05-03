@@ -97,8 +97,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 
              string postCode = addressMatcherProcessingService.ExtractPostCode(resolvedAddresses.PostalAddress);
              ValidatePostCode(postCode);
-
-             //ValidateMatchingPostcodes(resolvedAddresses.PostCode, postcode);
+             ValidatPostCodeMatch(resolvedAddresses.PostCode, postCode);
 
              List<Address> retrieveAddressesByPostCode =
                  await addressProcessingService.RetrieveAddressesByPostCodeAsync(postCode);

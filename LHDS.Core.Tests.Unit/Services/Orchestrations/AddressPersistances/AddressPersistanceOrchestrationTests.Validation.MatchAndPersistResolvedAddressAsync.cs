@@ -211,14 +211,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
             string postCode = GetRandomString();
 
-            this.addressMatcherProcessingServiceMock.SetupSequence(processing =>
-                processing.ExtractPostCode(randomResolvedAddress.JsonPostalAddress))
+            this.addressMatcherProcessingServiceMock.Setup(processing =>
+                processing.ExtractPostCode(randomResolvedAddress.PostalAddress))
                     .Returns(postCode);
 
             var invalidArgumentAddressPersistanceOrchestrationException =
                 new InvalidArgumentAddressPersistenceOrchestrationException(
                     message: "Invalid address persistence orchestration argument, " +
                         "please correct the errors and try again.");
+
+            invalidArgumentAddressPersistanceOrchestrationException.AddData(
+                key: "postCode",
+                values: "PostCodes need to match.");
 
             var expectedAddressPersistanceOrchestrationValidationException =
                 new AddressPersistenceOrchestrationValidationException(
@@ -238,6 +242,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             //then
             actualAddressPersistanceOrchestrationValidationException.Should()
                 .BeEquivalentTo(expectedAddressPersistanceOrchestrationValidationException);
+
+            this.addressMatcherProcessingServiceMock.Verify(processing =>
+                processing.ExtractPostCode(randomResolvedAddress.PostalAddress),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

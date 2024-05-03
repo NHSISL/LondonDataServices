@@ -20,6 +20,9 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                 (Rule: IsInvalid(fileName), Parameter: "fileName"));
         }
 
+        virtual internal void ValidatPostCodeMatch(string resolvedPostCode, string addressPostcode) =>
+            Validate((Rule: IsSame(resolvedPostCode, addressPostcode), Parameter: "postCode"));
+
         virtual internal void ValidatePostCode(string postCode) =>
             Validate((Rule: IsInvalid(postCode), Parameter: "postCode"));
 
@@ -51,6 +54,12 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsSame(string resolvedPostCode, string addressPostcode) => new
+        {
+            Condition = resolvedPostCode != addressPostcode,
+            Message = "PostCodes need to match."
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

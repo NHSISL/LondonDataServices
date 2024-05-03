@@ -102,5 +102,53 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionsOnProcessIfJsonPostalAddressIsNullAndLogItAsync(string invalidText)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
+            randomResolvedAddress.JsonPostalAddress = invalidText;
+
+            var invalidArgumentAddressPersistanceOrchestrationException =
+                new InvalidArgumentAddressPersistenceOrchestrationException(
+                    message: "Invalid address persistence orchestration argument, " +
+                        "please correct the errors and try again.");
+
+            invalidArgumentAddressPersistanceOrchestrationException.AddData(
+                key: "JsonPostalAddress",
+                values: "Text is required");
+
+            var expectedAddressPersistanceOrchestrationValidationException =
+                new AddressPersistenceOrchestrationValidationException(
+                    message: "Address persistence orchestration validation error occurred, please try again",
+                    innerException: invalidArgumentAddressPersistanceOrchestrationException);
+
+            // when
+            ValueTask<ResolvedAddress> processResolvedAddressesTask =
+                this.addressPersistanceOrchestrationService.MatchAndPersistResolvedAddressAsync(
+                    resolvedAddresses: randomResolvedAddress);
+
+            AddressPersistenceOrchestrationValidationException
+                actualAddressPersistanceOrchestrationValidationException =
+                    await Assert.ThrowsAsync<AddressPersistenceOrchestrationValidationException>(
+                        processResolvedAddressesTask.AsTask);
+
+            //then
+            actualAddressPersistanceOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedAddressPersistanceOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressPersistanceOrchestrationValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

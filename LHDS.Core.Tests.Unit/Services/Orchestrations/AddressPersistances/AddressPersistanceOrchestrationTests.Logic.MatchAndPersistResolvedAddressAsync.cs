@@ -25,7 +25,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            string postCode = GetRandomString();
             ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
+            randomResolvedAddress.PostCode = postCode;
             ResolvedAddress inputResolvedAddress = randomResolvedAddress;
 
             List<KeyValuePair<string, string>> randomResolvedAddressComponents =
@@ -33,7 +35,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             List<Address> randomAddresses = CreateRandomAddressList(GetRandomNumber());
             List<Address> storageAddresses = randomAddresses;
-            string postCode = GetRandomString();
             List<KeyValuePair<string, string>> randomAddressComponents = GenerateRandomKeyValuePairAddress();
 
             HashSet<AddressMatch> addressesToMatch = storageAddresses.Select(address => new AddressMatch
@@ -126,7 +127,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            string postCode = GetRandomString();
             ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
+            randomResolvedAddress.PostCode = postCode;
             ResolvedAddress inputResolvedAddress = randomResolvedAddress;
 
             List<KeyValuePair<string, string>> randomResolvedAddressComponents =
@@ -134,7 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             List<Address> randomAddresses = CreateRandomAddressList(GetRandomNumber());
             List<Address> storageAddresses = randomAddresses;
-            string postCode = GetRandomString();
+            
             List<KeyValuePair<string, string>> randomAddressComponents = GenerateRandomKeyValuePairAddress();
 
             HashSet<AddressMatch> addressesToMatch = storageAddresses.Select(address => new AddressMatch

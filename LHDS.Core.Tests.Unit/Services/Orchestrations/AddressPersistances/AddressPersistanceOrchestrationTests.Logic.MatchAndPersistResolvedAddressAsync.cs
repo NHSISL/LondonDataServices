@@ -103,6 +103,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 processing.ModifyResolvedAddressAsync(updatedResolvedAddress),
                     Times.Once);
 
+            this.auditBrokerMock.Verify(broker =>
+                broker.LogInformation(
+                    "Resolved Address",
+                    "Successfully resolved and address to the database",
+                    $"Successfully persisted address with id: " +
+                        $"{updatedResolvedAddress.Id} with a {updatedResolvedAddress.MatchAlgorithmEnum} match",
+                    updatedResolvedAddress.MatchAlgorithmEnum.ToString(),
+                    updatedResolvedAddress.Id),
+                        Times.Once());
+
             this.addressMatcherProcessingServiceMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

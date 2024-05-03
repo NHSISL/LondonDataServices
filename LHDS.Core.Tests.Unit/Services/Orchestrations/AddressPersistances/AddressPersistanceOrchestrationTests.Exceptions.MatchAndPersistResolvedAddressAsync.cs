@@ -107,5 +107,52 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnMatchAndPersistIfDependencyValidationErrorOccursAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
+            var serviceException = new Exception();
+
+            var failedAddressPersistenceOrchestrationServiceException =
+                new FailedAddressPersistenceOrchestrationServiceException(
+                    message: "Failed address persistence orchestration service error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedAddressPersistenceOrchestrationServiceException =
+                new AddressPersistenceOrchestrationServiceException(
+                    message: "Address persistence orchestration service error occurred, contact support.",
+                    innerException: failedAddressPersistenceOrchestrationServiceException);
+
+            this.addressMatcherProcessingServiceMock.Setup(processing =>
+                processing.ExtractPostCode(It.IsAny<string>()))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<ResolvedAddress> PersistTask = this.addressPersistanceOrchestrationService
+                    .MatchAndPersistResolvedAddressAsync(randomResolvedAddress);
+
+            AddressPersistenceOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(
+                    PersistTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedAddressPersistenceOrchestrationServiceException);
+
+            this.addressMatcherProcessingServiceMock.Verify(processing =>
+                processing.ExtractPostCode(It.IsAny<string>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedAddressPersistenceOrchestrationServiceException))),
+                         Times.Once);
+
+            this.addressMatcherProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

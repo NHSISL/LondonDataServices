@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
@@ -17,6 +18,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
     {
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
         private delegate ValueTask<Address> ReturningAddressFunction();
+        private delegate ValueTask<ResolvedAddress> ReturningResolvedFunction();
 
         private async ValueTask<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
         {
@@ -113,6 +115,17 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             }
         }
 
+        private async ValueTask<ResolvedAddress> TryCatch(ReturningResolvedFunction returningResolvedFunction)
+        {
+            try
+            {
+                return await returningResolvedFunction();
+            }
+            catch (InvalidArgumentAddressPersistenceOrchestrationException invalidArgumentAddressPersistanceOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressPersistanceOrchestrationException);
+            }
+        }
         private AddressPersistenceOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var addressPersistanceOrchestrationValidationException =

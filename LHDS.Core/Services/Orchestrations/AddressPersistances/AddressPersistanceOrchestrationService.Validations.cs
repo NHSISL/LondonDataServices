@@ -4,7 +4,10 @@
 
 using System.Collections.Generic;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
+using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 
 namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 {
@@ -15,6 +18,21 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             Validate(
                 (Rule: IsInvalid(addressList), Parameter: "addressList"),
                 (Rule: IsInvalid(fileName), Parameter: "fileName"));
+        }
+
+        private static void ValidateResolvedAddress(ResolvedAddress resolvedAddress)
+        {
+            ValidateResolvedAddressIsNotNull(resolvedAddress);
+        }
+
+        private static void ValidateResolvedAddressIsNotNull(ResolvedAddress resolvedAddress)
+        {
+            if (resolvedAddress == null)
+            {
+                throw new InvalidArgumentAddressPersistenceOrchestrationException(
+                    message: "Invalid address persistence orchestration argument, " +
+                    "please correct the errors and try again.");
+            }
         }
 
         private static dynamic IsInvalid(List<Address> addressList) => new

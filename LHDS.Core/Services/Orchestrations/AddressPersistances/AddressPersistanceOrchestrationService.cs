@@ -12,6 +12,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressMatchers;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressMatchers;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
@@ -87,9 +88,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                 return processedAddresses;
             });
 
-        public async ValueTask<ResolvedAddress> MatchAndPersistResolvedAddressAsync(ResolvedAddress resolvedAddresses)
-        {
-            // Validate null resolved Address param
+        public ValueTask<ResolvedAddress> MatchAndPersistResolvedAddressAsync(ResolvedAddress resolvedAddresses) =>
+         TryCatch(async () =>
+         {
+             ValidateResolvedAddress(resolvedAddresses);
             // Validate resolvedAddress.PostCode is not null
             // Validate JsonPostalAddress is not null
 
@@ -130,7 +132,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                 updatedResolvedAddress.Id);
 
             return updatedResolvedAddress;
-        }
+         });
 
         private static ResolvedAddress populateMatchedAddress(
             ResolvedAddress resolvedAddresses, 

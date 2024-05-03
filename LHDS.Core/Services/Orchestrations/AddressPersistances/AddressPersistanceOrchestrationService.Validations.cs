@@ -20,6 +20,12 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                 (Rule: IsInvalid(fileName), Parameter: "fileName"));
         }
 
+        virtual internal void ValidatePostCodeOrchestration(string postCode)
+        {
+            Validate(
+                (Rule: IsInvalid(postCode), Parameter: "postCode"));
+        }
+
         private static void ValidateResolvedAddress(ResolvedAddress resolvedAddress)
         {
             ValidateResolvedAddressIsNotNull(resolvedAddress);

@@ -92,10 +92,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
          TryCatch(async () =>
          {
              ValidateResolvedAddress(resolvedAddresses);
-            // Validate resolvedAddress.PostCode is not null
-            // Validate JsonPostalAddress is not null
+             ValidatePostCodeOrchestration(resolvedAddresses.PostCode);
+             // Validate JsonPostalAddress is not null
 
-            string postCode = addressMatcherProcessingService.ExtractPostCode(resolvedAddresses.PostalAddress);
+             string postCode = addressMatcherProcessingService.ExtractPostCode(resolvedAddresses.PostalAddress);
             // Validate postcode is not null
             // Validate Compare postcode match
 

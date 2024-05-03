@@ -160,11 +160,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
-            string postcode = invalidText;
+            string postCode = invalidText;
 
             this.addressMatcherProcessingServiceMock.SetupSequence(processing =>
                 processing.ExtractPostCode(randomResolvedAddress.JsonPostalAddress))
-                    .Returns(postcode);
+                    .Returns(postCode);
 
             var invalidArgumentAddressPersistanceOrchestrationException =
                 new InvalidArgumentAddressPersistenceOrchestrationException(
@@ -174,6 +174,51 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             invalidArgumentAddressPersistanceOrchestrationException.AddData(
                 key: "postCode",
                 values: "Text is required");
+
+            var expectedAddressPersistanceOrchestrationValidationException =
+                new AddressPersistenceOrchestrationValidationException(
+                    message: "Address persistence orchestration validation error occurred, please try again",
+                    innerException: invalidArgumentAddressPersistanceOrchestrationException);
+
+            // when
+            ValueTask<ResolvedAddress> processResolvedAddressesTask =
+                this.addressPersistanceOrchestrationService.MatchAndPersistResolvedAddressAsync(
+                    resolvedAddresses: randomResolvedAddress);
+
+            AddressPersistenceOrchestrationValidationException
+                actualAddressPersistanceOrchestrationValidationException =
+                    await Assert.ThrowsAsync<AddressPersistenceOrchestrationValidationException>(
+                        processResolvedAddressesTask.AsTask);
+
+            //then
+            actualAddressPersistanceOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedAddressPersistanceOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressPersistanceOrchestrationValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionsOnProcessIfPostCodesDontMatchAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
+            string postCode = GetRandomString();
+
+            this.addressMatcherProcessingServiceMock.SetupSequence(processing =>
+                processing.ExtractPostCode(randomResolvedAddress.JsonPostalAddress))
+                    .Returns(postCode);
+
+            var invalidArgumentAddressPersistanceOrchestrationException =
+                new InvalidArgumentAddressPersistenceOrchestrationException(
+                    message: "Invalid address persistence orchestration argument, " +
+                        "please correct the errors and try again.");
 
             var expectedAddressPersistanceOrchestrationValidationException =
                 new AddressPersistenceOrchestrationValidationException(

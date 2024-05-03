@@ -117,7 +117,54 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
-        }  
+        }
+
+        [Fact]
+        public async Task ShouldMatchAndPersistResolvedAddressNoMatchAndLogAsync()
+        {
+            // Given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
+            ResolvedAddress inputResolvedAddress = randomResolvedAddress;
+
+            List<KeyValuePair<string, string>> randomResolvedAddressComponents =
+                GenerateRandomKeyValuePairAddressFromJson(randomResolvedAddress.JsonPostalAddress);
+
+            List<Address> randomAddresses = CreateRandomAddressList(GetRandomNumber());
+            List<Address> storageAddresses = randomAddresses;
+            string postCode = GetRandomString();
+
+            this.addressMatcherProcessingServiceMock.Setup(processing =>
+                processing.ExtractPostCode(inputResolvedAddress.PostalAddress))
+                    .Returns(postCode);
+
+            this.addressProcessingServiceMock.Setup(processing =>
+                processing.RetrieveAddressesByPostCodeAsync(postCode))
+                    .ReturnsAsync(storageAddresses);
+
+            // When
+            ResolvedAddress actualResolvedAddress =
+                await this.addressPersistanceOrchestrationService
+                    .MatchAndPersistResolvedAddressAsync(inputResolvedAddress);
+
+            // Then
+            actualResolvedAddress.Should().BeEquivalentTo(inputResolvedAddress);
+
+            this.addressMatcherProcessingServiceMock.Verify(processing =>
+                processing.ExtractPostCode(inputResolvedAddress.PostalAddress),
+                    Times.Once);
+
+            this.addressProcessingServiceMock.Verify(processing =>
+                processing.RetrieveAddressesByPostCodeAsync(postCode),
+                    Times.Once);
+
+            addressMatcherProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
 

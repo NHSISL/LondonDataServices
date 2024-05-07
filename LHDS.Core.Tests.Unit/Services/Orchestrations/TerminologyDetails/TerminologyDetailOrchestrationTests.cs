@@ -121,6 +121,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static List<TerminologyArtifact> CreateRandomUndownloadedTerminologyArtifacts()
+        {
+            List<TerminologyArtifact> terminologyArtifacts = new List<TerminologyArtifact>();
+
+            for (int i = 0; i < GetRandomNumber(); i++) 
+            {
+                terminologyArtifacts.Add(CreateUndownloadedTerminologyArtifactFiller().Create());
+            }
+
+            return terminologyArtifacts;
+        }
+
         private static TerminologyArtifact CreateRandomUndownloadedTerminologyArtifact() =>
             CreateUndownloadedTerminologyArtifactFiller().Create();
 

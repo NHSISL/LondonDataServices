@@ -45,7 +45,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
             {
                 TerminologyArtifact artifact = null;
 
-                while ((artifact =
+                while ((artifact = 
                     await this.terminologyArtifactProcessingService.GetNonDownloadedArtifactAsync()) != null)
                 {
                     try

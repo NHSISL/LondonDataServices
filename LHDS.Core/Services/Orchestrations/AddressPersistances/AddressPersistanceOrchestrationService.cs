@@ -64,17 +64,17 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                             return processAddress;
                         });
 
+                        processedAddresses.Add(processAddress);
+
                         await this.auditBroker.LogInformation(
                             auditType: "Address",
                             title: "Successfully persisted Address to Database",
                             message: $"Successfully persisted address with id: {address.Id} from file: {fileName}",
                             fileName,
                             correlationId: address.Id);
-                        processedAddresses.Add(processAddress);
                     }
                     catch (Exception ex)
                     {
-                        this.loggingBroker.LogError(ex);
                         exceptions.Add(ex);
                     }
                 }

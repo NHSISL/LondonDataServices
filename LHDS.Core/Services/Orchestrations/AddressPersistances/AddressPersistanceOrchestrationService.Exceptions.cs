@@ -48,22 +48,23 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             }
             catch (AggregateException aggregateException)
             {
-                var failedAddressPersistanceOrchestrationServiceException =
+                var failedAddressPersistenceOrchestrationServiceException =
                     new FailedAddressPersistenceOrchestrationServiceException(
-                        message: "Failed address persistence aggregate processing service error occurred, " +
-                        "contact support.",
+                        message: "Failed address persistence aggregate orchestration service error occurred, " +
+                        "please contact support.",
                         innerException: aggregateException);
 
-                throw CreateAndLogServiceException(failedAddressPersistanceOrchestrationServiceException);
+                throw CreateAndLogServiceException(failedAddressPersistenceOrchestrationServiceException);
             }
             catch (Exception exception)
             {
-                var failedAddressPersistanceOrchestrationServiceException =
+                var failedAddressPersistenceOrchestrationServiceException =
                     new FailedAddressPersistenceOrchestrationServiceException(
-                        message: "Failed address persistence orchestration service error occurred, contact support.",
+                        message: "Failed address persistence orchestration service error occurred, " +
+                        "please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedAddressPersistanceOrchestrationServiceException);
+                throw CreateAndLogServiceException(failedAddressPersistenceOrchestrationServiceException);
             }
         }
 
@@ -93,22 +94,12 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             {
                 throw CreateAndLogDependencyException(addressProcessingServiceException);
             }
-            catch (AggregateException aggregateException)
-            {
-                var failedAddressPersistanceOrchestrationServiceException =
-                    new FailedAddressPersistenceOrchestrationServiceException(
-                        message: "Failed address persistence aggregate processing service error occurred, " +
-                        "contact support.",
-                        innerException: aggregateException);
-
-                throw CreateAndLogServiceException(failedAddressPersistanceOrchestrationServiceException);
-            }
             catch (Exception exception)
             {
                 var failedAddressPersistanceOrchestrationServiceException =
                     new FailedAddressPersistenceOrchestrationServiceException(
                         message: "Failed address persistence orchestration service error occurred, " +
-                        "contact support",
+                        "please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressPersistanceOrchestrationServiceException);

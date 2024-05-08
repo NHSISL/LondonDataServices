@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     message: "DataSet validation errors occurred, please try again.", innerException),
 
                 new DataSetServiceException(
-                    message : "DataSet service error occurred, contact support.", innerException)
+                    message : "DataSet service error occurred, please contact support.", innerException)
             };
         }
 

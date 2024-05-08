@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Text;
@@ -25,7 +25,7 @@ namespace LHDS.Functions.OptOut
         }
 
         [Function("RetrieveOptOutStatusFunction")]
-        public void Run(
+        public async Task Run(
             [BlobTrigger("optout/in/{name}", Connection = "BlobStorage")] string myBlob, string name)
         {
             this.loggingBroker
@@ -35,11 +35,8 @@ namespace LHDS.Functions.OptOut
 
             try
             {
-                Task.Run(async () =>
-                {
-                    byte[] optOutFile = Encoding.ASCII.GetBytes(myBlob);
-                    await optOutClient.RetrieveOptOutStatusAsync(optOutFile, fileName: name);
-                }).Wait();
+                byte[] optOutFile = Encoding.ASCII.GetBytes(myBlob);
+                await optOutClient.RetrieveOptOutStatusAsync(optOutFile, fileName: name);
             }
             catch (Exception ex)
             {

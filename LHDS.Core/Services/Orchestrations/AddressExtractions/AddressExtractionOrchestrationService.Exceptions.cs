@@ -68,7 +68,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 var failedAddressExtractionOrchestrationServiceException =
                     new FailedAddressExtractionOrchestrationServiceException(
-                        message: "Failed address extraction aggregate orchestration service occurred, " +
+                        message: "Failed address extraction aggregate orchestration service error occurred, " +
                             "please contact support.",
                         innerException: aggregateException);
 
@@ -134,7 +134,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 var failedAddressExtractionOrchestrationServiceException =
                     new FailedAddressExtractionOrchestrationServiceException(
-                        message: "Failed address extraction aggregate orchestration service occurred, " +
+                        message: "Failed address extraction aggregate orchestration service error occurred, " +
                             "please contact support.",
                         innerException: aggregateException);
 
@@ -200,7 +200,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 var failedAddressExtractionOrchestrationServiceException =
                     new FailedAddressExtractionOrchestrationServiceException(
-                        message: "Failed address extraction aggregate orchestration service occurred, " +
+                        message: "Failed address extraction aggregate orchestration service error occurred, " +
                             "please contact support.",
                         innerException: aggregateException);
 
@@ -265,7 +265,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 var failedAddressExtractionOrchestrationServiceException =
                     new FailedAddressExtractionOrchestrationServiceException(
-                        message: "Failed address extraction aggregate orchestration service occurred, " +
+                        message: "Failed address extraction aggregate orchestration service error occurred, " +
                         "please contact support.",
                         innerException: aggregateException);
 
@@ -327,7 +327,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
         {
             var addressExtractionOrchestrationServiceException =
                 new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
+                    message: "Address extraction orchestration service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressExtractionOrchestrationServiceException);

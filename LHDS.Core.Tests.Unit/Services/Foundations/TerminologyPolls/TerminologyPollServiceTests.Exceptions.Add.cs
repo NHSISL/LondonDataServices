@@ -26,12 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             var failedTerminologyPollStorageException =
                 new FailedTerminologyPollStorageException(
-                    message: "Failed terminologyPoll storage error occurred, contact support.",
+                    message: "Failed terminologyPoll storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedTerminologyPollDependencyException =
                 new TerminologyPollDependencyException(
-                    message: "TerminologyPoll dependency error occurred, contact support.",
+                    message: "TerminologyPoll dependency error occurred, please contact support.",
                     innerException: failedTerminologyPollStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -189,12 +189,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             var failedTerminologyPollStorageException =
                 new FailedTerminologyPollStorageException(
-                    message: "Failed terminologyPoll storage error occurred, contact support.",
+                    message: "Failed terminologyPoll storage error occurred, please contact support.",
                     innerException: databaseUpdateException);
 
             var expectedTerminologyPollDependencyException =
                 new TerminologyPollDependencyException(
-                    message: "TerminologyPoll dependency error occurred, contact support.",
+                    message: "TerminologyPoll dependency error occurred, please contact support.",
                     innerException: failedTerminologyPollStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -240,12 +240,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             var failedTerminologyPollServiceException =
                 new FailedTerminologyPollServiceException(
-                    message: "Failed terminologyPoll service occurred, please contact support",
+                    message: "Failed terminologyPoll service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedTerminologyPollServiceException =
                 new TerminologyPollServiceException(
-                    message: "TerminologyPoll service error occurred, contact support.",
+                    message: "TerminologyPoll service error occurred, please contact support.",
                     innerException: failedTerminologyPollServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>

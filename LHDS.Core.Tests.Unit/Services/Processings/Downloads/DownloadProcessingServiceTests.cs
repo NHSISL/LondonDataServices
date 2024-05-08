@@ -63,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                     message: "Download validation errors occurred, please try again.", innerException),
 
                 new DownloadServiceException(
-                    message : "Download service error occurred, contact support.", innerException)
+                    message : "Download service error occurred, please contact support.", innerException)
             };
         }
 

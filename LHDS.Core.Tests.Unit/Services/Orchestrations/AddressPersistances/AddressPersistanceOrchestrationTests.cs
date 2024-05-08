@@ -133,27 +133,27 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             return new TheoryData<Xeption>
             {
                 new AddressNormalisationProcessingDependencyException(
-                    message: "Address normalisation processing dependency error occurred, contact support.",
+                    message: "Address normalisation processing dependency error occurred, please contact support.",
                     innerException),
 
                 new AddressNormalisationProcessingServiceException(
-                    message: "Address Normalisation processing service error occurred, contact support.",
+                    message: "Address Normalisation processing service error occurred, please contact support.",
                     innerException),
 
                 new AddressProcessingDependencyException(
-                    message: "Address processing dependency error occurred, contact support.",
+                    message: "Address processing dependency error occurred, please contact support.",
                     innerException),
 
                 new AddressProcessingServiceException(
-                    message: "Address processing service error occurred, contact support.",
+                    message: "Address processing service error occurred, please contact support.",
                     innerException),
 
                 new AddressLoadingAuditProcessingDependencyException(
-                    message: "Audit dependency error occurred, contact support.",
+                    message: "Audit dependency error occurred, please contact support.",
                     innerException),
 
                 new AddressLoadingAuditProcessingServiceException(
-                    message: "Audit service error occurred, contact support.",
+                    message: "Audit service error occurred, please contact support.",
                     innerException)
             };
         }

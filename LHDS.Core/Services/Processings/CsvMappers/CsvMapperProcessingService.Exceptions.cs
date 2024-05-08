@@ -46,7 +46,7 @@ namespace LHDS.Core.Services.Processings.CsvMappers
             {
                 var failedCsvMapperServiceException =
                     new FailedCsvMapperServiceException(
-                        message: "Failed CSV mapper service error occurred, contact support.",
+                        message: "Failed CSV mapper service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedCsvMapperServiceException);
@@ -83,7 +83,7 @@ namespace LHDS.Core.Services.Processings.CsvMappers
             {
                 var failedCsvMapperServiceException =
                     new FailedCsvMapperServiceException(
-                        message: "Failed CSV mapper service error occurred, contact support.",
+                        message: "Failed CSV mapper service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedCsvMapperServiceException);
@@ -130,7 +130,7 @@ namespace LHDS.Core.Services.Processings.CsvMappers
         private CsvMapperProcessingServiceException CreateAndLogServiceException(Xeption exception)
         {
             var csvMapperProcessingServiceException = new CsvMapperProcessingServiceException(
-                message: "Csv Mapper processing service error occurred, contact support.", 
+                message: "Csv Mapper processing service error occurred, please contact support.", 
                 exception);
 
             this.loggingBroker.LogError(csvMapperProcessingServiceException);

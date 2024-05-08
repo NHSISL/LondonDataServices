@@ -25,12 +25,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
 
             var failedDecryptionServiceException =
                 new FailedCryptographyServiceException(
-                    message: "Failed cryptography service occurred, please contact support",
+                    message: "Failed cryptography service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedDecryptionServiceException =
                 new CryptographyServiceException(
-                    message: "Cryptography service error occurred, contact support.",
+                    message: "Cryptography service error occurred, please contact support.",
                     innerException: failedDecryptionServiceException);
 
             this.cryptographyBroker.Setup(broker =>

@@ -81,7 +81,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                 var failedAddressPersistanceOrchestrationServiceException =
                     new FailedAddressPersistanceOrchestrationServiceException(
                         message: "Failed address persistance orchestration service error occurred, " +
-                        "please contact support",
+                        "please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressPersistanceOrchestrationServiceException);
@@ -131,7 +131,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
         {
             var addressPersistanceOrchestrationServiceException =
                 new AddressPersistanceOrchestrationServiceException(
-                    message: "Address persistance orchestration service error occurred, contact support.",
+                    message: "Address persistance orchestration service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressPersistanceOrchestrationServiceException);

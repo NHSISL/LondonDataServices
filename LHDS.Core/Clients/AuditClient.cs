@@ -47,7 +47,7 @@ namespace LHDS.Core.Clients
             catch (AuditDependencyException auditDependencyException)
             {
                 throw new AuditClientDependencyException(
-                    message: "Audit client dependency error occurred, contact support.",
+                    message: "Audit client dependency error occurred, please contact support.",
                     innerException: auditDependencyException.InnerException as Xeption);
             }
             catch (AuditServiceException auditServiceException)

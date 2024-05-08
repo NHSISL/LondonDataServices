@@ -76,7 +76,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
             {
                 var FailedTerminologyDetailOrchestrationServiceException =
                     new FailedTerminologyDetailOrchestrationServiceException(
-                        message: "Failed terminology detail orchestration service occurred, please contact support",
+                        message: "Failed terminology detail orchestration service error occurred, please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(FailedTerminologyDetailOrchestrationServiceException);
@@ -115,7 +115,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
         {
             var terminologyDetailOrchestrationServiceException =
                 new TerminologyDetailOrchestrationServiceException(
-                    message: "Terminology detail orchestration service error occurred, contact support.",
+                    message: "Terminology detail orchestration service error occurred, please contact support.",
                     exception);
 
             this.loggingBroker.LogError(terminologyDetailOrchestrationServiceException);

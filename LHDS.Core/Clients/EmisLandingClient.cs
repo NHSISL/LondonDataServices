@@ -43,7 +43,7 @@ namespace LHDS.Core.Clients
                 emisLandingOrchestrationDependencyException)
             {
                 throw new LandingClientDependencyException(
-                    message: "Landing client dependency error occurred, contact support.",
+                    message: "Landing client dependency error occurred, please contact support.",
                     innerException: emisLandingOrchestrationDependencyException.InnerException as Xeption);
             }
             catch (EmisLandingOrchestrationServiceException
@@ -75,7 +75,7 @@ namespace LHDS.Core.Clients
             catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
             {
                 throw new LandingClientDependencyException(
-                    message: "Landing client dependency error occurred, contact support.",
+                    message: "Landing client dependency error occurred, please contact support.",
                     innerException: emisLandingOrchestrationDependencyException.InnerException as Xeption);
             }
             catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)

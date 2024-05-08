@@ -157,19 +157,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             return new TheoryData<Xeption>
             {
                 new AddressParserDependencyException(
-                    message: "Address parser dependency error occurred, contact support.",
+                    message: "Address parser dependency error occurred, please contact support.",
                     innerException),
 
                 new AddressParserServiceException(
-                    message: "Address parser service error occurred, contact support.",
+                    message: "Address parser service error occurred, please contact support.",
                     innerException),
 
                 new AddressNormalisationDependencyException(
-                    message: "Address normalisation dependency error occurred, contact support.",
+                    message: "Address normalisation dependency error occurred, please contact support.",
                     innerException),
 
                 new AddressNormalisationServiceException(
-                    message: "Address normalisation service error occurred, contact support.",
+                    message: "Address normalisation service error occurred, please contact support.",
                     innerException),
             };
         }

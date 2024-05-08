@@ -26,12 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             var failedIngestionTrackingAuditStorageException =
                 new FailedIngestionTrackingAuditStorageException(
-                    message: "Failed IngestionTrackingAudit storage error occurred, contact support.",
+                    message: "Failed IngestionTrackingAudit storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedIngestionTrackingAuditDependencyException =
                 new IngestionTrackingAuditDependencyException(
-                    message: "IngestionTrackingAudit dependency error occurred, contact support.",
+                    message: "IngestionTrackingAudit dependency error occurred, please contact support.",
                     innerException: failedIngestionTrackingAuditStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -189,12 +189,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             var failedIngestionTrackingAuditStorageException =
                 new FailedIngestionTrackingAuditStorageException(
-                    message: "Failed IngestionTrackingAudit storage error occurred, contact support.",
+                    message: "Failed IngestionTrackingAudit storage error occurred, please contact support.",
                     innerException: databaseUpdateException);
 
             var expectedIngestionTrackingAuditDependencyException =
                 new IngestionTrackingAuditDependencyException(
-                    message: "IngestionTrackingAudit dependency error occurred, contact support.",
+                    message: "IngestionTrackingAudit dependency error occurred, please contact support.",
                     innerException: failedIngestionTrackingAuditStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -240,12 +240,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             var failedIngestionTrackingAuditServiceException =
                 new FailedIngestionTrackingAuditServiceException(
-                    message: "Failed IngestionTrackingAudit service occurred, please contact support",
+                    message: "Failed IngestionTrackingAudit service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedIngestionTrackingAuditServiceException =
                 new IngestionTrackingAuditServiceException(
-                    message: "IngestionTrackingAudit service error occurred, contact support.",
+                    message: "IngestionTrackingAudit service error occurred, please contact support.",
                     innerException: failedIngestionTrackingAuditServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>

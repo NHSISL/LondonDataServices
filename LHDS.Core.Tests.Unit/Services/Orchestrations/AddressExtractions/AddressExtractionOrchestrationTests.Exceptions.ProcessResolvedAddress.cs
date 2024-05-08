@@ -91,6 +91,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     It.IsAny<Dictionary<string, int>>()),
                         Times.Once);
 
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Exactly(randomResolvedAddresses.Count()));
+
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
                 string addressString = resolvedAddress.UnstructuredPostalAddress;
@@ -194,6 +198,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>()),
                         Times.Once);
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Exactly(randomResolvedAddresses.Count()));
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
@@ -300,6 +308,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>()),
                         Times.Once);
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Exactly(randomResolvedAddresses.Count()));
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {

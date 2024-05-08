@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             // when
             List<Address> actualAddresses =
-                await this.addressProcessingService.RetrieveAddressByPostCodeAsync(inputPostCode);
+                await this.addressProcessingService.RetrieveAddressesByPostCodeAsync(inputPostCode);
 
             // then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);

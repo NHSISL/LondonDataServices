@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var expectedAddressPersistanceOrchestrationServiceException =
                 new AddressPersistenceOrchestrationServiceException(
-                    message: "Address persistence orchestration service error occurred, contact support.",
+                    message: "Address persistence orchestration service error occurred, please contact support.",
                     innerException: failedAddressPersistanceOrchestrationServiceException);
 
             // when
@@ -133,7 +133,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var expectedAddressPersistanceOrchestrationServiceException =
                 new AddressPersistenceOrchestrationServiceException(
-                    message: "Address persistence orchestration service error occurred, contact support.",
+                    message: "Address persistence orchestration service error occurred, please contact support.",
                     innerException: failedAddressPersistanceOrchestrationServiceException);
 
             // when
@@ -189,7 +189,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var innerAddressPersistenceOrchestrationServiceException =
                 new AddressPersistenceOrchestrationServiceException(
-                    message: "Address persistence orchestration service error occurred, contact support.",
+                    message: "Address persistence orchestration service error occurred, please contact support.",
                     innerException: innerfailedAddressPersistenceOrchestrationServiceException);
 
             foreach (Address address in randomAddresses)
@@ -214,7 +214,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var expectedAddressPersistenceOrchestrationServiceException =
                 new AddressPersistenceOrchestrationServiceException(
-                    message: "Address persistence orchestration service error occurred, contact support.",
+                    message: "Address persistence orchestration service error occurred, please contact support.",
                     innerException: failedAddressPersistanceOrchestrationServiceException);
 
             // when

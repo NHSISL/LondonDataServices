@@ -288,11 +288,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     innerException),
 
                 new AddressProcessingServiceException(
-                    message: "Address processing service error occurred, contact support.",
+                    message: "Address processing service error occurred, please contact support.",
                     innerException),
 
                  new AddressMatcherProcessingServiceException(
-                    message: "Address matcher processing service error occurred, contact support.",
+                    message: "Address matcher processing service error occurred, please contact support.",
                     innerException),
 
                  new ResolvedAddressDependencyException(
@@ -300,7 +300,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     innerException),
 
                 new ResolvedAddressServiceException(
-                    message: "Resolved address processing service error occurred, contact support.",
+                    message: "Resolved address processing service error occurred, please contact support.",
                     innerException),
             };
         }

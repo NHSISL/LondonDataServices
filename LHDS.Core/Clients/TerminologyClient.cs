@@ -25,11 +25,11 @@ namespace LHDS.Core.Clients
             this.terminologyDetailOrchestrationService = terminologyDetailOrchestrationService;
         }
 
-        public async ValueTask RetrieveArtifactMetadataAsync()
+        public async ValueTask RetrieveArtifactMetadataAsync(string[] resourceTypes)
         {
             try
             {
-                await this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync();
+                await this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(resourceTypes);
             }
             catch (TerminologyMetadataOrchestrationValidationException
                 terminologyMetadataOrchestrationValidationException)

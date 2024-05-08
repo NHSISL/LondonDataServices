@@ -8,6 +8,6 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
 {
     public interface ITerminologyMetadataOrchestrationService
     {
-        ValueTask RetrieveArtifactMetadataAsync();
+        ValueTask RetrieveArtifactMetadataAsync(string[] resourceTypes);
     }
 }

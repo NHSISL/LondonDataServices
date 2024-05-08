@@ -48,10 +48,10 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
             this.identifierBroker = identifierBroker;
         }
 
-        public ValueTask RetrieveArtifactMetadataAsync() =>
+        public ValueTask RetrieveArtifactMetadataAsync(string[] resourceTypes) =>
             TryCatch(async () =>
             {
-                string[] resourceTypes = new string[] { "CodeSystem", "ValueSet", "ConceptMap" };
+                ValidateResourceTypes(resourceTypes);
                 var exceptions = new List<Exception>();
 
                 foreach (var resourceType in resourceTypes)

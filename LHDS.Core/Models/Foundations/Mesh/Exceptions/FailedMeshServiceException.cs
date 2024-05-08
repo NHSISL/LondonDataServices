@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Mesh.Exceptions
 {
     public class FailedMeshServiceException : Xeption
     {
-        public FailedMeshServiceException(string message, Exception innerException)
+        public FailedMeshServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

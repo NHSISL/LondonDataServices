@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Coordinations.Decryptions.Exceptions
 {
     public class DecryptionCoordinationDependencyException : Xeption
     {
-        public DecryptionCoordinationDependencyException(string message, Xeption innerException)
+        public DecryptionCoordinationDependencyException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

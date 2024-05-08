@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions
 {
     public class FailedAddressLoadingAuditProcessingServiceException : Xeption
     {
-        public FailedAddressLoadingAuditProcessingServiceException(string message, Exception innerException)
+        public FailedAddressLoadingAuditProcessingServiceException(string message, Exception? innerException)
           : base(message, innerException)
         { }
     }

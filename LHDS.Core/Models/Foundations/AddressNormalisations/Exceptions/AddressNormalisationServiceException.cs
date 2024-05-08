@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions
 {
     public class AddressNormalisationServiceException : Xeption
     {
-        public AddressNormalisationServiceException(string message, Xeption innerException)
+        public AddressNormalisationServiceException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

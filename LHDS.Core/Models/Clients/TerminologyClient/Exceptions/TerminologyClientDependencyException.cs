@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Clients.TerminologyClient.Exceptions
 {
     public class TerminologyClientDependencyException : Xeption
     {
-        public TerminologyClientDependencyException(string message, Xeption innerException)
+        public TerminologyClientDependencyException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

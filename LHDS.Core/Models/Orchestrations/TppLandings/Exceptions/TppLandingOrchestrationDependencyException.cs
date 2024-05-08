@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Orchestrations.TppLandings.Exceptions
 {
     public class TppLandingOrchestrationDependencyException : Xeption
     {
-        public TppLandingOrchestrationDependencyException(string message, Xeption innerException)
+        public TppLandingOrchestrationDependencyException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

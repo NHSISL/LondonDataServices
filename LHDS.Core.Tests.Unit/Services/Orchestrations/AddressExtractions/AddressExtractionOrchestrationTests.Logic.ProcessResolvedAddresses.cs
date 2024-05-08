@@ -87,6 +87,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 service.MapCsvToObjectAsync<ResolvedAddress>(stringData, hasHeaderRecord, fieldMappings),
                     Times.Once());
 
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Exactly(outputResolvedAddresses.Count()));
+
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
                 string stringAddress = resolvedAddress.UnstructuredPostalAddress;

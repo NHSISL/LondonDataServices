@@ -128,6 +128,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 processing.GetIdentifier(),
                     Times.Exactly(outputOptOuts.Count));
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Exactly(outputOptOuts.Count));
+
             this.csvHelperBrokerMock.Verify(processings =>
                 processings.MapObjectToCsvAsync(
                     It.IsAny<List<OptOut>>(),

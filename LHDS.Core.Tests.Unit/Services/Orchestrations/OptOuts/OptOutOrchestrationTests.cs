@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
@@ -489,6 +490,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 new MeshProcessingDependencyValidationException(
                     message: "Mesh processing dependency validation occurred, please try again.",
                     innerException),
+
+                //new CsvHelperClientValidationException(innerException),
             };
         }
 
@@ -548,6 +551,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     message: "Mesh processing service error occurred, contact support.",
                     innerException),
 
+                //new CsvHelperClientDependencyException(innerException),
+                //new CsvHelperClientServiceException(innerException)
             };
         }
 

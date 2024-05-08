@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
@@ -67,6 +68,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             catch (DocumentProcessingDependencyValidationException meshProcessingDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
+            }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
             }
             catch (OptOutOrchestrationDependencyException optOutOrchestrationDependencyException)
             {
@@ -157,6 +162,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (OptOutOrchestrationDependencyException optOutOrchestrationDependencyException)
             {
                 throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
@@ -188,6 +197,14 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             catch (DocumentProcessingServiceException optOutOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+            }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
             }
             catch (Exception exception)
             {
@@ -246,6 +263,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (OptOutOrchestrationDependencyException optOutOrchestrationDependencyException)
             {
                 throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
@@ -277,6 +298,14 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             catch (DocumentProcessingServiceException optOutOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+            }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
             }
             catch (Exception exception)
             {
@@ -339,6 +368,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (OptOutOrchestrationDependencyException optOutOrchestrationDependencyException)
             {
                 throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
@@ -370,6 +403,14 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             catch (DocumentProcessingServiceException optOutOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+            }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
             }
             catch (Exception exception)
             {
@@ -433,6 +474,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (OptOutOrchestrationDependencyException optOutOrchestrationDependencyException)
             {
                 throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
@@ -464,6 +509,14 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             catch (DocumentProcessingServiceException optOutOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+            }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
             }
             catch (Exception exception)
             {

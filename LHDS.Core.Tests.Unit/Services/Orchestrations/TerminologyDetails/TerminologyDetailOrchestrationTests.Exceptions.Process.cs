@@ -31,26 +31,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             string outputArtifactDetail = GetRandomString();
             List<Exception> exceptions = new List<Exception>();
 
-
             foreach (TerminologyArtifact terminologyArtifact in undownloadedTerminologyArtifacts)
             {
                 this.terminologyArtifactProcessingServiceMock.Setup(service =>
                     service.GetNonDownloadedArtifactAsync())
                         .ReturnsAsync(terminologyArtifact);
 
-                string addressString = resolvedAddress.UnstructuredPostalAddress;
-
-                this.addressNormalisationServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(addressString))
-                        .ThrowsAsync(dependencyValidationException);
-
-                var addressExtractionOrchestrationDependencyValidationException =
-                    new AddressExtractionOrchestrationDependencyValidationException(
-                        message: "Address extraction orchestration dependency validation error occurred, " +
+                var terminologyDetailOrchestrationDependencyValidationException =
+                    new TerminologyDetailOrchestrationDependencyValidationException(
+                        message: "Terminology detail orchestration dependency validation error occurred, " +
                         "please try again.",
                         innerException: dependencyValidationException.InnerException as Xeption);
 
-                exceptions.Add(addressExtractionOrchestrationDependencyValidationException);
+                exceptions.Add(terminologyDetailOrchestrationDependencyValidationException);
             }
 
             var aggregateException =
@@ -58,16 +51,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     $"Unable to normalise address for {exceptions.Count} resolved addresses",
                     exceptions);
 
-            var failedAddressExtractionOrchestrationServiceException =
-                new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction aggregate orchestration service occurred, " +
+            var failedTerminologyDetailOrchestrationServiceException =
+                new FailedTerminologyDetailOrchestrationServiceException(
+                    message: "Failed terminology detail aggregate orchestration service occurred, " +
                     "please contact support.",
                     innerException: aggregateException);
 
-            var expectedAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
+            var expectedTerminologyDetailOrchestrationServiceException =
+                new TerminologyDetailOrchestrationServiceException(
                     message: "Address extraction orchestration service error occurred, contact support.",
-                    innerException: failedAddressExtractionOrchestrationServiceException);
+                    innerException: failedTerminologyDetailOrchestrationServiceException);
 
             // When
             ValueTask<List<ResolvedAddress>> processResolvedAddressTask =

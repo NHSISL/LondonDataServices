@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             Xeption dependencyValidationException)
         {
             // given
-            List<Address> randomAddresses = CreateRandomAddresses(1).ToList();
+            List<Address> randomAddresses = CreateRandomAddresses(GetRandomNumber()).ToList();
             string someFileName = GetRandomString();
             List<Exception> exceptions = new List<Exception>();
 
@@ -75,8 +75,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                  .BeEquivalentTo(expectedAddressPersistanceOrchestrationServiceException);
 
             this.addressProcessingServiceMock.Verify(service =>
-             service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
-                  Times.Exactly(randomAddresses.Count));
+                service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
+                    Times.Exactly(randomAddresses.Count));
 
             var addressPersistanceDependencyValidationException =
                 new AddressPersistenceOrchestrationDependencyValidationException(
@@ -85,14 +85,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
-                     addressPersistanceDependencyValidationException))),
-                         Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    addressPersistanceDependencyValidationException))),
+                        Times.Exactly(randomAddresses.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedAddressPersistanceOrchestrationServiceException))),
-                       Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressPersistanceOrchestrationServiceException))),
+                        Times.Once);
 
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -104,7 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             Xeption dependencyException)
         {
             // given
-            List<Address> randomAddresses = CreateRandomAddresses(1).ToList();
+            List<Address> randomAddresses = CreateRandomAddresses(GetRandomNumber()).ToList();
             string someFileName = GetRandomString();
             List<Exception> exceptions = new List<Exception>();
 
@@ -129,10 +129,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     exceptions);
 
             var failedAddressPersistanceOrchestrationServiceException =
-                 new FailedAddressPersistenceOrchestrationServiceException(
-                     message: "Failed address persistence aggregate orchestration service error occurred, " +
-                     "please contact support.",
-                     innerException: aggregateException);
+                new FailedAddressPersistenceOrchestrationServiceException(
+                    message: "Failed address persistence aggregate orchestration service error occurred, " +
+                    "please contact support.",
+                    innerException: aggregateException);
 
             var expectedAddressPersistanceOrchestrationServiceException =
                 new AddressPersistenceOrchestrationServiceException(
@@ -162,14 +162,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     innerException: dependencyException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
-                     addressPersistanceDependencyException))),
-                         Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    addressPersistanceDependencyException))),
+                        Times.Exactly(randomAddresses.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedAddressPersistanceOrchestrationServiceException))),
-                       Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressPersistanceOrchestrationServiceException))),
+                        Times.Once);
 
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -179,7 +179,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         public async Task ShouldThrowAggregateServiceExceptionOnAddressPersistenceIfErrorsAndLogItAsync()
         {
             // given
-            List<Address> randomAddresses = CreateRandomAddresses(1).ToList();
+            List<Address> randomAddresses = CreateRandomAddresses(GetRandomNumber()).ToList();
             string someFileName = GetRandomString();
             var serviceException = new Exception();
             List<Exception> exceptions = new List<Exception>();
@@ -210,10 +210,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                         exceptions);
 
             var failedAddressPersistanceOrchestrationServiceException =
-                 new FailedAddressPersistenceOrchestrationServiceException(
-                     message: "Failed address persistence aggregate orchestration service error occurred, " +
+                new FailedAddressPersistenceOrchestrationServiceException(
+                    message: "Failed address persistence aggregate orchestration service error occurred, " +
                         "please contact support.",
-                     innerException: aggregateException);
+                    innerException: aggregateException);
 
             var expectedAddressPersistenceOrchestrationServiceException =
                 new AddressPersistenceOrchestrationServiceException(
@@ -240,9 +240,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             }
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
-                     innerAddressPersistenceOrchestrationServiceException))),
-                         Times.Exactly(randomAddresses.Count));
+                broker.LogError(It.Is(SameExceptionAs(
+                    innerAddressPersistenceOrchestrationServiceException))),
+                        Times.Exactly(randomAddresses.Count));
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(

@@ -7,8 +7,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
+using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using Xeptions;
 
@@ -34,17 +36,41 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             {
                 throw CreateAndLogDependencyValidationException(addressProcessingValidationException);
             }
+            catch (AddressMatcherProcessingValidationException addressMatcherProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressMatcherProcessingValidationException);
+            }
+            catch (ResolvedAddressValidationException resolvedAddressValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressValidationException);
+            }
             catch (AddressProcessingDependencyValidationException addressProcessingDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressProcessingDependencyValidationException);
+            }
+            catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressDependencyValidationException);
             }
             catch (AddressProcessingDependencyException addressProcessingDependencyException)
             {
                 throw CreateAndLogDependencyException(addressProcessingDependencyException);
             }
+            catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressDependencyException);
+            }
             catch (AddressProcessingServiceException addressProcessingServiceException)
             {
                 throw CreateAndLogDependencyException(addressProcessingServiceException);
+            }
+            catch (AddressMatcherProcessingServiceException addressMatcherProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(addressMatcherProcessingServiceException);
+            }
+            catch (ResolvedAddressServiceException resolvedAddressServiceException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -82,17 +108,41 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             {
                 throw CreateAndLogDependencyValidationException(addressProcessingValidationException);
             }
+            catch (AddressMatcherProcessingValidationException addressMatcherProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressMatcherProcessingValidationException);
+            }
+            catch (ResolvedAddressValidationException resolvedAddressValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressValidationException);
+            }
             catch (AddressProcessingDependencyValidationException addressProcessingDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressProcessingDependencyValidationException);
+            }
+            catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressDependencyValidationException);
             }
             catch (AddressProcessingDependencyException addressProcessingDependencyException)
             {
                 throw CreateAndLogDependencyException(addressProcessingDependencyException);
             }
+            catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressDependencyException);
+            }
             catch (AddressProcessingServiceException addressProcessingServiceException)
             {
                 throw CreateAndLogDependencyException(addressProcessingServiceException);
+            }
+            catch (AddressMatcherProcessingServiceException addressMatcherProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(addressMatcherProcessingServiceException);
+            }
+            catch (ResolvedAddressServiceException resolvedAddressServiceException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressServiceException);
             }
             catch (Exception exception)
             {
@@ -120,17 +170,41 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             {
                 throw CreateAndLogDependencyValidationException(addressProcessingValidationException);
             }
+            catch (AddressMatcherProcessingValidationException addressMatcherProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressMatcherProcessingValidationException);
+            }
+            catch (ResolvedAddressValidationException resolvedAddressValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressValidationException);
+            }
             catch (AddressProcessingDependencyValidationException addressProcessingDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressProcessingDependencyValidationException);
+            }
+            catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressDependencyValidationException);
             }
             catch (AddressProcessingDependencyException addressProcessingDependencyException)
             {
                 throw CreateAndLogDependencyException(addressProcessingDependencyException);
             }
+            catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressDependencyException);
+            }
             catch (AddressProcessingServiceException addressProcessingServiceException)
             {
                 throw CreateAndLogDependencyException(addressProcessingServiceException);
+            }
+            catch (AddressMatcherProcessingServiceException addressMatcherProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(addressMatcherProcessingServiceException);
+            }
+            catch (ResolvedAddressServiceException resolvedAddressServiceException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressServiceException);
             }
             catch (Exception exception)
             {

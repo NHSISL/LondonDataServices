@@ -14,7 +14,9 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressMatchers;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
+using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressMatchers;
@@ -258,6 +260,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 new AddressProcessingDependencyValidationException(
                     message: "Address processing dependency validation occurred, please try again.",
                     innerException),
+
+                 new AddressMatcherProcessingValidationException(
+                    message: "Address matcher processing validation errors occurred, please try again.",
+                    innerException),
+
+                 new ResolvedAddressValidationException(
+                    message: "Resolved address processing validation errors occurred, please try again.",
+                    innerException),
+
+                new ResolvedAddressDependencyValidationException(
+                    message: "Resolved address processing dependency validation occurred, please try again.",
+                    innerException),
             };
         }
 
@@ -275,6 +289,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
                 new AddressProcessingServiceException(
                     message: "Address processing service error occurred, contact support.",
+                    innerException),
+
+                 new AddressMatcherProcessingServiceException(
+                    message: "Address matcher processing service error occurred, contact support.",
+                    innerException),
+
+                 new ResolvedAddressDependencyException(
+                    message: "Resolved address processing dependency error occurred, please try again.",
+                    innerException),
+
+                new ResolvedAddressServiceException(
+                    message: "Resolved address processing service error occurred, contact support.",
                     innerException),
             };
         }

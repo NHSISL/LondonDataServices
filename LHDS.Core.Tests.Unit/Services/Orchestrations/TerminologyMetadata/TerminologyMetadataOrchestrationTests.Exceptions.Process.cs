@@ -177,12 +177,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 service.RetrieveOrAddTerminologyPollAsync(It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
-            foreach (string resourceType in resourceTypes)
-            {
-                var failedTerminologyMetadataOrchestrationServiceException =
+            var innerFailedTerminologyMetadataOrchestrationServiceException =
                 new FailedTerminologyMetadataOrchestrationServiceException(
                     message: "Failed terminology metadata orchestration service error occurred, please contact support.",
                     serviceException);
+
+            var innerTerminologyMetadataOrchestrationServiceException =
+                new TerminologyMetadataOrchestrationServiceException(
+                    message: "Terminology metadata orchestration service error occurred, please contact support.",
+                    innerFailedTerminologyMetadataOrchestrationServiceException);
+
+            foreach (string resourceType in resourceTypes)
+            {
+                exceptions.Add(innerTerminologyMetadataOrchestrationServiceException);
             }
 
             var aggregateException =
@@ -214,7 +221,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             this.terminologyPollProcessingServiceMock.Verify(service =>
                 service.RetrieveOrAddTerminologyPollAsync(It.IsAny<string>()),
-                    Times.Once);
+                    Times.Exactly(resourceTypes.Length));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    innerTerminologyMetadataOrchestrationServiceException))),
+                        Times.Exactly(resourceTypes.Length));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

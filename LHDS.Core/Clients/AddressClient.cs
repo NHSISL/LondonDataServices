@@ -45,7 +45,7 @@ namespace LHDS.Core.Clients
                 addressCoordinationDependencyException)
             {
                 throw new AddressClientDependencyException(
-                    message: "Address client dependency error occurred, contact support.",
+                    message: "Address client dependency error occurred, please contact support.",
                     innerException: addressCoordinationDependencyException.InnerException as Xeption);
             }
             catch (AddressCoordinationServiceException
@@ -80,7 +80,7 @@ namespace LHDS.Core.Clients
                 addressCoordinationDependencyException)
             {
                 throw new AddressClientDependencyException(
-                    message: "Address client dependency error occurred, contact support.",
+                    message: "Address client dependency error occurred, please contact support.",
                     innerException: addressCoordinationDependencyException.InnerException as Xeption);
             }
             catch (AddressCoordinationServiceException
@@ -115,7 +115,7 @@ namespace LHDS.Core.Clients
                 addressCoordinationDependencyException)
             {
                 throw new AddressClientDependencyException(
-                    message: "Address client dependency error occurred, contact support.",
+                    message: "Address client dependency error occurred, please contact support.",
                     innerException: addressCoordinationDependencyException.InnerException as Xeption);
             }
             catch (AddressCoordinationServiceException

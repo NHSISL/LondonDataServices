@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                     message: "Address validation errors occurred, please try again.", innerException),
 
                 new AddressServiceException(
-                    message : "Address service error occurred, contact support.", innerException)
+                    message : "Address service error occurred, please contact support.", innerException)
             };
         }
 

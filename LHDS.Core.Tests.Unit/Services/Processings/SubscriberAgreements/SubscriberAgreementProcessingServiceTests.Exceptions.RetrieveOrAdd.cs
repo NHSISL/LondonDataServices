@@ -112,12 +112,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             var failedSubscriberAgreementProcessingServiceException =
                 new FailedSubscriberAgreementProcessingServiceException(
-                    message: "Failed subscriber agreement processing service error occurred, contact support.",
+                    message: "Failed subscriber agreement processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedSubscriberAgreementProcessingServiveException =
                 new SubscriberAgreementProcessingServiceException(
-                    message: "Subscriber agreement processing service error occurred, contact support.",
+                    message: "Subscriber agreement processing service error occurred, please contact support.",
                     innerException: failedSubscriberAgreementProcessingServiceException);
 
             this.subscriberAgreementServiceMock.Setup(service =>

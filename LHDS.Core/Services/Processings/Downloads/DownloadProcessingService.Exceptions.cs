@@ -51,7 +51,7 @@ namespace LHDS.Core.Services.Processings.Downloads
             {
                 var failedDownloadProcessingServiceException =
                     new FailedDownloadProcessingServiceException(
-                        message: "Failed Download processing service error occurred, contact support.",
+                        message: "Failed Download processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDownloadProcessingServiceException);
@@ -84,7 +84,7 @@ namespace LHDS.Core.Services.Processings.Downloads
             {
                 var failedDownloadProcessingServiceException =
                     new FailedDownloadProcessingServiceException(
-                        message: "Failed Download processing service error occurred, contact support.",
+                        message: "Failed Download processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDownloadProcessingServiceException);
@@ -131,7 +131,7 @@ namespace LHDS.Core.Services.Processings.Downloads
         {
             var downloadProcessingServiceException = new
                 DownloadProcessingServiceException(
-                    message: "Download processing service error occurred, contact support.",
+                    message: "Download processing service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(downloadProcessingServiceException);

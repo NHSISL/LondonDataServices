@@ -544,15 +544,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException),
 
                 new DocumentProcessingServiceException(
-                    message: "Document processing service error occurred, contact support.",
+                    message: "Document processing service error occurred, please contact support.",
                     innerException),
 
                 new MeshProcessingDependencyException(
-                        message: "Mesh processing dependency error occurred, contact support.",
+                        message: "Mesh processing dependency error occurred, please contact support.",
                         innerException),
 
                 new MeshProcessingServiceException(
-                    message: "Mesh processing service error occurred, contact support.",
+                    message: "Mesh processing service error occurred, please contact support.",
                     innerException),
 
                 new CsvMapperProcessingDependencyException(
@@ -560,7 +560,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException),
 
                 new CsvMapperProcessingServiceException(
-                    message: "Csv Mapper processing service error occurred, contact support.",
+                    message: "Csv Mapper processing service error occurred, please contact support.",
                     innerException)
             };
         }

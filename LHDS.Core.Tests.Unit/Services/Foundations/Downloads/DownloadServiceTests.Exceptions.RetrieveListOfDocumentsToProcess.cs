@@ -28,12 +28,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
 
             var failedDownloadServiceException =
                 new FailedDownloadServiceException(
-                    message: "Failed download service occurred, please contact support",
+                    message: "Failed download service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedDownloadServiceException =
                 new DownloadServiceException(
-                    message: "Download service error occurred, contact support.",
+                    message: "Download service error occurred, please contact support.",
                     innerException: failedDownloadServiceException);
 
             this.downloadBrokerMock.Setup(broker =>

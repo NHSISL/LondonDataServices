@@ -109,12 +109,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
 
             var failedTerminologyDetailOrchestrationServiceException =
                 new FailedTerminologyDetailOrchestrationServiceException(
-                    message: "Failed terminology detail orchestration service occurred, please contact support",
+                    message: "Failed terminology detail orchestration service error occurred, please contact support.",
                     serviceException);
 
             var expectedTerminologyDetailOrchestrationServiceException =
                 new TerminologyDetailOrchestrationServiceException(
-                    message: "Terminology detail orchestration service error occurred, contact support.",
+                    message: "Terminology detail orchestration service error occurred, please contact support.",
                     failedTerminologyDetailOrchestrationServiceException);
 
             this.terminologyArtifactProcessingServiceMock.Setup(service =>

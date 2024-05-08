@@ -121,7 +121,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 var failedOptOutServiceException =
                     new FailedOptOutOrchestrationServiceException(
-                        message: "Failed opt out orchestration service occurred, please contact support",
+                        message: "Failed opt out orchestration service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedOptOutServiceException);
@@ -226,7 +226,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 var failedOptOutServiceException =
                     new FailedOptOutOrchestrationServiceException(
-                        message: "Failed opt out orchestration service occurred, please contact support",
+                        message: "Failed opt out orchestration service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedOptOutServiceException);
@@ -331,7 +331,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 var failedOptOutServiceException =
                     new FailedOptOutOrchestrationServiceException(
-                        message: "Failed opt out orchestration service occurred, please contact support",
+                        message: "Failed opt out orchestration service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedOptOutServiceException);
@@ -440,7 +440,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 var failedOptOutServiceException =
                     new FailedOptOutOrchestrationServiceException(
-                        message: "Failed opt out orchestration service occurred, please contact support",
+                        message: "Failed opt out orchestration service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedOptOutServiceException);
@@ -550,7 +550,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 var failedOptOutServiceException =
                     new FailedOptOutOrchestrationServiceException(
-                        message: "Failed opt out orchestration service occurred, please contact support",
+                        message: "Failed opt out orchestration service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedOptOutServiceException);
@@ -600,7 +600,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         {
             var optOutOrchestrationServiceException =
                 new OptOutOrchestrationServiceException(
-                    message: "Opt Out orchestration service error occurred, contact support.",
+                    message: "Opt Out orchestration service error occurred, please contact support.",
                     exception);
 
             this.loggingBroker.LogError(optOutOrchestrationServiceException);

@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var expectedResolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, contact support.",
+                    message: "Resolved address orchestration service error occurred, please contact support.",
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
@@ -220,7 +220,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var expectedResolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, contact support.",
+                    message: "Resolved address orchestration service error occurred, please contact support.",
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
@@ -325,7 +325,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var innerResolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, contact support.",
+                    message: "Resolved address orchestration service error occurred, please contact support.",
                     innerException: innerFailedResolvedAddressOrchestrationServiceException);
 
             foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
@@ -355,7 +355,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var expectedResolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, contact support.",
+                    message: "Resolved address orchestration service error occurred, please contact support.",
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
@@ -512,7 +512,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var expectedResolvedAddressOrchestrationServiveException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, contact support.",
+                    message: "Resolved address orchestration service error occurred, please contact support.",
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             this.resolvedAddressProcessingServiceMock.Setup(service =>

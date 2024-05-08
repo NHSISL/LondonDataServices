@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 var failedDecryptServiceException =
                     new FailedAddressCoordinationServiceException(
-                        message: "Failed address coordination service error occurred, please contact support",
+                        message: "Failed address coordination service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDecryptServiceException);
@@ -324,7 +324,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         {
             var addressCoordinationServiceException =
                 new AddressCoordinationServiceException(
-                    message: "Address coordination service error occurred, contact support.",
+                    message: "Address coordination service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressCoordinationServiceException);

@@ -32,7 +32,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
         private void ValidateSubscriberCredentialIdOnRemove(Guid subscriberCredentialId)
         {
             Validate<InvalidArgumentSubscriberCredentialProcessingException>(
-                 message: "Invalid argument subscriber credential processing error occurred, contact support.",
+                 message: "Invalid argument subscriber credential processing error occurred, please contact support.",
                  (Rule: IsInvalid(subscriberCredentialId), Parameter: "subscriberCredentialId"));
         }
 
@@ -57,7 +57,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             }
 
             Validate<InvalidArgumentSubscriberCredentialProcessingException>(
-                message: "Invalid argument subscriber credential processing error occurred, contact support.",
+                message: "Invalid argument subscriber credential processing error occurred, please contact support.",
                 rules.ToArray());
         }
 

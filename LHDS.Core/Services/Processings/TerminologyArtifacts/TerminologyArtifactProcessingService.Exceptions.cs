@@ -44,7 +44,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             {
                 var failedTerminologyArtifactProcessingServiceException =
                     new FailedTerminologyArtifactProcessingServiceException(
-                        message: "Failed terminology artifact processing service error occurred, contact support.",
+                        message: "Failed terminology artifact processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedTerminologyArtifactProcessingServiceException);
@@ -86,7 +86,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             {
                 var failedTerminologyArtifactProcessingServiceException =
                     new FailedTerminologyArtifactProcessingServiceException(
-                        message: "Failed terminology artifact processing service error occurred, contact support.",
+                        message: "Failed terminology artifact processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedTerminologyArtifactProcessingServiceException);
@@ -136,7 +136,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
         {
             var terminologyArtifactProcessingServiceException =
                 new TerminologyArtifactProcessingServiceException(
-                    message: "Terminology artifact processing service error occurred, contact support.",
+                    message: "Terminology artifact processing service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(terminologyArtifactProcessingServiceException);

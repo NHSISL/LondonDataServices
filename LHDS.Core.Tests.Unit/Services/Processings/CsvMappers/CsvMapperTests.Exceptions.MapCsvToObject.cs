@@ -121,12 +121,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
 
             var failedCsvMapperServiceException =
                 new FailedCsvMapperServiceException(
-                    message: "Failed CSV mapper service error occurred, contact support.",
+                    message: "Failed CSV mapper service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedCsvMapperServiceException =
                 new CsvMapperProcessingServiceException(
-                    message: "Csv Mapper processing service error occurred, contact support.",
+                    message: "Csv Mapper processing service error occurred, please contact support.",
                     failedCsvMapperServiceException);
 
             this.csvMapperServiceMock.Setup(service =>

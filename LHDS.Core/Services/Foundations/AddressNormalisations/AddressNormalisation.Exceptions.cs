@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -60,7 +60,7 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
             {
                 var failedAddressNormalisationServiceException =
                     new FailedAddressNormalisationServiceException(
-                        message: "Failed address normalisation service occurred, please contact support",
+                        message: "Failed address normalisation service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressNormalisationServiceException);
@@ -82,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
             {
                 var failedAddressNormalisationServiceException =
                     new FailedAddressNormalisationServiceException(
-                        message: "Failed address normalisation service occurred, please contact support",
+                        message: "Failed address normalisation service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressNormalisationServiceException);
@@ -131,7 +131,7 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
         {
             var addressNormalisationServiceException =
                 new AddressNormalisationServiceException(
-                    message: "Address normalisation service error occurred, contact support.",
+                    message: "Address normalisation service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressNormalisationServiceException);

@@ -61,11 +61,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             return new TheoryData<Xeption>
             {
                 new CsvMapperDependencyException(
-                    message: "CSV mapper dependency error occurred, contact support.",
+                    message: "CSV mapper dependency error occurred, please contact support.",
                     innerException),
 
                 new CsvMapperServiceException(
-                    message: "CSV mapper service error occurred, contact support.",
+                    message: "CSV mapper service error occurred, please contact support.",
                     innerException)
             };
         }

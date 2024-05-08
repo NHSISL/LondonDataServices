@@ -9,17 +9,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
 {
     public partial class TerminologyClients
     {
-        [Theory(Skip = "Add wiremock to this test and move duplicate test as is to integration tests")]
-        [InlineData("CodeSystem")]
-        [InlineData("ValueSet")]
-        [InlineData("ConceptMap")]
-        public async Task ShouldRetrieveMetadataAsync(string inputResourceType)
+        [Fact(Skip = "Add wiremock to this test and move duplicate test as is to integration tests")]
+        public async Task ShouldRetrieveMetadataAsync()
         {
             //Given
-            string resourceType = inputResourceType;
 
             //When
-            await terminologyClient.RetrieveArtifactMetadataAsync(resourceType);
+            await terminologyClient.RetrieveArtifactMetadataAsync();
 
             //Then
         }

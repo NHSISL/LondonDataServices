@@ -16,17 +16,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 {
     public partial class TerminologyMetadataOrchestrationTests
     {
-        [Theory]
-        [InlineData("CodeSystem")]
-        [InlineData("ValueSet")]
-        [InlineData("ConceptMap")]
-        public async Task ShouldRetrievePagedArtifactMetadataAsync(string inputResourceType)
+        [Fact]
+        public async Task ShouldRetrievePagedArtifactMetadataAsync()
         {
             // given
             Guid randomId = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string randomString = GetRandomString();
-            string resourceType = inputResourceType;
+            string resourceType = "CodeSystem";
 
             TerminologyPoll retrievedTerminologyPoll =
                 CreateRandomTerminologyPoll(resourceType, lastPoll: randomDateTimeOffset.AddDays(-3));
@@ -129,7 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     ReturnsAsync(storageTerminologyPoll);
 
             // when
-            await this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(resourceType);
+            await this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync();
 
             // then
             this.terminologyPollProcessingServiceMock.Verify(service =>

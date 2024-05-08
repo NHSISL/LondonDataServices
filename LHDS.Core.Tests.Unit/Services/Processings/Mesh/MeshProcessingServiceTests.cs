@@ -63,11 +63,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             return new TheoryData<Xeption>
             {
                 new MeshDependencyException(
-                    message: "Mesh dependency error occurred, contact support.",
+                    message: "Mesh dependency error occurred, please contact support.",
                     innerException),
 
                 new MeshServiceException(
-                    message: "Mesh service error occurred, contact support.",
+                    message: "Mesh service error occurred, please contact support.",
                     innerException)
             };
         }

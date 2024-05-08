@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             // when
             ValueTask retrieveTerminologyMetadataTask =
-                this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(inputString);
+                this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync();
 
             TerminologyMetadataOrchestrationValidationException
                 actualTerminologyMetadataOrchestrationValidationException =
@@ -98,7 +98,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             // when
             ValueTask retrieveTerminologyMetadataTask =
-                this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(resourceType);
+                this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync();
 
             TerminologyMetadataOrchestrationValidationException
                 actualTerminologyMetadataOrchestrationValidationException =

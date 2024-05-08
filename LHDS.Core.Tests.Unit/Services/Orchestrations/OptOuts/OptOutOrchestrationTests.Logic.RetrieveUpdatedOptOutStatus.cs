@@ -172,10 +172,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
             }
 
-            meshProcessingServiceMock.VerifyNoOtherCalls();
-            csvHelperBrokerMock.VerifyNoOtherCalls();
-            optOutProcessingServiceMock.VerifyNoOtherCalls();
-            documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -310,10 +313,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                             Times.Never);
                 }
 
-                meshProcessingServiceMock.VerifyNoOtherCalls();
-                csvHelperBrokerMock.VerifyNoOtherCalls();
-                optOutProcessingServiceMock.VerifyNoOtherCalls();
-                documentProcessingServiceMock.VerifyNoOtherCalls();
+                this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+                this.csvHelperBrokerMock.VerifyNoOtherCalls();
+                this.meshProcessingServiceMock.VerifyNoOtherCalls();
+                this.documentProcessingServiceMock.VerifyNoOtherCalls();
+                this.loggingBrokerMock.VerifyNoOtherCalls();
+                this.identifierBrokerMock.VerifyNoOtherCalls();
+                this.dateTimeBrokerMock.VerifyNoOtherCalls();
             }
             catch (System.Exception ex)
             {
@@ -383,10 +389,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
             }
 
-            meshProcessingServiceMock.VerifyNoOtherCalls();
-            csvHelperBrokerMock.VerifyNoOtherCalls();
-            optOutProcessingServiceMock.VerifyNoOtherCalls();
-            documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

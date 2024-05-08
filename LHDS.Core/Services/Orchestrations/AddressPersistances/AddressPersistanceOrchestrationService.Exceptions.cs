@@ -11,7 +11,6 @@ using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
-using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.AddressPersistances
@@ -209,7 +208,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             catch (Exception exception)
             {
                 var failedAddressPersistanceOrchestrationServiceException =
-                    new FailedAddressPersistanceOrchestrationServiceException(
+                    new FailedAddressPersistenceOrchestrationServiceException(
                         message: "Failed address persistence orchestration service error occurred, " +
                         "please contact support.",
                         innerException: exception);
@@ -258,7 +257,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
         private AddressPersistenceOrchestrationServiceException CreateAndLogServiceException(Xeption exception)
         {
             var addressPersistanceOrchestrationServiceException =
-                new AddressPersistanceOrchestrationServiceException(
+                new AddressPersistenceOrchestrationServiceException(
                     message: "Address persistence orchestration service error occurred, please contact support.",
                     innerException: exception);
 

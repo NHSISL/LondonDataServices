@@ -31,7 +31,7 @@ namespace LHDS.Functions.Terminology
 
             try
             {
-                await terminologyClient.RetrieveArtifactMetadataAsync();
+                await terminologyClient.RetrieveArtifactMetadataAsync(["CodeSystem", "ValueSet", "ConceptMap"]);
             }
             catch (Exception ex)
             {

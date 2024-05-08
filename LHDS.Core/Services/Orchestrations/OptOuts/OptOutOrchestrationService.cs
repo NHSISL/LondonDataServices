@@ -76,7 +76,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 bool withHeader =
                     optOutConfiguration.OptOutFileHasHeader;
 
-                Dictionary<string, int> fieldMappings = null;
+                Dictionary<string, int>? fieldMappings = null;
 
                 bool shouldAddTrailingComma =
                     optOutConfiguration.OptOutFileRequireTrailingComma;
@@ -262,7 +262,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
         private static string GetHeaderValue(MeshMessage message, string keyToFind)
         {
-            List<string> value = new List<string>();
+            List<string>? value = new List<string>();
 
             foreach (var key in message.Headers.Keys)
             {
@@ -274,7 +274,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 }
             }
 
-            return value.FirstOrDefault();
+            return value?.FirstOrDefault() ?? string.Empty;
         }
 
         private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)

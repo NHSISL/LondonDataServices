@@ -99,7 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
             return new TheoryData<Xeption>
             {
                 new LibPostalClientValidationException(
-                    message: "Lib postal client validation error occurred, contact support.",
+                    message: "Lib postal client validation error occurred, please contact support.",
                     innerException,
                     data)
             };

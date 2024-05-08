@@ -20,13 +20,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
         [InlineData("CodeSystem")]
         [InlineData("ValueSet")]
         [InlineData("ConceptMap")]
-        public async Task ShouldRetrievePagedArtifactMetadataAsync(string inputResourceType)
+        public async Task ShouldRetrievePagedArtifactMetadataAsync(string resourceType)
         {
             // given
+            string[] resourceTypes = new string[] { resourceType };
             Guid randomId = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string randomString = GetRandomString();
-            string resourceType = inputResourceType;
 
             TerminologyPoll retrievedTerminologyPoll =
                 CreateRandomTerminologyPoll(resourceType, lastPoll: randomDateTimeOffset.AddDays(-3));
@@ -129,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     ReturnsAsync(storageTerminologyPoll);
 
             // when
-            await this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(resourceType);
+            await this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(resourceTypes);
 
             // then
             this.terminologyPollProcessingServiceMock.Verify(service =>
@@ -182,9 +182,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 default:
                     throw new ArgumentException($"Unsupported resourceType: {resourceType}");
             }
-
-
-
 
             for (int i = 0; i < assets.Count; i++)
             {

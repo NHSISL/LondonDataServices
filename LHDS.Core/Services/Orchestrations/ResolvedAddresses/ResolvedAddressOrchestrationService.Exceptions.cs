@@ -205,7 +205,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             var resolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, contact support.",
+                    message: "Resolved address orchestration service error occurred, please contact support.",
                     exception);
 
             this.loggingBroker.LogError(resolvedAddressOrchestrationServiceException);

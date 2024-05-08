@@ -51,7 +51,7 @@ namespace LHDS.Core.Services.Processings.DataSets
             {
                 var failedDataSetProcessingServiceException =
                     new FailedDataSetProcessingServiceException(
-                        message: "Failed DataSet processing service error occurred, contact support.",
+                        message: "Failed DataSet processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDataSetProcessingServiceException);
@@ -84,7 +84,7 @@ namespace LHDS.Core.Services.Processings.DataSets
             {
                 var failedDataSetProcessingServiceException =
                     new FailedDataSetProcessingServiceException(
-                        message: "Failed DataSet processing service error occurred, contact support.",
+                        message: "Failed DataSet processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDataSetProcessingServiceException);
@@ -133,7 +133,7 @@ namespace LHDS.Core.Services.Processings.DataSets
         {
             var dataSetProcessingServiceException = new
                 DataSetProcessingServiceException(
-                    message: "DataSet processing service error occurred, contact support.",
+                    message: "DataSet processing service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(dataSetProcessingServiceException);

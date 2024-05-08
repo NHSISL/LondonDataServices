@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 var failedOptOutProcessingServiceException =
                     new FailedOptOutProcessingServiceException(
-                        message: "Failed opt out processing service error occurred, contact support.",
+                        message: "Failed opt out processing service error occurred, please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(failedOptOutProcessingServiceException);
@@ -90,7 +90,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 var failedOptOutProcessingServiceException =
                     new FailedOptOutProcessingServiceException(
-                        message: "Failed opt out processing service error occurred, contact support.",
+                        message: "Failed opt out processing service error occurred, please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(failedOptOutProcessingServiceException);
@@ -127,7 +127,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 var failedOptOutProcessingServiceException =
                     new FailedOptOutProcessingServiceException(
-                        message: "Failed opt out processing service error occurred, contact support.",
+                        message: "Failed opt out processing service error occurred, please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(failedOptOutProcessingServiceException);

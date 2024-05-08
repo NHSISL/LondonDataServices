@@ -28,17 +28,13 @@ namespace LHDS.Functions.Landings.Emis
         }
 
         [Function("EmisLandingTimerFunction")]
-        public void Run([TimerTrigger("0 */15 * * * *")] MyInfo myTimer)
+        public async Task Run([TimerTrigger("0 */15 * * * *")] MyInfo myTimer)
         {
-
             this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
-                Task.Run(async () =>
-                {
-                    await this.landingClient.ProcessAsync();
-                }).Wait();
+                await this.landingClient.ProcessAsync();
             }
             catch (Exception ex)
             {

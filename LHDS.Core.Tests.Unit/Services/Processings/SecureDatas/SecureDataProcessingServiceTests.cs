@@ -179,7 +179,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     message: "Secure data validation errors occurred, please try again.", innerException),
 
                 new SecureDataServiceException(
-                    message : "Secure data service error occurred, contact support.", innerException)
+                    message : "Secure data service error occurred, please contact support.", innerException)
             };
         }
     }

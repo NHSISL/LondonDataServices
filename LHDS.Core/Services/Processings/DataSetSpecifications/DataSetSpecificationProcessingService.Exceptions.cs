@@ -57,7 +57,7 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
             {
                 var failedDataSetSpecificationProcessingServiceException =
                     new FailedDataSetSpecificationProcessingServiceException(
-                        message: "Failed DataSetSpecification processing service error occurred, contact support.",
+                        message: "Failed DataSetSpecification processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDataSetSpecificationProcessingServiceException);
@@ -91,7 +91,7 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
             {
                 var failedDataSetSpecificationProcessingServiceException =
                     new FailedDataSetSpecificationProcessingServiceException(
-                        message: "Failed DataSetSpecification processing service error occurred, contact support.",
+                        message: "Failed DataSetSpecification processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDataSetSpecificationProcessingServiceException);
@@ -139,7 +139,7 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
         {
             var dataSetSpecificationProcessingServiceException = new
                 DataSetSpecificationProcessingServiceException(
-                    message: "DataSetSpecification processing service error occurred, contact support.",
+                    message: "DataSetSpecification processing service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(dataSetSpecificationProcessingServiceException);

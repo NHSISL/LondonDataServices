@@ -109,7 +109,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             {
                 var failedDecryptServiceException =
                     new FailedDecryptionOrchestrationServiceException(
-                        message: "Failed Decryption orchestration service occurred, please contact support",
+                        message: "Failed Decryption orchestration service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDecryptServiceException);
@@ -158,7 +158,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         {
             var decryptionServiceException =
                 new DecryptionOrchestrationServiceException(
-                    message: "Decryption orchestration service error occurred, contact support.",
+                    message: "Decryption orchestration service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(decryptionServiceException);

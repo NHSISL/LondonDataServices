@@ -11,7 +11,6 @@ using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
-using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.AddressPersistances
@@ -210,7 +209,8 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             {
                 var failedAddressPersistanceOrchestrationServiceException =
                     new FailedAddressPersistenceOrchestrationServiceException(
-                        message: "Failed address persistence orchestration service error occurred, contact support.",
+                        message: "Failed address persistence orchestration service error occurred, " +
+                        "please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressPersistanceOrchestrationServiceException);
@@ -258,7 +258,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
         {
             var addressPersistanceOrchestrationServiceException =
                 new AddressPersistenceOrchestrationServiceException(
-                    message: "Address persistence orchestration service error occurred, contact support.",
+                    message: "Address persistence orchestration service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressPersistanceOrchestrationServiceException);

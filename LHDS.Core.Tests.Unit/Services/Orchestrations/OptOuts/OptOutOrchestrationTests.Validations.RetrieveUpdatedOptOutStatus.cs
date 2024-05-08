@@ -58,8 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
             OptOutOrchestrationValidationException actualOptOutOrchestrationValidationException =
-                await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(() =>
-                    retrieveUpdatedOptOutStatusTask.AsTask());
+                await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(retrieveUpdatedOptOutStatusTask.AsTask);
 
             //then
             actualOptOutOrchestrationValidationException.Should()

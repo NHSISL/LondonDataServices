@@ -140,7 +140,7 @@ namespace LHDS.Core.Clients.Extensions
             Message = "Configuration value does not exist"
         };
 
-        private static dynamic IsInvalid(bool value) => new
+        private static dynamic IsInvalid(bool? value) => new
         {
             Condition = value == null,
             Message = "Configuration value does not exist"

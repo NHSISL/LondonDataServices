@@ -33,8 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 this.subscriberAgreementService.AddSubscriberAgreementAsync(nullSubscriberAgreement);
 
             SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
-                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(() =>
-                    addSubscriberAgreementTask.AsTask());
+                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(addSubscriberAgreementTask.AsTask);
 
             // then
             actualSubscriberAgreementValidationException.Should()
@@ -103,8 +102,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 this.subscriberAgreementService.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
 
             SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
-                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(() =>
-                    addSubscriberAgreementTask.AsTask());
+                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(addSubscriberAgreementTask.AsTask);
 
             // then
             actualSubscriberAgreementValidationException.Should()
@@ -168,8 +166,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 this.subscriberAgreementService.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
 
             SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
-                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(() =>
-                    addSubscriberAgreementTask.AsTask());
+                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(addSubscriberAgreementTask.AsTask);
 
             // then
             actualSubscriberAgreementValidationException.Should()
@@ -227,8 +224,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 this.subscriberAgreementService.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
 
             SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
-                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(() =>
-                    addSubscriberAgreementTask.AsTask());
+                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(addSubscriberAgreementTask.AsTask);
 
             // then
             actualSubscriberAgreementValidationException.Should()
@@ -283,8 +279,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 this.subscriberAgreementService.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
 
             SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
-                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(() =>
-                    addSubscriberAgreementTask.AsTask());
+                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(addSubscriberAgreementTask.AsTask);
 
             // then
             actualSubscriberAgreementValidationException.Should()
@@ -344,8 +339,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 this.subscriberAgreementService.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
 
             SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
-                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(() =>
-                    addSubscriberAgreementTask.AsTask());
+                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(addSubscriberAgreementTask.AsTask);
 
             // then
             actualSubscriberAgreementValidationException.Should()

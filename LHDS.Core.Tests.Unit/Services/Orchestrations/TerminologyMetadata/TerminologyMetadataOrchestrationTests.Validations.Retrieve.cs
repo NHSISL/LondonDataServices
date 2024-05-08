@@ -43,8 +43,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             TerminologyMetadataOrchestrationValidationException
                 actualTerminologyMetadataOrchestrationValidationException =
-                    await Assert.ThrowsAsync<TerminologyMetadataOrchestrationValidationException>(() =>
-                        retrieveTerminologyMetadataTask.AsTask());
+                    await Assert.ThrowsAsync<TerminologyMetadataOrchestrationValidationException>(
+                        retrieveTerminologyMetadataTask.AsTask);
 
             //then
             actualTerminologyMetadataOrchestrationValidationException.Should()
@@ -199,8 +199,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             TerminologyMetadataOrchestrationServiceException
                 actualTerminologyMetadataOrchestrationServiceException =
-                    await Assert.ThrowsAsync<TerminologyMetadataOrchestrationServiceException>(() =>
-                        retrieveTerminologyMetadataTask.AsTask());
+                    await Assert.ThrowsAsync<TerminologyMetadataOrchestrationServiceException>(
+                        retrieveTerminologyMetadataTask.AsTask);
 
             //then
             actualTerminologyMetadataOrchestrationServiceException.Should()

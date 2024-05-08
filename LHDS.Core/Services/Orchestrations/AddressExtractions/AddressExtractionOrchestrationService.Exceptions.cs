@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
@@ -48,6 +49,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (AddressParserDependencyException addressParserDependencyException)
             {
                 throw CreateAndLogDependencyException(addressParserDependencyException);
@@ -63,6 +68,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             catch (AddressNormalisationServiceException addressNormalisationServiceException)
             {
                 throw CreateAndLogDependencyException(addressNormalisationServiceException);
+            }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -114,6 +127,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (AddressParserDependencyException addressParserDependencyException)
             {
                 throw CreateAndLogDependencyException(addressParserDependencyException);
@@ -129,6 +146,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             catch (AddressNormalisationServiceException addressNormalisationServiceException)
             {
                 throw CreateAndLogDependencyException(addressNormalisationServiceException);
+            }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -180,6 +205,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (AddressParserDependencyException addressParserDependencyException)
             {
                 throw CreateAndLogDependencyException(addressParserDependencyException);
@@ -195,6 +224,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             catch (AddressNormalisationServiceException addressNormalisationServiceException)
             {
                 throw CreateAndLogDependencyException(addressNormalisationServiceException);
+            }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -245,6 +282,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (AddressParserDependencyException addressParserDependencyException)
             {
                 throw CreateAndLogDependencyException(addressParserDependencyException);
@@ -260,6 +301,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             catch (AddressNormalisationServiceException addressNormalisationServiceException)
             {
                 throw CreateAndLogDependencyException(addressNormalisationServiceException);
+            }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
             }
             catch (AggregateException aggregateException)
             {

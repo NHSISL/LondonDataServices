@@ -59,12 +59,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     failedTerminologyMetadataOrchestrationServiceException);
 
             // when
-            ValueTask retrireveTask =
+            ValueTask retrieveTask =
                 this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(resourceTypes);
 
             TerminologyMetadataOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<TerminologyMetadataOrchestrationServiceException>(
-                    retrireveTask.AsTask);
+                    retrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyMetadataOrchestrationServiceException);
@@ -134,11 +134,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     failedTerminologyMetadataOrchestrationServiceException);
 
             // when
-            ValueTask retrireveTask =
+            ValueTask retrieveTask =
                 this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(resourceTypes);
 
             TerminologyMetadataOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<TerminologyMetadataOrchestrationServiceException>(retrireveTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyMetadataOrchestrationServiceException>(retrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyMetadataOrchestrationServiceException);
@@ -210,11 +210,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     failedTerminologyMetadataOrchestrationServiceException);
 
             // when
-            ValueTask retrireveTask =
+            ValueTask retrieveTask =
                 this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(resourceTypes);
 
             TerminologyMetadataOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<TerminologyMetadataOrchestrationServiceException>(retrireveTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyMetadataOrchestrationServiceException>(retrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyMetadataOrchestrationServiceException);

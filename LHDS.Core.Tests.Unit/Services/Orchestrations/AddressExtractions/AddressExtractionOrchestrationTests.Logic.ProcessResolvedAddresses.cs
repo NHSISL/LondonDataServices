@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 broker.GetIdentifier())
                     .Returns(identifier);
 
-            this.csvMapperServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(stringData, hasHeaderRecord, fieldMappings))
                     .ReturnsAsync(outputResolvedAddresses);
 
@@ -83,9 +83,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualResolvedAddress.Should().BeEquivalentTo(expectedResolvedAddresses, options =>
                 options.Excluding(address => address.Id));
 
-            this.csvMapperServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(stringData, hasHeaderRecord, fieldMappings),
                     Times.Once());
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Exactly(outputResolvedAddresses.Count()));
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
@@ -105,11 +109,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     identifier),
                         Times.Exactly(randomResolvedAddresses.Count));
 
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

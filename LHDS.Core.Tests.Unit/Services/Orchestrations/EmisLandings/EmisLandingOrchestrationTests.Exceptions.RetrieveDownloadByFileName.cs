@@ -126,12 +126,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             var failedEmisLandingOrchestrationServiceException =
                 new FailedEmisLandingOrchestrationServiceException(
-                    message: "Failed EMIS landing orchestration service occurred, please contact support",
+                    message: "Failed EMIS landing orchestration service error occurred, please contact support.",
                     serviceException);
 
             var expectedEmisLandingOrchestrationServiceException =
                 new EmisLandingOrchestrationServiceException(
-                    message: "EMIS landing orchestration service error occurred, contact support.",
+                    message: "EMIS landing orchestration service error occurred, please contact support.",
                     failedEmisLandingOrchestrationServiceException);
 
             this.downloadProcessingServiceMock.Setup(service =>

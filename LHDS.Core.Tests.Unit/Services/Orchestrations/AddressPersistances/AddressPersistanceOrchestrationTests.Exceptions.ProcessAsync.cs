@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
+using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -18,172 +19,287 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
     public partial class AddressPersistanceOrchestrationServiceTests
     {
         [Theory]
-        [MemberData(nameof(AddressPersistanceDependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationOnAddressPersistanceIfDependencyValidationOccursAndLogItAsync(
+        [MemberData(nameof(AddressPersistenceDependencyValidationExceptions))]
+        public async Task ShouldThrowAggregateDependencyValidationOnAddressPersistenceIfDependencyValidationOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            List<Address> randomAddresses = CreateRandomAddresses(GetRandomNumber()).ToList();
             string someFileName = GetRandomString();
-            Address address = randomAddresses[0];
+            List<Exception> exceptions = new List<Exception>();
 
-            var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
-                        $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
-                        $"{address.DependentThoroughfare},{address.Thoroughfare}," +
-                        $"{address.DoubleDependentLocality}," +
-                        $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
+            foreach (Address address in randomAddresses)
+            {
+                this.addressProcessingServiceMock.Setup(processing =>
+                    processing.ModifyOrAddAddressAsync(It.IsAny<Address>()))
+                        .ThrowsAsync(dependencyValidationException);
 
-            var expectedDependencyException =
-                new AddressPersistanceOrchestrationDependencyValidationException(
-                    message: "Address persistance orchestration dependency validation error occurred, " +
-                        "fix the errors and try again.",
-                    innerException: dependencyValidationException.InnerException as Xeption);
+                var addressPersistanceOrchestrationDependencyValidationException =
+                    new AddressPersistenceOrchestrationDependencyValidationException(
+                        message: "Address persistence orchestration dependency validation error occurred, " +
+                            "please try again.",
+                        innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.addressNormalisationProcessingServiceMock.Setup(service =>
-                service.GetNormalisedAddress(stringAddress))
-                    .ThrowsAsync(dependencyValidationException);
+                exceptions.Add(addressPersistanceOrchestrationDependencyValidationException);
+            }
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to add or modify {exceptions.Count} address(es)",
+                    exceptions);
+
+            var failedAddressPersistanceOrchestrationServiceException =
+                 new FailedAddressPersistenceOrchestrationServiceException(
+                     message: "Failed address persistence aggregate orchestration service error occurred, " +
+                     "please contact support.",
+                     innerException: aggregateException);
+
+            var expectedAddressPersistanceOrchestrationServiceException =
+                new AddressPersistenceOrchestrationServiceException(
+                    message: "Address persistence orchestration service error occurred, please contact support.",
+                    innerException: failedAddressPersistanceOrchestrationServiceException);
 
             // when
             ValueTask<List<Address>> processTask =
                 this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
 
-            AddressPersistanceOrchestrationDependencyValidationException actualException =
-                await Assert.ThrowsAsync<AddressPersistanceOrchestrationDependencyValidationException>(
+            AddressPersistenceOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(
                     processTask.AsTask);
 
             // then
             actualException.Should()
-                 .BeEquivalentTo(expectedDependencyException);
-
-            this.addressNormalisationProcessingServiceMock.Verify(service =>
-             service.GetNormalisedAddress(stringAddress),
-                 Times.Once);
+                 .BeEquivalentTo(expectedAddressPersistanceOrchestrationServiceException);
 
             this.addressProcessingServiceMock.Verify(service =>
-             service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
-                 Times.Never);
+                service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
+                    Times.Exactly(randomAddresses.Count));
+
+            var addressPersistanceDependencyValidationException =
+                new AddressPersistenceOrchestrationDependencyValidationException(
+                    message: "Address persistence orchestration dependency validation error occurred, " +
+                        "please try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedDependencyException))),
-                       Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    addressPersistanceDependencyValidationException))),
+                        Times.Exactly(randomAddresses.Count));
 
-            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressPersistanceOrchestrationServiceException))),
+                        Times.Once);
+
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
-        [MemberData(nameof(AddressPersistanceDependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnAddressPersistanceIfDependencyExceptionOccursAndLogItAsync(
+        [MemberData(nameof(AddressPersistenceDependencyExceptions))]
+        public async Task ShouldThrowAggregateDependencyOnAddressPersistenceIfDependencyOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            List<Address> randomAddresses = CreateRandomAddresses(GetRandomNumber()).ToList();
             string someFileName = GetRandomString();
-            Address address = randomAddresses[0];
+            List<Exception> exceptions = new List<Exception>();
 
-            var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
-                        $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
-                        $"{address.DependentThoroughfare},{address.Thoroughfare}," +
-                        $"{address.DoubleDependentLocality}," +
-                        $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
+            foreach (Address address in randomAddresses)
+            {
+                this.addressProcessingServiceMock.Setup(processing =>
+                    processing.ModifyOrAddAddressAsync(It.IsAny<Address>()))
+                        .ThrowsAsync(dependencyException);
 
-            var expectedDependencyException =
-                new AddressPersistanceOrchestrationDependencyException(
-                    message: "Address persistance orchestration dependency error occurred, " +
-                        "fix the errors and try again.",
-                    innerException: dependencyException.InnerException as Xeption);
+                var addressPersistanceOrchestrationDependencyException =
+                    new AddressPersistenceOrchestrationDependencyException(
+                        message: "Address persistence orchestration dependency error occurred, " +
+                            "please try again.",
+                        innerException: dependencyException.InnerException as Xeption);
 
-            this.addressNormalisationProcessingServiceMock.Setup(service =>
-                service.GetNormalisedAddress(stringAddress))
-                    .ThrowsAsync(dependencyException);
+                exceptions.Add(addressPersistanceOrchestrationDependencyException);
+            }
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to add or modify {exceptions.Count} address(es)",
+                    exceptions);
+
+            var failedAddressPersistanceOrchestrationServiceException =
+                new FailedAddressPersistenceOrchestrationServiceException(
+                    message: "Failed address persistence aggregate orchestration service error occurred, " +
+                    "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedAddressPersistanceOrchestrationServiceException =
+                new AddressPersistenceOrchestrationServiceException(
+                    message: "Address persistence orchestration service error occurred, please contact support.",
+                    innerException: failedAddressPersistanceOrchestrationServiceException);
 
             // when
             ValueTask<List<Address>> processTask =
                 this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
 
-            AddressPersistanceOrchestrationDependencyException actualException =
-                await Assert.ThrowsAsync<AddressPersistanceOrchestrationDependencyException>(
+            AddressPersistenceOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(
                     processTask.AsTask);
 
             // then
             actualException.Should()
-                 .BeEquivalentTo(expectedDependencyException);
-
-            this.addressNormalisationProcessingServiceMock.Verify(service =>
-             service.GetNormalisedAddress(stringAddress),
-                 Times.Once);
+                 .BeEquivalentTo(expectedAddressPersistanceOrchestrationServiceException);
 
             this.addressProcessingServiceMock.Verify(service =>
              service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
-                 Times.Never);
+                  Times.Exactly(randomAddresses.Count));
+
+            var addressPersistanceDependencyException =
+                new AddressPersistenceOrchestrationDependencyException(
+                    message: "Address persistence orchestration dependency error occurred, " +
+                        "please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedDependencyException))),
-                       Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    addressPersistanceDependencyException))),
+                        Times.Exactly(randomAddresses.Count));
 
-            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressPersistanceOrchestrationServiceException))),
+                        Times.Once);
+
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnAddressPersistanceIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowAggregateServiceExceptionOnAddressPersistenceIfErrorsAndLogItAsync()
         {
-            //Given
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            // given
+            List<Address> randomAddresses = CreateRandomAddresses(GetRandomNumber()).ToList();
             string someFileName = GetRandomString();
-            Address address = randomAddresses[0];
-
-            var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
-                        $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
-                        $"{address.DependentThoroughfare},{address.Thoroughfare}," +
-                        $"{address.DoubleDependentLocality}," +
-                        $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
-
             var serviceException = new Exception();
+            List<Exception> exceptions = new List<Exception>();
 
-            var failedAddressPersistanceOrchestrationServiceException =
-                new FailedAddressPersistanceOrchestrationServiceException(
-                    message: "Failed address persistance orchestration service error occurred, please contact support",
+            var innerfailedAddressPersistenceOrchestrationServiceException =
+                new FailedAddressPersistenceOrchestrationServiceException(
+                    message: "Failed address persistence orchestration service error occurred, " +
+                        "please contact support.",
                     innerException: serviceException);
 
-            var expectedAddressPersistanceOrchestrationServiceException =
-                new AddressPersistanceOrchestrationServiceException(
-                    message: "Address persistance orchestration service error occurred, contact support.",
-                    innerException: failedAddressPersistanceOrchestrationServiceException);
+            var innerAddressPersistenceOrchestrationServiceException =
+                new AddressPersistenceOrchestrationServiceException(
+                    message: "Address persistence orchestration service error occurred, please contact support.",
+                    innerException: innerfailedAddressPersistenceOrchestrationServiceException);
 
-            this.addressNormalisationProcessingServiceMock.Setup(service =>
-                service.GetNormalisedAddress(stringAddress))
-                    .ThrowsAsync(serviceException);
+            foreach (Address address in randomAddresses)
+            {
+                this.addressProcessingServiceMock.Setup(processing =>
+                    processing.ModifyOrAddAddressAsync(It.IsAny<Address>()))
+                        .ThrowsAsync(serviceException);
+
+                exceptions.Add(innerAddressPersistenceOrchestrationServiceException);
+            }
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to add or modify {exceptions.Count} address(es)",
+                        exceptions);
+
+            var failedAddressPersistanceOrchestrationServiceException =
+                new FailedAddressPersistenceOrchestrationServiceException(
+                    message: "Failed address persistence aggregate orchestration service error occurred, " +
+                        "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedAddressPersistenceOrchestrationServiceException =
+                new AddressPersistenceOrchestrationServiceException(
+                    message: "Address persistence orchestration service error occurred, please contact support.",
+                    innerException: failedAddressPersistanceOrchestrationServiceException);
 
             // when
             ValueTask<List<Address>> processTask =
                 this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
 
-            AddressPersistanceOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<AddressPersistanceOrchestrationServiceException>(
+            AddressPersistenceOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(async () =>
+                    await processTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedAddressPersistenceOrchestrationServiceException);
+
+            foreach (Address address in randomAddresses)
+            {
+                this.addressProcessingServiceMock.Verify(service =>
+                   service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
+                       Times.Exactly(randomAddresses.Count));
+            }
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    innerAddressPersistenceOrchestrationServiceException))),
+                        Times.Exactly(randomAddresses.Count));
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedAddressPersistenceOrchestrationServiceException))),
+                       Times.Once);
+
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddressPersistIfServiceErrorOccursAsync()
+        {
+            // given
+            var mock = new Mock<AddressPersistanceOrchestrationService>(
+                addressProcessingServiceMock.Object,
+                addressMatcherProcessingServiceMock.Object,
+                resolvedAddressProcessingServiceMock.Object,
+                auditBrokerMock.Object,
+                loggingBrokerMock.Object,
+                dateTimeBrokerMock.Object)
+            { CallBase = true };
+
+            List<Address> randomAddresses = CreateRandomAddresses(1).ToList();
+            Address address = randomAddresses[0];
+            string exceptionMessage = GetRandomString();
+            string someFileName = GetRandomString();
+            var serviceException = new Exception(exceptionMessage);
+
+            mock.Setup(x => x.ValidateAddressPersistenceOrchestration(randomAddresses, someFileName))
+                .Throws(serviceException);
+
+            AddressPersistanceOrchestrationService addressPersistanceOrchestrationService = mock.Object;
+
+            var failedAddressPersistanceOrchestrationServiceException =
+                new FailedAddressPersistenceOrchestrationServiceException(
+                    message: "Failed address persistence orchestration service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var expectedAddressPersistanceOrchestrationServiceException =
+                new AddressPersistenceOrchestrationServiceException(
+                    message: "Address persistence orchestration service error occurred, please contact support.",
+                    innerException: failedAddressPersistanceOrchestrationServiceException);
+
+            // when
+            ValueTask<List<Address>> processTask =
+                addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
+
+            AddressPersistenceOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(
                     processTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedAddressPersistanceOrchestrationServiceException);
-
-            this.addressNormalisationProcessingServiceMock.Verify(service =>
-             service.GetNormalisedAddress(stringAddress),
-                 Times.Once);
-
-            this.addressProcessingServiceMock.Verify(service =>
-             service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
-                 Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
                    expectedAddressPersistanceOrchestrationServiceException))),
                        Times.Once);
 
-            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

@@ -121,7 +121,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             var invalidArgumentSubscriberCredentialProcessingException =
                 new InvalidArgumentSubscriberCredentialProcessingException(
-                    message: "Invalid argument subscriber credential processing error occurred, contact support.");
+                    message: "Invalid argument subscriber credential processing error occurred, please contact support.");
 
             foreach (string keyType in invalidProperties)
             {

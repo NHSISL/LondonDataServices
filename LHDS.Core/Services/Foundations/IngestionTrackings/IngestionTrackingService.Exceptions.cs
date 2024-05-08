@@ -37,7 +37,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             {
                 var failedIngestionTrackingStorageException =
                     new FailedIngestionTrackingStorageException(
-                        message: "Failed ingestion tracking storage error occurred, contact support.",
+                        message: "Failed ingestion tracking storage error occurred, please contact support.",
                         sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
@@ -76,7 +76,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             {
                 var failedIngestionTrackingStorageException =
                     new FailedIngestionTrackingStorageException(
-                        message: "Failed ingestion tracking storage error occurred, contact support.",
+                        message: "Failed ingestion tracking storage error occurred, please contact support.",
                         databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedIngestionTrackingStorageException);
@@ -85,7 +85,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             {
                 var failedIngestionTrackingServiceException =
                     new FailedIngestionTrackingServiceException(
-                        message: "Failed ingestion tracking service occurred, please contact support", 
+                        message: "Failed ingestion tracking service error occurred, please contact support.", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedIngestionTrackingServiceException);
@@ -102,7 +102,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             {
                 var failedIngestionTrackingStorageException =
                     new FailedIngestionTrackingStorageException(
-                        message: "Failed ingestion tracking storage error occurred, contact support.",
+                        message: "Failed ingestion tracking storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
@@ -111,7 +111,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             {
                 var failedIngestionTrackingServiceException =
                     new FailedIngestionTrackingServiceException(
-                        message: "Failed ingestion tracking service occurred, please contact support", 
+                        message: "Failed ingestion tracking service error occurred, please contact support.", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedIngestionTrackingServiceException);
@@ -133,7 +133,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         private IngestionTrackingDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
             var ingestionTrackingDependencyException = new IngestionTrackingDependencyException(
-                message: "Failed ingestion tracking storage error occurred, contact support.", 
+                message: "Failed ingestion tracking storage error occurred, please contact support.", 
                 innerException: exception);
 
             this.loggingBroker.LogCritical(ingestionTrackingDependencyException);
@@ -157,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             Xeption exception)
         {
             var ingestionTrackingDependencyException = new IngestionTrackingDependencyException(
-                message: "Failed ingestion tracking storage error occurred, contact support.", 
+                message: "Failed ingestion tracking storage error occurred, please contact support.", 
                 innerException: exception);
 
             this.loggingBroker.LogError(ingestionTrackingDependencyException);
@@ -169,7 +169,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             Xeption exception)
         {
             var ingestionTrackingServiceException = new IngestionTrackingServiceException(
-                message: "Ingestion tracking service error occurred, contact support.",
+                message: "Ingestion tracking service error occurred, please contact support.",
                 innerException: exception);
 
             this.loggingBroker.LogError(ingestionTrackingServiceException);

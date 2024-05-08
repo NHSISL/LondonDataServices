@@ -81,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     message: "DataSetSpecification validation errors occurred, please try again.", innerException),
 
                 new DataSetSpecificationServiceException(
-                    message : "DataSetSpecification service error occurred, contact support.", innerException)
+                    message : "DataSetSpecification service error occurred, please contact support.", innerException)
             };
         }
 

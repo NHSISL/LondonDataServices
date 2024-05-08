@@ -7,14 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Services.Processings.CsvMappers;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 
@@ -24,8 +23,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
     {
         private readonly IDocumentProcessingService documentProcessingService;
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
-        private readonly ICsvMapperProcessingService csvMapperProcessingService;
         private readonly ILoggingBroker loggingBroker;
+        private readonly ICsvHelperBroker csvHelperBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly BlobContainers blobContainers;
@@ -33,16 +32,16 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         public ResolvedAddressOrchestrationService(
             IDocumentProcessingService documentProcessingService,
             IResolvedAddressProcessingService resolvedAddressProcessingService,
-            ICsvMapperProcessingService csvMapperProcessingService,
             ILoggingBroker loggingBroker,
+            ICsvHelperBroker csvHelperBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
             BlobContainers blobContainers)
         {
             this.documentProcessingService = documentProcessingService;
             this.resolvedAddressProcessingService = resolvedAddressProcessingService;
-            this.csvMapperProcessingService = csvMapperProcessingService;
             this.loggingBroker = loggingBroker;
+            this.csvHelperBroker = csvHelperBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
             this.blobContainers = blobContainers;
@@ -96,7 +95,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     }).ToList();
 
                 string resolvedAddressesCsv =
-                    await this.csvMapperProcessingService.MapObjectToCsvAsync(returnAddresses, false, null, true);
+                    await this.csvHelperBroker.MapObjectToCsvAsync(returnAddresses, false, null, true);
 
                 Guid batchReferenceId = identifierBroker.GetIdentifier();
                 string fileName = $"{batchReferenceId}.csv";

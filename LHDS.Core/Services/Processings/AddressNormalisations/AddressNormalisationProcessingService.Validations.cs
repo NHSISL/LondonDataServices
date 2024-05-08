@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Processings.AddressNormalisations
                 (Rule: IsInvalid(address), Parameter: "address"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"

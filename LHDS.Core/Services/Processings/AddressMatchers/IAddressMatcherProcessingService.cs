@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
     public interface IAddressMatcherProcessingService
     {
         string CleanAddress(string address);
-        string ExtractPostCode(string address);
+        string ExtractPostCode(string? address);
 
         ValueTask<HashSet<AddressMatch>> CalculateMatchingAddressComponents(
             IList<KeyValuePair<string, string>> addressComponents,

@@ -164,7 +164,7 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "ontologySettings__clientSecret"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Configuration value does not exist"

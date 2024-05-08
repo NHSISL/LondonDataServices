@@ -20,7 +20,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                     (Rule: IsInvalid(filename), Parameter: "filename"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"

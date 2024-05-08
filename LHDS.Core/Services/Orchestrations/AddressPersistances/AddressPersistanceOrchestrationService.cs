@@ -12,7 +12,6 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressMatchers;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressMatchers;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
@@ -188,10 +187,15 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             return resolvedAddresses;
         }
 
-        public static List<KeyValuePair<string, string>> GenerateKeyValuePairAddressFromJson(string jsonPostalAddress)
+        public static List<KeyValuePair<string, string>> GenerateKeyValuePairAddressFromJson(string? jsonPostalAddress)
         {
             var keyValuePairs = new List<KeyValuePair<string, string>>();
-            var items = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(jsonPostalAddress);
+            var items = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(jsonPostalAddress ?? "");
+
+            if (items == null || items.Count == 0)
+            {
+                return keyValuePairs;
+            }
 
             foreach (var item in items)
             {

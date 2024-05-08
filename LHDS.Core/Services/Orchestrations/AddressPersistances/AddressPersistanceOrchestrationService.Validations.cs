@@ -4,17 +4,44 @@
 
 using System.Collections.Generic;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
+using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 
 namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 {
     internal partial class AddressPersistanceOrchestrationService
     {
-        private static void ValidateAddressPersistanceOrchestration(List<Address> addressList, string fileName)
+        virtual internal void ValidateAddressPersistenceOrchestration(List<Address> addressList, string fileName)
         {
             Validate(
                 (Rule: IsInvalid(addressList), Parameter: "addressList"),
                 (Rule: IsInvalid(fileName), Parameter: "fileName"));
+        }
+
+        virtual internal void ValidatPostCodeMatch(string resolvedPostCode, string addressPostcode) =>
+            Validate((Rule: IsSame(resolvedPostCode, addressPostcode), Parameter: "postCode"));
+
+        virtual internal void ValidatePostCode(string postCode) =>
+            Validate((Rule: IsInvalid(postCode), Parameter: "postCode"));
+
+        virtual internal void ValidateJsonPostalAddress(string postCode) =>
+            Validate((Rule: IsInvalid(postCode), Parameter: "jsonPostalAddress"));
+
+        private static void ValidateResolvedAddress(ResolvedAddress resolvedAddress)
+        {
+            ValidateResolvedAddressIsNotNull(resolvedAddress);
+        }
+
+        private static void ValidateResolvedAddressIsNotNull(ResolvedAddress resolvedAddress)
+        {
+            if (resolvedAddress == null)
+            {
+                throw new InvalidArgumentAddressPersistenceOrchestrationException(
+                    message: "Invalid address persistence orchestration argument, " +
+                    "please correct the errors and try again.");
+            }
         }
 
         private static dynamic IsInvalid(List<Address> addressList) => new
@@ -29,12 +56,18 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             Message = "Text is required"
         };
 
+        private static dynamic IsSame(string resolvedPostCode, string addressPostcode) => new
+        {
+            Condition = resolvedPostCode != addressPostcode,
+            Message = "PostCodes need to match."
+        };
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidArgumentAddressPersistanceOrchestrationException =
-                new InvalidArgumentAddressPersistanceOrchestrationException(
+                new InvalidArgumentAddressPersistenceOrchestrationException(
                     message:
-                    "Invalid address persistance orchestration argument, please correct the errors and try again.");
+                    "Invalid address persistence orchestration argument, please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

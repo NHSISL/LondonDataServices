@@ -491,7 +491,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     message: "Mesh processing dependency validation occurred, please try again.",
                     innerException),
 
-                //new CsvHelperClientValidationException(innerException),
+                new CsvHelperClientValidationException(innerException),
             };
         }
 
@@ -551,8 +551,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     message: "Mesh processing service error occurred, contact support.",
                     innerException),
 
-                //new CsvHelperClientDependencyException(innerException),
-                //new CsvHelperClientServiceException(innerException)
+                new CsvHelperClientDependencyException(innerException),
+                new CsvHelperClientServiceException(innerException)
             };
         }
 

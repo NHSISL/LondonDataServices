@@ -159,7 +159,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             Message = "Id is required"
         };
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"

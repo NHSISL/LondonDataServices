@@ -57,14 +57,14 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 return cleanAddress;
             });
 
-        public string ExtractPostCode(string address) =>
+        public string ExtractPostCode(string? address) =>
             TryCatch(() =>
             {
                 ValidateAddress(address);
                 string pattern = @"\b([A-Z]{1,2}\d{1,2}[A-Z]?\s*\d[A-Z]{2})\b";
                 HashSet<string> uniqueMatches = new HashSet<string>();
 
-                foreach (Match match in Regex.Matches(address, pattern))
+                foreach (Match match in Regex.Matches(address ?? "", pattern))
                 {
                     uniqueMatches.Add(match.Value);
                 }

@@ -69,7 +69,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                 (Rule: IsInvalid(fileName), Parameter: "fileName"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"

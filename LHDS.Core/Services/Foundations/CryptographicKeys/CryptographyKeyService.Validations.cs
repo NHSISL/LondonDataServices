@@ -18,7 +18,7 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
                 (Rule: IsInvalid(cryptographyType), Parameter: nameof(cryptographyType)));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"

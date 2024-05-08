@@ -1,13 +1,11 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
-using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
-using LHDS.Core.Models.Processings.SubscriberCredentials;
 
 namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 {
@@ -20,13 +18,13 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                 (Rule: IsInvalid(fileName), Parameter: "fileName"));
         }
 
-        virtual internal void ValidatPostCodeMatch(string resolvedPostCode, string addressPostcode) =>
+        virtual internal void ValidatPostCodeMatch(string? resolvedPostCode, string? addressPostcode) =>
             Validate((Rule: IsSame(resolvedPostCode, addressPostcode), Parameter: "postCode"));
 
-        virtual internal void ValidatePostCode(string postCode) =>
+        virtual internal void ValidatePostCode(string? postCode) =>
             Validate((Rule: IsInvalid(postCode), Parameter: "postCode"));
 
-        virtual internal void ValidateJsonPostalAddress(string postCode) =>
+        virtual internal void ValidateJsonPostalAddress(string? postCode) =>
             Validate((Rule: IsInvalid(postCode), Parameter: "jsonPostalAddress"));
 
         private static void ValidateResolvedAddress(ResolvedAddress resolvedAddress)
@@ -50,13 +48,13 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             Message = "Address list is required"
         };
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
         };
 
-        private static dynamic IsSame(string resolvedPostCode, string addressPostcode) => new
+        private static dynamic IsSame(string? resolvedPostCode, string? addressPostcode) => new
         {
             Condition = resolvedPostCode != addressPostcode,
             Message = "PostCodes need to match."

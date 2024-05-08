@@ -26,7 +26,7 @@ namespace LHDS.Core.Services.Processings.Downloads
                 message: "Invalid argument(s). Please correct the errors and try again.",
                 validations: (Rule: IsInvalid(fileName), Parameter: nameof(Document.FileName)));
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"

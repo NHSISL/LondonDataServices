@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
         public void ValidateResourceURL(string resourceURL) =>
             Validate((Rule: IsInvalid(resourceURL), Parameter: "resourceURL"));
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"

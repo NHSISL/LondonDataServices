@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Documents.Exceptions
 {
     public class AlreadyExistsDocumentException : Xeption
     {
-        public AlreadyExistsDocumentException(string message, Exception innerException)
+        public AlreadyExistsDocumentException(string message, Exception? innerException)
             : base(message, innerException) 
         { }
     }

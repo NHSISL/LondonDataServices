@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddressParsers.Exceptions
 {
     public class ResolvedAddressParserValidationException : Xeption
     {
-        public ResolvedAddressParserValidationException(string message, Xeption innerException)
+        public ResolvedAddressParserValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

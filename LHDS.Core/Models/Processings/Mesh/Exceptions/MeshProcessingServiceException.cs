@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.Mesh.Exceptions
 {
     public class MeshProcessingServiceException : Xeption
     {
-        public MeshProcessingServiceException(string message, Xeption innerException)
+        public MeshProcessingServiceException(string message, Xeption? innerException)
           : base(message, innerException)
         { }
     }

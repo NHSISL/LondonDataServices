@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions
 {
     public class ResolvedAddressProcessingDependencyException : Xeption
     {
-        public ResolvedAddressProcessingDependencyException(string message, Xeption innerException) :
+        public ResolvedAddressProcessingDependencyException(string message, Xeption? innerException) :
             base(message, innerException)
         { }
     }

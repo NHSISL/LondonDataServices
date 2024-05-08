@@ -5,7 +5,7 @@ namespace LHDS.Core.Models.Foundations.Audits.Exceptions
 {
     public class AlreadyExistsAuditException : Xeption
     {
-        public AlreadyExistsAuditException(string message, Exception innerException)
+        public AlreadyExistsAuditException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

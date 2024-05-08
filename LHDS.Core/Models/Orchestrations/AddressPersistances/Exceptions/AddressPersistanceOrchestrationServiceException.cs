@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions
 {
     public class AddressPersistanceOrchestrationServiceException : Xeption
     {
-        public AddressPersistanceOrchestrationServiceException(string message, Exception innerException)
+        public AddressPersistanceOrchestrationServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

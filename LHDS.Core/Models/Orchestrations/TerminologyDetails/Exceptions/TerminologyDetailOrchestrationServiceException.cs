@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Orchestrations.TerminologyDetails.Exceptions
 {
     public class TerminologyDetailOrchestrationServiceException : Xeption
     {
-        public TerminologyDetailOrchestrationServiceException(string message, Exception innerException)
+        public TerminologyDetailOrchestrationServiceException(string message, Exception? innerException)
             : base(message, innerException) 
         { }
     }

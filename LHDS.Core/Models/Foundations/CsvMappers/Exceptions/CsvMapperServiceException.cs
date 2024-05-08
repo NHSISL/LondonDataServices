@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Foundations.CsvMappers.Exceptions
 {
     public class CsvMapperServiceException : Xeption
     {
-        public CsvMapperServiceException(string message, Xeption innerException)
+        public CsvMapperServiceException(string message, Xeption? innerException)
           : base(message, innerException)
         { }
     }

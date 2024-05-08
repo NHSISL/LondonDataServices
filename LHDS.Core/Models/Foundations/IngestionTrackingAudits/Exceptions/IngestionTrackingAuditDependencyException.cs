@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions
 {
     public class IngestionTrackingAuditDependencyException : Xeption
     {
-        public IngestionTrackingAuditDependencyException(string message, Xeption innerException) :
+        public IngestionTrackingAuditDependencyException(string message, Xeption? innerException) :
             base(message, innerException)
         { }
     }

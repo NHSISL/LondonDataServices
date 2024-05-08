@@ -5,7 +5,7 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions
 {
     public class ResolvedAddressServiceException : Xeption
     {
-        public ResolvedAddressServiceException(string message, Exception innerException)
+        public ResolvedAddressServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

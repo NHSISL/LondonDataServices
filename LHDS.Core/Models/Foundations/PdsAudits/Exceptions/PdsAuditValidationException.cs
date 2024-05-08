@@ -4,7 +4,7 @@ namespace LHDS.Core.Models.Foundations.PdsAudits.Exceptions
 {
     public class PdsAuditValidationException : Xeption
     {
-        public PdsAuditValidationException(string message, Xeption innerException)
+        public PdsAuditValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

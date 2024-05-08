@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions
 {
     public class ResolvedAddressProcessingValidationException : Xeption
     {
-        public ResolvedAddressProcessingValidationException(string message, Xeption innerException)
+        public ResolvedAddressProcessingValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

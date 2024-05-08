@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions
 {
-    public class AddressPersistanceOrchestrationDependencyException : Xeption
+    public class AddressPersistenceOrchestrationDependencyException : Xeption
     {
-        public AddressPersistanceOrchestrationDependencyException(string message, Xeption innerException)
+        public AddressPersistenceOrchestrationDependencyException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

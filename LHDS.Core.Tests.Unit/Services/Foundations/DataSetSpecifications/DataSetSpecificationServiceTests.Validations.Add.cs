@@ -33,8 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 this.dataSetSpecificationService.AddDataSetSpecificationAsync(nullDataSetSpecification);
 
             DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
-                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(() =>
-                    addDataSetSpecificationTask.AsTask());
+                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(addDataSetSpecificationTask.AsTask);
 
             // then
             actualDataSetSpecificationValidationException.Should()
@@ -112,8 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 this.dataSetSpecificationService.AddDataSetSpecificationAsync(invalidDataSetSpecification);
 
             DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
-                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(() =>
-                    addDataSetSpecificationTask.AsTask());
+                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(addDataSetSpecificationTask.AsTask);
 
             // then
             actualDataSetSpecificationValidationException.Should()
@@ -182,8 +180,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 this.dataSetSpecificationService.AddDataSetSpecificationAsync(invalidDataSetSpecification);
 
             DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
-                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(() =>
-                    addDataSetSpecificationTask.AsTask());
+                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(addDataSetSpecificationTask.AsTask);
 
             // then
             actualDataSetSpecificationValidationException.Should()
@@ -241,8 +238,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 this.dataSetSpecificationService.AddDataSetSpecificationAsync(invalidDataSetSpecification);
 
             DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
-                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(() =>
-                    addDataSetSpecificationTask.AsTask());
+                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(addDataSetSpecificationTask.AsTask);
 
             // then
             actualDataSetSpecificationValidationException.Should()
@@ -297,8 +293,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 this.dataSetSpecificationService.AddDataSetSpecificationAsync(invalidDataSetSpecification);
 
             DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
-                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(() =>
-                    addDataSetSpecificationTask.AsTask());
+                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(addDataSetSpecificationTask.AsTask);
 
             // then
             actualDataSetSpecificationValidationException.Should()
@@ -358,8 +353,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 this.dataSetSpecificationService.AddDataSetSpecificationAsync(invalidDataSetSpecification);
 
             DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
-                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(() =>
-                    addDataSetSpecificationTask.AsTask());
+                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(addDataSetSpecificationTask.AsTask);
 
             // then
             actualDataSetSpecificationValidationException.Should()

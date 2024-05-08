@@ -100,9 +100,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyPolls
 
             // then
             deletedTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getTerminologyPollbyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getTerminologyPollbyIdTask.AsTask);
         }
     }
 }

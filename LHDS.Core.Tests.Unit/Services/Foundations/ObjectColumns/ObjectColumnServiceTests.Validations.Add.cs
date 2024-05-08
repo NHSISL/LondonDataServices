@@ -33,8 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 this.objectColumnService.AddObjectColumnAsync(nullObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
-                await Assert.ThrowsAsync<ObjectColumnValidationException>(() =>
-                    addObjectColumnTask.AsTask());
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(addObjectColumnTask.AsTask);
 
             // then
             actualObjectColumnValidationException.Should()
@@ -119,8 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 this.objectColumnService.AddObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
-                await Assert.ThrowsAsync<ObjectColumnValidationException>(() =>
-                    addObjectColumnTask.AsTask());
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(addObjectColumnTask.AsTask);
 
             // then
             actualObjectColumnValidationException.Should()
@@ -234,8 +232,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 this.objectColumnService.AddObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
-                await Assert.ThrowsAsync<ObjectColumnValidationException>(() =>
-                    addObjectColumnTask.AsTask());
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(addObjectColumnTask.AsTask);
 
             // then
             actualObjectColumnValidationException.Should()
@@ -293,8 +290,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 this.objectColumnService.AddObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
-                await Assert.ThrowsAsync<ObjectColumnValidationException>(() =>
-                    addObjectColumnTask.AsTask());
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(addObjectColumnTask.AsTask);
 
             // then
             actualObjectColumnValidationException.Should()
@@ -349,8 +345,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 this.objectColumnService.AddObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
-                await Assert.ThrowsAsync<ObjectColumnValidationException>(() =>
-                    addObjectColumnTask.AsTask());
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(addObjectColumnTask.AsTask);
 
             // then
             actualObjectColumnValidationException.Should()
@@ -410,8 +405,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 this.objectColumnService.AddObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
-                await Assert.ThrowsAsync<ObjectColumnValidationException>(() =>
-                    addObjectColumnTask.AsTask());
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(addObjectColumnTask.AsTask);
 
             // then
             actualObjectColumnValidationException.Should()

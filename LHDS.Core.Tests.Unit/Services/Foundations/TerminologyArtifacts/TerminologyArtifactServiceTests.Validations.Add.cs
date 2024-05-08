@@ -33,8 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 this.terminologyArtifactService.AddTerminologyArtifactAsync(nullTerminologyArtifact);
 
             TerminologyArtifactValidationException actualTerminologyArtifactValidationException =
-                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(() =>
-                    addTerminologyArtifactTask.AsTask());
+                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(addTerminologyArtifactTask.AsTask);
 
             // then
             actualTerminologyArtifactValidationException.Should()
@@ -105,8 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 this.terminologyArtifactService.AddTerminologyArtifactAsync(invalidTerminologyArtifact);
 
             TerminologyArtifactValidationException actualTerminologyArtifactValidationException =
-                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(() =>
-                    addTerminologyArtifactTask.AsTask());
+                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(addTerminologyArtifactTask.AsTask);
 
             // then
             actualTerminologyArtifactValidationException.Should()
@@ -164,8 +162,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 this.terminologyArtifactService.AddTerminologyArtifactAsync(invalidTerminologyArtifact);
 
             TerminologyArtifactValidationException actualTerminologyArtifactValidationException =
-                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(() =>
-                    addTerminologyArtifactTask.AsTask());
+                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(addTerminologyArtifactTask.AsTask);
 
             // then
             actualTerminologyArtifactValidationException.Should()
@@ -220,8 +217,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 this.terminologyArtifactService.AddTerminologyArtifactAsync(invalidTerminologyArtifact);
 
             TerminologyArtifactValidationException actualTerminologyArtifactValidationException =
-                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(() =>
-                    addTerminologyArtifactTask.AsTask());
+                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(addTerminologyArtifactTask.AsTask);
 
             // then
             actualTerminologyArtifactValidationException.Should()
@@ -281,8 +277,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 this.terminologyArtifactService.AddTerminologyArtifactAsync(invalidTerminologyArtifact);
 
             TerminologyArtifactValidationException actualTerminologyArtifactValidationException =
-                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(() =>
-                    addTerminologyArtifactTask.AsTask());
+                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(addTerminologyArtifactTask.AsTask);
 
             // then
             actualTerminologyArtifactValidationException.Should()

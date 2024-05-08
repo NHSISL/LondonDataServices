@@ -180,8 +180,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 this.subscriberAgreementService.ModifySubscriberAgreementAsync(invalidSubscriberAgreement);
 
             SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
-                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(() =>
-                    addSubscriberAgreementTask.AsTask());
+                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(addSubscriberAgreementTask.AsTask);
 
             // then
             actualSubscriberAgreementValidationException.Should()

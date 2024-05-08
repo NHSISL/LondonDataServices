@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             TerminologyArtifactProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<TerminologyArtifactProcessingDependencyValidationException>(
-                    async () => await getUndownloadedTask.AsTask());
+                    getUndownloadedTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingDependencyValidationException);
@@ -70,12 +70,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     .Throws(dependencyException);
 
             // when
-            ValueTask<TerminologyArtifact?> getUndownloadedTask =
+            ValueTask<TerminologyArtifact> getUndownloadedTask =
                 this.terminologyArtifactProcessingService.GetNonDownloadedArtifactAsync();
 
             TerminologyArtifactProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<TerminologyArtifactProcessingDependencyException>(
-                    async () => await getUndownloadedTask.AsTask());
+                    getUndownloadedTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingDependencyException);
@@ -119,7 +119,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             TerminologyArtifactProcessingServiceException actualException =
                 await Assert.ThrowsAsync<TerminologyArtifactProcessingServiceException>(
-                    async () => await getUndownloadedTask.AsTask());
+                    getUndownloadedTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingServiceException);

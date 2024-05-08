@@ -37,6 +37,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     service.GetNonDownloadedArtifactAsync())
                         .ReturnsAsync(terminologyArtifact);
 
+                string relativeUrl = terminologyArtifact.FullUrl;
+
+                this.ontologyProcessingServiceMock.Setup(service =>
+                    service.RetrieveArtifactDetailsAsync(relativeUrl))
+                        .ThrowsAsync(dependencyValidationException);
+
                 var terminologyDetailOrchestrationDependencyValidationException =
                     new TerminologyDetailOrchestrationDependencyValidationException(
                         message: "Terminology detail orchestration dependency validation error occurred, " +
@@ -48,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to normalise address for {exceptions.Count} resolved addresses",
+                    $"Unable to retrieve artifact detail for {exceptions.Count} artifacts",
                     exceptions);
 
             var failedTerminologyDetailOrchestrationServiceException =
@@ -63,47 +69,44 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     innerException: failedTerminologyDetailOrchestrationServiceException);
 
             // When
-            ValueTask<List<ResolvedAddress>> processResolvedAddressTask =
-                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(randomData, randomFilename);
+            ValueTask retrieveArtifactDetailsTask =
+                this.terminologyDetailOrchestrationService.RetrieveArtifactDetailsAsync();
 
-            AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
-                await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
-                    await processResolvedAddressTask);
+            TerminologyDetailOrchestrationServiceException actualTerminologyDetailOrchestrationServiceException =
+                await Assert.ThrowsAsync<TerminologyDetailOrchestrationServiceException>(async () =>
+                    await retrieveArtifactDetailsTask);
 
             // Then
-            actualAddressExtractionOrchestrationServiceException.Should()
-                .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
+            actualTerminologyDetailOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedTerminologyDetailOrchestrationServiceException);
 
-            this.csvMapperServiceMock.Verify(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
+            foreach (TerminologyArtifact terminologyArtifact in undownloadedTerminologyArtifacts)
+            {
+                this.terminologyArtifactProcessingServiceMock.Verify(service =>
+                    service.GetNonDownloadedArtifactAsync(),
                         Times.Once);
 
-            foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
-            {
-                string addressString = resolvedAddress.UnstructuredPostalAddress;
+                string relativeUrl = terminologyArtifact.FullUrl;
 
-                this.addressNormalisationServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(addressString),
+                this.ontologyProcessingServiceMock.Verify(service =>
+                    service.RetrieveArtifactDetailsAsync(relativeUrl),
                         Times.Once);
             }
 
-            var addressExtractionOrchestrationDependencyValidationLoggingException =
-                new AddressExtractionOrchestrationDependencyValidationException(
-                    message: "Address extraction orchestration dependency validation error occurred, " +
-                    "fix the errors and try again.",
+            var terminologyDetailOrchestrationDependencyValidationLoggingException =
+                new TerminologyDetailOrchestrationDependencyValidationException(
+                    message: "Terminology artifact orchestration dependency validation error occurred, " +
+                        "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    addressExtractionOrchestrationDependencyValidationLoggingException))),
-                        Times.Exactly(randomResolvedAddresses.Count));
+                    terminologyDetailOrchestrationDependencyValidationLoggingException))),
+                        Times.Exactly(undownloadedTerminologyArtifacts.Count));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    actualAddressExtractionOrchestrationServiceException))),
+                    actualTerminologyDetailOrchestrationServiceException))),
                         Times.Once);
 
             this.csvMapperServiceMock.VerifyNoOtherCalls();
@@ -318,8 +321,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             // given
             var expectedDependencyException =
                 new TerminologyDetailOrchestrationDependencyValidationException(
-                    message:
-                        "Terminology detail orchestration dependency validation error occurred, " +
+                    message:"Terminology detail orchestration dependency validation error occurred, " +
                         "fix the errors and try again.",
                     dependancyValidationException.InnerException as Xeption);
 
@@ -328,12 +330,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                   .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask retrireveTask =
+            ValueTask retrieveTask =
                 this.terminologyDetailOrchestrationService.RetrieveArtifactDetailsAsync();
 
             TerminologyDetailOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<TerminologyDetailOrchestrationDependencyValidationException>(
-                    retrireveTask.AsTask);
+                    retrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);

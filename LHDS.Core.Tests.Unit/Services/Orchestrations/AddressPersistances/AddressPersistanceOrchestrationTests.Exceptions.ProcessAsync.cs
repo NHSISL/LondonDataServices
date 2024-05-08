@@ -7,9 +7,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
+using LHDS.Core.Services.Processings.AddressMatchers;
+using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -50,8 +53,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var failedAddressPersistanceOrchestrationServiceException =
                  new FailedAddressPersistenceOrchestrationServiceException(
-                     message: "Failed address persistence aggregate processing service error occurred, " +
-                     "contact support.",
+                     message: "Failed address persistence aggregate orchestration service error occurred, " +
+                     "please contact support.",
                      innerException: aggregateException);
 
             var expectedAddressPersistanceOrchestrationServiceException =
@@ -84,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      addressPersistanceDependencyValidationException))),
-                         Times.Exactly(2));
+                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
@@ -127,8 +130,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var failedAddressPersistanceOrchestrationServiceException =
                  new FailedAddressPersistenceOrchestrationServiceException(
-                     message: "Failed address persistence aggregate processing service error occurred, " +
-                     "contact support.",
+                     message: "Failed address persistence aggregate orchestration service error occurred, " +
+                     "please contact support.",
                      innerException: aggregateException);
 
             var expectedAddressPersistanceOrchestrationServiceException =
@@ -161,7 +164,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      addressPersistanceDependencyException))),
-                         Times.Exactly(2));
+                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
@@ -181,17 +184,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             var serviceException = new Exception();
             List<Exception> exceptions = new List<Exception>();
 
-            var innerfailedAddressPersistanceOrchestrationServiceException =
+            var innerfailedAddressPersistenceOrchestrationServiceException =
                 new FailedAddressPersistenceOrchestrationServiceException(
-                    message: "Failed address persistence aggregate processing service error occurred, " +
-                        "contact support.",
+                    message: "Failed address persistence orchestration service error occurred, " +
+                        "please contact support.",
                     innerException: serviceException);
 
             var innerAddressPersistenceOrchestrationServiceException =
                 new AddressPersistenceOrchestrationServiceException(
                     message: "Address persistence orchestration service error occurred, contact support.",
-                    innerException: innerfailedAddressPersistanceOrchestrationServiceException);
-
+                    innerException: innerfailedAddressPersistenceOrchestrationServiceException);
 
             foreach (Address address in randomAddresses)
             {
@@ -205,15 +207,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             var aggregateException =
                 new AggregateException(
                     $"Unable to add or modify {exceptions.Count} address(es)",
-                    exceptions);
+                        exceptions);
 
             var failedAddressPersistanceOrchestrationServiceException =
                  new FailedAddressPersistenceOrchestrationServiceException(
-                     message: "Failed address persistence aggregate processing service error occurred, " +
-                     "contact support.",
+                     message: "Failed address persistence aggregate orchestration service error occurred, " +
+                        "please contact support.",
                      innerException: aggregateException);
 
-            var expectedAddressPersistanceOrchestrationServiceException =
+            var expectedAddressPersistenceOrchestrationServiceException =
                 new AddressPersistenceOrchestrationServiceException(
                     message: "Address persistence orchestration service error occurred, contact support.",
                     innerException: failedAddressPersistanceOrchestrationServiceException);
@@ -223,16 +225,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
 
             AddressPersistenceOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(
-                    processTask.AsTask);
+                await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(async() =>
+                    await processTask);
 
             // then
             actualException.Should()
-                 .BeEquivalentTo(expectedAddressPersistanceOrchestrationServiceException);
+                 .BeEquivalentTo(expectedAddressPersistenceOrchestrationServiceException);
 
-            this.addressProcessingServiceMock.Verify(service =>
-             service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
-                  Times.Exactly(randomAddresses.Count));
+            foreach (Address address in randomAddresses)
+            {
+                 this.addressProcessingServiceMock.Verify(service =>
+                    service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
+                        Times.Exactly(randomAddresses.Count));
+            }
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
@@ -241,7 +246,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
-                   expectedAddressPersistanceOrchestrationServiceException))),
+                   expectedAddressPersistenceOrchestrationServiceException))),
                        Times.Once);
 
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
@@ -254,6 +259,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             // given
             var mock = new Mock<AddressPersistanceOrchestrationService>(
                 addressProcessingServiceMock.Object,
+                addressMatcherProcessingServiceMock.Object,
+                resolvedAddressProcessingServiceMock.Object,
+                auditBrokerMock.Object,
                 loggingBrokerMock.Object,
                 dateTimeBrokerMock.Object)
             { CallBase = true };
@@ -271,7 +279,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var failedAddressPersistanceOrchestrationServiceException =
                 new FailedAddressPersistenceOrchestrationServiceException(
-                    message: "Failed address persistence orchestration service error occurred, contact support.",
+                    message: "Failed address persistence orchestration service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedAddressPersistanceOrchestrationServiceException =

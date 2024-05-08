@@ -10,7 +10,6 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
-using LHDS.Core.Brokers.CsvMappers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -20,7 +19,6 @@ using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
-using LHDS.Core.Services.Foundations.CsvMappers;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
@@ -94,7 +92,6 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddServices(IServiceCollection services)
         {
-            services.AddTransient<ICsvMapperService, CsvMapperService>();
             services.AddTransient<IAddressNormalisationService, AddressNormalisationService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IResolvedAddressService, ResolvedAddressService>();

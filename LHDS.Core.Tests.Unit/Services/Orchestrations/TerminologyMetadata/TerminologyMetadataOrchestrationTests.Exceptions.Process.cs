@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             // when
             ValueTask retrireveTask =
-                this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync();
+                this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(resourceTypes);
 
             TerminologyMetadataOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<TerminologyMetadataOrchestrationServiceException>(
@@ -135,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             // when
             ValueTask retrireveTask =
-                this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync();
+                this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(resourceTypes);
 
             TerminologyMetadataOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<TerminologyMetadataOrchestrationServiceException>(retrireveTask.AsTask);
@@ -211,7 +211,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             // when
             ValueTask retrireveTask =
-                this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync();
+                this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(resourceTypes);
 
             TerminologyMetadataOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<TerminologyMetadataOrchestrationServiceException>(retrireveTask.AsTask);

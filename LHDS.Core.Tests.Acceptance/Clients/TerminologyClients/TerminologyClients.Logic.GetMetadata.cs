@@ -13,9 +13,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
         public async Task ShouldRetrieveMetadataAsync()
         {
             //Given
+            string[] resourceTypes = new string[] { "CodeSystem", "ValueSet", "ConceptMap" };
 
             //When
-            await terminologyClient.RetrieveArtifactMetadataAsync();
+            await terminologyClient.RetrieveArtifactMetadataAsync(resourceTypes);
 
             //Then
         }

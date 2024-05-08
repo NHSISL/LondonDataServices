@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier())
                     .Returns(batchReference);
 
-            this.csvMapperProcessingServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapObjectToCsvAsync(
                     It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()))
                         .ReturnsAsync(ouputCsv);
@@ -112,7 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier(),
                     Times.Once);
 
-            this.csvMapperProcessingServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapObjectToCsvAsync(
                     It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()),
                     Times.Once);
@@ -145,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                         Times.Once);
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -183,7 +183,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier())
                     .Returns(batchReference);
 
-            this.csvMapperProcessingServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapObjectToCsvAsync(
                     It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()))
                         .ReturnsAsync(ouputCsv);
@@ -243,7 +243,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier(),
                     Times.Once);
 
-            this.csvMapperProcessingServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapObjectToCsvAsync(
                     It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()),
                         Times.Once);
@@ -277,7 +277,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                         Times.Once);
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -313,7 +313,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier())
                     .Returns(batchReference);
 
-            this.csvMapperProcessingServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapObjectToCsvAsync(
                     It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()))
                         .ReturnsAsync(ouputCsv);
@@ -378,7 +378,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier(),
                     Times.Once);
 
-            this.csvMapperProcessingServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapObjectToCsvAsync(
                     It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()),
                         Times.Once);
@@ -406,7 +406,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                         Times.Once);
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -452,7 +452,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
@@ -494,7 +494,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
@@ -542,7 +542,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }

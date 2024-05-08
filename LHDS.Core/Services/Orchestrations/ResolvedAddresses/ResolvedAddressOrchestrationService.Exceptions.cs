@@ -4,7 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
+using CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
@@ -45,6 +45,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
                 throw CreateAndLogDependencyValidationException(resolvedAddressProcessingDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (DocumentProcessingDependencyException documentProcessingDependencyException)
             {
                 throw CreateAndLogDependencyException(documentProcessingDependencyException);
@@ -60,6 +64,14 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             catch (ResolvedAddressProcessingServiceException resolvedAddressProcessingServiceException)
             {
                 throw CreateAndLogDependencyException(resolvedAddressProcessingServiceException);
+            }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
             }
             catch (Exception exception)
             {
@@ -101,6 +113,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
                 throw CreateAndLogDependencyValidationException(resolvedAddressProcessingDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (DocumentProcessingDependencyException documentProcessingDependencyException)
             {
                 throw CreateAndLogDependencyException(documentProcessingDependencyException);
@@ -116,6 +132,14 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             catch (ResolvedAddressProcessingServiceException resolvedAddressProcessingServiceException)
             {
                 throw CreateAndLogDependencyException(resolvedAddressProcessingServiceException);
+            }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
             }
             catch (AggregateException aggregateException)
             {

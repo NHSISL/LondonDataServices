@@ -117,9 +117,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     actualAddressExtractionOrchestrationServiceException))),
                         Times.Once);
 
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -315,9 +318,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     expectedAddressExtractionOrchestrationServiceException))),
                         Times.Once);
 
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -371,10 +377,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedDependencyException))),
                        Times.Once);
 
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -428,10 +436,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedDependencyException))),
                        Times.Once);
 
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -488,10 +498,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedAddressExtractionOrchestrationServiceException))),
                        Times.Once);
 
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

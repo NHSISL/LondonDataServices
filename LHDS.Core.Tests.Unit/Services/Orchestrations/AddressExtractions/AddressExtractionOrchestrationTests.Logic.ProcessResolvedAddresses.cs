@@ -106,10 +106,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                         Times.Exactly(randomResolvedAddresses.Count));
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

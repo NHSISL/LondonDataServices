@@ -94,10 +94,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             return new TheoryData<Xeption>
             {
                 new OptOutDependencyException(
-                    message: "OptOut dependency error occurred, contact support.",
+                    message: "OptOut dependency error occurred, please contact support.",
                     innerException),
 
-                new OptOutServiceException(message: "OptOut service error occurred, contact support.", innerException)
+                new OptOutServiceException(message: "OptOut service error occurred, please contact support.", innerException)
             };
         }
 

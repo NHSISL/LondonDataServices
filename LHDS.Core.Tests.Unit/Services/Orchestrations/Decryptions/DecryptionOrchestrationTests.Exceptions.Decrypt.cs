@@ -120,12 +120,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             var failedDecryptionOrchestrationServiceException =
                 new FailedDecryptionOrchestrationServiceException(
-                    message: "Failed Decryption orchestration service occurred, please contact support",
+                    message: "Failed Decryption orchestration service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedDecryptionOrchestrationServiceException =
                 new DecryptionOrchestrationServiceException(
-                    message: "Decryption orchestration service error occurred, contact support.",
+                    message: "Decryption orchestration service error occurred, please contact support.",
                     innerException: failedDecryptionOrchestrationServiceException);
 
             this.ingestionTrackingServiceMock.Setup(service =>

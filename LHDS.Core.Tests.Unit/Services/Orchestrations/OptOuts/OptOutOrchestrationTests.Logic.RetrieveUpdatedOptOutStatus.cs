@@ -92,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     differentIdentifiers,
                     this.optOutConfiguration.OptOutFileRequireTrailingComma);
 
-                csvMapperProcessingServiceMock.Setup(processings =>
+                csvHelperBrokerMock.Setup(processings =>
                     processings.MapObjectToCsvAsync<OptOutIdentifier>(
                         It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
                         withHeader,
@@ -149,7 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     differentIdentifiers,
                     optOutConfiguration.OptOutFileRequireTrailingComma);
 
-                csvMapperProcessingServiceMock.Verify(processings =>
+                csvHelperBrokerMock.Verify(processings =>
                     processings.MapObjectToCsvAsync<OptOutIdentifier>(
                         It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
                         withHeader,
@@ -172,10 +172,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
             }
 
-            meshProcessingServiceMock.VerifyNoOtherCalls();
-            csvMapperProcessingServiceMock.VerifyNoOtherCalls();
-            optOutProcessingServiceMock.VerifyNoOtherCalls();
-            documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -243,7 +246,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         differentIdentifiers,
                         this.optOutConfiguration.OptOutFileRequireTrailingComma);
 
-                    this.csvMapperProcessingServiceMock.Setup(processings =>
+                    this.csvHelperBrokerMock.Setup(processings =>
                         processings.MapObjectToCsvAsync<OptOutIdentifier>(
                             It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
                             withHeader,
@@ -297,7 +300,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                             It.Is(SameStringListAs(randomConsentedIdentifiers))),
                                 Times.Exactly(outputMessageIds.Count));
 
-                    csvMapperProcessingServiceMock.Verify(processings =>
+                    csvHelperBrokerMock.Verify(processings =>
                         processings.MapObjectToCsvAsync<OptOutIdentifier>(
                             It.IsAny<List<OptOutIdentifier>>(),
                             withHeader,
@@ -310,10 +313,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                             Times.Never);
                 }
 
-                meshProcessingServiceMock.VerifyNoOtherCalls();
-                csvMapperProcessingServiceMock.VerifyNoOtherCalls();
-                optOutProcessingServiceMock.VerifyNoOtherCalls();
-                documentProcessingServiceMock.VerifyNoOtherCalls();
+                this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+                this.csvHelperBrokerMock.VerifyNoOtherCalls();
+                this.meshProcessingServiceMock.VerifyNoOtherCalls();
+                this.documentProcessingServiceMock.VerifyNoOtherCalls();
+                this.loggingBrokerMock.VerifyNoOtherCalls();
+                this.identifierBrokerMock.VerifyNoOtherCalls();
+                this.dateTimeBrokerMock.VerifyNoOtherCalls();
             }
             catch (System.Exception ex)
             {
@@ -383,10 +389,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
             }
 
-            meshProcessingServiceMock.VerifyNoOtherCalls();
-            csvMapperProcessingServiceMock.VerifyNoOtherCalls();
-            optOutProcessingServiceMock.VerifyNoOtherCalls();
-            documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

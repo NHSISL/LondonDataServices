@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             var expectedSubscriberCredentialProcessingServiceException =
                 new SubscriberCredentialProcessingServiceException(
-                    message: "Subscriber credential processing service error occurred, contact support.",
+                    message: "Subscriber credential processing service error occurred, please contact support.",
                     innerException: failedSubscriberCredentialProcessingServiceException);
 
             // when
@@ -154,7 +154,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             var expectedSubscriberCredentialProcessingServiceException =
                 new SubscriberCredentialProcessingServiceException(
-                    message: "Subscriber credential processing service error occurred, contact support.",
+                    message: "Subscriber credential processing service error occurred, please contact support.",
                     innerException: failedSubscriberCredentialProcessingServiceException);
 
             // when
@@ -215,12 +215,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             var innerfailedSubscriberCredentialProcessingServiceException =
                 new FailedSubscriberCredentialProcessingServiceException(
-                    message: "Failed subscriber credential processing service error occurred, contact support.",
+                    message: "Failed subscriber credential processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var innerSubscriberCredentialProcessingServiceException =
                 new SubscriberCredentialProcessingServiceException(
-                    message: "Subscriber credential processing service error occurred, contact support.",
+                    message: "Subscriber credential processing service error occurred, please contact support.",
                     innerException: innerfailedSubscriberCredentialProcessingServiceException);
 
             foreach (var keyType in keyTypes)
@@ -245,7 +245,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             var expectedSubscriberCredentialProcessingServiceException =
                 new SubscriberCredentialProcessingServiceException(
-                    message: "Subscriber credential processing service error occurred, contact support.",
+                    message: "Subscriber credential processing service error occurred, please contact support.",
                     innerException: failedSubscriberCredentialProcessingServiceException);
 
             // when

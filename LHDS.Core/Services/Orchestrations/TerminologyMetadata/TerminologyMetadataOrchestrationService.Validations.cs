@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using LHDS.Core.Models.Orchestrations.TerminologyMetadatas.Exceptions;
 
@@ -8,6 +8,9 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
 {
     public partial class TerminologyMetadataOrchestrationService
     {
+        public void ValidateResourceTypes(string[] resourceTypes) =>
+            Validate((Rule: IsInvalid(resourceTypes), Parameter: "resourceTypes"));
+
         public void ValidateResourceType(string resourceType) =>
             Validate((Rule: IsInvalid(resourceType), Parameter: "resourceType"));
 
@@ -17,6 +20,12 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
         private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(string[] text) => new
+        {
+            Condition = text == null || text.Length == 0,
             Message = "Text is required"
         };
 

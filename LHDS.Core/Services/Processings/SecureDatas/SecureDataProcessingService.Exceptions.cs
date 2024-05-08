@@ -70,7 +70,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 var failedSubscriberCredentialProcessingServiceException =
                     new FailedSubscriberCredentialProcessingServiceException(
-                        message: "Failed subscriber credential processing service error occurred, contact support.",
+                        message: "Failed subscriber credential processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedSubscriberCredentialProcessingServiceException);
@@ -126,7 +126,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             {
                 var failedSubscriberCredentialProcessingServiceException =
                     new FailedSubscriberCredentialProcessingServiceException(
-                        message: "Failed subscriber credential processing service error occurred, contact support.",
+                        message: "Failed subscriber credential processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedSubscriberCredentialProcessingServiceException);
@@ -173,7 +173,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
         {
             var subscriberCredentialProcessingServiceException = new
                 SubscriberCredentialProcessingServiceException(
-                    message: "Subscriber credential processing service error occurred, contact support.",
+                    message: "Subscriber credential processing service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(subscriberCredentialProcessingServiceException);

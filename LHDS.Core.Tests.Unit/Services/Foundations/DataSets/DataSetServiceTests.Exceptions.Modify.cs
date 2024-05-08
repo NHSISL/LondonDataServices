@@ -26,12 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             var failedDataSetStorageException =
                 new FailedDataSetStorageException(
-                    message: "Failed dataSet storage error occurred, contact support.",
+                    message: "Failed dataSet storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedDataSetDependencyException =
                 new DataSetDependencyException(
-                    message: "DataSet dependency error occurred, contact support.",
+                    message: "DataSet dependency error occurred, please contact support.",
                     innerException: failedDataSetStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -139,12 +139,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             var failedDataSetStorageException =
                 new FailedDataSetStorageException(
-                    message: "Failed dataSet storage error occurred, contact support.",
+                    message: "Failed dataSet storage error occurred, please contact support.",
                     innerException: databaseUpdateException);
 
             var expectedDataSetDependencyException =
                 new DataSetDependencyException(
-                    message: "DataSet dependency error occurred, contact support.",
+                    message: "DataSet dependency error occurred, please contact support.",
                     innerException: failedDataSetStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -249,12 +249,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             var failedDataSetServiceException =
                 new FailedDataSetServiceException(
-                    message: "Failed dataSet service occurred, please contact support",
+                    message: "Failed dataSet service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedDataSetServiceException =
                 new DataSetServiceException(
-                    message: "DataSet service error occurred, contact support.",
+                    message: "DataSet service error occurred, please contact support.",
                     innerException: failedDataSetServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>

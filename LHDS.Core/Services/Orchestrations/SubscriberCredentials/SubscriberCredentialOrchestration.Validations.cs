@@ -40,7 +40,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         private void ValidateSubscriberCredentialId(Guid subscriberCredentialId)
         {
             Validate<InvalidArgumentSubscriberCredentialOrchestrationException>(
-                 message: "Invalid argument subscriber credential orchestration error occurred, contact support.",
+                 message: "Invalid argument subscriber credential orchestration error occurred, please contact support.",
                  (Rule: IsInvalid(subscriberCredentialId), Parameter: "subscriberCredentialId"));
         }
 

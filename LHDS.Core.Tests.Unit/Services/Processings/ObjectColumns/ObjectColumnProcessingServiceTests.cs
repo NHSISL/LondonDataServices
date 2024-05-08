@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                     message: "ObjectColumn validation errors occurred, please try again.", innerException),
 
                 new ObjectColumnServiceException(
-                    message : "ObjectColumn service error occurred, contact support.", innerException)
+                    message : "ObjectColumn service error occurred, please contact support.", innerException)
             };
         }
 

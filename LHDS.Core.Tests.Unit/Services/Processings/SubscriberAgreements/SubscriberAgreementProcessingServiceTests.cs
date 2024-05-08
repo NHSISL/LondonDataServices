@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     message: "SubscriberAgreement validation errors occurred, please try again.", innerException),
 
                 new SubscriberAgreementServiceException(
-                    message : "SubscriberAgreement service error occurred, contact support.", innerException)
+                    message : "SubscriberAgreement service error occurred, please contact support.", innerException)
             };
         }
 

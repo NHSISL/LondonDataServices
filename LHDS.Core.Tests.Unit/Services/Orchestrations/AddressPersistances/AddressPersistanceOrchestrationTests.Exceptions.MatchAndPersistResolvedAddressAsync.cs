@@ -118,12 +118,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var failedAddressPersistenceOrchestrationServiceException =
                 new FailedAddressPersistenceOrchestrationServiceException(
-                    message: "Failed address persistence orchestration service error occurred, contact support.",
+                    message: "Failed address persistence orchestration service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedAddressPersistenceOrchestrationServiceException =
                 new AddressPersistenceOrchestrationServiceException(
-                    message: "Address persistence orchestration service error occurred, contact support.",
+                    message: "Address persistence orchestration service error occurred, please contact support.",
                     innerException: failedAddressPersistenceOrchestrationServiceException);
 
             this.addressMatcherProcessingServiceMock.Setup(processing =>

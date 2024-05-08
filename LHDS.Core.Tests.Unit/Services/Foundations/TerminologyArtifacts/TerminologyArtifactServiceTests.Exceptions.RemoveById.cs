@@ -25,12 +25,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             var failedTerminologyArtifactStorageException =
                 new FailedTerminologyArtifactStorageException(
-                    message: "Failed terminologyArtifact storage error occurred, contact support.",
+                    message: "Failed terminologyArtifact storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedTerminologyArtifactDependencyException =
                 new TerminologyArtifactDependencyException(
-                    message: "TerminologyArtifact dependency error occurred, contact support.",
+                    message: "TerminologyArtifact dependency error occurred, please contact support.",
                     innerException: failedTerminologyArtifactStorageException);
 
             this.storageBrokerMock.Setup(broker =>
@@ -133,12 +133,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             var failedTerminologyArtifactStorageException =
                 new FailedTerminologyArtifactStorageException(
-                    message: "Failed terminologyArtifact storage error occurred, contact support.",
+                    message: "Failed terminologyArtifact storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedTerminologyArtifactDependencyException =
                 new TerminologyArtifactDependencyException(
-                    message: "TerminologyArtifact dependency error occurred, contact support.",
+                    message: "TerminologyArtifact dependency error occurred, please contact support.",
                     innerException: failedTerminologyArtifactStorageException);
 
             this.storageBrokerMock.Setup(broker =>
@@ -180,12 +180,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             var failedTerminologyArtifactServiceException =
                 new FailedTerminologyArtifactServiceException(
-                    message: "Failed terminologyArtifact service occurred, please contact support",
+                    message: "Failed terminologyArtifact service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedTerminologyArtifactServiceException =
                 new TerminologyArtifactServiceException(
-                    message: "TerminologyArtifact service error occurred, contact support.",
+                    message: "TerminologyArtifact service error occurred, please contact support.",
                     innerException: failedTerminologyArtifactServiceException);
 
             this.storageBrokerMock.Setup(broker =>

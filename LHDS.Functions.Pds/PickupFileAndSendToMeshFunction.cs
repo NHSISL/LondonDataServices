@@ -25,7 +25,7 @@ namespace LHDS.Functions.Pds
         }
 
         [Function("PickupFileAndSendToMeshFunction")]
-        public void Run(
+        public async Task Run(
             [BlobTrigger("pds/in/{name}", Connection = "BlobStorage")] string myBlob, string name)
         {
             this.loggingBroker
@@ -35,11 +35,8 @@ namespace LHDS.Functions.Pds
 
             try
             {
-                Task.Run(async () =>
-                {
-                    byte[] pdsFile = Encoding.ASCII.GetBytes(myBlob);
-                    await pdsClient.PickupFileAndSendToMesh(pdsFile, fileName: name);
-                }).Wait();
+                byte[] pdsFile = Encoding.ASCII.GetBytes(myBlob);
+                await pdsClient.PickupFileAndSendToMesh(pdsFile, fileName: name);
             }
             catch (Exception ex)
             {

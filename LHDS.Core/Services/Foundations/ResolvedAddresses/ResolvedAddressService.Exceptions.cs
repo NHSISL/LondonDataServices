@@ -33,7 +33,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressStorageException =
                     new FailedResolvedAddressStorageException(
-                        message: "Failed resolvedAddress storage error occurred, contact support.",
+                        message: "Failed resolvedAddress storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedResolvedAddressStorageException);
@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressStorageException =
                     new FailedResolvedAddressStorageException(
-                        message: "Failed resolvedAddress storage error occurred, contact support.",
+                        message: "Failed resolvedAddress storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedResolvedAddressStorageException);
@@ -82,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressServiceException =
                     new FailedResolvedAddressServiceException(
-                        message: "Failed resolvedAddress service occurred, please contact support", 
+                        message: "Failed resolvedAddress service error occurred, please contact support.", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedResolvedAddressServiceException);
@@ -99,7 +99,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressStorageException =
                     new FailedResolvedAddressStorageException(
-                        message: "Failed resolvedAddress storage error occurred, contact support.",
+                        message: "Failed resolvedAddress storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedResolvedAddressStorageException);
@@ -108,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressServiceException =
                     new FailedResolvedAddressServiceException(
-                        message: "Failed resolvedAddress service occurred, please contact support", 
+                        message: "Failed resolvedAddress service error occurred, please contact support.", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedResolvedAddressServiceException);
@@ -131,7 +131,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             var resolvedAddressDependencyException = 
                 new ResolvedAddressDependencyException(
-                    message: "ResolvedAddress dependency error occurred, contact support.",
+                    message: "ResolvedAddress dependency error occurred, please contact support.",
                     innerException: exception); 
 
             this.loggingBroker.LogCritical(resolvedAddressDependencyException);
@@ -156,7 +156,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             var resolvedAddressDependencyException = 
                 new ResolvedAddressDependencyException(
-                    message: "ResolvedAddress dependency error occurred, contact support.",
+                    message: "ResolvedAddress dependency error occurred, please contact support.",
                     innerException: exception); 
 
             this.loggingBroker.LogError(resolvedAddressDependencyException);
@@ -169,7 +169,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             var resolvedAddressServiceException = 
                 new ResolvedAddressServiceException(
-                    message: "ResolvedAddress service error occurred, contact support.",
+                    message: "ResolvedAddress service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(resolvedAddressServiceException);

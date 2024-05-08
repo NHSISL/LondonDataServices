@@ -33,7 +33,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             {
                 var failedObjectColumnStorageException =
                     new FailedObjectColumnStorageException(
-                        message: "Failed objectColumn storage error occurred, contact support.",
+                        message: "Failed objectColumn storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedObjectColumnStorageException);
@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             {
                 var failedObjectColumnStorageException =
                     new FailedObjectColumnStorageException(
-                        message: "Failed objectColumn storage error occurred, contact support.",
+                        message: "Failed objectColumn storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedObjectColumnStorageException);
@@ -82,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             {
                 var failedObjectColumnServiceException =
                     new FailedObjectColumnServiceException(
-                        message: "Failed objectColumn service occurred, please contact support", 
+                        message: "Failed objectColumn service error occurred, please contact support.", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedObjectColumnServiceException);
@@ -99,7 +99,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             {
                 var failedObjectColumnStorageException =
                     new FailedObjectColumnStorageException(
-                        message: "Failed objectColumn storage error occurred, contact support.",
+                        message: "Failed objectColumn storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedObjectColumnStorageException);
@@ -108,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             {
                 var failedObjectColumnServiceException =
                     new FailedObjectColumnServiceException(
-                        message: "Failed objectColumn service occurred, please contact support", 
+                        message: "Failed objectColumn service error occurred, please contact support.", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedObjectColumnServiceException);
@@ -131,7 +131,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         {
             var objectColumnDependencyException = 
                 new ObjectColumnDependencyException(
-                    message: "ObjectColumn dependency error occurred, contact support.",
+                    message: "ObjectColumn dependency error occurred, please contact support.",
                     innerException: exception); 
 
             this.loggingBroker.LogCritical(objectColumnDependencyException);
@@ -156,7 +156,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         {
             var objectColumnDependencyException = 
                 new ObjectColumnDependencyException(
-                    message: "ObjectColumn dependency error occurred, contact support.",
+                    message: "ObjectColumn dependency error occurred, please contact support.",
                     innerException: exception); 
 
             this.loggingBroker.LogError(objectColumnDependencyException);
@@ -169,7 +169,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         {
             var objectColumnServiceException = 
                 new ObjectColumnServiceException(
-                    message: "ObjectColumn service error occurred, contact support.",
+                    message: "ObjectColumn service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(objectColumnServiceException);

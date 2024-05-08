@@ -25,16 +25,13 @@ namespace LHDS.Functions.Pds
         }
 
         [Function("HandShakeFunction")]
-        public void Run([TimerTrigger("0 0 0 * * *")] MyInformation myTimer)
+        public async Task Run([TimerTrigger("0 0 0 * * *")] MyInformation myTimer)
         {
             this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
-                Task.Run(async () =>
-                {
-                    await pdsClient.ValidateMailboxAccessAsync();
-                }).Wait();
+                await pdsClient.ValidateMailboxAccessAsync();
             }
             catch (Exception ex)
             {

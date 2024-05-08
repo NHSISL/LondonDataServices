@@ -112,12 +112,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             var failedTppOrchestrationServiceException =
                 new FailedTppLandingOrchestrationServiceException(
-                    message: "Failed TPP landing orchestration service occurred, please contact support",
+                    message: "Failed TPP landing orchestration service error occurred, please contact support.",
                     serviceException);
 
             var expectedTppOrchestrationServiceException =
                 new TppLandingOrchestrationServiceException(
-                    message: "TPP landing orchestration service error occurred, contact support.",
+                    message: "TPP landing orchestration service error occurred, please contact support.",
                     failedTppOrchestrationServiceException);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>

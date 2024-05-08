@@ -112,12 +112,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
 
             var failedIngestionTrackingAuditProcessingServiceException =
                 new FailedIngestionTrackingAuditProcessingServiceException(
-                    message: "Failed IngestionTrackingAudit processing service error occurred, contact support.",
+                    message: "Failed IngestionTrackingAudit processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedIngestionTrackingAuditProcessingServiveException =
                 new IngestionTrackingAuditProcessingServiceException(
-                    message: "IngestionTrackingAudit processing service error occurred, contact support.",
+                    message: "IngestionTrackingAudit processing service error occurred, please contact support.",
                     innerException: failedIngestionTrackingAuditProcessingServiceException);
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>

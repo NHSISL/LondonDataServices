@@ -108,12 +108,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             var failedDataSetSpecificationProcessingServiceException =
                 new FailedDataSetSpecificationProcessingServiceException(
-                    message: "Failed DataSetSpecification processing service error occurred, contact support.",
+                    message: "Failed DataSetSpecification processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedDataSetSpecificationProcessingServiveException =
                 new DataSetSpecificationProcessingServiceException(
-                    message: "DataSetSpecification processing service error occurred, contact support.",
+                    message: "DataSetSpecification processing service error occurred, please contact support.",
                     innerException: failedDataSetSpecificationProcessingServiceException);
 
             this.dataSetSpecificationServiceMock.Setup(service =>

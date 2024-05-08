@@ -186,27 +186,27 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             return new TheoryData<Xeption>
             {
                 new DocumentProcessingDependencyException(
-                    message: "Document processing dependency error occurred, contact support.",
+                    message: "Document processing dependency error occurred, please contact support.",
                     innerException),
 
                 new DocumentProcessingServiceException(
-                    message: "Document processing service error occurred, contact support.",
+                    message: "Document processing service error occurred, please contact support.",
                     innerException),
 
                 new TerminologyArtifactProcessingDependencyException(
-                    message: "Terminology artifact processing dependency error occurred, contact support.",
+                    message: "Terminology artifact processing dependency error occurred, please contact support.",
                     innerException),
 
                 new TerminologyArtifactProcessingServiceException(
-                    message: "Terminology artifact processing service error occurred, contact support.",
+                    message: "Terminology artifact processing service error occurred, please contact support.",
                     innerException),
 
                 new OntologyProcessingDependencyException(
-                    message: "Ontology processing dependency error occurred, contact support.",
+                    message: "Ontology processing dependency error occurred, please contact support.",
                     innerException),
 
                 new OntologyProcessingServiceException(
-                    message: "Ontology processing service error occurred, contact support.",
+                    message: "Ontology processing service error occurred, please contact support.",
                     innerException),
             };
         }

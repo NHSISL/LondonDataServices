@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             {
                 var failedIngestionTrackingProcessingServiceException =
                     new FailedIngestionTrackingProcessingServiceException(
-                        message: "Failed IngestionTracking processing service error occurred, contact support.",
+                        message: "Failed IngestionTracking processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedIngestionTrackingProcessingServiceException);
@@ -87,7 +87,7 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             {
                 var failedIngestionTrackingProcessingServiceException =
                     new FailedIngestionTrackingProcessingServiceException(
-                        message: "Failed IngestionTracking processing service error occurred, contact support.",
+                        message: "Failed IngestionTracking processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedIngestionTrackingProcessingServiceException);
@@ -136,7 +136,7 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
         {
             var ingestionTrackingProcessingServiceException = new
                 IngestionTrackingProcessingServiceException(
-                    message: "IngestionTracking processing service error occurred, contact support.",
+                    message: "IngestionTracking processing service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(ingestionTrackingProcessingServiceException);

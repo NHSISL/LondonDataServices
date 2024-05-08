@@ -46,7 +46,7 @@ namespace LHDS.Core.Services.Processings.Ontologies
             {
                 var failedOntologyProcessingServiceException =
                     new FailedOntologyProcessingServiceException(
-                        message: "Failed ontology processing service error occurred, contact support.",
+                        message: "Failed ontology processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedOntologyProcessingServiceException);
@@ -83,7 +83,7 @@ namespace LHDS.Core.Services.Processings.Ontologies
             {
                 var failedOntologyProcessingServiceException =
                     new FailedOntologyProcessingServiceException(
-                        message: "Failed ontology processing service error occurred, contact support.",
+                        message: "Failed ontology processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedOntologyProcessingServiceException);
@@ -131,7 +131,7 @@ namespace LHDS.Core.Services.Processings.Ontologies
         {
             var ontologyProcessingServiceException = new
                 OntologyProcessingServiceException(
-                    message: "Ontology processing service error occurred, contact support.",
+                    message: "Ontology processing service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(ontologyProcessingServiceException);

@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
             {
                 var failedSubscriberAgreementProcessingServiceException =
                     new FailedSubscriberAgreementProcessingServiceException(
-                        message: "Failed subscriber agreement processing service error occurred, contact support.",
+                        message: "Failed subscriber agreement processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedSubscriberAgreementProcessingServiceException);
@@ -87,7 +87,7 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
             {
                 var failedSubscriberAgreementProcessingServiceException =
                     new FailedSubscriberAgreementProcessingServiceException(
-                        message: "Failed subscriber agreement processing service error occurred, contact support.",
+                        message: "Failed subscriber agreement processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedSubscriberAgreementProcessingServiceException);
@@ -136,7 +136,7 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
         {
             var dataSetProcessingServiceException = new
                 SubscriberAgreementProcessingServiceException(
-                    message: "Subscriber agreement processing service error occurred, contact support.",
+                    message: "Subscriber agreement processing service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(dataSetProcessingServiceException);

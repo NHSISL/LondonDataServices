@@ -122,12 +122,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
 
             var failedAddressNormalisationServiceException =
                 new FailedAddressNormalisationServiceException(
-                    message: "Failed address normalisation service occurred, please contact support",
+                    message: "Failed address normalisation service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedAddressNormalisationServiceException =
                 new AddressNormalisationServiceException(
-                    message: "Address normalisation service error occurred, contact support.",
+                    message: "Address normalisation service error occurred, please contact support.",
                     innerException: failedAddressNormalisationServiceException);
 
             this.addressNormalisationBrokerMock.Setup(broker =>

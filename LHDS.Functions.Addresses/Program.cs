@@ -34,7 +34,7 @@ var host = new HostBuilder()
                 setup.AddApplicationInsights();
                 setup.AddConsole();
             })
-           .AddPdsClient(context.Configuration);
+           .AddAddressClient(context.Configuration,false);
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .ConfigureFunctionsWorkerDefaults()

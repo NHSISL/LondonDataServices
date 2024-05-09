@@ -35,7 +35,7 @@ namespace LHDS.Core.Clients.Extensions
 {
     public static class AddressClientServiceCollectionExtensions
     {
-        public static IServiceCollection AddPdsClient(
+        public static IServiceCollection AddAddressClient(
             this IServiceCollection services,
             IConfiguration configuration,
             bool acceptanceTest)
@@ -81,7 +81,7 @@ namespace LHDS.Core.Clients.Extensions
                         options: blobServiceClientOptions));
             }
 
-            services.AddTransient<IPdsClient, PdsClient>();
+            services.AddTransient<IAddressClient, AddressClient>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
 

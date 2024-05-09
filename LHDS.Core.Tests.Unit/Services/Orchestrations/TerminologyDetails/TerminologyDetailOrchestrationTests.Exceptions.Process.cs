@@ -109,207 +109,207 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     actualTerminologyDetailOrchestrationServiceException))),
                         Times.Once);
 
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.terminologyArtifactProcessingServiceMock.VerifyNoOtherCalls();
+            this.ontologyProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
         [MemberData(nameof(TerminologyDetailOrchestrationDependencyExceptions))]
         public async Task
-            ShouldThrowAggregateDependencyExceptionOnProcessResolvedAddressesIfErrorsInLoopAndLogItAsync(
+            ShouldThrowAggregateDependencyExceptionOnNonDownloadedIfErrorsInLoopAndLogItAsync(
             Xeption dependencyException)
         {
             // Given
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
-            string randomFilename = GetRandomString();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            List<TerminologyArtifact> randomTerminologyArtifacts = CreateRandomUndownloadedTerminologyArtifacts();
+            List<TerminologyArtifact> undownloadedTerminologyArtifacts = randomTerminologyArtifacts;
+            string inputFileName = undownloadedTerminologyArtifacts.ToString();
+            string outputFileName = inputFileName;
+            string outputArtifactDetail = GetRandomString();
             List<Exception> exceptions = new List<Exception>();
 
-            this.csvMapperServiceMock.Setup(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
-                        .ReturnsAsync(randomResolvedAddresses);
-
-            foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
+            foreach (TerminologyArtifact terminologyArtifact in undownloadedTerminologyArtifacts)
             {
-                string addressString = resolvedAddress.UnstructuredPostalAddress;
+                this.terminologyArtifactProcessingServiceMock.Setup(service =>
+                    service.GetNonDownloadedArtifactAsync())
+                        .ReturnsAsync(terminologyArtifact);
 
-                this.addressNormalisationServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(addressString))
+                string relativeUrl = terminologyArtifact.FullUrl;
+
+                this.ontologyProcessingServiceMock.Setup(service =>
+                    service.RetrieveArtifactDetailsAsync(relativeUrl))
                         .ThrowsAsync(dependencyException);
 
-                var addressExtractionOrchestrationDependencyException =
-                    new AddressExtractionOrchestrationDependencyException(
-                        message: "Address extraction orchestration dependency error occurred, " +
-                        "please try again.",
+                var terminologyDetailOrchestrationDependencyException =
+                    new TerminologyDetailOrchestrationDependencyException(
+                        message: "Terminology detail orchestration dependency validation error occurred, " +
+                            "please try again.",
                         innerException: dependencyException.InnerException as Xeption);
 
-                exceptions.Add(addressExtractionOrchestrationDependencyException);
+                exceptions.Add(terminologyDetailOrchestrationDependencyException);
             }
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to normalise address for {exceptions.Count} resolved addresses",
+                    $"Unable to retrieve artifact detail for {exceptions.Count} artifacts",
                     exceptions);
 
-            var failedAddressExtractionOrchestrationServiceException =
-                new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction aggregate orchestration service occurred, " +
-                    "please contact support.",
+            var failedTerminologyDetailOrchestrationServiceException =
+                new FailedTerminologyDetailOrchestrationServiceException(
+                    message: "Failed terminology detail aggregate orchestration service occurred, " +
+                        "please contact support.",
                     innerException: aggregateException);
 
-            var expectedAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
+            var expectedTerminologyDetailOrchestrationServiceException =
+                new TerminologyDetailOrchestrationServiceException(
                     message: "Address extraction orchestration service error occurred, contact support.",
-                    innerException: failedAddressExtractionOrchestrationServiceException);
+                    innerException: failedTerminologyDetailOrchestrationServiceException);
 
             // When
-            ValueTask<List<ResolvedAddress>> processResolvedAddressTask =
-                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(randomData, randomFilename);
+            ValueTask retrieveArtifactDetailsTask =
+                this.terminologyDetailOrchestrationService.RetrieveArtifactDetailsAsync();
 
-            AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
-                await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
-                    await processResolvedAddressTask);
+            TerminologyDetailOrchestrationServiceException actualTerminologyDetailOrchestrationServiceException =
+                await Assert.ThrowsAsync<TerminologyDetailOrchestrationServiceException>(async () =>
+                    await retrieveArtifactDetailsTask);
 
             // Then
-            actualAddressExtractionOrchestrationServiceException.Should()
-                .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
+            actualTerminologyDetailOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedTerminologyDetailOrchestrationServiceException);
 
-            this.csvMapperServiceMock.Verify(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
+            foreach (TerminologyArtifact terminologyArtifact in undownloadedTerminologyArtifacts)
+            {
+                this.terminologyArtifactProcessingServiceMock.Verify(service =>
+                    service.GetNonDownloadedArtifactAsync(),
                         Times.Once);
 
-            foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
-            {
-                string addressString = resolvedAddress.UnstructuredPostalAddress;
+                string relativeUrl = terminologyArtifact.FullUrl;
 
-                this.addressNormalisationServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(addressString),
+                this.ontologyProcessingServiceMock.Verify(service =>
+                    service.RetrieveArtifactDetailsAsync(relativeUrl),
                         Times.Once);
             }
 
-            var addressExtractionOrchestrationDependencyLoggingException =
-                new AddressExtractionOrchestrationDependencyException(
-                    message: "Address extraction orchestration dependency error occurred, " +
-                    "fix the errors and try again.",
+            var terminologyDetailOrchestrationDependencyLoggingException =
+                new TerminologyDetailOrchestrationDependencyException(
+                    message: "Terminology artifact orchestration dependency error occurred, " +
+                        "fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    addressExtractionOrchestrationDependencyLoggingException))),
-                        Times.Exactly(randomResolvedAddresses.Count));
+                    terminologyDetailOrchestrationDependencyLoggingException))),
+                        Times.Exactly(undownloadedTerminologyArtifacts.Count));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    actualAddressExtractionOrchestrationServiceException))),
+                    actualTerminologyDetailOrchestrationServiceException))),
                         Times.Once);
 
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.terminologyArtifactProcessingServiceMock.VerifyNoOtherCalls();
+            this.ontologyProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
         public async Task ShouldThrowAggregateServiceExceptionOnProcessResolvedAddressesIfErrorsInLoopAndLogItAsync()
         {
             // Given
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
-            string randomFilename = GetRandomString();
-            var serviceException = new Exception();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            List<TerminologyArtifact> randomTerminologyArtifacts = CreateRandomUndownloadedTerminologyArtifacts();
+            List<TerminologyArtifact> undownloadedTerminologyArtifacts = randomTerminologyArtifacts;
+            string inputFileName = undownloadedTerminologyArtifacts.ToString();
+            string outputFileName = inputFileName;
+            string outputArtifactDetail = GetRandomString();
             List<Exception> exceptions = new List<Exception>();
+            var serviceException = new Exception();
 
-            this.csvMapperServiceMock.Setup(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
-                        .ReturnsAsync(randomResolvedAddresses);
-
-            var innerFailedAddressExtractionOrchestrationServiceException =
-                new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction orchestration service error occurred, please contact support.",
+            var innerFailedTerminologyDetailOrchestrationServiceException =
+                new FailedTerminologyDetailOrchestrationServiceException(
+                    message: "Failed terminology detail orchestration service error occurred, please contact support.",
                     innerException: serviceException);
 
-            var innerAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
-                    innerException: innerFailedAddressExtractionOrchestrationServiceException);
+            var innerTerminologyDetailOrchestrationServiceException =
+                new TerminologyDetailOrchestrationServiceException(
+                    message: "Terminology detail orchestration service error occurred, contact support.",
+                    innerException: innerFailedTerminologyDetailOrchestrationServiceException);
 
-            foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
+            foreach (TerminologyArtifact terminologyArtifact in undownloadedTerminologyArtifacts)
             {
-                string stringAddress = resolvedAddress.UnstructuredPostalAddress;
+                this.terminologyArtifactProcessingServiceMock.Setup(service =>
+                    service.GetNonDownloadedArtifactAsync())
+                        .ReturnsAsync(terminologyArtifact);
 
-                this.addressNormalisationServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(stringAddress))
+                string relativeUrl = terminologyArtifact.FullUrl;
+
+                this.ontologyProcessingServiceMock.Setup(service =>
+                    service.RetrieveArtifactDetailsAsync(relativeUrl))
                         .ThrowsAsync(serviceException);
 
-                exceptions.Add(innerAddressExtractionOrchestrationServiceException);
+                exceptions.Add(innerTerminologyDetailOrchestrationServiceException);
             }
 
             var aggregateException =
-                new AggregateException(
-                    $"Unable to normalise address for {exceptions.Count} resolved addresses",
-                    exceptions);
+               new AggregateException(
+                   $"Unable to retrieve artifact detail for {exceptions.Count} artifacts",
+                   exceptions);
 
-            var failedAddressExtractionOrchestrationServiceException =
-                new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction aggregate orchestration service occurred, " +
+            var failedTerminologyDetailOrchestrationServiceException =
+                new FailedTerminologyDetailOrchestrationServiceException(
+                    message: "Failed terminology detail aggregate orchestration service occurred, " +
                         "please contact support.",
                     innerException: aggregateException);
 
-            var expectedAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
-                    innerException: failedAddressExtractionOrchestrationServiceException);
+            var expectedTerminologyDetailOrchestrationServiceException =
+                new TerminologyDetailOrchestrationServiceException(
+                    message: "Terminology detail orchestration service error occurred, contact support.",
+                    innerException: failedTerminologyDetailOrchestrationServiceException);
 
             // When
-            ValueTask<List<ResolvedAddress>> processResolvedAddressTask =
-                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(randomData, randomFilename);
+            ValueTask retrieveArtifactDetailsTask =
+                this.terminologyDetailOrchestrationService.RetrieveArtifactDetailsAsync();
 
-            AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
-                await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
-                    await processResolvedAddressTask);
+            TerminologyDetailOrchestrationServiceException actualTerminologyDetailOrchestrationServiceException =
+                await Assert.ThrowsAsync<TerminologyDetailOrchestrationServiceException>(async () =>
+                    await retrieveArtifactDetailsTask);
 
             // Then
-            actualAddressExtractionOrchestrationServiceException.Should()
-                .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
+            actualTerminologyDetailOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedTerminologyDetailOrchestrationServiceException);
 
-            this.csvMapperServiceMock.Verify(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
-                        Times.Once);
-
-            foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
+            foreach (TerminologyArtifact terminologyArtifact in undownloadedTerminologyArtifacts)
             {
-                string addressString = resolvedAddress.UnstructuredPostalAddress;
+                this.terminologyArtifactProcessingServiceMock.Verify(service =>
+                    service.GetNonDownloadedArtifactAsync(),
+                        Times.Once());  
 
-                this.addressNormalisationServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(addressString),
-                        Times.Once);
+                string relativeUrl = terminologyArtifact.FullUrl;
+
+                this.ontologyProcessingServiceMock.Setup(service =>
+                    service.RetrieveArtifactDetailsAsync(relativeUrl))
+                        .ThrowsAsync(serviceException);
             }
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    innerAddressExtractionOrchestrationServiceException))),
-                        Times.Exactly(randomResolvedAddresses.Count));
+                    innerTerminologyDetailOrchestrationServiceException))),
+                        Times.Exactly(undownloadedTerminologyArtifacts.Count));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedAddressExtractionOrchestrationServiceException))),
+                    expectedTerminologyDetailOrchestrationServiceException))),
                         Times.Once);
 
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.terminologyArtifactProcessingServiceMock.VerifyNoOtherCalls();
+            this.ontologyProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -321,7 +321,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             // given
             var expectedDependencyException =
                 new TerminologyDetailOrchestrationDependencyValidationException(
-                    message:"Terminology detail orchestration dependency validation error occurred, " +
+                    message: "Terminology detail orchestration dependency validation error occurred, " +
                         "fix the errors and try again.",
                     dependancyValidationException.InnerException as Xeption);
 

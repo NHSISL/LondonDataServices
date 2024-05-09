@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnRetrieveUpdatedOptOutStatusIfRequiredRetreivedMessageHeaderIsInvalidAndLogItAsync(
+        public async Task ShouldThrowValidationExceptionOnRetrieveUpdatedOptOutStatusIfInvalidAndLogItAsync(
                 string invalidInput)
         {
             // given

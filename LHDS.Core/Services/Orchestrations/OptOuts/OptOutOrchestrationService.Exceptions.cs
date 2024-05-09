@@ -24,6 +24,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 return await returningFunction();
             }
+            catch (NullBlobContainersOptOutOrchestrationException nullBlobContainersOptOutOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullBlobContainersOptOutOrchestrationException);
+            }
             catch (NullConfigOptOutOrchestrationException nullConfigOptOutOrchestrationException)
             {
                 throw CreateAndLogValidationException(nullConfigOptOutOrchestrationException);
@@ -107,6 +111,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             catch (CsvHelperClientServiceException csvHelperClientServiceException)
             {
                 throw CreateAndLogDependencyException(csvHelperClientServiceException);
+            }
+
+            catch (InvalidMeshMessageOrchestrationException invalidMeshMessageOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidMeshMessageOrchestrationException);
             }
             catch (Exception exception)
             {

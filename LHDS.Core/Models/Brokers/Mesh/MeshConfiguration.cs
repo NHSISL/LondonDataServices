@@ -8,16 +8,16 @@ namespace LHDS.Core.Models.Brokers.Mesh
 {
     public class MeshConfiguration
     {
-        public string MailboxId { get; set; }
-        public string Password { get; set; }
-        public string Key { get; set; }
-        public string Url { get; set; }
-        public X509Certificate2 RootCertificate { get; set; }
-        public X509Certificate2Collection IntermediateCertificates { get; set; }
-        public X509Certificate2 ClientCertificate { get; set; }
-        public string MexClientVersion { get; set; }
-        public string MexOSName { get; set; }
-        public string MexOSVersion { get; set; }
+        public string MailboxId { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string Key { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
+        public X509Certificate2? RootCertificate { get; set; }
+        public X509Certificate2Collection IntermediateCertificates { get; set; } = new X509Certificate2Collection();
+        public X509Certificate2? ClientCertificate { get; set; }
+        public string MexClientVersion { get; set; } = string.Empty;
+        public string MexOSName { get; set; } = string.Empty;
+        public string MexOSVersion { get; set; } = string.Empty;
         public int MaxChunkSizeInMegabytes { get; set; }
     }
 }

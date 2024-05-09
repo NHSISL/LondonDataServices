@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -87,8 +87,8 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
                     var decryptedFileName =
                                 $"/{landingConfiguration.DecryptedFolder}"
-                                + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
-                                + $"/{retrievedDataSetSpecification.Id}"
+                                + $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}"
+                                + $"/{retrievedDataSetSpecification?.Id}"
                                 + $"{filename}";
 
                     IngestionTracking newIngestionTracking =

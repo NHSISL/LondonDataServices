@@ -129,11 +129,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 return saveDocument;
             });
 
-        public ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync() =>
+        public ValueTask<MeshMessage?> PushExpiredOptOutsToMeshForRenewalAsync() =>
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
-                bool withHeader = false;
                 bool shouldAddTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
 
                 List<OptOut> expiredOptOuts = await
@@ -279,11 +278,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
         private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)
         {
-            string value = dictionary.ContainsKey(key)
+            var value = dictionary.ContainsKey(key)
                 ? dictionary[key]?.First()
                 : string.Empty;
 
-            return value;
+            return value ?? string.Empty;
         }
     }
 }

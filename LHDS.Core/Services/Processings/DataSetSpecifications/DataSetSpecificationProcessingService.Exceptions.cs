@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -14,12 +14,12 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
 {
     public partial class DataSetSpecificationProcessingService : IDataSetSpecificationProcessingService
     {
-        private delegate ValueTask<DataSetSpecification> ReturningDataSetSpecificationProcessingFunction();
+        private delegate ValueTask<T> ReturningDataSetSpecificationProcessingFunction<T>();
         private delegate IQueryable<DataSetSpecification> ReturningDataSetSpecificationsFunction();
         private delegate DataSetSpecification ReturningSingleDataSetSpecificationProcessingFunction();
 
-        private async ValueTask<DataSetSpecification> TryCatch(
-            ReturningDataSetSpecificationProcessingFunction returningDataSetSpecificationProcessingFunction)
+        private async ValueTask<T> TryCatch<T>(
+            ReturningDataSetSpecificationProcessingFunction<T> returningDataSetSpecificationProcessingFunction)
         {
             try
             {

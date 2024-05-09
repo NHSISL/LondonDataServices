@@ -24,12 +24,12 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             Message = "Text is required"
         };
 
-        private void ValidateBrokerNotNull(ICryptographyKeyBroker broker)
+        private void ValidateBrokerNotNull(ICryptographyKeyBroker? broker)
         {
             ValidateCryptographyBrokerIsNotNull(broker);
         }
 
-        private static void ValidateCryptographyBrokerIsNotNull(ICryptographyKeyBroker broker)
+        private static void ValidateCryptographyBrokerIsNotNull(ICryptographyKeyBroker? broker)
         {
             if (broker is null)
             {
@@ -40,19 +40,19 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
+            var invalidDataException = (T?)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataException.UpsertDataList(
+                    invalidDataException?.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataException.ThrowIfContainsErrors();
+            invalidDataException?.ThrowIfContainsErrors();
         }
     }
 }

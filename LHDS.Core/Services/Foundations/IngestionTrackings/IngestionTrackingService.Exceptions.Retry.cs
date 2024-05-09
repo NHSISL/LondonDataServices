@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -12,7 +12,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
     public partial class IngestionTrackingService
     {
         private async ValueTask<IngestionTracking> WithRetry(
-            ReturningIngestionTrackingFunction returningIngestionTrackingFunction)
+            ReturningIngestionTrackingFunction<IngestionTracking> returningIngestionTrackingFunction)
         {
             var attempts = 0;
 

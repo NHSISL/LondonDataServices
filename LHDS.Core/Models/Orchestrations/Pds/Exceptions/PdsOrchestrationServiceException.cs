@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Orchestrations.Pds.Exceptions
 {
     public class PdsOrchestrationServiceException : Xeption
     {
-        public PdsOrchestrationServiceException(string message, Exception innerException)
+        public PdsOrchestrationServiceException(string message, Exception? innerException)
             : base(message, innerException) 
         { }
     }

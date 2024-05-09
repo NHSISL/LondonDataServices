@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.TerminologyPolls.Exceptions
 {
     public class TerminologyPollProcessingDependencyValidationException : Xeption
     {
-        public TerminologyPollProcessingDependencyValidationException(string message, Xeption innerException)
+        public TerminologyPollProcessingDependencyValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

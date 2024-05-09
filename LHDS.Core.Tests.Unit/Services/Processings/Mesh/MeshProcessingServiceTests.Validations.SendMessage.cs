@@ -65,8 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     accept);
 
             MeshProcessingValidationException actualMeshProcessingValidationException =
-                await Assert.ThrowsAsync<MeshProcessingValidationException>(() =>
-                    sendMessageTask.AsTask());
+                await Assert.ThrowsAsync<MeshProcessingValidationException>(sendMessageTask.AsTask);
 
             //then
             actualMeshProcessingValidationException.Should()
@@ -141,8 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     accept);
 
             MeshProcessingValidationException actualMeshProcessingValidationException =
-                await Assert.ThrowsAsync<MeshProcessingValidationException>(() =>
-                    sendMessageTask.AsTask());
+                await Assert.ThrowsAsync<MeshProcessingValidationException>(sendMessageTask.AsTask);
 
             //then
             actualMeshProcessingValidationException.Should()

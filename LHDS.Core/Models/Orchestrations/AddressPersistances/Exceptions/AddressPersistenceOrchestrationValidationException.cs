@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions
 {
     public class AddressPersistenceOrchestrationValidationException : Xeption
     {
-        public AddressPersistenceOrchestrationValidationException(string message, Xeption innerException)
+        public AddressPersistenceOrchestrationValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

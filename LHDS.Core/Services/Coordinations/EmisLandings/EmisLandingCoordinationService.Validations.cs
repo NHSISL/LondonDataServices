@@ -32,7 +32,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             Validate((Rule: IsInvalid(ingestionTrackingId), Parameter: "ingestionTrackingId"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"

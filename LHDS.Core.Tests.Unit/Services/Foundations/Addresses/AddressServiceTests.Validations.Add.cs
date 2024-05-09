@@ -33,8 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 this.addressService.AddAddressAsync(nullAddress);
 
             AddressValidationException actualAddressValidationException =
-                await Assert.ThrowsAsync<AddressValidationException>(() =>
-                    addAddressTask.AsTask());
+                await Assert.ThrowsAsync<AddressValidationException>(addAddressTask.AsTask);
 
             // then
             actualAddressValidationException.Should()
@@ -110,8 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 this.addressService.AddAddressAsync(invalidAddress);
 
             AddressValidationException actualAddressValidationException =
-                await Assert.ThrowsAsync<AddressValidationException>(() =>
-                    addAddressTask.AsTask());
+                await Assert.ThrowsAsync<AddressValidationException>(addAddressTask.AsTask);
 
             // then
             actualAddressValidationException.Should()
@@ -169,8 +167,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 this.addressService.AddAddressAsync(invalidAddress);
 
             AddressValidationException actualAddressValidationException =
-                await Assert.ThrowsAsync<AddressValidationException>(() =>
-                    addAddressTask.AsTask());
+                await Assert.ThrowsAsync<AddressValidationException>(addAddressTask.AsTask);
 
             // then
             actualAddressValidationException.Should()
@@ -225,8 +222,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 this.addressService.AddAddressAsync(invalidAddress);
 
             AddressValidationException actualAddressValidationException =
-                await Assert.ThrowsAsync<AddressValidationException>(() =>
-                    addAddressTask.AsTask());
+                await Assert.ThrowsAsync<AddressValidationException>(addAddressTask.AsTask);
 
             // then
             actualAddressValidationException.Should()
@@ -286,8 +282,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 this.addressService.AddAddressAsync(invalidAddress);
 
             AddressValidationException actualAddressValidationException =
-                await Assert.ThrowsAsync<AddressValidationException>(() =>
-                    addAddressTask.AsTask());
+                await Assert.ThrowsAsync<AddressValidationException>(addAddressTask.AsTask);
 
             // then
             actualAddressValidationException.Should()

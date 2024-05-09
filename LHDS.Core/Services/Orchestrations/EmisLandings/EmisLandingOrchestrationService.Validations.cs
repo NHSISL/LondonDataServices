@@ -76,7 +76,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             Message = "Id is required"
         };
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"

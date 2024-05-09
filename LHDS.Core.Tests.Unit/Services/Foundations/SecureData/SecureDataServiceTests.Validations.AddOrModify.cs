@@ -31,8 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             ValueTask<SecureData> addSecureDataTask = this.secureDataService.AddOrModifySecureData(nullSecureData);
 
             SecureDataValidationException actualSecureDataValidationException =
-                await Assert.ThrowsAsync<SecureDataValidationException>(() =>
-                    addSecureDataTask.AsTask());
+                await Assert.ThrowsAsync<SecureDataValidationException>(addSecureDataTask.AsTask);
 
             // then
             actualSecureDataValidationException.Should().BeEquivalentTo(expectedSecureDataValidationException);
@@ -76,8 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                 this.secureDataService.AddOrModifySecureData(invalidSecureData);
 
             SecureDataValidationException actualSecureDataValidationException =
-                await Assert.ThrowsAsync<SecureDataValidationException>(() =>
-                    addSecureDataTask.AsTask());
+                await Assert.ThrowsAsync<SecureDataValidationException>(addSecureDataTask.AsTask);
 
             // then
             actualSecureDataValidationException.Should()

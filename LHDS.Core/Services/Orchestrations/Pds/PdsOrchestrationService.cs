@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -124,7 +124,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
 
                         string filename = message.Headers["mex-filename"].FirstOrDefault();
                         string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
-                        string[] fileNameParts = fileNameWithoutExtension.Split('_');
+                        string[] fileNameParts = fileNameWithoutExtension?.Split('_') ?? Array.Empty<string>();
 
                         string fileNameOutput =
                             $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";

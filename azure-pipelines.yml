@@ -252,14 +252,14 @@ steps:
     inputs:
       command: 'build'
       projects: '**/LHDS.Functions.Addresses.csproj'
-      arguments: --output $(System.DefaultWorkingDirectory)/publish_addresses_func --configuration Release
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_addresses_func --configuration Release
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (Terminology Function)"
     inputs:
       command: 'build'
       projects: '**/LHDS.Functions.Terminology.csproj'
-      arguments: --output $(System.DefaultWorkingDirectory)/publish_terminology_func --configuration Release
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_terminology_func --configuration Release
 
   #- task: DotNetCoreCLI@2
   #  displayName: C# Integration Tests
@@ -441,7 +441,7 @@ steps:
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Archive files - Addresses Function'
     inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_addresses_func'
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_addresses_func'
       includeRootFolder: false
       archiveType: zip
       archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_addresses_func.zip
@@ -451,7 +451,7 @@ steps:
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Archive files - Terminology Function'
     inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_terminology_func'
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_terminology_func'
       includeRootFolder: false
       archiveType: zip
       archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_terminology_func.zip

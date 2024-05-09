@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Foundations.Files.Exceptions
 {
     internal class FileValidationException : Xeption
     {
-        public FileValidationException(string message, Xeption innerException)
+        public FileValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

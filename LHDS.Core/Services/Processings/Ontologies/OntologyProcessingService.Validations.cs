@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Processings.Ontologies
         public void ValidateArgs(string relativeUrl) =>
             Validate((Rule: IsInvalid(relativeUrl), Parameter: "relativeUrl"));
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"

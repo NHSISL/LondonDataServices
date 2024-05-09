@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Processings.Addresses.Exceptions
 {
     public class FailedAddressProcessingServiceException : Xeption
     {
-        public FailedAddressProcessingServiceException(string message, Exception innerException)
+        public FailedAddressProcessingServiceException(string message, Exception? innerException)
           : base(message, innerException)
         { }
     }

@@ -108,7 +108,7 @@ namespace LHDS.Core.Brokers.Ontologies
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(
                     scheme: "Bearer",
-                    parameter: this.ontologyAccessToken.AccessToken);
+                    parameter: this.ontologyAccessToken?.AccessToken ?? "");
 
             this.apiClient = new RESTFulApiFactoryClient(httpClient);
         }

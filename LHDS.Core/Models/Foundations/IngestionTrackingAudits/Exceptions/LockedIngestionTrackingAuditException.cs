@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions
 {
     public class LockedIngestionTrackingAuditException : Xeption
     {
-        public LockedIngestionTrackingAuditException(string message, Exception innerException)
+        public LockedIngestionTrackingAuditException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

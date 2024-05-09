@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.Documents.Exceptions
 {
     public class DocumentProcessingValidationException : Xeption
     {
-        public DocumentProcessingValidationException(string message, Xeption innerException)
+        public DocumentProcessingValidationException(string message, Xeption? innerException)
             : base(message,innerException)
         { }
     }

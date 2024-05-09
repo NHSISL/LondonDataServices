@@ -33,8 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 this.resolvedAddressService.AddResolvedAddressAsync(nullResolvedAddress);
 
             ResolvedAddressValidationException actualResolvedAddressValidationException =
-                await Assert.ThrowsAsync<ResolvedAddressValidationException>(() =>
-                    addResolvedAddressTask.AsTask());
+                await Assert.ThrowsAsync<ResolvedAddressValidationException>(addResolvedAddressTask.AsTask);
 
             // then
             actualResolvedAddressValidationException.Should()
@@ -101,8 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 this.resolvedAddressService.AddResolvedAddressAsync(invalidResolvedAddress);
 
             ResolvedAddressValidationException actualResolvedAddressValidationException =
-                await Assert.ThrowsAsync<ResolvedAddressValidationException>(() =>
-                    addResolvedAddressTask.AsTask());
+                await Assert.ThrowsAsync<ResolvedAddressValidationException>(addResolvedAddressTask.AsTask);
 
             // then
             actualResolvedAddressValidationException.Should()
@@ -160,8 +158,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 this.resolvedAddressService.AddResolvedAddressAsync(invalidResolvedAddress);
 
             ResolvedAddressValidationException actualResolvedAddressValidationException =
-                await Assert.ThrowsAsync<ResolvedAddressValidationException>(() =>
-                    addResolvedAddressTask.AsTask());
+                await Assert.ThrowsAsync<ResolvedAddressValidationException>(addResolvedAddressTask.AsTask);
 
             // then
             actualResolvedAddressValidationException.Should()
@@ -216,8 +213,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 this.resolvedAddressService.AddResolvedAddressAsync(invalidResolvedAddress);
 
             ResolvedAddressValidationException actualResolvedAddressValidationException =
-                await Assert.ThrowsAsync<ResolvedAddressValidationException>(() =>
-                    addResolvedAddressTask.AsTask());
+                await Assert.ThrowsAsync<ResolvedAddressValidationException>(addResolvedAddressTask.AsTask);
 
             // then
             actualResolvedAddressValidationException.Should()
@@ -277,8 +273,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 this.resolvedAddressService.AddResolvedAddressAsync(invalidResolvedAddress);
 
             ResolvedAddressValidationException actualResolvedAddressValidationException =
-                await Assert.ThrowsAsync<ResolvedAddressValidationException>(() =>
-                    addResolvedAddressTask.AsTask());
+                await Assert.ThrowsAsync<ResolvedAddressValidationException>(addResolvedAddressTask.AsTask);
 
             // then
             actualResolvedAddressValidationException.Should()

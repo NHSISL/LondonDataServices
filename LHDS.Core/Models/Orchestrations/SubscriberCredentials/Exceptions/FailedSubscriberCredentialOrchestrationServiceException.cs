@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions
 {
     public class FailedSubscriberCredentialOrchestrationServiceException : Xeption
     {
-        public FailedSubscriberCredentialOrchestrationServiceException(string message, Exception innerException)
+        public FailedSubscriberCredentialOrchestrationServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

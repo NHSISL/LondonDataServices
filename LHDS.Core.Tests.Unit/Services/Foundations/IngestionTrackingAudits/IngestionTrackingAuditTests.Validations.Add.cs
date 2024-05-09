@@ -33,8 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 this.ingestionTrackingAuditService.AddIngestionTrackingAuditAsync(nullIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(() =>
-                    addIngestionTrackingAuditTask.AsTask());
+                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(
+                    addIngestionTrackingAuditTask.AsTask);
 
             // then
             actualAuditValidationException.Should()
@@ -104,8 +104,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 this.ingestionTrackingAuditService.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(() =>
-                    addIngestionTrackingAuditTask.AsTask());
+                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(
+                    addIngestionTrackingAuditTask.AsTask);
 
             // then
             actualAuditValidationException.Should()
@@ -162,8 +162,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 this.ingestionTrackingAuditService.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(() =>
-                    addIngestionTrackingAuditTask.AsTask());
+                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(
+                    addIngestionTrackingAuditTask.AsTask);
 
             // then
             actualAuditValidationException.Should()
@@ -218,8 +218,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 this.ingestionTrackingAuditService.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(() =>
-                    addIngestionTrackingAuditTask.AsTask());
+                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(
+                    addIngestionTrackingAuditTask.AsTask);
 
             // then
             actualAuditValidationException.Should()
@@ -279,8 +279,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 this.ingestionTrackingAuditService.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(() =>
-                    addIngestionTrackingAuditTask.AsTask());
+                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(
+                    addIngestionTrackingAuditTask.AsTask);
 
             // then
             actualAuditValidationException.Should()
@@ -341,8 +341,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
                 this.ingestionTrackingAuditService.AddIngestionTrackingAuditAsync(invalidIngestionTrackingAudit);
 
             IngestionTrackingAuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(() =>
-                    addAuditTask.AsTask());
+                await Assert.ThrowsAsync<IngestionTrackingAuditValidationException>(addAuditTask.AsTask);
 
             // then
             actualAuditValidationException.Should()

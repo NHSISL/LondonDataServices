@@ -33,8 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 this.dataSetService.AddDataSetAsync(nullDataSet);
 
             DataSetValidationException actualDataSetValidationException =
-                await Assert.ThrowsAsync<DataSetValidationException>(() =>
-                    addDataSetTask.AsTask());
+                await Assert.ThrowsAsync<DataSetValidationException>(addDataSetTask.AsTask);
 
             // then
             actualDataSetValidationException.Should()
@@ -129,8 +128,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 this.dataSetService.AddDataSetAsync(invalidDataSet);
 
             DataSetValidationException actualDataSetValidationException =
-                await Assert.ThrowsAsync<DataSetValidationException>(() =>
-                    addDataSetTask.AsTask());
+                await Assert.ThrowsAsync<DataSetValidationException>(addDataSetTask.AsTask);
 
             // then
             actualDataSetValidationException.Should()
@@ -268,8 +266,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 this.dataSetService.AddDataSetAsync(invalidDataSet);
 
             DataSetValidationException actualDataSetValidationException =
-                await Assert.ThrowsAsync<DataSetValidationException>(() =>
-                    addDataSetTask.AsTask());
+                await Assert.ThrowsAsync<DataSetValidationException>(addDataSetTask.AsTask);
 
             // then
             actualDataSetValidationException.Should()
@@ -324,8 +321,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 this.dataSetService.AddDataSetAsync(invalidDataSet);
 
             DataSetValidationException actualDataSetValidationException =
-                await Assert.ThrowsAsync<DataSetValidationException>(() =>
-                    addDataSetTask.AsTask());
+                await Assert.ThrowsAsync<DataSetValidationException>(addDataSetTask.AsTask);
 
             // then
             actualDataSetValidationException.Should()
@@ -385,8 +381,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 this.dataSetService.AddDataSetAsync(invalidDataSet);
 
             DataSetValidationException actualDataSetValidationException =
-                await Assert.ThrowsAsync<DataSetValidationException>(() =>
-                    addDataSetTask.AsTask());
+                await Assert.ThrowsAsync<DataSetValidationException>(addDataSetTask.AsTask);
 
             // then
             actualDataSetValidationException.Should()

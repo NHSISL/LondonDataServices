@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions
 {
     public class SubscriberCredentialValidationOrchestrationException : Xeption
     {
-        public SubscriberCredentialValidationOrchestrationException(string message, Xeption innerException)
+        public SubscriberCredentialValidationOrchestrationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

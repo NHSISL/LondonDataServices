@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Foundations.Mesh.Exceptions
 {
     public class MeshDependencyValidationException : Xeption
     {
-        public MeshDependencyValidationException(string message, Xeption innerException)
+        public MeshDependencyValidationException(string message, Xeption? innerException)
            : base(message, innerException) 
         { }
     }

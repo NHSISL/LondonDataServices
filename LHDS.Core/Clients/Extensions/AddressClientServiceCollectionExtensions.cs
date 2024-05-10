@@ -88,6 +88,7 @@ namespace LHDS.Core.Clients.Extensions
 
             services.AddTransient<IAddressClient, AddressClient>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
+            services.AddTransient<IAuditClient, AuditClient>();
         }
 
         private static void AddBrokers(IServiceCollection services)

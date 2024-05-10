@@ -12,9 +12,9 @@ namespace LHDS.Core.Brokers.CsvHelpers
     {
         private readonly ICsvHelperClient csvHelperClient;
 
-        public CsvHelperBroker(ICsvHelperClient csvHelperClient)
+        public CsvHelperBroker()
         {
-            this.csvHelperClient = csvHelperClient;
+            this.csvHelperClient = new NHSISL.CsvHelperClient.Clients.CsvHelperClient();
         }
 
         public async ValueTask<List<T>> MapCsvToObjectAsync<T>(

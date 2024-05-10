@@ -83,7 +83,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
-            string normalised = null;
             var filler = new Filler<Address>();
 
             filler.Setup()

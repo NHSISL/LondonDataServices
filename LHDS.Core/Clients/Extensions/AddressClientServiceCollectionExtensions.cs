@@ -10,6 +10,7 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using LHDS.Core.Brokers.AddressNormalisations;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -92,6 +93,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+            services.AddTransient<IAddressNormalisationBroker, AddressNormalisationBroker>();
         }
 
         private static void AddServices(IServiceCollection services)
@@ -99,7 +101,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAddressNormalisationService, AddressNormalisationService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IResolvedAddressService, ResolvedAddressService>();
-
+            services.AddTransient<IAddressNormalisationService, AddressNormalisationService>();
         }
 
         private static void AddProcessings(IServiceCollection services)

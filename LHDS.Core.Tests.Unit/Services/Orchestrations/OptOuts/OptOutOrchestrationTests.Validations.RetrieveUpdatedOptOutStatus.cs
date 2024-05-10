@@ -14,12 +14,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 {
     public partial class OptOutOrchestrationTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnRetrieveUpdatedOptOutStatusIfInvalidAndLogItAsync(
-                string invalidInput)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnRetrieveUpdatedOptOutStatusIfHeadersInvalidAndLogItAsync()
         {
             // given
             string randomString = GetRandomString();

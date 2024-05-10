@@ -10,11 +10,11 @@ namespace LHDS.Core.Brokers.CsvHelpers
 {
     public class CsvHelperBroker : ICsvHelperBroker
     {
-        private readonly ICsvHelperClient csvHelperClient;
+        private readonly ICsvClient csvClient;
 
-        public CsvHelperBroker(ICsvHelperClient csvHelperClient)
+        public CsvHelperBroker()
         {
-            this.csvHelperClient = csvHelperClient;
+            this.csvClient = new CsvClient();
         }
 
         public async ValueTask<List<T>> MapCsvToObjectAsync<T>(
@@ -22,7 +22,7 @@ namespace LHDS.Core.Brokers.CsvHelpers
             bool hasHeaderRecord,
             Dictionary<string, int>? fieldMappings = null)
         {
-            return await this.csvHelperClient
+            return await this.csvClient
                 .MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);
         }
 
@@ -32,7 +32,7 @@ namespace LHDS.Core.Brokers.CsvHelpers
             Dictionary<string, int>? fieldMappings = null,
             bool? shouldAddTrailingComma = false)
         {
-            return await this.csvHelperClient
+            return await this.csvClient
                 .MapObjectToCsvAsync(@object, addHeaderRecord, fieldMappings, shouldAddTrailingComma);
         }
     }

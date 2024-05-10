@@ -176,7 +176,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
 
-        private static X509Certificate2 GetCertificate(string value)
+        private static X509Certificate2? GetCertificate(string value)
         {
             if (!string.IsNullOrEmpty(value))
             {

@@ -169,7 +169,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IPdsAuditService, PdsAuditService>();
         }
 
-        private static X509Certificate2 GetCertificate(string value)
+        private static X509Certificate2? GetCertificate(string value)
         {
             if (!string.IsNullOrEmpty(value))
             {

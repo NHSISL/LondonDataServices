@@ -10,6 +10,8 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using LHDS.Core.Brokers.Audits;
+using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.AddressNormalisations;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -19,6 +21,7 @@ using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
+using LHDS.Core.Services.Foundations.AddressMatchers;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
@@ -26,6 +29,7 @@ using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
+using LHDS.Core.Services.Processings.AddressMatchers;
 using LHDS.Core.Services.Processings.AddressNormalisations;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
@@ -93,6 +97,8 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+            services.AddTransient<IAuditBroker, AuditBroker>();
+            services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
             services.AddTransient<IAddressNormalisationBroker, AddressNormalisationBroker>();
         }
 
@@ -101,6 +107,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAddressNormalisationService, AddressNormalisationService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IResolvedAddressService, ResolvedAddressService>();
+            services.AddTransient<IAddressMatcherService, AddressMatcherService>();
             services.AddTransient<IAddressNormalisationService, AddressNormalisationService>();
         }
 
@@ -110,6 +117,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAddressNormalisationProcessingService, AddressNormalisationProcessingService>();
             services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();
             services.AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>();
+            services.AddTransient<IAddressMatcherProcessingService, AddressMatcherProcessingService>();
         }
 
         private static void AddOrchestrations(IServiceCollection services)

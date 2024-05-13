@@ -20,6 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         {
             // Given
             int randomNumber = GetRandomNumber();
+            Guid inputSupplierId = Guid.NewGuid();
+
             List<Guid> randomActiveSubscriberAgreementIds =
                 CreateRandomActiveSubscriberAgreementIds(number: randomNumber);
 
@@ -42,12 +44,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                         .ReturnsAsync(randomSubscriberAgreement);
 
                 this.emisLandingOrchestrationServiceMock.Setup(service =>
-                    service.ProcessAsync(randomSubscriberAgreement))
+                    service.ProcessAsync(randomSubscriberAgreement, inputSupplierId))
                         .ReturnsAsync(randomEmisLandingPaths);
             }
 
             // When
-            List<string> actualPaths = await this.emisLandingCoordinationService.ProcessAsync();
+            List<string> actualPaths = await this.emisLandingCoordinationService
+                .ProcessAsync(supplierId: inputSupplierId);
 
             // Then
             actualPaths.Count().Should().Be(randomEmisLandingPaths.Count * randomNumber);
@@ -66,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                         Times.Once);
 
                 this.emisLandingOrchestrationServiceMock.Verify(service =>
-                    service.ProcessAsync(randomSubscriberAgreement),
+                    service.ProcessAsync(randomSubscriberAgreement, inputSupplierId),
                         Times.Once);
             }
 

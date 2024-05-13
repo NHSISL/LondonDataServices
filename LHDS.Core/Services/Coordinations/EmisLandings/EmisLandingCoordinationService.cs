@@ -34,6 +34,8 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
         public ValueTask<List<string>> ProcessAsync(Guid supplierId) =>
             TryCatch(async () =>
             {
+                ValidateProcessArgs(supplierId);
+
                 List<Guid> subscriberAgreementIds = await this.subscriberCredentialOrchestration
                     .RetrieveAllActiveSubscriberCredentialIds();
 
@@ -77,7 +79,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
         public ValueTask<string> ProcessFileAsync(string ftpFileName, Guid supplierId) =>
             TryCatch(async () =>
             {
-                ValidateFileNameOnLand(ftpFileName);
+                ValidateProcessFileArgs(fileName: ftpFileName, supplierId);
                 string[] parts = ftpFileName.Split("/");
 
                 if (parts.Length > 0)

@@ -138,7 +138,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             }
 
             // when
-            await this.emisLandingOrchestrationService.ProcessAsync(subscriberCredential: inputSubscriberCredential);
+            await this.emisLandingOrchestrationService.ProcessAsync(
+                subscriberCredential: inputSubscriberCredential, supplierId);
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>
@@ -266,6 +267,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             List<Document> externalDocuments = randomDocuments;
             List<string> externalDownloadList = randomDocuments.Select(document => document.FileName).ToList();
             string randomHash = GetRandomString(64);
+            Guid inputSupplierId = landingConfiguration.LandingSupplierId;
 
             List<IngestionTracking> externalIngestionTrackingsFound =
                 CreateRandomIngestionTrackings(dateTimeOffset: randomDateTime, fileNames: externalDownloadList);
@@ -287,7 +289,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(externalIngestionTrackingsFound.AsQueryable());
 
             // when
-            await this.emisLandingOrchestrationService.ProcessAsync(subscriberCredential: inputSubscriberCredential);
+            await this.emisLandingOrchestrationService.ProcessAsync(
+                subscriberCredential: inputSubscriberCredential,
+                supplierId: inputSupplierId);
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>
@@ -334,13 +338,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             List<Document> externalDocuments = new List<Document>();
             List<string> externalDownloadList = externalDocuments.Select(document => document.FileName).ToList();
+            Guid inputSupplierId = landingConfiguration.LandingSupplierId;
 
             List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking>
             {
                 new IngestionTracking
                 {
                     Id = Guid.NewGuid(),
-                    SupplierId = this.landingConfiguration.LandingSupplierId,
+                    SupplierId = inputSupplierId,
                     FileName = "test.txt",
                     EncryptedFileName = "/encrypted/test.txt",
                     DecryptedFileName = "/decrypted/test.txt",
@@ -367,7 +372,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(externalIngestionTrackingsFound.AsQueryable());
 
             // when
-            await this.emisLandingOrchestrationService.ProcessAsync(subscriberCredential: inputSubscriberCredential);
+            await this.emisLandingOrchestrationService
+                .ProcessAsync(subscriberCredential: inputSubscriberCredential, supplierId: inputSupplierId);
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>

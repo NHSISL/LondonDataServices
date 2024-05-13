@@ -74,6 +74,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 ValidateConfigurationSettings();
                 ValidateSubscriberCredentials(subscriberCredential);
+                ValidateProcessArguments(supplierId);
                 var exceptions = new List<Exception>();
                 Download download = new Download { SubscriberCredential = subscriberCredential };
 

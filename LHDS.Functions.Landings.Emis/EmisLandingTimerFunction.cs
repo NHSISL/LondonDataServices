@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
@@ -16,15 +17,18 @@ namespace LHDS.Functions.Landings.Emis
         private readonly ILoggingBroker loggingBroker;
         private readonly IEmisLandingClient landingClient;
         private readonly ILogger logger;
+        private readonly LandingConfiguration landingConfiguration;
 
         public EmisLandingTimerFunction(
             ILoggingBroker loggingBroker,
             IEmisLandingClient landingClient,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            LandingConfiguration landingConfiguration)
         {
             this.loggingBroker = loggingBroker;
             this.landingClient = landingClient;
             this.logger = loggerFactory.CreateLogger<EmisLandingTimerFunction>();
+            this.landingConfiguration = landingConfiguration;
         }
 
         [Function("EmisLandingTimerFunction")]
@@ -34,7 +38,7 @@ namespace LHDS.Functions.Landings.Emis
 
             try
             {
-                await this.landingClient.ProcessAsync();
+                await this.landingClient.ProcessAsync(supplierId: landingConfiguration.LandingSupplierId);
             }
             catch (Exception ex)
             {

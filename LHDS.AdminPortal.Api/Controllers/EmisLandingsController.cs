@@ -59,16 +59,16 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [HttpGet("filename/{fileName}")]
+        [HttpGet("filename/{fileName}/{supplierId}")]
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<string>> ReLandDocumentByFileNameAsync(string fileName)
+        public async ValueTask<ActionResult<string>> ReLandDocumentByFileNameAsync(string fileName, Guid supplierId)
         {
             try
             {
                 var returnFilePath = await this.emisLandingCoordinationService
-                    .ProcessFileAsync(HttpUtility.UrlDecode(fileName));
+                    .ProcessFileAsync(HttpUtility.UrlDecode(fileName), supplierId);
 
                 return Ok(returnFilePath);
             }
@@ -86,15 +86,15 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [HttpGet("download")]
+        [HttpGet("download/{supplierId}")]
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<List<string>>> DownloadDocumentsAsync()
+        public async ValueTask<ActionResult<List<string>>> DownloadDocumentsAsync(Guid supplierId)
         {
             try
             {
-                List<string> retrievedDownloads = await emisLandingCoordinationService.ProcessAsync();
+                List<string> retrievedDownloads = await emisLandingCoordinationService.ProcessAsync(supplierId);
 
                 return Ok(retrievedDownloads);
             }

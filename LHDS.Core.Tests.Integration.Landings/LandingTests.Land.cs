@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Integration.Landings
                 SubscriberAgreement maybeSubscriberAgreement = await SetupSubscriberAgreement();
 
                 // when
-                List<string> files = await landingClient.ProcessAsync();
+                List<string> files = await landingClient.ProcessAsync(supplierId: supplier.Id);
 
                 // then
                 files.Should().NotBeNull();

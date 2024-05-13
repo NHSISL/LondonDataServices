@@ -10,6 +10,7 @@ using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 using RESTFulSense.Exceptions;
 using Xunit;
 
@@ -44,6 +45,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             actualSubscriberCredential.FtpPassword.Should().BeNull();
             actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
             actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
+            actualSubscriberCredential.FtpPublicKey.Should().NotBeNullOrWhiteSpace();
+            actualSubscriberCredential.GpgPublicKey.Should().NotBeNullOrWhiteSpace();
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(actualSubscriberCredential.Id);
         }
 
@@ -130,11 +133,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             Guid subscriberAgreementId = Guid.NewGuid();
             SubscriberAgreement subscriberAgreement = await PostRandomSubscriberAgreementAsync(subscriberAgreementId);
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberAgreementId);
-            randomSubscriberCredential.CreatedDate = subscriberAgreement.CreatedDate;
-            randomSubscriberCredential.CreatedBy = subscriberAgreement.CreatedBy;
-            randomSubscriberCredential.UpdatedDate = dateOffset.AddMilliseconds(10);
-            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
+            SubscriberCredential inititalSubscriberCredential = randomSubscriberCredential;
+            SubscriberCredential modifiedSubscriberCredential = randomSubscriberCredential;
+            modifiedSubscriberCredential.CreatedDate = subscriberAgreement.CreatedDate;
+            modifiedSubscriberCredential.CreatedBy = subscriberAgreement.CreatedBy;
+            modifiedSubscriberCredential.UpdatedDate = dateOffset.AddMilliseconds(10);
+
+            SubscriberCredential expectedSubscriberCredential = modifiedSubscriberCredential.DeepClone();
             expectedSubscriberCredential.FtpPassPhrase = null;
             expectedSubscriberCredential.FtpPrivateKey = null;
             expectedSubscriberCredential.FtpPassword = null;
@@ -142,7 +147,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             expectedSubscriberCredential.GpgPrivateKey = null;
 
             // when 
-            await this.apiBroker.PostSubscriberCredentialAndGenerateKeysAsync(inputSubscriberCredential);
+            await this.apiBroker.PostSubscriberCredentialAndGenerateKeysAsync(modifiedSubscriberCredential);
 
             SubscriberCredential actualSubscriberCredential =
                 await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
@@ -156,6 +161,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             actualSubscriberCredential.FtpPublicKey.Should().NotBeNullOrWhiteSpace();
             actualSubscriberCredential.GpgPublicKey.Should().NotBeNullOrWhiteSpace();
             actualSubscriberCredential.UpdatedDate.ToString().Should().NotBeNullOrWhiteSpace();
+            inititalSubscriberCredential.FtpPublicKey.Should().NotBeSameAs(actualSubscriberCredential.FtpPublicKey);
+            inititalSubscriberCredential.GpgPublicKey.Should().NotBeSameAs(actualSubscriberCredential.GpgPublicKey);
             actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
             actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
             actualSubscriberCredential.FtpPassword.Should().BeNull();
@@ -276,11 +283,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             Guid subscriberAgreementId = Guid.NewGuid();
             SubscriberAgreement subscriberAgreement = await PostRandomSubscriberAgreementAsync(subscriberAgreementId);
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberAgreementId);
-            randomSubscriberCredential.CreatedDate = subscriberAgreement.CreatedDate;
-            randomSubscriberCredential.CreatedBy = subscriberAgreement.CreatedBy;
-            randomSubscriberCredential.UpdatedDate = dateOffset.AddMilliseconds(10);
-            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            SubscriberCredential expectedSubscriberCredential = inputSubscriberCredential.DeepClone();
+            SubscriberCredential inititalSubscriberCredential = randomSubscriberCredential;
+            SubscriberCredential modifiedSubscriberCredential = randomSubscriberCredential;
+            modifiedSubscriberCredential.CreatedDate = subscriberAgreement.CreatedDate;
+            modifiedSubscriberCredential.CreatedBy = subscriberAgreement.CreatedBy;
+            modifiedSubscriberCredential.UpdatedDate = dateOffset.AddMilliseconds(10);
+
+            SubscriberCredential expectedSubscriberCredential = modifiedSubscriberCredential.DeepClone();
             expectedSubscriberCredential.FtpPassPhrase = null;
             expectedSubscriberCredential.FtpPrivateKey = null;
             expectedSubscriberCredential.FtpPassword = null;
@@ -288,7 +297,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             expectedSubscriberCredential.GpgPrivateKey = null;
 
             // when 
-            await this.apiBroker.PutSubscriberCredentialAndGenerateKeysAsync(inputSubscriberCredential);
+            await this.apiBroker.PutSubscriberCredentialAndGenerateKeysAsync(modifiedSubscriberCredential);
 
             SubscriberCredential actualSubscriberCredential =
                 await this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
@@ -302,6 +311,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             actualSubscriberCredential.FtpPublicKey.Should().NotBeNullOrWhiteSpace();
             actualSubscriberCredential.GpgPublicKey.Should().NotBeNullOrWhiteSpace();
             actualSubscriberCredential.UpdatedDate.ToString().Should().NotBeNullOrWhiteSpace();
+            inititalSubscriberCredential.FtpPublicKey.Should().NotBeSameAs(actualSubscriberCredential.FtpPublicKey);
+            inititalSubscriberCredential.GpgPublicKey.Should().NotBeSameAs(actualSubscriberCredential.GpgPublicKey);
             actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
             actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
             actualSubscriberCredential.FtpPassword.Should().BeNull();

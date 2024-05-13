@@ -39,6 +39,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
 
             // then
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+            actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
+            actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
+            actualSubscriberCredential.FtpPassword.Should().BeNull();
+            actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
+            actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(actualSubscriberCredential.Id);
         }
 
@@ -69,6 +74,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
 
             // then
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+            actualSubscriberCredential.FtpPublicKey.Should().BeEquivalentTo(expectedSubscriberCredential.FtpPublicKey);
+            actualSubscriberCredential.GpgPublicKey.Should().BeEquivalentTo(expectedSubscriberCredential.GpgPublicKey);
+            actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
+            actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
+            actualSubscriberCredential.FtpPassword.Should().BeNull();
+            actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
+            actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
@@ -97,6 +109,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 options.Excluding(e => e.FtpPublicKey)
                     .Excluding(e => e.GpgPublicKey)
                     .Excluding(e => e.UpdatedDate));
+
+            actualSubscriberCredential.FtpPublicKey.Should().NotBeNullOrWhiteSpace();
+            actualSubscriberCredential.GpgPublicKey.Should().NotBeNullOrWhiteSpace();
+            actualSubscriberCredential.UpdatedDate.ToString().Should().NotBeNullOrWhiteSpace();
+            actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
+            actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
+            actualSubscriberCredential.FtpPassword.Should().BeNull();
+            actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
+            actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
 
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
@@ -132,6 +153,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                     .Excluding(e => e.GpgPublicKey)
                     .Excluding(e => e.UpdatedDate));
 
+            actualSubscriberCredential.FtpPublicKey.Should().NotBeNullOrWhiteSpace();
+            actualSubscriberCredential.GpgPublicKey.Should().NotBeNullOrWhiteSpace();
+            actualSubscriberCredential.UpdatedDate.ToString().Should().NotBeNullOrWhiteSpace();
+            actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
+            actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
+            actualSubscriberCredential.FtpPassword.Should().BeNull();
+            actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
+            actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
+
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
@@ -157,6 +187,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
 
             // then
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+            actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
+            actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
+            actualSubscriberCredential.FtpPassword.Should().BeNull();
+            actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
+            actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
@@ -187,6 +222,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
 
             // then
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
+                        actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
+            actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
+            actualSubscriberCredential.FtpPassword.Should().BeNull();
+            actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
+            actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
@@ -215,6 +255,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 options.Excluding(e => e.FtpPublicKey)
                     .Excluding(e => e.GpgPublicKey)
                     .Excluding(e => e.UpdatedDate));
+
+            actualSubscriberCredential.FtpPublicKey.Should().NotBeNullOrWhiteSpace();
+            actualSubscriberCredential.GpgPublicKey.Should().NotBeNullOrWhiteSpace();
+            actualSubscriberCredential.UpdatedDate.ToString().Should().NotBeNullOrWhiteSpace();
+            actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
+            actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
+            actualSubscriberCredential.FtpPassword.Should().BeNull();
+            actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
+            actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
 
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
@@ -249,6 +298,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 options.Excluding(e => e.FtpPublicKey)
                     .Excluding(e => e.GpgPublicKey)
                     .Excluding(e => e.UpdatedDate));
+
+            actualSubscriberCredential.FtpPublicKey.Should().NotBeNullOrWhiteSpace();
+            actualSubscriberCredential.GpgPublicKey.Should().NotBeNullOrWhiteSpace();
+            actualSubscriberCredential.UpdatedDate.ToString().Should().NotBeNullOrWhiteSpace();
+            actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
+            actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
+            actualSubscriberCredential.FtpPassword.Should().BeNull();
+            actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
+            actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
 
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }

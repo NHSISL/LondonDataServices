@@ -5,7 +5,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
+using System.Runtime.CompilerServices;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -67,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         }
 
         private static SqlException GetSqlException() =>
-            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+            (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();

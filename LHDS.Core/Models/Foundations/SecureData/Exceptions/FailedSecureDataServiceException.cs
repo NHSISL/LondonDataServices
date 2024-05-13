@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.SecureData.Exceptions
 {
     public class FailedSecureDataServiceException : Xeption
     {
-        public FailedSecureDataServiceException(string message, Exception innerException)
+        public FailedSecureDataServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

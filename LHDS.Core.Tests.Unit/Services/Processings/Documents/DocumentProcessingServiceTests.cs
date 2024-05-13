@@ -61,11 +61,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             return new TheoryData<Xeption>
             {
                 new DocumentDependencyException(
-                    message: "Document dependency error occurred, contact support.",
+                    message: "Document dependency error occurred, please contact support.",
                     innerException),
 
                 new DocumentServiceException(
-                    message: "Document service error occurred, contact support.",
+                    message: "Document service error occurred, please contact support.",
                     innerException)
             };
         }

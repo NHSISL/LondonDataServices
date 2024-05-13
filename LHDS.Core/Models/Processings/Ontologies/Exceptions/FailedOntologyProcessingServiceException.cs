@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Processings.Ontologies.Exceptions
 {
     public class FailedOntologyProcessingServiceException : Xeption
     {
-        public FailedOntologyProcessingServiceException(string message, Exception innerException)
+        public FailedOntologyProcessingServiceException(string message, Exception? innerException)
           : base(message, innerException)
         { }
     }

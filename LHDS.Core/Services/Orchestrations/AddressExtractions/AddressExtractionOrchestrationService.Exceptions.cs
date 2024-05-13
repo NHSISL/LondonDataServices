@@ -10,6 +10,7 @@ using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
+using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions
@@ -48,6 +49,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (AddressParserDependencyException addressParserDependencyException)
             {
                 throw CreateAndLogDependencyException(addressParserDependencyException);
@@ -64,11 +69,19 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyException(addressNormalisationServiceException);
             }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
+            }
             catch (AggregateException aggregateException)
             {
                 var failedAddressExtractionOrchestrationServiceException =
                     new FailedAddressExtractionOrchestrationServiceException(
-                        message: "Failed address extraction aggregate orchestration service occurred, " +
+                        message: "Failed address extraction aggregate orchestration service error occurred, " +
                             "please contact support.",
                         innerException: aggregateException);
 
@@ -114,6 +127,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (AddressParserDependencyException addressParserDependencyException)
             {
                 throw CreateAndLogDependencyException(addressParserDependencyException);
@@ -130,11 +147,19 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyException(addressNormalisationServiceException);
             }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
+            }
             catch (AggregateException aggregateException)
             {
                 var failedAddressExtractionOrchestrationServiceException =
                     new FailedAddressExtractionOrchestrationServiceException(
-                        message: "Failed address extraction aggregate orchestration service occurred, " +
+                        message: "Failed address extraction aggregate orchestration service error occurred, " +
                             "please contact support.",
                         innerException: aggregateException);
 
@@ -180,6 +205,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (AddressParserDependencyException addressParserDependencyException)
             {
                 throw CreateAndLogDependencyException(addressParserDependencyException);
@@ -196,11 +225,19 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyException(addressNormalisationServiceException);
             }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
+            }
             catch (AggregateException aggregateException)
             {
                 var failedAddressExtractionOrchestrationServiceException =
                     new FailedAddressExtractionOrchestrationServiceException(
-                        message: "Failed address extraction aggregate orchestration service occurred, " +
+                        message: "Failed address extraction aggregate orchestration service error occurred, " +
                             "please contact support.",
                         innerException: aggregateException);
 
@@ -245,6 +282,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (AddressParserDependencyException addressParserDependencyException)
             {
                 throw CreateAndLogDependencyException(addressParserDependencyException);
@@ -261,11 +302,19 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyException(addressNormalisationServiceException);
             }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
+            }
             catch (AggregateException aggregateException)
             {
                 var failedAddressExtractionOrchestrationServiceException =
                     new FailedAddressExtractionOrchestrationServiceException(
-                        message: "Failed address extraction aggregate orchestration service occurred, " +
+                        message: "Failed address extraction aggregate orchestration service error occurred, " +
                         "please contact support.",
                         innerException: aggregateException);
 
@@ -327,7 +376,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
         {
             var addressExtractionOrchestrationServiceException =
                 new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
+                    message: "Address extraction orchestration service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressExtractionOrchestrationServiceException);

@@ -162,8 +162,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
 
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getDataSetSpecificationbyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getDataSetSpecificationbyIdTask.AsTask);
         }
     }
 }

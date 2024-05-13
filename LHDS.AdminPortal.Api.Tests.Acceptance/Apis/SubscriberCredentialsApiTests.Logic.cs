@@ -305,8 +305,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            await Assert.ThrowsAsync<HttpResponseInternalServerErrorException>(() =>
-                getSubscriberCredentialbyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseInternalServerErrorException>(getSubscriberCredentialbyIdTask.AsTask);
         }
     }
 }

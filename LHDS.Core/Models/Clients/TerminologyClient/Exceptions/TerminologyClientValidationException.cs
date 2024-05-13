@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Clients.TerminologyClient.Exceptions
 {
     public class TerminologyClientValidationException : Xeption
     {
-        public TerminologyClientValidationException(string message, Xeption innerException)
+        public TerminologyClientValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

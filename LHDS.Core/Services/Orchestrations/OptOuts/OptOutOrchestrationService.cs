@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -16,7 +17,6 @@ using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts;
-using LHDS.Core.Services.Processings.CsvMappers;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Mesh;
 using LHDS.Core.Services.Processings.OptOuts;
@@ -28,7 +28,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         private readonly IOptOutProcessingService optOutProcessingService;
         private readonly IDocumentProcessingService documentProcessingService;
         private readonly IMeshProcessingService meshProcessingService;
-        private readonly ICsvMapperProcessingService csvMapperProcessingService;
+        private readonly ICsvHelperBroker csvHelperBroker;
         private readonly BlobContainers blobContainers;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
@@ -40,8 +40,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             IOptOutProcessingService optOutProcessingService,
             IDocumentProcessingService documentProcessingService,
             IMeshProcessingService meshProcessingService,
-            ICsvMapperProcessingService csvMapperProcessingService,
             BlobContainers blobContainers,
+            ICsvHelperBroker csvHelperBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
             ILoggingBroker loggingBroker,
@@ -51,8 +51,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             this.optOutProcessingService = optOutProcessingService;
             this.documentProcessingService = documentProcessingService;
             this.meshProcessingService = meshProcessingService;
-            this.csvMapperProcessingService = csvMapperProcessingService;
             this.blobContainers = blobContainers;
+            this.csvHelperBroker = csvHelperBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
@@ -76,7 +76,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 bool withHeader =
                     optOutConfiguration.OptOutFileHasHeader;
 
-                Dictionary<string, int> fieldMappings = null;
+                Dictionary<string, int>? fieldMappings = null;
 
                 bool shouldAddTrailingComma =
                     optOutConfiguration.OptOutFileRequireTrailingComma;
@@ -84,7 +84,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 var inputString = Encoding.ASCII.GetString(optOutFile);
 
                 List<OptOutIdentifier> mappedOptOuts =
-                    await this.csvMapperProcessingService
+                    await this.csvHelperBroker
                         .MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader);
 
                 List<OptOut> processedOptOuts = new List<OptOut>();
@@ -112,7 +112,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     processedOptOuts.Add(item);
                 }
 
-                var processedData = await this.csvMapperProcessingService
+                var processedData = await this.csvHelperBroker
                     .MapObjectToCsvAsync(processedOptOuts, withHeader, fieldMappings, shouldAddTrailingComma);
 
                 var processedBytes = Encoding.ASCII.GetBytes(processedData);
@@ -129,11 +129,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 return saveDocument;
             });
 
-        public ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync() =>
+        public ValueTask<MeshMessage?> PushExpiredOptOutsToMeshForRenewalAsync() =>
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
-                bool withHeader = false;
                 bool shouldAddTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
 
                 List<OptOut> expiredOptOuts = await
@@ -233,7 +232,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                     StatusChangedDateTime = identifier.CacheTime
                                 }).ToList();
 
-                            string csvDifferences = await this.csvMapperProcessingService
+                            string csvDifferences = await this.csvHelperBroker
                                 .MapObjectToCsvAsync(
                                     @object: differentIdentifiers,
                                     addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
@@ -262,7 +261,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
         private static string GetHeaderValue(MeshMessage message, string keyToFind)
         {
-            List<string> value = new List<string>();
+            List<string>? value = new List<string>();
 
             foreach (var key in message.Headers.Keys)
             {
@@ -274,16 +273,16 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 }
             }
 
-            return value.FirstOrDefault();
+            return value?.FirstOrDefault() ?? string.Empty;
         }
 
         private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)
         {
-            string value = dictionary.ContainsKey(key)
+            var value = dictionary.ContainsKey(key)
                 ? dictionary[key]?.First()
                 : string.Empty;
 
-            return value;
+            return value ?? string.Empty;
         }
     }
 }

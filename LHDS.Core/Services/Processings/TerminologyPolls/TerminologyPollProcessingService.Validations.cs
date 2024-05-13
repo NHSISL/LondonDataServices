@@ -31,7 +31,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
         public void ValidateResourceType(string resourceType) =>
             Validate((Rule: IsInvalid(resourceType), Parameter: "resourceType"));
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"

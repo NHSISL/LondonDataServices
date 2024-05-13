@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.CryptographicKeys.Exceptions
 {
     public class CryptographicKeyProcessingDependencyException : Xeption
     {
-        public CryptographicKeyProcessingDependencyException(string message, Xeption innerException)
+        public CryptographicKeyProcessingDependencyException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

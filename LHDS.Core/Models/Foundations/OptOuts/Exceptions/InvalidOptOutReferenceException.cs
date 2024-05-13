@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.OptOuts.Exceptions
 {
     public class InvalidOptOutReferenceException : Xeption
     {
-        public InvalidOptOutReferenceException(string message, Exception innerException)
+        public InvalidOptOutReferenceException(string message, Exception? innerException)
             : base(message, innerException) { }
     }
 }

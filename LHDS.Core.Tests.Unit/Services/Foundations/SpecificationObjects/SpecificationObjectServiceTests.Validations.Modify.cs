@@ -205,8 +205,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 this.specificationObjectService.ModifySpecificationObjectAsync(invalidSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
-                await Assert.ThrowsAsync<SpecificationObjectValidationException>(() =>
-                    modifySpecificationObjectTask.AsTask());
+                await Assert.ThrowsAsync<SpecificationObjectValidationException>(modifySpecificationObjectTask.AsTask);
 
             // then
             actualSpecificationObjectValidationException.Should()

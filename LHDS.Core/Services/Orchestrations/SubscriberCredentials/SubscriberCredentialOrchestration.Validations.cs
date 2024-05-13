@@ -40,7 +40,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         private void ValidateSubscriberCredentialId(Guid subscriberCredentialId)
         {
             Validate<InvalidArgumentSubscriberCredentialOrchestrationException>(
-                 message: "Invalid argument subscriber credential orchestration error occurred, contact support.",
+                 message: "Invalid argument subscriber credential orchestration error occurred, please contact support.",
                  (Rule: IsInvalid(subscriberCredentialId), Parameter: "subscriberCredentialId"));
         }
 
@@ -53,19 +53,19 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
+            var invalidDataException = (T?)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataException.UpsertDataList(
+                    invalidDataException?.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataException.ThrowIfContainsErrors();
+            invalidDataException?.ThrowIfContainsErrors();
         }
     }
 }

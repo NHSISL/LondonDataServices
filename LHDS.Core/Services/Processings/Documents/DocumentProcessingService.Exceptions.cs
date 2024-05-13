@@ -51,7 +51,7 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 var failedDocumentProcessingServiceException =
                     new FailedDocumentProcessingServiceException(
-                        message: "Failed document processing service error occurred, contact support.",
+                        message: "Failed document processing service error occurred, please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
@@ -88,7 +88,7 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 var failedDocumentProcessingServiceException =
                     new FailedDocumentProcessingServiceException(
-                        message: "Failed document processing service error occurred, contact support.",
+                        message: "Failed document processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
@@ -133,7 +133,7 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 var failedDocumentProcessingServiceException =
                     new FailedDocumentProcessingServiceException(
-                        message: "Failed document processing service error occurred, contact support.",
+                        message: "Failed document processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
@@ -183,7 +183,7 @@ namespace LHDS.Core.Services.Processings.Documents
         {
             var documentProcessingServiceException = new
                 DocumentProcessingServiceException(
-                message: "Document processing service error occurred, contact support.",
+                message: "Document processing service error occurred, please contact support.",
                 innerException: exception);
 
             this.loggingBroker.LogError(documentProcessingServiceException);

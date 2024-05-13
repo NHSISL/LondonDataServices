@@ -96,9 +96,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
 
             // then
             deletedPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getPdsAuditbyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getPdsAuditbyIdTask.AsTask);
         }
 
         [Fact]

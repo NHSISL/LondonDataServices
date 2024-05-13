@@ -34,12 +34,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             var failedDocumentRequestException =
                 new FailedDocumentRequestException(
-                    message: "Failed document request occurred, please contact support",
+                    message: "Failed document request occurred, please contact support.",
                     innerException: requestFailedException);
 
             var expectedDependencyException =
                  new DocumentDependencyException(
-                     message: "Document dependency error occurred, contact support.",
+                     message: "Document dependency error occurred, please contact support.",
                      innerException: failedDocumentRequestException);
 
             this.blobStorageBrokerMock.Setup(broker =>
@@ -86,12 +86,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             var serviceException = new Exception(randomMessage);
 
             var failedDocumentServiceException = new FailedDocumentServiceException(
-                message: "Failed document service error occurred, contact support.",
+                message: "Failed document service error occurred, please contact support.",
                 innerException: serviceException);
 
             var expectedDocumentServiceException =
                 new DocumentServiceException(
-                    message: "Document service error occurred, contact support.",
+                    message: "Document service error occurred, please contact support.",
                     innerException: failedDocumentServiceException);
 
             this.blobStorageBrokerMock.Setup(broker =>

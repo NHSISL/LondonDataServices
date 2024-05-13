@@ -38,8 +38,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                 this.terminologyPollProcessingService.RetrieveTerminologyPollByIdAsync(invalidTerminologyPollId);
 
             TerminologyPollProcessingValidationException actualTerminologyPollProcessingValidationException =
-                await Assert.ThrowsAsync<TerminologyPollProcessingValidationException>(() =>
-                    retrieveTerminologyPollByIDTask.AsTask());
+                await Assert.ThrowsAsync<TerminologyPollProcessingValidationException>(
+                    retrieveTerminologyPollByIDTask.AsTask);
 
             // then
             actualTerminologyPollProcessingValidationException.Should()

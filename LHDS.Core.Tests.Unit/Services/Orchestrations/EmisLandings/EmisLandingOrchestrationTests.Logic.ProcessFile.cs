@@ -32,6 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             Document randomDocument = CreateRandomDocument();
             Document externalDocument = randomDocument;
             IngestionTracking externalIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
+            Guid inputSupplierId = externalIngestionTracking.SupplierId;
 
             List<IngestionTracking> externalIngestionTrackingsFound =
                 new List<IngestionTracking> { externalIngestionTracking };
@@ -73,7 +74,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             await this.emisLandingOrchestrationService
                 .ProcessFileAsync(
                     ftpFileName: externalIngestionTracking.FileName,
-                    subscriberCredential: inputSubscriberCredential);
+                    subscriberCredential: inputSubscriberCredential,
+                    supplierId: inputSupplierId);
 
             // then
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
@@ -233,7 +235,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // when
             await this.emisLandingOrchestrationService.ProcessFileAsync(
                 ftpFileName: newRandomIngestionTracking.FileName,
-                subscriberCredential: inputSubscriberCredential);
+                subscriberCredential: inputSubscriberCredential,
+                supplierId: supplierId);
 
             // then
             this.downloadProcessingServiceMock.Verify(service =>

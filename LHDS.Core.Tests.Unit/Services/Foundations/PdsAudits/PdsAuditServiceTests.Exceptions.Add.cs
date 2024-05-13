@@ -26,12 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             var failedPdsAuditStorageException =
                 new FailedPdsAuditStorageException(
-                    message: "Failed pdsAudit service occurred, please contact support",
+                    message: "Failed pdsAudit service error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedPdsAuditDependencyException =
                 new PdsAuditDependencyException(
-                    message: "PdsAudit dependency error occurred, contact support.",
+                    message: "PdsAudit dependency error occurred, please contact support.",
                     innerException: failedPdsAuditStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -189,12 +189,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             var failedPdsAuditStorageException =
                 new FailedPdsAuditStorageException(
-                    message: "Failed pdsAudit service occurred, please contact support",
+                    message: "Failed pdsAudit service error occurred, please contact support.",
                     innerException: databaseUpdateException);
 
             var expectedPdsAuditDependencyException =
                 new PdsAuditDependencyException(
-                    message: "PdsAudit dependency error occurred, contact support.",
+                    message: "PdsAudit dependency error occurred, please contact support.",
                     innerException: failedPdsAuditStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -240,12 +240,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             var failedPdsAuditServiceException =
                 new FailedPdsAuditServiceException(
-                    message: "Failed pdsAudit service occurred, please contact support",
+                    message: "Failed pdsAudit service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedPdsAuditServiceException =
                 new PdsAuditServiceException(
-                    message: "PdsAudit service error occurred, contact support.",
+                    message: "PdsAudit service error occurred, please contact support.",
                     innerException: failedPdsAuditServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>

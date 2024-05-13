@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
                     message: "IngestionTrackingAudit dependency validation errors occurred, please try again.", innerException),
 
                 new IngestionTrackingAuditServiceException(
-                    message : "IngestionTrackingAudit service error occurred, contact support.", innerException)
+                    message : "IngestionTrackingAudit service error occurred, please contact support.", innerException)
             };
         }
 

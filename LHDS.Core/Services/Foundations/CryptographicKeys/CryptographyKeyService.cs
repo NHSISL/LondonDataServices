@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.CryptographyKeys;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.CryptographicKeys;
+using LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.CryptographicKeys
 {
@@ -36,13 +37,16 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
                 var broker = cryptographyKeyBrokers
                     .FirstOrDefault(broker => broker.CryptographyType == cryptographyType);
 
-                ValidateBrokerNotNull(broker);
+                if (broker is null)
+                {
+                    throw new NullBrokerCryptographyKeyException(message: "Broker is null.");
+                }
 
                 return await broker.GenerateKeysAsync(
-                    comment,
-                    passPhrase,
-                    userName,
-                    email);
+                    comment ?? string.Empty,
+                    passPhrase ?? string.Empty,
+                    userName ?? string.Empty,
+                    email ?? string.Empty);
             });
     }
 }

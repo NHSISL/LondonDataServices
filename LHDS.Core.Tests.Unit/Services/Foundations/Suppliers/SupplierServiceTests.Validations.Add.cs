@@ -33,8 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 this.supplierService.AddSupplierAsync(nullSupplier);
 
             SupplierValidationException actualSupplierValidationException =
-                await Assert.ThrowsAsync<SupplierValidationException>(() =>
-                    addSupplierTask.AsTask());
+                await Assert.ThrowsAsync<SupplierValidationException>(addSupplierTask.AsTask);
 
             // then
             actualSupplierValidationException.Should()
@@ -105,8 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 this.supplierService.AddSupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
-                await Assert.ThrowsAsync<SupplierValidationException>(() =>
-                    addSupplierTask.AsTask());
+                await Assert.ThrowsAsync<SupplierValidationException>(addSupplierTask.AsTask);
 
             // then
             actualSupplierValidationException.Should()
@@ -163,8 +161,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 this.supplierService.AddSupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
-                await Assert.ThrowsAsync<SupplierValidationException>(() =>
-                    addSupplierTask.AsTask());
+                await Assert.ThrowsAsync<SupplierValidationException>(addSupplierTask.AsTask);
 
             // then
             actualSupplierValidationException.Should()
@@ -218,8 +215,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 this.supplierService.AddSupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
-                await Assert.ThrowsAsync<SupplierValidationException>(() =>
-                    addSupplierTask.AsTask());
+                await Assert.ThrowsAsync<SupplierValidationException>(addSupplierTask.AsTask);
 
             // then
             actualSupplierValidationException.Should()
@@ -278,8 +274,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 this.supplierService.AddSupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
-                await Assert.ThrowsAsync<SupplierValidationException>(() =>
-                    addSupplierTask.AsTask());
+                await Assert.ThrowsAsync<SupplierValidationException>(addSupplierTask.AsTask);
 
             // then
             actualSupplierValidationException.Should()

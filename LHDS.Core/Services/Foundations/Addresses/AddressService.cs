@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,7 +88,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 List<Address> returnedAddresses =
                     this.storageBroker.SelectAllAddresses().Where(address => address.PostCode == postCode).ToList();
 
-                return returnedAddresses;
+                return await ValueTask.FromResult(returnedAddresses);
             });
     }
 }

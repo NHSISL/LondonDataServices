@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Orchestrations.Decryptions.Exceptions
 {
     public class FailedDecryptionOrchestrationServiceException : Xeption
     {
-        public FailedDecryptionOrchestrationServiceException(string message, Exception innerException)
+        public FailedDecryptionOrchestrationServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

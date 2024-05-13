@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Clients.AddressClient.Exceptions
 {
     public class AddressClientServiceException : Xeption
     {
-        public AddressClientServiceException(string message, Xeption innerException)
+        public AddressClientServiceException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

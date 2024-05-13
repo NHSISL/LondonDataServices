@@ -38,7 +38,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             {
                 var failedSecureDataException =
                     new FailedSecureDataException(
-                        message: "Failed secure data error occurred, contact support.",
+                        message: "Failed secure data error occurred, please contact support.",
                         innerException: argumentException);
 
                 throw CreateAndLogDependencyValidationException(failedSecureDataException);
@@ -47,7 +47,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             {
                 var failedSecureDataException =
                     new FailedSecureDataException(
-                        message: "Failed secure data error occurred, contact support.",
+                        message: "Failed secure data error occurred, please contact support.",
                         innerException: requestFailedException);
 
                 throw CreateAndLogDependencyException(failedSecureDataException);
@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             catch (Exception exception)
             {
                 var failedSecureDataServiceException = new FailedSecureDataServiceException(
-                    message: "Failed secure data service occurred, please contact support",
+                    message: "Failed secure data service error occurred, please contact support.",
                     innerException: exception);
 
                 throw CreateAndLogServiceException(failedSecureDataServiceException);
@@ -76,7 +76,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             {
                 var failedSecureDataException =
                     new FailedSecureDataException(
-                        message: "Failed secure data error occurred, contact support.",
+                        message: "Failed secure data error occurred, please contact support.",
                         innerException: requestFailedException);
 
                 throw CreateAndLogDependencyException(failedSecureDataException);
@@ -84,7 +84,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             catch (Exception exception)
             {
                 var failedSecureDataServiceException = new FailedSecureDataServiceException(
-                    message: "Failed secure data service occurred, please contact support",
+                    message: "Failed secure data service error occurred, please contact support.",
                     innerException: exception);
 
                 throw CreateAndLogServiceException(failedSecureDataServiceException);
@@ -116,7 +116,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
         private SecureDataDependencyException CreateAndLogDependencyException(Xeption exception)
         {
             var secureDataDependencyException = new SecureDataDependencyException(
-                message: "Secure data dependency errors occurred, contact support.",
+                message: "Secure data dependency errors occurred, please contact support.",
                 innerException: exception);
 
             this.loggingBroker.LogError(secureDataDependencyException);
@@ -128,7 +128,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             Xeption exception)
         {
             var secureDataServiceException = new SecureDataServiceException(
-                message: "Secure data service error occurred, contact support.",
+                message: "Secure data service error occurred, please contact support.",
                 innerException: exception);
 
             this.loggingBroker.LogError(secureDataServiceException);

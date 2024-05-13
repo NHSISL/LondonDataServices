@@ -38,7 +38,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             {
                 var failedIngestionTrackingAuditStorageException =
                     new FailedIngestionTrackingAuditStorageException(
-                        message: "Failed IngestionTrackingAudit storage error occurred, contact support.",
+                        message: "Failed IngestionTrackingAudit storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedIngestionTrackingAuditStorageException);
@@ -77,7 +77,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             {
                 var failedIngestionTrackingAuditStorageException =
                     new FailedIngestionTrackingAuditStorageException(
-                        message: "Failed IngestionTrackingAudit storage error occurred, contact support.",
+                        message: "Failed IngestionTrackingAudit storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedIngestionTrackingAuditStorageException);
@@ -86,7 +86,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             {
                 var failedIngestionTrackingAuditServiceException =
                     new FailedIngestionTrackingAuditServiceException(
-                        message: "Failed IngestionTrackingAudit service occurred, please contact support",
+                        message: "Failed IngestionTrackingAudit service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedIngestionTrackingAuditServiceException);
@@ -104,7 +104,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             {
                 var failedIngestionTrackingAuditStorageException =
                     new FailedIngestionTrackingAuditStorageException(
-                        message: "Failed IngestionTrackingAudit storage error occurred, contact support.",
+                        message: "Failed IngestionTrackingAudit storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedIngestionTrackingAuditStorageException);
@@ -113,7 +113,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             {
                 var failedIngestionTrackingAuditServiceException =
                     new FailedIngestionTrackingAuditServiceException(
-                        message: "Failed IngestionTrackingAudit service occurred, please contact support",
+                        message: "Failed IngestionTrackingAudit service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedIngestionTrackingAuditServiceException);
@@ -134,7 +134,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
         private IngestionTrackingAuditDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
             var ingestionTrackingAuditDependencyException = new IngestionTrackingAuditDependencyException(
-                message: "IngestionTrackingAudit dependency error occurred, contact support.",
+                message: "IngestionTrackingAudit dependency error occurred, please contact support.",
                 innerException: exception);
             this.loggingBroker.LogCritical(ingestionTrackingAuditDependencyException);
 
@@ -158,7 +158,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             Xeption exception)
         {
             var ingestionTrackingAuditDependencyException = new IngestionTrackingAuditDependencyException(
-                message: "IngestionTrackingAudit dependency error occurred, contact support.",
+                message: "IngestionTrackingAudit dependency error occurred, please contact support.",
                 innerException: exception);
 
             this.loggingBroker.LogError(ingestionTrackingAuditDependencyException);
@@ -170,7 +170,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             Xeption exception)
         {
             var ingestionTrackingAuditServiceException = new IngestionTrackingAuditServiceException(
-                message: "IngestionTrackingAudit service error occurred, contact support.",
+                message: "IngestionTrackingAudit service error occurred, please contact support.",
                 innerException: exception);
 
             this.loggingBroker.LogError(ingestionTrackingAuditServiceException);

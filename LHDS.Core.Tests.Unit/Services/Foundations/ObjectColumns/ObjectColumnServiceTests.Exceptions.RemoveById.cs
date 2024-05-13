@@ -25,12 +25,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             var failedObjectColumnStorageException =
                 new FailedObjectColumnStorageException(
-                    message: "Failed objectColumn storage error occurred, contact support.",
+                    message: "Failed objectColumn storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedObjectColumnDependencyException =
                 new ObjectColumnDependencyException(
-                    message: "ObjectColumn dependency error occurred, contact support.",
+                    message: "ObjectColumn dependency error occurred, please contact support.",
                     innerException: failedObjectColumnStorageException);
 
             this.storageBrokerMock.Setup(broker =>
@@ -133,12 +133,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             var failedObjectColumnStorageException =
                 new FailedObjectColumnStorageException(
-                    message: "Failed objectColumn storage error occurred, contact support.",
+                    message: "Failed objectColumn storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedObjectColumnDependencyException =
                 new ObjectColumnDependencyException(
-                    message: "ObjectColumn dependency error occurred, contact support.",
+                    message: "ObjectColumn dependency error occurred, please contact support.",
                     innerException: failedObjectColumnStorageException);
 
             this.storageBrokerMock.Setup(broker =>
@@ -180,12 +180,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             var failedObjectColumnServiceException =
                 new FailedObjectColumnServiceException(
-                    message: "Failed objectColumn service occurred, please contact support",
+                    message: "Failed objectColumn service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedObjectColumnServiceException =
                 new ObjectColumnServiceException(
-                    message: "ObjectColumn service error occurred, contact support.",
+                    message: "ObjectColumn service error occurred, please contact support.",
                     innerException: failedObjectColumnServiceException);
 
             this.storageBrokerMock.Setup(broker =>

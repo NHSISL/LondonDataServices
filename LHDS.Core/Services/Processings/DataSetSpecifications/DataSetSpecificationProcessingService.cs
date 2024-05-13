@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -93,7 +93,7 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
                 return await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(dataSetSpecificationId);
             });
 
-        public ValueTask<DataSetSpecification> GetActiveDataSetSpecification(Guid supplierId) =>
+        public ValueTask<DataSetSpecification?> GetActiveDataSetSpecification(Guid supplierId) =>
             TryCatch(async () =>
             {
                 ValidateSupplierId(supplierId);

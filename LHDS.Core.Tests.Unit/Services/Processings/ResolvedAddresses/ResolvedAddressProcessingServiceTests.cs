@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     message: "ResolvedAddress validation errors occurred, please try again.", innerException),
 
                 new ResolvedAddressServiceException(
-                    message : "ResolvedAddress service error occurred, contact support.", innerException)
+                    message : "ResolvedAddress service error occurred, please contact support.", innerException)
             };
         }
 

@@ -277,7 +277,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException),
 
                 new SubscriberCredentialOrchestrationServiceException(
-                    message: "Subscriber credential orchestration service error occurred, contact support.",
+                    message: "Subscriber credential orchestration service error occurred, please contact support.",
                     innerException),
 
                 new EmisLandingOrchestrationDependencyException(
@@ -285,7 +285,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException),
 
                 new EmisLandingOrchestrationServiceException(
-                    message: "EMIS landing orchestration service error occurred, contact support.",
+                    message: "EMIS landing orchestration service error occurred, please contact support.",
                     innerException)
             };
         }

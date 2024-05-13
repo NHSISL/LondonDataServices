@@ -25,7 +25,7 @@ namespace LHDS.Functions.Landings.Emis
         }
 
         [Function("DecryptionEventFunction")]
-        public void Run(
+        public async Task Run(
             [BlobTrigger("emislanding/encrypted/{name}", Connection = "BlobStorage")] string myBlob, string name)
         {
             this.loggingBroker
@@ -35,18 +35,15 @@ namespace LHDS.Functions.Landings.Emis
 
             try
             {
-                Task.Run(async () =>
+                if (!Path.HasExtension(name))
                 {
-                    if (!Path.HasExtension(name))
-                    {
-                        return;
-                    }
+                    return;
+                }
 
-                    if (Path.GetExtension(name) == ".gpg")
-                    {
-                        await this.decryptionClient.DecryptAsync($"/encrypted/{name}");
-                    }
-                }).Wait();
+                if (Path.GetExtension(name) == ".gpg")
+                {
+                    await this.decryptionClient.DecryptAsync($"/encrypted/{name}");
+                }
             }
             catch (Exception ex)
             {

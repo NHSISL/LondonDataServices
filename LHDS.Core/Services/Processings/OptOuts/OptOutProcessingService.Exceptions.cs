@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -15,11 +15,11 @@ namespace LHDS.Core.Services.Processings.OptOuts
 {
     public partial class OptOutProcessingService
     {
-        private delegate ValueTask<OptOut> ReturningOptOutFunction();
+        private delegate ValueTask<T> ReturningOptOutFunction<T>();
         private delegate ValueTask<List<OptOut>> ReturningOptOutListFunction();
         private delegate IQueryable<OptOut> ReturningOptOutListsFunction();
 
-        private async ValueTask<OptOut> TryCatch(ReturningOptOutFunction returningOptOutFunction)
+        private async ValueTask<T> TryCatch<T>(ReturningOptOutFunction<T> returningOptOutFunction)
         {
             try
             {
@@ -53,44 +53,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 var failedOptOutProcessingServiceException =
                     new FailedOptOutProcessingServiceException(
-                        message: "Failed opt out processing service error occurred, contact support.",
-                        exception);
-
-                throw CreateAndLogServiceException(failedOptOutProcessingServiceException);
-            }
-        }
-
-        private async ValueTask<List<OptOut>> TryCatch(ReturningOptOutListFunction returningOptOutListFunction)
-        {
-            try
-            {
-                return await returningOptOutListFunction();
-            }
-            catch (InvalidArgumentOptOutProcessingException invalidArgumentOptOutProcessingException)
-            {
-                throw CreateAndLogValidationException(invalidArgumentOptOutProcessingException);
-            }
-            catch (OptOutDependencyValidationException optOutDependencyValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(optOutDependencyValidationException);
-            }
-            catch (OptOutValidationException optOutValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(optOutValidationException);
-            }
-            catch (OptOutDependencyException optOutDependencyException)
-            {
-                throw CreateAndLogDependencyException(optOutDependencyException);
-            }
-            catch (OptOutServiceException optOutServiceException)
-            {
-                throw CreateAndLogDependencyException(optOutServiceException);
-            }
-            catch (Exception exception)
-            {
-                var failedOptOutProcessingServiceException =
-                    new FailedOptOutProcessingServiceException(
-                        message: "Failed opt out processing service error occurred, contact support.",
+                        message: "Failed opt out processing service error occurred, please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(failedOptOutProcessingServiceException);
@@ -127,7 +90,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 var failedOptOutProcessingServiceException =
                     new FailedOptOutProcessingServiceException(
-                        message: "Failed opt out processing service error occurred, contact support.",
+                        message: "Failed opt out processing service error occurred, please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(failedOptOutProcessingServiceException);
@@ -149,7 +112,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
         {
             var optOutProcessingDependencyValidationException =
                 new OptOutProcessingDependencyValidationException(
-                    exception.InnerException as Xeption);
+                    exception?.InnerException as Xeption);
 
             this.loggingBroker.LogError(optOutProcessingDependencyValidationException);
 

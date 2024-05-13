@@ -96,7 +96,7 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
         {
             var cryptographicKeyProcessingServiceException = new
                 CryptographicKeyProcessingServiceException(
-                    message: "Cryptography key processing service error occurred, contact support.",
+                    message: "Cryptography key processing service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(cryptographicKeyProcessingServiceException);

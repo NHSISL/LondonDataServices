@@ -18,7 +18,7 @@ namespace LHDS.Core.Brokers.AddressNormalisations
         public AddressNormalisationBroker()
         {
             string assembly = Assembly.GetExecutingAssembly().Location;
-            string dataFolderPath = Path.Combine(Path.GetDirectoryName(assembly), @"Data");
+            string dataFolderPath = Path.Combine(Path.GetDirectoryName(assembly) ?? string.Empty, @"Data");
 
             var config = new LibPostalConfiguration
             {

@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
         ValueTask<OptOut> AddOrModifyOptOutAsync(OptOut optOut);
         ValueTask<OptOut> RemoveOptOutByIdAsync(Guid optOutId);
         ValueTask<OptOut> RetrieveOptOutByIdAsync(Guid optOutId);
-        ValueTask<OptOut> RetrieveOptOutByNhsNumberAsync(string optOutNhsNumber);
+        ValueTask<OptOut?> RetrieveOptOutByNhsNumberAsync(string optOutNhsNumber);
         ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync(int olderThanDays);
         ValueTask<List<OptOut>> RetrieveAllOptOutsByBatchReferenceAsync(string batchReference);
 

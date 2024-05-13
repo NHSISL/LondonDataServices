@@ -280,7 +280,7 @@ namespace LHDS.AdminPortal.Api
                     Parameter: "blobContainers__pds"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Configuration value does not exist"

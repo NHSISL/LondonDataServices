@@ -32,7 +32,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
         private void ValidateSubscriberCredentialIdOnRemove(Guid subscriberCredentialId)
         {
             Validate<InvalidArgumentSubscriberCredentialProcessingException>(
-                 message: "Invalid argument subscriber credential processing error occurred, contact support.",
+                 message: "Invalid argument subscriber credential processing error occurred, please contact support.",
                  (Rule: IsInvalid(subscriberCredentialId), Parameter: "subscriberCredentialId"));
         }
 
@@ -57,7 +57,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             }
 
             Validate<InvalidArgumentSubscriberCredentialProcessingException>(
-                message: "Invalid argument subscriber credential processing error occurred, contact support.",
+                message: "Invalid argument subscriber credential processing error occurred, please contact support.",
                 rules.ToArray());
         }
 
@@ -83,7 +83,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             Message = "Id is required"
         };
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
@@ -92,7 +92,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
         private static dynamic IsInvalidProperty(string keyType, SubscriberCredential subscriberCredential)
         {
             Type type = subscriberCredential.GetType();
-            PropertyInfo property = type.GetProperty(keyType);
+            PropertyInfo? property = type.GetProperty(keyType);
 
             return new
             {
@@ -104,19 +104,19 @@ namespace LHDS.Core.Services.Processings.SecureDatas
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
              where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
+            var invalidDataException = (T?)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataException.UpsertDataList(
+                    invalidDataException?.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataException.ThrowIfContainsErrors();
+            invalidDataException?.ThrowIfContainsErrors();
         }
     }
 }

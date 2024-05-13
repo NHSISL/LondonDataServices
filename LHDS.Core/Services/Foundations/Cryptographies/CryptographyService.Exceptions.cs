@@ -31,7 +31,7 @@ namespace LHDS.Core.Services.Foundations.Cryptographies
             {
                 var failedCryptographyServiceException =
                     new FailedCryptographyServiceException(
-                        message: "Failed cryptography service occurred, please contact support",
+                        message: "Failed cryptography service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedCryptographyServiceException);
@@ -54,7 +54,7 @@ namespace LHDS.Core.Services.Foundations.Cryptographies
             Xeption exception)
         {
             var decryptionServiceException = new CryptographyServiceException(
-                message: "Cryptography service error occurred, contact support.",
+                message: "Cryptography service error occurred, please contact support.",
                 innerException: exception);
 
             this.loggingBroker.LogError(decryptionServiceException);

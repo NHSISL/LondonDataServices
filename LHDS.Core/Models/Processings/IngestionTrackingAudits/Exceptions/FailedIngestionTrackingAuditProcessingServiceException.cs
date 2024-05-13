@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Processings.IngestionTrackingAudits.Exceptions
 {
     public class FailedIngestionTrackingAuditProcessingServiceException : Xeption
     {
-        public FailedIngestionTrackingAuditProcessingServiceException(string message, Exception innerException)
+        public FailedIngestionTrackingAuditProcessingServiceException(string message, Exception? innerException)
           : base(message, innerException)
         { }
     }

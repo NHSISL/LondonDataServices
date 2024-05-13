@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
             List<Exception> exceptions = new List<Exception>();
 
-            this.csvMapperServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -63,13 +63,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             var failedAddressExtractionOrchestrationServiceException =
                 new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction aggregate orchestration service occurred, " +
+                    message: "Failed address extraction aggregate orchestration service error occurred, " +
                     "please contact support.",
                     innerException: aggregateException);
 
             var expectedAddressExtractionOrchestrationServiceException =
                 new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
+                    message: "Address extraction orchestration service error occurred, please contact support.",
                     innerException: failedAddressExtractionOrchestrationServiceException);
 
             // When
@@ -84,12 +84,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualAddressExtractionOrchestrationServiceException.Should()
                 .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
 
-            this.csvMapperServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>()),
                         Times.Once);
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Exactly(randomResolvedAddresses.Count()));
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
@@ -116,9 +120,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     actualAddressExtractionOrchestrationServiceException))),
                         Times.Once);
 
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -133,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
             List<Exception> exceptions = new List<Exception>();
 
-            this.csvMapperServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -164,13 +171,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             var failedAddressExtractionOrchestrationServiceException =
                 new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction aggregate orchestration service occurred, " +
+                    message: "Failed address extraction aggregate orchestration service error occurred, " +
                     "please contact support.",
                     innerException: aggregateException);
 
             var expectedAddressExtractionOrchestrationServiceException =
                 new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
+                    message: "Address extraction orchestration service error occurred, please contact support.",
                     innerException: failedAddressExtractionOrchestrationServiceException);
 
             // When
@@ -185,12 +192,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualAddressExtractionOrchestrationServiceException.Should()
                 .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
 
-            this.csvMapperServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>()),
                         Times.Once);
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Exactly(randomResolvedAddresses.Count()));
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
@@ -217,9 +228,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     actualAddressExtractionOrchestrationServiceException))),
                         Times.Once);
 
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -232,7 +246,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
             List<Exception> exceptions = new List<Exception>();
 
-            this.csvMapperServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -246,7 +260,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             var innerAddressExtractionOrchestrationServiceException =
                 new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
+                    message: "Address extraction orchestration service error occurred, please contact support.",
                     innerException: innerFailedAddressExtractionOrchestrationServiceException);
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
@@ -267,13 +281,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             var failedAddressExtractionOrchestrationServiceException =
                 new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction aggregate orchestration service occurred, " +
+                    message: "Failed address extraction aggregate orchestration service error occurred, " +
                         "please contact support.",
                     innerException: aggregateException);
 
             var expectedAddressExtractionOrchestrationServiceException =
                 new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
+                    message: "Address extraction orchestration service error occurred, please contact support.",
                     innerException: failedAddressExtractionOrchestrationServiceException);
 
             // When
@@ -288,12 +302,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualAddressExtractionOrchestrationServiceException.Should()
                 .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
 
-            this.csvMapperServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>()),
                         Times.Once);
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Exactly(randomResolvedAddresses.Count()));
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
@@ -314,9 +332,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     expectedAddressExtractionOrchestrationServiceException))),
                         Times.Once);
 
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -340,7 +361,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                         "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.csvMapperServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -359,7 +380,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
-            this.csvMapperServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -371,10 +392,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedDependencyException))),
                        Times.Once);
 
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -397,7 +420,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                         "fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
-            this.csvMapperServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -416,7 +439,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
-            this.csvMapperServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -428,10 +451,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedDependencyException))),
                        Times.Once);
 
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -454,10 +479,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             var expectedAddressExtractionOrchestrationServiceException =
                 new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
+                    message: "Address extraction orchestration service error occurred, please contact support.",
                     innerException: failedAddressPersistanceOrchestrationServiceException);
 
-            this.csvMapperServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -476,7 +501,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualException.Should()
                  .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
 
-            this.csvMapperServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -488,10 +513,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedAddressExtractionOrchestrationServiceException))),
                        Times.Once);
 
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

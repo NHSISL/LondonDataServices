@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Suppliers.Exceptions
 {
     public class InvalidSupplierReferenceException : Xeption
     {
-        public InvalidSupplierReferenceException(string message, Exception innerException)
+        public InvalidSupplierReferenceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

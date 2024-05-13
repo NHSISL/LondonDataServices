@@ -12,7 +12,7 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
-using LHDS.Core.Brokers.CsvMappers;
+using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -23,7 +23,6 @@ using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.Pds;
-using LHDS.Core.Services.Foundations.CsvMappers;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -63,31 +62,35 @@ namespace LHDS.Core.Clients.Extensions
 
             ValidateMeshConfigurationSettings(meshConfigurationSettings, acceptanceTest);
 
-            var meshConfig = new MeshConfiguration
+            if (meshConfigurationSettings != null)
             {
-                MailboxId = meshConfigurationSettings.MailboxId,
-                Password = meshConfigurationSettings.Password,
-                Key = meshConfigurationSettings.Key,
-                Url = meshConfigurationSettings.Url,
-                MexClientVersion = meshConfigurationSettings.MexClientVersion,
-                MexOSName = meshConfigurationSettings.MexOSName,
-                MexOSVersion = meshConfigurationSettings.MexOSVersion,
-                MaxChunkSizeInMegabytes = meshConfigurationSettings.MaxChunkSizeInMegabytes,
-            };
+                var meshConfig = new MeshConfiguration
+                {
+                    MailboxId = meshConfigurationSettings.MailboxId,
+                    Password = meshConfigurationSettings.Password,
+                    Key = meshConfigurationSettings.Key,
+                    Url = meshConfigurationSettings.Url,
+                    MexClientVersion = meshConfigurationSettings.MexClientVersion,
+                    MexOSName = meshConfigurationSettings.MexOSName,
+                    MexOSVersion = meshConfigurationSettings.MexOSVersion,
+                    MaxChunkSizeInMegabytes = meshConfigurationSettings.MaxChunkSizeInMegabytes,
+                };
 
-            if (!acceptanceTest)
-            {
-                meshConfig.RootCertificate =
-                    GetCertificate(value: meshConfigurationSettings.RootCertificate);
+                if (!acceptanceTest)
+                {
+                    meshConfig.RootCertificate =
+                        GetCertificate(value: meshConfigurationSettings.RootCertificate);
 
-                meshConfig.IntermediateCertificates =
-                    GetCertificates(values: meshConfigurationSettings.IntermediateCertificates);
+                    meshConfig.IntermediateCertificates =
+                        GetCertificates(values: meshConfigurationSettings.IntermediateCertificates);
 
-                meshConfig.ClientCertificate =
-                    GetCertificate(value: meshConfigurationSettings.ClientCertificate);
+                    meshConfig.ClientCertificate =
+                        GetCertificate(value: meshConfigurationSettings.ClientCertificate);
+                }
+
+                services.AddSingleton(meshConfig);
             }
 
-            services.AddSingleton(meshConfig);
             AddClients(services, configuration);
             AddBrokers(services, acceptanceTest);
             AddOrchestrations(services);
@@ -102,29 +105,37 @@ namespace LHDS.Core.Clients.Extensions
         {
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
-            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+
+            if (blobStorageSettings != null)
+            {
+                services.AddSingleton(blobStorageSettings.BlobContainers);
+
+                var blobServiceClientOptions = new BlobClientOptions()
+                {
+                    Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
+                    Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                    EnableTenantDiscovery = true
+                };
+
+                services.AddSingleton(
+                    new BlobServiceClient(
+                        serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
+                        credential: new DefaultAzureCredential(
+                            new DefaultAzureCredentialOptions
+                            {
+                                VisualStudioTenantId = blobStorageSettings.AzureTenantId,
+                            }),
+                        options: blobServiceClientOptions));
+            }
 
             var pdsConfiguration = configuration.GetSection("pdsSettings").Get<PdsConfiguration>();
             ValidatePdsConfigurationSettings(pdsConfiguration);
 
-            var blobServiceClientOptions = new BlobClientOptions()
+            if (pdsConfiguration != null)
             {
-                Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
-                Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
-                EnableTenantDiscovery = true
-            };
+                services.AddSingleton(pdsConfiguration);
+            }
 
-            services.AddSingleton(
-                new BlobServiceClient(
-                    serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
-                    credential: new DefaultAzureCredential(
-                        new DefaultAzureCredentialOptions
-                        {
-                            VisualStudioTenantId = blobStorageSettings.AzureTenantId,
-                        }),
-                    options: blobServiceClientOptions));
-
-            services.AddSingleton(pdsConfiguration);
             services.AddTransient<IPdsClient, PdsClient>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
@@ -132,7 +143,7 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddBrokers(IServiceCollection services, bool acceptanceTest)
         {
             services.AddTransient<ILoggingBroker, LoggingBroker>();
-            services.AddTransient<ICsvMapperBroker, CsvMapperBroker>();
+            services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
@@ -152,14 +163,13 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddServices(IServiceCollection services)
         {
             services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
-            services.AddTransient<ICsvMapperService, CsvMapperService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<IMeshService, MeshService>();
             services.AddTransient<IPdsAuditService, PdsAuditService>();
         }
 
-        private static X509Certificate2 GetCertificate(string value)
+        private static X509Certificate2? GetCertificate(string value)
         {
             if (!string.IsNullOrEmpty(value))
             {
@@ -190,7 +200,7 @@ namespace LHDS.Core.Clients.Extensions
         }
 
         private static void ValidateMeshConfigurationSettings(
-            MeshConfigurationSettings meshConfigurationSettings,
+            MeshConfigurationSettings? meshConfigurationSettings,
             bool acceptanceTest)
         {
             if (meshConfigurationSettings == null)
@@ -235,7 +245,7 @@ namespace LHDS.Core.Clients.Extensions
             }
         }
 
-        private static void ValidatePdsConfigurationSettings(PdsConfiguration pdsConfiguration)
+        private static void ValidatePdsConfigurationSettings(PdsConfiguration? pdsConfiguration)
         {
             if (pdsConfiguration == null)
             {
@@ -263,7 +273,7 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "pdsSettings__workflowId"));
         }
 
-        private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
+        private static void ValidateBlobStorageSettings(BlobStorageSettings? blobStorageSettings)
         {
             if (blobStorageSettings == null)
             {
@@ -279,13 +289,13 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "blobStorage__azureTenantId"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Configuration value does not exist"
         };
 
-        private static dynamic IsInvalid(bool value) => new
+        private static dynamic IsInvalid(bool? value) => new
         {
             Condition = value == null,
             Message = "Configuration value does not exist"

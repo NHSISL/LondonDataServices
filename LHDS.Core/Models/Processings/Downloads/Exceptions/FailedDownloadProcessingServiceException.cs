@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Processings.Downloads.Exceptions
 {
     public class FailedDownloadProcessingServiceException : Xeption
     {
-        public FailedDownloadProcessingServiceException(string message, Exception innerException)
+        public FailedDownloadProcessingServiceException(string message, Exception? innerException)
           : base(message, innerException)
         { }
     }

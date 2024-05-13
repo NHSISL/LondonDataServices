@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions
 {
     public class CryptographyKeyValidationException : Xeption
     {
-        public CryptographyKeyValidationException(string message, Xeption innerException)
+        public CryptographyKeyValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

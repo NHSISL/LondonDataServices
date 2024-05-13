@@ -137,12 +137,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             var failedDocumentProcessingServiceException =
                 new FailedDocumentProcessingServiceException(
-                    message: "Failed document processing service error occurred, contact support.",
+                    message: "Failed document processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedDocumentProcessingServiveException =
                 new DocumentProcessingServiceException(
-                    message: "Document processing service error occurred, contact support.",
+                    message: "Document processing service error occurred, please contact support.",
                     innerException: failedDocumentProcessingServiceException);
 
             this.documentServiceMock.Setup(service =>

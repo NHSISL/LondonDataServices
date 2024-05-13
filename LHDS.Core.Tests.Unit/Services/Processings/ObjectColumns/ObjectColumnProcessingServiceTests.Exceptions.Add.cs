@@ -109,12 +109,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
 
             var failedObjectColumnProcessingServiceException =
                 new FailedObjectColumnProcessingServiceException(
-                    message: "Failed ObjectColumn processing service error occurred, contact support.",
+                    message: "Failed ObjectColumn processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedObjectColumnProcessingServiveException =
                 new ObjectColumnProcessingServiceException(
-                    message: "ObjectColumn processing service error occurred, contact support.",
+                    message: "ObjectColumn processing service error occurred, please contact support.",
                     innerException: failedObjectColumnProcessingServiceException);
 
             this.objectColumnServiceMock.Setup(service =>

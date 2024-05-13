@@ -37,7 +37,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             {
                 var failedPdsAuditStorageException =
                     new FailedPdsAuditStorageException(
-                        message: "Failed pdsAudit service occurred, please contact support", 
+                        message: "Failed pdsAudit service error occurred, please contact support.", 
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedPdsAuditStorageException);
@@ -76,7 +76,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             {
                 var failedPdsAuditStorageException =
                     new FailedPdsAuditStorageException(
-                        message: "Failed pdsAudit service occurred, please contact support", 
+                        message: "Failed pdsAudit service error occurred, please contact support.", 
                         innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedPdsAuditStorageException);
@@ -85,7 +85,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             {
                 var failedPdsAuditServiceException =
                     new FailedPdsAuditServiceException(
-                        message: "Failed pdsAudit service occurred, please contact support", 
+                        message: "Failed pdsAudit service error occurred, please contact support.", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedPdsAuditServiceException);
@@ -102,7 +102,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             {
                 var failedPdsAuditStorageException =
                     new FailedPdsAuditStorageException(
-                        message: "Failed pdsAudit service occurred, please contact support", 
+                        message: "Failed pdsAudit service error occurred, please contact support.", 
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedPdsAuditStorageException);
@@ -111,7 +111,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             {
                 var failedPdsAuditServiceException =
                     new FailedPdsAuditServiceException(
-                        message: "Failed pdsAudit service occurred, please contact support", 
+                        message: "Failed pdsAudit service error occurred, please contact support.", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedPdsAuditServiceException);
@@ -133,7 +133,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         private PdsAuditDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
             var pdsAuditDependencyException = new PdsAuditDependencyException(
-                message: "PdsAudit dependency error occurred, contact support.", 
+                message: "PdsAudit dependency error occurred, please contact support.", 
                 innerException: exception);
 
             this.loggingBroker.LogCritical(pdsAuditDependencyException);
@@ -157,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             Xeption exception)
         {
             var pdsAuditDependencyException = new PdsAuditDependencyException(
-                message: "PdsAudit dependency error occurred, contact support.", 
+                message: "PdsAudit dependency error occurred, please contact support.", 
                 innerException: exception);
 
             this.loggingBroker.LogError(pdsAuditDependencyException);
@@ -169,7 +169,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             Xeption exception)
         {
             var pdsAuditServiceException = new PdsAuditServiceException(
-                message: "PdsAudit service error occurred, contact support.", 
+                message: "PdsAudit service error occurred, please contact support.", 
                 innerException: exception);
 
             this.loggingBroker.LogError(pdsAuditServiceException);

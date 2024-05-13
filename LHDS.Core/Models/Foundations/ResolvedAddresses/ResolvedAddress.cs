@@ -12,7 +12,7 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses
         public Guid Id { get; set; }
         public Guid UniqueReference { get; set; }
         public Guid? BatchReference { get; set; }
-        public string UnstructuredPostalAddress { get; set; }
+        public string UnstructuredPostalAddress { get; set; } = string.Empty;
         public string? PostCode { get; set; }
         public string? PostalAddress { get; set; }
         public string? JsonPostalAddress { get; set; }

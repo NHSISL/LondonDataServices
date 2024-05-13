@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Processings.Addresses
             {
                 var failedAddressProcessingServiceException =
                     new FailedAddressProcessingServiceException(
-                        message: "Failed Address processing service error occurred, contact support.",
+                        message: "Failed Address processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressProcessingServiceException);
@@ -93,7 +93,7 @@ namespace LHDS.Core.Services.Processings.Addresses
             {
                 var failedAddressProcessingServiceException =
                     new FailedAddressProcessingServiceException(
-                        message: "Failed Address processing service error occurred, contact support.",
+                        message: "Failed Address processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressProcessingServiceException);
@@ -126,7 +126,7 @@ namespace LHDS.Core.Services.Processings.Addresses
             {
                 var failedAddressProcessingServiceException =
                     new FailedAddressProcessingServiceException(
-                        message: "Failed Address processing service error occurred, contact support.",
+                        message: "Failed Address processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressProcessingServiceException);
@@ -163,7 +163,7 @@ namespace LHDS.Core.Services.Processings.Addresses
             {
                 var failedAddressProcessingServiceException =
                     new FailedAddressProcessingServiceException(
-                        message: "Failed Address processing service error occurred, contact support.",
+                        message: "Failed Address processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressProcessingServiceException);
@@ -211,7 +211,7 @@ namespace LHDS.Core.Services.Processings.Addresses
         {
             var addressProcessingServiceException = new
                 AddressProcessingServiceException(
-                    message: "Address processing service error occurred, contact support.",
+                    message: "Address processing service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressProcessingServiceException);

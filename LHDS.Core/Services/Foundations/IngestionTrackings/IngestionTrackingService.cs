@@ -52,24 +52,24 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 return maybeIngestionTracking;
             });
 
-        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByFileNameAsync(string fileName) =>
+        public ValueTask<IngestionTracking?> RetrieveIngestionTrackingByFileNameAsync(string fileName) =>
             TryCatch(async () =>
             {
                 ValidateIngestionTrackingFileName(fileName);
 
-                IngestionTracking maybeIngestionTracking =
+                IngestionTracking? maybeIngestionTracking =
                     this.storageBroker.SelectAllIngestionTrackings()
                         .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
 
                 return await ValueTask.FromResult(maybeIngestionTracking);
             });
 
-        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByEncryptedFileNameAsync(string encryptedFileName) =>
+        public ValueTask<IngestionTracking?> RetrieveIngestionTrackingByEncryptedFileNameAsync(string encryptedFileName) =>
             TryCatch(async () =>
             {
                 ValidateIngestionTrackingFileName(encryptedFileName);
 
-                IngestionTracking maybeIngestionTracking =
+                IngestionTracking? maybeIngestionTracking =
                     this.storageBroker.SelectAllIngestionTrackings()
                         .FirstOrDefault(ingestionTracking => ingestionTracking.EncryptedFileName == encryptedFileName);
 

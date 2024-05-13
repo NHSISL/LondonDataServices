@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.ObjectColumns.Exceptions
 {
     public class ObjectColumnProcessingDependencyValidationException : Xeption
     {
-        public ObjectColumnProcessingDependencyValidationException(string message, Xeption innerException)
+        public ObjectColumnProcessingDependencyValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

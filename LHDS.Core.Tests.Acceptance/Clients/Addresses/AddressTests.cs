@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 builder.AddConsole();
             });
 
-            serviceCollection.AddAddressClient(this.dependencyBroker.Configuration);
+            serviceCollection.AddAddressClient(this.dependencyBroker.Configuration, true);
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
             this.addressExtractionOrchestrationService =

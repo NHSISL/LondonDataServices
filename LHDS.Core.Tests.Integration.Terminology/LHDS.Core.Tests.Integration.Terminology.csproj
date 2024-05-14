@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
@@ -30,8 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="appsettings.Acceptance.json">
+    <None Update="appsettings.ContinuousIntegration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
     <None Update="appsettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -36,6 +36,10 @@ using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using LHDS.Core.Services.Foundations.Audits;
+using NEL.LibPostalClient.Clients;
+using LHDS.Core.Services.Foundations.Addresses;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
+using LHDS.Core.Models.Coordinations.AddressCoordinations;
 
 namespace LHDS.Core.Clients.Extensions
 {
@@ -65,6 +69,11 @@ namespace LHDS.Core.Clients.Extensions
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
 
+            AddressConfiguration addressConfiguration =
+                configuration.GetSection("addressSettings").Get<AddressConfiguration>();
+
+            services.AddSingleton(addressConfiguration);
+
             if (blobStorageSettings != null)
             {
                 services.AddSingleton(blobStorageSettings.BlobContainers);
@@ -87,9 +96,12 @@ namespace LHDS.Core.Clients.Extensions
                         options: blobServiceClientOptions));
             }
 
+
+
             services.AddTransient<IAddressClient, AddressClient>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<IAuditClient, AuditClient>();
+            services.AddTransient<ILibPostalClient, LibPostalClient>();
         }
 
         private static void AddBrokers(IServiceCollection services)
@@ -112,6 +124,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAddressMatcherService, AddressMatcherService>();
             services.AddTransient<IAddressNormalisationService, AddressNormalisationService>();
             services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IAddressService, AddressService>();
         }
 
         private static void AddProcessings(IServiceCollection services)

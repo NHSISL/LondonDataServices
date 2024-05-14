@@ -90,7 +90,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAddressClient, AddressClient>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<IAuditClient, AuditClient>();
-            //services.AddTransient<ILibPostalClient, LibPostalClient>();
+            services.AddTransient<ILibPostalClient, LibPostalClient>();
         }
 
         private static void AddBrokers(IServiceCollection services)
@@ -113,7 +113,6 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAddressMatcherService, AddressMatcherService>();
             services.AddTransient<IAddressNormalisationService, AddressNormalisationService>();
             services.AddTransient<IAuditService, AuditService>();
-
         }
 
         private static void AddProcessings(IServiceCollection services)

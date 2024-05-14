@@ -10,7 +10,7 @@ namespace LHDS.Core.Tests.Integration.Terminology
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     [XunitTestCaseDiscoverer(
-        typeName: "LHDS.Core.Tests.Integration.Landings.ReleaseCandidateTestCaseDiscoverer",
-        assemblyName: "LHDS.Core.Tests.Integration.Landings")]
+        typeName: "LHDS.Core.Tests.Integration.Terminology.ReleaseCandidateTestCaseDiscoverer",
+        assemblyName: "LHDS.Core.Tests.Integration.Terminology")]
     public class ReleaseCandidateFactAttribute : FactAttribute { }
 }

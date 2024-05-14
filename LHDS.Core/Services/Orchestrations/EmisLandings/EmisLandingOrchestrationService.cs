@@ -69,11 +69,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.landingConfiguration = landingConfiguration;
         }
 
-        public ValueTask<List<string>> ProcessAsync(SubscriberCredential subscriberCredential) =>
+        public ValueTask<List<string>> ProcessAsync(SubscriberCredential subscriberCredential, Guid supplierId) =>
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
                 ValidateSubscriberCredentials(subscriberCredential);
+                ValidateProcessArguments(supplierId);
                 var exceptions = new List<Exception>();
                 Download download = new Download { SubscriberCredential = subscriberCredential };
 
@@ -113,7 +114,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                                 DataSetSpecification? retrievedDataSetSpecification = await
                                     this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
-                                        landingConfiguration.LandingSupplierId);
+                                        supplierId);
 
                                 if (retrievedDataSetSpecification == null)
                                 {
@@ -233,12 +234,15 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 return files;
             });
 
-        public async ValueTask<string> ProcessFileAsync(string ftpFileName, SubscriberCredential subscriberCredential) =>
+        public async ValueTask<string> ProcessFileAsync(
+            string ftpFileName,
+            SubscriberCredential subscriberCredential,
+            Guid supplierId) =>
             await TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
                 ValidateSubscriberCredentials(subscriberCredential);
-                ValidateFileName(ftpFileName);
+                ValidateProcessFileArguments(ftpFileName, supplierId);
 
                 Download download = new Download
                 {
@@ -303,7 +307,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                     DataSetSpecification? retrievedDataSetSpecification = await
                         this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
-                            landingConfiguration.LandingSupplierId);
+                            supplierId);
 
                     if (retrievedDataSetSpecification == null)
                     {
@@ -394,7 +398,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             TryCatch(async () =>
             {
                 ValidateSubscriberCredentials(subscriberCredential);
-                ValidateFileName(fileName);
+                ValidateRetrieveDownloadByFileNameArguments(fileName);
 
                 Download download = new Download
                 {

@@ -5,17 +5,18 @@
 using System.Threading.Tasks;
 using Xunit;
 
-namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
+namespace LHDS.Core.Tests.Integration.Terminology
 {
     public partial class TerminologyClients
     {
-        [Fact(Skip = "Add wiremock to this test and move duplicate test as is to integration tests")]
-        public async Task ShouldRetrieveArtifactDetailsAsync()
+        [Fact]
+        public async Task ShouldRetrieveMetadataAsync()
         {
             //Given
+            string[] resourceTypes = new string[] { "CodeSystem", "ValueSet", "ConceptMap" };
 
             //When
-            await terminologyClient.RetrieveArtifactDetailsAsync();
+            await terminologyClient.RetrieveArtifactMetadataAsync(resourceTypes);
 
             //Then
         }

@@ -35,6 +35,7 @@ using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using LHDS.Core.Services.Foundations.Audits;
 
 namespace LHDS.Core.Clients.Extensions
 {
@@ -110,6 +111,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IResolvedAddressService, ResolvedAddressService>();
             services.AddTransient<IAddressMatcherService, AddressMatcherService>();
             services.AddTransient<IAddressNormalisationService, AddressNormalisationService>();
+            services.AddTransient<IAuditService, AuditService>();
         }
 
         private static void AddProcessings(IServiceCollection services)

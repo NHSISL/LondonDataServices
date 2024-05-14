@@ -19,8 +19,10 @@ using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
+using LHDS.Core.Services.Processings.ResolvedAddresses;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Tynamix.ObjectFiller;
 using Xunit;
 
@@ -33,6 +35,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
         private readonly IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
+        private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
         private readonly IAddressClient addressClient;
         private readonly ICompareLogic compareLogic;
         private readonly AddressConfiguration addressConfiguration;
@@ -45,10 +48,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             var serviceCollection = new ServiceCollection();
 
             serviceCollection
-                .AddTransient<ISupplierService, SupplierService>()
-                .AddTransient<IDataSetService, DataSetService>()
-                .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
-                .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
+                .AddTransient<IAddressExtractionOrchestrationService, AddressExtractionOrchestrationService>()
+                .AddTransient<IAddressPersistanceOrchestrationService, AddressPersistanceOrchestrationService>()
+                .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()
+                .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>();
+
+            serviceCollection.AddLogging(builder =>
+            {
+                builder.AddConsole();
+            });
 
             serviceCollection.AddAddressClient(this.dependencyBroker.Configuration, true);
             var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -61,6 +69,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             this.resolvedAddressOrchestrationService =
                 serviceProvider.GetService<IResolvedAddressOrchestrationService>();
+
+            this.resolvedAddressProcessingService =
+                serviceProvider.GetService<IResolvedAddressProcessingService>();
 
             this.addressConfiguration = serviceProvider.GetService<AddressConfiguration>();
             this.blobContainers = serviceProvider.GetService<BlobContainers>();

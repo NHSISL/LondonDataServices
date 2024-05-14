@@ -2,8 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Moq;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -16,10 +19,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         {
             // Given
             Guid expectedBatchReference = Guid.NewGuid();
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses();
 
-            this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.UploadResolvedAddressesAsync())
-                    .ReturnsAsync(expectedBatchReference);
+            foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
+            {
+                await this.resolvedAddressProcessingService.AddResolvedAddressAsync(resolvedAddress);
+            }
 
             // When
             Guid actualBatchReference =
@@ -28,14 +33,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             // Then
             actualBatchReference.Should().Be(expectedBatchReference);
 
-            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.UploadResolvedAddressesAsync(),
-                    Times.Once());
+            //this.resolvedAddressOrchestrationServiceMock.Verify(service =>
+            //    service.UploadResolvedAddressesAsync(),
+            //        Times.Once());
 
-            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            //this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
+            //this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
+            //this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            //this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

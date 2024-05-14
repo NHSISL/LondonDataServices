@@ -3,13 +3,12 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
-using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Terminology
 {
     public partial class TerminologyClients
     {
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldRetrieveMetadataAsync()
         {
             //Given

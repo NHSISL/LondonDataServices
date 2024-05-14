@@ -3,13 +3,12 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
-using Xunit;
 
-namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
+namespace LHDS.Core.Tests.Integration.Terminology
 {
     public partial class TerminologyClients
     {
-        [Fact(Skip = "Add wiremock to this test and move duplicate test as is to integration tests")]
+        [ReleaseCandidateFact]
         public async Task ShouldRetrieveMetadataAsync()
         {
             //Given

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -26,6 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             var somefileName = GetRandomMessage();
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
+            Guid inputSupplierId = Guid.NewGuid();
             LandingConfiguration invalidLandingConfiguration = null;
 
             var invalidDownloadOrchestrationService = new EmisLandingOrchestrationService(
@@ -53,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<List<string>> processTask = invalidDownloadOrchestrationService
-                .ProcessAsync(subscriberCredential: inputSubscriberCredential);
+                .ProcessAsync(subscriberCredential: inputSubscriberCredential, supplierId: inputSupplierId);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
@@ -82,6 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             SubscriberCredential inputSubscriberCredential = null;
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
+            Guid inputSupplierId = Guid.NewGuid();
 
             var nullSubscriberCredentialEmisLandingOrchestrationException =
                 new NullSubscriberCredentialEmisLandingOrchestrationException(
@@ -96,7 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // when
             ValueTask<List<string>> processTask =
                 this.emisLandingOrchestrationService
-                    .ProcessAsync(subscriberCredential: inputSubscriberCredential);
+                    .ProcessAsync(subscriberCredential: inputSubscriberCredential, supplierId: inputSupplierId);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
@@ -126,6 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
+            Guid inputSupplierId = Guid.NewGuid();
             BlobContainers invalidBlobContainers = null;
 
             var invalidDownloadOrchestrationService = new EmisLandingOrchestrationService(
@@ -153,7 +157,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<List<string>> processTask = invalidDownloadOrchestrationService
-                .ProcessAsync(subscriberCredential: inputSubscriberCredential);
+                .ProcessAsync(subscriberCredential: inputSubscriberCredential, supplierId: inputSupplierId);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
@@ -174,6 +178,54 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnProcessIfSupplierIdIsInvalidAndLogItAsync()
+        {
+            // given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+            Guid invalidSupplierId = Guid.Empty;
+
+            var invalidArgumentEmisLandingOrchestrationException =
+                new InvalidArgumentEmisLandingOrchestrationException(
+                    message: "Invalid EMIS landing orchestration argument(s), please correct the errors and try again.");
+
+            invalidArgumentEmisLandingOrchestrationException.AddData(
+               key: "SupplierId",
+               values: "Id is required");
+
+            var expectedEmisLandingOrchestrationValidationException =
+                new EmisLandingOrchestrationValidationException(
+                    message: "EMIS landing orchestration validation errors occurred, please try again.",
+                    innerException: invalidArgumentEmisLandingOrchestrationException);
+
+            // when
+            ValueTask<List<string>> processTask =
+                this.emisLandingOrchestrationService
+                    .ProcessAsync(subscriberCredential: inputSubscriberCredential, supplierId: invalidSupplierId);
+
+            EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
+                await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
+
+            // then
+            actualEmisLandingOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedEmisLandingOrchestrationValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }

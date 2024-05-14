@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             string expectedString = randomFile.DecryptedBlobPath;
 
             // When
-            var actualString = await this.landingClient.ProcessAsync(inputFileName);
+            var actualString = await this.landingClient.ProcessAsync(fileName: inputFileName, supplierId);
 
             // Then
             actualString.Should().BeEquivalentTo(expectedString);
@@ -99,7 +99,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             string expectedString = randomFile.DecryptedBlobPath;
 
             // When
-            var actualString = await this.landingClient.ProcessAsync(inputFileName);
+            var actualString = await this.landingClient.ProcessAsync(fileName: inputFileName, supplierId);
 
             // Then
             actualString.Should().BeEquivalentTo(expectedString);

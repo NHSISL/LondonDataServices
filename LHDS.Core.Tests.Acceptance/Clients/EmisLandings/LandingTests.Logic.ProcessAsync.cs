@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             List<string> expectedFiles = randomFiles.Select(file => file.DecryptedBlobPath).ToList();
 
             //When
-            var actualStringList = await this.landingClient.ProcessAsync();
+            var actualStringList = await this.landingClient.ProcessAsync(supplierId);
 
             //Then
             expectedFiles.Should().BeEquivalentTo(actualStringList);
@@ -109,7 +109,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 supplierId: landingConfiguration.LandingSupplierId);
 
             //When
-            var actualStringList = await this.landingClient.ProcessAsync();
+            var actualStringList = await this.landingClient.ProcessAsync(supplierId);
 
             //Then
             actualStringList.Should().HaveCount(0);

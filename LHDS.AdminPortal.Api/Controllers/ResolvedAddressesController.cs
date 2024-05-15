@@ -1,11 +1,15 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
+using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
-using LHDS.AdminPortal.Api.Models.Foundations.ResolvedAddresses;
-using LHDS.AdminPortal.Api.Models.Foundations.ResolvedAddresses.Exceptions;
-using LHDS.AdminPortal.Api.Services.Foundations.ResolvedAddresses;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
@@ -38,7 +42,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return FailedDependency(resolvedAddressValidationException.InnerException);
             }
             catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
-               when (resolvedAddressDependencyValidationException.InnerException is AlreadyExistsResolvedAddressException)
+                when (resolvedAddressDependencyValidationException.InnerException
+                    is AlreadyExistsResolvedAddressException)
             {
                 return Conflict(resolvedAddressDependencyValidationException.InnerException);
             }
@@ -77,7 +82,8 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                ResolvedAddress resolvedAddress = await this.resolvedAddressService.RetrieveResolvedAddressByIdAsync(resolvedAddressId);
+                ResolvedAddress resolvedAddress = await this.resolvedAddressService
+                    .RetrieveResolvedAddressByIdAsync(resolvedAddressId);
 
                 return Ok(resolvedAddress);
             }
@@ -125,7 +131,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return FailedDependency(resolvedAddressValidationException.InnerException);
             }
             catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
-               when (resolvedAddressDependencyValidationException.InnerException is AlreadyExistsResolvedAddressException)
+                when (resolvedAddressDependencyValidationException.InnerException
+                    is AlreadyExistsResolvedAddressException)
             {
                 return Conflict(resolvedAddressDependencyValidationException.InnerException);
             }

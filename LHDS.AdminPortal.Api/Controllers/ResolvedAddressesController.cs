@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace LHDS.AdminPortal.Api.Controllers
                when (resolvedAddressDependencyValidationException.InnerException is AlreadyExistsResolvedAddressException)
             {
                 return Conflict(resolvedAddressDependencyValidationException.InnerException);
+            }
+            catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
+            {
+                return InternalServerError(resolvedAddressDependencyException);
+            }
+            catch (ResolvedAddressServiceException resolvedAddressServiceException)
+            {
+                return InternalServerError(resolvedAddressServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<ResolvedAddress>> GetAllResolvedAddresses()
+        {
+            try
+            {
+                IQueryable<ResolvedAddress> retrievedResolvedAddresses =
+                    this.resolvedAddressService.RetrieveAllResolvedAddresses();
+
+                return Ok(retrievedResolvedAddresses);
             }
             catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
             {

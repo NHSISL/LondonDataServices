@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace LHDS.AdminPortal.Api.Controllers
                when (addressDependencyValidationException.InnerException is AlreadyExistsAddressException)
             {
                 return Conflict(addressDependencyValidationException.InnerException);
+            }
+            catch (AddressDependencyException addressDependencyException)
+            {
+                return InternalServerError(addressDependencyException);
+            }
+            catch (AddressServiceException addressServiceException)
+            {
+                return InternalServerError(addressServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<Address>> GetAllAddresses()
+        {
+            try
+            {
+                IQueryable<Address> retrievedAddresses =
+                    this.addressService.RetrieveAllAddresses();
+
+                return Ok(retrievedAddresses);
             }
             catch (AddressDependencyException addressDependencyException)
             {

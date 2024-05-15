@@ -138,5 +138,43 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(resolvedAddressServiceException);
             }
         }
+
+        [HttpDelete("{resolvedAddressId}")]
+        public async ValueTask<ActionResult<ResolvedAddress>> DeleteResolvedAddressByIdAsync(Guid resolvedAddressId)
+        {
+            try
+            {
+                ResolvedAddress deletedResolvedAddress =
+                    await this.resolvedAddressService.RemoveResolvedAddressByIdAsync(resolvedAddressId);
+
+                return Ok(deletedResolvedAddress);
+            }
+            catch (ResolvedAddressValidationException resolvedAddressValidationException)
+                when (resolvedAddressValidationException.InnerException is NotFoundResolvedAddressException)
+            {
+                return NotFound(resolvedAddressValidationException.InnerException);
+            }
+            catch (ResolvedAddressValidationException resolvedAddressValidationException)
+            {
+                return BadRequest(resolvedAddressValidationException.InnerException);
+            }
+            catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
+                when (resolvedAddressDependencyValidationException.InnerException is LockedResolvedAddressException)
+            {
+                return Locked(resolvedAddressDependencyValidationException.InnerException);
+            }
+            catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
+            {
+                return BadRequest(resolvedAddressDependencyValidationException);
+            }
+            catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
+            {
+                return InternalServerError(resolvedAddressDependencyException);
+            }
+            catch (ResolvedAddressServiceException resolvedAddressServiceException)
+            {
+                return InternalServerError(resolvedAddressServiceException);
+            }
+        }
     }
 }

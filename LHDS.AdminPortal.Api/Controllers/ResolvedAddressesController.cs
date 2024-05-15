@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace LHDS.AdminPortal.Api.Controllers
                     this.resolvedAddressService.RetrieveAllResolvedAddresses();
 
                 return Ok(retrievedResolvedAddresses);
+            }
+            catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
+            {
+                return InternalServerError(resolvedAddressDependencyException);
+            }
+            catch (ResolvedAddressServiceException resolvedAddressServiceException)
+            {
+                return InternalServerError(resolvedAddressServiceException);
+            }
+        }
+
+        [HttpGet("{resolvedAddressId}")]
+        public async ValueTask<ActionResult<ResolvedAddress>> GetResolvedAddressByIdAsync(Guid resolvedAddressId)
+        {
+            try
+            {
+                ResolvedAddress resolvedAddress = await this.resolvedAddressService.RetrieveResolvedAddressByIdAsync(resolvedAddressId);
+
+                return Ok(resolvedAddress);
+            }
+            catch (ResolvedAddressValidationException resolvedAddressValidationException)
+                when (resolvedAddressValidationException.InnerException is NotFoundResolvedAddressException)
+            {
+                return NotFound(resolvedAddressValidationException.InnerException);
+            }
+            catch (ResolvedAddressValidationException resolvedAddressValidationException)
+            {
+                return BadRequest(resolvedAddressValidationException.InnerException);
             }
             catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
             {

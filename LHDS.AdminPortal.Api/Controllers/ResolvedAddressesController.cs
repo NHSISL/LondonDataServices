@@ -99,5 +99,44 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(resolvedAddressServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<ResolvedAddress>> PutResolvedAddressAsync(ResolvedAddress resolvedAddress)
+        {
+            try
+            {
+                ResolvedAddress modifiedResolvedAddress =
+                    await this.resolvedAddressService.ModifyResolvedAddressAsync(resolvedAddress);
+
+                return Ok(modifiedResolvedAddress);
+            }
+            catch (ResolvedAddressValidationException resolvedAddressValidationException)
+                when (resolvedAddressValidationException.InnerException is NotFoundResolvedAddressException)
+            {
+                return NotFound(resolvedAddressValidationException.InnerException);
+            }
+            catch (ResolvedAddressValidationException resolvedAddressValidationException)
+            {
+                return BadRequest(resolvedAddressValidationException.InnerException);
+            }
+            catch (ResolvedAddressDependencyValidationException resolvedAddressValidationException)
+                when (resolvedAddressValidationException.InnerException is InvalidResolvedAddressReferenceException)
+            {
+                return FailedDependency(resolvedAddressValidationException.InnerException);
+            }
+            catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
+               when (resolvedAddressDependencyValidationException.InnerException is AlreadyExistsResolvedAddressException)
+            {
+                return Conflict(resolvedAddressDependencyValidationException.InnerException);
+            }
+            catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
+            {
+                return InternalServerError(resolvedAddressDependencyException);
+            }
+            catch (ResolvedAddressServiceException resolvedAddressServiceException)
+            {
+                return InternalServerError(resolvedAddressServiceException);
+            }
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace LHDS.AdminPortal.Api.Controllers
                     this.addressService.RetrieveAllAddresses();
 
                 return Ok(retrievedAddresses);
+            }
+            catch (AddressDependencyException addressDependencyException)
+            {
+                return InternalServerError(addressDependencyException);
+            }
+            catch (AddressServiceException addressServiceException)
+            {
+                return InternalServerError(addressServiceException);
+            }
+        }
+
+        [HttpGet("{addressId}")]
+        public async ValueTask<ActionResult<Address>> GetAddressByIdAsync(Guid addressId)
+        {
+            try
+            {
+                Address address = await this.addressService.RetrieveAddressByIdAsync(addressId);
+
+                return Ok(address);
+            }
+            catch (AddressValidationException addressValidationException)
+                when (addressValidationException.InnerException is NotFoundAddressException)
+            {
+                return NotFound(addressValidationException.InnerException);
+            }
+            catch (AddressValidationException addressValidationException)
+            {
+                return BadRequest(addressValidationException.InnerException);
             }
             catch (AddressDependencyException addressDependencyException)
             {

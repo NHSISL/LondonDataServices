@@ -18,8 +18,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         public async Task ShouldUploadResolvedAddressesAsync()
         {
             // Given
+            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             Guid expectedBatchReference = Guid.NewGuid();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses();
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses(dateTimeOffset);
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
@@ -41,6 +42,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             //this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             //this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             //this.loggingBrokerMock.VerifyNoOtherCalls();
+            //assert.items in file count rows.
         }
     }
 }

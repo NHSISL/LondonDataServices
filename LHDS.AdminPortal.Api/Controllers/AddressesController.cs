@@ -138,5 +138,43 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(addressServiceException);
             }
         }
+
+        [HttpDelete("{addressId}")]
+        public async ValueTask<ActionResult<Address>> DeleteAddressByIdAsync(Guid addressId)
+        {
+            try
+            {
+                Address deletedAddress =
+                    await this.addressService.RemoveAddressByIdAsync(addressId);
+
+                return Ok(deletedAddress);
+            }
+            catch (AddressValidationException addressValidationException)
+                when (addressValidationException.InnerException is NotFoundAddressException)
+            {
+                return NotFound(addressValidationException.InnerException);
+            }
+            catch (AddressValidationException addressValidationException)
+            {
+                return BadRequest(addressValidationException.InnerException);
+            }
+            catch (AddressDependencyValidationException addressDependencyValidationException)
+                when (addressDependencyValidationException.InnerException is LockedAddressException)
+            {
+                return Locked(addressDependencyValidationException.InnerException);
+            }
+            catch (AddressDependencyValidationException addressDependencyValidationException)
+            {
+                return BadRequest(addressDependencyValidationException);
+            }
+            catch (AddressDependencyException addressDependencyException)
+            {
+                return InternalServerError(addressDependencyException);
+            }
+            catch (AddressServiceException addressServiceException)
+            {
+                return InternalServerError(addressServiceException);
+            }
+        }
     }
 }

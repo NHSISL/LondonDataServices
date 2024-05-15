@@ -99,5 +99,44 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(addressServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<Address>> PutAddressAsync(Address address)
+        {
+            try
+            {
+                Address modifiedAddress =
+                    await this.addressService.ModifyAddressAsync(address);
+
+                return Ok(modifiedAddress);
+            }
+            catch (AddressValidationException addressValidationException)
+                when (addressValidationException.InnerException is NotFoundAddressException)
+            {
+                return NotFound(addressValidationException.InnerException);
+            }
+            catch (AddressValidationException addressValidationException)
+            {
+                return BadRequest(addressValidationException.InnerException);
+            }
+            catch (AddressDependencyValidationException addressValidationException)
+                when (addressValidationException.InnerException is InvalidAddressReferenceException)
+            {
+                return FailedDependency(addressValidationException.InnerException);
+            }
+            catch (AddressDependencyValidationException addressDependencyValidationException)
+               when (addressDependencyValidationException.InnerException is AlreadyExistsAddressException)
+            {
+                return Conflict(addressDependencyValidationException.InnerException);
+            }
+            catch (AddressDependencyException addressDependencyException)
+            {
+                return InternalServerError(addressDependencyException);
+            }
+            catch (AddressServiceException addressServiceException)
+            {
+                return InternalServerError(addressServiceException);
+            }
+        }
     }
 }

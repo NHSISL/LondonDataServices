@@ -2,12 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using FluentAssertions;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using Moq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
@@ -20,7 +18,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             // Given
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             string addressContainer = this.blobContainers.Addresses;
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses(dateTimeOffset);
+
+            List<ResolvedAddress> randomMatchedResolvedAddresses =
+                CreateRandomResolvedAddresses(dateTimeOffset, true);
+
+            List<ResolvedAddress> randomUnMatchedResolvedAddresses =
+                CreateRandomResolvedAddresses(dateTimeOffset, false);
+
+            List<ResolvedAddress> randomResolvedAddresses = new List<ResolvedAddress>();
+            randomResolvedAddresses.AddRange(randomMatchedResolvedAddresses);
+            randomResolvedAddresses.AddRange(randomUnMatchedResolvedAddresses);
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
@@ -33,7 +40,23 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             // Then
             string fileName = $"{actualBatchReference.ToString()}.csv";
-            await this.documentService.RemoveDocumentByFileNameAsync(fileName, addressContainer);
+            //await this.documentService.RemoveDocumentByFileNameAsync(fileName, addressContainer);
+
+            foreach (var resolvedAddress in randomMatchedResolvedAddresses)
+            {
+                ResolvedAddress matchedResolvedAddress = 
+                    await this.resolvedAddressProcessingService.RetrieveResolvedAddressByIdAsync(resolvedAddress.Id);
+
+                matchedResolvedAddress.IsProcessed = true;
+            }
+
+            foreach (var resolvedAddress in randomUnMatchedResolvedAddresses)
+            {
+                ResolvedAddress unMatchedResolvedAddress =
+                    await this.resolvedAddressProcessingService.RetrieveResolvedAddressByIdAsync(resolvedAddress.Id);
+
+                unMatchedResolvedAddress.IsProcessed = false;
+            }
 
             foreach (var resolvedAddress in randomResolvedAddresses)
             {

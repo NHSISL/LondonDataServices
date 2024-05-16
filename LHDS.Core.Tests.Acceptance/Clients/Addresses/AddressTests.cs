@@ -112,27 +112,28 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             return filler;
         }
 
-        private static List<ResolvedAddress> CreateRandomResolvedAddresses(DateTimeOffset dateTimeOffset)
+        private static List<ResolvedAddress> CreateRandomResolvedAddresses(
+            DateTimeOffset dateTimeOffset, bool isMatched)
         {
-            return CreateResolvedAddressFiller(dateTimeOffset)
+            return CreateResolvedAddressFiller(dateTimeOffset, isMatched)
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
 
-        private static ResolvedAddress CreateRandomResolvedAddress() =>
-            CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+        private static ResolvedAddress CreateRandomResolvedAddress(
+            DateTimeOffset dateTimeOffset, 
+            bool isMatched) =>
+                CreateResolvedAddressFiller(dateTimeOffset, isMatched).Create();
 
-        private static ResolvedAddress CreateRandomResolvedAddress(DateTimeOffset dateTimeOffset) =>
-            CreateResolvedAddressFiller(dateTimeOffset).Create();
-
-        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(
+            DateTimeOffset dateTimeOffset, bool isMatched)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<ResolvedAddress>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(resolvedAddress => resolvedAddress.IsMatched).Use(true)
+                .OnProperty(resolvedAddress => resolvedAddress.IsMatched).Use(isMatched)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);

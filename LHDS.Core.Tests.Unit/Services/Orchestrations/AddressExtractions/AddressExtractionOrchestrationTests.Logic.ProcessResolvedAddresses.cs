@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 {
                     { nameof(ResolvedAddress.UniqueReference), 0 },
                     { nameof(ResolvedAddress.PostCode), 1 },
-                    { nameof(ResolvedAddress.UnstructuredPostalAddress), 2 }
+                    { nameof(ResolvedAddress.PostalAddress), 2 }
                 };
 
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (ResolvedAddress resolvedAddress in outputResolvedAddresses)
             {
-                string stringAddress = resolvedAddress.UnstructuredPostalAddress;
+                string stringAddress = resolvedAddress.PostalAddress ?? string.Empty;
 
                 AddressNormalisation addressNormalisation = new AddressNormalisation
                 {
@@ -70,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     service.GetNormalisedAddress(stringAddress))
                         .ReturnsAsync(addressNormalisation);
 
-                resolvedAddress.PostalAddress = addressNormalisation.PostalAddress;
+                resolvedAddress.UnstructuredPostalAddress = addressNormalisation.PostalAddress ?? string.Empty;
                 resolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
                 expectedResolvedAddresses.Add(resolvedAddress);
             }
@@ -93,7 +93,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
-                string stringAddress = resolvedAddress.UnstructuredPostalAddress;
+                string stringAddress = resolvedAddress.PostalAddress ?? string.Empty;
 
                 this.addressNormalisationServiceMock.Verify(service =>
                     service.GetNormalisedAddress(stringAddress),

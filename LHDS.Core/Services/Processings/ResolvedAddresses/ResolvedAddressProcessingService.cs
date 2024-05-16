@@ -57,7 +57,9 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             {
                 ValidateResolvedAddress(resolvedAddress);
                 ValidateResolvedAddressId(resolvedAddress.Id);
-                var maybeResolvedAddress = await resolvedAddressService.RetrieveResolvedAddressByIdAsync(resolvedAddress.Id);
+
+                var maybeResolvedAddress = resolvedAddressService.RetrieveAllResolvedAddresses()
+                    .FirstOrDefault(address => address.UnstructuredPostalAddress == resolvedAddress.UnstructuredPostalAddress);
 
                 if (maybeResolvedAddress != null)
                 {

@@ -74,13 +74,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             {
                 ResolvedAddress? matchedResolvedAddress = 
                     this.resolvedAddressService.RetrieveAllResolvedAddresses()
-                        .FirstOrDefault(resolvedAddress => resolvedAddress.PostalAddress. == address.PostalAddress);
+                        .FirstOrDefault(resolvedAddress => resolvedAddress.PostalAddress == address.PostalAddress);
 
                 if(matchedResolvedAddress != null)
                 {
                     await this.resolvedAddressService.RemoveResolvedAddressByIdAsync(matchedResolvedAddress.Id);
                 }
-
                 await this.addressService.RemoveAddressByIdAsync(address.Id);
             }
         }

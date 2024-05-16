@@ -155,7 +155,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             if (matchedAddress.AddressComponents.Count() > 0)
             {
                 resolvedAddresses.MatchedOrganisationName =
-                matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "OrganisationName").Value;
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "OrganisationName").Value;
 
                 resolvedAddresses.MatchedDepartmentName =
                     matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedDepartmentName").Value;

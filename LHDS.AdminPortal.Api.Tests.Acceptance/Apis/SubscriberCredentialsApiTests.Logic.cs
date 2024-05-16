@@ -121,7 +121,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             actualSubscriberCredential.FtpPassword.Should().BeNull();
             actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
             actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
-
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
@@ -168,7 +167,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             actualSubscriberCredential.FtpPassword.Should().BeNull();
             actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
             actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
-
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
@@ -229,7 +227,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
 
             // then
             actualSubscriberCredential.Should().BeEquivalentTo(expectedSubscriberCredential);
-                        actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
+            actualSubscriberCredential.FtpPassPhrase.Should().BeNull();
             actualSubscriberCredential.FtpPrivateKey.Should().BeNull();
             actualSubscriberCredential.FtpPassword.Should().BeNull();
             actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
@@ -271,7 +269,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             actualSubscriberCredential.FtpPassword.Should().BeNull();
             actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
             actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
-
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 
@@ -288,7 +285,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             modifiedSubscriberCredential.CreatedDate = subscriberAgreement.CreatedDate;
             modifiedSubscriberCredential.CreatedBy = subscriberAgreement.CreatedBy;
             modifiedSubscriberCredential.UpdatedDate = dateOffset.AddMilliseconds(10);
-
             SubscriberCredential expectedSubscriberCredential = modifiedSubscriberCredential.DeepClone();
             expectedSubscriberCredential.FtpPassPhrase = null;
             expectedSubscriberCredential.FtpPrivateKey = null;
@@ -318,7 +314,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             actualSubscriberCredential.FtpPassword.Should().BeNull();
             actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
             actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
-
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 

@@ -83,7 +83,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
                 await this.addressService.RemoveAddressByIdAsync(address.Id);
             }
-
         }
     }
 }

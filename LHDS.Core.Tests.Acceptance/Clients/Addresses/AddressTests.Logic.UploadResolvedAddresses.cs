@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Xunit;
@@ -50,9 +51,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             foreach (var resolvedAddress in randomMatchedResolvedAddresses)
             {
-                uploadedData.Contains(resolvedAddress.UniqueReference.ToString());
+                uploadedData.Should().Contain(resolvedAddress.UniqueReference.ToString());
 
                 ResolvedAddress matchedResolvedAddress = 
+                    await this.resolvedAddressProcessingService.RetrieveResolvedAddressByIdAsync(resolvedAddress.Id);
+
+                matchedResolvedAddress.IsProcessed = true;
+            }
+
+            foreach (var resolvedAddress in randomUnMatchedResolvedAddresses)
+            {
+                uploadedData.Should().NotContain(resolvedAddress.UniqueReference.ToString());
+
+                ResolvedAddress matchedResolvedAddress =
                     await this.resolvedAddressProcessingService.RetrieveResolvedAddressByIdAsync(resolvedAddress.Id);
 
                 matchedResolvedAddress.IsProcessed = true;

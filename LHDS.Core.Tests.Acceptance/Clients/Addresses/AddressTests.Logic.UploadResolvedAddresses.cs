@@ -4,7 +4,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Xunit;
 
@@ -40,10 +42,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             // Then
             string fileName = $"{actualBatchReference.ToString()}.csv";
-            //await this.documentService.RemoveDocumentByFileNameAsync(fileName, addressContainer);
+
+            Document uploadedDocument =
+                await this.documentService.RetrieveDocumentByFileNameAsync(fileName, addressContainer);
+
+            string uploadedData = Encoding.ASCII.GetString(uploadedDocument.DocumentData);
 
             foreach (var resolvedAddress in randomMatchedResolvedAddresses)
             {
+                uploadedData.Contains(resolvedAddress.UniqueReference.ToString());
+
                 ResolvedAddress matchedResolvedAddress = 
                     await this.resolvedAddressProcessingService.RetrieveResolvedAddressByIdAsync(resolvedAddress.Id);
 
@@ -57,6 +65,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
                 unMatchedResolvedAddress.IsProcessed = false;
             }
+
+            await this.documentService.RemoveDocumentByFileNameAsync(fileName, addressContainer);
 
             foreach (var resolvedAddress in randomResolvedAddresses)
             {

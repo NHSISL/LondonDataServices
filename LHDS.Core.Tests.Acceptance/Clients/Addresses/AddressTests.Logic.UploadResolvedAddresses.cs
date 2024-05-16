@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         {
             // Given
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
-            Guid expectedBatchReference = Guid.NewGuid();
+            string addressContainer = this.blobContainers.Addresses;
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses(dateTimeOffset);
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
@@ -32,17 +32,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 await this.addressClient.ProcessResolvedAddressDataAsync();
 
             // Then
-            actualBatchReference.Should().Be(expectedBatchReference);
+            string fileName = $"{actualBatchReference.ToString()}.csv";
+            await this.documentService.RemoveDocumentByFileNameAsync(fileName, addressContainer);
 
-            //this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-            //    service.UploadResolvedAddressesAsync(),
-            //        Times.Once());
-
-            //this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
-            //this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            //this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
-            //this.loggingBrokerMock.VerifyNoOtherCalls();
-            //assert.items in file count rows.
+            foreach (var resolvedAddress in randomResolvedAddresses)
+            {
+                await this.resolvedAddressProcessingService.RemoveResolvedAddressByIdAsync(resolvedAddress.Id);
+            }
         }
     }
 }

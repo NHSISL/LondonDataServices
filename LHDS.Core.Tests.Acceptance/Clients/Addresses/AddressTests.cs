@@ -12,6 +12,7 @@ using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Coordinations.AddressCoordinations;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
@@ -32,6 +33,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private readonly IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
+        private readonly IDocumentService documentService;
         private readonly IAddressClient addressClient;
         private readonly ICompareLogic compareLogic;
         private readonly AddressConfiguration addressConfiguration;
@@ -47,7 +49,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .AddTransient<IAddressExtractionOrchestrationService, AddressExtractionOrchestrationService>()
                 .AddTransient<IAddressPersistanceOrchestrationService, AddressPersistanceOrchestrationService>()
                 .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()
-                .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>();
+                .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>()
+                .AddTransient<IDocumentService, DocumentService> ();
 
             serviceCollection.AddLogging(builder =>
             {
@@ -68,6 +71,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             this.resolvedAddressProcessingService =
                 serviceProvider.GetService<IResolvedAddressProcessingService>();
+
+            this.documentService =
+                serviceProvider.GetService<IDocumentService>();
 
             this.addressConfiguration = serviceProvider.GetService<AddressConfiguration>();
             this.blobContainers = serviceProvider.GetService<BlobContainers>();
@@ -126,7 +132,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(resolvedAddress => resolvedAddress.IsMatched).Use(false)
+                .OnProperty(resolvedAddress => resolvedAddress.IsMatched).Use(true)
+                .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 

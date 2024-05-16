@@ -64,7 +64,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 string pattern = @"\b([A-Z]{1,2}\d{1,2}[A-Z]?\s*\d[A-Z]{2})\b";
                 HashSet<string> uniqueMatches = new HashSet<string>();
 
-                foreach (Match match in Regex.Matches(address ?? "", pattern))
+                foreach (Match match in Regex.Matches(address?.ToUpper() ?? "", pattern))
                 {
                     uniqueMatches.Add(match.Value);
                 }
@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 ValidateMatches(matches);
                 string extractedPostCode = matches[0].Groups[1].Value;
 
-                return extractedPostCode;
+                return extractedPostCode.ToLower();
             });
 
         public ValueTask<HashSet<AddressMatch>> CalculateMatchingAddressComponents(

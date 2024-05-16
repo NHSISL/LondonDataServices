@@ -19,7 +19,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
         }
 
         virtual internal void ValidatPostCodeMatch(string? resolvedPostCode, string? addressPostcode) =>
-            Validate((Rule: IsSame(resolvedPostCode, addressPostcode), Parameter: "postCode"));
+            Validate((Rule: IsSame(resolvedPostCode?.ToLower(), addressPostcode?.ToLower()), Parameter: "postCode"));
 
         virtual internal void ValidatePostCode(string? postCode) =>
             Validate((Rule: IsInvalid(postCode), Parameter: "postCode"));

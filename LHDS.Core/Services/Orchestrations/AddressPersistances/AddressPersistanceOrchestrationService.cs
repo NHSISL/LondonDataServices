@@ -87,22 +87,24 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                 return processedAddresses;
             });
 
-        public ValueTask<ResolvedAddress> MatchAndPersistResolvedAddressAsync(ResolvedAddress resolvedAddresses) =>
+        public ValueTask<ResolvedAddress> MatchAndPersistResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
          TryCatch(async () =>
          {
-             ValidateResolvedAddress(resolvedAddresses);
-             ValidatePostCode(resolvedAddresses.PostCode);
-             ValidateJsonPostalAddress(resolvedAddresses.JsonPostalAddress);
+             ValidateResolvedAddress(resolvedAddress);
+             ValidatePostCode(resolvedAddress.PostCode);
+             ValidateJsonPostalAddress(resolvedAddress.JsonPostalAddress);
 
-             string postCode = addressMatcherProcessingService.ExtractPostCode(resolvedAddresses.PostalAddress);
+             string postCode = 
+                addressMatcherProcessingService.ExtractPostCode(resolvedAddress.UnstructuredPostalAddress);
+
              ValidatePostCode(postCode);
-             ValidatPostCodeMatch(resolvedAddresses.PostCode, postCode);
+             ValidatPostCodeMatch(resolvedAddress.PostCode, postCode);
 
              List<Address> retrieveAddressesByPostCode =
-                 await addressProcessingService.RetrieveAddressesByPostCodeAsync(postCode);
+                 await addressProcessingService.RetrieveAddressesByPostCodeAsync(resolvedAddress.PostCode);
 
              List<KeyValuePair<string, string>> resolvedAddressComponents =
-                GenerateKeyValuePairAddressFromJson(resolvedAddresses.JsonPostalAddress);
+                GenerateKeyValuePairAddressFromJson(resolvedAddress.JsonPostalAddress);
 
              HashSet<AddressMatch> addressesToMatch = retrieveAddressesByPostCode.Select(address => new AddressMatch
              {
@@ -116,11 +118,15 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                      matchedAddresses: addressesToMatch,
                      addressComponents: resolvedAddressComponents);
 
-             ResolvedAddress UpdateFromMatch = populateMatchedAddress(resolvedAddresses, matchedAddress);
-             UpdateFromMatch.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+             ResolvedAddress UpdateFromMatch = populateMatchedAddress(resolvedAddress, matchedAddress);
+             DateTimeOffset currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+             UpdateFromMatch.UpdatedDate = currentDateTime;
+             UpdateFromMatch.CreatedDate = currentDateTime;
+             UpdateFromMatch.CreatedBy =  "System";
+             UpdateFromMatch.UpdatedBy = "System";
 
              ResolvedAddress updatedResolvedAddress =
-                 await resolvedAddressProcessingService.ModifyResolvedAddressAsync(UpdateFromMatch);
+                 await resolvedAddressProcessingService.ModifyOrAddResolvedAddressAsync(UpdateFromMatch);
 
              await this.auditBroker.LogInformation(
                  "Resolved Address",
@@ -190,18 +196,17 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
         public static List<KeyValuePair<string, string>> GenerateKeyValuePairAddressFromJson(string? jsonPostalAddress)
         {
             var keyValuePairs = new List<KeyValuePair<string, string>>();
-            var items = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(jsonPostalAddress ?? "");
+            var addressDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonPostalAddress ?? "");
 
-            if (items == null || items.Count == 0)
+            if (addressDict == null || addressDict.Count == 0)
             {
                 return keyValuePairs;
             }
 
-            foreach (var item in items)
+            // Add each key-value pair from the dictionary to the list
+            foreach (var kvp in addressDict)
             {
-                var key = item["Key"];
-                var value = item["Value"];
-                keyValuePairs.Add(new KeyValuePair<string, string>(key, value));
+                keyValuePairs.Add(kvp);
             }
 
             return keyValuePairs;

@@ -124,5 +124,8 @@ namespace LHDS.Core.Services.Foundations.Files
                     }
                 });
             });
+
+        public ValueTask<List<(byte[] data, string fileName)>> UnzipFile(string path) =>
+            throw new NotImplementedException();
     }
 }

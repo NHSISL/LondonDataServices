@@ -76,6 +76,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             this.addressService = serviceProvider.GetService<IAddressService>();
             this.resolvedAddressService = serviceProvider.GetService<IResolvedAddressService>();
 
+            this.documentService =
+                serviceProvider.GetService<IDocumentService>();
+
             this.addressConfiguration = serviceProvider.GetService<AddressConfiguration>();
             this.blobContainers = serviceProvider.GetService<BlobContainers>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
@@ -217,6 +220,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(resolvedAddress => resolvedAddress.IsMatched).Use(isMatched)
+                .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 

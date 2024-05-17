@@ -137,7 +137,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             modifiedSubscriberCredential.CreatedDate = subscriberAgreement.CreatedDate;
             modifiedSubscriberCredential.CreatedBy = subscriberAgreement.CreatedBy;
             modifiedSubscriberCredential.UpdatedDate = dateOffset.AddMilliseconds(10);
-
             SubscriberCredential expectedSubscriberCredential = modifiedSubscriberCredential.DeepClone();
             expectedSubscriberCredential.FtpPassPhrase = null;
             expectedSubscriberCredential.FtpPrivateKey = null;
@@ -197,6 +196,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
             actualSubscriberCredential.FtpPassword.Should().BeNull();
             actualSubscriberCredential.GpgPassPhrase.Should().BeNull();
             actualSubscriberCredential.GpgPrivateKey.Should().BeNull();
+            actualSubscriberCredential.FtpPublicKey.Should().NotBeNullOrWhiteSpace();
+            actualSubscriberCredential.GpgPublicKey.Should().NotBeNullOrWhiteSpace();
             await this.apiBroker.DeleteSubscriberCredentialByIdAsync(subscriberAgreementId);
         }
 

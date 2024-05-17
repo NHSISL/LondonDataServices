@@ -124,16 +124,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             return new List<KeyValuePair<string, string>>
             {
+                new KeyValuePair<string, string>("UPRN", GetRandomString()),
+                new KeyValuePair<string, string>("UPSN", GetRandomString()),
+
                 new KeyValuePair<string, string>("OrganisationName", GetRandomString()),
                 new KeyValuePair<string, string>("DepartmentName", GetRandomString()),
                 new KeyValuePair<string, string>("SubBuildingName", GetRandomString()),
+                new KeyValuePair<string, string>("BuildingName", GetRandomString()),
                 new KeyValuePair<string, string>("BuildingNumber", GetRandomString()),
                 new KeyValuePair<string, string>("DependentThoroughfare", GetRandomString()),
                 new KeyValuePair<string, string>("Thoroughfare", GetRandomString()),
                 new KeyValuePair<string, string>("DoubleDependentLocality", GetRandomString()),
                 new KeyValuePair<string, string>("DependentLocality", GetRandomString()),
                 new KeyValuePair<string, string>("PostTown", GetRandomString()),
-                new KeyValuePair<string, string>("PostCode", GetRandomString())
+                new KeyValuePair<string, string>("PostCode", GetRandomString()),
             };
         }
 

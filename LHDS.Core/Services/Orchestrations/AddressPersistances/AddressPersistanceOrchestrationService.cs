@@ -117,10 +117,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                      addressComponents: resolvedAddressComponents);
 
              ResolvedAddress UpdateFromMatch = populateMatchedAddress(resolvedAddresses, matchedAddress);
-             UpdateFromMatch.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+             DateTimeOffset currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+             UpdateFromMatch.UpdatedDate = currentDateTime;
+             UpdateFromMatch.CreatedDate = currentDateTime;
+             UpdateFromMatch.CreatedBy = "System";
+             UpdateFromMatch.UpdatedBy = "System";
 
              ResolvedAddress updatedResolvedAddress =
-                 await resolvedAddressProcessingService.ModifyResolvedAddressAsync(UpdateFromMatch);
+                 await resolvedAddressProcessingService.ModifyOrAddResolvedAddressAsync(UpdateFromMatch);
 
              await this.auditBroker.LogInformation(
                  "Resolved Address",

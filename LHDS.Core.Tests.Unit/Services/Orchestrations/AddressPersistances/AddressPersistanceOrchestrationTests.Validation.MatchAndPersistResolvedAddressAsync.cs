@@ -212,7 +212,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
 
             this.addressMatcherProcessingServiceMock.Setup(processing =>
-                processing.ExtractPostCode(randomResolvedAddress.UnstructuredPostalAddress))
+                processing.ExtractPostCode(randomResolvedAddress.PostalAddress))
                     .Returns(postCode);
 
             var invalidArgumentAddressPersistanceOrchestrationException =
@@ -244,7 +244,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 .BeEquivalentTo(expectedAddressPersistanceOrchestrationValidationException);
 
             this.addressMatcherProcessingServiceMock.Verify(processing =>
-                processing.ExtractPostCode(randomResolvedAddress.UnstructuredPostalAddress),
+                processing.ExtractPostCode(randomResolvedAddress.PostalAddress),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

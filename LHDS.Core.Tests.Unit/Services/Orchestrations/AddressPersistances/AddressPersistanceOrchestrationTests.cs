@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text.Json;
+using System.Reflection;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
@@ -120,32 +120,49 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             return filler;
         }
 
-        static List<KeyValuePair<string, string>> GenerateRandomKeyValuePairAddress()
+        private static List<KeyValuePair<string, string>> GenerateKeyValuePairRepresentingAddress(Address address)
+        {
+            var keyValuePairs = new List<KeyValuePair<string, string>>();
+            PropertyInfo[] properties = typeof(Address).GetProperties();
+
+            foreach (var property in properties)
+            {
+                object? value = property.GetValue(address);
+                string stringValue = value?.ToString() ?? string.Empty;
+                keyValuePairs.Add(new KeyValuePair<string, string>(property.Name, stringValue));
+            }
+
+            return keyValuePairs;
+        }
+
+        private static List<KeyValuePair<string, string>> GenerateRandomKeyValuePairAddress()
         {
             return new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("OrganisationName", GetRandomString()),
-                new KeyValuePair<string, string>("DepartmentName", GetRandomString()),
-                new KeyValuePair<string, string>("SubBuildingName", GetRandomString()),
-                new KeyValuePair<string, string>("BuildingNumber", GetRandomString()),
-                new KeyValuePair<string, string>("DependentThoroughfare", GetRandomString()),
-                new KeyValuePair<string, string>("Thoroughfare", GetRandomString()),
-                new KeyValuePair<string, string>("DoubleDependentLocality", GetRandomString()),
-                new KeyValuePair<string, string>("DependentLocality", GetRandomString()),
-                new KeyValuePair<string, string>("PostTown", GetRandomString()),
-                new KeyValuePair<string, string>("PostCode", GetRandomString())
+                new KeyValuePair<string, string>("house_number", GetRandomString()),
+                new KeyValuePair<string, string>("road", GetRandomString()),
+                new KeyValuePair<string, string>("city_district", GetRandomString()),
+                new KeyValuePair<string, string>("city", GetRandomString()),
+                new KeyValuePair<string, string>("postcode", GetRandomString()),
+                new KeyValuePair<string, string>("country", GetRandomString()),
             };
         }
 
-        static List<KeyValuePair<string, string>> GenerateRandomKeyValuePairAddressFromJson(string jsonPostalAddress)
+        private static List<KeyValuePair<string, string>> GenerateKeyValuePairAddressFromJson(string? jsonPostalAddress)
         {
             var keyValuePairs = new List<KeyValuePair<string, string>>();
-            var items = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(jsonPostalAddress);
 
-            foreach (var item in items)
+            if (string.IsNullOrWhiteSpace(jsonPostalAddress))
             {
-                var key = item["Key"];
-                var value = item["Value"];
+                return keyValuePairs;
+            }
+
+            var dictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonPostalAddress);
+
+            foreach (var item in dictionary)
+            {
+                var key = item.Key;
+                var value = item.Value;
                 keyValuePairs.Add(new KeyValuePair<string, string>(key, value));
             }
 
@@ -174,7 +191,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             return filler;
         }
         public static ResolvedAddress UpdateResolvedAddress(
-            ResolvedAddress inputResolvedAddress, 
+            ResolvedAddress inputResolvedAddress,
             AddressMatch matchedAddress)
         {
             inputResolvedAddress.IsMatched = matchedAddress.IsMatched;
@@ -182,49 +199,54 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             Enum.TryParse(((int)matchedAddress.BestMatch).ToString(), ignoreCase: true, out matchAlgorithmEnum);
             inputResolvedAddress.MatchAlgorithmEnum = matchAlgorithmEnum;
 
-            if (matchedAddress.NormalisedAddressComponents.Count() > 0)
+            if (matchedAddress.OriginalAddressComponents.Count() > 0)
             {
                 inputResolvedAddress.MatchAlgorithmEnum = MatchAlgorithmEnum.Exact;
-                inputResolvedAddress.MatchedPostalAddress = matchedAddress.PostalAddress;
-                inputResolvedAddress.MatchedJsonPostalAddress = matchedAddress.JsonPostalAddress;
-                inputResolvedAddress.MatchedUPRN = matchedAddress.UPRN;
-                inputResolvedAddress.MatchedUPSN = matchedAddress.UPSN;
 
-                inputResolvedAddress.MatchedOrganisationName =
-                    matchedAddress.NormalisedAddressComponents.FirstOrDefault(pair => pair.Key == "OrganisationName").Value;
+                inputResolvedAddress.MatchedPostalAddress = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "PostalAddress").Value;
 
-                inputResolvedAddress.MatchedOrganisationName =
-                    matchedAddress.NormalisedAddressComponents.FirstOrDefault(pair => pair.Key == "DepartmentName").Value;
+                inputResolvedAddress.MatchedJsonPostalAddress = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "JsonPostalAddress").Value;
 
-                inputResolvedAddress.MatchedOrganisationName =
-                    matchedAddress.NormalisedAddressComponents.FirstOrDefault(pair => pair.Key == "SubBuildingName").Value;
+                inputResolvedAddress.MatchedUPRN = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "UPRN").Value;
 
-                inputResolvedAddress.MatchedBuildingName =
-                    matchedAddress.NormalisedAddressComponents.FirstOrDefault(pair => pair.Key == "MatchedBuildingName").Value;
+                inputResolvedAddress.MatchedUPSN = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "UPSN").Value;
 
-                inputResolvedAddress.MatchedBuildingNumber =
-                    matchedAddress.NormalisedAddressComponents.FirstOrDefault(pair => pair.Key == "MatchedBuildingNumber").Value;
+                inputResolvedAddress.MatchedOrganisationName = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "OrganisationName").Value;
 
-                inputResolvedAddress.MatchedDependentThoroughfare =
-                    matchedAddress.NormalisedAddressComponents
+                inputResolvedAddress.MatchedOrganisationName = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "DepartmentName").Value;
+
+                inputResolvedAddress.MatchedOrganisationName = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "SubBuildingName").Value;
+
+                inputResolvedAddress.MatchedBuildingName = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "MatchedBuildingName").Value;
+
+                inputResolvedAddress.MatchedBuildingNumber = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "MatchedBuildingNumber").Value;
+
+                inputResolvedAddress.MatchedDependentThoroughfare = matchedAddress.NormalisedAddressComponents
                         .FirstOrDefault(pair => pair.Key == "MatchedDependentThoroughfare").Value;
 
-                inputResolvedAddress.MatchedThoroughfare =
-                    matchedAddress.NormalisedAddressComponents.FirstOrDefault(pair => pair.Key == "MatchedThoroughfare").Value;
+                inputResolvedAddress.MatchedThoroughfare = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "MatchedThoroughfare").Value;
 
-                inputResolvedAddress.MatchedDoubleDependentLocality =
-                    matchedAddress.NormalisedAddressComponents
+                inputResolvedAddress.MatchedDoubleDependentLocality = matchedAddress.NormalisedAddressComponents
                         .FirstOrDefault(pair => pair.Key == "MatchedDoubleDependentLocality").Value;
 
-                inputResolvedAddress.MatchedDependentLocality =
-                    matchedAddress.NormalisedAddressComponents
+                inputResolvedAddress.MatchedDependentLocality = matchedAddress.NormalisedAddressComponents
                         .FirstOrDefault(pair => pair.Key == "MatchedDependentLocality").Value;
 
-                inputResolvedAddress.MatchedPostTown =
-                    matchedAddress.NormalisedAddressComponents.FirstOrDefault(pair => pair.Key == "MatchedPostTown").Value;
+                inputResolvedAddress.MatchedPostTown = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "MatchedPostTown").Value;
 
-                inputResolvedAddress.MatchedPostCode =
-                    matchedAddress.NormalisedAddressComponents.FirstOrDefault(pair => pair.Key == "MatchedPostCode").Value;
+                inputResolvedAddress.MatchedPostCode = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "MatchedPostCode").Value;
             }
             return inputResolvedAddress;
         }

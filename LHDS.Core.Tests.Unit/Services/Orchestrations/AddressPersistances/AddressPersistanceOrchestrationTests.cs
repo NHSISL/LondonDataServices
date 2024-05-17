@@ -107,48 +107,46 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
-            string compomnents = GenerateRandomKeyValuePairAddress();
+            List<KeyValuePair<string, string>> compomnents = GenerateRandomKeyValuePairAddress();
             var filler = new Filler<Address>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(address => address.PostalAddress).Use(() => compomnents)
-                .OnProperty(address => address.JsonPostalAddress).Use(() => compomnents)
+                .OnProperty(address => address.PostalAddress).Use(() => ConvertToString(compomnents))
+                .OnProperty(address => address.JsonPostalAddress).Use(() => ConvertToJSONString(compomnents))
                 .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.UpdatedBy).Use(user);
 
             return filler;
         }
 
-        static string GenerateRandomKeyValuePairAddress()
+        static List<KeyValuePair<string, string>> GenerateRandomKeyValuePairAddress()
         {
-            var addressObj = new
+            return new List<KeyValuePair<string, string>>
             {
-                house_number = GetRandomString(),
-                road = GetRandomString(),
-                city_district = GetRandomString(),
-                city = GetRandomString(),
-                postcode = GetRandomString(),
-                country = GetRandomString()
+                new KeyValuePair<string, string>("OrganisationName", GetRandomString()),
+                new KeyValuePair<string, string>("DepartmentName", GetRandomString()),
+                new KeyValuePair<string, string>("SubBuildingName", GetRandomString()),
+                new KeyValuePair<string, string>("BuildingNumber", GetRandomString()),
+                new KeyValuePair<string, string>("DependentThoroughfare", GetRandomString()),
+                new KeyValuePair<string, string>("Thoroughfare", GetRandomString()),
+                new KeyValuePair<string, string>("DoubleDependentLocality", GetRandomString()),
+                new KeyValuePair<string, string>("DependentLocality", GetRandomString()),
+                new KeyValuePair<string, string>("PostTown", GetRandomString()),
+                new KeyValuePair<string, string>("PostCode", GetRandomString())
             };
-
-            return System.Text.Json.JsonSerializer.Serialize(addressObj);
         }
 
         static List<KeyValuePair<string, string>> GenerateRandomKeyValuePairAddressFromJson(string jsonPostalAddress)
         {
             var keyValuePairs = new List<KeyValuePair<string, string>>();
-            var addressDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonPostalAddress ?? "");
+            var items = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(jsonPostalAddress);
 
-            if (addressDict == null || addressDict.Count == 0)
+            foreach (var item in items)
             {
-                return keyValuePairs;
-            }
-
-            // Add each key-value pair from the dictionary to the list
-            foreach (var kvp in addressDict)
-            {
-                keyValuePairs.Add(kvp);
+                var key = item["Key"];
+                var value = item["Value"];
+                keyValuePairs.Add(new KeyValuePair<string, string>(key, value));
             }
 
             return keyValuePairs;
@@ -163,13 +161,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         private static Filler<ResolvedAddress> CreateResolvedAddressFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
-            string compomnents = GenerateRandomKeyValuePairAddress();
+            List<KeyValuePair<string, string>> compomnents = GenerateRandomKeyValuePairAddress();
             var filler = new Filler<ResolvedAddress>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(address => address.PostalAddress).Use(() => compomnents)
-                .OnProperty(address => address.JsonPostalAddress).Use(() => compomnents)
+                .OnProperty(address => address.PostalAddress).Use(() => ConvertToString(compomnents))
+                .OnProperty(address => address.JsonPostalAddress).Use(() => ConvertToJSONString(compomnents))
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 
@@ -187,8 +185,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             if (matchedAddress.AddressComponents.Count() > 0)
             {
                 inputResolvedAddress.MatchAlgorithmEnum = MatchAlgorithmEnum.Exact;
-                inputResolvedAddress.MatchedWithPostalAddress = matchedAddress.PostalAddress;
-                inputResolvedAddress.MatchedWithJsonPostalAddress = matchedAddress.JsonPostalAddress;
+                inputResolvedAddress.MatchedPostalAddress = matchedAddress.PostalAddress;
+                inputResolvedAddress.MatchedJsonPostalAddress = matchedAddress.JsonPostalAddress;
                 inputResolvedAddress.MatchedUPRN = matchedAddress.UPRN;
                 inputResolvedAddress.MatchedUPSN = matchedAddress.UPSN;
 

@@ -14,21 +14,16 @@ using LHDS.Core.Models.Coordinations.AddressCoordinations;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.Addresses;
-using LHDS.Core.Services.Foundations.DataSets;
-using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
-using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
-using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tynamix.ObjectFiller;
 using Xunit;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 {
@@ -66,7 +61,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 builder.AddConsole();
             });
 
-            serviceCollection.AddAddressClient(this.dependencyBroker.Configuration, true);
+            serviceCollection.AddAddressClient(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
             this.addressExtractionOrchestrationService =
@@ -116,7 +111,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 PostTown = "London",
                 PostCode = "SW1A2AA",
                 PostalAddress = "10 Downing Str, Westminster, London, SW1A2AA, UK",
-                JsonPostalAddress =  "{\"house_number\":\"10\",\"road\":\"Downing Str\",\"city_district\":\"Westminister\",\"city\":\"London\",\"postcode\":\"SW1A2AA\",\"country\":\"UK\"}",
+                JsonPostalAddress = "{\"house_number\":\"10\",\"road\":\"Downing Str\",\"city_district\":\"Westminister\",\"city\":\"London\",\"postcode\":\"SW1A2AA\",\"country\":\"UK\"}",
                 UnstructuredPostalAddress = "10 downing str westminster london sw1a2aa uk"
             };
 

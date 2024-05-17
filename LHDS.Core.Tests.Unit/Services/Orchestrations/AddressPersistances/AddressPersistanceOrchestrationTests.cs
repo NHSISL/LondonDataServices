@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.Json;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
@@ -22,7 +23,6 @@ using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressMatchers;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Moq;
-using Newtonsoft.Json;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -88,7 +88,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
         static string ConvertToJSONString(List<KeyValuePair<string, string>> keyValuePairs)
         {
-            var jsonString = System.Text.Json.JsonSerializer.Serialize(keyValuePairs);
+            var dictionary = keyValuePairs.ToDictionary(pair => pair.Key, pair => pair.Value);
+            var jsonString = JsonSerializer.Serialize(dictionary);
+
             return jsonString;
         }
 
@@ -157,7 +159,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 return keyValuePairs;
             }
 
-            var dictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonPostalAddress);
+            var dictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonPostalAddress);
 
             foreach (var item in dictionary)
             {

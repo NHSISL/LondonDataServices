@@ -37,9 +37,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             string csvFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
-                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithZippedCsvAddressesData.zip");
+                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithOnlyCsvAddressesData.csv");
 
-            byte[] csvData = await File.ReadAllBytesAsync(inputFilePath);
+            byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
             string stringData = Encoding.UTF8.GetString(inputData);
             List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
 

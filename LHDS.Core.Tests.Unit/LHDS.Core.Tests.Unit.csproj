@@ -29,6 +29,9 @@
 	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessResolvedAddressesAsync.csv">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
+	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithOnlyCsvAddressesData.csv">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <Content Include="Resources\Services\Foundations\ResolvedAddressParser\ShouldProcessResolvedAddressCsvAsync.csv">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>

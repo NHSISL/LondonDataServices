@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             ResolvedAddress inputResolvedAddress = randomResolvedAddress;
 
             List<KeyValuePair<string, string>> randomResolvedAddressComponents =
-                GenerateRandomKeyValuePairAddressFromJson(randomResolvedAddress.JsonPostalAddress);
+                GenerateKeyValuePairAddressFromJson(randomResolvedAddress.JsonPostalAddress);
 
             List<Address> randomAddresses = CreateRandomAddressList(GetRandomNumber());
             List<Address> storageAddresses = randomAddresses;
@@ -41,7 +41,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             {
                 PostalAddress = address.PostalAddress,
                 JsonPostalAddress = address.JsonPostalAddress,
-                NormalisedAddressComponents = GenerateRandomKeyValuePairAddressFromJson(address.JsonPostalAddress)
+                NormalisedAddressComponents = GenerateKeyValuePairAddressFromJson(address.JsonPostalAddress),
+                OriginalAddressComponents = GenerateKeyValuePairRepresentingAddress(address)
             }).ToHashSet();
 
             HashSet<AddressMatch> resolvedMatchedAddresses = addressesToMatch.DeepClone();
@@ -153,7 +154,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             ResolvedAddress inputResolvedAddress = randomResolvedAddress;
 
             List<KeyValuePair<string, string>> randomResolvedAddressComponents =
-                GenerateRandomKeyValuePairAddressFromJson(randomResolvedAddress.JsonPostalAddress);
+                GenerateKeyValuePairAddressFromJson(randomResolvedAddress.JsonPostalAddress);
 
             List<Address> randomAddresses = CreateRandomAddressList(GetRandomNumber());
             List<Address> storageAddresses = randomAddresses;
@@ -164,7 +165,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             {
                 PostalAddress = address.PostalAddress,
                 JsonPostalAddress = address.JsonPostalAddress,
-                NormalisedAddressComponents = GenerateRandomKeyValuePairAddressFromJson(address.JsonPostalAddress)
+                NormalisedAddressComponents = GenerateKeyValuePairAddressFromJson(address.JsonPostalAddress)
             }).ToHashSet();
 
             HashSet<AddressMatch> resolvedMatchedAddresses = addressesToMatch.DeepClone();

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Force.DeepCloner;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressMatchers;
 using LHDS.Core.Services.Foundations.AddressMatchers;
@@ -161,12 +162,13 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             HashSet<AddressMatch> matchedAddresses,
             IList<KeyValuePair<string, string>> addressComponents)
         {
-            return await ValueTask.FromResult(
-                new AddressMatch
-                {
-                    IsMatched = false,
-                    BestMatch = BestMatchEnum.Multiple
-                });
+            var multipleMatch = matchedAddresses.ToList().Where(x => x.MatchingCoreComponents)
+                .OrderByDescending(x => x.MatchedComponents).First().DeepClone();
+
+            multipleMatch.IsMatched = true;
+            multipleMatch.BestMatch = BestMatchEnum.Multiple;
+
+            return await ValueTask.FromResult(multipleMatch);
         }
     }
 }

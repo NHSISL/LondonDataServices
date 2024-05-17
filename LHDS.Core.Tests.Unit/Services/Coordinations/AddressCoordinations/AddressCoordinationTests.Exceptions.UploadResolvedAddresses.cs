@@ -3,12 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
-using LHDS.Core.Models.Foundations.Addresses;
 using Moq;
 using Xeptions;
 using Xunit;

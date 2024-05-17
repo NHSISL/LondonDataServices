@@ -79,6 +79,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 List<ResolvedAddressReturn> returnAddresses = resolvedAddresses.Select(resolvedAddress =>
                     new ResolvedAddressReturn
                     {
+                        UniqueReference = resolvedAddress.UniqueReference,
                         UPRN = resolvedAddress.MatchedUPRN,
                         UPSN = resolvedAddress.MatchedUPSN,
                         OrganisationName = resolvedAddress.MatchedOrganisationName,

@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                  @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithOnlyCsvAddressesData.csv");
 
             byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
-            string stringData = Encoding.UTF8.GetString(inputData);
+            string stringData = Encoding.UTF8.GetString(csvData);
             List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
 
             List<string> filteredRecords = records.Where(record =>

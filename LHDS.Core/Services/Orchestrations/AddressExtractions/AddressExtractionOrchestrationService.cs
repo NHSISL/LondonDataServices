@@ -51,7 +51,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             TryCatch(async () =>
             {
                 ValidateDataOnProcessData(data, filename);
-
                 List<byte[]> csvData = await ProcessAddressDataAsync(data);
                 List<Address> mappedAddresses = new List<Address>();
 

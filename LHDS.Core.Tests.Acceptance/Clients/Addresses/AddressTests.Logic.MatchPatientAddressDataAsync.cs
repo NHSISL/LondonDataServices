@@ -4,9 +4,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -72,14 +70,31 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             //Then
             foreach (Address address in listAddresses)
             {
-                ResolvedAddress? matchedResolvedAddress = 
+                ResolvedAddress? matchedResolvedAddress =
                     this.resolvedAddressService.RetrieveAllResolvedAddresses()
                         .FirstOrDefault(resolvedAddress => resolvedAddress.PostalAddress == address.PostalAddress);
 
-                if(matchedResolvedAddress != null)
+                matchedResolvedAddress.MatchedPostalAddress = address.PostalAddress;
+                matchedResolvedAddress.MatchedJsonPostalAddress = address.JsonPostalAddress;
+                matchedResolvedAddress.MatchedUPRN = address.UPRN;
+                matchedResolvedAddress.MatchedUPSN = address.UPSN;
+                matchedResolvedAddress.MatchedOrganisationName = address.OrganisationName;
+                matchedResolvedAddress.MatchedDepartmentName = address.DepartmentName;
+                matchedResolvedAddress.MatchedSubBuildingName = address.SubBuildingName;
+                matchedResolvedAddress.MatchedBuildingName = address.BuildingName;
+                matchedResolvedAddress.MatchedBuildingNumber = address.BuildingNumber;
+                matchedResolvedAddress.MatchedDependentThoroughfare = address.DependentThoroughfare;
+                matchedResolvedAddress.MatchedThoroughfare = address.Thoroughfare;
+                matchedResolvedAddress.MatchedDoubleDependentLocality = address.DoubleDependentLocality;
+                matchedResolvedAddress.MatchedDependentLocality = address.DependentLocality;
+                matchedResolvedAddress.MatchedPostTown = address.PostTown;
+                matchedResolvedAddress.MatchedPostCode = address.PostCode;
+
+                if (matchedResolvedAddress != null)
                 {
                     await this.resolvedAddressService.RemoveResolvedAddressByIdAsync(matchedResolvedAddress.Id);
                 }
+
                 await this.addressService.RemoveAddressByIdAsync(address.Id);
             }
         }

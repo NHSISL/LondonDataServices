@@ -10,9 +10,9 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using LHDS.Core.Brokers.AddressNormalisations;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
-using LHDS.Core.Brokers.AddressNormalisations;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -20,9 +20,12 @@ using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
+using LHDS.Core.Models.Coordinations.AddressCoordinations;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
+using LHDS.Core.Services.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.AddressMatchers;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
+using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
@@ -35,11 +38,7 @@ using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using LHDS.Core.Services.Foundations.Audits;
 using NEL.LibPostalClient.Clients;
-using LHDS.Core.Services.Foundations.Addresses;
-using LHDS.Core.Models.Orchestrations.EmisLandings;
-using LHDS.Core.Models.Coordinations.AddressCoordinations;
 
 namespace LHDS.Core.Clients.Extensions
 {
@@ -47,8 +46,7 @@ namespace LHDS.Core.Clients.Extensions
     {
         public static IServiceCollection AddAddressClient(
             this IServiceCollection services,
-            IConfiguration configuration,
-            bool acceptanceTest)
+            IConfiguration configuration)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
 
@@ -96,7 +94,7 @@ namespace LHDS.Core.Clients.Extensions
                         options: blobServiceClientOptions));
             }
 
-           
+
 
             services.AddTransient<IAddressClient, AddressClient>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();

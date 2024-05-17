@@ -87,24 +87,22 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                 return processedAddresses;
             });
 
-        public ValueTask<ResolvedAddress> MatchAndPersistResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
+        public ValueTask<ResolvedAddress> MatchAndPersistResolvedAddressAsync(ResolvedAddress resolvedAddresses) =>
          TryCatch(async () =>
          {
-             ValidateResolvedAddress(resolvedAddress);
-             ValidatePostCode(resolvedAddress.PostCode);
-             ValidateJsonPostalAddress(resolvedAddress.JsonPostalAddress);
+             ValidateResolvedAddress(resolvedAddresses);
+             ValidatePostCode(resolvedAddresses.PostCode);
+             ValidateJsonPostalAddress(resolvedAddresses.JsonPostalAddress);
 
-             string postCode = 
-                addressMatcherProcessingService.ExtractPostCode(resolvedAddress.UnstructuredPostalAddress);
-
+             string postCode = addressMatcherProcessingService.ExtractPostCode(resolvedAddresses.PostalAddress);
              ValidatePostCode(postCode);
-             ValidatPostCodeMatch(resolvedAddress.PostCode, postCode);
+             ValidatPostCodeMatch(resolvedAddresses.PostCode, postCode);
 
              List<Address> retrieveAddressesByPostCode =
-                 await addressProcessingService.RetrieveAddressesByPostCodeAsync(resolvedAddress.PostCode);
+                 await addressProcessingService.RetrieveAddressesByPostCodeAsync(postCode);
 
              List<KeyValuePair<string, string>> resolvedAddressComponents =
-                GenerateKeyValuePairAddressFromJson(resolvedAddress.JsonPostalAddress);
+                GenerateKeyValuePairAddressFromJson(resolvedAddresses.JsonPostalAddress);
 
              HashSet<AddressMatch> addressesToMatch = retrieveAddressesByPostCode.Select(address => new AddressMatch
              {
@@ -118,15 +116,11 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                      matchedAddresses: addressesToMatch,
                      addressComponents: resolvedAddressComponents);
 
-             ResolvedAddress UpdateFromMatch = populateMatchedAddress(resolvedAddress, matchedAddress);
-             DateTimeOffset currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-             UpdateFromMatch.UpdatedDate = currentDateTime;
-             UpdateFromMatch.CreatedDate = currentDateTime;
-             UpdateFromMatch.CreatedBy =  "System";
-             UpdateFromMatch.UpdatedBy = "System";
+             ResolvedAddress UpdateFromMatch = populateMatchedAddress(resolvedAddresses, matchedAddress);
+             UpdateFromMatch.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
              ResolvedAddress updatedResolvedAddress =
-                 await resolvedAddressProcessingService.ModifyOrAddResolvedAddressAsync(UpdateFromMatch);
+                 await resolvedAddressProcessingService.ModifyResolvedAddressAsync(UpdateFromMatch);
 
              await this.auditBroker.LogInformation(
                  "Resolved Address",
@@ -147,47 +141,47 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             Enum.TryParse(((int)matchedAddress.BestMatch).ToString(), ignoreCase: true, out matchAlgorithmEnum);
             resolvedAddresses.MatchAlgorithmEnum = matchAlgorithmEnum;
             resolvedAddresses.IsMatched = matchedAddress.IsMatched;
-            resolvedAddresses.MatchedWithPostalAddress = matchedAddress.PostalAddress;
-            resolvedAddresses.MatchedWithJsonPostalAddress = matchedAddress.JsonPostalAddress;
+            resolvedAddresses.MatchedPostalAddress = matchedAddress.PostalAddress;
+            resolvedAddresses.MatchedJsonPostalAddress = matchedAddress.JsonPostalAddress;
             resolvedAddresses.MatchedUPRN = matchedAddress.UPRN;
             resolvedAddresses.MatchedUPSN = matchedAddress.UPSN;
 
             if (matchedAddress.AddressComponents.Count() > 0)
             {
                 resolvedAddresses.MatchedOrganisationName =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "OrganisationName").Value;
+                matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "OrganisationName").Value;
 
                 resolvedAddresses.MatchedDepartmentName =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedDepartmentName").Value;
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "DepartmentName").Value;
 
                 resolvedAddresses.MatchedSubBuildingName =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedSubBuildingName").Value;
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "SubBuildingName").Value;
 
                 resolvedAddresses.MatchedBuildingName =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedBuildingName").Value;
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "BuildingName").Value;
 
                 resolvedAddresses.MatchedBuildingNumber =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedBuildingNumber").Value;
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "BuildingNumber").Value;
 
                 resolvedAddresses.MatchedDependentThoroughfare =
                     matchedAddress.AddressComponents
-                        .FirstOrDefault(pair => pair.Key == "MatchedDependentThoroughfare").Value;
+                        .FirstOrDefault(pair => pair.Key == "DependentThoroughfare").Value;
 
                 resolvedAddresses.MatchedThoroughfare =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedThoroughfare").Value;
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "Thoroughfare").Value;
 
                 resolvedAddresses.MatchedDoubleDependentLocality =
                     matchedAddress.AddressComponents
-                        .FirstOrDefault(pair => pair.Key == "MatchedDoubleDependentLocality").Value;
+                        .FirstOrDefault(pair => pair.Key == "DoubleDependentLocality").Value;
 
                 resolvedAddresses.MatchedDependentLocality =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedDependentLocality").Value;
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "DependentLocality").Value;
 
                 resolvedAddresses.MatchedPostTown =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedPostTown").Value;
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "PostTown").Value;
 
                 resolvedAddresses.MatchedPostCode =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedPostCode").Value;
+                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "PostCode").Value;
             }
 
             return resolvedAddresses;
@@ -196,17 +190,18 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
         public static List<KeyValuePair<string, string>> GenerateKeyValuePairAddressFromJson(string? jsonPostalAddress)
         {
             var keyValuePairs = new List<KeyValuePair<string, string>>();
-            var addressDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonPostalAddress ?? "");
+            var items = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(jsonPostalAddress ?? "");
 
-            if (addressDict == null || addressDict.Count == 0)
+            if (items == null || items.Count == 0)
             {
                 return keyValuePairs;
             }
 
-            // Add each key-value pair from the dictionary to the list
-            foreach (var kvp in addressDict)
+            foreach (var item in items)
             {
-                keyValuePairs.Add(kvp);
+                var key = item["Key"];
+                var value = item["Value"];
+                keyValuePairs.Add(new KeyValuePair<string, string>(key, value));
             }
 
             return keyValuePairs;

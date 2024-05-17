@@ -165,7 +165,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             {
                 PostalAddress = address.PostalAddress,
                 JsonPostalAddress = address.JsonPostalAddress,
-                NormalisedAddressComponents = GenerateKeyValuePairAddressFromJson(address.JsonPostalAddress)
+                NormalisedAddressComponents = GenerateKeyValuePairAddressFromJson(address.JsonPostalAddress),
+                OriginalAddressComponents = GenerateKeyValuePairRepresentingAddress(address)
             }).ToHashSet();
 
             HashSet<AddressMatch> resolvedMatchedAddresses = addressesToMatch.DeepClone();

@@ -51,9 +51,6 @@ namespace LHDS.Core.Providers.Downloads.Extensions
                 (Rule: IsInvalid(ftpDownloadProviderSettings.FtpPort),
                     Parameter: "ftpDownload__ftpPort"),
 
-                (Rule: IsInvalid(ftpDownloadProviderSettings.FtpUserName),
-                    Parameter: "ftpDownload__ftpUserName"),
-
                 (Rule: IsInvalid(ftpDownloadProviderSettings.IncludeSubDirectories),
                     Parameter: "ftpDownload__includeSubDirectories"));
         }

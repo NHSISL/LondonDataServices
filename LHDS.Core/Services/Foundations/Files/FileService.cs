@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
+using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Files;
@@ -125,7 +127,28 @@ namespace LHDS.Core.Services.Foundations.Files
                 });
             });
 
-        public ValueTask<List<(byte[] data, string fileName)>> UnzipFile(string path) =>
-            throw new NotImplementedException();
+        public async ValueTask<List<(byte[] data, string fileName)>> UnzipFile(string zipFilePath)
+        {
+            ValidateReadFromFileArguments(zipFilePath);
+            List<(byte[] data, string fileName)> extractedFiles = new List<(byte[] data, string fileName)>();
+            using (FileStream zipFileStream = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read))
+
+            using (ZipArchive archive = new ZipArchive(zipFileStream, ZipArchiveMode.Read))
+            {
+                foreach (ZipArchiveEntry entry in archive.Entries)
+                {
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        using (Stream entryStream = entry.Open())
+                        {
+                            await entryStream.CopyToAsync(memoryStream);
+                        }
+                        extractedFiles.Add((memoryStream.ToArray(), entry.FullName));
+                    }
+                }
+            }
+
+            return extractedFiles;
+        }
     }
 }

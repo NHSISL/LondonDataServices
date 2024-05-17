@@ -105,7 +105,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             actualResolvedAddress.Should().BeEquivalentTo(updatedResolvedAddress);
 
             this.addressMatcherProcessingServiceMock.Verify(processing =>
-                processing.ExtractPostCode(inputResolvedAddress.UnstructuredPostalAddress),
+                processing.ExtractPostCode(inputResolvedAddress.PostalAddress),
                     Times.Once);
 
             this.addressProcessingServiceMock.Verify(processing =>
@@ -197,7 +197,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             updatedResolvedAddress.UpdatedBy = "System";
 
             this.addressMatcherProcessingServiceMock.Setup(processing =>
-                processing.ExtractPostCode(inputResolvedAddress.UnstructuredPostalAddress))
+                processing.ExtractPostCode(inputResolvedAddress.PostalAddress))
                     .Returns(postCode);
 
             this.addressProcessingServiceMock.Setup(processing =>
@@ -227,7 +227,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             actualResolvedAddress.Should().BeEquivalentTo(updatedResolvedAddress);
 
             this.addressMatcherProcessingServiceMock.Verify(processing =>
-                processing.ExtractPostCode(inputResolvedAddress.UnstructuredPostalAddress),
+                processing.ExtractPostCode(inputResolvedAddress.PostalAddress),
                     Times.Once);
 
             this.addressProcessingServiceMock.Verify(processing =>

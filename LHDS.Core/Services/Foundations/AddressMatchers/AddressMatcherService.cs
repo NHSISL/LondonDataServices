@@ -59,7 +59,7 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
                 foreach (var address in possibleAddressMatches)
                 {
                     AddressMatch addressMatch = address.DeepClone();
-                    var possibleAddressComponents = address.AddressComponents;
+                    var possibleAddressComponents = address.NormalisedAddressComponents;
 
                     addressMatch.MatchedComponents = addressComponents
                         .Intersect(possibleAddressComponents).Count();
@@ -125,16 +125,19 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
             {
                 bool matchOnHouseNumberAndPostCode = incomingHasHouseNumber && possibleAddressHasHouseNumber &&
                     incomingAddressComponents.Any(kv => kv.Key == "house_number" &&
-                        possibleAddressComponents.Any(kv2 => kv2.Key == "house_number" && kv2.Value == kv.Value)) &&
-                            incomingAddressComponents.Any(kv => kv.Key == "postcode" && possibleAddressComponents
-                                .Any(kv2 => kv2.Key == "postcode" && kv2.Value == kv.Value));
+                        possibleAddressComponents.Any(kv2 => kv2.Key == "house_number"
+                            && kv2.Value.Equals(kv.Value, StringComparison.InvariantCultureIgnoreCase))) &&
+                                incomingAddressComponents.Any(kv => kv.Key == "postcode" && possibleAddressComponents
+                                    .Any(kv2 => kv2.Key == "postcode" && kv2.Value
+                                        .Equals(kv.Value, StringComparison.InvariantCultureIgnoreCase)));
 
                 return matchOnHouseNumberAndPostCode;
             }
             else
             {
                 bool matchOnPostcode = incomingAddressComponents.Any(kv => kv.Key == "postcode" &&
-                    possibleAddressComponents.Any(kv2 => kv2.Key == "postcode" && kv2.Value == kv.Value));
+                    possibleAddressComponents.Any(kv2 => kv2.Key == "postcode"
+                        && kv2.Value.Equals(kv.Value, StringComparison.InvariantCultureIgnoreCase)));
 
                 return matchOnPostcode;
             }

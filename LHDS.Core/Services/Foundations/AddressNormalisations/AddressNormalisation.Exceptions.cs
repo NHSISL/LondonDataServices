@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.LibPostalClient.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
-using NEL.LibPostalClient.Models.Clients.LibPostal.Exceptions;
+using NHSISL.LibPostalClient.Models.Clients.LibPostal.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.AddressNormalisations

@@ -26,8 +26,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             string projectRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(assembly), @"..\..\.."));
 
             string inputFilePath = Path.Combine(
-                projectRoot, 
-                @"Resource/Clients/Address/ShouldProcessZipFileWithZippedCsvAddressesData.zip");
+                projectRoot,
+                @"Resource/Clients/Address/Test.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
 

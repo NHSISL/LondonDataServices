@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
-                string addressString = resolvedAddress.UnstructuredPostalAddress;
+                string addressString = resolvedAddress.PostalAddress ?? string.Empty;
 
                 this.addressNormalisationServiceMock.Setup(service =>
                     service.GetNormalisedAddress(addressString))
@@ -97,7 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
-                string addressString = resolvedAddress.UnstructuredPostalAddress;
+                string addressString = resolvedAddress.PostalAddress ?? string.Empty;
 
                 this.addressNormalisationServiceMock.Verify(service =>
                     service.GetNormalisedAddress(addressString),
@@ -149,7 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
-                string addressString = resolvedAddress.UnstructuredPostalAddress;
+                string addressString = resolvedAddress.PostalAddress ?? string.Empty;
 
                 this.addressNormalisationServiceMock.Setup(service =>
                     service.GetNormalisedAddress(addressString))
@@ -205,7 +205,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
-                string addressString = resolvedAddress.UnstructuredPostalAddress;
+                string addressString = resolvedAddress.PostalAddress ?? string.Empty;
 
                 this.addressNormalisationServiceMock.Verify(service =>
                     service.GetNormalisedAddress(addressString),
@@ -265,7 +265,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
-                string stringAddress = resolvedAddress.UnstructuredPostalAddress;
+                string stringAddress = resolvedAddress.PostalAddress ?? string.Empty;
 
                 this.addressNormalisationServiceMock.Setup(service =>
                     service.GetNormalisedAddress(stringAddress))
@@ -315,7 +315,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
-                string addressString = resolvedAddress.UnstructuredPostalAddress;
+                string addressString = resolvedAddress.PostalAddress ?? string.Empty;
 
                 this.addressNormalisationServiceMock.Verify(service =>
                     service.GetNormalisedAddress(addressString),

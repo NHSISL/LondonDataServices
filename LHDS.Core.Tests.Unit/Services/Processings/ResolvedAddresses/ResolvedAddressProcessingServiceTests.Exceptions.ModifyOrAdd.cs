@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.resolvedAddressServiceMock.Setup(service =>
-                service.RetrieveResolvedAddressByIdAsync(inputResolvedAddress.Id))
+                service.RetrieveAllResolvedAddresses())
                     .Throws(dependencyValidationException);
 
             // when
@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
             actualException.Should().BeEquivalentTo(expectedResolvedAddressProcessingDependencyValidationException);
 
             this.resolvedAddressServiceMock.Verify(service =>
-                service.RetrieveResolvedAddressByIdAsync(inputResolvedAddress.Id),
+                service.RetrieveAllResolvedAddresses(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     innerException: dependencyException.InnerException as Xeption);
 
             this.resolvedAddressServiceMock.Setup(service =>
-                service.RetrieveResolvedAddressByIdAsync(inputResolvedAddress.Id))
+                service.RetrieveAllResolvedAddresses())
                     .Throws(dependencyException);
 
             // when
@@ -87,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
             actualException.Should().BeEquivalentTo(expectedResolvedAddressProcessingDependencyException);
 
             this.resolvedAddressServiceMock.Verify(service =>
-                service.RetrieveResolvedAddressByIdAsync(inputResolvedAddress.Id),
+                service.RetrieveAllResolvedAddresses(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -119,7 +119,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     innerException: failedResolvedAddressProcessingServiceException);
 
             this.resolvedAddressServiceMock.Setup(service =>
-                service.RetrieveResolvedAddressByIdAsync(inputResolvedAddress.Id))
+                service.RetrieveAllResolvedAddresses())
                     .Throws(serviceException);
 
             // when
@@ -133,7 +133,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
             actualException.Should().BeEquivalentTo(expectedResolvedAddressProcessingServiveException);
 
             this.resolvedAddressServiceMock.Verify(service =>
-                service.RetrieveResolvedAddressByIdAsync(inputResolvedAddress.Id),
+                service.RetrieveAllResolvedAddresses(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

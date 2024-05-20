@@ -145,7 +145,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                 {
                     { nameof(ResolvedAddress.UniqueReference), 0 },
                     { nameof(ResolvedAddress.PostCode), 1 },
-                    { nameof(ResolvedAddress.UnstructuredPostalAddress), 2 }
+                    { nameof(ResolvedAddress.PostalAddress), 2 }
                 };
 
                 List<ResolvedAddress> resolvedAddresses = await this.csvHelperBroker
@@ -165,13 +165,15 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                         {
                             ResolvedAddress inputResolvedAddress = resolvedAddress;
                             inputResolvedAddress.Id = this.identifierBroker.GetIdentifier();
-                            string addressString = inputResolvedAddress.UnstructuredPostalAddress;
+                            string addressString = inputResolvedAddress.PostalAddress ?? string.Empty;
 
                             AddressNormalisation addressNormalisation =
                                 await this.addressNormalisationService.GetNormalisedAddress(addressString);
 
                             inputResolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                            inputResolvedAddress.PostalAddress = addressNormalisation.PostalAddress;
+
+                            inputResolvedAddress.UnstructuredPostalAddress = 
+                                addressNormalisation.PostalAddress ?? string.Empty;
 
                             await this.auditBroker.LogInformation(
                                 auditType: "Address",

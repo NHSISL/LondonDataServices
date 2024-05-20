@@ -85,8 +85,11 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 ValidatePostCode(postCode);
 
-                List<Address> returnedAddresses =
-                    this.storageBroker.SelectAllAddresses().Where(address => address.PostCode == postCode).ToList();
+                List<Address> returnedAddresses = this.storageBroker
+                    .SelectAllAddresses()
+                    .ToList()
+                    .Where(address => address.PostCode.Equals(postCode, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
 
                 return await ValueTask.FromResult(returnedAddresses);
             });

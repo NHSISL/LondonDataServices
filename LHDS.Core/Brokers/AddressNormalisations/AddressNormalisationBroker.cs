@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using NEL.LibPostalClient.Clients;
-using NEL.LibPostalClient.Models.Brokers.LibPostal;
+using NHSISL.LibPostalClient.Clients;
+using NHSISL.LibPostalClient.Models.Brokers.LibPostal;
 
 namespace LHDS.Core.Brokers.AddressNormalisations
 {

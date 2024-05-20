@@ -10,7 +10,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using Moq;
-using NEL.LibPostalClient.Models.Clients.LibPostal.Exceptions;
+using NHSISL.LibPostalClient.Models.Clients.LibPostal.Exceptions;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;

@@ -208,8 +208,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
             string postCode = GetRandomString();
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
 
             this.addressMatcherProcessingServiceMock.Setup(processing =>
                 processing.ExtractPostCode(randomResolvedAddress.PostalAddress))

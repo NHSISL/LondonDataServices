@@ -11,8 +11,6 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
@@ -25,16 +23,17 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             // Given
             string inputFilename = GetRandomString();
             string assembly = Assembly.GetExecutingAssembly().Location;
+            string projectRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(assembly), @"..\..\.."));
 
             string inputFilePath = Path.Combine(
-                Path.GetDirectoryName(assembly),
-                 @"Resource/Clients/Address/ShouldProcessZipFileWithZippedCsvAddressesData.zip");
+                projectRoot, 
+                @"Resource/Clients/Address/ShouldProcessZipFileWithZippedCsvAddressesData.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
 
             string csvFilePath = Path.Combine(
-                Path.GetDirectoryName(assembly),
-                 @"Resource/Clients/Address/AddressExtractions/ShouldProcessCsvAddressesSetup.csv");
+                projectRoot,
+                @"Resource/Clients/Address/ShouldProcessCsvAddressesSetup.csv");
 
             byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
             string stringData = Encoding.UTF8.GetString(csvData);
@@ -47,21 +46,21 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             bool hasHeaderRecord = false;
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
-                {
-                    { "UPRN", 3 },
-                    { "UPSN", 4 },
-                    { "OrganisationName", 5 },
-                    { "DepartmentName", 6 },
-                    { "SubBuildingName", 7 },
-                    { "BuildingName", 8 },
-                    { "BuildingNumber", 9 },
-                    { "DependentThoroughfare", 10 },
-                    { "Thoroughfare", 11 },
-                    { "DoubleDependentLocality", 12 },
-                    { "DependentLocality", 13 },
-                    { "PostTown", 14 },
-                    { "PostCode", 15 }
-                };
+            {
+                { "UPRN", 3 },
+                { "UPSN", 4 },
+                { "OrganisationName", 5 },
+                { "DepartmentName", 6 },
+                { "SubBuildingName", 7 },
+                { "BuildingName", 8 },
+                { "BuildingNumber", 9 },
+                { "DependentThoroughfare", 10 },
+                { "Thoroughfare", 11 },
+                { "DoubleDependentLocality", 12 },
+                { "DependentLocality", 13 },
+                { "PostTown", 14 },
+                { "PostCode", 15 }
+            };
 
             List<Address> expectedListAddresses =
                 await this.csvHelperBroker.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings);
@@ -75,3 +74,4 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         }
     }
 }
+

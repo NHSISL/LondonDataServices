@@ -54,7 +54,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 UpdateResolvedAddress(inputResolvedAddress, matchedAddress);
 
             Address ordinanceAddress = storageAddresses.First();
-
             updatedResolvedAddress.MatchedPostalAddress = ordinanceAddress.PostalAddress;
             updatedResolvedAddress.MatchedJsonPostalAddress = ordinanceAddress.JsonPostalAddress;
             updatedResolvedAddress.MatchedUPRN = ordinanceAddress.UPRN;

@@ -233,16 +233,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     .FirstOrDefault(pair => pair.Key == "MatchedBuildingNumber").Value;
 
                 inputResolvedAddress.MatchedDependentThoroughfare = matchedAddress.NormalisedAddressComponents
-                        .FirstOrDefault(pair => pair.Key == "MatchedDependentThoroughfare").Value;
+                    .FirstOrDefault(pair => pair.Key == "MatchedDependentThoroughfare").Value;
 
                 inputResolvedAddress.MatchedThoroughfare = matchedAddress.NormalisedAddressComponents
                     .FirstOrDefault(pair => pair.Key == "MatchedThoroughfare").Value;
 
                 inputResolvedAddress.MatchedDoubleDependentLocality = matchedAddress.NormalisedAddressComponents
-                        .FirstOrDefault(pair => pair.Key == "MatchedDoubleDependentLocality").Value;
+                    .FirstOrDefault(pair => pair.Key == "MatchedDoubleDependentLocality").Value;
 
                 inputResolvedAddress.MatchedDependentLocality = matchedAddress.NormalisedAddressComponents
-                        .FirstOrDefault(pair => pair.Key == "MatchedDependentLocality").Value;
+                    .FirstOrDefault(pair => pair.Key == "MatchedDependentLocality").Value;
 
                 inputResolvedAddress.MatchedPostTown = matchedAddress.NormalisedAddressComponents
                     .FirstOrDefault(pair => pair.Key == "MatchedPostTown").Value;

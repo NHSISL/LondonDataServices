@@ -188,7 +188,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                         .FirstOrDefault(pair => pair.Key == "Thoroughfare").Value;
 
                     resolvedAddresses.MatchedDoubleDependentLocality = matchedAddress.OriginalAddressComponents
-                            .FirstOrDefault(pair => pair.Key == "DoubleDependentLocality").Value;
+                        .FirstOrDefault(pair => pair.Key == "DoubleDependentLocality").Value;
 
                     resolvedAddresses.MatchedDependentLocality = matchedAddress.OriginalAddressComponents
                         .FirstOrDefault(pair => pair.Key == "DependentLocality").Value;

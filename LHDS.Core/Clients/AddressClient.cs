@@ -92,7 +92,7 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<Guid> ProcessResolvedAddressDataAsync()
+        public async ValueTask<Guid?> ProcessResolvedAddressDataAsync()
         {
             try
             {

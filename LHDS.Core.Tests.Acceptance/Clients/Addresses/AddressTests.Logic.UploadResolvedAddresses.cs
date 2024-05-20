@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             }
 
             // When
-            Guid actualBatchReference =
+            Guid? actualBatchReference =
                 await this.addressClient.ProcessResolvedAddressDataAsync();
 
             // Then
@@ -53,7 +53,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             {
                 uploadedData.Should().Contain(resolvedAddress.UniqueReference.ToString());
 
-                ResolvedAddress matchedResolvedAddress = 
+                ResolvedAddress matchedResolvedAddress =
                     await this.resolvedAddressProcessingService.RetrieveResolvedAddressByIdAsync(resolvedAddress.Id);
 
                 matchedResolvedAddress.IsProcessed = true;

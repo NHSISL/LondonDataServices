@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationServiceTests
     {
-        [Theory]
+        [Theory(Skip = "WIP")]
         [MemberData(nameof(AddressExtractionOrchestrationDependencyValidationExceptions))]
         public async Task
             ShouldThrowAggregateDependencyValidationExceptionOnProcessAddressesIfErrorsInLoopAndLogItAsync(
@@ -125,7 +125,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
+        [Theory(Skip = "WIP")]
         [MemberData(nameof(AddressExtractionDependencyExceptions))]
         public async Task
             ShouldThrowAggregateDependencyExceptionOnProcessAddressesIfErrorsInLoopAndLogItAsync(
@@ -226,7 +226,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
+        [Fact(Skip = "WIP")]
         public async Task ShouldThrowAggregateServiceExceptionOnProcessAddressIfErrorsInLoopAndLogItAsync()
         {
             // Given

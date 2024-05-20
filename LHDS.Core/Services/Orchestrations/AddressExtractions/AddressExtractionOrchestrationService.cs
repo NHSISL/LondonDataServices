@@ -53,40 +53,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                 ValidateDataOnProcessData(data, filename);
                 List<byte[]> csvData = await ProcessAddressDataAsync(data);
                 List<Address> mappedAddresses = new List<Address>();
-
-                foreach (byte[] file in csvData)
-                {
-                    string stringData = Encoding.UTF8.GetString(file);
-                    List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-                    List<string> filteredRecords = records.Where(record =>
-                       record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
-
-                    string stringRecords = string.Join(Environment.NewLine, filteredRecords);
-
-                    Dictionary<string, int> fieldMappings = new Dictionary<string, int>
-                    {
-                        { "UPRN", 3 },
-                        { "UPSN", 4 },
-                        { "OrganisationName", 5 },
-                        { "DepartmentName", 6 },
-                        { "SubBuildingName", 7 },
-                        { "BuildingName", 8 },
-                        { "BuildingNumber", 9 },
-                        { "DependentThoroughfare", 10 },
-                        { "Thoroughfare", 11 },
-                        { "DoubleDependentLocality", 12 },
-                        { "DependentLocality", 13 },
-                        { "PostTown", 14 },
-                        { "PostCode", 15 }
-                    };
-
-                    List<Address> addresses = await this.csvHelperBroker
-                        .MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord: false, fieldMappings);
-
-                    mappedAddresses.AddRange(addresses);
-                }
-
+                await CsvToAddressAsync(csvData, mappedAddresses);
                 List<Address> processedAddresses = new List<Address>();
                 var exceptions = new List<Exception>();
 
@@ -132,6 +99,42 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
                 return processedAddresses;
             });
+
+        private async Task CsvToAddressAsync(List<byte[]> csvData, List<Address> mappedAddresses)
+        {
+            foreach (byte[] file in csvData)
+            {
+                string stringData = Encoding.UTF8.GetString(file);
+                List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+
+                List<string> filteredRecords = records.Where(record =>
+                   record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
+
+                string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+
+                Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                    {
+                        { "UPRN", 3 },
+                        { "UPSN", 4 },
+                        { "OrganisationName", 5 },
+                        { "DepartmentName", 6 },
+                        { "SubBuildingName", 7 },
+                        { "BuildingName", 8 },
+                        { "BuildingNumber", 9 },
+                        { "DependentThoroughfare", 10 },
+                        { "Thoroughfare", 11 },
+                        { "DoubleDependentLocality", 12 },
+                        { "DependentLocality", 13 },
+                        { "PostTown", 14 },
+                        { "PostCode", 15 }
+                    };
+
+                List<Address> addresses = await this.csvHelperBroker
+                    .MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord: false, fieldMappings);
+
+                mappedAddresses.AddRange(addresses);
+            }
+        }
 
         public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data, string filename) =>
             TryCatch(async () =>

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -34,6 +35,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
         private readonly IDocumentService documentService;
+        private readonly ICsvHelperBroker csvHelperBroker;
         private readonly IAddressClient addressClient;
         private readonly ICompareLogic compareLogic;
         private readonly AddressConfiguration addressConfiguration;
@@ -50,7 +52,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .AddTransient<IAddressPersistanceOrchestrationService, AddressPersistanceOrchestrationService>()
                 .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()
                 .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>()
-                .AddTransient<IDocumentService, DocumentService> ();
+                .AddTransient<IDocumentService, DocumentService> ()
+                .AddTransient<ICsvHelperBroker, CsvHelperBroker> ();
 
             serviceCollection.AddLogging(builder =>
             {
@@ -74,6 +77,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             this.documentService =
                 serviceProvider.GetService<IDocumentService>();
+
+            this.csvHelperBroker =
+                serviceProvider.GetService<ICsvHelperBroker>();
 
             this.addressConfiguration = serviceProvider.GetService<AddressConfiguration>();
             this.blobContainers = serviceProvider.GetService<BlobContainers>();

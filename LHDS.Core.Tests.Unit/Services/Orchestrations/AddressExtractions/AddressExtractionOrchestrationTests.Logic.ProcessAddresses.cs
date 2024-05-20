@@ -66,9 +66,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     { "PostCode", 15 }
                 };
 
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
-            List<Address> outputAddresses = randomAddresses.DeepClone();
-
             this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings))
                     .ReturnsAsync(outputAddresses);

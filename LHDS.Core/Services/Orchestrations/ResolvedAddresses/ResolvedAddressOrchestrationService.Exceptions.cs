@@ -15,7 +15,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
     public partial class ResolvedAddressOrchestrationService
     {
         private delegate ValueTask ReturningNothingFunction();
-        private delegate ValueTask<Guid> ReturningGuidFunction();
+        private delegate ValueTask<Guid?> ReturningGuidFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
@@ -85,7 +85,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             }
         }
 
-        private async ValueTask<Guid> TryCatch(ReturningGuidFunction returningGuidFunction)
+        private async ValueTask<Guid?> TryCatch(ReturningGuidFunction returningGuidFunction)
         {
             try
             {

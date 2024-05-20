@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask<Guid> uploadAddressesTask =
+            ValueTask<Guid?> uploadAddressesTask =
                 this.addressCoordinationService.UploadResolvedAddressesAsync();
 
             AddressCoordinationDependencyValidationException actualException =
@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<Guid> uploadAddressesTask =
+            ValueTask<Guid?> uploadAddressesTask =
                 this.addressCoordinationService.UploadResolvedAddressesAsync();
 
             AddressCoordinationDependencyException actualException =
@@ -117,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<Guid> uploadAddressesTask =
+            ValueTask<Guid?> uploadAddressesTask =
                 this.addressCoordinationService.UploadResolvedAddressesAsync();
 
             AddressCoordinationServiceException actualException =

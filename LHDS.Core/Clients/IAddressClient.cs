@@ -13,6 +13,6 @@ namespace LHDS.Core.Clients
     {
         public ValueTask<List<Address>> LoadAddressDataAsync(byte[] data, string filename);
         public ValueTask MatchPatientAddressDataAsync(byte[] data, string filename);
-        public ValueTask<Guid> ProcessResolvedAddressDataAsync();
+        public ValueTask<Guid?> ProcessResolvedAddressDataAsync();
     }
 }

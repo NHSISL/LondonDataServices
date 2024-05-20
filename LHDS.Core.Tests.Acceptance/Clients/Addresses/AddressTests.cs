@@ -14,6 +14,7 @@ using LHDS.Core.Models.Coordinations.AddressCoordinations;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.Addresses;
+using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
@@ -36,6 +37,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
         private readonly IAddressService addressService;
+        private readonly IDocumentService documentService;
         private readonly IResolvedAddressService resolvedAddressService;
         private readonly IAddressClient addressClient;
         private readonly ICompareLogic compareLogic;
@@ -54,7 +56,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .AddTransient<IAddressPersistanceOrchestrationService, AddressPersistanceOrchestrationService>()
                 .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()
                 .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>()
-                .AddTransient<IAddressService, AddressService>();
+                .AddTransient<IAddressService, AddressService>()
+                .AddTransient<IDocumentService, DocumentService>();
 
             serviceCollection.AddLogging(builder =>
             {
@@ -200,20 +203,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             return postcodes[index];
         }
 
-        private static List<ResolvedAddress> CreateRandomResolvedAddresses()
+        private static List<ResolvedAddress> CreateRandomResolvedAddresses(DateTimeOffset dateTimeOffset, bool isMatched)
         {
-            return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+            return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset(), isMatched)
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
 
-        private static ResolvedAddress CreateRandomResolvedAddress() =>
-            CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
-
-        private static ResolvedAddress CreateRandomResolvedAddress(DateTimeOffset dateTimeOffset) =>
-            CreateResolvedAddressFiller(dateTimeOffset).Create();
-
-        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(DateTimeOffset dateTimeOffset, bool isMatched)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<ResolvedAddress>();

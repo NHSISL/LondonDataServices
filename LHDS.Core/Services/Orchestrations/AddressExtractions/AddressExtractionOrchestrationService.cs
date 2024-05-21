@@ -17,6 +17,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 
@@ -55,6 +56,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                 List<Address> mappedAddresses = new List<Address>();
                 await CsvToAddressAsync(csvData, mappedAddresses);
                 List<Address> processedAddresses = new List<Address>();
+                List<Address> failedAddresses = new List<Address>();
                 var exceptions = new List<Exception>();
 
                 foreach (Address address in mappedAddresses)
@@ -66,11 +68,34 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                             Address inputAddress = address;
                             string addressString = inputAddress.GetFormattedAddress();
 
-                            AddressNormalisation addressNormalisation =
-                                await this.addressNormalisationService.GetNormalisedAddress(addressString);
+                            try
+                            {
+                                AddressNormalisation addressNormalisation =
+                                    await this.addressNormalisationService.GetNormalisedAddress(addressString);
 
-                            inputAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                            inputAddress.PostalAddress = addressNormalisation.PostalAddress;
+                                inputAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                                inputAddress.PostalAddress = addressNormalisation.PostalAddress;
+                                inputAddress.IsErrored = false;
+                            }
+                            catch (Exception ex)
+                            {
+                                if (ex is InvalidAddressPartsNormalisationException)
+                                {
+                                    inputAddress.IsErrored = true;
+
+                                    await this.auditBroker.LogWarning(
+                                        auditType: "Address",
+                                        title: "Invalid address parts found",
+                                        message: $"Invalid address parts found in address with id: {address.Id} " +
+                                            $"from file: {filename}",
+                                        filename,
+                                        correlationId: address.Id);
+                                }
+                                else
+                                {
+                                    throw;
+                                }
+                            }
 
                             return inputAddress;
                         });
@@ -172,7 +197,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
                             inputResolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
 
-                            inputResolvedAddress.UnstructuredPostalAddress = 
+                            inputResolvedAddress.UnstructuredPostalAddress =
                                 addressNormalisation.PostalAddress ?? string.Empty;
 
                             await this.auditBroker.LogInformation(

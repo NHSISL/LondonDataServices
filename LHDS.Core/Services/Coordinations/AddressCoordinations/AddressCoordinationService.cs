@@ -107,7 +107,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 }
             });
 
-        public ValueTask<Guid> UploadResolvedAddressesAsync() =>
+        public ValueTask<Guid?> UploadResolvedAddressesAsync() =>
             TryCatch(async () =>
             {
                 return await this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();

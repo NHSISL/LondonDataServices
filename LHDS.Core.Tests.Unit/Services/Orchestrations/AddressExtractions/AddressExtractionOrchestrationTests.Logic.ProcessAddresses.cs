@@ -25,10 +25,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         {
             // Given
             Guid randomId = Guid.NewGuid();
+            int randomItems = 1; // GetRandomNumber();
             string inputFilename = GetRandomString();
             string assembly = Assembly.GetExecutingAssembly().Location;
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
-            List<Address> outputAddresses = randomAddresses;
 
             string inputFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
@@ -67,28 +66,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     { "PostCode", 15 }
                 };
 
+            List<Address> randomAddresses = CreateRandomAddresses(count: randomItems).ToList();
+            List<Address> outputAddresses = randomAddresses.DeepClone();
+
             this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings))
                     .ReturnsAsync(outputAddresses);
 
             List<Address> expectedAddresses = new List<Address>();
 
+            AddressNormalisation addressNormalisation = new AddressNormalisation
+            {
+                PostalAddress = GetRandomString(),
+                JsonPostalAddress = GetRandomString()
+            };
+
             foreach (Address address in outputAddresses)
             {
                 string stringAddress = address.GetFormattedAddress();
 
-                AddressNormalisation addressNormalisation = new AddressNormalisation
-                {
-                    PostalAddress = GetRandomString(),
-                    JsonPostalAddress = GetRandomString()
-                };
-
-                this.addressNormalisationServiceMock.Setup(service =>
+                this.addressNormalisationProcessingServiceMock.Setup(service =>
                     service.GetNormalisedAddress(stringAddress))
                         .ReturnsAsync(addressNormalisation);
 
                 address.PostalAddress = addressNormalisation.PostalAddress;
                 address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                address.IsErrored = false;
+
+                this.addressProcessingServiceMock.Setup(service =>
+                    service.ModifyAddressAsync(address))
+                        .ReturnsAsync(address);
+
                 expectedAddresses.Add(address);
             }
 
@@ -108,7 +116,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string stringAddress = address.GetFormattedAddress();
 
-                this.addressNormalisationServiceMock.Verify(service =>
+                this.addressNormalisationProcessingServiceMock.Verify(service =>
                     service.GetNormalisedAddress(stringAddress),
                         Times.Once);
 
@@ -120,12 +128,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                         inputFilename,
                         address.Id),
                             Times.Once);
+
+                address.PostalAddress = addressNormalisation.PostalAddress;
+                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                address.IsErrored = false;
+
+                this.addressProcessingServiceMock.Verify(service =>
+                    service.ModifyAddressAsync(It.Is(SameAddressAs(address))),
+                        Times.Once);
             }
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }

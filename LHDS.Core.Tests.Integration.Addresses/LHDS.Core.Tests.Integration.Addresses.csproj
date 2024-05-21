@@ -17,6 +17,7 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.22.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
 		<PackageReference Include="Microsoft.VisualStudio.TestPlatform" Version="14.0.0" />
+		<PackageReference Include="NHSISL.LibPostalClient" Version="1.0.0.6" />
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.8" />
 		<PackageReference Include="xunit" Version="2.8.0" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.8.0">
@@ -40,6 +41,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="local.appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DataEngineering\IncomingFileToMatch.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Ordnance\0040176014-6414006-1SMALL.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

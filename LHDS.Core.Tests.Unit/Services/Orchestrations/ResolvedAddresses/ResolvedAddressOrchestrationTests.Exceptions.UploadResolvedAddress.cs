@@ -92,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask<Guid> uploadResolvedAddressTask =
+            ValueTask<Guid?> uploadResolvedAddressTask =
                 this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException
@@ -224,7 +224,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask<Guid> uploadResolvedAddressTask =
+            ValueTask<Guid?> uploadResolvedAddressTask =
                  this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
@@ -359,7 +359,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask<Guid> uploadResolvedAddressTask =
+            ValueTask<Guid?> uploadResolvedAddressTask =
                   this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
@@ -430,7 +430,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<Guid> documentAddTask =
+            ValueTask<Guid?> documentAddTask =
                 this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationDependencyValidationException actualException =
@@ -473,7 +473,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Throws(dependencyException);
 
             // when
-            ValueTask<Guid> documentAddTask =
+            ValueTask<Guid?> documentAddTask =
                 this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationDependencyException actualException =
@@ -520,7 +520,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Throws(serviceException);
 
             // when
-            ValueTask<Guid> uploadResolvedAddressTask =
+            ValueTask<Guid?> uploadResolvedAddressTask =
                  this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualException =

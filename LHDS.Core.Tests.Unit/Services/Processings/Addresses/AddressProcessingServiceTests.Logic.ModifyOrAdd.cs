@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -24,10 +26,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             modifiedAddress.UpdatedDate = DateTimeOffset.UtcNow;
             Address updatedAddress = modifiedAddress.DeepClone();
             Address expectedAddress = updatedAddress;
+            List<Address> storageAddresses = new List<Address> { storageAddress };
 
             this.addressServiceMock.Setup(service =>
-                service.RetrieveAddressByIdAsync(modifiedAddress.Id))
-                    .ReturnsAsync(value: storageAddress);
+                service.RetrieveAllAddresses())
+                    .Returns(value: storageAddresses.AsQueryable());
 
             this.addressServiceMock.Setup(service =>
                 service.ModifyAddressAsync(modifiedAddress))
@@ -41,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             actualAddress.Should().BeEquivalentTo(expectedAddress);
 
             this.addressServiceMock.Verify(service =>
-                service.RetrieveAddressByIdAsync(modifiedAddress.Id),
+                service.RetrieveAllAddresses(),
                     Times.Once);
 
             this.addressServiceMock.Verify(service =>
@@ -64,10 +67,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             Address inputAddress = randomAddress;
             Address storageAddress = inputAddress.DeepClone();
             Address expectedAddress = storageAddress;
+            List<Address> emptyList = new List<Address>();
 
             this.addressServiceMock.Setup(service =>
-                service.RetrieveAddressByIdAsync(inputAddress.Id))
-                    .ReturnsAsync(value: null);
+                service.RetrieveAllAddresses())
+                    .Returns(value: emptyList.AsQueryable());
 
             this.addressServiceMock.Setup(service =>
                 service.AddAddressAsync(inputAddress))
@@ -78,12 +82,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             // Then
             this.addressServiceMock.Verify(service =>
-                service.RetrieveAddressByIdAsync(inputAddress.Id),
+                service.RetrieveAllAddresses(),
                     Times.Once);
 
             this.addressServiceMock.Verify(service =>
-            service.AddAddressAsync(inputAddress),
-            Times.Once);
+                service.AddAddressAsync(inputAddress),
+                    Times.Once);
 
             this.addressServiceMock.Verify(service =>
                 service.ModifyAddressAsync(inputAddress),

@@ -90,7 +90,7 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
                 var addressSegments =
                     string.Join(Environment.NewLine, addressParts.Select(pair => $"{pair.Key}: {pair.Value}"));
 
-                throw new InvalidAddressNormalisationArgumentException(
+                throw new InvalidAddressPartsNormalisationException(
                     $"{ex.Message}, address: {address}, parts: {addressSegments}");
             }
         }

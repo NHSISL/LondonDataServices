@@ -3,9 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
-using LHDS.Core.Models.Foundations.Addresses;
 using Xeptions;
 
 namespace LHDS.Core.Services.Coordinations.AddressCoordinations
@@ -31,15 +29,6 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             Condition = data == null || data.Length == 0,
             Message = "Data is required"
         };
-
-        private void ValidateAddressListIsNotNull(List<Address> addresses)
-        {
-            if (addresses == null)
-            {
-                throw new NullAddressCoordinationListException(
-                    message: "Address list is null, please correct the errors and try again.");
-            }
-        }
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption

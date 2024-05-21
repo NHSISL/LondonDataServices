@@ -10,7 +10,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
@@ -28,6 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             Guid randomId = Guid.NewGuid();
             string inputFilename = GetRandomString();
             string assembly = Assembly.GetExecutingAssembly().Location;
+            List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            List<Address> outputAddresses = randomAddresses;
 
             string inputFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),

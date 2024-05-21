@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     JsonPostalAddress = GetRandomString()
                 };
 
-                this.addressNormalisationServiceMock.Setup(service =>
+                this.addressNormalisationProcessingServiceMock.Setup(service =>
                     service.GetNormalisedAddress(stringAddress))
                         .ReturnsAsync(addressNormalisation);
 
@@ -95,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string stringAddress = resolvedAddress.PostalAddress ?? string.Empty;
 
-                this.addressNormalisationServiceMock.Verify(service =>
+                this.addressNormalisationProcessingServiceMock.Verify(service =>
                     service.GetNormalisedAddress(stringAddress),
                         Times.Once);
             }
@@ -112,7 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }

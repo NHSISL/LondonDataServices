@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationServiceTests
     {
-        [Theory(Skip = "WIP")]
+        [Theory(Skip = "WIP: Hassan to complete")]
         [MemberData(nameof(AddressExtractionOrchestrationDependencyValidationExceptions))]
         public async Task
             ShouldThrowAggregateDependencyValidationExceptionOnProcessAddressesIfErrorsInLoopAndLogItAsync(
@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = address.GetFormattedAddress();
 
-                this.addressNormalisationServiceMock.Setup(service =>
+                this.addressNormalisationProcessingServiceMock.Setup(service =>
                     service.GetNormalisedAddress(addressString))
                         .ThrowsAsync(dependencyValidationException);
 
@@ -96,7 +96,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = address.GetFormattedAddress();
 
-                this.addressNormalisationServiceMock.Verify(service =>
+                this.addressNormalisationProcessingServiceMock.Verify(service =>
                     service.GetNormalisedAddress(addressString),
                         Times.Once);
             }
@@ -117,7 +117,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     actualAddressExtractionOrchestrationServiceException))),
                         Times.Once);
 
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
@@ -125,7 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory(Skip = "WIP")]
+        [Theory(Skip = "WIP: Hassan to complete")]
         [MemberData(nameof(AddressExtractionDependencyExceptions))]
         public async Task
             ShouldThrowAggregateDependencyExceptionOnProcessAddressesIfErrorsInLoopAndLogItAsync(
@@ -148,7 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = address.GetFormattedAddress();
 
-                this.addressNormalisationServiceMock.Setup(service =>
+                this.addressNormalisationProcessingServiceMock.Setup(service =>
                     service.GetNormalisedAddress(addressString))
                         .ThrowsAsync(dependencyException);
 
@@ -200,7 +201,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = address.GetFormattedAddress();
 
-                this.addressNormalisationServiceMock.Verify(service =>
+                this.addressNormalisationProcessingServiceMock.Verify(service =>
                     service.GetNormalisedAddress(addressString),
                         Times.Once);
             }
@@ -221,12 +222,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     actualAddressExtractionOrchestrationServiceException))),
                         Times.Once);
 
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact(Skip = "WIP")]
+        [Fact(Skip = "WIP: Hassan to complete")]
         public async Task ShouldThrowAggregateServiceExceptionOnProcessAddressIfErrorsInLoopAndLogItAsync()
         {
             // Given
@@ -257,7 +262,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string stringAddress = address.GetFormattedAddress();
 
-                this.addressNormalisationServiceMock.Setup(service =>
+                this.addressNormalisationProcessingServiceMock.Setup(service =>
                     service.GetNormalisedAddress(stringAddress))
                         .ThrowsAsync(serviceException);
 
@@ -303,7 +308,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = address.GetFormattedAddress();
 
-                this.addressNormalisationServiceMock.Verify(service =>
+                this.addressNormalisationProcessingServiceMock.Verify(service =>
                     service.GetNormalisedAddress(addressString),
                         Times.Once);
             }
@@ -318,7 +323,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     expectedAddressExtractionOrchestrationServiceException))),
                         Times.Once);
 
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
@@ -377,7 +383,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedDependencyException))),
                        Times.Once);
 
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
@@ -436,7 +443,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedDependencyException))),
                        Times.Once);
 
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
@@ -498,7 +506,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedAddressExtractionOrchestrationServiceException))),
                        Times.Once);
 
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();

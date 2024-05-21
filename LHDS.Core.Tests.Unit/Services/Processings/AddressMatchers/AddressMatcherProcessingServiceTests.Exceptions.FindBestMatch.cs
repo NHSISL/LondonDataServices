@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                         "{\"Key\":\"city\",\"Value\":\"london\"}," +
                         "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}," +
                         "{\"Key\":\"country\",\"Value\":\"uk\"}]",
-                    AddressComponents = new List<KeyValuePair<string, string>>
+                    NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                     {
                         new KeyValuePair<string, string>("house_number", "10"),
                         new KeyValuePair<string, string>("road", "downing str"),

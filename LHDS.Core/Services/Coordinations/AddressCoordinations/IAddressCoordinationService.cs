@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
 
 namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 {
@@ -14,6 +13,6 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
     {
         public ValueTask<List<Address>> LoadAddressDataAsync(byte[] data, string filename);
         public ValueTask MatchAddressDataAsync(byte[] data, string filename);
-        public ValueTask<Guid> UploadResolvedAddressesAsync();
+        public ValueTask<Guid?> UploadResolvedAddressesAsync();
     }
 }

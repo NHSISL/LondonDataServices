@@ -17,14 +17,17 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Services.Foundations.AddressNormalisations;
+using LHDS.Core.Services.Processings.Addresses;
+using LHDS.Core.Services.Processings.AddressNormalisations;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationService : IAddressExtractionOrchestrationService
     {
-        private readonly IAddressNormalisationService addressNormalisationService;
+        private readonly IAddressNormalisationProcessingService addressNormalisationProcessingService;
+        private readonly IAddressProcessingService addressProcessingService;
         private readonly IAuditBroker auditBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly ICsvHelperBroker csvHelperBroker;
@@ -32,14 +35,16 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
         private readonly IIdentifierBroker identifierBroker;
 
         public AddressExtractionOrchestrationService(
-            IAddressNormalisationService addressNormalisationService,
+            IAddressNormalisationProcessingService addressNormalisationProcessingService,
+            IAddressProcessingService addressProcessingService,
             IAuditBroker auditBroker,
             ILoggingBroker loggingBroker,
             ICsvHelperBroker csvHelperBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker)
         {
-            this.addressNormalisationService = addressNormalisationService;
+            this.addressNormalisationProcessingService = addressNormalisationProcessingService;
+            this.addressProcessingService = addressProcessingService;
             this.auditBroker = auditBroker;
             this.loggingBroker = loggingBroker;
             this.csvHelperBroker = csvHelperBroker;
@@ -55,6 +60,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                 List<Address> mappedAddresses = new List<Address>();
                 await CsvToAddressAsync(csvData, mappedAddresses);
                 List<Address> processedAddresses = new List<Address>();
+                List<Address> failedAddresses = new List<Address>();
                 var exceptions = new List<Exception>();
 
                 foreach (Address address in mappedAddresses)
@@ -66,23 +72,48 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                             Address inputAddress = address;
                             string addressString = inputAddress.GetFormattedAddress();
 
-                            AddressNormalisation addressNormalisation =
-                                await this.addressNormalisationService.GetNormalisedAddress(addressString);
+                            try
+                            {
+                                AddressNormalisation addressNormalisation =
+                                    await this.addressNormalisationProcessingService.GetNormalisedAddress(addressString);
 
-                            inputAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                            inputAddress.PostalAddress = addressNormalisation.PostalAddress;
+                                inputAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                                inputAddress.PostalAddress = addressNormalisation.PostalAddress;
+                                inputAddress.IsErrored = false;
 
-                            return inputAddress;
+                                await this.auditBroker.LogInformation(
+                                    auditType: "Address",
+                                    title: "Successfully extracted address from Ordinance Database",
+                                    message: $"Successfully extracted address with id: {address.Id} from file: {filename}",
+                                    filename,
+                                    correlationId: address.Id);
+                            }
+                            catch (Exception ex)
+                            {
+                                if (ex is InvalidAddressPartsNormalisationException)
+                                {
+                                    inputAddress.IsErrored = true;
+
+                                    await this.auditBroker.LogWarning(
+                                        auditType: "Address",
+                                        title: "Invalid address parts found",
+                                        message: $"Invalid address parts found in address with id: {address.Id} " +
+                                            $"from file: {filename}",
+                                        filename,
+                                        correlationId: address.Id);
+                                }
+                                else
+                                {
+                                    throw;
+                                }
+                            }
+
+                            var savedAddress = await this.addressProcessingService.ModifyAddressAsync(inputAddress);
+
+                            return savedAddress;
                         });
 
                         processedAddresses.Add(processedAddress);
-
-                        await this.auditBroker.LogInformation(
-                            auditType: "Address",
-                            title: "Successfully extracted address from Ordinance Database",
-                            message: $"Successfully extracted address with id: {address.Id} from file: {filename}",
-                            filename,
-                            correlationId: address.Id);
                     }
                     catch (Exception ex)
                     {
@@ -145,7 +176,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                 {
                     { nameof(ResolvedAddress.UniqueReference), 0 },
                     { nameof(ResolvedAddress.PostCode), 1 },
-                    { nameof(ResolvedAddress.UnstructuredPostalAddress), 2 }
+                    { nameof(ResolvedAddress.PostalAddress), 2 }
                 };
 
                 List<ResolvedAddress> resolvedAddresses = await this.csvHelperBroker
@@ -165,13 +196,15 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                         {
                             ResolvedAddress inputResolvedAddress = resolvedAddress;
                             inputResolvedAddress.Id = this.identifierBroker.GetIdentifier();
-                            string addressString = inputResolvedAddress.UnstructuredPostalAddress;
+                            string addressString = inputResolvedAddress.PostalAddress ?? string.Empty;
 
                             AddressNormalisation addressNormalisation =
-                                await this.addressNormalisationService.GetNormalisedAddress(addressString);
+                                await this.addressNormalisationProcessingService.GetNormalisedAddress(addressString);
 
                             inputResolvedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                            inputResolvedAddress.PostalAddress = addressNormalisation.PostalAddress;
+
+                            inputResolvedAddress.UnstructuredPostalAddress =
+                                addressNormalisation.PostalAddress ?? string.Empty;
 
                             await this.auditBroker.LogInformation(
                                 auditType: "Address",

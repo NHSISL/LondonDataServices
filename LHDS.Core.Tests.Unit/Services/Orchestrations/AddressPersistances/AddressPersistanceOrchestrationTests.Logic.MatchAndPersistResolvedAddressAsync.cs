@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             ResolvedAddress inputResolvedAddress = randomResolvedAddress;
 
             List<KeyValuePair<string, string>> randomResolvedAddressComponents =
-                GenerateRandomKeyValuePairAddressFromJson(randomResolvedAddress.JsonPostalAddress);
+                GenerateKeyValuePairAddressFromJson(randomResolvedAddress.JsonPostalAddress);
 
             List<Address> randomAddresses = CreateRandomAddressList(GetRandomNumber());
             List<Address> storageAddresses = randomAddresses;
@@ -41,7 +41,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             {
                 PostalAddress = address.PostalAddress,
                 JsonPostalAddress = address.JsonPostalAddress,
-                AddressComponents = GenerateRandomKeyValuePairAddressFromJson(address.JsonPostalAddress)
+                NormalisedAddressComponents = GenerateKeyValuePairAddressFromJson(address.JsonPostalAddress),
+                OriginalAddressComponents = GenerateKeyValuePairRepresentingAddress(address)
             }).ToHashSet();
 
             HashSet<AddressMatch> resolvedMatchedAddresses = addressesToMatch.DeepClone();
@@ -49,22 +50,41 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             matchedAddress.IsMatched = true;
             matchedAddress.BestMatch = bestMatch;
 
-            ResolvedAddress updatedResolvedAddress = 
+            ResolvedAddress updatedResolvedAddress =
                 UpdateResolvedAddress(inputResolvedAddress, matchedAddress);
 
+            Address ordinanceAddress = storageAddresses.First();
+            updatedResolvedAddress.MatchedPostalAddress = ordinanceAddress.PostalAddress;
+            updatedResolvedAddress.MatchedJsonPostalAddress = ordinanceAddress.JsonPostalAddress;
+            updatedResolvedAddress.MatchedUPRN = ordinanceAddress.UPRN;
+            updatedResolvedAddress.MatchedUPSN = ordinanceAddress.UPSN;
+            updatedResolvedAddress.MatchedOrganisationName = ordinanceAddress.OrganisationName;
+            updatedResolvedAddress.MatchedDepartmentName = ordinanceAddress.DepartmentName;
+            updatedResolvedAddress.MatchedSubBuildingName = ordinanceAddress.SubBuildingName;
+            updatedResolvedAddress.MatchedBuildingName = ordinanceAddress.BuildingName;
+            updatedResolvedAddress.MatchedBuildingNumber = ordinanceAddress.BuildingNumber;
+            updatedResolvedAddress.MatchedDependentThoroughfare = ordinanceAddress.DependentThoroughfare;
+            updatedResolvedAddress.MatchedThoroughfare = ordinanceAddress.Thoroughfare;
+            updatedResolvedAddress.MatchedDoubleDependentLocality = ordinanceAddress.DoubleDependentLocality;
+            updatedResolvedAddress.MatchedDependentLocality = ordinanceAddress.DependentLocality;
+            updatedResolvedAddress.MatchedPostTown = ordinanceAddress.PostTown;
+            updatedResolvedAddress.MatchedPostCode = ordinanceAddress.PostCode;
             updatedResolvedAddress.UpdatedDate = randomDateTimeOffset;
+            updatedResolvedAddress.CreatedDate = randomDateTimeOffset;
+            updatedResolvedAddress.CreatedBy = "System";
+            updatedResolvedAddress.UpdatedBy = "System";
 
             this.addressMatcherProcessingServiceMock.Setup(processing =>
                 processing.ExtractPostCode(inputResolvedAddress.PostalAddress))
                     .Returns(postCode);
 
             this.addressProcessingServiceMock.Setup(processing =>
-                processing.RetrieveAddressesByPostCodeAsync(postCode))
-                    .ReturnsAsync(storageAddresses); 
+                processing.RetrieveAddressesByPostCodeAsync(randomResolvedAddress.PostCode))
+                    .ReturnsAsync(storageAddresses);
 
             this.addressMatcherProcessingServiceMock.Setup(processing =>
                 processing.FindBestMatch(
-                    It.Is(SameAddressToMatchAs(addressesToMatch)), 
+                    It.Is(SameAddressToMatchAs(addressesToMatch)),
                     It.Is(SameResolvedAddressAs(randomResolvedAddressComponents))))
                         .ReturnsAsync(matchedAddress);
 
@@ -73,7 +93,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                    .Returns(randomDateTimeOffset);
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
-                processing.ModifyResolvedAddressAsync(updatedResolvedAddress))
+                processing.ModifyOrAddResolvedAddressAsync(updatedResolvedAddress))
                     .ReturnsAsync(updatedResolvedAddress);
 
             // When
@@ -89,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     Times.Once);
 
             this.addressProcessingServiceMock.Verify(processing =>
-                processing.RetrieveAddressesByPostCodeAsync(postCode),
+                processing.RetrieveAddressesByPostCodeAsync(randomResolvedAddress.PostCode),
                     Times.Once);
 
             this.addressMatcherProcessingServiceMock.Verify(processing =>
@@ -103,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     Times.Once);
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
-                processing.ModifyResolvedAddressAsync(updatedResolvedAddress),
+                processing.ModifyOrAddResolvedAddressAsync(updatedResolvedAddress),
                     Times.Once);
 
             this.auditBrokerMock.Verify(broker =>
@@ -133,22 +153,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             ResolvedAddress inputResolvedAddress = randomResolvedAddress;
 
             List<KeyValuePair<string, string>> randomResolvedAddressComponents =
-                GenerateRandomKeyValuePairAddressFromJson(randomResolvedAddress.JsonPostalAddress);
+                GenerateKeyValuePairAddressFromJson(randomResolvedAddress.JsonPostalAddress);
 
             List<Address> randomAddresses = CreateRandomAddressList(GetRandomNumber());
             List<Address> storageAddresses = randomAddresses;
-            
+
             List<KeyValuePair<string, string>> randomAddressComponents = GenerateRandomKeyValuePairAddress();
 
             HashSet<AddressMatch> addressesToMatch = storageAddresses.Select(address => new AddressMatch
             {
                 PostalAddress = address.PostalAddress,
                 JsonPostalAddress = address.JsonPostalAddress,
-                AddressComponents = GenerateRandomKeyValuePairAddressFromJson(address.JsonPostalAddress)
+                NormalisedAddressComponents = GenerateKeyValuePairAddressFromJson(address.JsonPostalAddress),
+                OriginalAddressComponents = GenerateKeyValuePairRepresentingAddress(address)
             }).ToHashSet();
 
             HashSet<AddressMatch> resolvedMatchedAddresses = addressesToMatch.DeepClone();
-            
+
             AddressMatch matchedAddress = new AddressMatch();
             matchedAddress.IsMatched = true;
             matchedAddress.BestMatch = BestMatchEnum.None;
@@ -156,14 +177,32 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             ResolvedAddress updatedResolvedAddress =
                 UpdateResolvedAddress(inputResolvedAddress, matchedAddress);
 
+            updatedResolvedAddress.MatchedPostalAddress = string.Empty;
+            updatedResolvedAddress.MatchedJsonPostalAddress = string.Empty;
+            updatedResolvedAddress.MatchedUPRN = string.Empty;
+            updatedResolvedAddress.MatchedUPSN = string.Empty;
+            updatedResolvedAddress.MatchedOrganisationName = string.Empty;
+            updatedResolvedAddress.MatchedDepartmentName = string.Empty;
+            updatedResolvedAddress.MatchedSubBuildingName = string.Empty;
+            updatedResolvedAddress.MatchedBuildingName = string.Empty;
+            updatedResolvedAddress.MatchedBuildingNumber = string.Empty;
+            updatedResolvedAddress.MatchedDependentThoroughfare = string.Empty;
+            updatedResolvedAddress.MatchedThoroughfare = string.Empty;
+            updatedResolvedAddress.MatchedDoubleDependentLocality = string.Empty;
+            updatedResolvedAddress.MatchedDependentLocality = string.Empty;
+            updatedResolvedAddress.MatchedPostTown = string.Empty;
+            updatedResolvedAddress.MatchedPostCode = string.Empty;
             updatedResolvedAddress.UpdatedDate = randomDateTimeOffset;
+            updatedResolvedAddress.CreatedDate = randomDateTimeOffset;
+            updatedResolvedAddress.CreatedBy = "System";
+            updatedResolvedAddress.UpdatedBy = "System";
 
             this.addressMatcherProcessingServiceMock.Setup(processing =>
                 processing.ExtractPostCode(inputResolvedAddress.PostalAddress))
                     .Returns(postCode);
 
             this.addressProcessingServiceMock.Setup(processing =>
-                processing.RetrieveAddressesByPostCodeAsync(postCode))
+                processing.RetrieveAddressesByPostCodeAsync(inputResolvedAddress.PostCode))
                     .ReturnsAsync(storageAddresses);
 
             this.addressMatcherProcessingServiceMock.Setup(processing =>
@@ -177,7 +216,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                    .Returns(randomDateTimeOffset);
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
-                processing.ModifyResolvedAddressAsync(updatedResolvedAddress))
+                processing.ModifyOrAddResolvedAddressAsync(updatedResolvedAddress))
                     .ReturnsAsync(updatedResolvedAddress);
 
             // When
@@ -193,7 +232,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     Times.Once);
 
             this.addressProcessingServiceMock.Verify(processing =>
-                processing.RetrieveAddressesByPostCodeAsync(postCode),
+                processing.RetrieveAddressesByPostCodeAsync(inputResolvedAddress.PostCode),
                     Times.Once);
 
             this.addressMatcherProcessingServiceMock.Verify(processing =>
@@ -207,7 +246,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     Times.Once);
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
-                processing.ModifyResolvedAddressAsync(updatedResolvedAddress),
+                processing.ModifyOrAddResolvedAddressAsync(updatedResolvedAddress),
                     Times.Once);
 
             this.auditBrokerMock.Verify(broker =>

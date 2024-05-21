@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text.Json;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
@@ -22,7 +23,6 @@ using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressMatchers;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Moq;
-using Newtonsoft.Json;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -88,7 +88,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
         static string ConvertToJSONString(List<KeyValuePair<string, string>> keyValuePairs)
         {
-            var jsonString = System.Text.Json.JsonSerializer.Serialize(keyValuePairs);
+            var dictionary = keyValuePairs.ToDictionary(pair => pair.Key, pair => pair.Value);
+            var jsonString = JsonSerializer.Serialize(dictionary);
+
             return jsonString;
         }
 
@@ -120,32 +122,49 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             return filler;
         }
 
-        static List<KeyValuePair<string, string>> GenerateRandomKeyValuePairAddress()
+        private static List<KeyValuePair<string, string>> GenerateKeyValuePairRepresentingAddress(Address address)
+        {
+            var keyValuePairs = new List<KeyValuePair<string, string>>();
+            PropertyInfo[] properties = typeof(Address).GetProperties();
+
+            foreach (var property in properties)
+            {
+                object? value = property.GetValue(address);
+                string stringValue = value?.ToString() ?? string.Empty;
+                keyValuePairs.Add(new KeyValuePair<string, string>(property.Name, stringValue));
+            }
+
+            return keyValuePairs;
+        }
+
+        private static List<KeyValuePair<string, string>> GenerateRandomKeyValuePairAddress()
         {
             return new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("OrganisationName", GetRandomString()),
-                new KeyValuePair<string, string>("DepartmentName", GetRandomString()),
-                new KeyValuePair<string, string>("SubBuildingName", GetRandomString()),
-                new KeyValuePair<string, string>("BuildingNumber", GetRandomString()),
-                new KeyValuePair<string, string>("DependentThoroughfare", GetRandomString()),
-                new KeyValuePair<string, string>("Thoroughfare", GetRandomString()),
-                new KeyValuePair<string, string>("DoubleDependentLocality", GetRandomString()),
-                new KeyValuePair<string, string>("DependentLocality", GetRandomString()),
-                new KeyValuePair<string, string>("PostTown", GetRandomString()),
-                new KeyValuePair<string, string>("PostCode", GetRandomString())
+                new KeyValuePair<string, string>("house_number", GetRandomString()),
+                new KeyValuePair<string, string>("road", GetRandomString()),
+                new KeyValuePair<string, string>("city_district", GetRandomString()),
+                new KeyValuePair<string, string>("city", GetRandomString()),
+                new KeyValuePair<string, string>("postcode", GetRandomString()),
+                new KeyValuePair<string, string>("country", GetRandomString()),
             };
         }
 
-        static List<KeyValuePair<string, string>> GenerateRandomKeyValuePairAddressFromJson(string jsonPostalAddress)
+        private static List<KeyValuePair<string, string>> GenerateKeyValuePairAddressFromJson(string? jsonPostalAddress)
         {
             var keyValuePairs = new List<KeyValuePair<string, string>>();
-            var items = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(jsonPostalAddress);
 
-            foreach (var item in items)
+            if (string.IsNullOrWhiteSpace(jsonPostalAddress))
             {
-                var key = item["Key"];
-                var value = item["Value"];
+                return keyValuePairs;
+            }
+
+            var dictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonPostalAddress);
+
+            foreach (var item in dictionary)
+            {
+                var key = item.Key;
+                var value = item.Value;
                 keyValuePairs.Add(new KeyValuePair<string, string>(key, value));
             }
 
@@ -174,7 +193,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             return filler;
         }
         public static ResolvedAddress UpdateResolvedAddress(
-            ResolvedAddress inputResolvedAddress, 
+            ResolvedAddress inputResolvedAddress,
             AddressMatch matchedAddress)
         {
             inputResolvedAddress.IsMatched = matchedAddress.IsMatched;
@@ -182,49 +201,54 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             Enum.TryParse(((int)matchedAddress.BestMatch).ToString(), ignoreCase: true, out matchAlgorithmEnum);
             inputResolvedAddress.MatchAlgorithmEnum = matchAlgorithmEnum;
 
-            if (matchedAddress.AddressComponents.Count() > 0)
+            if (matchedAddress.OriginalAddressComponents.Count() > 0)
             {
                 inputResolvedAddress.MatchAlgorithmEnum = MatchAlgorithmEnum.Exact;
-                inputResolvedAddress.MatchedWithPostalAddress = matchedAddress.PostalAddress;
-                inputResolvedAddress.MatchedWithJsonPostalAddress = matchedAddress.JsonPostalAddress;
-                inputResolvedAddress.MatchedUPRN = matchedAddress.UPRN;
-                inputResolvedAddress.MatchedUPSN = matchedAddress.UPSN;
 
-                inputResolvedAddress.MatchedOrganisationName =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "OrganisationName").Value;
+                inputResolvedAddress.MatchedPostalAddress = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "PostalAddress").Value;
 
-                inputResolvedAddress.MatchedOrganisationName =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "DepartmentName").Value;
+                inputResolvedAddress.MatchedJsonPostalAddress = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "JsonPostalAddress").Value;
 
-                inputResolvedAddress.MatchedOrganisationName =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "SubBuildingName").Value;
+                inputResolvedAddress.MatchedUPRN = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "UPRN").Value;
 
-                inputResolvedAddress.MatchedBuildingName =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedBuildingName").Value;
+                inputResolvedAddress.MatchedUPSN = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "UPSN").Value;
 
-                inputResolvedAddress.MatchedBuildingNumber =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedBuildingNumber").Value;
+                inputResolvedAddress.MatchedOrganisationName = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "OrganisationName").Value;
 
-                inputResolvedAddress.MatchedDependentThoroughfare =
-                    matchedAddress.AddressComponents
-                        .FirstOrDefault(pair => pair.Key == "MatchedDependentThoroughfare").Value;
+                inputResolvedAddress.MatchedOrganisationName = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "DepartmentName").Value;
 
-                inputResolvedAddress.MatchedThoroughfare =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedThoroughfare").Value;
+                inputResolvedAddress.MatchedOrganisationName = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "SubBuildingName").Value;
 
-                inputResolvedAddress.MatchedDoubleDependentLocality =
-                    matchedAddress.AddressComponents
-                        .FirstOrDefault(pair => pair.Key == "MatchedDoubleDependentLocality").Value;
+                inputResolvedAddress.MatchedBuildingName = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "MatchedBuildingName").Value;
 
-                inputResolvedAddress.MatchedDependentLocality =
-                    matchedAddress.AddressComponents
-                        .FirstOrDefault(pair => pair.Key == "MatchedDependentLocality").Value;
+                inputResolvedAddress.MatchedBuildingNumber = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "MatchedBuildingNumber").Value;
 
-                inputResolvedAddress.MatchedPostTown =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedPostTown").Value;
+                inputResolvedAddress.MatchedDependentThoroughfare = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "MatchedDependentThoroughfare").Value;
 
-                inputResolvedAddress.MatchedPostCode =
-                    matchedAddress.AddressComponents.FirstOrDefault(pair => pair.Key == "MatchedPostCode").Value;
+                inputResolvedAddress.MatchedThoroughfare = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "MatchedThoroughfare").Value;
+
+                inputResolvedAddress.MatchedDoubleDependentLocality = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "MatchedDoubleDependentLocality").Value;
+
+                inputResolvedAddress.MatchedDependentLocality = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "MatchedDependentLocality").Value;
+
+                inputResolvedAddress.MatchedPostTown = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "MatchedPostTown").Value;
+
+                inputResolvedAddress.MatchedPostCode = matchedAddress.NormalisedAddressComponents
+                    .FirstOrDefault(pair => pair.Key == "MatchedPostCode").Value;
             }
             return inputResolvedAddress;
         }

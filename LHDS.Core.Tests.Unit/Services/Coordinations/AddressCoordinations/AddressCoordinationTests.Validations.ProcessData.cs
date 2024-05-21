@@ -53,10 +53,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             actualAddressCoordinationValidationException.Should()
                 .BeEquivalentTo(expectedAddressCoordinationValidationException);
 
-            this.addressExtractionOrchestrationServiceMock.Verify(service =>
-                service.ProcessAddressesAsync(nullData, invalidFilename),
-                    Times.Never());
-
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedAddressCoordinationValidationException))),

@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
@@ -22,10 +24,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
             modifiedResolvedAddress.PostalAddress = modifiedResolvedAddress.PostalAddress + "Modified";
             ResolvedAddress updatedResolvedAddress = modifiedResolvedAddress.DeepClone();
             ResolvedAddress expectedResolvedAddress = updatedResolvedAddress;
+            List<ResolvedAddress> storageResolvedAddresses = new List<ResolvedAddress>{storageResolvedAddress};
 
             this.resolvedAddressServiceMock.Setup(service =>
-                service.RetrieveResolvedAddressByIdAsync(modifiedResolvedAddress.Id))
-                    .ReturnsAsync(value: storageResolvedAddress);
+                service.RetrieveAllResolvedAddresses())
+                    .Returns(value: storageResolvedAddresses.AsQueryable());
 
             this.resolvedAddressServiceMock.Setup(service =>
                 service.ModifyResolvedAddressAsync(modifiedResolvedAddress))
@@ -36,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             // Then
             this.resolvedAddressServiceMock.Verify(service =>
-                service.RetrieveResolvedAddressByIdAsync(modifiedResolvedAddress.Id),
+                service.RetrieveAllResolvedAddresses(),
                     Times.Once);
 
             this.resolvedAddressServiceMock.Verify(service =>
@@ -61,10 +64,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
             ResolvedAddress expectedResolvedAddress = storageResolvedAddress;
 
             this.resolvedAddressServiceMock.Setup(service =>
-                service.RetrieveResolvedAddressByIdAsync(inputResolvedAddress.Id))
-                    .ReturnsAsync(value: null);
-
-            this.resolvedAddressServiceMock.Setup(service =>
                 service.AddResolvedAddressAsync(inputResolvedAddress))
                     .ReturnsAsync(value: storageResolvedAddress);
 
@@ -73,12 +72,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             // Then
             this.resolvedAddressServiceMock.Verify(service =>
-                service.RetrieveResolvedAddressByIdAsync(inputResolvedAddress.Id),
+                service.RetrieveAllResolvedAddresses(),
                     Times.Once);
 
             this.resolvedAddressServiceMock.Verify(service =>
-            service.AddResolvedAddressAsync(inputResolvedAddress),
-            Times.Once);
+                service.AddResolvedAddressAsync(inputResolvedAddress),
+                    Times.Once);
 
             this.resolvedAddressServiceMock.Verify(service =>
                 service.ModifyResolvedAddressAsync(inputResolvedAddress),

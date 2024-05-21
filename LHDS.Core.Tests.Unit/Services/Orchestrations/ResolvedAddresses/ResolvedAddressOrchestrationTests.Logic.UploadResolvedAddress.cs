@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     It.Is(SameResolvedAddressReturnsAs(returnResolvedAddresses)), false, null, true))
                         .ReturnsAsync(ouputCsv);
 
-            foreach(ResolvedAddress resolvedAddress in updatedResolvedAddresses)
+            foreach (ResolvedAddress resolvedAddress in updatedResolvedAddresses)
             {
                 resolvedAddress.BatchReference = batchReference;
                 resolvedAddress.IsProcessed = true;
@@ -61,13 +61,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 this.dateTimeBrokerMock.Setup(broker =>
                     broker.GetCurrentDateTimeOffset()).Returns(dateTimeOffset);
 
-                this.resolvedAddressProcessingServiceMock.Setup(service => 
+                this.resolvedAddressProcessingServiceMock.Setup(service =>
                     service.ModifyResolvedAddressAsync(resolvedAddress))
                         .ReturnsAsync(resolvedAddress);
             }
 
             // When
-            Guid actualBatchReference =
+            Guid? actualBatchReference =
                 await this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             // Then
@@ -89,13 +89,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(), 
+                broker.GetCurrentDateTimeOffset(),
                     Times.Exactly(storageResolvedAddresses.Count));
 
             foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
             {
                 this.resolvedAddressProcessingServiceMock.Verify(service =>
-                    service.ModifyResolvedAddressAsync(resolvedAddress), 
+                    service.ModifyResolvedAddressAsync(resolvedAddress),
                         Times.Once);
             }
 

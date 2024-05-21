@@ -24,17 +24,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             byte[] inputData = Encoding.UTF8.GetBytes(GetRandomString());
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
             List<Address> extractedAddresses = randomAddresses.DeepClone();
-            List<Address> persistedAddresses = extractedAddresses.DeepClone();
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
                 service.ProcessAddressesAsync(inputData, someFilename))
                     .ReturnsAsync(extractedAddresses);
 
-            this.addressPersistanceOrchestrationServiceMock.Setup(service =>
-                service.PersistAddressAsync(extractedAddresses, someFilename))
-                    .ReturnsAsync(persistedAddresses);
-
-            List<Address> expectedAddresses = persistedAddresses.DeepClone();
+            List<Address> expectedAddresses = extractedAddresses.DeepClone();
 
             // When
             List<Address> actualAddresses =
@@ -45,10 +40,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
                 service.ProcessAddressesAsync(inputData, someFilename),
-                    Times.Once());
-
-            this.addressPersistanceOrchestrationServiceMock.Verify(service =>
-                service.PersistAddressAsync(extractedAddresses, someFilename),
                     Times.Once());
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();

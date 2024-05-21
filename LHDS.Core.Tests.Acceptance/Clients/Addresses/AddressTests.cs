@@ -75,6 +75,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             this.resolvedAddressProcessingService =
                 serviceProvider.GetService<IResolvedAddressProcessingService>();
 
+            this.addressService = serviceProvider.GetService<IAddressService>();
+            this.resolvedAddressService = serviceProvider.GetService<IResolvedAddressService>();
+
             this.documentService =
                 serviceProvider.GetService<IDocumentService>();
 

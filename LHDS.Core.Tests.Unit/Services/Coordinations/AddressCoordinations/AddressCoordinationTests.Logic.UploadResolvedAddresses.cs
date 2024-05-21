@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ReturnsAsync(expectedBatchReference);
 
             // When
-            Guid actualBatchReference =
+            Guid? actualBatchReference =
                 await this.addressCoordinationService.UploadResolvedAddressesAsync();
 
             // Then

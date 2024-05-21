@@ -15,8 +15,9 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
+using LHDS.Core.Services.Processings.Addresses;
+using LHDS.Core.Services.Processings.AddressNormalisations;
 using Moq;
 using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using Tynamix.ObjectFiller;
@@ -28,7 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationServiceTests
     {
-        private readonly Mock<IAddressNormalisationService> addressNormalisationServiceMock;
+        private readonly Mock<IAddressNormalisationProcessingService> addressNormalisationProcessingServiceMock;
+        private readonly Mock<IAddressProcessingService> addressProcessingServiceMock;
         private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
@@ -40,7 +42,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
         public AddressExtractionOrchestrationServiceTests(ITestOutputHelper output)
         {
-            this.addressNormalisationServiceMock = new Mock<IAddressNormalisationService>();
+            this.addressNormalisationProcessingServiceMock = new Mock<IAddressNormalisationProcessingService>();
+            this.addressProcessingServiceMock = new Mock<IAddressProcessingService>();
             this.auditBrokerMock = new Mock<IAuditBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
@@ -50,12 +53,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.output = output;
 
             this.addressExtractionOrchestrationService = new AddressExtractionOrchestrationService(
-                addressNormalisationService: addressNormalisationServiceMock.Object,
+                addressNormalisationProcessingService: addressNormalisationProcessingServiceMock.Object,
+                addressProcessingService: addressProcessingServiceMock.Object,
                 auditBroker: auditBrokerMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 csvHelperBroker: csvHelperBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object);
+        }
+
+        private Expression<Func<Address, bool>> SameAddressAs(Address expectedAddress)
+        {
+            return actualAddress =>
+                this.compareLogic.Compare(expectedAddress, actualAddress)
+                    .AreEqual;
         }
 
         private static string GetRandomString() =>
@@ -70,10 +81,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        private static IQueryable<Address> CreateRandomAddresses()
+        private static IQueryable<Address> CreateRandomAddresses(int count = 0)
         {
+            if (count == 0)
+            {
+                count = GetRandomNumber();
+            }
+
             return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
+                .Create(count)
                     .AsQueryable();
         }
 

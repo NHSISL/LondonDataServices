@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = resolvedAddress.PostalAddress ?? string.Empty;
 
-                this.addressNormalisationServiceMock.Setup(service =>
+                this.addressNormalisationProcessingServiceMock.Setup(service =>
                     service.GetNormalisedAddress(addressString))
                         .ThrowsAsync(dependencyValidationException);
 
@@ -99,7 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = resolvedAddress.PostalAddress ?? string.Empty;
 
-                this.addressNormalisationServiceMock.Verify(service =>
+                this.addressNormalisationProcessingServiceMock.Verify(service =>
                     service.GetNormalisedAddress(addressString),
                         Times.Once);
             }
@@ -120,10 +120,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     actualAddressExtractionOrchestrationServiceException))),
                         Times.Once);
 
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
@@ -151,7 +152,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = resolvedAddress.PostalAddress ?? string.Empty;
 
-                this.addressNormalisationServiceMock.Setup(service =>
+                this.addressNormalisationProcessingServiceMock.Setup(service =>
                     service.GetNormalisedAddress(addressString))
                         .ThrowsAsync(dependencyException);
 
@@ -207,7 +208,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = resolvedAddress.PostalAddress ?? string.Empty;
 
-                this.addressNormalisationServiceMock.Verify(service =>
+                this.addressNormalisationProcessingServiceMock.Verify(service =>
                     service.GetNormalisedAddress(addressString),
                         Times.Once);
             }
@@ -228,10 +229,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     actualAddressExtractionOrchestrationServiceException))),
                         Times.Once);
 
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
@@ -267,7 +269,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string stringAddress = resolvedAddress.PostalAddress ?? string.Empty;
 
-                this.addressNormalisationServiceMock.Setup(service =>
+                this.addressNormalisationProcessingServiceMock.Setup(service =>
                     service.GetNormalisedAddress(stringAddress))
                         .ThrowsAsync(serviceException);
 
@@ -317,7 +319,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = resolvedAddress.PostalAddress ?? string.Empty;
 
-                this.addressNormalisationServiceMock.Verify(service =>
+                this.addressNormalisationProcessingServiceMock.Verify(service =>
                     service.GetNormalisedAddress(addressString),
                         Times.Once);
             }
@@ -332,10 +334,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     expectedAddressExtractionOrchestrationServiceException))),
                         Times.Once);
 
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
@@ -392,10 +395,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedDependencyException))),
                        Times.Once);
 
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
@@ -451,10 +455,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedDependencyException))),
                        Times.Once);
 
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
@@ -513,10 +518,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedAddressExtractionOrchestrationServiceException))),
                        Times.Once);
 
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }

@@ -59,7 +59,10 @@ namespace LHDS.Core.Services.Processings.Addresses
             {
                 ValidateAddress(address);
                 ValidateAddressId(address.Id);
-                var maybeAddress = await this.addressService.RetrieveAddressByIdAsync(address.Id);
+
+                var maybeAddress = 
+                    this.addressService.RetrieveAllAddresses()
+                        .FirstOrDefault(storageAddress => storageAddress.Id == address.Id);
 
                 if (maybeAddress != null)
                 {

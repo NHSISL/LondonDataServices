@@ -45,7 +45,7 @@
     <None Update="Resources\DataEngineering\IncomingFileToMatch.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Ordnance\TQ4065.csv">
+    <None Update="Resources\Ordnance\0040176014-6414006-1SMALL.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

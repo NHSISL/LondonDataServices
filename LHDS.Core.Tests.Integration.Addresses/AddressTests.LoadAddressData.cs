@@ -19,12 +19,12 @@ namespace LHDS.Core.Tests.Integration.Addresses
             byte[] fileBytes =
                 File.ReadAllBytes(
                     //@"Resources\0040176014-6414006-1.zip");
-                    @"Resources\Ordnance\TQ4065.csv");
+                    @"Resources\Ordnance\0040176014-6414006-1SMALL.zip");
 
             FileInfo fi =
                 new FileInfo(
                     //@"Resources\0040176014-6414006-1.zip");
-                    @"Resources\Ordnance\TQ4065.csv");
+                    @"Resources\Ordnance\0040176014-6414006-1SMALL.zip");
 
             var fileName = fi.Name;
 

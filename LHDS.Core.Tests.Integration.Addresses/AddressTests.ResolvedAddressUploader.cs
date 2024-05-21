@@ -19,6 +19,7 @@ namespace LHDS.Core.Tests.Integration.Addresses
 
             // When
             Guid? returnedBatchGuid = await addressClient.ProcessResolvedAddressDataAsync();
+
             // Then
             Assert.True(returnedBatchGuid == null || returnedBatchGuid != Guid.Empty,
                "The returned GUID should be either null or a valid GUID.");

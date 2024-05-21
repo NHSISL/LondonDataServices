@@ -57,6 +57,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                     {
                         var processAddress = await TryCatch(async () =>
                         {
+                            //check if the address exists -> retrieve all matching on given fields
+                            //if not exists -> generated a guid and add to address
+                            //if exists -> add guid 
+
                             Address processAddress =
                                 await this.addressProcessingService.ModifyOrAddAddressAsync(address);
 

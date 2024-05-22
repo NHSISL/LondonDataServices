@@ -116,6 +116,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                                 savedAddress.PostalAddress = addressNormalisation.PostalAddress;
                                 savedAddress.IsErrored = false;
 
+
                                 await this.auditBroker.LogInformation(
                                     auditType: "Address",
                                     title: "Successfully extracted address from Ordinance Database",
@@ -133,7 +134,9 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                                         auditType: "Address",
                                         title: "Invalid address parts found",
                                         message: $"Invalid address parts found in address with id: {savedAddress.Id} " +
-                                            $"from file: {filename}",
+                                            $"from file: {filename}" + Environment.NewLine +
+                                            $"error message: {ex.InnerException.Message}" + Environment.NewLine +
+                                            $"parts: {ex.InnerException.InnerException.Message}",
                                         filename,
                                         correlationId: savedAddress.Id);
                                 }
@@ -143,7 +146,12 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                                 }
                             }
 
-                            var updatedAddress = await this.addressProcessingService.ModifyOrAddAddressAsync(savedAddress);
+                            DateTimeOffset updatedDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                            savedAddress.UpdatedBy = "System";
+                            savedAddress.UpdatedDate = updatedDateTime;
+
+                            var updatedAddress =
+                                await this.addressProcessingService.ModifyOrAddAddressAsync(savedAddress);
 
                             return updatedAddress;
                         });

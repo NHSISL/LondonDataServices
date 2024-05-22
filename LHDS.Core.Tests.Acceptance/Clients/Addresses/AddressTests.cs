@@ -38,6 +38,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
         private readonly IDocumentService documentService;
+        private readonly IAddressService addressService;
         private readonly IResolvedAddressService resolvedAddressService;
         private readonly ICsvHelperBroker csvHelperBroker;
         private readonly IAddressClient addressClient;
@@ -58,7 +59,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()
                 .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>()
                 .AddTransient<IDocumentService, DocumentService> ()
-                .AddTransient<ICsvHelperBroker, CsvHelperBroker> ();
+                .AddTransient<ICsvHelperBroker, CsvHelperBroker> ()
                 .AddTransient<IAddressService, AddressService>()
                 .AddTransient<IDocumentService, DocumentService>();
 
@@ -78,9 +79,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             this.resolvedAddressOrchestrationService =
                 serviceProvider.GetService<IResolvedAddressOrchestrationService>();
-
-            this.addressService = serviceProvider.GetService<IAddressService>();
-            this.resolvedAddressService = serviceProvider.GetService<IResolvedAddressService>();
 
             this.addressService = serviceProvider.GetService<IAddressService>();
             this.resolvedAddressService = serviceProvider.GetService<IResolvedAddressService>();

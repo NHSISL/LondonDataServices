@@ -82,9 +82,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = address.GetFormattedAddress();
 
-                this.addressNormalisationProcessingServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(addressString))
-                        .ThrowsAsync(dependencyValidationException);
+                this.addressProcessingServiceMock.Setup(service =>
+                    service.RetrieveAllAddresses())
+                        .Throws(dependencyValidationException);
 
                 var addressExtractionOrchestrationDependencyValidationException =
                     new AddressExtractionOrchestrationDependencyValidationException(
@@ -134,8 +134,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = address.GetFormattedAddress();
 
-                this.addressNormalisationProcessingServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(addressString),
+                this.addressProcessingServiceMock.Verify(service =>
+                    service.RetrieveAllAddresses(),
                         Times.Once);
             }
 
@@ -224,9 +224,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = address.GetFormattedAddress();
 
-                this.addressNormalisationProcessingServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(addressString))
-                        .ThrowsAsync(dependencyValidationException);
+                this.addressProcessingServiceMock.Setup(service =>
+                    service.RetrieveAllAddresses())
+                        .Throws(dependencyValidationException);
 
                 var addressExtractionOrchestrationDependencyException =
                     new AddressExtractionOrchestrationDependencyException(
@@ -276,8 +276,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = address.GetFormattedAddress();
 
-                this.addressNormalisationProcessingServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(addressString),
+                this.addressProcessingServiceMock.Verify(service =>
+                    service.RetrieveAllAddresses(),
                         Times.Once);
             }
 
@@ -374,9 +374,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string stringAddress = address.GetFormattedAddress();
 
-                this.addressNormalisationProcessingServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(stringAddress))
-                        .ThrowsAsync(serviceException);
+                this.addressProcessingServiceMock.Setup(service =>
+                    service.RetrieveAllAddresses())
+                        .Throws(serviceException);
 
                 exceptions.Add(innerAddressExtractionOrchestrationServiceException);
             }
@@ -420,8 +420,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             {
                 string addressString = address.GetFormattedAddress();
 
-                this.addressNormalisationProcessingServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(addressString),
+                this.addressProcessingServiceMock.Verify(service =>
+                    service.RetrieveAllAddresses(),
                         Times.Once);
             }
 

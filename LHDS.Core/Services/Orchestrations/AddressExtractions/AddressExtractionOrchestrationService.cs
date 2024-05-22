@@ -88,7 +88,23 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                                 && storageAddress.PostTown.Equals(address.PostTown)
                                 && storageAddress.PostCode.Equals(address.PostCode));
 
-                            inputAddress.Id = maybeAddress != null ? maybeAddress.Id : Guid.NewGuid();
+                            DateTimeOffset dateStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                            if (maybeAddress != null)
+                            {
+                                inputAddress.Id = maybeAddress.Id;
+                                inputAddress.UpdatedBy = "System";
+                                inputAddress.UpdatedDate = dateStamp;
+                            }
+                            else
+                            {
+                                inputAddress.Id = Guid.NewGuid();
+                                inputAddress.CreatedBy = "System";
+                                inputAddress.CreatedDate = dateStamp;
+                                inputAddress.UpdatedBy = "System";
+                                inputAddress.UpdatedDate = dateStamp;
+                            }
+
                             var savedAddress = await this.addressProcessingService.ModifyOrAddAddressAsync(inputAddress);
 
                             try

@@ -69,8 +69,8 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                     {
                         Address processedAddress = await TryCatch(async () =>
                         {
-                            Address inputAddress = address;
-                            string addressString = inputAddress.GetFormattedAddress();
+                            Address incomingAddress = address;
+                            string addressString = incomingAddress.GetFormattedAddress();
 
                             Address? maybeAddress = this.addressProcessingService.RetrieveAllAddresses()
                             .FirstOrDefault(storageAddress =>
@@ -92,20 +92,20 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
                             if (maybeAddress != null)
                             {
-                                inputAddress.Id = maybeAddress.Id;
-                                inputAddress.UpdatedBy = "System";
-                                inputAddress.UpdatedDate = dateStamp;
+                                incomingAddress.Id = maybeAddress.Id;
+                                incomingAddress.UpdatedBy = "System";
+                                incomingAddress.UpdatedDate = dateStamp;
                             }
                             else
                             {
-                                inputAddress.Id = Guid.NewGuid();
-                                inputAddress.CreatedBy = "System";
-                                inputAddress.CreatedDate = dateStamp;
-                                inputAddress.UpdatedBy = "System";
-                                inputAddress.UpdatedDate = dateStamp;
+                                incomingAddress.Id = Guid.NewGuid();
+                                incomingAddress.CreatedBy = "System";
+                                incomingAddress.CreatedDate = dateStamp;
+                                incomingAddress.UpdatedBy = "System";
+                                incomingAddress.UpdatedDate = dateStamp;
                             }
 
-                            var savedAddress = await this.addressProcessingService.ModifyOrAddAddressAsync(inputAddress);
+                            var savedAddress = await this.addressProcessingService.ModifyOrAddAddressAsync(incomingAddress);
 
                             try
                             {

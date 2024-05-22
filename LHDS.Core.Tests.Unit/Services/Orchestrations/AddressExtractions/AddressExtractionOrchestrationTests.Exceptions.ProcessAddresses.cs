@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
@@ -21,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationServiceTests
     {
-        [Theory(Skip = "WIP: Hassan to complete")]
+        [Theory]
         [MemberData(nameof(AddressExtractionOrchestrationDependencyValidationExceptions))]
         public async Task
             ShouldThrowAggregateDependencyValidationExceptionOnProcessAddressesIfErrorsInLoopAndLogItAsync(
@@ -29,18 +30,55 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         {
             // Given
             string someFilename = GetRandomString();
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            int randomItems = 1; // GetRandomNumber();
             List<Exception> exceptions = new List<Exception>();
+            string assembly = Assembly.GetExecutingAssembly().Location;
+
+            string inputFilePath = Path.Combine(
+                Path.GetDirectoryName(assembly),
+                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithZippedCsvAddressesData.zip");
+
+            byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+
+            string csvFilePath = Path.Combine(
+                Path.GetDirectoryName(assembly),
+                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithOnlyCsvAddressesData.csv");
+
+            byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
+            string stringData = Encoding.UTF8.GetString(csvData);
+            List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+
+            List<string> filteredRecords = records.Where(record =>
+               record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
+
+            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+            bool hasHeaderRecord = false;
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                {
+                    { "UPRN", 3 },
+                    { "UPSN", 4 },
+                    { "OrganisationName", 5 },
+                    { "DepartmentName", 6 },
+                    { "SubBuildingName", 7 },
+                    { "BuildingName", 8 },
+                    { "BuildingNumber", 9 },
+                    { "DependentThoroughfare", 10 },
+                    { "Thoroughfare", 11 },
+                    { "DoubleDependentLocality", 12 },
+                    { "DependentLocality", 13 },
+                    { "PostTown", 14 },
+                    { "PostCode", 15 }
+                };
+
+            List<Address> randomAddresses = CreateRandomAddresses(count: randomItems).ToList();
+            List<Address> outputAddresses = randomAddresses.DeepClone();
 
             this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<Address>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
-                    .ReturnsAsync(randomAddresses);
+                service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings))
+                    .ReturnsAsync(outputAddresses);
 
-            foreach (Address address in randomAddresses)
+            foreach (Address address in outputAddresses)
             {
                 string addressString = address.GetFormattedAddress();
 
@@ -75,7 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // When
             ValueTask<List<Address>> processAddressTask =
-                this.addressExtractionOrchestrationService.ProcessAddressesAsync(randomData, someFilename);
+                this.addressExtractionOrchestrationService.ProcessAddressesAsync(inputData, someFilename);
 
             AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
@@ -126,38 +164,75 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory(Skip = "WIP: Hassan to complete")]
+        [Theory]
         [MemberData(nameof(AddressExtractionDependencyExceptions))]
         public async Task
             ShouldThrowAggregateDependencyExceptionOnProcessAddressesIfErrorsInLoopAndLogItAsync(
-            Xeption dependencyException)
+            Xeption dependencyValidationException)
         {
             // Given
             string someFilename = GetRandomString();
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            int randomItems = 1; // GetRandomNumber();
             List<Exception> exceptions = new List<Exception>();
+            string assembly = Assembly.GetExecutingAssembly().Location;
+
+            string inputFilePath = Path.Combine(
+                Path.GetDirectoryName(assembly),
+                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithZippedCsvAddressesData.zip");
+
+            byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+
+            string csvFilePath = Path.Combine(
+                Path.GetDirectoryName(assembly),
+                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithOnlyCsvAddressesData.csv");
+
+            byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
+            string stringData = Encoding.UTF8.GetString(csvData);
+            List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+
+            List<string> filteredRecords = records.Where(record =>
+               record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
+
+            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+            bool hasHeaderRecord = false;
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                {
+                    { "UPRN", 3 },
+                    { "UPSN", 4 },
+                    { "OrganisationName", 5 },
+                    { "DepartmentName", 6 },
+                    { "SubBuildingName", 7 },
+                    { "BuildingName", 8 },
+                    { "BuildingNumber", 9 },
+                    { "DependentThoroughfare", 10 },
+                    { "Thoroughfare", 11 },
+                    { "DoubleDependentLocality", 12 },
+                    { "DependentLocality", 13 },
+                    { "PostTown", 14 },
+                    { "PostCode", 15 }
+                };
+
+            List<Address> randomAddresses = CreateRandomAddresses(count: randomItems).ToList();
+            List<Address> outputAddresses = randomAddresses.DeepClone();
 
             this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<Address>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
-                    .ReturnsAsync(randomAddresses);
+                service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings))
+                    .ReturnsAsync(outputAddresses);
 
-            foreach (Address address in randomAddresses)
+            foreach (Address address in outputAddresses)
             {
                 string addressString = address.GetFormattedAddress();
 
                 this.addressNormalisationProcessingServiceMock.Setup(service =>
                     service.GetNormalisedAddress(addressString))
-                        .ThrowsAsync(dependencyException);
+                        .ThrowsAsync(dependencyValidationException);
 
                 var addressExtractionOrchestrationDependencyException =
                     new AddressExtractionOrchestrationDependencyException(
                         message: "Address extraction orchestration dependency error occurred, " +
                         "please try again.",
-                        innerException: dependencyException.InnerException as Xeption);
+                        innerException: dependencyValidationException.InnerException as Xeption);
 
                 exceptions.Add(addressExtractionOrchestrationDependencyException);
             }
@@ -180,7 +255,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // When
             ValueTask<List<Address>> processAddressTask =
-                this.addressExtractionOrchestrationService.ProcessAddressesAsync(randomData, someFilename);
+                this.addressExtractionOrchestrationService.ProcessAddressesAsync(inputData, someFilename);
 
             AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
@@ -210,7 +285,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 new AddressExtractionOrchestrationDependencyException(
                     message: "Address extraction orchestration dependency error occurred, " +
                     "fix the errors and try again.",
-                    innerException: dependencyException.InnerException as Xeption);
+                    innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -231,22 +306,59 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact(Skip = "WIP: Hassan to complete")]
+        [Fact]
         public async Task ShouldThrowAggregateServiceExceptionOnProcessAddressIfErrorsInLoopAndLogItAsync()
         {
             // Given
             string someFilename = GetRandomString();
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            int randomItems = 1; // GetRandomNumber();
             var serviceException = new Exception();
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
             List<Exception> exceptions = new List<Exception>();
+            string assembly = Assembly.GetExecutingAssembly().Location;
+
+            string inputFilePath = Path.Combine(
+                Path.GetDirectoryName(assembly),
+                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithZippedCsvAddressesData.zip");
+
+            byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+
+            string csvFilePath = Path.Combine(
+                Path.GetDirectoryName(assembly),
+                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithOnlyCsvAddressesData.csv");
+
+            byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
+            string stringData = Encoding.UTF8.GetString(csvData);
+            List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+
+            List<string> filteredRecords = records.Where(record =>
+               record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
+
+            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+            bool hasHeaderRecord = false;
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                {
+                    { "UPRN", 3 },
+                    { "UPSN", 4 },
+                    { "OrganisationName", 5 },
+                    { "DepartmentName", 6 },
+                    { "SubBuildingName", 7 },
+                    { "BuildingName", 8 },
+                    { "BuildingNumber", 9 },
+                    { "DependentThoroughfare", 10 },
+                    { "Thoroughfare", 11 },
+                    { "DoubleDependentLocality", 12 },
+                    { "DependentLocality", 13 },
+                    { "PostTown", 14 },
+                    { "PostCode", 15 }
+                };
+
+            List<Address> randomAddresses = CreateRandomAddresses(count: randomItems).ToList();
+            List<Address> outputAddresses = randomAddresses.DeepClone();
 
             this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<Address>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
-                    .ReturnsAsync(randomAddresses);
+                service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings))
+                    .ReturnsAsync(outputAddresses);
 
             var innerFailedAddressExtractionOrchestrationServiceException =
                 new FailedAddressExtractionOrchestrationServiceException(
@@ -258,7 +370,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     message: "Address extraction orchestration service error occurred, please contact support.",
                     innerException: innerFailedAddressExtractionOrchestrationServiceException);
 
-            foreach (Address address in randomAddresses)
+            foreach (Address address in outputAddresses)
             {
                 string stringAddress = address.GetFormattedAddress();
 
@@ -287,7 +399,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // When
             ValueTask<List<Address>> processAddressTask =
-                this.addressExtractionOrchestrationService.ProcessAddressesAsync(randomData, someFilename);
+                this.addressExtractionOrchestrationService.ProcessAddressesAsync(inputData, someFilename);
 
             AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>

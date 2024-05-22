@@ -25,6 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         public async Task ShouldProcessAddressesAsync()
         {
             // Given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid randomId = Guid.NewGuid();
             int randomItems = 1; // GetRandomNumber();
             string inputFilename = GetRandomString();
@@ -84,21 +85,39 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (Address address in outputAddresses)
             {
-                string stringAddress = address.GetFormattedAddress();
+                Address inputAddress = address;
+                string addressString = address.GetFormattedAddress();
 
-                this.addressNormalisationProcessingServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(stringAddress))
-                        .ReturnsAsync(addressNormalisation);
-
-                address.PostalAddress = addressNormalisation.PostalAddress;
-                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                address.IsErrored = false;
+                Address? storageAddress = CreateRandomAddress();
+                var maybeAddress = new List<Address> { storageAddress }.AsQueryable();
 
                 this.addressProcessingServiceMock.Setup(service =>
-                    service.ModifyAddressAsync(address))
-                        .ReturnsAsync(address);
+                    service.RetrieveAllAddresses())
+                        .Returns(maybeAddress);
 
-                expectedAddresses.Add(address);
+                this.dateTimeBrokerMock.Setup(broker =>
+                    broker.GetCurrentDateTimeOffset())
+                        .Returns(randomDateTimeOffset);
+
+                inputAddress.Id = maybeAddress.FirstOrDefault().Id;
+                inputAddress.UpdatedBy = "System";
+                inputAddress.UpdatedDate = randomDateTimeOffset;
+
+                Address storageInputAddress = inputAddress;
+
+                this.addressProcessingServiceMock.Setup(service =>
+                    service.ModifyOrAddAddressAsync(inputAddress))
+                        .ReturnsAsync(storageInputAddress);
+
+                this.addressNormalisationProcessingServiceMock.Setup(service =>
+                    service.GetNormalisedAddress(addressString))
+                        .ReturnsAsync(addressNormalisation);
+
+                storageInputAddress.PostalAddress = addressNormalisation.PostalAddress;
+                storageInputAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                storageInputAddress.IsErrored = false;
+
+                expectedAddresses.Add(storageInputAddress);
             }
 
             // When
@@ -115,28 +134,46 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             foreach (Address address in randomAddresses)
             {
-                string stringAddress = address.GetFormattedAddress();
+                Address inputAddress = address;
+                string addressString = address.GetFormattedAddress();
+
+                Address? storageAddress = CreateRandomAddress();
+                var maybeAddress = new List<Address> { storageAddress }.AsQueryable();
+
+                this.addressProcessingServiceMock.Verify(service =>
+                    service.RetrieveAllAddresses()
+                        , Times.Once);
+
+                this.dateTimeBrokerMock.Verify(broker =>
+                    broker.GetCurrentDateTimeOffset(),
+                        Times.AtLeast(1));
+
+                inputAddress.Id = maybeAddress.FirstOrDefault().Id;
+                inputAddress.UpdatedBy = "System";
+                inputAddress.UpdatedDate = randomDateTimeOffset;
+
+                Address storageInputAddress = inputAddress;
+
+                this.addressProcessingServiceMock.Setup(service =>
+                    service.ModifyOrAddAddressAsync(inputAddress))
+                        .ReturnsAsync(storageInputAddress);
 
                 this.addressNormalisationProcessingServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(stringAddress),
+                    service.GetNormalisedAddress(addressString),
                         Times.Once);
+
+                storageInputAddress.PostalAddress = addressNormalisation.PostalAddress;
+                storageInputAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                storageInputAddress.IsErrored = false;
 
                 this.auditBrokerMock.Verify(broker =>
                     broker.LogInformation(
                         "Address",
                         "Successfully extracted address from Ordinance Database",
-                        $"Successfully extracted address with id: {address.Id} from file: {inputFilename}",
+                        $"Successfully extracted address with id: {storageInputAddress.Id} from file: {inputFilename}",
                         inputFilename,
-                        address.Id),
+                        storageInputAddress.Id),
                             Times.Once);
-
-                address.PostalAddress = addressNormalisation.PostalAddress;
-                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                address.IsErrored = false;
-
-                this.addressProcessingServiceMock.Verify(service =>
-                    service.ModifyAddressAsync(It.Is(SameAddressAs(address))),
-                        Times.Once);
             }
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

@@ -138,6 +138,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             return filler;
         }
 
+        private static Address CreateRandomAddress() =>
+           CreateRandomAddressFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static Filler<Address> CreateRandomAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<Address>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(address => address.CreatedBy).Use(user)
+                .OnProperty(address => address.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
         public static TheoryData AddressExtractionOrchestrationDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();

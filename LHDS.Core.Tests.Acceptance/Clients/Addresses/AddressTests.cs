@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -36,9 +37,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private readonly IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
-        private readonly IAddressService addressService;
         private readonly IDocumentService documentService;
+        private readonly IAddressService addressService;
         private readonly IResolvedAddressService resolvedAddressService;
+        private readonly ICsvHelperBroker csvHelperBroker;
         private readonly IAddressClient addressClient;
         private readonly ICompareLogic compareLogic;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -56,6 +58,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .AddTransient<IAddressPersistanceOrchestrationService, AddressPersistanceOrchestrationService>()
                 .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()
                 .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>()
+                .AddTransient<IDocumentService, DocumentService> ()
+                .AddTransient<ICsvHelperBroker, CsvHelperBroker> ()
                 .AddTransient<IAddressService, AddressService>()
                 .AddTransient<IDocumentService, DocumentService>();
 
@@ -79,8 +83,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             this.addressService = serviceProvider.GetService<IAddressService>();
             this.resolvedAddressService = serviceProvider.GetService<IResolvedAddressService>();
 
+            this.resolvedAddressProcessingService =
+                serviceProvider.GetService<IResolvedAddressProcessingService>();
+
             this.documentService =
                 serviceProvider.GetService<IDocumentService>();
+
+            this.csvHelperBroker =
+                serviceProvider.GetService<ICsvHelperBroker>();
 
             this.addressConfiguration = serviceProvider.GetService<AddressConfiguration>();
             this.blobContainers = serviceProvider.GetService<BlobContainers>();
@@ -205,7 +215,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
         private static List<ResolvedAddress> CreateRandomResolvedAddresses(DateTimeOffset dateTimeOffset, bool isMatched)
         {
-            return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset(), isMatched)
+            return CreateResolvedAddressFiller(dateTimeOffset, isMatched)
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
@@ -216,11 +226,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             var filler = new Filler<ResolvedAddress>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(resolvedAddress => resolvedAddress.IsMatched).Use(isMatched)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
-                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user)
+                .OnType<DateTimeOffset>().Use(dateTimeOffset);
 
             return filler;
         }

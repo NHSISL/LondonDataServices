@@ -166,7 +166,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 this.dateTimeBroker.GetCurrentDateTimeOffset();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
-            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(3);
 
             return timeDifference.Duration() > oneMinute;
         }

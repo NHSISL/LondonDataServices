@@ -69,38 +69,76 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                     {
                         Address processedAddress = await TryCatch(async () =>
                         {
-                            Address inputAddress = address;
-                            string addressString = inputAddress.GetFormattedAddress();
+                            Address incomingAddress = address;
+                            string addressString = incomingAddress.GetFormattedAddress();
+
+                            Address? maybeAddress = this.addressProcessingService.RetrieveAllAddresses()
+                            .FirstOrDefault(storageAddress =>
+                                storageAddress.UPRN.Equals(address.UPRN)
+                                && storageAddress.UPSN.Equals(address.UPSN)
+                                && storageAddress.OrganisationName.Equals(address.OrganisationName)
+                                && storageAddress.DepartmentName.Equals(address.DepartmentName)
+                                && storageAddress.SubBuildingName.Equals(address.SubBuildingName)
+                                && storageAddress.BuildingName.Equals(address.BuildingName)
+                                && storageAddress.BuildingNumber.Equals(address.BuildingNumber)
+                                && storageAddress.DependentThoroughfare.Equals(address.DependentThoroughfare)
+                                && storageAddress.Thoroughfare.Equals(address.Thoroughfare)
+                                && storageAddress.DoubleDependentLocality.Equals(address.DoubleDependentLocality)
+                                && storageAddress.DependentLocality.Equals(address.DependentLocality)
+                                && storageAddress.PostTown.Equals(address.PostTown)
+                                && storageAddress.PostCode.Equals(address.PostCode));
+
+                            DateTimeOffset dateStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                            if (maybeAddress != null)
+                            {
+                                incomingAddress.Id = maybeAddress.Id;
+                                incomingAddress.UpdatedBy = "System";
+                                incomingAddress.UpdatedDate = dateStamp;
+                            }
+                            else
+                            {
+                                incomingAddress.Id = Guid.NewGuid();
+                                incomingAddress.CreatedBy = "System";
+                                incomingAddress.CreatedDate = dateStamp;
+                                incomingAddress.UpdatedBy = "System";
+                                incomingAddress.UpdatedDate = dateStamp;
+                            }
+
+                            var savedAddress = await this.addressProcessingService.ModifyOrAddAddressAsync(incomingAddress);
 
                             try
                             {
                                 AddressNormalisation addressNormalisation =
                                     await this.addressNormalisationProcessingService.GetNormalisedAddress(addressString);
 
-                                inputAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                                inputAddress.PostalAddress = addressNormalisation.PostalAddress;
-                                inputAddress.IsErrored = false;
+                                savedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                                savedAddress.PostalAddress = addressNormalisation.PostalAddress;
+                                savedAddress.IsErrored = false;
+
 
                                 await this.auditBroker.LogInformation(
                                     auditType: "Address",
                                     title: "Successfully extracted address from Ordinance Database",
-                                    message: $"Successfully extracted address with id: {address.Id} from file: {filename}",
+                                    message: $"Successfully extracted address with id: {savedAddress.Id} from file: {filename}",
                                     filename,
-                                    correlationId: address.Id);
+                                    correlationId: savedAddress.Id);
                             }
                             catch (Exception ex)
                             {
-                                if (ex is InvalidAddressPartsNormalisationException)
+                                if (ex.InnerException.InnerException is InvalidAddressPartsNormalisationException)
                                 {
-                                    inputAddress.IsErrored = true;
+                                    savedAddress.IsErrored = true;
 
                                     await this.auditBroker.LogWarning(
                                         auditType: "Address",
                                         title: "Invalid address parts found",
-                                        message: $"Invalid address parts found in address with id: {address.Id} " +
-                                            $"from file: {filename}",
+                                        message: $"Invalid address parts found in address with id: {savedAddress.Id} " +
+                                            $"from file: {filename}" + Environment.NewLine +
+                                            $"error message: {ex.InnerException.Message}" + Environment.NewLine +
+                                            $"parts: {ex.InnerException.InnerException.Message}",
                                         filename,
-                                        correlationId: address.Id);
+                                        correlationId: savedAddress.Id);
                                 }
                                 else
                                 {
@@ -108,9 +146,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                                 }
                             }
 
-                            var savedAddress = await this.addressProcessingService.ModifyAddressAsync(inputAddress);
+                            DateTimeOffset updatedDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                            savedAddress.UpdatedBy = "System";
+                            savedAddress.UpdatedDate = updatedDateTime;
 
-                            return savedAddress;
+                            var updatedAddress =
+                                await this.addressProcessingService.ModifyOrAddAddressAsync(savedAddress);
+
+                            return updatedAddress;
                         });
 
                         processedAddresses.Add(processedAddress);

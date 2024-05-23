@@ -25,6 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         public async Task ShouldProcessAddressesAsync()
         {
             // Given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid randomId = Guid.NewGuid();
             int randomItems = 1; // GetRandomNumber();
             string inputFilename = GetRandomString();
@@ -82,23 +83,49 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 JsonPostalAddress = GetRandomString()
             };
 
+            var storageAddresses = outputAddresses.AsQueryable();
+
             foreach (Address address in outputAddresses)
             {
-                string stringAddress = address.GetFormattedAddress();
-
-                this.addressNormalisationProcessingServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(stringAddress))
-                        .ReturnsAsync(addressNormalisation);
-
-                address.PostalAddress = addressNormalisation.PostalAddress;
-                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                address.IsErrored = false;
+                Address inputAddress = address;
+                string addressString = address.GetFormattedAddress();
+                Address? maybeAddress = storageAddresses.First(item => item.Id == address.Id);
 
                 this.addressProcessingServiceMock.Setup(service =>
-                    service.ModifyAddressAsync(address))
-                        .ReturnsAsync(address);
+                    service.RetrieveAllAddresses())
+                        .Returns(storageAddresses);
 
-                expectedAddresses.Add(address);
+                this.dateTimeBrokerMock.Setup(broker =>
+                    broker.GetCurrentDateTimeOffset())
+                        .Returns(randomDateTimeOffset);
+
+                inputAddress.Id = maybeAddress.Id;
+                inputAddress.UpdatedBy = "System";
+                inputAddress.UpdatedDate = randomDateTimeOffset;
+
+                Address storageInputAddress = inputAddress.DeepClone();
+
+                this.addressProcessingServiceMock.Setup(service =>
+                    service.ModifyOrAddAddressAsync(inputAddress))
+                        .ReturnsAsync(storageInputAddress);
+
+                this.addressNormalisationProcessingServiceMock.Setup(service =>
+                    service.GetNormalisedAddress(addressString))
+                        .ReturnsAsync(addressNormalisation);
+
+                storageInputAddress.PostalAddress = addressNormalisation.PostalAddress;
+                storageInputAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                storageInputAddress.IsErrored = false;
+
+                Address updatedOutputAddress = storageInputAddress.DeepClone();
+                updatedOutputAddress.UpdatedBy = "System";
+                updatedOutputAddress.UpdatedDate = randomDateTimeOffset;
+
+                this.addressProcessingServiceMock.Setup(service =>
+                    service.ModifyOrAddAddressAsync(storageInputAddress))
+                        .ReturnsAsync(updatedOutputAddress);
+
+                expectedAddresses.Add(storageInputAddress);
             }
 
             // When
@@ -113,31 +140,55 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings),
                     Times.Once());
 
-            foreach (Address address in randomAddresses)
+            var verifyStorageAddresses = randomAddresses.AsQueryable();
+
+            foreach (Address verifyAddress in randomAddresses)
             {
-                string stringAddress = address.GetFormattedAddress();
+                Address verifyInputAddress = verifyAddress.DeepClone();
+                string verifyAddressString = verifyAddress.GetFormattedAddress();
+                Address? maybeAddress = verifyStorageAddresses.First(item => item.Id == verifyAddress.Id);
+
+                this.addressProcessingServiceMock.Verify(service =>
+                    service.RetrieveAllAddresses(), Times.Once);
+
+                verifyInputAddress.Id = maybeAddress.Id;
+                verifyInputAddress.UpdatedBy = "System";
+                verifyInputAddress.UpdatedDate = randomDateTimeOffset;
+
+                this.addressProcessingServiceMock.Verify(service =>
+                    service.ModifyOrAddAddressAsync(It.Is(SameAddressAs(verifyInputAddress))),
+                        Times.Once);
 
                 this.addressNormalisationProcessingServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(stringAddress),
+                    service.GetNormalisedAddress(verifyAddressString),
                         Times.Once);
+
+                Address storageInputAddress = verifyInputAddress.DeepClone();
+                storageInputAddress.PostalAddress = addressNormalisation.PostalAddress;
+                storageInputAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                storageInputAddress.IsErrored = false;
 
                 this.auditBrokerMock.Verify(broker =>
                     broker.LogInformation(
                         "Address",
                         "Successfully extracted address from Ordinance Database",
-                        $"Successfully extracted address with id: {address.Id} from file: {inputFilename}",
+                        $"Successfully extracted address with id: {storageInputAddress.Id} from file: {inputFilename}",
                         inputFilename,
-                        address.Id),
+                        storageInputAddress.Id),
                             Times.Once);
 
-                address.PostalAddress = addressNormalisation.PostalAddress;
-                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                address.IsErrored = false;
+                Address updatedVerifyOutputAddress = storageInputAddress.DeepClone();
+                updatedVerifyOutputAddress.UpdatedBy = "System";
+                updatedVerifyOutputAddress.UpdatedDate = randomDateTimeOffset;
 
                 this.addressProcessingServiceMock.Verify(service =>
-                    service.ModifyAddressAsync(It.Is(SameAddressAs(address))),
+                    service.ModifyOrAddAddressAsync(It.Is(SameAddressAs(updatedVerifyOutputAddress))),
                         Times.Once);
             }
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                    broker.GetCurrentDateTimeOffset(),
+                        Times.Exactly(2));
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();

@@ -47,10 +47,10 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 ValidateDataOnProcessData(data, filename);
 
-                List<Address> extractedAddress =
+                List<Address> extractedAddresses =
                     await this.addressExtractionOrchestrationService.ProcessAddressesAsync(data, filename);
 
-                return extractedAddress;
+                return extractedAddresses;
             });
 
         public ValueTask MatchAddressDataAsync(byte[] data, string filename) =>

@@ -71,6 +71,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             // Then
             actualListAddresses.Should().BeEquivalentTo(actualListAddresses);
+
+            foreach (Address address in actualListAddresses)
+            {
+                await this.addressService.RemoveAddressByIdAsync(address.Id);
+            }
         }
     }
 }

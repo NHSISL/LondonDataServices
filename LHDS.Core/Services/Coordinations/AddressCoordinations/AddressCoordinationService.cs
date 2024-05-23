@@ -50,8 +50,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 List<Address> extractedAddresses =
                     await this.addressExtractionOrchestrationService.ProcessAddressesAsync(data, filename);
 
-                return await this.addressPersistanceOrchestrationService
-                    .PersistAddressAsync(extractedAddresses, filename);
+                return extractedAddresses;
             });
 
         public ValueTask MatchAddressDataAsync(byte[] data, string filename) =>

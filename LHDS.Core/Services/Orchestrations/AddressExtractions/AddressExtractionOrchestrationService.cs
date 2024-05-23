@@ -93,6 +93,8 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                             if (maybeAddress != null)
                             {
                                 incomingAddress.Id = maybeAddress.Id;
+                                incomingAddress.CreatedBy = maybeAddress.CreatedBy;
+                                incomingAddress.CreatedDate = maybeAddress.CreatedDate;
                                 incomingAddress.UpdatedBy = "System";
                                 incomingAddress.UpdatedDate = dateStamp;
                             }

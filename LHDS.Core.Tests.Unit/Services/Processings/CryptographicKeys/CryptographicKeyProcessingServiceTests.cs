@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq.Expressions;
+using System.Text;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.CryptographicKeys;
 using LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions;
@@ -66,6 +67,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
                 PublicKey = GetRandomString(),
                 Passphrase = GetRandomString()
             };
+        }
+
+        private string ConvertToBase64(string value)
+        {
+            byte[] byteValue = Encoding.UTF8.GetBytes(value);
+
+            return Convert.ToBase64String(byteValue);
         }
 
         public static TheoryData DependencyValidationExceptions()

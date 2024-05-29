@@ -117,7 +117,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             List<IngestionTracking> ingestionTrackings = await CreateRandomIngestionTrackings(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
                 documentSources: new List<DocumentSource> { randomFile },
-                supplierId: landingConfiguration.LandingSupplierId);
+                supplierId: supplierId);
 
             string inputFileName = randomFile.FtpPath;
             string expectedString = randomFile.DecryptedBlobPath;

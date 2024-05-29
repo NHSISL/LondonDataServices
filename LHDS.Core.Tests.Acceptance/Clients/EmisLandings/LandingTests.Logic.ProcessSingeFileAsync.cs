@@ -10,6 +10,7 @@ using FluentAssertions;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Tests.Acceptance.Clients.EmisLandings.Models;
 using Xunit;
@@ -23,12 +24,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         {
             // Given
             CleanupDownloadFolder();
-            Guid supplierId = landingConfiguration.LandingSupplierId;
+            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            Guid supplierId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecifications = CreateRandomDataSetSpecification(randomDataSet);
+            Supplier randomSupplier = CreateRandomSupplier(supplierId, randomDateTime);
+            await this.supplierService.AddSupplierAsync(randomSupplier);
             await this.dataSetService.AddDataSetAsync(randomDataSet);
             await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecifications);
+
 
             SubscriberCredential inputSubscriberCredential = await this.subscriberCredentialOrchestration
                 .ModifyOrAddSubscriberCredentialAsync(
@@ -75,6 +80,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(retrievedInestionTracking.Id);
             CleanupDownloadFolder();
+
+            await this.supplierService.RemoveSupplierByIdAsync(supplierId: supplierId);
         }
 
         [Fact]
@@ -82,10 +89,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         {
             // Given
             CleanupDownloadFolder();
-            Guid supplierId = landingConfiguration.LandingSupplierId;
+            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            Guid supplierId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecifications = CreateRandomDataSetSpecification(randomDataSet);
+            Supplier randomSupplier = CreateRandomSupplier(supplierId, randomDateTime);
+            await this.supplierService.AddSupplierAsync(randomSupplier);
             await this.dataSetService.AddDataSetAsync(randomDataSet);
             await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecifications);
 
@@ -139,6 +149,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(retrievedInestionTracking.Id);
             CleanupDownloadFolder();
+
+            await this.supplierService.RemoveSupplierByIdAsync(supplierId: supplierId);
         }
     }
 }

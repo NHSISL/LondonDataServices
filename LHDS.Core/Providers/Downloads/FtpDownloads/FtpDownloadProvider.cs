@@ -179,7 +179,10 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
 
             if (ftpDownloadProviderSettings.FtpPrivateKey != null && ftpDownloadProviderSettings.FtpPassPhrase != null)
             {
-                var pkf = GetKeyFromB64(ftpDownloadProviderSettings.FtpPrivateKey, ftpDownloadProviderSettings.FtpPassPhrase);
+                var pkf = GetKeyFromB64(
+                    encodedKey: ftpDownloadProviderSettings.FtpPrivateKey,
+                    passPhrase: ftpDownloadProviderSettings.FtpPassPhrase);
+
                 methods.Add(new PrivateKeyAuthenticationMethod(ftpDownloadProviderSettings.FtpUserName, pkf));
             }
 

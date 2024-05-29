@@ -15,7 +15,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.22.0" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
 		<PackageReference Include="Microsoft.VisualStudio.TestPlatform" Version="14.0.0" />
 		<PackageReference Include="NHSISL.LibPostalClient" Version="1.0.0.6" />
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.8" />

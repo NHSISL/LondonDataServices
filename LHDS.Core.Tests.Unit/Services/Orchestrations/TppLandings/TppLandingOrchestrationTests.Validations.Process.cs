@@ -19,6 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         {
             // given
             Document randonNullDocument = null;
+            Guid randomSupplierId = Guid.NewGuid();
 
             var nullTppDocumentException =
                 new NullDocumentTppLandingException(
@@ -30,7 +31,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     innerException: nullTppDocumentException);
 
             // when
-            ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService.ProcessAsync(randonNullDocument);
+            ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService
+                .ProcessAsync(document: randonNullDocument, supplierId: randomSupplierId);
 
             TppLandingOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationValidationException>(returnedGuidTask.AsTask);
@@ -60,6 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         public async Task ShouldThrowValidationExceptionIfDocumentFileNameIsNullAndLogItAsync(string invalidText)
         {
             // given
+            Guid supplierId = Guid.Empty;
             Document randomDocument = CreateRandomDocument();
             randomDocument.FileName = invalidText;
 
@@ -71,13 +74,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                key: "FileName",
                values: "Text is required");
 
+            invalidArgumentException.AddData(
+               key: "SupplierId",
+               values: "Id is required");
+
             var expectedTppOrchestrationValidationException =
                 new TppLandingOrchestrationValidationException(
                     message: "TPP landing orchestration validation errors occured, please try again.",
                     innerException: invalidArgumentException);
 
             // when
-            ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService.ProcessAsync(randomDocument);
+            ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService
+                .ProcessAsync(document: randomDocument, supplierId);
 
             TppLandingOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationValidationException>(returnedGuidTask.AsTask);

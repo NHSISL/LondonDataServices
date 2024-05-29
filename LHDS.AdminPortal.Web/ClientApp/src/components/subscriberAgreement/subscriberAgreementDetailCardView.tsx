@@ -31,6 +31,18 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
     const [ftpKeyCopied, setFtpKeyCopied] = React.useState<boolean>(false);
     const [gpgKeyCopied, setGpgKeyCopied] = React.useState<boolean>(false);
 
+    const decodeBase64 = (base64String: string) => {
+        try 
+        {
+            return atob(base64String);
+        } 
+        catch (error) 
+        {
+            console.error('Failed to decode base64 string', error);
+            return '';
+        }
+    };
+
     React.useEffect(() => {
         const keyStateVariables = [
             { keyCopied: ftpKeyCopied, setKeyCopied: setFtpKeyCopied },
@@ -86,13 +98,13 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                             <FontAwesomeIcon icon={faCheck} className="text-secondary" />
                             : <FontAwesomeIcon icon={faCopy}
                                 onClick={() => {
-                                    const publicKey = subscriberCredential.ftpPublicKey ?? "";
+                                    const publicKey = decodeBase64(subscriberCredential.ftpPublicKey ?? "");
                                     navigator.clipboard.writeText(publicKey);
                                     setFtpKeyCopied(true);
                                 }}
                             />
                         } &nbsp;
-                        {subscriberCredential.ftpPublicKey}
+                        {decodeBase64(subscriberCredential.ftpPublicKey ?? "")}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
@@ -104,13 +116,13 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
                             <FontAwesomeIcon icon={faCheck} className="text-secondary" />
                             : <FontAwesomeIcon icon={faCopy}
                                 onClick={() => {
-                                    const gpgPublicKey = subscriberCredential.gpgPublicKey ?? ""; 
+                                    const gpgPublicKey = decodeBase64(subscriberCredential.gpgPublicKey ?? ""); 
                                     navigator.clipboard.writeText(gpgPublicKey);
                                     setGpgKeyCopied(true);
                                 }}
                             />
                         } &nbsp;
-                        {subscriberCredential.gpgPublicKey}
+                        {decodeBase64(subscriberCredential.gpgPublicKey ?? "")}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 

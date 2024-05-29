@@ -22,11 +22,11 @@ namespace LHDS.Core.Clients
             this.tppOrchestrationService = tppOrchestrationService;
         }
 
-        public async ValueTask<Guid> ProcessAsync(Document fileName)
+        public async ValueTask<Guid> ProcessAsync(Document fileName, Guid supplierId)
         {
             try
             {
-                return await this.tppOrchestrationService.ProcessAsync(fileName);
+                return await this.tppOrchestrationService.ProcessAsync(fileName, supplierId);
             }
             catch (TppLandingOrchestrationValidationException tppOrchestrationValidationException)
             {

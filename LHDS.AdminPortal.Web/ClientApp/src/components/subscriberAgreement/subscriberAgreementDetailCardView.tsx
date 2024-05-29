@@ -32,9 +32,12 @@ const SubscriberAgreementDetailCardView: FunctionComponent<SubscriberAgreementDe
     const [gpgKeyCopied, setGpgKeyCopied] = React.useState<boolean>(false);
 
     const decodeBase64 = (base64String: string) => {
-        try {
+        try 
+        {
             return atob(base64String);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             console.error('Failed to decode base64 string', error);
             return '';
         }

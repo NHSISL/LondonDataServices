@@ -22,12 +22,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         {
             //Given
             DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            Guid supplierId = landingConfiguration.LandingSupplierId;
+            Guid supplierId = Guid.NewGuid();
             Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
             Document randomDocument = CreateRandomDocument();
             DataSet activeDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
-
             await this.supplierService.AddSupplierAsync(landingSupplier);
             await this.dataSetService.AddDataSetAsync(activeDataSet);
             await this.dataSetSpecificationService.AddDataSetSpecificationAsync(activeDataSetSpecification);
@@ -51,6 +50,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
+            this.supplierService.RemoveSupplierByIdAsync(supplierId);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(

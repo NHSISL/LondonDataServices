@@ -126,13 +126,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
         private static List<IngestionTracking> CreateRandomIngestionTrackings(
             DateTimeOffset dateTimeOffset,
-            List<Document> documents)
+            List<Document> documents,
+            Guid supplierId)
         {
             List<IngestionTracking> items = new List<IngestionTracking>();
 
             foreach (var document in documents)
             {
-                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, document.FileName).Create());
+                items.Add(CreateIngestionTrackingFiller(
+                    dateTimeOffset,
+                    fileName: document.FileName,
+                    supplierId).Create());
             }
 
             return items;
@@ -303,12 +307,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset, string id)
+            DateTimeOffset dateTimeOffset,
+            string fileName,
+            Guid supplierId)
         {
             var filler = new Filler<IngestionTracking>();
 
             filler.Setup()
-                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(id)
+                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(fileName)
+                .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()

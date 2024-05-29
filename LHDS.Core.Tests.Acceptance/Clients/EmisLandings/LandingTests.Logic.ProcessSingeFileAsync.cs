@@ -25,6 +25,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             CleanupDownloadFolder();
             Guid supplierId = landingConfiguration.LandingSupplierId;
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            DataSet randomDataSet = CreateRandomDataSet(supplierId);
+            DataSetSpecification activeDataSetSpecifications = CreateRandomDataSetSpecification(randomDataSet);
+            await this.dataSetService.AddDataSetAsync(randomDataSet);
+            await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecifications);
 
             SubscriberCredential inputSubscriberCredential = await this.subscriberCredentialOrchestration
                 .ModifyOrAddSubscriberCredentialAsync(
@@ -60,6 +64,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             {
                 await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
             }
+
+            await this.dataSetSpecificationProcessingService
+               .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecifications.Id);
+
+            await this.dataSetService.RemoveDataSetByIdAsync(randomDataSet.Id);
 
             await this.subscriberCredentialOrchestration
                 .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);

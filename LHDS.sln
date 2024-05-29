@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.AdminPortal.Api.Tests.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.Core.Tests.Integration.Decryptions", "LHDS.Core.Tests.Integration.Decryptions\LHDS.Core.Tests.Integration.Decryptions.csproj", "{A0D864D5-E65D-4084-8AE2-CE402ED128C2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.Core.Tests.Integration.EmisLandings", "LHDS.Core.Tests.Integration.EmisLandings\LHDS.Core.Tests.Integration.EmisLandings.csproj", "{5C174B0B-175F-46CE-B883-C769F311FF2D}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.Core.Tests.Integration.OptOuts", "LHDS.Core.Tests.Integration.OptOuts\LHDS.Core.Tests.Integration.OptOuts.csproj", "{C30CA0DE-3EB0-4324-A0EA-495F9B672A7B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.Functions.OptOut", "LHDS.Functions.OptOut\LHDS.Functions.OptOut.csproj", "{651188AA-4DAB-46FA-8215-AECAE69B0691}"

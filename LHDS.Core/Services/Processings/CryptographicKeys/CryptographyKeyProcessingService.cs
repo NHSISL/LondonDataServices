@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -28,14 +30,21 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             ValidateSubscriberCredential(subscriberCredential);
             var gpgGeneratedKeys = await cryptographyKeyService.GenerateKeysAsync("GPG");
             var ftpGeneratedKeys = await cryptographyKeyService.GenerateKeysAsync("SSH");
-            subscriberCredential.GpgPublicKey = gpgGeneratedKeys.PublicKey;
-            subscriberCredential.GpgPrivateKey = gpgGeneratedKeys.PrivateKey;
+            subscriberCredential.GpgPublicKey = ConvertToBase64(gpgGeneratedKeys.PublicKey);
+            subscriberCredential.GpgPrivateKey = ConvertToBase64(gpgGeneratedKeys.PrivateKey);
             subscriberCredential.GpgPassPhrase = gpgGeneratedKeys.Passphrase;
-            subscriberCredential.FtpPublicKey = ftpGeneratedKeys.PublicKey;
-            subscriberCredential.FtpPrivateKey = ftpGeneratedKeys.PrivateKey;
+            subscriberCredential.FtpPublicKey = ConvertToBase64(ftpGeneratedKeys.PublicKey);
+            subscriberCredential.FtpPrivateKey = ConvertToBase64(ftpGeneratedKeys.PrivateKey);
             subscriberCredential.FtpPassPhrase = ftpGeneratedKeys.Passphrase;
 
             return subscriberCredential;
         });
+
+        private string ConvertToBase64(string value)
+        {
+            byte[] byteValue = Encoding.UTF8.GetBytes(value);
+
+            return Convert.ToBase64String(byteValue);
+        }
     }
 }

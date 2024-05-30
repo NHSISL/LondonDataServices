@@ -13,6 +13,7 @@ using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
+using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
@@ -33,11 +34,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IDecryptionClient decryptionClient;
         private readonly ISupplierService supplierService;
+        private readonly IDocumentService documentService;
         private readonly LandingConfiguration landingConfiguration;
+        private readonly BlobContainers blobContainers;
         private readonly ICryptographyProvider cryptographyProvider;
         private readonly IIngestionTrackingAuditService auditService;
         private readonly ISubscriberCredentialOrchestration subscriberCredentialOrchestration;
-        private readonly BlobStorageSettings blobStorageSettings;
+
 
 
         public DecryptionTests(DependencyBroker dependencyBroker)
@@ -57,7 +60,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             this.landingConfiguration = serviceProvider.GetRequiredService<LandingConfiguration>();
-            this.blobStorageSettings = serviceProvider.GetService<BlobStorageSettings>();
+            this.blobContainers = serviceProvider.GetRequiredService<BlobContainers>();
+            this.documentService = serviceProvider.GetService<IDocumentService>();
             this.cryptographyProvider = serviceProvider.GetRequiredService<ICryptographyProvider>();
             decryptionClient = serviceProvider.GetService<IDecryptionClient>();
             subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
@@ -77,7 +81,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
         private static string CreateRandomFileName(Guid subscriberCredentialId)
         {
-            string fileName = GetRandomWordString();
+            string fileName = "acceptance-test-only-should-be-deleted-soon";
 
             for (int i = 0; i < 6; i++)
             {
@@ -115,7 +119,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             var filler = new Filler<IngestionTracking>();
 
             filler.Setup()
-                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(fileName)
+                .OnProperty(ingestionTracking => ingestionTracking.EncryptedFileName).Use(fileName)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)

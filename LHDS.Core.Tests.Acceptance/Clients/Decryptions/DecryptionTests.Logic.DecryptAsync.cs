@@ -3,14 +3,12 @@
 // ---------------------------------------------------------
 
 using System;
-using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
-using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
@@ -25,8 +23,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             Guid supplierId = Guid.NewGuid();
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
             SubscriberCredential subscriberCredential = CreateRandomSubscriberCredential();
-            await this.subscriberCredentialOrchestration.ModifyOrAddSubscriberCredentialAsync(subscriberCredential);
-            byte[] encryptedData = await this.cryptographyProvider.EncryptAsync(documentData, subscriberCredential);
+
+            SubscriberCredential generatedSubscriberCredential = await this.subscriberCredentialOrchestration
+                .ModifyOrAddSubscriberCredentialAsync(subscriberCredential, regenerateKeys: true);
+
+            byte[] encryptedData = 
+                await this.cryptographyProvider.EncryptAsync(documentData, generatedSubscriberCredential);
 
             Document document = new Document
             {

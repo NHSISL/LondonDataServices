@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 builder.AddConsole();
             });
 
-            serviceCollection.AddDecryptionClientForAcceptance(this.dependencyBroker.Configuration);
+            serviceCollection.AddDecryptionClient(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();

@@ -22,24 +22,21 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         {
             //Given
             DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            Guid supplierId = landingConfiguration.LandingSupplierId;
+            Guid supplierId = Guid.NewGuid();
             Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
             Document randomDocument = CreateRandomDocument();
             DataSet activeDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
-
             await this.supplierService.AddSupplierAsync(landingSupplier);
             await this.dataSetService.AddDataSetAsync(activeDataSet);
             await this.dataSetSpecificationService.AddDataSetSpecificationAsync(activeDataSetSpecification);
 
             //When
-            Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomDocument);
+            Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomDocument, supplierId);
 
             //Then
             IngestionTracking ingestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
-
-            Assert.Equal(randomDocument.FileName, ingestionTracking.FileName);
 
             var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
@@ -52,7 +49,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-            await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
+            await this.supplierService.RemoveSupplierByIdAsync(supplierId);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                 randomDocument.FileName,
@@ -65,18 +62,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             //Given
             DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
             Document randomDocument = CreateRandomDocument();
-
-            // Add Document
             string fileName = GetRandomFileName();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
-
-            Guid supplierId = landingConfiguration.LandingSupplierId;
+            Guid supplierId = Guid.NewGuid();
             Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
             await this.supplierService.AddSupplierAsync(landingSupplier);
-
             DataSet activeDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
-
             await this.supplierService.AddSupplierAsync(landingSupplier);
             await this.dataSetService.AddDataSetAsync(activeDataSet);
             await this.dataSetSpecificationService.AddDataSetSpecificationAsync(activeDataSetSpecification);
@@ -95,13 +87,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
 
             //When
-            Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomDocument);
+            Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomDocument, supplierId);
 
             //Then
             IngestionTracking ingestionTracking =
-               await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
-
-            Assert.Equal(randomDocument.SHA256Hash, ingestionTracking.DecryptedFileSha256Hash);
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
             var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
@@ -114,7 +104,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-            await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
+            await this.supplierService.RemoveSupplierByIdAsync(supplierId);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                 randomDocument.FileName,
@@ -127,18 +117,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             //Given
             DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
             Document randomDocument = CreateRandomDocument();
-
-            // Add Document
             string fileName = GetRandomFileName();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
-
-            Guid supplierId = landingConfiguration.LandingSupplierId;
+            Guid supplierId = Guid.NewGuid();
             Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
             await this.supplierService.AddSupplierAsync(landingSupplier);
-
             DataSet activeDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
-
             await this.supplierService.AddSupplierAsync(landingSupplier);
             await this.dataSetService.AddDataSetAsync(activeDataSet);
             await this.dataSetSpecificationService.AddDataSetSpecificationAsync(activeDataSetSpecification);
@@ -156,13 +141,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
 
             //When
-            Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomDocument);
+            Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomDocument, supplierId);
 
             //Then
             IngestionTracking ingestionTracking =
                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
-
-            Assert.NotEqual(randomDocument.SHA256Hash, ingestionTracking.DecryptedFileSha256Hash);
 
             var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using Xeptions;
@@ -14,6 +15,11 @@ namespace LHDS.Core.Services.Processings.Addresses
         private void ValidateAddress(Address address)
         {
             ValidateAddressIsNotNull(address);
+        }
+
+        private void ValidateAddresses(List<Address> addresses)
+        {
+            ValidateAddressesIsNotNull(addresses);
         }
 
         private void ValidateAddress(string address)
@@ -28,6 +34,14 @@ namespace LHDS.Core.Services.Processings.Addresses
             if (address is null)
             {
                 throw new NullAddressProcessingException(message: "Address is null.");
+            }
+        }
+
+        private static void ValidateAddressesIsNotNull(List<Address> addresses)
+        {
+            if (addresses is null)
+            {
+                throw new NullAddressProcessingException(message: "Addresses is null.");
             }
         }
 

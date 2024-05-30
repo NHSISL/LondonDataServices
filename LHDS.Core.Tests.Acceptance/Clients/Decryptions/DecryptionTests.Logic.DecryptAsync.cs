@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -31,7 +32,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             string fileName = CreateRandomFileName(subscriberCredential.Id);
 
-
             byte[] encryptedData = 
                 await this.cryptographyProvider.EncryptAsync(documentData, generatedSubscriberCredential);
 
@@ -41,6 +41,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 FileName = fileName
             };
 
+            await this.documentService.AddDocumentAsync(document, blobContainers.EmisLanding);
             await this.supplierService.AddSupplierAsync(randomSupplier);
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
@@ -60,7 +61,21 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             IngestionTracking decryptedIngestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
+            var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+
+            foreach (var audit in audits)
+            {
+                await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+            }
+
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
+            await this.subscriberCredentialOrchestration
+                .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: subscriberCredential.Id);
+
+            await this.supplierService.RemoveSupplierByIdAsync(supplierId: supplierId);
+            await this.documentService.RemoveDocumentByFileNameAsync(fileName, blobContainers.EmisLanding);
         }
     }
 }

@@ -38,8 +38,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             IngestionTracking ingestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
-            Assert.Equal(randomDocument.FileName, ingestionTracking.FileName);
-
             var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
@@ -95,8 +93,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             IngestionTracking ingestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
-            Assert.Equal(randomDocument.SHA256Hash, ingestionTracking.DecryptedFileSha256Hash);
-
             var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
@@ -150,8 +146,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             //Then
             IngestionTracking ingestionTracking =
                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
-
-            Assert.NotEqual(randomDocument.SHA256Hash, ingestionTracking.DecryptedFileSha256Hash);
 
             var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);

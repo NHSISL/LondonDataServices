@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions;
@@ -57,6 +58,17 @@ namespace LHDS.Core.Brokers.Storages.Sql
         }
 
         public override void Dispose() { }
+
+        private async ValueTask BulkInsertAsync<T>(List<T> objects)
+        {
+            this.AddRange(objects);
+            await this.SaveChangesAsync();
+
+            foreach (var obj in objects)
+            {
+                DetachSavedEntity(obj);
+            }
+        }
 
         private async ValueTask<T> InsertAsync<T>(T @object)
         {

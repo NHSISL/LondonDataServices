@@ -45,10 +45,15 @@ namespace LHDS.Core.Services.Foundations.Addresses
         public ValueTask BulkAddAddressesAsync(List<Address> addresses, string fileName) =>
             TryCatch(async () =>
             {
+                Console.WriteLine($"{addresses.Count()} records to process");
+                var stopwatch = Stopwatch.StartNew();
+                Console.WriteLine($"Batch processed in {stopwatch.ElapsedMilliseconds} milliseconds");
                 List<Address> validatedAddresses = new List<Address>();
                 await ExtractValidAddresses(addresses, fileName, validatedAddresses);
                 int batchSize = 10000;
                 await BulkInsertBatch(validatedAddresses, batchSize);
+                stopwatch.Stop(); // Stop the stopwatch
+                Console.WriteLine($"Batch processed in {stopwatch.ElapsedMilliseconds} milliseconds");
             });
 
         private async Task BulkInsertBatch(List<Address> validatedAddresses, int batchSize)

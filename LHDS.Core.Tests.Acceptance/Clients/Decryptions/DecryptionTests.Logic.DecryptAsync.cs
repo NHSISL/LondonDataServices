@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Xunit;
 
@@ -19,13 +20,17 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         public async Task ShouldDecryptNewDocumentsAsync()
         {
             //Given
-            string fileName = GetRandomString();
+            DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
             Guid supplierId = Guid.NewGuid();
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
+            Supplier randomSupplier = CreateRandomSupplier(supplierId, dateTimeOffset);
             SubscriberCredential subscriberCredential = CreateRandomSubscriberCredential();
 
             SubscriberCredential generatedSubscriberCredential = await this.subscriberCredentialOrchestration
                 .ModifyOrAddSubscriberCredentialAsync(subscriberCredential, regenerateKeys: true);
+
+            string fileName = CreateRandomFileName(subscriberCredential.Id);
+
 
             byte[] encryptedData = 
                 await this.cryptographyProvider.EncryptAsync(documentData, generatedSubscriberCredential);
@@ -35,6 +40,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 DocumentData = encryptedData,
                 FileName = fileName
             };
+
+            await this.supplierService.AddSupplierAsync(randomSupplier);
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),

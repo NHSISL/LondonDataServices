@@ -9,11 +9,13 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +32,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IDecryptionClient decryptionClient;
+        private readonly ISupplierService supplierService;
         private readonly LandingConfiguration landingConfiguration;
         private readonly ICryptographyProvider cryptographyProvider;
         private readonly IIngestionTrackingAuditService auditService;
@@ -50,6 +53,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             serviceCollection.AddDecryptionClient(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
+            this.supplierService = serviceProvider.GetService<ISupplierService>();
             this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             this.landingConfiguration = serviceProvider.GetRequiredService<LandingConfiguration>();
@@ -67,6 +71,28 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
+
+        private static string GetRandomWordString() =>
+           new MnemonicString(wordCount: 1).GetValue();
+
+        private static string CreateRandomFileName(Guid subscriberCredentialId)
+        {
+            string fileName = GetRandomWordString();
+
+            for (int i = 0; i < 6; i++)
+            {
+                if(i == 1)
+                {
+                    fileName += "/" + subscriberCredentialId.ToString();
+                }
+                else
+                {
+                    fileName += "/" + GetRandomWordString();
+                }
+            }
+
+            return fileName;
+        }
 
         private static IngestionTracking CreateRandomIngestionTracking(
            DateTimeOffset dateTimeOffset,
@@ -114,6 +140,26 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .OnProperty(subscriberCredential => subscriberCredential.IsActive).Use(true)
                 .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Supplier CreateRandomSupplier(Guid supplierId, DateTimeOffset dateTimeOffset) =>
+            CreateSupplierFiller(supplierId, dateTimeOffset).Create();
+
+        private static Filler<Supplier> CreateSupplierFiller(Guid supplierId, DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<Supplier>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(supplier => supplier.Id).Use(supplierId)
+                .OnProperty(supplier => supplier.CreatedBy).Use(user)
+                .OnProperty(supplier => supplier.UpdatedBy).Use(user)
+                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt()
+                .OnProperty(supplier => supplier.DataSets).IgnoreIt();
 
             return filler;
         }

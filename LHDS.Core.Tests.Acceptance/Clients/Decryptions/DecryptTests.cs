@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq.Expressions;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -11,9 +12,11 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -35,6 +38,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private readonly LandingConfiguration landingConfiguration;
         private readonly ICryptographyProvider cryptographyProvider;
         private readonly IIngestionTrackingAuditService auditService;
+        private readonly ISubscriberCredentialOrchestration subscriberCredentialOrchestration;
+        
 
         public DecryptionTests(DependencyBroker dependencyBroker)
         {
@@ -61,6 +66,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.landingConfiguration = serviceProvider.GetRequiredService<LandingConfiguration>();
             this.cryptographyProvider = serviceProvider.GetRequiredService<ICryptographyProvider>();
             decryptionClient = serviceProvider.GetService<IDecryptionClient>();
+            subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
         }
 
         private static string GetRandomString() =>
@@ -99,6 +105,25 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+
+            return filler;
+        }
+
+        private static SubscriberCredential CreateRandomSubscriberCredential() =>
+            CreateSubscriberCredentialFiller().Create();
+
+        private static Filler<SubscriberCredential> CreateSubscriberCredentialFiller()
+        {
+            var filler = new Filler<SubscriberCredential>();
+            string user = Guid.NewGuid().ToString();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(subscriberCredential => subscriberCredential.IsActive).Use(true)
+                .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
+                .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
             return filler;
         }

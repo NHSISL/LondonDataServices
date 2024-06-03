@@ -14,10 +14,8 @@ using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
-using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressNormalisations;
@@ -58,63 +56,79 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                 ValidateDataOnProcessData(data, filename);
                 List<byte[]> csvData = await ProcessAddressDataAsync(data);
                 List<Address> mappedAddresses = await CsvToAddressAsync(csvData);
-                var exceptions = new List<Exception>();
-
-                foreach (var incomingAddress in mappedAddresses)
-                {
-                    try
-                    {
-                        Address addressToProcess = incomingAddress;
-
-                        addressToProcess = await TryCatch(async () =>
-                        {
-                            string addressString = addressToProcess.GetFormattedAddress();
-
-                            AddressNormalisation addressNormalisation =
-                                await this.addressNormalisationProcessingService.GetNormalisedAddress(addressString);
-
-                            addressToProcess.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                            addressToProcess.PostalAddress = addressNormalisation.PostalAddress;
-                            addressToProcess.IsErrored = false;
-
-                            return addressToProcess;
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        if (ex.InnerException.InnerException is InvalidAddressPartsNormalisationException)
-                        {
-                            incomingAddress.IsErrored = true;
-
-                            await this.auditBroker.LogWarning(
-                                auditType: "Address",
-                                title: "Invalid address parts found",
-                                message: $"Invalid address parts found in address with UPRN: {incomingAddress.UPRN} " +
-                                    $"from file: {filename}" + Environment.NewLine +
-                                    $"error message: {ex.InnerException.Message}" + Environment.NewLine +
-                                    $"parts: {ex.InnerException.InnerException.Message}",
-                                filename,
-                                correlationId: null);
-                        }
-                        else
-                        {
-                            exceptions.Add(ex);
-                        }
-                    }
-                }
-
-                if (exceptions.Any())
-                {
-                    throw new AggregateException(
-                        $"Unable to normalise address for {exceptions.Count} addresses",
-                        exceptions);
-                }
 
                 await this.addressProcessingService
                     .BulkAddAddressesAsync(addresses: mappedAddresses, fileName: filename);
 
                 return mappedAddresses;
             });
+
+        //public ValueTask NormaliseAddresses() =>
+        //    TryCatch(async () =>
+        //    {
+
+        //        var exceptions = new List<Exception>();
+
+        //        foreach (var incomingAddress in mappedAddresses)
+        //        {
+        //            Stopwatch stopwatch = new Stopwatch();
+        //            stopwatch.Start();
+
+        //            try
+        //            {
+        //                Address addressToProcess = incomingAddress;
+
+        //                addressToProcess = await TryCatch(async () =>
+        //                {
+        //                    string addressString = addressToProcess.GetFormattedAddress();
+
+        //                    AddressNormalisation addressNormalisation =
+        //                        await this.addressNormalisationProcessingService.GetNormalisedAddress(addressString);
+
+        //                    addressToProcess.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+        //                    addressToProcess.PostalAddress = addressNormalisation.PostalAddress;
+        //                    addressToProcess.IsErrored = false;
+
+        //                    return addressToProcess;
+        //                });
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                if (ex.InnerException.InnerException is InvalidAddressPartsNormalisationException)
+        //                {
+        //                    incomingAddress.IsErrored = true;
+
+        //                    await this.auditBroker.LogWarning(
+        //                        auditType: "Address",
+        //                        title: "Invalid address parts found",
+        //                        message: $"Invalid address parts found in address with UPRN: {incomingAddress.UPRN} " +
+        //                            $"from file: {filename}" + Environment.NewLine +
+        //                            $"error message: {ex.InnerException.Message}" + Environment.NewLine +
+        //                            $"parts: {ex.InnerException.InnerException.Message}",
+        //                        filename,
+        //                        correlationId: null);
+        //                }
+        //                else
+        //                {
+        //                    exceptions.Add(ex);
+        //                }
+        //            }
+
+        //            stopwatch.Stop();
+
+        //            Console.WriteLine($"Execution Time: {stopwatch.ElapsedMilliseconds} ms");
+        //        }
+
+        //        if (exceptions.Any())
+        //        {
+        //            throw new AggregateException(
+        //                $"Unable to normalise address for {exceptions.Count} addresses",
+        //                exceptions);
+        //        }
+
+        //        throw new NotImplementedException();
+
+        //    });
 
         private async ValueTask<List<Address>> CsvToAddressAsync(List<byte[]> csvData)
         {

@@ -62,7 +62,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
                 foreach (var incomingAddress in mappedAddresses)
                 {
-
                     try
                     {
                         Address addressToProcess = incomingAddress;

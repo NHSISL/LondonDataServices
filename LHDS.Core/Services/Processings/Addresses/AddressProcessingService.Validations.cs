@@ -17,9 +17,12 @@ namespace LHDS.Core.Services.Processings.Addresses
             ValidateAddressIsNotNull(address);
         }
 
-        private void ValidateAddresses(List<Address> addresses)
+        private void ValidateArguments(List<Address> addresses, string fileName)
         {
-            ValidateAddressesIsNotNull(addresses);
+            Validate<InvalidArgumentAddressProcessingException>(
+                message: "Invalid argument(s). Please correct the errors and try again.",
+                (Rule: IsInvalid(addresses), Parameter: "Addresses"),
+                (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
         private void ValidateAddress(string address)
@@ -59,6 +62,12 @@ namespace LHDS.Core.Services.Processings.Addresses
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(List<Address>? addresses) => new
+        {
+            Condition = addresses is null,
+            Message = "Addresses is required"
         };
 
         private static dynamic IsInvalid(string? text) => new

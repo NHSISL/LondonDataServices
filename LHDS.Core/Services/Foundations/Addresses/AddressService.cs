@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Audits;
@@ -12,6 +11,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.Addresses
 {
@@ -45,13 +45,8 @@ namespace LHDS.Core.Services.Foundations.Addresses
         public ValueTask BulkAddAddressesAsync(List<Address> addresses, string fileName) =>
             TryCatch(async () =>
             {
-                Console.WriteLine($"{addresses.Count()} records to process");
-                var stopwatch = Stopwatch.StartNew();
-                Console.WriteLine($"Batch processed in {stopwatch.ElapsedMilliseconds} milliseconds");
                 int batchSize = 10000;
                 await BulkInsertBatch(addresses, batchSize, fileName);
-                stopwatch.Stop();
-                Console.WriteLine($"Batch processed in {stopwatch.ElapsedMilliseconds} milliseconds");
             });
 
         private async ValueTask BulkInsertBatch(List<Address> addresses, int batchSize, string fileName)
@@ -65,7 +60,6 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 {
                     var batch = addresses.Skip(i).Take(batchSize).ToList();
                     List<Address> validatedAddresses = await ExtractValidAddresses(batch, fileName);
-                    var stopwatch = Stopwatch.StartNew();
                     var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
 
                     var existingUPRNs = this.storageBroker.SelectAllAddresses()
@@ -80,14 +74,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         await this.storageBroker.BulkInsertAddressesAsync(newAddresses);
                     }
 
-                    stopwatch.Stop(); // Stop the stopwatch
-
                     processedRecords += batch.Count;
-
-                    Console.WriteLine(
-                        $"Batch processed in {stopwatch.ElapsedMilliseconds} milliseconds. " + Environment.NewLine +
-                        $"Processed {processedRecords} out of {totalRecords} records. " + Environment.NewLine +
-                        $"{totalRecords - processedRecords} records remaining.");
                 }
                 catch (Exception ex)
                 {
@@ -104,8 +91,10 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 try
                 {
+                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
                     address.Id = Guid.NewGuid();
-                    address.CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    address.CreatedDate = currentDateTime;
                     address.CreatedBy = "System";
                     address.UpdatedDate = address.CreatedDate;
                     address.UpdatedBy = address.CreatedBy;
@@ -114,18 +103,23 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 }
                 catch (Exception ex)
                 {
-                    int indexOfInvalidItem = addresses.IndexOf(address);
-
-                    if (indexOfInvalidItem != -1)
+                    if (ex is NullAddressException || ex is InvalidAddressException)
                     {
-                        await this.auditBroker.LogWarning(
-                            auditType: "Address",
-                            title: "Invalid address parts found",
-                            message: $"Invalid address parts found in line item: {indexOfInvalidItem + 1} " +
-                                     $"from file: {fileName}",
-                            fileName,
-                            null);
+                        int indexOfInvalidItem = addresses.IndexOf(address);
+
+                        if (indexOfInvalidItem != -1)
+                        {
+                            await this.auditBroker.LogWarning(
+                                auditType: "Address",
+                                title: "Invalid address parts found",
+                                message: $"Invalid address parts found in line item: {indexOfInvalidItem + 1} " +
+                                         $"from file: {fileName}",
+                                fileName,
+                                null);
+                        }
                     }
+
+                    throw;
                 }
             }
 

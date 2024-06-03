@@ -28,7 +28,7 @@ namespace LHDS.Core.Services.Processings.Addresses
         public ValueTask BulkAddAddressesAsync(List<Address> addresses, string fileName) =>
             TryCatch(async () =>
             {
-                ValidateAddresses(addresses);
+                ValidateArguments(addresses, fileName);
 
                 await this.addressService.BulkAddAddressesAsync(addresses, fileName);
             });

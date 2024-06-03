@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -19,17 +20,20 @@ namespace LHDS.Core.Services.Foundations.Addresses
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IIdentifierBroker identifierBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly IAuditBroker auditBroker;
 
         public AddressService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
+            IIdentifierBroker identifierBroker,
             ILoggingBroker loggingBroker,
             IAuditBroker auditBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
             this.auditBroker = auditBroker;
         }
@@ -93,7 +97,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 {
                     var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-                    address.Id = Guid.NewGuid();
+                    address.Id = this.identifierBroker.GetIdentifier();
                     address.CreatedDate = currentDateTime;
                     address.CreatedBy = "System";
                     address.UpdatedDate = address.CreatedDate;

@@ -53,6 +53,12 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 return extractedAddresses;
             });
 
+        public ValueTask NormaliseAddresses() =>
+            TryCatch(async () =>
+            {
+                await this.addressExtractionOrchestrationService.NormaliseAddresses();
+            });
+
         public ValueTask MatchAddressDataAsync(byte[] data, string filename) =>
             TryCatch(async () =>
             {

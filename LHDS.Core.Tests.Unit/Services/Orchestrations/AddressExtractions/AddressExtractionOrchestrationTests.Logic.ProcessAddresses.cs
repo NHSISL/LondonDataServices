@@ -31,13 +31,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             string inputFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
-                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithZippedCsvAddressesData.zip");
+                @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithZippedCsvAddressesData.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
 
             string csvFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
-                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithOnlyCsvAddressesData.csv");
+                @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithOnlyCsvAddressesData.csv");
 
             byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
             string stringData = Encoding.UTF8.GetString(csvData);

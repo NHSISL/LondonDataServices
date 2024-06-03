@@ -12,6 +12,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
     public interface IAddressExtractionOrchestrationService
     {
         public ValueTask<List<Address>> ProcessAddressesAsync(byte[] data, string filename);
+        public ValueTask NormaliseAddresses();
         public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data, string filename);
     }
 }

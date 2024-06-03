@@ -77,7 +77,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     .AreEqual;
         }
 
-
         private static string GetRandomString() =>
            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 

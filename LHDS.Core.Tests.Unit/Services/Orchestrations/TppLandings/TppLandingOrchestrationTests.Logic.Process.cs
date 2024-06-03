@@ -28,12 +28,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             string randomHash = GetRandomString(64);
             randomDocument.SHA256Hash = randomHash;
             int randomNumber = GetRandomNumber();
+            Guid randomSupplierId = Guid.NewGuid();
 
             List<Document> randomDocuments = CreateRandomDocuments(randomNumber);
             randomDocuments[randomNumber - 1].FileName = randomDocument.FileName;
 
             List<IngestionTracking> randomIngestionTrackings =
-                CreateRandomIngestionTrackings(randomDateTime, randomDocuments);
+                CreateRandomIngestionTrackings(
+                    dateTimeOffset: randomDateTime,
+                    documents: randomDocuments,
+                    supplierId: randomSupplierId);
 
             IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
@@ -72,7 +76,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ReturnsAsync(value: ingestionTrackingAudit);
 
             // when
-            ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(randomDocument);
+            ValueTask<Guid> returnedGuid = this.tppOrchestrationService
+                .ProcessAsync(document: randomDocument, supplierId: randomSupplierId);
 
             // then
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
@@ -120,12 +125,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             string randomHash = GetRandomString(64);
             randomDocument.SHA256Hash = randomHash;
             int randomNumber = GetRandomNumber();
+            Guid randomSupplierId = Guid.NewGuid();
 
             List<Document> randomDocuments = CreateRandomDocuments(randomNumber);
             randomDocuments[randomNumber - 1].FileName = randomDocument.FileName;
 
             List<IngestionTracking> randomIngestionTrackings =
-                CreateRandomIngestionTrackings(randomDateTime, randomDocuments);
+                CreateRandomIngestionTrackings(
+                    dateTimeOffset: randomDateTime,
+                    documents: randomDocuments,
+                    supplierId: randomSupplierId);
 
             IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
             randomIngestionTracking.DecryptedFileSha256Hash = randomHash;
@@ -139,7 +148,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                    .Returns(randomDateTime);
 
             // when
-            ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(randomDocument);
+            ValueTask<Guid> returnedGuid = this.tppOrchestrationService
+                .ProcessAsync(document: randomDocument, supplierId: randomSupplierId);
 
             // then
             this.dateTimeBrokerMock.Verify(broker =>
@@ -170,17 +180,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             Guid randomGuid = Guid.NewGuid();
-            Guid supplierId = landingConfiguration.LandingSupplierId;
-            DataSet randomDataSet = CreateRandomDataSet(supplierId);
+            Guid randomSupplierId = Guid.NewGuid();
+            DataSet randomDataSet = CreateRandomDataSet(supplierId: randomSupplierId);
             Document randomDocument = CreateRandomDocument();
             string randomHash = GetRandomString(64);
             randomDocument.SHA256Hash = randomHash;
             int randomNumber = GetRandomNumber();
 
-            List<Document> randomDocuments = CreateRandomDocuments(randomNumber);
+            List<Document> randomDocuments = CreateRandomDocuments(count: randomNumber);
 
             List<IngestionTracking> randomIngestionTrackings =
-                CreateRandomIngestionTrackings(randomDateTime, randomDocuments);
+                CreateRandomIngestionTrackings(
+                    dateTimeOffset: randomDateTime,
+                    documents: randomDocuments,
+                    supplierId: randomSupplierId);
 
             IQueryable<DataSetSpecification> randomDataSetSpecificationList =
                CreateRandomDataSetSpecifications(dataSet: randomDataSet);
@@ -203,7 +216,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .Returns(randomDateTime);
 
             this.dataSetSpecificationProcessingServiceMock.Setup(service =>
-               service.GetActiveDataSetSpecification(supplierId))
+               service.GetActiveDataSetSpecification(randomSupplierId))
                    .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
 
             var filename = randomDocument.FileName.StartsWith('/')
@@ -215,7 +228,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                    {
                        Id = randomGuid,
                        FileName = randomDocument.FileName,
-                       SupplierId = landingConfiguration.LandingSupplierId,
+                       SupplierId = randomSupplierId,
                        EncryptedFileName = null,
 
                        DecryptedFileName =
@@ -265,7 +278,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ReturnsAsync(value: ingestionTrackingAudit);
 
             // when
-            ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(randomDocument);
+            ValueTask<Guid> returnedGuid = this.tppOrchestrationService
+                .ProcessAsync(document: randomDocument, supplierId: randomIngestionTracking.SupplierId);
 
             // then
 
@@ -282,7 +296,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>
-                service.GetActiveDataSetSpecification(supplierId),
+                service.GetActiveDataSetSpecification(randomSupplierId),
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>

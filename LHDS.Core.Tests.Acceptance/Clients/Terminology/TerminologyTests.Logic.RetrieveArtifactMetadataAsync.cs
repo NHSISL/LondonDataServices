@@ -2,8 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
+using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
@@ -17,14 +19,21 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
         public async Task ShouldRetrieveArtifactMetadataAsync(string resourceType)
         {
             //Given
-            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
             string[] resourceTypes = new string[] { resourceType };
 
             //When
             await this.terminologyClient.RetrieveArtifactMetadataAsync(resourceTypes);
 
             //Then
-            //await this.terminologyPollService.RemoveTerminologyPollByIdAsync(address.Id);
+            IQueryable<TerminologyPoll> retrievedTerminologyPolls =
+                this.terminologyPollService.RetrieveAllTerminologyPolls();
+
+            retrievedTerminologyPolls.Count().Should().BeGreaterThan(0);
+
+            foreach (TerminologyPoll poll in retrievedTerminologyPolls)
+            {
+                await this.terminologyPollService.RemoveTerminologyPollByIdAsync(poll.Id);
+            }
         }
     }
 }

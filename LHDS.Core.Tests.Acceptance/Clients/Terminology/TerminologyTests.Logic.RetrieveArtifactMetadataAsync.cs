@@ -3,12 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
@@ -29,8 +24,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             await this.terminologyClient.RetrieveArtifactMetadataAsync(resourceTypes);
 
             //Then
-            await this.addressService.RemoveAddressByIdAsync(address.Id);
-            }
+            //await this.terminologyPollService.RemoveTerminologyPollByIdAsync(address.Id);
         }
     }
 }

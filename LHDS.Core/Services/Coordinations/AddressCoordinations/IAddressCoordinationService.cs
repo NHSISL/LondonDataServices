@@ -12,6 +12,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
     public interface IAddressCoordinationService
     {
         public ValueTask<List<Address>> LoadAddressDataAsync(byte[] data, string filename);
+        public ValueTask NormaliseAddresses();
         public ValueTask MatchAddressDataAsync(byte[] data, string filename);
         public ValueTask<Guid?> UploadResolvedAddressesAsync();
     }

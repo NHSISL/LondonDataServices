@@ -11,9 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressNormalisations;
 using Moq;
 using Xunit;
 
@@ -75,26 +73,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings))
                     .ReturnsAsync(outputAddresses);
 
-
-            AddressNormalisation addressNormalisation = new AddressNormalisation
-            {
-                PostalAddress = GetRandomString(),
-                JsonPostalAddress = GetRandomString()
-            };
-
-            foreach (Address address in outputAddresses)
-            {
-                string addressString = address.GetFormattedAddress();
-
-                this.addressNormalisationProcessingServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(addressString))
-                        .ReturnsAsync(addressNormalisation);
-
-                address.PostalAddress = addressNormalisation.PostalAddress;
-                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                address.IsErrored = false;
-            }
-
             List<Address> expectedAddresses = outputAddresses.DeepClone();
 
             // When
@@ -114,23 +92,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings),
                     Times.Once());
 
-            List<Address> verifyStorageAddresses = randomAddresses;
-
-            foreach (Address verifyAddress in verifyStorageAddresses)
-            {
-                string verifyAddressString = verifyAddress.GetFormattedAddress();
-
-                this.addressNormalisationProcessingServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(verifyAddressString),
-                        Times.Once);
-
-                verifyAddress.PostalAddress = addressNormalisation.PostalAddress;
-                verifyAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                verifyAddress.IsErrored = false;
-            }
-
             this.addressProcessingServiceMock.Verify(service =>
-                service.BulkAddAddressesAsync(It.Is(SameAddressesAs(verifyStorageAddresses)), inputFilename),
+                service.BulkAddAddressesAsync(outputAddresses, inputFilename),
                     Times.Once);
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

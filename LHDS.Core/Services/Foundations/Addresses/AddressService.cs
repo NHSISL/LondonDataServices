@@ -48,51 +48,67 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 Console.WriteLine($"{addresses.Count()} records to process");
                 var stopwatch = Stopwatch.StartNew();
                 Console.WriteLine($"Batch processed in {stopwatch.ElapsedMilliseconds} milliseconds");
-                List<Address> validatedAddresses = new List<Address>();
-                await ExtractValidAddresses(addresses, fileName, validatedAddresses);
                 int batchSize = 10000;
-                await BulkInsertBatch(validatedAddresses, batchSize);
-                stopwatch.Stop(); // Stop the stopwatch
+                await BulkInsertBatch(addresses, batchSize, fileName);
+                stopwatch.Stop();
                 Console.WriteLine($"Batch processed in {stopwatch.ElapsedMilliseconds} milliseconds");
             });
 
-        private async Task BulkInsertBatch(List<Address> validatedAddresses, int batchSize)
+        private async ValueTask BulkInsertBatch(List<Address> addresses, int batchSize, string fileName)
         {
-            for (int i = 0; i < validatedAddresses.Count; i += batchSize)
+            int totalRecords = addresses.Count;
+            int processedRecords = 0;
+
+            for (int i = 0; i < totalRecords; i += batchSize)
             {
-                var batch = validatedAddresses.Skip(i).Take(batchSize).ToList();
-
-                var stopwatch = Stopwatch.StartNew();
-
-                var existingUPRNs = this.storageBroker.SelectAllAddresses()
-                    .Where(address => batch.Any(validatedAddress => validatedAddress.UPRN == address.UPRN))
-                    .Select(address => address.UPRN)
-                    .ToList();
-
-                var newAddresses = batch.Where(address => !existingUPRNs.Contains(address.UPRN)).ToList();
-
-                foreach (var newAddress in newAddresses)
+                try
                 {
-                    newAddress.Id = Guid.NewGuid();
-                    newAddress.CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                    newAddress.CreatedBy = "System";
-                    newAddress.UpdatedDate = newAddress.CreatedDate;
-                    newAddress.UpdatedBy = newAddress.CreatedBy;
+                    var batch = addresses.Skip(i).Take(batchSize).ToList();
+                    List<Address> validatedAddresses = await ExtractValidAddresses(batch, fileName);
+                    var stopwatch = Stopwatch.StartNew();
+                    var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
+
+                    var existingUPRNs = this.storageBroker.SelectAllAddresses()
+                        .Where(address => batchUPRNs.Contains(address.UPRN))
+                        .Select(address => address.UPRN)
+                        .ToList();
+
+                    var newAddresses = batch.Where(address => !existingUPRNs.Contains(address.UPRN)).ToList();
+
+                    if (newAddresses.Count != 0)
+                    {
+                        await this.storageBroker.BulkInsertAddressesAsync(newAddresses);
+                    }
+
+                    stopwatch.Stop(); // Stop the stopwatch
+
+                    processedRecords += batch.Count;
+
+                    Console.WriteLine(
+                        $"Batch processed in {stopwatch.ElapsedMilliseconds} milliseconds. " + Environment.NewLine +
+                        $"Processed {processedRecords} out of {totalRecords} records. " + Environment.NewLine +
+                        $"{totalRecords - processedRecords} records remaining.");
                 }
-
-                await this.storageBroker.BulkInsertAddressesAsync(newAddresses);
-
-                stopwatch.Stop(); // Stop the stopwatch
-                Console.WriteLine($"Batch processed in {stopwatch.ElapsedMilliseconds} milliseconds");
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
         }
 
-        private async Task ExtractValidAddresses(List<Address> addresses, string fileName, List<Address> validatedAddresses)
+        private async ValueTask<List<Address>> ExtractValidAddresses(List<Address> addresses, string fileName)
         {
+            List<Address> validatedAddresses = new List<Address>();
+
             foreach (Address address in addresses)
             {
                 try
                 {
+                    address.Id = Guid.NewGuid();
+                    address.CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    address.CreatedBy = "System";
+                    address.UpdatedDate = address.CreatedDate;
+                    address.UpdatedBy = address.CreatedBy;
                     ValidateAddressOnAdd(address);
                     validatedAddresses.Add(address);
                 }
@@ -112,6 +128,8 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     }
                 }
             }
+
+            return await ValueTask.FromResult(validatedAddresses);
         }
 
         public IQueryable<Address> RetrieveAllAddresses() =>

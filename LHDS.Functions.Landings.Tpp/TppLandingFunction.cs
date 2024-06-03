@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
 using Microsoft.Azure.Functions.Worker;
 
 namespace LHDS.Functions.Landings.Tpp
@@ -15,13 +16,16 @@ namespace LHDS.Functions.Landings.Tpp
     {
         private readonly ILoggingBroker loggingBroker;
         private readonly ITppLandingClient tppLandingClient;
+        private readonly LandingConfiguration landingConfiguration;
 
         public TppLandingFunction(
             ILoggingBroker loggingBroker,
-            ITppLandingClient tppLandingClient)
+            ITppLandingClient tppLandingClient,
+            LandingConfiguration landingConfiguration)
         {
             this.loggingBroker = loggingBroker;
             this.tppLandingClient = tppLandingClient;
+            this.landingConfiguration = landingConfiguration;
         }
 
         [Function("TppLandingFunction")]
@@ -35,7 +39,7 @@ namespace LHDS.Functions.Landings.Tpp
 
             try
             {
-                await tppLandingClient.ProcessAsync(document);
+                await tppLandingClient.ProcessAsync(document, supplierId: landingConfiguration.LandingSupplierId);
             }
             catch (Exception ex)
             {

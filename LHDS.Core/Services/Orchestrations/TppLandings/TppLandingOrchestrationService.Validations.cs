@@ -1,7 +1,8 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
+using System;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
 
@@ -17,8 +18,19 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             }
         }
 
-        private static void ValidateDocumentFileNameIsNotNull(string fileName) =>
-            Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
+        private static void ValidateArgumentsOnProcess(string fileName, Guid supplierId)
+        {
+            Validate(
+                (Rule: IsInvalid(fileName), Parameter: "FileName"),
+                (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
+
+        }
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "Id is required"
+        };
 
         private static dynamic IsInvalid(string? text) => new
         {

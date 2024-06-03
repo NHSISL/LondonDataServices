@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using KellermanSoftware.CompareNetObjects;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Clients;
@@ -59,8 +58,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .AddTransient<IAddressPersistanceOrchestrationService, AddressPersistanceOrchestrationService>()
                 .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()
                 .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>()
-                .AddTransient<IDocumentService, DocumentService> ()
-                .AddTransient<ICsvHelperBroker, CsvHelperBroker> ()
+                .AddTransient<IDocumentService, DocumentService>()
+                .AddTransient<ICsvHelperBroker, CsvHelperBroker>()
                 .AddTransient<IAddressService, AddressService>()
                 .AddTransient<IDocumentService, DocumentService>();
 

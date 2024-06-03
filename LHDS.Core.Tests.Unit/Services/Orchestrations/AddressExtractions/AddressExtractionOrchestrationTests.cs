@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
@@ -68,6 +69,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 this.compareLogic.Compare(expectedAddress, actualAddress)
                     .AreEqual;
         }
+
+        private Expression<Func<List<Address>, bool>> SameAddressesAs(List<Address> expectedAddresses)
+        {
+            return actualAddresses =>
+                this.compareLogic.Compare(expectedAddresses, actualAddresses)
+                    .AreEqual;
+        }
+
 
         private static string GetRandomString() =>
            new MnemonicString(wordCount: GetRandomNumber()).GetValue();

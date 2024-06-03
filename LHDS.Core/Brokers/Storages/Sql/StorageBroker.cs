@@ -59,15 +59,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
         public override void Dispose() { }
 
-        private async ValueTask BulkInsertAsync<T>(List<T> objects)
+        private async ValueTask BulkInsertAsync<T>(IEnumerable<T> objects) where T : class
         {
+            objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Added);
             this.AddRange(objects);
             await this.SaveChangesAsync();
-
-            foreach (var obj in objects)
-            {
-                DetachSavedEntity(obj);
-            }
+            DetachSavedEntities(objects);
         }
 
         private async ValueTask<T> InsertAsync<T>(T @object)
@@ -99,6 +96,11 @@ namespace LHDS.Core.Brokers.Storages.Sql
             await this.SaveChangesAsync();
 
             return @object;
+        }
+
+        private void DetachSavedEntities<T>(IEnumerable<T> @objects)
+        {
+            objects.ToList().ForEach(DetachSavedEntity);
         }
 
         private void DetachSavedEntity<T>(T @object)

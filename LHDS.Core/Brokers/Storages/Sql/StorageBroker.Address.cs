@@ -15,8 +15,8 @@ namespace LHDS.Core.Brokers.Storages.Sql
     {
         public DbSet<Address> Addresses { get; set; }
 
-        public async ValueTask BulkInsertAddressesAsync(List<Address> address) =>
-            await BulkInsertAsync(address);
+        public async ValueTask BulkInsertAddressesAsync(List<Address> addresses) =>
+            await BulkInsertAsync(addresses);
 
         public async ValueTask<Address> InsertAddressAsync(Address address) =>
             await InsertAsync(address);

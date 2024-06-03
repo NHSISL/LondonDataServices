@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings))
                     .ReturnsAsync(outputAddresses);
 
-            List<Address> expectedAddresses = new List<Address>();
+            List<Address> expectedAddresses = outputAddresses.DeepClone();
 
             AddressNormalisation addressNormalisation = new AddressNormalisation
             {

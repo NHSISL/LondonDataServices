@@ -64,7 +64,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                 return mappedAddresses;
             });
 
-        public ValueTask NormaliseAddresses() =>
+        public ValueTask NormaliseAddressesAsync() =>
             TryCatch(async () =>
             {
                 var exceptions = new List<Exception>();

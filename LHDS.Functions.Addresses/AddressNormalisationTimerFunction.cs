@@ -30,7 +30,7 @@ namespace LHDS.Functions.Landings.Emis
 
             try
             {
-                await this.addressClient.NormaliseAddresses();
+                await this.addressClient.NormaliseAddressesAsync();
             }
             catch (Exception ex)
             {

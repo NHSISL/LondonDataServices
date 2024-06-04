@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     .ReturnsAsync(modifiedAddress);
 
             // When
-            await this.addressExtractionOrchestrationService.NormaliseAddresses();
+            await this.addressExtractionOrchestrationService.NormaliseAddressesAsync();
 
             // Then
             addressProcessingServiceMock

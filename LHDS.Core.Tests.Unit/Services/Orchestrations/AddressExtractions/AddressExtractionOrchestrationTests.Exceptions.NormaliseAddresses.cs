@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask normaliseTask = this.addressExtractionOrchestrationService.NormaliseAddresses();
+            ValueTask normaliseTask = this.addressExtractionOrchestrationService.NormaliseAddressesAsync();
 
             AddressExtractionOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationDependencyValidationException>(
@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     .Throws(dependencyException);
 
             // when
-            ValueTask normaliseTask = this.addressExtractionOrchestrationService.NormaliseAddresses();
+            ValueTask normaliseTask = this.addressExtractionOrchestrationService.NormaliseAddressesAsync();
 
             AddressExtractionOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationDependencyException>(
@@ -123,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     .Throws(serviceException);
 
             // when
-            ValueTask normaliseTask = this.addressExtractionOrchestrationService.NormaliseAddresses();
+            ValueTask normaliseTask = this.addressExtractionOrchestrationService.NormaliseAddressesAsync();
 
             AddressExtractionOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(

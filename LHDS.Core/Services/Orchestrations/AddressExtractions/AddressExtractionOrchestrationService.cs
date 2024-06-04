@@ -99,15 +99,15 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                             auditType: "Address",
                             title: "Unable to normalise address",
                             message: $"Unable to normalise address with UPRN: {address.UPRN} " +
-                                $"error message: {ex.InnerException.Message}" + Environment.NewLine +
-                                $"parts: {ex.InnerException.InnerException.Message}",
+                                $"error message: {ex?.InnerException?.Message}" + Environment.NewLine +
+                                $"parts: {ex?.InnerException?.InnerException?.InnerException?.InnerException?.Message}",
                             string.Empty,
                             correlationId: address.Id);
 
                         address.IsErrored = true;
                         address.IsNormalised = false;
+                        address.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
                         address = await this.addressProcessingService.ModifyAddressAsync(address);
-
                         exceptions.Add(ex);
                     }
                 }

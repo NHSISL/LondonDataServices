@@ -9,6 +9,7 @@ using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Ontologies;
 using LHDS.Core.Services.Foundations.Ontologies;
+using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +25,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
     {
         private readonly DependencyBroker dependencyBroker;
         private readonly ITerminologyPollService terminologyPollService;
-        private readonly IOntologyService ontologyService;
+        private readonly ITerminologyArtifactService terminologyArtifactService;
         private readonly ITerminologyClient terminologyClient;
         private readonly OntologyConfiguration ontologyConfiguration;
         private readonly ICompareLogic compareLogic;
@@ -50,7 +51,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             terminologyClient = serviceProvider.GetService<ITerminologyClient>();
             ontologyConfiguration = serviceProvider.GetService<OntologyConfiguration>();
             terminologyPollService = serviceProvider.GetService<ITerminologyPollService>();
-            ontologyService = serviceProvider.GetService<IOntologyService>();
+            terminologyArtifactService = serviceProvider.GetService<ITerminologyArtifactService>();
         }
 
         private static string GetRandomString() =>

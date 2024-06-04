@@ -57,11 +57,11 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask NormaliseAddresses()
+        public async ValueTask NormaliseAddressesAsync()
         {
             try
             {
-                await this.addressCoordinationService.NormaliseAddresses();
+                await this.addressCoordinationService.NormaliseAddressesAsync();
             }
             catch (AddressCoordinationValidationException addressCoordinationValidationException)
             {

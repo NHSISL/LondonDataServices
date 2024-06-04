@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -13,6 +14,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
     public partial class StorageBroker
     {
         public DbSet<Address> Addresses { get; set; }
+
+        public async ValueTask BulkInsertAddressesAsync(List<Address> addresses) =>
+            await BulkInsertAsync(addresses);
 
         public async ValueTask<Address> InsertAddressAsync(Address address) =>
             await InsertAsync(address);

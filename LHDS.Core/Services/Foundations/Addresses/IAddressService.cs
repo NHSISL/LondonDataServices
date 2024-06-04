@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +12,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
 {
     public interface IAddressService
     {
+        ValueTask BulkAddAddressesAsync(List<Address> addresses, string fileName);
         ValueTask<Address> AddAddressAsync(Address address);
         IQueryable<Address> RetrieveAllAddresses();
         ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId);

@@ -20,8 +20,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired(false);
 
             modelBuilder.Entity<Address>()
-                .HasIndex(address => address.UPRN)
-                .IsUnique();
+                .HasIndex(address => address.UPRN);
 
             modelBuilder.Entity<Address>()
                 .Property(address => address.UPSN)

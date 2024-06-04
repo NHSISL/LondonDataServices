@@ -14,10 +14,8 @@ using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
-using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressNormalisations;
@@ -57,125 +55,18 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 ValidateDataOnProcessData(data, filename);
                 List<byte[]> csvData = await ProcessAddressDataAsync(data);
-                List<Address> mappedAddresses = new List<Address>();
-                await CsvToAddressAsync(csvData, mappedAddresses);
-                List<Address> processedAddresses = new List<Address>();
-                List<Address> failedAddresses = new List<Address>();
-                var exceptions = new List<Exception>();
+                List<Address> mappedAddresses = await CsvToAddressAsync(csvData);
 
-                foreach (Address address in mappedAddresses)
-                {
-                    try
-                    {
-                        Address processedAddress = await TryCatch(async () =>
-                        {
-                            Address incomingAddress = address;
-                            string addressString = incomingAddress.GetFormattedAddress();
+                await this.addressProcessingService
+                    .BulkAddAddressesAsync(addresses: mappedAddresses, fileName: filename);
 
-                            Address? maybeAddress = this.addressProcessingService.RetrieveAllAddresses()
-                            .FirstOrDefault(storageAddress =>
-                                storageAddress.UPRN.Equals(address.UPRN)
-                                && storageAddress.UPSN.Equals(address.UPSN)
-                                && storageAddress.OrganisationName.Equals(address.OrganisationName)
-                                && storageAddress.DepartmentName.Equals(address.DepartmentName)
-                                && storageAddress.SubBuildingName.Equals(address.SubBuildingName)
-                                && storageAddress.BuildingName.Equals(address.BuildingName)
-                                && storageAddress.BuildingNumber.Equals(address.BuildingNumber)
-                                && storageAddress.DependentThoroughfare.Equals(address.DependentThoroughfare)
-                                && storageAddress.Thoroughfare.Equals(address.Thoroughfare)
-                                && storageAddress.DoubleDependentLocality.Equals(address.DoubleDependentLocality)
-                                && storageAddress.DependentLocality.Equals(address.DependentLocality)
-                                && storageAddress.PostTown.Equals(address.PostTown)
-                                && storageAddress.PostCode.Equals(address.PostCode));
-
-                            DateTimeOffset dateStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
-                            if (maybeAddress != null)
-                            {
-                                incomingAddress.Id = maybeAddress.Id;
-                                incomingAddress.UpdatedBy = "System";
-                                incomingAddress.UpdatedDate = dateStamp;
-                            }
-                            else
-                            {
-                                incomingAddress.Id = Guid.NewGuid();
-                                incomingAddress.CreatedBy = "System";
-                                incomingAddress.CreatedDate = dateStamp;
-                                incomingAddress.UpdatedBy = "System";
-                                incomingAddress.UpdatedDate = dateStamp;
-                            }
-
-                            var savedAddress = await this.addressProcessingService.ModifyOrAddAddressAsync(incomingAddress);
-
-                            try
-                            {
-                                AddressNormalisation addressNormalisation =
-                                    await this.addressNormalisationProcessingService.GetNormalisedAddress(addressString);
-
-                                savedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                                savedAddress.PostalAddress = addressNormalisation.PostalAddress;
-                                savedAddress.IsErrored = false;
-
-
-                                await this.auditBroker.LogInformation(
-                                    auditType: "Address",
-                                    title: "Successfully extracted address from Ordinance Database",
-                                    message: $"Successfully extracted address with id: {savedAddress.Id} from file: {filename}",
-                                    filename,
-                                    correlationId: savedAddress.Id);
-                            }
-                            catch (Exception ex)
-                            {
-                                if (ex.InnerException.InnerException is InvalidAddressPartsNormalisationException)
-                                {
-                                    savedAddress.IsErrored = true;
-
-                                    await this.auditBroker.LogWarning(
-                                        auditType: "Address",
-                                        title: "Invalid address parts found",
-                                        message: $"Invalid address parts found in address with id: {savedAddress.Id} " +
-                                            $"from file: {filename}" + Environment.NewLine +
-                                            $"error message: {ex.InnerException.Message}" + Environment.NewLine +
-                                            $"parts: {ex.InnerException.InnerException.Message}",
-                                        filename,
-                                        correlationId: savedAddress.Id);
-                                }
-                                else
-                                {
-                                    throw;
-                                }
-                            }
-
-                            DateTimeOffset updatedDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                            savedAddress.UpdatedBy = "System";
-                            savedAddress.UpdatedDate = updatedDateTime;
-
-                            var updatedAddress =
-                                await this.addressProcessingService.ModifyOrAddAddressAsync(savedAddress);
-
-                            return updatedAddress;
-                        });
-
-                        processedAddresses.Add(processedAddress);
-                    }
-                    catch (Exception ex)
-                    {
-                        exceptions.Add(ex);
-                    }
-                }
-
-                if (exceptions.Any())
-                {
-                    throw new AggregateException(
-                        $"Unable to normalise address for {exceptions.Count} addresses",
-                        exceptions);
-                }
-
-                return processedAddresses;
+                return mappedAddresses;
             });
 
-        private async Task CsvToAddressAsync(List<byte[]> csvData, List<Address> mappedAddresses)
+        private async ValueTask<List<Address>> CsvToAddressAsync(List<byte[]> csvData)
         {
+            List<Address> mappedAddresses = new List<Address>();
+
             foreach (byte[] file in csvData)
             {
                 string stringData = Encoding.UTF8.GetString(file);
@@ -208,6 +99,8 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
                 mappedAddresses.AddRange(addresses);
             }
+
+            return mappedAddresses;
         }
 
         public ValueTask<List<ResolvedAddress>> ProcessResolvedAddressesAsync(byte[] data, string filename) =>

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using Xeptions;
@@ -14,6 +15,14 @@ namespace LHDS.Core.Services.Processings.Addresses
         private void ValidateAddress(Address address)
         {
             ValidateAddressIsNotNull(address);
+        }
+
+        private void ValidateArguments(List<Address> addresses, string fileName)
+        {
+            Validate<InvalidArgumentAddressProcessingException>(
+                message: "Invalid argument(s). Please correct the errors and try again.",
+                (Rule: IsInvalid(addresses), Parameter: "Addresses"),
+                (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
         private void ValidateAddress(string address)
@@ -31,6 +40,14 @@ namespace LHDS.Core.Services.Processings.Addresses
             }
         }
 
+        private static void ValidateAddressesIsNotNull(List<Address> addresses)
+        {
+            if (addresses is null)
+            {
+                throw new NullAddressProcessingException(message: "Addresses is null.");
+            }
+        }
+
         public void ValidateAddressId(Guid addressId) =>
             Validate<InvalidArgumentAddressProcessingException>(
                 message: "Invalid argument(s). Please correct the errors and try again.",
@@ -45,6 +62,12 @@ namespace LHDS.Core.Services.Processings.Addresses
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(List<Address>? addresses) => new
+        {
+            Condition = addresses is null,
+            Message = "Addresses is required"
         };
 
         private static dynamic IsInvalid(string? text) => new

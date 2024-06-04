@@ -17,9 +17,84 @@ namespace LHDS.Core.Services.Foundations.Addresses
 {
     public partial class AddressService
     {
+        private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<Address> ReturningAddressFunction();
         private delegate IQueryable<Address> ReturningAddressesFunction();
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (NullAddressException nullAddressException)
+            {
+                throw CreateAndLogValidationException(nullAddressException);
+            }
+            catch (InvalidAddressException invalidAddressException)
+            {
+                throw CreateAndLogValidationException(invalidAddressException);
+            }
+            catch (SqlException sqlException)
+            {
+                var failedAddressStorageException =
+                    new FailedAddressStorageException(
+                        message: "Failed address storage error occurred, please contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedAddressStorageException);
+            }
+            catch (NotFoundAddressException notFoundAddressException)
+            {
+                throw CreateAndLogValidationException(notFoundAddressException);
+            }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsAddressException =
+                    new AlreadyExistsAddressException(
+                        message: "Address with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsAddressException);
+            }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidAddressReferenceException =
+                    new InvalidAddressReferenceException(
+                        message: "Invalid address reference error occurred.",
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidAddressReferenceException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedAddressException =
+                    new LockedAddressException(
+                        message: "Locked address record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedAddressException);
+            }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedAddressStorageException =
+                    new FailedAddressStorageException(
+                        message: "Failed address storage error occurred, please contact support.",
+                        innerException: databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedAddressStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressServiceException =
+                    new FailedAddressServiceException(
+                        message: "Failed address service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressServiceException);
+            }
+        }
 
         private async ValueTask<Address> TryCatch(ReturningAddressFunction returningAddressFunction)
         {

@@ -15,7 +15,7 @@ namespace LHDS.Core.Tests.Integration.Addresses
             //Given
 
             // When
-            await addressClient.NormaliseAddresses();
+            await addressClient.NormaliseAddressesAsync();
 
             // Then
 

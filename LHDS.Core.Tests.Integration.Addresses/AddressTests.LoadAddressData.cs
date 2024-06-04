@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Integration.Addresses
         public async Task LoadAddressDataAsync()
         {
             //var filePath = @"Resources\Ordnance\0040176014-6414006-1.zip";
-            // var filePath = @"Resources\Ordnance\0040176014-6414006-1SMALL.zip";
+            //var filePath = @"Resources\Ordnance\0040176014-6414006-1SMALL.zip";
             var filePath = @"Resources\Ordnance\0040176014-6414006-1VERYSMALL.zip";
 
             // Given

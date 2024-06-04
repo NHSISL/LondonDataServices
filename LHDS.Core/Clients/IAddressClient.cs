@@ -12,6 +12,7 @@ namespace LHDS.Core.Clients
     public interface IAddressClient
     {
         public ValueTask<List<Address>> LoadAddressDataAsync(byte[] data, string filename);
+        public ValueTask NormaliseAddresses();
         public ValueTask MatchPatientAddressDataAsync(byte[] data, string filename);
         public ValueTask<Guid?> ProcessResolvedAddressDataAsync();
     }

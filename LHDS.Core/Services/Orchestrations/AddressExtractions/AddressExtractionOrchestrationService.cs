@@ -14,6 +14,7 @@ using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
@@ -61,6 +62,62 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                     .BulkAddAddressesAsync(addresses: mappedAddresses, fileName: filename);
 
                 return mappedAddresses;
+            });
+
+        public ValueTask NormaliseAddresses() =>
+            TryCatch(async () =>
+            {
+                var exceptions = new List<Exception>();
+                Address? address;
+
+                while ((address = this.addressProcessingService.RetrieveAllAddresses()
+                    .FirstOrDefault(address => address.IsNormalised == false && address.IsErrored == false)) != null)
+                {
+                    try
+                    {
+                        Address addressToProcess = address;
+
+                        addressToProcess = await TryCatch(async () =>
+                        {
+                            string addressString = addressToProcess.GetFormattedAddress();
+
+                            AddressNormalisation addressNormalisation =
+                                await this.addressNormalisationProcessingService.GetNormalisedAddress(addressString);
+
+                            addressToProcess.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                            addressToProcess.PostalAddress = addressNormalisation.PostalAddress;
+                            addressToProcess.IsErrored = false;
+                            addressToProcess.IsNormalised = true;
+                            addressToProcess.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                            return await this.addressProcessingService.ModifyAddressAsync(addressToProcess);
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        await this.auditBroker.LogWarning(
+                            auditType: "Address",
+                            title: "Unable to normalise address",
+                            message: $"Unable to normalise address with UPRN: {address.UPRN} " +
+                                $"error message: {ex.InnerException.Message}" + Environment.NewLine +
+                                $"parts: {ex.InnerException.InnerException.Message}",
+                            string.Empty,
+                            correlationId: address.Id);
+
+                        address.IsErrored = true;
+                        address.IsNormalised = false;
+                        address = await this.addressProcessingService.ModifyAddressAsync(address);
+
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to normalise address for {exceptions.Count} addresses",
+                        exceptions);
+                }
             });
 
         private async ValueTask<List<Address>> CsvToAddressAsync(List<byte[]> csvData)

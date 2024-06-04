@@ -58,8 +58,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .AddTransient<IAddressPersistanceOrchestrationService, AddressPersistanceOrchestrationService>()
                 .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()
                 .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>()
-                .AddTransient<IDocumentService, DocumentService> ()
-                .AddTransient<ICsvHelperBroker, CsvHelperBroker> ()
+                .AddTransient<IDocumentService, DocumentService>()
+                .AddTransient<ICsvHelperBroker, CsvHelperBroker>()
                 .AddTransient<IAddressService, AddressService>()
                 .AddTransient<IDocumentService, DocumentService>();
 
@@ -178,6 +178,39 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             dynamicAddresses.Add(address3);
 
             return dynamicAddresses;
+        }
+
+        private static Address GetRandomAddress()
+        {
+            DateTimeOffset randomDateTime = DateTime.UtcNow;
+
+            Address address = new Address
+            {
+                Id = Guid.NewGuid(),
+                UPSN = "upsn",
+                UPRN = "uprn",
+                OrganisationName = "",
+                DepartmentName = "",
+                SubBuildingName = "",
+                BuildingName = "",
+                BuildingNumber = "10",
+                DependentThoroughfare = "",
+                Thoroughfare = "Downing Str",
+                DoubleDependentLocality = "",
+                DependentLocality = "Westminister",
+                PostTown = "London",
+                PostCode = "SW1A2AA",
+                PostalAddress = "",
+                JsonPostalAddress = "",
+                IsNormalised = false,
+                IsErrored = false,
+                CreatedBy = "system",
+                UpdatedBy = "system",
+                CreatedDate = randomDateTime,
+                UpdatedDate = randomDateTime
+            };
+
+            return address;
         }
 
 

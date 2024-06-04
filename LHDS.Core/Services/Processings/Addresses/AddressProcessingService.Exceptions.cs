@@ -13,7 +13,7 @@ using Xeptions;
 
 namespace LHDS.Core.Services.Processings.Addresses
 {
-    public partial class AddressProcessingService : IAddressProcessingService
+    public partial class AddressProcessingService
     {
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<Address> ReturningAddressProcessingFunction();

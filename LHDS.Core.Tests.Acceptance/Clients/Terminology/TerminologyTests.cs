@@ -5,17 +5,12 @@
 using System;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Identifiers;
-using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Ontologies;
-using LHDS.Core.Services.Orchestrations.TerminologyMetadata;
-using LHDS.Core.Services.Processings.Ontologies;
-using LHDS.Core.Services.Processings.TerminologyArtifacts;
-using LHDS.Core.Services.Processings.TerminologyPolls;
+using LHDS.Core.Services.Foundations.Ontologies;
+using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tynamix.ObjectFiller;
@@ -28,16 +23,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
     public partial class TerminologyTests
     {
         private readonly DependencyBroker dependencyBroker;
-        private readonly ITerminologyMetadataOrchestrationService terminologyMetadataOrchestrationService;
-        private readonly ITerminologyArtifactProcessingService terminologyArtifactProcessingService;
-        private readonly ITerminologyPollProcessingService terminologyPollProcessingService;
-        private readonly IOntologyProcessingService ontologyProcessingService;
+        private readonly ITerminologyPollService terminologyPollService;
+        private readonly IOntologyService ontologyService;
         private readonly ITerminologyClient terminologyClient;
         private readonly OntologyConfiguration ontologyConfiguration;
         private readonly ICompareLogic compareLogic;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-        private readonly IIdentifierBroker identifierBroker;
         private readonly WireMockServer wireMockServer;
 
         public TerminologyTests(DependencyBroker dependencyBroker)
@@ -58,6 +49,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             terminologyClient = serviceProvider.GetService<ITerminologyClient>();
             ontologyConfiguration = serviceProvider.GetService<OntologyConfiguration>();
+            terminologyPollService = serviceProvider.GetService<ITerminologyPollService>();
+            ontologyService = serviceProvider.GetService<IOntologyService>();
         }
 
         private static string GetRandomString() =>

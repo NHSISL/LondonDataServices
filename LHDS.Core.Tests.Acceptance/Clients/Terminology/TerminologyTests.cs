@@ -3,12 +3,13 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Ontologies;
-using LHDS.Core.Services.Foundations.Ontologies;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
@@ -59,5 +60,37 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
+        private static IQueryable<TerminologyArtifact> CreateRandomTerminologyArtifacts(DateTimeOffset dateTimeOffset)
+        {
+            return CreateTerminologyArtifactFiller(dateTimeOffset)
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
+        private static TerminologyArtifact CreateRandomTerminologyArtifact() =>
+            CreateTerminologyArtifactFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static TerminologyArtifact CreateRandomTerminologyArtifact(DateTimeOffset dateTimeOffset) =>
+            CreateTerminologyArtifactFiller(dateTimeOffset).Create();
+
+        private static Filler<TerminologyArtifact> CreateTerminologyArtifactFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<TerminologyArtifact>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(terminologyArtifact => terminologyArtifact.IsDownloaded).Use(false)
+                .OnProperty(terminologyArtifact => terminologyArtifact.FullUrl).Use("test")
+                .OnProperty(terminologyArtifact => terminologyArtifact.CreatedBy).Use(user)
+                .OnProperty(terminologyArtifact => terminologyArtifact.UpdatedBy).Use(user);
+
+            return filler;
+        }
     }
 }

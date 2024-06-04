@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             Address savedAddress = await this.addressService.AddAddressAsync(address);
 
             //When
-            await this.addressClient.NormaliseAddresses();
+            await this.addressClient.NormaliseAddressesAsync();
 
             //Then
             Address returnedAddress = await addressService.RetrieveAddressByIdAsync(savedAddress.Id);

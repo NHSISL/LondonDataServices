@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
         private readonly ITerminologyPollProcessingService terminologyPollProcessingService;
         private readonly IOntologyProcessingService ontologyProcessingService;
         private readonly ITerminologyClient terminologyClient;
-        private readonly OntologyConfiguration ontologyConfigurations;
+        private readonly OntologyConfiguration ontologyConfiguration;
         private readonly ICompareLogic compareLogic;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -42,61 +42,22 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
 
         public TerminologyTests(DependencyBroker dependencyBroker)
         {
-            var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("LHDS_TERMINOLOGY_CLIENT_ACCEPTANCE_");
-
-            IConfiguration configuration = configurationBuilder.Build();
             this.wireMockServer = WireMockServer.Start();
-            bool RunAcceptanceTests = configuration.GetSection("RunAcceptanceTests").Get<bool>();
-            bool RunIntegrationTests = configuration.GetSection("RunIntegrationTests").Get<bool>();
-            var terminologyServerBaseUrl = configuration["ontologySettings:terminologyServerBaseUrl"];
-            var terminologyServerAuthenticationRelativeUrl = configuration["ontologySettings:terminologyServerAuthenticationRelativeUrl"];
-            var terminologyServerResourceRelativeUrl = configuration["ontologySettings:terminologyServerResourceRelativeUrl"];
-            var clientId = configuration["ontologySettings:ClientId"];
-            var clientSecret = configuration["ontologySettings:ClientSecret"];
-
             this.dependencyBroker = dependencyBroker;
             this.compareLogic = new CompareLogic();
             var serviceCollection = new ServiceCollection();
-
-            serviceCollection
-                .AddTransient<ITerminologyPollProcessingService, TerminologyPollProcessingService>()
-                .AddTransient<ITerminologyMetadataOrchestrationService, TerminologyMetadataOrchestrationService>()
-                .AddTransient<ITerminologyArtifactProcessingService, TerminologyArtifactProcessingService>()
-                .AddTransient<IOntologyProcessingService, OntologyProcessingService>();
 
             serviceCollection.AddLogging(builder =>
             {
                 builder.AddConsole();
             });
 
-            this.ontologyConfigurations = new OntologyConfiguration
-            {
-                TerminologyServerBaseUrl = this.wireMockServer.Url,
-                TerminologyServerAuthenticationRelativeUrl = terminologyServerAuthenticationRelativeUrl,
-                TerminologyServerResourceRelativeUrl = terminologyServerResourceRelativeUrl,
-                ClientId = clientId,
-                ClientSecret = clientSecret,
-            };
-
+            this.dependencyBroker.Configuration["ontologySettings:terminologyServerBaseUrl"] = this.wireMockServer.Url;
             serviceCollection.AddTerminologyClient(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
-            this.identifierBroker = serviceProvider.GetService<IIdentifierBroker>();
-            this.loggingBroker = serviceProvider.GetService<ILoggingBroker>();
             terminologyClient = serviceProvider.GetService<ITerminologyClient>();
-
-            this.terminologyMetadataOrchestrationService = new TerminologyMetadataOrchestrationService(
-                ontologyConfiguration: this.ontologyConfigurations,
-                terminologyPollProcessingService: this.terminologyPollProcessingService,
-                ontologyProcessingService: this.ontologyProcessingService,
-                terminologyArtifactProcessingService: this.terminologyArtifactProcessingService,
-                dateTimeBroker: this.dateTimeBroker,
-                loggingBroker: this.loggingBroker,
-                identifierBroker: this.identifierBroker
-                );
+            ontologyConfiguration = serviceProvider.GetService<OntologyConfiguration>();
         }
 
         private static string GetRandomString() =>

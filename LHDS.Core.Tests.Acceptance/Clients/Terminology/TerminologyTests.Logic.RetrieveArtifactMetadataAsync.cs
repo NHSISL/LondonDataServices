@@ -110,6 +110,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             {
                 await this.terminologyPollService.RemoveTerminologyPollByIdAsync(poll.Id);
             }
+
+            IQueryable<TerminologyArtifact> retrievedTerminologyArtifacts =
+                this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
+
+            retrievedTerminologyArtifacts.Count().Should().BeGreaterThan(0);
+
+            foreach (TerminologyArtifact artifact in retrievedTerminologyArtifacts)
+            {
+                await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(artifact.Id);
+            }
         }
     }
 }

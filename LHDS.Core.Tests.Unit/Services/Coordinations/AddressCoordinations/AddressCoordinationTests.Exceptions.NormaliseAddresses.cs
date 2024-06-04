@@ -39,8 +39,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-             service.NormaliseAddressesAsync(),
-                 Times.Once);
+                service.NormaliseAddressesAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
@@ -78,13 +78,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-             service.NormaliseAddressesAsync(),
-                 Times.Once);
+                service.NormaliseAddressesAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedDependencyException))),
-                       Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -45,9 +45,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedDependencyException))),
-                       Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
 
             this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();

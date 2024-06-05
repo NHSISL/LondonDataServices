@@ -81,6 +81,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             await this.supplierService.RemoveSupplierByIdAsync(supplierId: supplierId);
             await this.documentService.RemoveDocumentByFileNameAsync(fileName, blobContainers.EmisLanding);
+
+            await this.documentService.RemoveDocumentByFileNameAsync(
+                decryptedDocument.FileName, blobContainers.Versioner);
         }
     }
 }

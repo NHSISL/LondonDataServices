@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
 
             //Then
             TerminologyArtifact retrievedTerminologyArtifact =
-                await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(terminologyArtifact.Id);
+                await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(terminologyArtifact.Id);
 
             retrievedTerminologyArtifact.IsDownloaded.Should().BeTrue();
 

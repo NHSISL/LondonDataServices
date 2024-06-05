@@ -13,6 +13,7 @@ using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tynamix.ObjectFiller;
@@ -71,9 +72,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
                     .AsQueryable();
         }
 
-        private static TerminologyArtifact CreateRandomTerminologyArtifact() =>
-            CreateTerminologyArtifactFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
-
         private static TerminologyArtifact CreateRandomTerminologyArtifact(DateTimeOffset dateTimeOffset) =>
             CreateTerminologyArtifactFiller(dateTimeOffset).Create();
 
@@ -86,7 +84,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(terminologyArtifact => terminologyArtifact.IsDownloaded).Use(false)
-                .OnProperty(terminologyArtifact => terminologyArtifact.FullUrl).Use("test")
                 .OnProperty(terminologyArtifact => terminologyArtifact.CreatedBy).Use(user)
                 .OnProperty(terminologyArtifact => terminologyArtifact.UpdatedBy).Use(user);
 

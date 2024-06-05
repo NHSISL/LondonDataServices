@@ -21,14 +21,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
         {
             //Given
             DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            IQueryable<TerminologyArtifact> terminologyArtifacts = CreateRandomTerminologyArtifacts(dateTimeOffset);
+            TerminologyArtifact terminologyArtifact = CreateRandomTerminologyArtifact(dateTimeOffset);
+            string baseUrl = $"{ontologyConfiguration.TerminologyServerBaseUrl}";
             string authUri = $"{ontologyConfiguration.TerminologyServerAuthenticationRelativeUrl}";
-
-            foreach (TerminologyArtifact terminologyArtifact in terminologyArtifacts)
-            {
-                await this.terminologyArtifactService.AddTerminologyArtifactAsync(terminologyArtifact);
-
-            }
+            terminologyArtifact.FullUrl = $"{baseUrl}/test";
+            await this.terminologyArtifactService.AddTerminologyArtifactAsync(terminologyArtifact);
 
             OntologyAccessToken token = new OntologyAccessToken
             {

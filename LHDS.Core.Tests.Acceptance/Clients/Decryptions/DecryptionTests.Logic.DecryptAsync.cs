@@ -56,7 +56,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             //Then
             actualString.Should().BeEquivalentTo(ingestionTracking.DecryptedFileName);
-            ingestionTracking.Should().NotBeNull();
+
+            Document decryptedDocument =
+                await this.documentService.RetrieveDocumentByFileNameAsync(
+                    ingestionTracking.DecryptedFileName, blobContainers.Versioner);
+
+            decryptedDocument.DocumentData.Should().BeEquivalentTo(documentData);
 
             IngestionTracking decryptedIngestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);

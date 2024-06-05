@@ -63,8 +63,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
                 await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(terminologyArtifact.Id);
 
             retrievedTerminologyArtifact.IsDownloaded.Should().BeTrue();
-
-            await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(terminologyArtifact.Id);
+            string fileName = $"{retrievedTerminologyArtifact.ResourceType}/{retrievedTerminologyArtifact.Name}.json";
+            await this.documentService.RemoveDocumentByFileNameAsync(fileName, "terminology");
+            await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(retrievedTerminologyArtifact.Id);
         }
     }
 }

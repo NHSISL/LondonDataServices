@@ -10,6 +10,7 @@ using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
@@ -28,6 +29,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
         private readonly DependencyBroker dependencyBroker;
         private readonly ITerminologyPollService terminologyPollService;
         private readonly ITerminologyArtifactService terminologyArtifactService;
+        private readonly IDocumentService documentService;
         private readonly ITerminologyClient terminologyClient;
         private readonly OntologyConfiguration ontologyConfiguration;
         private readonly ICompareLogic compareLogic;
@@ -53,6 +55,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             terminologyClient = serviceProvider.GetService<ITerminologyClient>();
             ontologyConfiguration = serviceProvider.GetService<OntologyConfiguration>();
             terminologyPollService = serviceProvider.GetService<ITerminologyPollService>();
+            documentService = serviceProvider.GetService<IDocumentService>();
             terminologyArtifactService = serviceProvider.GetService<ITerminologyArtifactService>();
         }
 

@@ -6,10 +6,8 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using FluentAssertions;
 using LHDS.Core.Models.Brokers.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
-using LHDS.Core.Models.Foundations.TerminologyPolls;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using Xunit;
@@ -49,39 +47,21 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
                         Response.Create()
                             .WithStatusCode(HttpStatusCode.OK)
                             .WithBodyAsJson(token));
-            
-                this.wireMockServer.Given(
-                    Request.Create()
-                            .UsingGet()
-                            .WithPath($"test"))
-                        .RespondWith(
-                            Response.Create()
-                                .WithStatusCode(HttpStatusCode.OK)
-                                .WithBody("test"));
+
+            this.wireMockServer.Given(
+                Request.Create()
+                        .UsingGet()
+                        .WithPath($"test"))
+                    .RespondWith(
+                        Response.Create()
+                            .WithStatusCode(HttpStatusCode.OK)
+                            .WithBody("test"));
 
             //When
             await this.terminologyClient.RetrieveArtifactDetailsAsync();
 
             //Then
-            //IQueryable<TerminologyPoll> retrievedTerminologyPolls =
-            //    this.terminologyPollService.RetrieveAllTerminologyPolls();
-
-            //retrievedTerminologyPolls.Count().Should().BeGreaterThan(0);
-
-            //foreach (TerminologyPoll poll in retrievedTerminologyPolls)
-            //{
-            //    await this.terminologyPollService.RemoveTerminologyPollByIdAsync(poll.Id);
-            //}
-
-            //IQueryable<TerminologyArtifact> retrievedTerminologyArtifacts =
-            //    this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
-
-            //retrievedTerminologyArtifacts.Count().Should().BeGreaterThan(0);
-
-            //foreach (TerminologyArtifact artifact in retrievedTerminologyArtifacts)
-            //{
-            //    await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(artifact.Id);
-            //}
+            await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(terminologyArtifacts.First().Id);
         }
     }
 }

@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using FluentAssertions;
 using LHDS.Core.Models.Brokers.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using WireMock.RequestBuilders;
@@ -48,7 +49,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             this.wireMockServer.Given(
                 Request.Create()
                         .UsingGet()
-                        .WithPath($"test"))
+                        .WithPath($"/test"))
                     .RespondWith(
                         Response.Create()
                             .WithStatusCode(HttpStatusCode.OK)
@@ -58,7 +59,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             await this.terminologyClient.RetrieveArtifactDetailsAsync();
 
             //Then
-            await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(terminologyArtifacts.First().Id);
+            TerminologyArtifact retrievedTerminologyArtifact =
+                await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(terminologyArtifact.Id);
+
+            retrievedTerminologyArtifact.IsDownloaded.Should().BeTrue();
+
+            await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(terminologyArtifact.Id);
         }
     }
 }

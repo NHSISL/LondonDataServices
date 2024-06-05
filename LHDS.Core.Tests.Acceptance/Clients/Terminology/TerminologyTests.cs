@@ -84,6 +84,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(terminologyArtifact => terminologyArtifact.IsDownloaded).Use(false)
+                .OnProperty(terminologyArtifact => terminologyArtifact.IsError).Use(false)
                 .OnProperty(terminologyArtifact => terminologyArtifact.CreatedBy).Use(user)
                 .OnProperty(terminologyArtifact => terminologyArtifact.UpdatedBy).Use(user);
 

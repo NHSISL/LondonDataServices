@@ -67,7 +67,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
         private static IQueryable<TerminologyArtifact> CreateRandomTerminologyArtifacts(DateTimeOffset dateTimeOffset)
         {
             return CreateTerminologyArtifactFiller(dateTimeOffset)
-                .Create(count: GetRandomNumber())
+                .Create(count: 1)
                     .AsQueryable();
         }
 

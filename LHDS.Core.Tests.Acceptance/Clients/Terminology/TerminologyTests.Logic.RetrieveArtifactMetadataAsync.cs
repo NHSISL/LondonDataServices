@@ -101,25 +101,25 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             await this.terminologyClient.RetrieveArtifactMetadataAsync(resourceTypes);
 
             //Then
-            //IQueryable<TerminologyPoll> retrievedTerminologyPolls =
-            //    this.terminologyPollService.RetrieveAllTerminologyPolls();
+            IQueryable<TerminologyPoll> retrievedTerminologyPolls =
+                this.terminologyPollService.RetrieveAllTerminologyPolls();
 
-            //retrievedTerminologyPolls.Count().Should().BeGreaterThan(0);
+            retrievedTerminologyPolls.Count().Should().BeGreaterThan(0);
 
-            //foreach (TerminologyPoll poll in retrievedTerminologyPolls)
-            //{
-            //    await this.terminologyPollService.RemoveTerminologyPollByIdAsync(poll.Id);
-            //}
+            foreach (TerminologyPoll poll in retrievedTerminologyPolls)
+            {
+                await this.terminologyPollService.RemoveTerminologyPollByIdAsync(poll.Id);
+            }
 
-            //IQueryable<TerminologyArtifact> retrievedTerminologyArtifacts =
-            //    this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
+            IQueryable<TerminologyArtifact> retrievedTerminologyArtifacts =
+                this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
 
-            //retrievedTerminologyArtifacts.Count().Should().BeGreaterThan(0);
+            retrievedTerminologyArtifacts.Count().Should().BeGreaterThan(0);
 
-            //foreach (TerminologyArtifact artifact in retrievedTerminologyArtifacts)
-            //{
-            //    await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(artifact.Id);
-            //}
+            foreach (TerminologyArtifact artifact in retrievedTerminologyArtifacts)
+            {
+                await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(artifact.Id);
+            }
         }
     }
 }

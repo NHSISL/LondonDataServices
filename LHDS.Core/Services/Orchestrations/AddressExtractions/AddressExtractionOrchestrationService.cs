@@ -71,7 +71,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                 Address? address;
 
                 while ((address = this.addressProcessingService.RetrieveAllAddresses()
-                    .FirstOrDefault(address => address.IsNormalised == false && address.IsErrored == false)) != null)
+                    .FirstOrDefault(address =>
+                        address.IsNormalised == false
+                        && address.IsErrored == false
+                        && address.Processing == false)) != null)
                 {
                     try
                     {
@@ -79,6 +82,9 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
                         addressToProcess = await TryCatch(async () =>
                         {
+                            addressToProcess.Processing = true;
+                            addressToProcess.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                            addressToProcess = await this.addressProcessingService.ModifyAddressAsync(addressToProcess);
                             string addressString = addressToProcess.GetFormattedAddress();
 
                             AddressNormalisation addressNormalisation =
@@ -88,6 +94,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                             addressToProcess.PostalAddress = addressNormalisation.PostalAddress;
                             addressToProcess.IsErrored = false;
                             addressToProcess.IsNormalised = true;
+                            addressToProcess.Processing = false;
                             addressToProcess.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
                             return await this.addressProcessingService.ModifyAddressAsync(addressToProcess);
@@ -106,6 +113,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
                         address.IsErrored = true;
                         address.IsNormalised = false;
+                        address.Processing = false;
                         address.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
                         address = await this.addressProcessingService.ModifyAddressAsync(address);
                         exceptions.Add(ex);

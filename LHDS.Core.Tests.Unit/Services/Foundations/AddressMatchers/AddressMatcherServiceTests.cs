@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
             };
         }
 
-        public static TheoryData AddressToMatch()
+        public static TheoryData<List<KeyValuePair<string, string>>, HashSet<AddressMatch>, int, bool> AddressToMatch()
         {
             var theoryData = new TheoryData<List<KeyValuePair<string, string>>, HashSet<AddressMatch>, int, bool>
             {
@@ -277,7 +277,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
             return theoryData;
         }
 
-        public static TheoryData CheckForBestMatch()
+        public static TheoryData<HashSet<AddressMatch>, BestMatchEnum> CheckForBestMatch()
         {
             return new TheoryData<HashSet<AddressMatch>, BestMatchEnum>
             {

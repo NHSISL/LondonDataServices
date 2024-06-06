@@ -14,7 +14,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.22.0" />
-		<PackageReference Include="NHSISL.LibPostalClient" Version="1.0.0.6" />
+		<PackageReference Include="NHSISL.LibPostalClient" Version="1.0.0.7" />
 	</ItemGroup>
 
 	<ItemGroup>

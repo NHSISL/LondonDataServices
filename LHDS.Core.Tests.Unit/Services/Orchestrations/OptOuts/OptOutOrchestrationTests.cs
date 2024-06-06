@@ -464,7 +464,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return filler;
         }
 
-        public static TheoryData OptOutDependencyValidationExceptions()
+        public static TheoryData<Xeption> OptOutDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -524,7 +524,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return filler;
         }
 
-        public static TheoryData OptOutDependencyExceptions()
+        public static TheoryData<Xeption> OptOutDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;

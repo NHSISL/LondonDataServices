@@ -9,6 +9,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Force.DeepCloner;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
@@ -78,26 +79,27 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                 {
                     try
                     {
-                        Address addressToProcess = address;
+                        Address addressToProcess = address.DeepClone();
 
                         addressToProcess = await TryCatch(async () =>
                         {
                             addressToProcess.Processing = true;
                             addressToProcess.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                            addressToProcess = await this.addressProcessingService.ModifyAddressAsync(addressToProcess);
-                            string addressString = addressToProcess.GetFormattedAddress();
+                            var lockedForProcessingAddress = await this.addressProcessingService.ModifyAddressAsync(addressToProcess);
+                            string addressString = lockedForProcessingAddress.GetFormattedAddress();
 
                             AddressNormalisation addressNormalisation =
                                 await this.addressNormalisationProcessingService.GetNormalisedAddress(addressString);
 
-                            addressToProcess.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                            addressToProcess.PostalAddress = addressNormalisation.PostalAddress;
-                            addressToProcess.IsErrored = false;
-                            addressToProcess.IsNormalised = true;
-                            addressToProcess.Processing = false;
-                            addressToProcess.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                            lockedForProcessingAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                            lockedForProcessingAddress.PostalAddress = addressNormalisation.PostalAddress;
+                            lockedForProcessingAddress.IsErrored = false;
+                            lockedForProcessingAddress.IsNormalised = true;
+                            lockedForProcessingAddress.Processing = false;
+                            lockedForProcessingAddress.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                            var amendedAddress = await this.addressProcessingService.ModifyAddressAsync(lockedForProcessingAddress);
 
-                            return await this.addressProcessingService.ModifyAddressAsync(addressToProcess);
+                            return amendedAddress;
                         });
                     }
                     catch (Exception ex)

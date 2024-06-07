@@ -43,28 +43,29 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     .Returns(randomAddresses.AsQueryable())
                     .Returns(new List<Address>().AsQueryable());
 
-            var processingAddress = randomAddress.DeepClone();
-            processingAddress.Processing = true;
-            processingAddress.UpdatedDate = randomDateTimeOffset;
+            Address addressToProcess = randomAddress.DeepClone();
+            addressToProcess.Processing = true;
+            addressToProcess.UpdatedDate = randomDateTimeOffset;
+            Address lockForProcessingAddress = addressToProcess.DeepClone();
 
             addressProcessingServiceMock
-            .Setup(service => service.ModifyAddressAsync(It.Is(SameAddressAs(processingAddress))))
-                .ReturnsAsync(processingAddress);
+            .Setup(service => service.ModifyAddressAsync(It.Is(SameAddressAs(addressToProcess))))
+                .ReturnsAsync(lockForProcessingAddress);
 
             addressNormalisationProcessingServiceMock
                 .Setup(service => service.GetNormalisedAddress(randomAddress.GetFormattedAddress()))
                     .ReturnsAsync(addressNormalisation);
 
-            Address modifiedAddress = processingAddress.DeepClone();
-            modifiedAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-            modifiedAddress.PostalAddress = addressNormalisation.PostalAddress;
-            modifiedAddress.IsErrored = false;
-            modifiedAddress.IsNormalised = true;
-            modifiedAddress.Processing = false;
-            modifiedAddress.UpdatedDate = randomDateTimeOffset;
+            lockForProcessingAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+            lockForProcessingAddress.PostalAddress = addressNormalisation.PostalAddress;
+            lockForProcessingAddress.IsErrored = false;
+            lockForProcessingAddress.IsNormalised = true;
+            lockForProcessingAddress.Processing = false;
+            lockForProcessingAddress.UpdatedDate = randomDateTimeOffset;
+            Address modifiedAddress = lockForProcessingAddress.DeepClone();
 
             addressProcessingServiceMock
-                .Setup(service => service.ModifyAddressAsync(modifiedAddress))
+                .Setup(service => service.ModifyAddressAsync(lockForProcessingAddress))
                     .ReturnsAsync(modifiedAddress);
 
             // When
@@ -76,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     Times.Exactly(2));
 
             addressProcessingServiceMock
-                .Verify(service => service.ModifyAddressAsync(It.Is(SameAddressAs(processingAddress))),
+                .Verify(service => service.ModifyAddressAsync(It.Is(SameAddressAs(addressToProcess))),
                     Times.Once);
 
             addressNormalisationProcessingServiceMock

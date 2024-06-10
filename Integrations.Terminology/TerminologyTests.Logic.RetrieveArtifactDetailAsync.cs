@@ -12,12 +12,22 @@ namespace LHDS.Core.Tests.Integration.Terminology
 {
     public partial class TerminologyTests
     {
-        [Fact]
-        public async Task ShouldRetrieveArtifactDetailsAsync()
+        [Theory]
+        [InlineData("CodeSystem")]
+        [InlineData("ValueSet")]
+        [InlineData("ConceptMap")]
+        public async Task ShouldRetrieveArtifactDetailsAsync(string resourceType)
         {
             //Given
             DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
             TerminologyArtifact terminologyArtifact = CreateRandomTerminologyArtifact(dateTimeOffset);
+
+            string relativeUrl = $"{this.ontologyConfiguration.TerminologyServerBaseUrl}" +
+                $"{this.ontologyConfiguration.TerminologyServerResourceRelativeUrl}";
+
+            relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
+            relativeUrl = relativeUrl.Replace("{{datestamp}}", dateTimeOffset.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+            terminologyArtifact.FullUrl = $"{relativeUrl}";
             await this.terminologyArtifactService.AddTerminologyArtifactAsync(terminologyArtifact);
 
             //When

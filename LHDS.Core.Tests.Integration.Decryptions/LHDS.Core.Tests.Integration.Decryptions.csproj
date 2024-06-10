@@ -26,6 +26,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\LHDS.Core.Tests.Integration.Pds\LHDS.Core.Tests.Integration.Pds.csproj" />
 		<ProjectReference Include="..\LHDS.Core\LHDS.Core.csproj" />
 	</ItemGroup>
 

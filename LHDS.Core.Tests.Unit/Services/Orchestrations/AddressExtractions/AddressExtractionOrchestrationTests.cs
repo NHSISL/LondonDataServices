@@ -162,7 +162,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             return filler;
         }
 
-        public static TheoryData AddressExtractionOrchestrationDependencyValidationExceptions()
+        public static TheoryData<Xeption> AddressExtractionOrchestrationDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -190,7 +190,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             };
         }
 
-        public static TheoryData AddressExtractionDependencyExceptions()
+        public static TheoryData<Xeption> AddressExtractionDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;

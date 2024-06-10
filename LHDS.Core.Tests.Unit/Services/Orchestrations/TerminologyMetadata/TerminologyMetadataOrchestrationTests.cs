@@ -216,7 +216,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             return terminologyArtifacts;
         }
 
-        public static TheoryData TerminologyMetadataOrchestrationDependencyValidationExceptions()
+        public static TheoryData<Xeption> TerminologyMetadataOrchestrationDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -250,7 +250,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             };
         }
 
-        public static TheoryData TerminologyMetadataOrchestrationDependencyExceptions()
+        public static TheoryData<Xeption> TerminologyMetadataOrchestrationDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;

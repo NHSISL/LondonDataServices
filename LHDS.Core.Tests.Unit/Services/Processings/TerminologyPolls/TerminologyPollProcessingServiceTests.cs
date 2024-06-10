@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             return filler;
         }
 
-        public static TheoryData DependencyValidationExceptions()
+        public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -116,7 +116,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             };
         }
 
-        public static TheoryData DependencyExceptions()
+        public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;

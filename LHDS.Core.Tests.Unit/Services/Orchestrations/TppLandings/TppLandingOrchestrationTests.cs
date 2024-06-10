@@ -225,7 +225,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        public static TheoryData TppDependencyValidationExceptions()
+        public static TheoryData<Xeption> TppDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -259,7 +259,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             };
         }
 
-        public static TheoryData TppDependencyExceptions()
+        public static TheoryData<Xeption> TppDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;

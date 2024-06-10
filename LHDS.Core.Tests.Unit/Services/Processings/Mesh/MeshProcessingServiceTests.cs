@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        public static TheoryData DependencyValidationExceptions()
+        public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -54,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             };
         }
 
-        public static TheoryData DependencyExceptions()
+        public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;

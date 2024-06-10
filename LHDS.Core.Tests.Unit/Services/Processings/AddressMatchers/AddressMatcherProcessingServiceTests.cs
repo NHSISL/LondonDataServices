@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                 loggingBroker: loggingBrokerMock.Object);
         }
 
-        public static TheoryData UncleanedAddressString()
+        public static TheoryData<string> UncleanedAddressString()
         {
             return new TheoryData<string>
             {
@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             };
         }
 
-        public static TheoryData AddressToMatch()
+        public static TheoryData<List<KeyValuePair<string, string>>, HashSet<AddressMatch>> AddressToMatch()
         {
             var theoryData = new TheoryData<List<KeyValuePair<string, string>>, HashSet<AddressMatch>>
             {

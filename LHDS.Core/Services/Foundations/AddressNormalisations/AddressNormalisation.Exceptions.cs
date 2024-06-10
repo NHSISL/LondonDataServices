@@ -4,10 +4,8 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Clients.LibPostalClient.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
-using NHSISL.LibPostalClient.Models.Clients.LibPostal.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.AddressNormalisations
@@ -27,34 +25,6 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
             catch (InvalidAddressNormalisationArgumentException invalidAddressNormalisationArgumentException)
             {
                 throw CreateAndLogValidationException(invalidAddressNormalisationArgumentException);
-            }
-            catch (LibPostalClientValidationException libPostalClientValidationException)
-            {
-                var invalidLibPostalValidationException =
-                    new InvalidLibPostalValidationException(
-                        message: "Invalid lib poastal validation error occurred.",
-                        innerException: libPostalClientValidationException,
-                        data: libPostalClientValidationException.Data);
-
-                throw CreateAndLogDependencyValidationException(libPostalClientValidationException);
-            }
-            catch (LibPostalClientDependencyException libPostalClientDependencyException)
-            {
-                var invalidLibPostalDependencyException =
-                    new InvalidLibPostalDependencyException(
-                        message: "Invalid lib poastal dependency error occurred.",
-                        innerException: libPostalClientDependencyException);
-
-                throw CreateAndLogDependencyException(libPostalClientDependencyException);
-            }
-            catch (LibPostalClientServiceException libPostalClientServiceException)
-            {
-                var invalidLibPostalDependencyException =
-                    new InvalidLibPostalDependencyException(
-                        message: "Invalid lib poastal dependency error occurred.",
-                        innerException: libPostalClientServiceException);
-
-                throw CreateAndLogDependencyException(libPostalClientServiceException);
             }
             catch (Exception exception)
             {

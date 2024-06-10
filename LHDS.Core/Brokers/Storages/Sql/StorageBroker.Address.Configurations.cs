@@ -83,6 +83,18 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired(false);
 
             modelBuilder.Entity<Address>()
+                .HasIndex(address => address.PostCode);
+
+            modelBuilder.Entity<Address>()
+                .HasIndex(address => address.IsErrored);
+
+            modelBuilder.Entity<Address>()
+                .HasIndex(address => address.IsNormalised);
+
+            modelBuilder.Entity<Address>()
+                .HasIndex(address => address.Processing);
+
+            modelBuilder.Entity<Address>()
                 .Property(address => address.PostalAddress)
                 .IsRequired(false);
 

@@ -120,28 +120,6 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        //[HttpGet]
-        //public ActionResult<IQueryable<SubscriberCredential>> GetAllSubscriberCredentials()
-        //{
-        //    try
-        //    {
-        //        IQueryable<SubscriberCredential> retrievedSubscriberCredentials =
-        //            this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentials();
-
-        //        return Ok(retrievedSubscriberCredentials);
-        //    }
-        //    catch (SubscriberCredentialDependencyOrchestrationException
-        //        subscriberCredentialDependencyOrchestrationException)
-        //    {
-        //        return InternalServerError(subscriberCredentialDependencyOrchestrationException);
-        //    }
-        //    catch (SubscriberCredentialOrchestrationServiceException
-        //        subscriberCredentialOrchestrationServiceException)
-        //    {
-        //        return InternalServerError(subscriberCredentialOrchestrationServiceException);
-        //    }
-        //}
-
         [HttpGet("{subscriberCredentialId}")]
         public async ValueTask<ActionResult<SubscriberCredential>> GetSubscriberCredentialByIdAsync(
             Guid subscriberCredentialId)

@@ -38,7 +38,6 @@ using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NHSISL.LibPostalClient.Clients;
 
 namespace LHDS.Core.Clients.Extensions
 {
@@ -97,7 +96,6 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAddressClient, AddressClient>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<IAuditClient, AuditClient>();
-            services.AddSingleton<ILibPostalClient, LibPostalClient>();
         }
 
         private static void AddBrokers(IServiceCollection services)

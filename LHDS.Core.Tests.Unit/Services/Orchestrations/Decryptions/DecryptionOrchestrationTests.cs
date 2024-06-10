@@ -126,7 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     .AreEqual;
         }
 
-        public static TheoryData DecryptionDependencyValidationExceptions()
+        public static TheoryData<Xeption> DecryptionDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -168,7 +168,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             };
         }
 
-        public static TheoryData DecryptionDependencyExceptions()
+        public static TheoryData<Xeption> DecryptionDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;

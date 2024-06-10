@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
-        public static TheoryData AddressExpansionData()
+        public static TheoryData<string> AddressExpansionData()
         {
             return new TheoryData<string>
             {
@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
             return filler;
         }
 
-        public static TheoryData AddressNormalisationDependencyExceptions()
+        public static TheoryData<Xeption> AddressNormalisationDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
             };
         }
 
-        public static TheoryData AddressNormalisationDependencyValidationExceptions()
+        public static TheoryData<Xeption> AddressNormalisationDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;

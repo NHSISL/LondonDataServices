@@ -269,7 +269,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     .AreEqual;
         }
 
-        public static TheoryData AddressPersistenceDependencyValidationExceptions()
+        public static TheoryData<Xeption> AddressPersistenceDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -299,7 +299,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             };
         }
 
-        public static TheoryData AddressPersistenceDependencyExceptions()
+        public static TheoryData<Xeption> AddressPersistenceDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;

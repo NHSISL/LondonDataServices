@@ -172,13 +172,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
         private static List<IngestionTracking> CreateRandomIngestionTrackings(
             DateTimeOffset dateTimeOffset,
-            List<string> fileNames)
+            List<string> fileNames,
+            bool isDownloaded,
+            int retryCount)
         {
             List<IngestionTracking> items = new List<IngestionTracking>();
 
             foreach (var fileName in fileNames)
             {
-                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, fileName).Create());
+                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, fileName, isDownloaded, retryCount).Create());
             }
 
             return items;
@@ -373,7 +375,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset, string id)
+            DateTimeOffset dateTimeOffset,
+            string id,
+            bool isDownloaded,
+            int retryCount)
         {
             var filler = new Filler<IngestionTracking>();
 

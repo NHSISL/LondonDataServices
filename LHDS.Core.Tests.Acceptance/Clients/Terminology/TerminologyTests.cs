@@ -14,7 +14,6 @@ using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tynamix.ObjectFiller;
@@ -86,6 +85,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(terminologyArtifact => terminologyArtifact.IsCore).Use(true)
                 .OnProperty(terminologyArtifact => terminologyArtifact.IsDownloaded).Use(false)
                 .OnProperty(terminologyArtifact => terminologyArtifact.IsError).Use(false)
                 .OnProperty(terminologyArtifact => terminologyArtifact.CreatedBy).Use(user)

@@ -126,7 +126,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 count: GetRandomNumber());
 
             List<IngestionTracking> ingestionTrackings = await CreateRandomIngestionTrackings(
-                dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
                 documentSources,
                 supplierId: supplierId);
 

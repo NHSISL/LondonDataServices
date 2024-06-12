@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Force.DeepCloner;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
@@ -205,6 +204,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                       LastSeen = currentDateTime,
                       FileDeleted = false,
                       RecordCount = 0,
+                      RetryCount = 0,
                       EncryptedFileSize = 0,
                       EncryptedFileSha256Hash = string.Empty,
                       DecryptedFileSize = 0,
@@ -225,43 +225,49 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
             {
                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                IngestionTracking retryDownloadIngestionTracking = maybeIngestionTracking.DeepClone();
-                retryDownloadIngestionTracking.RetryCount += 1;
-                retryDownloadIngestionTracking.LastSeen = currentDateTime;
-                retryDownloadIngestionTracking.UpdatedDate = currentDateTime;
+                maybeIngestionTracking.RetryCount += 1;
+                maybeIngestionTracking.IsDownloaded = false;
+                maybeIngestionTracking.FileDeleted = false;
+                maybeIngestionTracking.EncryptedFileSize = 0;
+                maybeIngestionTracking.EncryptedFileSha256Hash = string.Empty;
+                maybeIngestionTracking.LastSeen = currentDateTime;
+                maybeIngestionTracking.UpdatedBy = "attemptDownload";
+                maybeIngestionTracking.UpdatedDate = currentDateTime;
 
                 LogAudit(maybeIngestionTracking, $"Downloading {fileName};  " +
-                    $"Attempt: {retryDownloadIngestionTracking.RetryCount}");
+                    $"Attempt: {maybeIngestionTracking.RetryCount}");
 
-                IngestionTracking downloadingIngestionTracking =
+                IngestionTracking updatedIngestionTracking =
                     await this.ingestionTrackingProcessingService
-                        .ModifyIngestionTrackingAsync(retryDownloadIngestionTracking);
+                        .ModifyIngestionTrackingAsync(maybeIngestionTracking);
 
                 Download retrievedDownload = await DownloadFile(subscriberCredential, fileName);
 
                 Document newBlobDocument = new Document
                 {
                     DocumentData = retrievedDownload?.Document?.DocumentData ?? Array.Empty<byte>(),
-                    FileName = downloadingIngestionTracking.EncryptedFileName
+                    FileName = updatedIngestionTracking.EncryptedFileName,
+                    SHA256Hash = retrievedDownload?.Document?.SHA256Hash ?? string.Empty
                 };
 
                 await this.documentProcessingService
                     .AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
 
-                IngestionTracking downloadedIngestionTracking = downloadingIngestionTracking.DeepClone();
-                downloadedIngestionTracking.IsDownloaded = true;
-                downloadedIngestionTracking.FileDeleted = false;
-                downloadedIngestionTracking.EncryptedFileSize = newBlobDocument.DocumentData.Length;
-                downloadedIngestionTracking.EncryptedFileSha256Hash = newBlobDocument.SHA256Hash;
-                downloadedIngestionTracking.UpdatedDate = currentDateTime;
+                updatedIngestionTracking.IsDownloaded = true;
+                updatedIngestionTracking.FileDeleted = false;
+                updatedIngestionTracking.EncryptedFileSize = newBlobDocument.DocumentData.Length;
+                updatedIngestionTracking.EncryptedFileSha256Hash = newBlobDocument.SHA256Hash;
+                updatedIngestionTracking.LastSeen = currentDateTime;
+                updatedIngestionTracking.UpdatedBy = "downloading";
+                updatedIngestionTracking.UpdatedDate = currentDateTime;
 
                 await this.ingestionTrackingProcessingService
-                    .ModifyIngestionTrackingAsync(downloadedIngestionTracking);
+                    .ModifyIngestionTrackingAsync(updatedIngestionTracking);
 
-                LogAudit(maybeIngestionTracking, $"Downloaded {fileName};  " +
-                    $"Attempt: {retryDownloadIngestionTracking.RetryCount}");
+                LogAudit(updatedIngestionTracking, $"Downloaded {fileName};  " +
+                    $"Attempt: {updatedIngestionTracking.RetryCount}");
 
-                return downloadedIngestionTracking.DecryptedFileName;
+                return updatedIngestionTracking.DecryptedFileName;
             }
 
             return string.Empty;
@@ -345,9 +351,18 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(
                 retrievedDownload.Document?.DocumentData ?? Array.Empty<byte>());
 
-            fileToRetrieve.Document.SHA256Hash = encryptedFileSha256Hash;
+            Download download = new Download
+            {
+                Document = new Document
+                {
+                    FileName = retrievedDownload.Document.FileName,
+                    DocumentData = retrievedDownload.Document?.DocumentData ?? Array.Empty<byte>(),
+                    SHA256Hash = encryptedFileSha256Hash
+                },
+                SubscriberCredential = subscriberCredential
+            };
 
-            return fileToRetrieve;
+            return download;
         }
     }
 }

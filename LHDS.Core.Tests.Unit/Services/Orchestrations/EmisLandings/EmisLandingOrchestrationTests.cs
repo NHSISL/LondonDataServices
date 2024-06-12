@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
@@ -193,16 +194,28 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             IngestionTracking expectedIngestionTracking)
         {
             return actualIngestionTracking =>
-                this.compareLogic.Compare(expectedIngestionTracking, actualIngestionTracking)
+                CompareObjects(expectedIngestionTracking, actualIngestionTracking);
+        }
+
+        private bool CompareObjects(object expected, object actual)
+        {
+            try
+            {
+                actual.Should().BeEquivalentTo(expected);
+            }
+            catch (Exception ex)
+            {
+                output.WriteLine(ex.Message);
+            }
+
+            return this.compareLogic.Compare(expected, actual)
                     .AreEqual;
         }
 
         private Expression<Func<Download, bool>> SameDownloadAs(
             Download expectedDownload)
         {
-            return actualDownload =>
-                this.compareLogic.Compare(expectedDownload, actualDownload)
-                    .AreEqual;
+            return actualDownload => this.compareLogic.Compare(expectedDownload, actualDownload).AreEqual;
         }
 
         private static DataSet CreateRandomDataSet(Guid supplierId) =>
@@ -270,8 +283,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             Document expectedDocument)
         {
             return actualDocument =>
-                this.compareLogic.Compare(expectedDocument, actualDocument)
-                    .AreEqual;
+                CompareObjects(expectedDocument, actualDocument);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

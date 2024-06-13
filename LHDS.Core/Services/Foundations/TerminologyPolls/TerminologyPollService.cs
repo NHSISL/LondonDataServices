@@ -61,7 +61,10 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                     await this.storageBroker.SelectTerminologyPollByIdAsync(terminologyPoll.Id);
 
                 ValidateStorageTerminologyPoll(maybeTerminologyPoll, terminologyPoll.Id);
-                ValidateAgainstStorageTerminologyPollOnModify(inputTerminologyPoll: terminologyPoll, storageTerminologyPoll: maybeTerminologyPoll);
+
+                ValidateAgainstStorageTerminologyPollOnModify(
+                    inputTerminologyPoll: terminologyPoll, 
+                    storageTerminologyPoll: maybeTerminologyPoll);
 
                 return await this.storageBroker.UpdateTerminologyPollAsync(terminologyPoll);
             });

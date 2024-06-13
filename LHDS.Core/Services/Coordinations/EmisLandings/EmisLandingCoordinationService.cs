@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
@@ -74,33 +73,6 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 }
 
                 return processedPaths;
-            });
-
-        public ValueTask<string> ProcessFileAsync(string ftpFileName, Guid supplierId) =>
-            TryCatch(async () =>
-            {
-                ValidateProcessFileArgs(fileName: ftpFileName, supplierId);
-                string[] parts = ftpFileName.Split("/");
-
-                if (parts.Length > 0)
-                {
-                    string extractSubscriberCredentialId = parts[3];
-
-                    SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
-                        .RetrieveSubscriberCredentialByIdAsync(new Guid(extractSubscriberCredentialId));
-
-                    string processedItem =
-                        await this.emisLandingOrchestrationService.ProcessFileAsync(
-                            ftpFileName: ftpFileName,
-                            subscriberCredential: maybeSubscriberCredential,
-                            supplierId);
-
-                    return processedItem;
-                }
-                else
-                {
-                    throw new InvalidArgumentEmisLandingCoordinationException("Invalid file name format.");
-                }
             });
 
         public ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(Guid subscriberAgreementId) =>

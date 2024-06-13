@@ -85,7 +85,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(terminologyArtifact => terminologyArtifact.IsCore).Use(true)
+                .OnProperty(terminologyArtifact => terminologyArtifact.IsCore).Use(false)
                 .OnProperty(terminologyArtifact => terminologyArtifact.IsDownloaded).Use(false)
                 .OnProperty(terminologyArtifact => terminologyArtifact.IsError).Use(false)
                 .OnProperty(terminologyArtifact => terminologyArtifact.CreatedBy).Use(user)

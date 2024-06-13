@@ -194,7 +194,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.Exactly(assets.Count + 1));
+                    Times.Exactly(assets.Count + 2));
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifier(),

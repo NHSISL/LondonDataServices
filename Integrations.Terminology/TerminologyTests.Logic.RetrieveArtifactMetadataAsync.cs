@@ -21,7 +21,6 @@ namespace LHDS.Core.Tests.Integration.Terminology
         public async Task ShouldRetrieveArtifactMetadataAsync(string resourceType)
         {
             //Given
-            DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
             string[] resourceTypes = new string[] { resourceType };
 
             //When

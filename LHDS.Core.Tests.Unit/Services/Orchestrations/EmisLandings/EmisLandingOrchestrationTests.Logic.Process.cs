@@ -132,7 +132,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 retryDownloadIngestionTracking.UpdatedDate = randomDateTime;
 
                 IngestionTracking downloadingIngestionTracking = retryDownloadIngestionTracking.DeepClone();
-
                 var mockSequence = new MockSequence();
 
                 this.ingestionTrackingProcessingServiceMock.InSequence(mockSequence).Setup(service =>
@@ -141,7 +140,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                             .ReturnsAsync(downloadingIngestionTracking);
 
                 IngestionTracking modifiedIngestionTracking = downloadingIngestionTracking.DeepClone();
-
                 modifiedIngestionTracking.IsDownloaded = true;
                 modifiedIngestionTracking.FileDeleted = false;
                 modifiedIngestionTracking.EncryptedFileSize = storageFileDownload.Document.DocumentData.Length;
@@ -149,7 +147,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 modifiedIngestionTracking.LastSeen = randomDateTime;
                 modifiedIngestionTracking.UpdatedBy = "downloading";
                 modifiedIngestionTracking.UpdatedDate = randomDateTime;
-
                 IngestionTracking downloadedIngestionTracking = modifiedIngestionTracking.DeepClone();
 
                 this.ingestionTrackingProcessingServiceMock.InSequence(mockSequence).Setup(service =>
@@ -244,10 +241,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 retryDownloadIngestionTracking.LastSeen = randomDateTime;
                 retryDownloadIngestionTracking.UpdatedBy = "attemptDownload";
                 retryDownloadIngestionTracking.UpdatedDate = randomDateTime;
-
                 IngestionTracking downloadingIngestionTracking = retryDownloadIngestionTracking.DeepClone();
-
-                var mockSequence = new MockSequence();
 
                 this.ingestionTrackingProcessingServiceMock.Verify(service =>
                     service.ModifyIngestionTrackingAsync(

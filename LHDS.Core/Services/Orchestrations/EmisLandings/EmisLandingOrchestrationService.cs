@@ -241,7 +241,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     await this.ingestionTrackingProcessingService
                         .ModifyIngestionTrackingAsync(maybeIngestionTracking);
 
-                Download retrievedDownload = await DownloadFile(subscriberCredential, fileName);
+                Download retrievedDownload = 
+                    await DownloadFile(subscriberCredential, fileName);
 
                 Document newBlobDocument = new Document
                 {

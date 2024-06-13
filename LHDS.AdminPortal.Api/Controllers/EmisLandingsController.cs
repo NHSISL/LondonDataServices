@@ -5,12 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web;
-using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
-using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Services.Coordinations.EmisLandings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -56,33 +53,6 @@ namespace LHDS.AdminPortal.Api.Controllers
             catch (DownloadServiceException downloadServiceException)
             {
                 return InternalServerError(downloadServiceException);
-            }
-        }
-
-        [HttpGet("filename/{fileName}/{supplierId}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
-#endif
-        public async ValueTask<ActionResult<string>> ReLandDocumentByFileNameAsync(string fileName, Guid supplierId)
-        {
-            try
-            {
-                var returnFilePath = await this.emisLandingCoordinationService
-                    .ProcessFileAsync(HttpUtility.UrlDecode(fileName), supplierId);
-
-                return Ok(returnFilePath);
-            }
-            catch (EmisLandingCoordinationValidationException emisLandingOrchestrationValidationException)
-            {
-                return BadRequest(emisLandingOrchestrationValidationException.InnerException);
-            }
-            catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
-            {
-                return InternalServerError(emisLandingOrchestrationDependencyException);
-            }
-            catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)
-            {
-                return InternalServerError(emisLandingOrchestrationServiceException);
             }
         }
 

@@ -172,13 +172,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
         private static List<IngestionTracking> CreateRandomIngestionTrackings(
             DateTimeOffset dateTimeOffset,
-            List<string> fileNames)
+            List<string> fileNames,
+            bool isDownloaded,
+            int retryCount)
         {
             List<IngestionTracking> items = new List<IngestionTracking>();
 
             foreach (var fileName in fileNames)
             {
-                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, fileName).Create());
+                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, fileName, isDownloaded, retryCount).Create());
             }
 
             return items;
@@ -191,16 +193,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             IngestionTracking expectedIngestionTracking)
         {
             return actualIngestionTracking =>
-                this.compareLogic.Compare(expectedIngestionTracking, actualIngestionTracking)
+                CompareObjects(expectedIngestionTracking, actualIngestionTracking);
+        }
+
+        private bool CompareObjects(object expected, object actual)
+        {
+            return this.compareLogic.Compare(expected, actual)
                     .AreEqual;
         }
 
         private Expression<Func<Download, bool>> SameDownloadAs(
             Download expectedDownload)
         {
-            return actualDownload =>
-                this.compareLogic.Compare(expectedDownload, actualDownload)
-                    .AreEqual;
+            return actualDownload => this.compareLogic.Compare(expectedDownload, actualDownload).AreEqual;
         }
 
         private static DataSet CreateRandomDataSet(Guid supplierId) =>
@@ -268,8 +273,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             Document expectedDocument)
         {
             return actualDocument =>
-                this.compareLogic.Compare(expectedDocument, actualDocument)
-                    .AreEqual;
+                CompareObjects(expectedDocument, actualDocument);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
@@ -373,7 +377,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset, string id)
+            DateTimeOffset dateTimeOffset,
+            string id,
+            bool isDownloaded,
+            int retryCount)
         {
             var filler = new Filler<IngestionTracking>();
 

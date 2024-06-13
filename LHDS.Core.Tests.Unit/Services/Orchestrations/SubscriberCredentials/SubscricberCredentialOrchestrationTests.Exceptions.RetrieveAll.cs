@@ -3,8 +3,11 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
+using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
@@ -15,6 +18,237 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 {
     public partial class SubscriberCredentialOrchestrationServiceTests
     {
+        [Theory]
+        [MemberData(nameof(SubscriberCredentialOrchestrationDependencyValidationExceptions))]
+        public async Task ShouldThrowAggregateDependencyValidationOnAddressPersistenceIfDependencyValidationOccursAndLogItAsync(
+            Xeption dependencyValidationException)
+        {
+            // given
+            List<SubscriberAgreement> randomSubscriberAgreements = CreateRandomSubscriberAgreements();
+            List<Exception> exceptions = new List<Exception>();
+
+            foreach ( address in randomAddresses)
+            {
+                this.addressProcessingServiceMock.Setup(processing =>
+                    processing.ModifyOrAddAddressAsync(It.IsAny<Address>()))
+                        .ThrowsAsync(dependencyValidationException);
+
+                var addressPersistanceOrchestrationDependencyValidationException =
+                    new AddressPersistenceOrchestrationDependencyValidationException(
+                        message: "Address persistence orchestration dependency validation error occurred, " +
+                            "please try again.",
+                        innerException: dependencyValidationException.InnerException as Xeption);
+
+                exceptions.Add(addressPersistanceOrchestrationDependencyValidationException);
+            }
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to add or modify {exceptions.Count} address(es)",
+                    exceptions);
+
+            var failedAddressPersistanceOrchestrationServiceException =
+                 new FailedAddressPersistenceOrchestrationServiceException(
+                     message: "Failed address persistence aggregate orchestration service error occurred, " +
+                     "please contact support.",
+                     innerException: aggregateException);
+
+            var expectedAddressPersistanceOrchestrationServiceException =
+                new AddressPersistenceOrchestrationServiceException(
+                    message: "Address persistence orchestration service error occurred, please contact support.",
+                    innerException: failedAddressPersistanceOrchestrationServiceException);
+
+            // when
+            ValueTask<List<Address>> processTask =
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
+
+            AddressPersistenceOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(
+                    processTask.AsTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedAddressPersistanceOrchestrationServiceException);
+
+            this.addressProcessingServiceMock.Verify(service =>
+                service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
+                    Times.Exactly(randomAddresses.Count));
+
+            var addressPersistanceDependencyValidationException =
+                new AddressPersistenceOrchestrationDependencyValidationException(
+                    message: "Address persistence orchestration dependency validation error occurred, " +
+                        "please try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    addressPersistanceDependencyValidationException))),
+                        Times.Exactly(randomAddresses.Count));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressPersistanceOrchestrationServiceException))),
+                        Times.Once);
+
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(SubscriberCredentialOrchestrationDependencyExceptions))]
+        public async Task ShouldThrowAggregateDependencyOnAddressPersistenceIfDependencyOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            List<Address> randomAddresses = CreateRandomAddresses(GetRandomNumber()).ToList();
+            string someFileName = GetRandomString();
+            List<Exception> exceptions = new List<Exception>();
+
+            foreach (Address address in randomAddresses)
+            {
+                this.addressProcessingServiceMock.Setup(processing =>
+                    processing.ModifyOrAddAddressAsync(It.IsAny<Address>()))
+                        .ThrowsAsync(dependencyException);
+
+                var addressPersistanceOrchestrationDependencyException =
+                    new AddressPersistenceOrchestrationDependencyException(
+                        message: "Address persistence orchestration dependency error occurred, " +
+                            "please try again.",
+                        innerException: dependencyException.InnerException as Xeption);
+
+                exceptions.Add(addressPersistanceOrchestrationDependencyException);
+            }
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to add or modify {exceptions.Count} address(es)",
+                    exceptions);
+
+            var failedAddressPersistanceOrchestrationServiceException =
+                new FailedAddressPersistenceOrchestrationServiceException(
+                    message: "Failed address persistence aggregate orchestration service error occurred, " +
+                    "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedAddressPersistanceOrchestrationServiceException =
+                new AddressPersistenceOrchestrationServiceException(
+                    message: "Address persistence orchestration service error occurred, please contact support.",
+                    innerException: failedAddressPersistanceOrchestrationServiceException);
+
+            // when
+            ValueTask<List<Address>> processTask =
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
+
+            AddressPersistenceOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(
+                    processTask.AsTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedAddressPersistanceOrchestrationServiceException);
+
+            this.addressProcessingServiceMock.Verify(service =>
+             service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
+                  Times.Exactly(randomAddresses.Count));
+
+            var addressPersistanceDependencyException =
+                new AddressPersistenceOrchestrationDependencyException(
+                    message: "Address persistence orchestration dependency error occurred, " +
+                        "please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    addressPersistanceDependencyException))),
+                        Times.Exactly(randomAddresses.Count));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressPersistanceOrchestrationServiceException))),
+                        Times.Once);
+
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowAggregateServiceExceptionOnAddressPersistenceIfErrorsAndLogItAsync()
+        {
+            // given
+            List<Address> randomAddresses = CreateRandomAddresses(GetRandomNumber()).ToList();
+            string someFileName = GetRandomString();
+            var serviceException = new Exception();
+            List<Exception> exceptions = new List<Exception>();
+
+            var innerfailedAddressPersistenceOrchestrationServiceException =
+                new FailedAddressPersistenceOrchestrationServiceException(
+                    message: "Failed address persistence orchestration service error occurred, " +
+                        "please contact support.",
+                    innerException: serviceException);
+
+            var innerAddressPersistenceOrchestrationServiceException =
+                new AddressPersistenceOrchestrationServiceException(
+                    message: "Address persistence orchestration service error occurred, please contact support.",
+                    innerException: innerfailedAddressPersistenceOrchestrationServiceException);
+
+            foreach (Address address in randomAddresses)
+            {
+                this.addressProcessingServiceMock.Setup(processing =>
+                    processing.ModifyOrAddAddressAsync(It.IsAny<Address>()))
+                        .ThrowsAsync(serviceException);
+
+                exceptions.Add(innerAddressPersistenceOrchestrationServiceException);
+            }
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to add or modify {exceptions.Count} address(es)",
+                        exceptions);
+
+            var failedAddressPersistanceOrchestrationServiceException =
+                new FailedAddressPersistenceOrchestrationServiceException(
+                    message: "Failed address persistence aggregate orchestration service error occurred, " +
+                        "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedAddressPersistenceOrchestrationServiceException =
+                new AddressPersistenceOrchestrationServiceException(
+                    message: "Address persistence orchestration service error occurred, please contact support.",
+                    innerException: failedAddressPersistanceOrchestrationServiceException);
+
+            // when
+            ValueTask<List<Address>> processTask =
+                this.addressPersistanceOrchestrationService.PersistAddressAsync(randomAddresses, someFileName);
+
+            AddressPersistenceOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<AddressPersistenceOrchestrationServiceException>(async () =>
+                    await processTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedAddressPersistenceOrchestrationServiceException);
+
+            foreach (Address address in randomAddresses)
+            {
+                this.addressProcessingServiceMock.Verify(service =>
+                   service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
+                       Times.Exactly(randomAddresses.Count));
+            }
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    innerAddressPersistenceOrchestrationServiceException))),
+                        Times.Exactly(randomAddresses.Count));
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedAddressPersistenceOrchestrationServiceException))),
+                       Times.Once);
+
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
         [Theory]
         [MemberData(nameof(SubscriberCredentialOrchestrationDependencyValidationExceptions))]
         public async Task

@@ -20,6 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             // given
             List<TerminologyArtifact> randomTerminologyArtifacts = CreateRandomTerminologyArtifacts();
             List<TerminologyArtifact> artifactsList = randomTerminologyArtifacts.ToList();
+            artifactsList.Last().IsCore = true;
             artifactsList.Last().IsDownloaded = false;
             artifactsList.Last().IsError = false;
             TerminologyArtifact expectedTerminologyArtifact = artifactsList.Last();

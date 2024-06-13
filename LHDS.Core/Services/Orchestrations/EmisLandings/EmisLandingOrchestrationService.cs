@@ -231,7 +231,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 maybeIngestionTracking.EncryptedFileSize = 0;
                 maybeIngestionTracking.EncryptedFileSha256Hash = string.Empty;
                 maybeIngestionTracking.LastSeen = currentDateTime;
-                maybeIngestionTracking.UpdatedBy = "attemptDownload";
                 maybeIngestionTracking.UpdatedDate = currentDateTime;
 
                 LogAudit(maybeIngestionTracking, $"Downloading {fileName};  " +
@@ -241,7 +240,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     await this.ingestionTrackingProcessingService
                         .ModifyIngestionTrackingAsync(maybeIngestionTracking);
 
-                Download retrievedDownload = 
+                Download retrievedDownload =
                     await DownloadFile(subscriberCredential, fileName);
 
                 Document newBlobDocument = new Document
@@ -259,7 +258,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 updatedIngestionTracking.EncryptedFileSize = newBlobDocument.DocumentData.Length;
                 updatedIngestionTracking.EncryptedFileSha256Hash = newBlobDocument.SHA256Hash;
                 updatedIngestionTracking.LastSeen = currentDateTime;
-                updatedIngestionTracking.UpdatedBy = "downloading";
                 updatedIngestionTracking.UpdatedDate = currentDateTime;
 
                 await this.ingestionTrackingProcessingService

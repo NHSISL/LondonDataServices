@@ -12,6 +12,7 @@ using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -128,7 +129,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 retryDownloadIngestionTracking.EncryptedFileSize = 0;
                 retryDownloadIngestionTracking.EncryptedFileSha256Hash = string.Empty;
                 retryDownloadIngestionTracking.LastSeen = randomDateTime;
-                retryDownloadIngestionTracking.UpdatedBy = "attemptDownload";
                 retryDownloadIngestionTracking.UpdatedDate = randomDateTime;
 
                 IngestionTracking downloadingIngestionTracking = retryDownloadIngestionTracking.DeepClone();
@@ -145,7 +145,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 modifiedIngestionTracking.EncryptedFileSize = storageFileDownload.Document.DocumentData.Length;
                 modifiedIngestionTracking.EncryptedFileSha256Hash = randomHash;
                 modifiedIngestionTracking.LastSeen = randomDateTime;
-                modifiedIngestionTracking.UpdatedBy = "downloading";
                 modifiedIngestionTracking.UpdatedDate = randomDateTime;
                 IngestionTracking downloadedIngestionTracking = modifiedIngestionTracking.DeepClone();
 
@@ -174,6 +173,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>
                 service.GetActiveDataSetSpecification(supplierId),
                     Times.Once);
+
+            this.auditServiceMock.Verify(service =>
+                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
+                    Times.Exactly(3));
 
             foreach (var externalFileName in externalDownloadList)
             {
@@ -239,7 +242,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 retryDownloadIngestionTracking.EncryptedFileSize = 0;
                 retryDownloadIngestionTracking.EncryptedFileSha256Hash = string.Empty;
                 retryDownloadIngestionTracking.LastSeen = randomDateTime;
-                retryDownloadIngestionTracking.UpdatedBy = "attemptDownload";
                 retryDownloadIngestionTracking.UpdatedDate = randomDateTime;
                 IngestionTracking downloadingIngestionTracking = retryDownloadIngestionTracking.DeepClone();
 
@@ -254,7 +256,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 modifiedIngestionTracking.EncryptedFileSize = storageFileDownload.Document.DocumentData.Length;
                 modifiedIngestionTracking.EncryptedFileSha256Hash = randomHash;
                 modifiedIngestionTracking.LastSeen = randomDateTime;
-                modifiedIngestionTracking.UpdatedBy = "downloading";
                 modifiedIngestionTracking.UpdatedDate = randomDateTime;
                 IngestionTracking downloadedIngestionTracking = modifiedIngestionTracking.DeepClone();
 
@@ -281,10 +282,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            //this.auditServiceMock.VerifyNoOtherCalls();
+            this.auditServiceMock.VerifyNoOtherCalls();
         }
-
-
 
         [Theory]
         [InlineData(true, 0)]
@@ -369,6 +368,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.auditServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -455,6 +455,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.auditServiceMock.VerifyNoOtherCalls();
         }
 
         private (string encryptedFileName, string decryptedFileName) GetFileNames(

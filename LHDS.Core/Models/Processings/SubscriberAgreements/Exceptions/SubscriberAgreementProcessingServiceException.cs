@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.SubscriberAgreements.Exceptions
 {
     public class SubscriberAgreementProcessingServiceException : Xeption
     {
-        public SubscriberAgreementProcessingServiceException(string message, Xeption innerException)
+        public SubscriberAgreementProcessingServiceException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

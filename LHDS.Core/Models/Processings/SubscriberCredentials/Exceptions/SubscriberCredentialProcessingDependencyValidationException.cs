@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions
 {
     public class SubscriberCredentialProcessingDependencyValidationException : Xeption
     {
-        public SubscriberCredentialProcessingDependencyValidationException(string message, Xeption innerException)
+        public SubscriberCredentialProcessingDependencyValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

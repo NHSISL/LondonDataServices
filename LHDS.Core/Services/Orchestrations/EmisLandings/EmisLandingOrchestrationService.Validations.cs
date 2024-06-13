@@ -4,7 +4,6 @@
 
 using System;
 using LHDS.Core.Models.Foundations.Downloads;
-using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
@@ -35,7 +34,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         {
             Validate((Rule: IsInvalid(ingestionTrackingId), Parameter: "ingestionTrackingId"));
         }
-        
+
+        public void ValidateProcessArguments(Guid supplierId)
+        {
+            Validate((Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
+        }
+
         private void ValidateLandingConfigurationIsNotNull()
         {
             if (this.landingConfiguration is null)
@@ -56,9 +60,17 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             }
         }
 
-        private static void ValidateFileName(string fileName)
+        private static void ValidateProcessFileArguments(string fileName, Guid supplierId)
         {
-            Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
+            Validate(
+                (Rule: IsInvalid(fileName), Parameter: "FileName"),
+                (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
+        }
+
+        private static void ValidateRetrieveDownloadByFileNameArguments(string fileName)
+        {
+            Validate(
+                (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
         private static void ValidateStorageDownload(Download maybeDownload, string fileName)
@@ -76,7 +88,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             Message = "Id is required"
         };
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"

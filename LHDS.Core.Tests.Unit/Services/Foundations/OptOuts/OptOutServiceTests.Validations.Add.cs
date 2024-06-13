@@ -32,8 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 this.optOutService.AddOptOutAsync(nullOptOut);
 
             OptOutValidationException actualOptOutValidationException =
-                await Assert.ThrowsAsync<OptOutValidationException>(() =>
-                    addOptOutTask.AsTask());
+                await Assert.ThrowsAsync<OptOutValidationException>(addOptOutTask.AsTask);
 
             // then
             actualOptOutValidationException.Should()
@@ -107,8 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 this.optOutService.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
-                await Assert.ThrowsAsync<OptOutValidationException>(() =>
-                    addOptOutTask.AsTask());
+                await Assert.ThrowsAsync<OptOutValidationException>(addOptOutTask.AsTask);
 
             // then
             actualOptOutValidationException.Should()
@@ -184,8 +182,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 this.optOutService.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
-                await Assert.ThrowsAsync<OptOutValidationException>(() =>
-                    addOptOutTask.AsTask());
+                await Assert.ThrowsAsync<OptOutValidationException>(addOptOutTask.AsTask);
 
             // then
             actualOptOutValidationException.Should()
@@ -240,8 +237,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 this.optOutService.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
-                await Assert.ThrowsAsync<OptOutValidationException>(() =>
-                    addOptOutTask.AsTask());
+                await Assert.ThrowsAsync<OptOutValidationException>(addOptOutTask.AsTask);
 
             // then
             actualOptOutValidationException.Should()
@@ -298,8 +294,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 this.optOutService.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
-                await Assert.ThrowsAsync<OptOutValidationException>(() =>
-                    addOptOutTask.AsTask());
+                await Assert.ThrowsAsync<OptOutValidationException>(addOptOutTask.AsTask);
 
             // then
             actualOptOutValidationException.Should()
@@ -353,8 +348,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 this.optOutService.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
-                await Assert.ThrowsAsync<OptOutValidationException>(() =>
-                    addOptOutTask.AsTask());
+                await Assert.ThrowsAsync<OptOutValidationException>(addOptOutTask.AsTask);
 
             // then
             actualOptOutValidationException.Should()
@@ -413,8 +407,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 this.optOutService.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
-                await Assert.ThrowsAsync<OptOutValidationException>(() =>
-                    addOptOutTask.AsTask());
+                await Assert.ThrowsAsync<OptOutValidationException>(addOptOutTask.AsTask);
 
             // then
             actualOptOutValidationException.Should()

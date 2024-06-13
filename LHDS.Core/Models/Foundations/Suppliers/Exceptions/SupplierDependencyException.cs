@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Foundations.Suppliers.Exceptions
 {
     public class SupplierDependencyException : Xeption
     {
-        public SupplierDependencyException(string message, Xeption innerException) :
+        public SupplierDependencyException(string message, Xeption? innerException) :
             base(message, innerException)
         { }
     }

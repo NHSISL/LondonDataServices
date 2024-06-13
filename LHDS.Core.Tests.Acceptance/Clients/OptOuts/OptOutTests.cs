@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using LHDS.Core.Brokers.CsvMappers;
+using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly IOptOutClient optOutClient;
-        private readonly ICsvMapperBroker csvMapperBroker;
+        private readonly ICsvHelperBroker csvHelperBroker;
         private readonly MeshConfiguration meshConfiguration;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -65,7 +65,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
             this.meshConfiguration = serviceProvider.GetService<MeshConfiguration>();
-            this.csvMapperBroker = serviceProvider.GetService<ICsvMapperBroker>();
+            this.csvHelperBroker = serviceProvider.GetService<ICsvHelperBroker>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             this.optOutService = serviceProvider.GetService<IOptOutService>();
             optOutClient = serviceProvider.GetService<IOptOutClient>();

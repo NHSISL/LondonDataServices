@@ -104,7 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 $"_{GetRandomNumber()}_{identifier}.csv.gpg;";
         }
 
-        public static TheoryData DependencyValidationExceptions()
+        public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -132,7 +132,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             };
         }
 
-        public static TheoryData DependencyExceptions()
+        public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -145,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     innerException),
 
                 new SubscriberCredentialOrchestrationServiceException(
-                    message: "Subscriber credential orchestration service error occurred, contact support.",
+                    message: "Subscriber credential orchestration service error occurred, please contact support.",
                     innerException),
 
                 new DecryptionOrchestrationDependencyException(
@@ -153,7 +153,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     innerException),
 
                 new DecryptionOrchestrationServiceException(
-                    message: "Decryption orchestration service error occurred, contact support.",
+                    message: "Decryption orchestration service error occurred, please contact support.",
                     innerException)
             };
         }

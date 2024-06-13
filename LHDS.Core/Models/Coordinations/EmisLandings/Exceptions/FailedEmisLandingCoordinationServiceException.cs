@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Coordinations.EmisLandings.Exceptions
 {
     public class FailedEmisLandingCoordinationServiceException : Xeption
     {
-        public FailedEmisLandingCoordinationServiceException(string message, Exception innerException)
+        public FailedEmisLandingCoordinationServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

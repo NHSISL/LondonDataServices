@@ -44,7 +44,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"

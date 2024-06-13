@@ -35,14 +35,14 @@ namespace LHDS.Core.Providers.Downloads.MockDownloads
 
             var document = new Document()
             {
-                FileName = download.Document.FileName,
+                FileName = download?.Document?.FileName ?? "",
                 DocumentData = data
             };
 
             var downloadedItem = new Download
             {
                 Document = document,
-                SubscriberCredential = download.SubscriberCredential
+                SubscriberCredential = download?.SubscriberCredential
             };
 
             return await ValueTask.FromResult(downloadedItem);
@@ -57,7 +57,7 @@ namespace LHDS.Core.Providers.Downloads.MockDownloads
                 downloads.Add(GetRandomString());
             }
 
-            return downloads;
+            return await ValueTask.FromResult(downloads);
         }
     }
 }

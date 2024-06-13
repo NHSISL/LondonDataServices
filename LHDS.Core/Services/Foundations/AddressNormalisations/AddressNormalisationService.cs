@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.AddressNormalisations;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using Newtonsoft.Json;
 
 namespace LHDS.Core.Services.Foundations.AddressNormalisations
@@ -32,16 +34,16 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
                 ValidateAddressNormalisationArgs(address);
                 string cleanedAddress = CleanupAddress(address);
                 string[] expandedAddresses = await this.addressNormalisationBroker.ExpandAddressAsync(address);
-                string fisrtExpandedAddress = expandedAddresses.FirstOrDefault() ?? string.Empty;
+                string firstExpandedAddress = expandedAddresses.FirstOrDefault() ?? string.Empty;
 
                 List<KeyValuePair<string, string>> parsedAddress =
-                    await this.addressNormalisationBroker.ParseAddressAsync(address: fisrtExpandedAddress);
+                    await this.addressNormalisationBroker.ParseAddressAsync(address: firstExpandedAddress);
 
                 string jsonPostalAddress = ParseAddressToJson(addressParts: parsedAddress);
 
                 AddressNormalisation normalisedAddress = new AddressNormalisation
                 {
-                    PostalAddress = fisrtExpandedAddress,
+                    PostalAddress = firstExpandedAddress,
                     JsonPostalAddress = jsonPostalAddress,
                     AddressComponents = parsedAddress,
                 };
@@ -74,10 +76,23 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
 
         internal string ParseAddressToJson(List<KeyValuePair<string, string>> addressParts)
         {
-            var dictionary = addressParts.ToDictionary(kv => kv.Key, kv => kv.Value);
-            string json = JsonConvert.SerializeObject(dictionary);
+            try
+            {
+                var dictionary = addressParts.ToDictionary(kv => kv.Key, kv => kv.Value);
+                string json = JsonConvert.SerializeObject(dictionary);
 
-            return json;
+                return json;
+            }
+            catch (Exception ex)
+            {
+                var address = string.Join(" ", addressParts.Select(pair => pair.Value));
+
+                var addressSegments =
+                    string.Join(Environment.NewLine, addressParts.Select(pair => $"{pair.Key}: {pair.Value}"));
+
+                throw new InvalidAddressPartsNormalisationException(
+                    $"{ex.Message}, address: {address}, parts: {addressSegments}");
+            }
         }
     }
 }

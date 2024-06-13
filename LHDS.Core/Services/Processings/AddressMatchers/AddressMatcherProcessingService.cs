@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Force.DeepCloner;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressMatchers;
 using LHDS.Core.Services.Foundations.AddressMatchers;
@@ -57,14 +58,14 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 return cleanAddress;
             });
 
-        public string ExtractPostCode(string address) =>
+        public string ExtractPostCode(string? address) =>
             TryCatch(() =>
             {
                 ValidateAddress(address);
                 string pattern = @"\b([A-Z]{1,2}\d{1,2}[A-Z]?\s*\d[A-Z]{2})\b";
                 HashSet<string> uniqueMatches = new HashSet<string>();
 
-                foreach (Match match in Regex.Matches(address, pattern))
+                foreach (Match match in Regex.Matches(address?.ToUpper() ?? "", pattern))
                 {
                     uniqueMatches.Add(match.Value);
                 }
@@ -73,7 +74,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 ValidateMatches(matches);
                 string extractedPostCode = matches[0].Groups[1].Value;
 
-                return extractedPostCode;
+                return extractedPostCode.ToLower();
             });
 
         public ValueTask<HashSet<AddressMatch>> CalculateMatchingAddressComponents(
@@ -161,12 +162,13 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             HashSet<AddressMatch> matchedAddresses,
             IList<KeyValuePair<string, string>> addressComponents)
         {
-            return await ValueTask.FromResult(
-                new AddressMatch
-                {
-                    IsMatched = false,
-                    BestMatch = BestMatchEnum.Multiple
-                });
+            var multipleMatch = matchedAddresses.ToList().Where(x => x.MatchingCoreComponents)
+                .OrderByDescending(x => x.MatchedComponents).First().DeepClone();
+
+            multipleMatch.IsMatched = true;
+            multipleMatch.BestMatch = BestMatchEnum.Multiple;
+
+            return await ValueTask.FromResult(multipleMatch);
         }
     }
 }

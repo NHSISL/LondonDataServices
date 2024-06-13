@@ -149,7 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             return filler;
         }
 
-        public static TheoryData AddressCoordinationDependencyValidationExceptions()
+        public static TheoryData<Xeption> AddressCoordinationDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -165,18 +165,18 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     message: "Address extraction orchestration dependency validation error occurred, please try again.",
                     innerException),
 
-                new AddressPersistanceOrchestrationValidationException(
+                new AddressPersistenceOrchestrationValidationException(
                     message: "Address persistance orchestration validation error occured, please try again",
                     innerException),
 
-                new AddressPersistanceOrchestrationDependencyValidationException(
+                new AddressPersistenceOrchestrationDependencyValidationException(
                     message: "Address persistance orchestration dependency validation error occurred, " +
                     "please try again.",
                     innerException),
             };
         }
 
-        public static TheoryData AddressCoordinationDependencyExceptions()
+        public static TheoryData<Xeption> AddressCoordinationDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -192,11 +192,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     message: "Address extraction orchestration error occured, please try again",
                     innerException),
 
-                new AddressPersistanceOrchestrationDependencyException(
+                new AddressPersistenceOrchestrationDependencyException(
                     message: "Address persistance orchestration dependency error occurred, please try again.",
                     innerException),
 
-                new AddressPersistanceOrchestrationServiceException(
+                new AddressPersistenceOrchestrationServiceException(
                     message: "Address persistance orchestration service error occured, please try again",
                     innerException),
             };

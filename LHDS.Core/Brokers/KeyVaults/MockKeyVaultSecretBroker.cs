@@ -10,10 +10,10 @@ namespace LHDS.Core.Brokers.KeyVaults
     public class MockKeyVaultSecretBroker : IKeyVaultSecretBroker
     {
         public async ValueTask<KeyVaultSecret> CreateOrUpdateKeyVaultSecretAsync(KeyVaultSecret keyVaultSecret) =>
-            keyVaultSecret;
+            await ValueTask.FromResult(keyVaultSecret);
 
         public async ValueTask<KeyVaultSecret> GetKeyVaultSecretAsync(string secretName) =>
-            new KeyVaultSecret(name: secretName, value: "mock value");
+            await ValueTask.FromResult(new KeyVaultSecret(name: secretName, value: "mock value"));
 
         public async ValueTask DeleteKeyVaultSecretAsync(string secretName) =>
             await Task.FromResult(true);

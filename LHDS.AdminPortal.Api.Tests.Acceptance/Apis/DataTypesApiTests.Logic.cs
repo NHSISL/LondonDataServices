@@ -116,8 +116,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
             // then
             deletedDataType.Should().BeEquivalentTo(expectedDataType);
 
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getDataTypebyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getDataTypebyIdTask.AsTask);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Documents.Exceptions
 {
     public class FailedDocumentRequestException : Xeption
     {
-        public FailedDocumentRequestException(string message, Exception innerException)
+        public FailedDocumentRequestException(string message, Exception? innerException)
             : base(message, innerException) 
         { }
     }

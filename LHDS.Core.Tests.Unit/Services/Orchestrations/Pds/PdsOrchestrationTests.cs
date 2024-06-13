@@ -200,7 +200,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             return pdsAudit;
         }
 
-        public static TheoryData PdsDependencyValidationExceptions()
+        public static TheoryData<Xeption> PdsDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -234,7 +234,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             };
         }
 
-        public static TheoryData PdsDependencyExceptions()
+        public static TheoryData<Xeption> PdsDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -247,23 +247,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException),
 
                 new PdsOrchestrationServiceException(
-                    message: "PDS orchestration service error occurred, contact support.",
+                    message: "PDS orchestration service error occurred, please contact support.",
                     innerException),
 
                 new DocumentDependencyException(
-                    message: "Document dependency error occurred, contact support.",
+                    message: "Document dependency error occurred, please contact support.",
                     innerException),
 
                 new DocumentServiceException(
-                    message: "Document service error occurred, contact support.",
+                    message: "Document service error occurred, please contact support.",
                     innerException),
 
                 new MeshDependencyException(
-                    message: "Mesh dependency error occurred, contact support.",
+                    message: "Mesh dependency error occurred, please contact support.",
                     innerException),
 
                 new MeshServiceException(
-                    message: "Mesh service error occurred, contact support.",
+                    message: "Mesh service error occurred, please contact support.",
                     innerException),
             };
         }

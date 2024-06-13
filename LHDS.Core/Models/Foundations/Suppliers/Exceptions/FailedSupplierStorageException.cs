@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Suppliers.Exceptions
 {
     public class FailedSupplierStorageException : Xeption
     {
-        public FailedSupplierStorageException(string message, Exception innerException)
+        public FailedSupplierStorageException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

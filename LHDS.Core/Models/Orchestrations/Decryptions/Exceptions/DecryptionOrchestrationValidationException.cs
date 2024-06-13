@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Orchestrations.Decryptions.Exceptions
 {
     public class DecryptionOrchestrationValidationException : Xeption
     {
-        public DecryptionOrchestrationValidationException(string message, Xeption innerException)
+        public DecryptionOrchestrationValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

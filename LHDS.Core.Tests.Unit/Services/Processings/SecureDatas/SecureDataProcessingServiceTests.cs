@@ -151,7 +151,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             return randomSubscriberCredential;
         }
 
-        public static TheoryData DependencyValidationExceptions()
+        public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -167,7 +167,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
             };
         }
 
-        public static TheoryData DependencyExceptions()
+        public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -179,7 +179,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     message: "Secure data validation errors occurred, please try again.", innerException),
 
                 new SecureDataServiceException(
-                    message : "Secure data service error occurred, contact support.", innerException)
+                    message : "Secure data service error occurred, please contact support.", innerException)
             };
         }
     }

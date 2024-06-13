@@ -64,10 +64,16 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IOntologyBroker, OntologyBroker>();
-            OntologyConfiguration ontologyConfiguration =
-            configuration.GetSection("ontologySettings").Get<OntologyConfiguration>();
+
+            OntologyConfiguration? ontologyConfiguration =
+                configuration.GetSection("ontologySettings").Get<OntologyConfiguration>();
+
             ValidateOntologyConfiguration(ontologyConfiguration);
-            services.AddSingleton(ontologyConfiguration);
+
+            if (ontologyConfiguration != null)
+            {
+                services.AddSingleton(ontologyConfiguration);
+            }
         }
 
         private static void AddServices(IServiceCollection services)
@@ -100,30 +106,34 @@ namespace LHDS.Core.Clients.Extensions
         {
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
-            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
-            var blobServiceClientOptions = new BlobClientOptions()
+            if (blobStorageSettings != null)
             {
-                Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
-                Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
-                EnableTenantDiscovery = true
-            };
+                services.AddSingleton(blobStorageSettings.BlobContainers);
 
-            services.AddSingleton(
-                new BlobServiceClient(
-                    serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
-                    credential: new DefaultAzureCredential(
-                        new DefaultAzureCredentialOptions
-                        {
-                            VisualStudioTenantId = blobStorageSettings.AzureTenantId,
-                        }),
-                    options: blobServiceClientOptions));
+                var blobServiceClientOptions = new BlobClientOptions()
+                {
+                    Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
+                    Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                    EnableTenantDiscovery = true
+                };
+
+                services.AddSingleton(
+                    new BlobServiceClient(
+                        serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
+                        credential: new DefaultAzureCredential(
+                            new DefaultAzureCredentialOptions
+                            {
+                                VisualStudioTenantId = blobStorageSettings.AzureTenantId,
+                            }),
+                        options: blobServiceClientOptions));
+            }
 
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<ITerminologyClient, TerminologyClient>();
         }
 
-        private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
+        private static void ValidateBlobStorageSettings(BlobStorageSettings? blobStorageSettings)
         {
             if (blobStorageSettings == null)
             {
@@ -139,8 +149,7 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "blobStorage__azureTenantId"));
         }
 
-        private static void ValidateOntologyConfiguration(
-            OntologyConfiguration ontologyConfiguration)
+        private static void ValidateOntologyConfiguration(OntologyConfiguration? ontologyConfiguration)
         {
             if (ontologyConfiguration == null)
             {
@@ -164,7 +173,7 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "ontologySettings__clientSecret"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Configuration value does not exist"

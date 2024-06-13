@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Foundations.OptOuts.Exceptions
 {
     public class OptOutDependencyException : Xeption
     {
-        public OptOutDependencyException(string message, Xeption innerException) :
+        public OptOutDependencyException(string message, Xeption? innerException) :
             base(message, innerException)
         { }
     }

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -27,6 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             var somefileName = GetRandomMessage();
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
+            Guid inputSupplierId = Guid.NewGuid();
             LandingConfiguration invalidLandingConfiguration = null;
 
             var invalidDownloadOrchestrationService = new EmisLandingOrchestrationService(
@@ -54,7 +56,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<string> processTask = invalidDownloadOrchestrationService
-                .ProcessFileAsync(ftpFileName: inputFileName, subscriberCredential: inputSubscriberCredential);
+                .ProcessFileAsync(
+                    ftpFileName: inputFileName,
+                    subscriberCredential: inputSubscriberCredential,
+                    supplierId: inputSupplierId);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
@@ -83,6 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             SubscriberCredential inputSubscriberCredential = null;
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
+            Guid inputSupplierId = Guid.NewGuid();
 
             var nullSubscriberCredentialEmisLandingOrchestrationException =
                 new NullSubscriberCredentialEmisLandingOrchestrationException(
@@ -97,7 +103,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // when
             ValueTask<string> processTask =
                 this.emisLandingOrchestrationService
-                    .ProcessFileAsync(ftpFileName: inputFileName, subscriberCredential: inputSubscriberCredential);
+                    .ProcessFileAsync(
+                        ftpFileName: inputFileName,
+                        subscriberCredential: inputSubscriberCredential,
+                        supplierId: inputSupplierId);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
@@ -127,6 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
+            Guid inputSupplierId = Guid.NewGuid();
             BlobContainers invalidBlobContainers = null;
 
             var invalidDownloadOrchestrationService = new EmisLandingOrchestrationService(
@@ -154,7 +164,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<string> DownloadTask = invalidDownloadOrchestrationService
-                .ProcessFileAsync(ftpFileName: inputFileName, subscriberCredential: inputSubscriberCredential);
+                .ProcessFileAsync(
+                    ftpFileName: inputFileName,
+                    subscriberCredential: inputSubscriberCredential,
+                    supplierId: inputSupplierId);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(DownloadTask.AsTask);
@@ -187,6 +200,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string inputFileName = invalidText;
+            Guid invalidSupplierId = Guid.Empty;
 
             var invalidArgumentEmisLandingOrchestrationException =
                 new InvalidArgumentEmisLandingOrchestrationException(
@@ -197,6 +211,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                key: "FileName",
                values: "Text is required");
 
+            invalidArgumentEmisLandingOrchestrationException.AddData(
+               key: "SupplierId",
+               values: "Id is required");
+
             var expectedDownloadOrchestrationValidationException =
                 new EmisLandingOrchestrationValidationException(
                     message: "EMIS landing orchestration validation errors occurred, please try again.",
@@ -205,7 +223,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // when
             ValueTask<string> processTask =
                 this.emisLandingOrchestrationService
-                    .ProcessFileAsync(ftpFileName: inputFileName, subscriberCredential: inputSubscriberCredential);
+                    .ProcessFileAsync(
+                        ftpFileName: inputFileName,
+                        subscriberCredential: inputSubscriberCredential,
+                        supplierId: invalidSupplierId);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
@@ -236,6 +257,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
+            Guid inputSupplierId = Guid.NewGuid();
 
             Download inputDownload = new Download
             {
@@ -258,7 +280,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<string> processTask = this.emisLandingOrchestrationService
-                .ProcessFileAsync(ftpFileName: inputFileName, subscriberCredential: inputSubscriberCredential);
+                .ProcessFileAsync(
+                    ftpFileName: inputFileName,
+                    subscriberCredential: inputSubscriberCredential,
+                    supplierId: inputSupplierId);
 
             EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);

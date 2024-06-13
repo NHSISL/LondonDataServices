@@ -216,7 +216,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             return terminologyArtifacts;
         }
 
-        public static TheoryData TerminologyMetadataOrchestrationDependencyValidationExceptions()
+        public static TheoryData<Xeption> TerminologyMetadataOrchestrationDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -250,7 +250,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             };
         }
 
-        public static TheoryData TerminologyMetadataOrchestrationDependencyExceptions()
+        public static TheoryData<Xeption> TerminologyMetadataOrchestrationDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -259,27 +259,27 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             return new TheoryData<Xeption>
             {
                 new TerminologyPollProcessingDependencyException(
-                    message: "Terminology poll processing dependency error occurred, contact support.",
+                    message: "Terminology poll processing dependency error occurred, please contact support.",
                     innerException),
 
                 new TerminologyPollProcessingServiceException(
-                    message: "Terminology poll processing service error occurred, contact support.",
+                    message: "Terminology poll processing service error occurred, please contact support.",
                     innerException),
 
                 new TerminologyArtifactProcessingDependencyException(
-                    message: "Terminology artifact processing dependency error occurred, contact support.",
+                    message: "Terminology artifact processing dependency error occurred, please contact support.",
                     innerException),
 
                 new TerminologyArtifactProcessingServiceException(
-                    message: "Terminology artifact processing service error occurred, contact support.",
+                    message: "Terminology artifact processing service error occurred, please contact support.",
                     innerException),
 
                 new OntologyProcessingDependencyException(
-                    message: "Ontology processing dependency error occurred, contact support.",
+                    message: "Ontology processing dependency error occurred, please contact support.",
                     innerException),
 
                 new OntologyProcessingServiceException(
-                    message: "Ontology processing service error occurred, contact support.",
+                    message: "Ontology processing service error occurred, please contact support.",
                     innerException),
             };
         }

@@ -118,12 +118,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
             var failedDecryptionCoordinationServiceException =
                 new FailedDecryptionCoordinationServiceException(
-                    message: "Failed decryption coordination service occurred, please contact support.",
+                    message: "Failed decryption coordination service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedDecryptionCoordinationServiceException =
                 new DecryptionCoordinationServiceException(
-                    message: "Decryption coordination service error occurred, contact support.",
+                    message: "Decryption coordination service error occurred, please contact support.",
                     innerException: failedDecryptionCoordinationServiceException);
 
             // When

@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             var invalidArgumentSubscriberCredentialOrchestrationException =
                 new InvalidArgumentSubscriberCredentialOrchestrationException(
-                    message: "Invalid argument subscriber credential orchestration error occurred, contact support.");
+                    message: "Invalid argument subscriber credential orchestration error occurred, please contact support.");
 
             invalidArgumentSubscriberCredentialOrchestrationException.AddData(
                 key: "subscriberCredentialId",

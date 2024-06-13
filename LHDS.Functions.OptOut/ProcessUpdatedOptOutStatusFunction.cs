@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -25,16 +25,13 @@ namespace LHDS.Functions.OptOut
         }
 
         [Function("ProcessUpdatedOptOutStatusFunction")]
-        public void Run([TimerTrigger("0 */15 * * * *")] MyInformation myTimer)
+        public async Task Run([TimerTrigger("0 */15 * * * *")] MyInformation myTimer)
         {
             this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
-                Task.Run(async () =>
-                {
-                    await optOutClient.RetrieveUpdatedMeshConsentStatusesChangesAsync();
-                }).Wait();
+                await optOutClient.RetrieveUpdatedMeshConsentStatusesChangesAsync();
             }
             catch (Exception ex)
             {

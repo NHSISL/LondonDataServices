@@ -3,12 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
-using LHDS.Core.Models.Foundations.Addresses;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -33,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask<Guid> uploadAddressesTask =
+            ValueTask<Guid?> uploadAddressesTask =
                 this.addressCoordinationService.UploadResolvedAddressesAsync();
 
             AddressCoordinationDependencyValidationException actualException =
@@ -74,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<Guid> uploadAddressesTask =
+            ValueTask<Guid?> uploadAddressesTask =
                 this.addressCoordinationService.UploadResolvedAddressesAsync();
 
             AddressCoordinationDependencyException actualException =
@@ -112,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             var expectedAddressCoordinationServiceException =
                 new AddressCoordinationServiceException(
-                    message: "Address coordination service error occurred, contact support.",
+                    message: "Address coordination service error occurred, please contact support.",
                     innerException: failedAddressCoordinationServiceException);
 
             this.resolvedAddressOrchestrationServiceMock.Setup(service =>
@@ -120,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<Guid> uploadAddressesTask =
+            ValueTask<Guid?> uploadAddressesTask =
                 this.addressCoordinationService.UploadResolvedAddressesAsync();
 
             AddressCoordinationServiceException actualException =

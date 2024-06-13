@@ -97,12 +97,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             var failedAddressProcessingServiceException =
                 new FailedAddressProcessingServiceException(
-                    message: "Failed Address processing service error occurred, contact support.",
+                    message: "Failed Address processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedAddressProcessingServiveException =
                 new AddressProcessingServiceException(
-                    message: "Address processing service error occurred, contact support.",
+                    message: "Address processing service error occurred, please contact support.",
                     innerException: failedAddressProcessingServiceException);
 
             addressServiceMock.Setup(service =>

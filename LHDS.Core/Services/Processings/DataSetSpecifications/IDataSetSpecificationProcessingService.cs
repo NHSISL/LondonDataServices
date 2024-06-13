@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -18,6 +18,6 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
         ValueTask<DataSetSpecification> ModifyOrAddDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);
         ValueTask<DataSetSpecification> ModifyDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);
         ValueTask<DataSetSpecification> RemoveDataSetSpecificationByIdAsync(Guid dataSetSpecificationId);
-        ValueTask<DataSetSpecification> GetActiveDataSetSpecification(Guid supplierId);
+        ValueTask<DataSetSpecification?> GetActiveDataSetSpecification(Guid supplierId);
     }
 }

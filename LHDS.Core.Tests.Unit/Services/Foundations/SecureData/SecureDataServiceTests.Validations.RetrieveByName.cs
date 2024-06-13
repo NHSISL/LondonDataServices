@@ -40,8 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                 this.secureDataService.RetrieveSecretDataByNameAsync(invalidSecretName);
 
             SecureDataValidationException actualSecureDataValidationException =
-                await Assert.ThrowsAsync<SecureDataValidationException>(() =>
-                    retrieveSecureDataTask.AsTask());
+                await Assert.ThrowsAsync<SecureDataValidationException>(retrieveSecureDataTask.AsTask);
 
             // then
             actualSecureDataValidationException.Should()

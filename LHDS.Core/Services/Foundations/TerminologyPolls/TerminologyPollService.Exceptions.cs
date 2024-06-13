@@ -33,7 +33,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             {
                 var failedTerminologyPollStorageException =
                     new FailedTerminologyPollStorageException(
-                        message: "Failed terminologyPoll storage error occurred, contact support.",
+                        message: "Failed terminologyPoll storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedTerminologyPollStorageException);
@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             {
                 var failedTerminologyPollStorageException =
                     new FailedTerminologyPollStorageException(
-                        message: "Failed terminologyPoll storage error occurred, contact support.",
+                        message: "Failed terminologyPoll storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedTerminologyPollStorageException);
@@ -82,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             {
                 var failedTerminologyPollServiceException =
                     new FailedTerminologyPollServiceException(
-                        message: "Failed terminologyPoll service occurred, please contact support", 
+                        message: "Failed terminologyPoll service error occurred, please contact support.", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedTerminologyPollServiceException);
@@ -99,7 +99,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             {
                 var failedTerminologyPollStorageException =
                     new FailedTerminologyPollStorageException(
-                        message: "Failed terminologyPoll storage error occurred, contact support.",
+                        message: "Failed terminologyPoll storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedTerminologyPollStorageException);
@@ -108,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             {
                 var failedTerminologyPollServiceException =
                     new FailedTerminologyPollServiceException(
-                        message: "Failed terminologyPoll service occurred, please contact support", 
+                        message: "Failed terminologyPoll service error occurred, please contact support.", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedTerminologyPollServiceException);
@@ -131,7 +131,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         {
             var terminologyPollDependencyException = 
                 new TerminologyPollDependencyException(
-                    message: "TerminologyPoll dependency error occurred, contact support.",
+                    message: "TerminologyPoll dependency error occurred, please contact support.",
                     innerException: exception); 
 
             this.loggingBroker.LogCritical(terminologyPollDependencyException);
@@ -156,7 +156,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         {
             var terminologyPollDependencyException = 
                 new TerminologyPollDependencyException(
-                    message: "TerminologyPoll dependency error occurred, contact support.",
+                    message: "TerminologyPoll dependency error occurred, please contact support.",
                     innerException: exception); 
 
             this.loggingBroker.LogError(terminologyPollDependencyException);
@@ -169,7 +169,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         {
             var terminologyPollServiceException = 
                 new TerminologyPollServiceException(
-                    message: "TerminologyPoll service error occurred, contact support.",
+                    message: "TerminologyPoll service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(terminologyPollServiceException);

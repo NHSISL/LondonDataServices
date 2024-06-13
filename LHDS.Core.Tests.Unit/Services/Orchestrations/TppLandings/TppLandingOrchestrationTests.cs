@@ -126,13 +126,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
         private static List<IngestionTracking> CreateRandomIngestionTrackings(
             DateTimeOffset dateTimeOffset,
-            List<Document> documents)
+            List<Document> documents,
+            Guid supplierId)
         {
             List<IngestionTracking> items = new List<IngestionTracking>();
 
             foreach (var document in documents)
             {
-                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, document.FileName).Create());
+                items.Add(CreateIngestionTrackingFiller(
+                    dateTimeOffset,
+                    fileName: document.FileName,
+                    supplierId).Create());
             }
 
             return items;
@@ -221,7 +225,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        public static TheoryData TppDependencyValidationExceptions()
+        public static TheoryData<Xeption> TppDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -255,7 +259,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             };
         }
 
-        public static TheoryData TppDependencyExceptions()
+        public static TheoryData<Xeption> TppDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -264,27 +268,27 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             return new TheoryData<Xeption>
             {
                 new DocumentDependencyException(
-                    message: "Document dependency error occurred, contact support.",
+                    message: "Document dependency error occurred, please contact support.",
                     innerException),
 
                 new DocumentServiceException(
-                    message: "Document service error occurred, contact support.",
+                    message: "Document service error occurred, please contact support.",
                     innerException),
 
                 new IngestionTrackingDependencyException(
-                    message: "Failed ingestion tracking storage error occurred, contact support.",
+                    message: "Failed ingestion tracking storage error occurred, please contact support.",
                     innerException),
 
                 new IngestionTrackingServiceException(
-                    message: "Ingestion tracking service error occurred, contact support.",
+                    message: "Ingestion tracking service error occurred, please contact support.",
                     innerException),
 
                 new IngestionTrackingAuditDependencyException(
-                    message: "Audit dependency error occurred, contact support.",
+                    message: "Audit dependency error occurred, please contact support.",
                     innerException),
 
                 new IngestionTrackingAuditServiceException(
-                    message: "Audit service error occurred, contact support.",
+                    message: "Audit service error occurred, please contact support.",
                     innerException)
             };
         }
@@ -303,12 +307,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset, string id)
+            DateTimeOffset dateTimeOffset,
+            string fileName,
+            Guid supplierId)
         {
             var filler = new Filler<IngestionTracking>();
 
             filler.Setup()
-                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(id)
+                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(fileName)
+                .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()

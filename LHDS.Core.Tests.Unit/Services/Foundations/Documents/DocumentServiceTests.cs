@@ -5,9 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
 using System.Security.Cryptography;
-using Azure;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -48,9 +46,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                 loggingBroker: this.loggingBrokerMock.Object,
                 configuration: this.inMemoryConfiguration);
         }
-
-        private static RequestFailedException GetBlobException() =>
-           (RequestFailedException)FormatterServices.GetUninitializedObject(typeof(RequestFailedException));
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
            actualException => actualException.SameExceptionAs(expectedException);

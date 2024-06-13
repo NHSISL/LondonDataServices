@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 optOutProcessingService: this.optOutProcessingServiceMock.Object,
                 documentProcessingService: this.documentProcessingServiceMock.Object,
                 meshProcessingService: this.meshProcessingServiceMock.Object,
-                csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
+                csvHelperBroker: this.csvHelperBrokerMock.Object,
                 blobContainers: this.blobContainers,
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
@@ -61,10 +61,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -77,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 optOutProcessingService: this.optOutProcessingServiceMock.Object,
                 documentProcessingService: this.documentProcessingServiceMock.Object,
                 meshProcessingService: this.meshProcessingServiceMock.Object,
-                csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
+                csvHelperBroker: this.csvHelperBrokerMock.Object,
                 blobContainers: invalidBlobContainers,
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
@@ -113,10 +115,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -148,9 +152,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 optOutProcessingService: this.optOutProcessingServiceMock.Object,
                 documentProcessingService: this.documentProcessingServiceMock.Object,
                 meshProcessingService: this.meshProcessingServiceMock.Object,
-                csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
                 blobContainers,
                 loggingBroker: this.loggingBrokerMock.Object,
+                csvHelperBroker: this.csvHelperBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
                 optOutConfiguration: invalidOptOutConfiguration,
@@ -191,10 +195,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

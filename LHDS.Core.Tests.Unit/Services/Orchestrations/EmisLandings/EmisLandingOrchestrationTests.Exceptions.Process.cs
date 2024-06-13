@@ -25,6 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // given
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
             Download someDownload = new Download { SubscriberCredential = someSubscriberCredential };
+            Guid someSupplierId = Guid.NewGuid();
 
             var expectedDependencyException =
                 new EmisLandingOrchestrationDependencyValidationException(
@@ -39,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<List<string>> processTask = this.emisLandingOrchestrationService
-                .ProcessAsync(subscriberCredential: someSubscriberCredential);
+                .ProcessAsync(subscriberCredential: someSubscriberCredential, supplierId: someSupplierId);
 
             EmisLandingOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyValidationException>(processTask.AsTask);
@@ -73,6 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // given
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
             Download someDownload = new Download { SubscriberCredential = someSubscriberCredential };
+            Guid someSupplierId = Guid.NewGuid();
 
             var expectedDependencyException =
                 new EmisLandingOrchestrationDependencyException(
@@ -85,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<List<string>> processTask = this.emisLandingOrchestrationService
-                .ProcessAsync(subscriberCredential: someSubscriberCredential);
+                .ProcessAsync(subscriberCredential: someSubscriberCredential, supplierId: someSupplierId);
 
             EmisLandingOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyException>(processTask.AsTask);
@@ -118,15 +120,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
             Download someDownload = new Download { SubscriberCredential = someSubscriberCredential };
             var serviceException = new Exception();
+            Guid someSupplierId = Guid.NewGuid();
 
             var failedEmisLandingOrchestrationServiceException =
                 new FailedEmisLandingOrchestrationServiceException(
-                    message: "Failed EMIS landing orchestration service occurred, please contact support",
+                    message: "Failed EMIS landing orchestration service error occurred, please contact support.",
                     serviceException);
 
             var expectedEmisLandingOrchestrationServiceException =
                 new EmisLandingOrchestrationServiceException(
-                    message: "EMIS landing orchestration service error occurred, contact support.",
+                    message: "EMIS landing orchestration service error occurred, please contact support.",
                     failedEmisLandingOrchestrationServiceException);
 
             this.downloadProcessingServiceMock.Setup(service =>
@@ -135,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<List<string>> processTask = this.emisLandingOrchestrationService
-                .ProcessAsync(subscriberCredential: someSubscriberCredential);
+                .ProcessAsync(subscriberCredential: someSubscriberCredential, supplierId: someSupplierId);
 
             EmisLandingOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationServiceException>(processTask.AsTask);

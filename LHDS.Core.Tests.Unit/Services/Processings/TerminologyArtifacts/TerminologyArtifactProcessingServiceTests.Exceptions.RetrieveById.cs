@@ -106,12 +106,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             var failedTerminologyArtifactProcessingServiceException =
                new FailedTerminologyArtifactProcessingServiceException(
-                    message: "Failed terminology artifact processing service error occurred, contact support.",
+                    message: "Failed terminology artifact processing service error occurred, please contact support.",
                    innerException: serviceException);
 
             var expectedTerminologyArtifactProcessingServiveException =
                 new TerminologyArtifactProcessingServiceException(
-                    message: "Terminology artifact processing service error occurred, contact support.",
+                    message: "Terminology artifact processing service error occurred, please contact support.",
                     innerException: failedTerminologyArtifactProcessingServiceException);
 
             this.terminologyArtifactServiceMock.Setup(service =>

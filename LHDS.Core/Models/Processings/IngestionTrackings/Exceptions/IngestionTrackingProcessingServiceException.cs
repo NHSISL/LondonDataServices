@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.IngestionTrackings.Exceptions
 {
     public class IngestionTrackingProcessingServiceException : Xeption
     {
-        public IngestionTrackingProcessingServiceException(string message, Xeption innerException)
+        public IngestionTrackingProcessingServiceException(string message, Xeption? innerException)
           : base(message, innerException)
         { }
     }

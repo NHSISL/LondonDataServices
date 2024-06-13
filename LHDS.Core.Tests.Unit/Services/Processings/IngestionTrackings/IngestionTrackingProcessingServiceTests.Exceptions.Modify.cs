@@ -110,12 +110,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             var failedIngestionTrackingProcessingServiceException =
                 new FailedIngestionTrackingProcessingServiceException(
-                    message: "Failed IngestionTracking processing service error occurred, contact support.",
+                    message: "Failed IngestionTracking processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedIngestionTrackingProcessingServiveException =
                 new IngestionTrackingProcessingServiceException(
-                    message: "IngestionTracking processing service error occurred, contact support.",
+                    message: "IngestionTracking processing service error occurred, please contact support.",
                     innerException: failedIngestionTrackingProcessingServiceException);
 
             this.ingestionTrackingServiceMock.Setup(service =>

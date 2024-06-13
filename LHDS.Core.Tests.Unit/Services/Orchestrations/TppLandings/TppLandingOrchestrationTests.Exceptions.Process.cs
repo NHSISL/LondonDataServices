@@ -21,6 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
              Xeption dependancyValidationException)
         {
             // given
+            Guid randomSupplierId = Guid.NewGuid();
             Document randomDocument = CreateRandomDocument();
 
             var expectedDependencyException =
@@ -33,7 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .Throws(dependancyValidationException);
 
             // when
-            ValueTask<Guid> processTask = this.tppOrchestrationService.ProcessAsync(randomDocument);
+            ValueTask<Guid> processTask = this.tppOrchestrationService
+                .ProcessAsync(document: randomDocument, supplierId: randomSupplierId);
 
             TppLandingOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationDependencyValidationException>(processTask.AsTask);
@@ -65,6 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
           Xeption dependancyException)
         {
             // given
+            Guid randomSupplierId = Guid.NewGuid();
             Document randomDocument = CreateRandomDocument();
 
             var expectedDependencyException =
@@ -77,7 +80,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .Throws(dependancyException);
 
             // when
-            ValueTask<Guid> processTask = this.tppOrchestrationService.ProcessAsync(randomDocument);
+            ValueTask<Guid> processTask = this.tppOrchestrationService
+                .ProcessAsync(document: randomDocument, supplierId: randomSupplierId);
 
             TppLandingOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationDependencyException>(processTask.AsTask);
@@ -107,17 +111,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         public async Task ShouldThrowServiceExceptionOnProcessIfServiceErrorOccursAndLogItAsync()
         {
             //Given
+            Guid randomSupplierId = Guid.NewGuid();
             Document randomDocument = CreateRandomDocument();
             var serviceException = new Exception();
 
             var failedTppOrchestrationServiceException =
                 new FailedTppLandingOrchestrationServiceException(
-                    message: "Failed TPP landing orchestration service occurred, please contact support",
+                    message: "Failed TPP landing orchestration service error occurred, please contact support.",
                     serviceException);
 
             var expectedTppOrchestrationServiceException =
                 new TppLandingOrchestrationServiceException(
-                    message: "TPP landing orchestration service error occurred, contact support.",
+                    message: "TPP landing orchestration service error occurred, please contact support.",
                     failedTppOrchestrationServiceException);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
@@ -125,7 +130,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .Throws(serviceException);
 
             // when
-            ValueTask<Guid> processTask = this.tppOrchestrationService.ProcessAsync(randomDocument);
+            ValueTask<Guid> processTask = this.tppOrchestrationService
+                .ProcessAsync(document: randomDocument, supplierId: randomSupplierId);
 
             TppLandingOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationServiceException>(processTask.AsTask);

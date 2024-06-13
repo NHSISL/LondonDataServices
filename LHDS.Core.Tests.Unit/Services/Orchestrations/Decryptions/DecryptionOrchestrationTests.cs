@@ -126,7 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     .AreEqual;
         }
 
-        public static TheoryData DecryptionDependencyValidationExceptions()
+        public static TheoryData<Xeption> DecryptionDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -168,7 +168,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             };
         }
 
-        public static TheoryData DecryptionDependencyExceptions()
+        public static TheoryData<Xeption> DecryptionDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -177,35 +177,35 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             return new TheoryData<Xeption>
             {
                 new DocumentDependencyException(
-                    message: "Document dependency error occurred, contact support.",
+                    message: "Document dependency error occurred, please contact support.",
                     innerException),
 
                 new DocumentServiceException(
-                    message: "Document service error occurred, contact support.",
+                    message: "Document service error occurred, please contact support.",
                     innerException),
 
                 new CryptographyDependencyException(
-                    message: "Cryptography dependency error occurred, contact support.",
+                    message: "Cryptography dependency error occurred, please contact support.",
                     innerException),
 
                 new CryptographyServiceException(
-                    message: "Cryptography service error occurred, contact support.",
+                    message: "Cryptography service error occurred, please contact support.",
                     innerException),
 
                 new IngestionTrackingDependencyException(
-                    message: "Failed ingestion tracking storage error occurred, contact support.",
+                    message: "Failed ingestion tracking storage error occurred, please contact support.",
                     innerException),
 
                 new IngestionTrackingServiceException(
-                    message: "Ingestion tracking service error occurred, contact support.",
+                    message: "Ingestion tracking service error occurred, please contact support.",
                     innerException),
 
                 new IngestionTrackingAuditDependencyException(
-                    message: "Audit dependency error occurred, contact support.",
+                    message: "Audit dependency error occurred, please contact support.",
                     innerException),
 
                 new IngestionTrackingAuditServiceException(
-                    message: "Audit service error occurred, contact support.",
+                    message: "Audit service error occurred, please contact support.",
                     innerException)
             };
         }

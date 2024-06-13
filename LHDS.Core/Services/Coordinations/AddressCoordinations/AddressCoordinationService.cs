@@ -47,13 +47,16 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 ValidateDataOnProcessData(data, filename);
 
-                List<Address> extractedAddress =
+                List<Address> extractedAddresses =
                     await this.addressExtractionOrchestrationService.ProcessAddressesAsync(data, filename);
 
-                ValidateAddressListIsNotNull(extractedAddress);
+                return extractedAddresses;
+            });
 
-                return await this.addressPersistanceOrchestrationService
-                    .PersistAddressAsync(extractedAddress, filename);
+        public ValueTask NormaliseAddressesAsync() =>
+            TryCatch(async () =>
+            {
+                await this.addressExtractionOrchestrationService.NormaliseAddressesAsync();
             });
 
         public ValueTask MatchAddressDataAsync(byte[] data, string filename) =>
@@ -105,7 +108,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 }
             });
 
-        public ValueTask<Guid> UploadResolvedAddressesAsync() =>
+        public ValueTask<Guid?> UploadResolvedAddressesAsync() =>
             TryCatch(async () =>
             {
                 return await this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();

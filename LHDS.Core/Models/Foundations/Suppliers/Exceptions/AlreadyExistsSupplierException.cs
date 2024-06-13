@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Suppliers.Exceptions
 {
     public class AlreadyExistsSupplierException : Xeption
     {
-        public AlreadyExistsSupplierException(string message, Exception innerException)
+        public AlreadyExistsSupplierException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

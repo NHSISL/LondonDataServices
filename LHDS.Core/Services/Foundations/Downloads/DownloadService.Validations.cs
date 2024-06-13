@@ -61,7 +61,7 @@ namespace LHDS.Core.Services.Foundations.Downloads
             }
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"

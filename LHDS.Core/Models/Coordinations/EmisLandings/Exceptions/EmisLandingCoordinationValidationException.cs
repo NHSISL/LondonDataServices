@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Coordinations.EmisLandings.Exceptions
 {
     public class EmisLandingCoordinationValidationException : Xeption
     {
-        public EmisLandingCoordinationValidationException(string message, Xeption innerException)
+        public EmisLandingCoordinationValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

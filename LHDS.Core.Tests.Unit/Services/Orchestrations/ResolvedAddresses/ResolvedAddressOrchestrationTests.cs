@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -16,10 +17,10 @@ using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
-using LHDS.Core.Services.Processings.CsvMappers;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Moq;
+using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -30,9 +31,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
     {
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
         private readonly Mock<IResolvedAddressProcessingService> resolvedAddressProcessingServiceMock;
-        private readonly Mock<ICsvMapperProcessingService> csvMapperProcessingServiceMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly BlobContainers blobContainers;
@@ -42,9 +43,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         {
             this.documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
             this.resolvedAddressProcessingServiceMock = new Mock<IResolvedAddressProcessingService>();
-            this.csvMapperProcessingServiceMock = new Mock<ICsvMapperProcessingService>();
-            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.compareLogic = new CompareLogic();
 
@@ -56,9 +57,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.resolvedAddressOrchestrationService = new ResolvedAddressOrchestrationService(
                 documentProcessingService: this.documentProcessingServiceMock.Object,
                 resolvedAddressProcessingService: this.resolvedAddressProcessingServiceMock.Object,
-                csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
-                dateTimeBroker: this.dateTimeBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
+                csvHelperBroker: this.csvHelperBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
                 blobContainers: blobContainers);
         }
@@ -123,6 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             List<ResolvedAddressReturn> returnAddresses = resolvedAddresses.Select(resolvedAddress =>
                     new ResolvedAddressReturn
                     {
+                        UniqueReference = resolvedAddress.UniqueReference,
                         UPRN = resolvedAddress.MatchedUPRN,
                         UPSN = resolvedAddress.MatchedUPSN,
                         OrganisationName = resolvedAddress.MatchedOrganisationName,
@@ -141,7 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             return returnAddresses;
         }
 
-        public static TheoryData DependencyValidationExceptions()
+        public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -164,10 +166,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 new ResolvedAddressProcessingDependencyValidationException(
                     message: "Resolved address processing dependency validation error occurred, please try again.",
                     innerException),
+
+                new CsvHelperClientValidationException(innerException),
             };
         }
 
-        public static TheoryData DependencyExceptions()
+        public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -176,20 +180,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             return new TheoryData<Xeption>
             {
                 new DocumentProcessingDependencyException(
-                    message: "Document processing dependency error occurred, contact support.",
+                    message: "Document processing dependency error occurred, please contact support.",
                     innerException),
 
                 new DocumentProcessingServiceException(
-                    message: "Document processing service error occurred, contact support.",
+                    message: "Document processing service error occurred, please contact support.",
                     innerException),
 
                 new ResolvedAddressProcessingDependencyException(
-                    message: "Resolved address processing dependency error occurred, contact support.",
+                    message: "Resolved address processing dependency error occurred, please contact support.",
                     innerException),
 
                 new ResolvedAddressProcessingServiceException(
-                    message: "Resolved address processing service error occurred, contact support.",
+                    message: "Resolved address processing service error occurred, please contact support.",
                     innerException),
+
+                new CsvHelperClientDependencyException(innerException),
+                new CsvHelperClientServiceException(innerException)
             };
         }
 

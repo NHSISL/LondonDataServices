@@ -21,12 +21,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             var failedDataTypeStorageException =
                 new FailedDataTypeStorageException(
-                    message: "Failed dataType storage error occurred, contact support.",
+                    message: "Failed dataType storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedDataTypeDependencyException =
                 new DataTypeDependencyException(
-                    message: "DataType dependency error occurred, contact support.",
+                    message: "DataType dependency error occurred, please contact support.",
                     innerException: failedDataTypeStorageException);
 
             this.storageBrokerMock.Setup(broker =>
@@ -67,12 +67,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             var failedDataTypeServiceException =
                 new FailedDataTypeServiceException(
-                    message: "Failed dataType service occurred, please contact support",
+                    message: "Failed dataType service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedDataTypeServiceException =
                 new DataTypeServiceException(
-                    message: "DataType service error occurred, contact support.",
+                    message: "DataType service error occurred, please contact support.",
                     innerException: failedDataTypeServiceException);
 
             this.storageBrokerMock.Setup(broker =>

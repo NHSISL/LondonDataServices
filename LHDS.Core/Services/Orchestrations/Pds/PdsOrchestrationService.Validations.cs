@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -69,7 +69,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                 (Rule: IsInvalid(fileName), Parameter: "fileName"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
@@ -84,19 +84,19 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
+            var invalidDataException = (T?)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataException.UpsertDataList(
+                    invalidDataException?.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataException.ThrowIfContainsErrors();
+            invalidDataException?.ThrowIfContainsErrors();
         }
     }
 }

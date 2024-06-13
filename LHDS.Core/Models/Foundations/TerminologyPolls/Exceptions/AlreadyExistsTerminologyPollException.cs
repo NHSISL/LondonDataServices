@@ -5,7 +5,7 @@ namespace LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions
 {
     public class AlreadyExistsTerminologyPollException : Xeption
     {
-        public AlreadyExistsTerminologyPollException(string message, Exception innerException)
+        public AlreadyExistsTerminologyPollException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

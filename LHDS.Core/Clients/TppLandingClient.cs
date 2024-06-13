@@ -22,28 +22,28 @@ namespace LHDS.Core.Clients
             this.tppOrchestrationService = tppOrchestrationService;
         }
 
-        public async ValueTask<Guid> ProcessAsync(Document fileName)
+        public async ValueTask<Guid> ProcessAsync(Document fileName, Guid supplierId)
         {
             try
             {
-                return await this.tppOrchestrationService.ProcessAsync(fileName);
+                return await this.tppOrchestrationService.ProcessAsync(fileName, supplierId);
             }
             catch (TppLandingOrchestrationValidationException tppOrchestrationValidationException)
             {
                 throw new TppLandingClientValidationException(
-                    message: "TPP landing client dependency validation error occurred, contact support.",
+                    message: "TPP landing client dependency validation error occurred, please contact support.",
                     tppOrchestrationValidationException.InnerException as Xeption);
             }
             catch (TppLandingOrchestrationDependencyValidationException tppOrchestrationDependencyValidationException)
             {
                 throw new TppLandingClientValidationException(
-                    message: "TPP landing client dependency validation error occurred, contact support.",
+                    message: "TPP landing client dependency validation error occurred, please contact support.",
                     innerException: tppOrchestrationDependencyValidationException.InnerException as Xeption);
             }
             catch (TppLandingOrchestrationDependencyException tppOrchestrationDependencyException)
             {
                 throw new TppLandingClientDependencyException(
-                    message: "TPP landing client dependency error occurred, contact support.",
+                    message: "TPP landing client dependency error occurred, please contact support.",
                     innerException: tppOrchestrationDependencyException.InnerException as Xeption);
             }
             catch (TppLandingOrchestrationServiceException tppOrchestrationServiceException)

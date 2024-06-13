@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                 loggingBroker: loggingBrokerMock.Object);
         }
 
-        public static TheoryData UncleanedAddressString()
+        public static TheoryData<string> UncleanedAddressString()
         {
             return new TheoryData<string>
             {
@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             };
         }
 
-        public static TheoryData AddressToMatch()
+        public static TheoryData<List<KeyValuePair<string, string>>, HashSet<AddressMatch>> AddressToMatch()
         {
             var theoryData = new TheoryData<List<KeyValuePair<string, string>>, HashSet<AddressMatch>>
             {
@@ -67,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                                 "{\"Key\":\"city\",\"Value\":\"london\"}," +
                                 "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}," +
                                 "{\"Key\":\"country\",\"Value\":\"uk\"}]",
-                            AddressComponents = new List<KeyValuePair<string, string>>
+                            NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                             {
                                 new KeyValuePair<string, string>("house_number", "10"),
                                 new KeyValuePair<string, string>("road", "downing str"),
@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                                 "{\"Key\":\"city\",\"Value\":\"london\"}," +
                                 "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}," +
                                 "{\"Key\":\"country\",\"Value\":\"uk\"}]",
-                            AddressComponents = new List<KeyValuePair<string, string>>
+                            NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                             {
                                 new KeyValuePair<string, string>("road", "downing str"),
                                 new KeyValuePair<string, string>("city_district", "westminster"),
@@ -132,7 +132,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                                 "{\"Key\":\"city\",\"Value\":\"london\"}," +
                                 "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}," +
                                 "{\"Key\":\"country\",\"Value\":\"uk\"}]",
-                            AddressComponents = new List<KeyValuePair<string, string>>
+                            NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                             {
                                 new KeyValuePair<string, string>("house_number", "10"),
                                 new KeyValuePair<string, string>("city_district", "westminster"),
@@ -161,7 +161,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                             PostalAddress = "10 sw1a2aa",
                             JsonPostalAddress = "[{\"Key\":\"house_number\",\"Value\":\"10\"}," +
                                 "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}]",
-                            AddressComponents = new List<KeyValuePair<string, string>>
+                            NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                             {
                                 new KeyValuePair<string, string>("house_number", "10"),
                                 new KeyValuePair<string, string>("postcode", "sw1a2aa"),
@@ -187,7 +187,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                             PostalAddress = "1 sw1a2aa",
                             JsonPostalAddress = "[{\"Key\":\"house_number\",\"Value\":\"1\"}," +
                                 "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}]",
-                            AddressComponents = new List<KeyValuePair<string, string>>
+                            NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                             {
                                 new KeyValuePair<string, string>("house_number", "1"),
                                 new KeyValuePair<string, string>("postcode", "sw1a2aa"),
@@ -213,7 +213,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                             PostalAddress = "10 sw1a2ab",
                             JsonPostalAddress = "[{\"Key\":\"house_number\",\"Value\":\"1\"}," +
                                 "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}]",
-                            AddressComponents = new List<KeyValuePair<string, string>>
+                            NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                             {
                                 new KeyValuePair<string, string>("house_number", "10"),
                                 new KeyValuePair<string, string>("postcode", "sw1a2ab"),
@@ -241,7 +241,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                         "{\"Key\":\"city\",\"Value\":\"london\"}," +
                         "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}," +
                         "{\"Key\":\"country\",\"Value\":\"uk\"}]",
-                    AddressComponents = new List<KeyValuePair<string, string>>
+                    NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                     {
                         new KeyValuePair<string, string>("house_number", "10"),
                         new KeyValuePair<string, string>("road", "downing str"),
@@ -262,7 +262,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                         "{\"Key\":\"road\",\"Value\":\"downing str\"}," +
                         "{\"Key\":\"city\",\"Value\":\"london\"}," +
                         "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}]",
-                    AddressComponents = new List<KeyValuePair<string, string>>
+                    NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                     {
                         new KeyValuePair<string, string>("house_number", "10"),
                         new KeyValuePair<string, string>("road", "downing str"),
@@ -280,7 +280,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     JsonPostalAddress = "[{\"Key\":\"house_number\",\"Value\":\"10\"}," +
                         "{\"Key\":\"road\",\"Value\":\"downing str\"}," +
                         "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}]",
-                    AddressComponents = new List<KeyValuePair<string, string>>
+                    NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                     {
                         new KeyValuePair<string, string>("house_number", "10"),
                         new KeyValuePair<string, string>("postcode", "sw1a2aa"),
@@ -306,7 +306,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                         "{\"Key\":\"city\",\"Value\":\"london\"}," +
                         "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}," +
                         "{\"Key\":\"country\",\"Value\":\"uk\"}]",
-                    AddressComponents = new List<KeyValuePair<string, string>>
+                    NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                     {
                         new KeyValuePair<string, string>("house_number", "10"),
                         new KeyValuePair<string, string>("road", "downing str"),
@@ -327,7 +327,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                         "{\"Key\":\"road\",\"Value\":\"downing str\"}," +
                         "{\"Key\":\"city\",\"Value\":\"london\"}," +
                         "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}]",
-                    AddressComponents = new List<KeyValuePair<string, string>>
+                    NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                     {
                         new KeyValuePair<string, string>("house_number", "10"),
                         new KeyValuePair<string, string>("road", "downing str"),
@@ -345,7 +345,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     JsonPostalAddress = "[{\"Key\":\"house_number\",\"Value\":\"10\"}," +
                         "{\"Key\":\"road\",\"Value\":\"downing str\"}," +
                         "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}]",
-                    AddressComponents = new List<KeyValuePair<string, string>>
+                    NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                     {
                         new KeyValuePair<string, string>("house_number", "10"),
                         new KeyValuePair<string, string>("postcode", "sw1a2aa"),
@@ -371,7 +371,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                         "{\"Key\":\"city\",\"Value\":\"london\"}," +
                         "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}," +
                         "{\"Key\":\"country\",\"Value\":\"uk\"}]",
-                    AddressComponents = new List<KeyValuePair<string, string>>
+                    NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                     {
                         new KeyValuePair<string, string>("house_number", "10"),
                         new KeyValuePair<string, string>("road", "downing str"),
@@ -392,7 +392,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                         "{\"Key\":\"road\",\"Value\":\"downing str\"}," +
                         "{\"Key\":\"city\",\"Value\":\"london\"}," +
                         "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}]",
-                    AddressComponents = new List<KeyValuePair<string, string>>
+                    NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                     {
                         new KeyValuePair<string, string>("house_number", "10"),
                         new KeyValuePair<string, string>("road", "downing str"),
@@ -410,7 +410,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     JsonPostalAddress = "[{\"Key\":\"house_number\",\"Value\":\"10\"}," +
                         "{\"Key\":\"road\",\"Value\":\"downing str\"}," +
                         "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}]",
-                    AddressComponents = new List<KeyValuePair<string, string>>
+                    NormalisedAddressComponents = new List<KeyValuePair<string, string>>
                     {
                         new KeyValuePair<string, string>("house_number", "10"),
                         new KeyValuePair<string, string>("postcode", "sw1a2aa"),

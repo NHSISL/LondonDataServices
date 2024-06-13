@@ -14,12 +14,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 {
     public partial class OptOutOrchestrationTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnRetrieveUpdatedOptOutStatusIfRequiredRetreivedMessageHeaderIsInvalidAndLogItAsync(
-                string invalidInput)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnRetrieveUpdatedOptOutStatusIfHeadersInvalidAndLogItAsync()
         {
             // given
             string randomString = GetRandomString();
@@ -58,8 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
             OptOutOrchestrationValidationException actualOptOutOrchestrationValidationException =
-                await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(() =>
-                    retrieveUpdatedOptOutStatusTask.AsTask());
+                await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(retrieveUpdatedOptOutStatusTask.AsTask);
 
             //then
             actualOptOutOrchestrationValidationException.Should()
@@ -79,10 +74,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

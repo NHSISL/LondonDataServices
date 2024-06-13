@@ -1,11 +1,18 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.Addresses
 {
@@ -13,16 +20,22 @@ namespace LHDS.Core.Services.Foundations.Addresses
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IIdentifierBroker identifierBroker;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IAuditBroker auditBroker;
 
         public AddressService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+            IIdentifierBroker identifierBroker,
+            ILoggingBroker loggingBroker,
+            IAuditBroker auditBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
+            this.auditBroker = auditBroker;
         }
 
         public ValueTask<Address> AddAddressAsync(Address address) =>
@@ -32,6 +45,90 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
                 return await this.storageBroker.InsertAddressAsync(address);
             });
+
+        public ValueTask BulkAddAddressesAsync(List<Address> addresses, string fileName) =>
+            TryCatch(async () =>
+            {
+                int batchSize = 10000;
+                await BulkInsertBatch(addresses, batchSize, fileName);
+            });
+
+        private async ValueTask BulkInsertBatch(List<Address> addresses, int batchSize, string fileName)
+        {
+            int totalRecords = addresses.Count;
+            int processedRecords = 0;
+
+            for (int i = 0; i < totalRecords; i += batchSize)
+            {
+                try
+                {
+                    var batch = addresses.Skip(i).Take(batchSize).ToList();
+                    List<Address> validatedAddresses = await ExtractValidAddresses(batch, fileName);
+                    var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
+
+                    var existingUPRNs = this.storageBroker.SelectAllAddresses()
+                        .Where(address => batchUPRNs.Contains(address.UPRN))
+                        .Select(address => address.UPRN)
+                        .ToList();
+
+                    var newAddresses = batch.Where(address => !existingUPRNs.Contains(address.UPRN)).ToList();
+
+                    if (newAddresses.Count != 0)
+                    {
+                        await this.storageBroker.BulkInsertAddressesAsync(newAddresses);
+                    }
+
+                    processedRecords += batch.Count;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+        }
+
+        private async ValueTask<List<Address>> ExtractValidAddresses(List<Address> addresses, string fileName)
+        {
+            List<Address> validatedAddresses = new List<Address>();
+
+            foreach (Address address in addresses)
+            {
+                try
+                {
+                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                    address.Id = this.identifierBroker.GetIdentifier();
+                    address.CreatedDate = currentDateTime;
+                    address.CreatedBy = "System";
+                    address.UpdatedDate = address.CreatedDate;
+                    address.UpdatedBy = address.CreatedBy;
+                    ValidateAddressOnAdd(address);
+                    validatedAddresses.Add(address);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is NullAddressException || ex is InvalidAddressException)
+                    {
+                        int indexOfInvalidItem = addresses.IndexOf(address);
+
+                        if (indexOfInvalidItem != -1)
+                        {
+                            await this.auditBroker.LogWarning(
+                                auditType: "Address",
+                                title: "Invalid address parts found",
+                                message: $"Invalid address parts found in line item: {indexOfInvalidItem + 1} " +
+                                         $"from file: {fileName}",
+                                fileName,
+                                null);
+                        }
+                    }
+
+                    throw;
+                }
+            }
+
+            return await ValueTask.FromResult(validatedAddresses);
+        }
 
         public IQueryable<Address> RetrieveAllAddresses() =>
             TryCatch(() => this.storageBroker.SelectAllAddresses());
@@ -81,10 +178,13 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 ValidatePostCode(postCode);
 
-                List<Address> returnedAddresses =
-                    this.storageBroker.SelectAllAddresses().Where(address => address.PostCode == postCode).ToList();
+                List<Address> returnedAddresses = this.storageBroker
+                    .SelectAllAddresses()
+                    .ToList()
+                    .Where(address => address.PostCode.Equals(postCode, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
 
-                return returnedAddresses;
+                return await ValueTask.FromResult(returnedAddresses);
             });
     }
 }

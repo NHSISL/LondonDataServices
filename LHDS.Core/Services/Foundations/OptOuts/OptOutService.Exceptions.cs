@@ -36,7 +36,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             catch (SqlException sqlException)
             {
                 var failedOptOutStorageException = new FailedOptOutStorageException(
-                    message: "Failed optOut storage error occurred, contact support.", 
+                    message: "Failed optOut storage error occurred, please contact support.", 
                     innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedOptOutStorageException);
@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedOptOutStorageException = new FailedOptOutStorageException(
-                    message: "Failed optOut storage error occurred, contact support.",
+                    message: "Failed optOut storage error occurred, please contact support.",
                     innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedOptOutStorageException);
@@ -81,7 +81,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             catch (Exception exception)
             {
                 var failedOptOutServiceException = new FailedOptOutServiceException(
-                    message: "Failed optOut service occurred, please contact support", 
+                    message: "Failed optOut service error occurred, please contact support.", 
                     innerException: exception);
 
                 throw CreateAndLogServiceException(failedOptOutServiceException);
@@ -97,7 +97,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             catch (SqlException sqlException)
             {
                 var failedOptOutStorageException = new FailedOptOutStorageException(
-                    message: "Failed optOut storage error occurred, contact support.",
+                    message: "Failed optOut storage error occurred, please contact support.",
                     innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedOptOutStorageException);
@@ -105,7 +105,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             catch (Exception exception)
             {
                 var failedOptOutServiceException = new FailedOptOutServiceException(
-                    message: "Failed optOut service occurred, please contact support", 
+                    message: "Failed optOut service error occurred, please contact support.", 
                     innerException: exception);
 
                 throw CreateAndLogServiceException(failedOptOutServiceException);
@@ -126,7 +126,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         private OptOutDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
             var optOutDependencyException = new OptOutDependencyException(
-                message: "OptOut dependency error occurred, contact support.", 
+                message: "OptOut dependency error occurred, please contact support.", 
                 innerException: exception);
 
             this.loggingBroker.LogCritical(optOutDependencyException);
@@ -149,7 +149,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             Xeption exception)
         {
             var optOutDependencyException = new OptOutDependencyException(
-                message: "OptOut dependency error occurred, contact support.", 
+                message: "OptOut dependency error occurred, please contact support.", 
                 innerException: exception);
 
             this.loggingBroker.LogError(optOutDependencyException);
@@ -161,7 +161,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             Xeption exception)
         {
             var optOutServiceException = new OptOutServiceException(
-                message: "OptOut service error occurred, contact support.", 
+                message: "OptOut service error occurred, please contact support.", 
                 innerException: exception);
 
             this.loggingBroker.LogError(optOutServiceException);

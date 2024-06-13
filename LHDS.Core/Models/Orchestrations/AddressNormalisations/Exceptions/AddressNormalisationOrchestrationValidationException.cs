@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Orchestrations.AddressNormalisations.Exceptions
 {
     public class AddressNormalisationOrchestrationValidationException : Xeption
     {
-        public AddressNormalisationOrchestrationValidationException(string message, Xeption innerException)
+        public AddressNormalisationOrchestrationValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

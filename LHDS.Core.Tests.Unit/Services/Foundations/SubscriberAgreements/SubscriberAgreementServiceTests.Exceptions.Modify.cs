@@ -26,12 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             var failedSubscriberAgreementStorageException =
                 new FailedSubscriberAgreementStorageException(
-                    message: "Failed subscriberAgreement storage error occurred, contact support.",
+                    message: "Failed subscriberAgreement storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedSubscriberAgreementDependencyException =
                 new SubscriberAgreementDependencyException(
-                    message: "SubscriberAgreement dependency error occurred, contact support.",
+                    message: "SubscriberAgreement dependency error occurred, please contact support.",
                     innerException: failedSubscriberAgreementStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -139,12 +139,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             var failedSubscriberAgreementStorageException =
                 new FailedSubscriberAgreementStorageException(
-                    message: "Failed subscriberAgreement storage error occurred, contact support.",
+                    message: "Failed subscriberAgreement storage error occurred, please contact support.",
                     innerException: databaseUpdateException);
 
             var expectedSubscriberAgreementDependencyException =
                 new SubscriberAgreementDependencyException(
-                    message: "SubscriberAgreement dependency error occurred, contact support.",
+                    message: "SubscriberAgreement dependency error occurred, please contact support.",
                     innerException: failedSubscriberAgreementStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -249,12 +249,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             var failedSubscriberAgreementServiceException =
                 new FailedSubscriberAgreementServiceException(
-                    message: "Failed subscriberAgreement service occurred, please contact support",
+                    message: "Failed subscriberAgreement service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedSubscriberAgreementServiceException =
                 new SubscriberAgreementServiceException(
-                    message: "SubscriberAgreement service error occurred, contact support.",
+                    message: "SubscriberAgreement service error occurred, please contact support.",
                     innerException: failedSubscriberAgreementServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>

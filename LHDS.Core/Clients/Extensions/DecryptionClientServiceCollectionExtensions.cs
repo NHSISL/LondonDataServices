@@ -11,6 +11,7 @@ using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.Cryptographies;
+using LHDS.Core.Brokers.CryptographyKeys;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Hashing;
@@ -73,10 +74,14 @@ namespace LHDS.Core.Clients.Extensions
             IConfiguration configuration,
             bool acceptanceTest)
         {
-            services.AddSingleton<IConfiguration>(_ => configuration);
+            services.AddSingleton(_ => configuration);
             var landingConfiguration = configuration.GetSection("landingSettings").Get<LandingConfiguration>();
             ValidateLandingConfiguration(landingConfiguration);
-            services.AddSingleton<LandingConfiguration>(landingConfiguration);
+
+            if (landingConfiguration != null)
+            {
+                services.AddSingleton(landingConfiguration);
+            }
 
             AddProviders(services, configuration);
             AddBrokers(services, configuration, acceptanceTest);
@@ -95,11 +100,16 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ICryptographyAbstractProvider, CryptographyAbstractProvider>();
             services.AddTransient<ICryptographyProvider, GpgCryptographyProvider>();
 
-            IFtpDownloadProviderSettings ftpDownloadProviderSettings =
+            IFtpDownloadProviderSettings? ftpDownloadProviderSettings =
                 configuration.GetSection("ftpDownload").Get<FtpDownloadProviderSettings>();
 
             ValidateFtpProviderSettings(ftpDownloadProviderSettings);
-            services.AddTransient<IFtpDownloadProviderSettings>(_ => ftpDownloadProviderSettings);
+
+            if (ftpDownloadProviderSettings != null)
+            {
+                services.AddSingleton(ftpDownloadProviderSettings);
+            }
+
             services.AddTransient<IDownloadProvider, FtpDownloadProvider>();
         }
 
@@ -107,12 +117,14 @@ namespace LHDS.Core.Clients.Extensions
         {
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<ICryptographyBroker, CryptographyBroker>();
+            services.AddTransient<ICryptographyKeyBroker, GpgKeyBroker>();
+            services.AddTransient<ICryptographyKeyBroker, SshKeyBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
 
-            LandingConfiguration landingConfiguration =
+            LandingConfiguration? landingConfiguration =
                 configuration.GetSection("landingSettings").Get<LandingConfiguration>();
 
             ValidateLandingConfiguration(landingConfiguration);
@@ -121,30 +133,37 @@ namespace LHDS.Core.Clients.Extensions
             {
                 var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
                 ValidateBlobStorageSettings(blobStorageSettings);
-                services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
-                var blobServiceClientOptions = new BlobClientOptions()
+                if (blobStorageSettings != null)
                 {
-                    Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
-                    Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
-                    EnableTenantDiscovery = true
-                };
+                    services.AddSingleton(blobStorageSettings.BlobContainers);
 
-                services.AddSingleton(
-                    new BlobServiceClient(
-                        serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
-                        credential: new DefaultAzureCredential(
-                            new DefaultAzureCredentialOptions
-                            {
-                                VisualStudioTenantId = blobStorageSettings.AzureTenantId,
-                            }),
-                        options: blobServiceClientOptions));
+                    var blobServiceClientOptions = new BlobClientOptions()
+                    {
+                        Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
+                        Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                        EnableTenantDiscovery = true
+                    };
+
+                    services.AddSingleton(
+                        new BlobServiceClient(
+                            serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
+                            credential: new DefaultAzureCredential(
+                                new DefaultAzureCredentialOptions
+                                {
+                                    VisualStudioTenantId = blobStorageSettings.AzureTenantId,
+                                }),
+                            options: blobServiceClientOptions));
+                }
 
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
                 services.AddTransient<IDownloadBroker, DownloadBroker>();
 
-                services.AddTransient<IKeyVaultSecretBroker>((LandingConfiguration) =>
-                    new KeyVaultSecretBroker(landingConfiguration.KeyVaultUrl));
+                if (landingConfiguration != null)
+                {
+                    services.AddTransient<IKeyVaultSecretBroker>((LandingConfiguration) =>
+                        new KeyVaultSecretBroker(landingConfiguration.KeyVaultUrl));
+                }
 
                 services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             }
@@ -187,7 +206,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDecryptionClient, DecryptionClient>();
         }
 
-        private static void ValidateFtpProviderSettings(IFtpDownloadProviderSettings ftpDownloadProviderSettings)
+        private static void ValidateFtpProviderSettings(IFtpDownloadProviderSettings? ftpDownloadProviderSettings)
         {
             if (ftpDownloadProviderSettings is null)
             {
@@ -198,14 +217,11 @@ namespace LHDS.Core.Clients.Extensions
                 (Rule: IsInvalid(ftpDownloadProviderSettings.FtpPort),
                     Parameter: "ftpDownload__ftpPort"),
 
-                (Rule: IsInvalid(ftpDownloadProviderSettings.FtpUserName),
-                    Parameter: "ftpDownload__ftpUserName"),
-
                 (Rule: IsInvalid(ftpDownloadProviderSettings.IncludeSubDirectories),
                     Parameter: "ftpDownload__includeSubDirectories"));
         }
 
-        private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)
+        private static void ValidateLandingConfiguration(LandingConfiguration? landingConfiguration)
         {
             if (landingConfiguration == null)
             {
@@ -226,7 +242,7 @@ namespace LHDS.Core.Clients.Extensions
                         Parameter: "landingSettings:keyVaultUrl"));
         }
 
-        private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
+        private static void ValidateBlobStorageSettings(BlobStorageSettings? blobStorageSettings)
         {
             if (blobStorageSettings == null)
             {
@@ -253,13 +269,13 @@ namespace LHDS.Core.Clients.Extensions
             Message = "Configuration value does not exist"
         };
 
-        private static dynamic IsInvalid(bool value) => new
+        private static dynamic IsInvalid(bool? value) => new
         {
             Condition = value == null,
             Message = "Configuration value does not exist"
         };
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Configuration value does not exist"

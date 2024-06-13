@@ -33,8 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 this.specificationObjectService.AddSpecificationObjectAsync(nullSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
-                await Assert.ThrowsAsync<SpecificationObjectValidationException>(() =>
-                    addSpecificationObjectTask.AsTask());
+                await Assert.ThrowsAsync<SpecificationObjectValidationException>(addSpecificationObjectTask.AsTask);
 
             // then
             actualSpecificationObjectValidationException.Should()
@@ -109,8 +108,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 this.specificationObjectService.AddSpecificationObjectAsync(invalidSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
-                await Assert.ThrowsAsync<SpecificationObjectValidationException>(() =>
-                    addSpecificationObjectTask.AsTask());
+                await Assert.ThrowsAsync<SpecificationObjectValidationException>(addSpecificationObjectTask.AsTask);
 
             // then
             actualSpecificationObjectValidationException.Should()
@@ -194,8 +192,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 this.specificationObjectService.AddSpecificationObjectAsync(invalidSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
-                await Assert.ThrowsAsync<SpecificationObjectValidationException>(() =>
-                    addSpecificationObjectTask.AsTask());
+                await Assert.ThrowsAsync<SpecificationObjectValidationException>(addSpecificationObjectTask.AsTask);
 
             // then
             actualSpecificationObjectValidationException.Should()
@@ -253,8 +250,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 this.specificationObjectService.AddSpecificationObjectAsync(invalidSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
-                await Assert.ThrowsAsync<SpecificationObjectValidationException>(() =>
-                    addSpecificationObjectTask.AsTask());
+                await Assert.ThrowsAsync<SpecificationObjectValidationException>(addSpecificationObjectTask.AsTask);
 
             // then
             actualSpecificationObjectValidationException.Should()
@@ -309,8 +305,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 this.specificationObjectService.AddSpecificationObjectAsync(invalidSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
-                await Assert.ThrowsAsync<SpecificationObjectValidationException>(() =>
-                    addSpecificationObjectTask.AsTask());
+                await Assert.ThrowsAsync<SpecificationObjectValidationException>(addSpecificationObjectTask.AsTask);
 
             // then
             actualSpecificationObjectValidationException.Should()
@@ -370,8 +365,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 this.specificationObjectService.AddSpecificationObjectAsync(invalidSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
-                await Assert.ThrowsAsync<SpecificationObjectValidationException>(() =>
-                    addSpecificationObjectTask.AsTask());
+                await Assert.ThrowsAsync<SpecificationObjectValidationException>(addSpecificationObjectTask.AsTask);
 
             // then
             actualSpecificationObjectValidationException.Should()

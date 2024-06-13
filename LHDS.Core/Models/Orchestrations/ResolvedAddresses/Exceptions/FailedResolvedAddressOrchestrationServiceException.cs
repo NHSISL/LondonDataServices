@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions
 {
     public class FailedResolvedAddressOrchestrationServiceException : Xeption
     {
-        public FailedResolvedAddressOrchestrationServiceException(string message, Exception innerException)
+        public FailedResolvedAddressOrchestrationServiceException(string message, Exception? innerException)
           : base(message, innerException)
         { }
     }

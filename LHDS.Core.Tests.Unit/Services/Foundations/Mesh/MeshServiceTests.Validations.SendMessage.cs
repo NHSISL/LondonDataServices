@@ -65,8 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     accept);
 
             MeshValidationException actualMeshValidationException =
-                await Assert.ThrowsAsync<MeshValidationException>(() =>
-                    sendFileTask.AsTask());
+                await Assert.ThrowsAsync<MeshValidationException>(sendFileTask.AsTask);
 
             // then
             actualMeshValidationException.Should()
@@ -141,8 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     accept);
 
             MeshValidationException actualMeshValidationException =
-                await Assert.ThrowsAsync<MeshValidationException>(() =>
-                    sendFileTask.AsTask());
+                await Assert.ThrowsAsync<MeshValidationException>(sendFileTask.AsTask);
 
             // then
             actualMeshValidationException.Should()

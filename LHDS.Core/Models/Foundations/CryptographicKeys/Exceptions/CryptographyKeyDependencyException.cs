@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions
 {
     public class CryptographyKeyDependencyException : Xeption
     {
-        public CryptographyKeyDependencyException(string message, Xeption innerException)
+        public CryptographyKeyDependencyException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

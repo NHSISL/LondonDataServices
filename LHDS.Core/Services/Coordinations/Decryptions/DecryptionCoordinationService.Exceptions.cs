@@ -70,7 +70,7 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             {
                 var failedDecryptionCoordinationServiceException =
                     new FailedDecryptionCoordinationServiceException(
-                        message: "Failed decryption coordination service occurred, please contact support.",
+                        message: "Failed decryption coordination service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDecryptionCoordinationServiceException);
@@ -118,7 +118,7 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
         {
             var decryptionCoordinationServiceException =
                 new DecryptionCoordinationServiceException(
-                    message: "Decryption coordination service error occurred, contact support.",
+                    message: "Decryption coordination service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(decryptionCoordinationServiceException);

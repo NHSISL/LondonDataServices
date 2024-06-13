@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.Downloads.Exceptions
 {
     public class DownloadProcessingValidationException : Xeption
     {
-        public DownloadProcessingValidationException(string message, Xeption innerException)
+        public DownloadProcessingValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

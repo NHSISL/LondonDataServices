@@ -24,16 +24,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             SecureData inputSecureData = CreateSecureDataFromRandomSecret(randomSecret);
 
             var requestFailedException =
-                new RequestFailedException(message: "Failed secure data request error occurred, contact support.");
+                new RequestFailedException(message: "Failed secure data request error occurred, please contact support.");
 
             var failedSecureDataException =
                 new FailedSecureDataException(
-                    message: "Failed secure data error occurred, contact support.",
+                    message: "Failed secure data error occurred, please contact support.",
                     innerException: requestFailedException);
 
             var expectedSecureDataDependencyException =
                 new SecureDataDependencyException(
-                    message: "Secure data dependency errors occurred, contact support.",
+                    message: "Secure data dependency errors occurred, please contact support.",
                     innerException: failedSecureDataException);
 
             this.keyVaultSecretBrokerMock.Setup(service =>
@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
 
             var failedSecureDataException =
                 new FailedSecureDataException(
-                    message: "Failed secure data error occurred, contact support.",
+                    message: "Failed secure data error occurred, please contact support.",
                     innerException: dependencyValidationException);
 
             var expectedDependencyValidationException =
@@ -123,12 +123,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
 
             var failedSecureDataServiceException =
                 new FailedSecureDataServiceException(
-                    message: "Failed secure data service occurred, please contact support",
+                    message: "Failed secure data service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedSecureDataServiceException =
                 new SecureDataServiceException(
-                    message: "Secure data service error occurred, contact support.",
+                    message: "Secure data service error occurred, please contact support.",
                     innerException: failedSecureDataServiceException);
 
             this.keyVaultSecretBrokerMock.Setup(broker =>

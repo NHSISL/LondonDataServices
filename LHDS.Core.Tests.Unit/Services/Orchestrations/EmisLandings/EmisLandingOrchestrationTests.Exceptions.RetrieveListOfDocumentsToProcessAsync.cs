@@ -73,6 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         {
             // given
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
+            Guid inputSupplierId = Guid.NewGuid();
             Download someDownload = new Download { SubscriberCredential = someSubscriberCredential };
 
             var expectedDependencyException =
@@ -86,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<List<string>> retrieveListOfDocumentsToProcessAsyncTask = this.emisLandingOrchestrationService
-                .ProcessAsync(subscriberCredential: someSubscriberCredential);
+                .ProcessAsync(subscriberCredential: someSubscriberCredential, supplierId: inputSupplierId);
 
             EmisLandingOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationDependencyException>(
@@ -120,15 +121,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
             Download someDownload = new Download { SubscriberCredential = someSubscriberCredential };
             var serviceException = new Exception();
+            Guid inputSupplierId = Guid.NewGuid();
 
             var failedEmisLandingOrchestrationServiceException =
                 new FailedEmisLandingOrchestrationServiceException(
-                    message: "Failed EMIS landing orchestration service occurred, please contact support",
+                    message: "Failed EMIS landing orchestration service error occurred, please contact support.",
                     serviceException);
 
             var expectedEmisLandingOrchestrationServiceException =
                 new EmisLandingOrchestrationServiceException(
-                    message: "EMIS landing orchestration service error occurred, contact support.",
+                    message: "EMIS landing orchestration service error occurred, please contact support.",
                     failedEmisLandingOrchestrationServiceException);
 
             this.downloadProcessingServiceMock.Setup(service =>
@@ -137,7 +139,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             // when
             ValueTask<List<string>> retrieveListOfDocumentsToProcessAsyncTask = this.emisLandingOrchestrationService
-                .ProcessAsync(subscriberCredential: someSubscriberCredential);
+                .ProcessAsync(subscriberCredential: someSubscriberCredential, supplierId: inputSupplierId);
 
             EmisLandingOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<EmisLandingOrchestrationServiceException>(

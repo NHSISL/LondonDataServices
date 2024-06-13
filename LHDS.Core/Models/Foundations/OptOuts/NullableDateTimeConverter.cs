@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
@@ -16,7 +17,14 @@ namespace LHDS.Core.Models.Foundations.OptOuts
             if (string.IsNullOrEmpty(text))
                 return null;
 
-            return DateTimeOffset.ParseExact(text, "yyyy-MM-dd HH:mm:ss", null);
+            DateTimeOffset result;
+
+            if (DateTimeOffset.TryParseExact(text, "yyyy-MM-dd HH:mm:ss", null, DateTimeStyles.None, out result))
+            {
+                return result;
+            }
+
+            return null;
         }
 
         public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)

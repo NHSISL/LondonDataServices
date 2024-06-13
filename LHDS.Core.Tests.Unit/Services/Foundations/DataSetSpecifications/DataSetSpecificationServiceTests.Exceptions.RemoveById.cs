@@ -25,12 +25,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             var failedDataSetSpecificationStorageException =
                 new FailedDataSetSpecificationStorageException(
-                    message: "Failed dataSetSpecification storage error occurred, contact support.",
+                    message: "Failed dataSetSpecification storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedDataSetSpecificationDependencyException =
                 new DataSetSpecificationDependencyException(
-                    message: "DataSetSpecification dependency error occurred, contact support.",
+                    message: "DataSetSpecification dependency error occurred, please contact support.",
                     innerException: failedDataSetSpecificationStorageException);
 
             this.storageBrokerMock.Setup(broker =>
@@ -133,12 +133,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             var failedDataSetSpecificationStorageException =
                 new FailedDataSetSpecificationStorageException(
-                    message: "Failed dataSetSpecification storage error occurred, contact support.",
+                    message: "Failed dataSetSpecification storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedDataSetSpecificationDependencyException =
                 new DataSetSpecificationDependencyException(
-                    message: "DataSetSpecification dependency error occurred, contact support.",
+                    message: "DataSetSpecification dependency error occurred, please contact support.",
                     innerException: failedDataSetSpecificationStorageException);
 
             this.storageBrokerMock.Setup(broker =>
@@ -180,12 +180,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             var failedDataSetSpecificationServiceException =
                 new FailedDataSetSpecificationServiceException(
-                    message: "Failed dataSetSpecification service occurred, please contact support",
+                    message: "Failed dataSetSpecification service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedDataSetSpecificationServiceException =
                 new DataSetSpecificationServiceException(
-                    message: "DataSetSpecification service error occurred, contact support.",
+                    message: "DataSetSpecification service error occurred, please contact support.",
                     innerException: failedDataSetSpecificationServiceException);
 
             this.storageBrokerMock.Setup(broker =>

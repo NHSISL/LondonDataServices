@@ -3,14 +3,12 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.AddressNormalisations;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using Moq;
-using NEL.LibPostalClient.Models.Clients.LibPostal.Exceptions;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -36,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
-        public static TheoryData AddressExpansionData()
+        public static TheoryData<string> AddressExpansionData()
         {
             return new TheoryData<string>
             {
@@ -69,40 +67,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
             var filler = new Filler<AddressNormalisation>();
 
             return filler;
-        }
-
-        public static TheoryData AddressNormalisationDependencyExceptions()
-        {
-            string randomMessage = GetRandomString();
-            string exceptionMessage = randomMessage;
-            var innerException = new Xeption(exceptionMessage);
-
-            return new TheoryData<Xeption>
-            {
-                new LibPostalClientDependencyException(
-                    message: "Lib postal client dependency validation error occured, please try again",
-                    innerException),
-
-                new LibPostalClientServiceException(
-                    message: "Lib postal client service error occured, please try again",
-                    innerException)
-            };
-        }
-
-        public static TheoryData AddressNormalisationDependencyValidationExceptions()
-        {
-            string randomMessage = GetRandomString();
-            string exceptionMessage = randomMessage;
-            var innerException = new Xeption(exceptionMessage);
-            IDictionary data = null;
-
-            return new TheoryData<Xeption>
-            {
-                new LibPostalClientValidationException(
-                    message: "Lib postal client validation error occurred, contact support.",
-                    innerException,
-                    data)
-            };
         }
     }
 }

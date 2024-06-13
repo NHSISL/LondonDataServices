@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Files.Exceptions
 {
     public class FailedFileServiceException : Xeption
     {
-        public FailedFileServiceException(string message, Exception innerException)
+        public FailedFileServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

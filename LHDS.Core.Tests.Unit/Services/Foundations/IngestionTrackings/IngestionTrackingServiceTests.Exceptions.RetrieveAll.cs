@@ -21,12 +21,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             var failedStorageException =
                 new FailedIngestionTrackingStorageException(
-                    message: "Failed ingestion tracking storage error occurred, contact support.",
+                    message: "Failed ingestion tracking storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedIngestionTrackingDependencyException =
                 new IngestionTrackingDependencyException(
-                    message: "Failed ingestion tracking storage error occurred, contact support.",
+                    message: "Failed ingestion tracking storage error occurred, please contact support.",
                     innerException: failedStorageException);
 
             this.storageBrokerMock.Setup(broker =>
@@ -67,12 +67,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             var failedIngestionTrackingServiceException =
                 new FailedIngestionTrackingServiceException(
-                    message: "Failed ingestion tracking service occurred, please contact support",
+                    message: "Failed ingestion tracking service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedIngestionTrackingServiceException =
                 new IngestionTrackingServiceException(
-                    message: "Ingestion tracking service error occurred, contact support.",
+                    message: "Ingestion tracking service error occurred, please contact support.",
                     innerException: failedIngestionTrackingServiceException);
 
             this.storageBrokerMock.Setup(broker =>

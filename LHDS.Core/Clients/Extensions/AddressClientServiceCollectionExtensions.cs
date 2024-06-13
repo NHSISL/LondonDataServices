@@ -10,7 +10,9 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
-using LHDS.Core.Brokers.CsvMappers;
+using LHDS.Core.Brokers.AddressNormalisations;
+using LHDS.Core.Brokers.Audits;
+using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -18,15 +20,19 @@ using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
+using LHDS.Core.Models.Coordinations.AddressCoordinations;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
+using LHDS.Core.Services.Foundations.Addresses;
+using LHDS.Core.Services.Foundations.AddressMatchers;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
-using LHDS.Core.Services.Foundations.CsvMappers;
+using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
+using LHDS.Core.Services.Processings.AddressMatchers;
 using LHDS.Core.Services.Processings.AddressNormalisations;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
@@ -37,10 +43,9 @@ namespace LHDS.Core.Clients.Extensions
 {
     public static class AddressClientServiceCollectionExtensions
     {
-        public static IServiceCollection AddPdsClient(
+        public static IServiceCollection AddAddressClient(
             this IServiceCollection services,
-            IConfiguration configuration,
-            bool acceptanceTest)
+            IConfiguration configuration)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
 
@@ -60,27 +65,37 @@ namespace LHDS.Core.Clients.Extensions
         {
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
-            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
-            var blobServiceClientOptions = new BlobClientOptions()
+            AddressConfiguration addressConfiguration =
+                configuration.GetSection("addressSettings").Get<AddressConfiguration>();
+
+            services.AddSingleton(addressConfiguration);
+
+            if (blobStorageSettings != null)
             {
-                Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
-                Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
-                EnableTenantDiscovery = true
-            };
+                services.AddSingleton(blobStorageSettings.BlobContainers);
 
-            services.AddSingleton(
-                new BlobServiceClient(
-                    serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
-                    credential: new DefaultAzureCredential(
-                        new DefaultAzureCredentialOptions
-                        {
-                            VisualStudioTenantId = blobStorageSettings.AzureTenantId,
-                        }),
-                    options: blobServiceClientOptions));
+                var blobServiceClientOptions = new BlobClientOptions()
+                {
+                    Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
+                    Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                    EnableTenantDiscovery = true
+                };
 
-            services.AddTransient<IPdsClient, PdsClient>();
+                services.AddSingleton(
+                    new BlobServiceClient(
+                        serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
+                        credential: new DefaultAzureCredential(
+                            new DefaultAzureCredentialOptions
+                            {
+                                VisualStudioTenantId = blobStorageSettings.AzureTenantId,
+                            }),
+                        options: blobServiceClientOptions));
+            }
+
+            services.AddTransient<IAddressClient, AddressClient>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
+            services.AddTransient<IAuditClient, AuditClient>();
         }
 
         private static void AddBrokers(IServiceCollection services)
@@ -90,15 +105,20 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+            services.AddTransient<IAuditBroker, AuditBroker>();
+            services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
+            services.AddTransient<IAddressNormalisationBroker, AddressNormalisationBroker>();
         }
 
         private static void AddServices(IServiceCollection services)
         {
-            services.AddTransient<ICsvMapperService, CsvMapperService>();
             services.AddTransient<IAddressNormalisationService, AddressNormalisationService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IResolvedAddressService, ResolvedAddressService>();
-
+            services.AddTransient<IAddressMatcherService, AddressMatcherService>();
+            services.AddTransient<IAddressNormalisationService, AddressNormalisationService>();
+            services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IAddressService, AddressService>();
         }
 
         private static void AddProcessings(IServiceCollection services)
@@ -107,6 +127,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAddressNormalisationProcessingService, AddressNormalisationProcessingService>();
             services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();
             services.AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>();
+            services.AddTransient<IAddressMatcherProcessingService, AddressMatcherProcessingService>();
         }
 
         private static void AddOrchestrations(IServiceCollection services)
@@ -121,7 +142,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAddressCoordinationService, AddressCoordinationService>();
         }
 
-        private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
+        private static void ValidateBlobStorageSettings(BlobStorageSettings? blobStorageSettings)
         {
             if (blobStorageSettings == null)
             {
@@ -137,13 +158,13 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "blobStorage__azureTenantId"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Configuration value does not exist"
         };
 
-        private static dynamic IsInvalid(bool value) => new
+        private static dynamic IsInvalid(bool? value) => new
         {
             Condition = value == null,
             Message = "Configuration value does not exist"

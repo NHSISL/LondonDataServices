@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Orchestrations.OptOuts.Exceptions
 {
     public class OptOutOrchestrationServiceException : Xeption
     {
-        public OptOutOrchestrationServiceException(string message, Exception innerException)
+        public OptOutOrchestrationServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

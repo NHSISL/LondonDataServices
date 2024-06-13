@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions
 {
     public class InvalidIngestionTrackingReferenceException : Xeption
     {
-        public InvalidIngestionTrackingReferenceException(string message, Exception innerException)
+        public InvalidIngestionTrackingReferenceException(string message, Exception? innerException)
             : base(message, innerException) 
         { }
     }

@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Orchestrations.Pds.Exceptions
 {
     public class PdsOrchestrationValidationException : Xeption
     {
-        public PdsOrchestrationValidationException(string message, Xeption innerException)
+        public PdsOrchestrationValidationException(string message, Xeption? innerException)
             : base(message,innerException)
         { }
     }

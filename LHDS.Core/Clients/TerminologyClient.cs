@@ -25,11 +25,11 @@ namespace LHDS.Core.Clients
             this.terminologyDetailOrchestrationService = terminologyDetailOrchestrationService;
         }
 
-        public async ValueTask RetrieveArtifactMetadataAsync(string resourceType)
+        public async ValueTask RetrieveArtifactMetadataAsync(string[] resourceTypes)
         {
             try
             {
-                await this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(resourceType);
+                await this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(resourceTypes);
             }
             catch (TerminologyMetadataOrchestrationValidationException
                 terminologyMetadataOrchestrationValidationException)
@@ -50,7 +50,7 @@ namespace LHDS.Core.Clients
                 terminologyMetadataOrchestrationDependencyException)
             {
                 throw new TerminologyClientDependencyException(
-                    message: "Terminology client dependency error occurred, contact support.",
+                    message: "Terminology client dependency error occurred, please contact support.",
                     innerException: terminologyMetadataOrchestrationDependencyException.InnerException as Xeption);
             }
             catch (TerminologyMetadataOrchestrationServiceException
@@ -87,7 +87,7 @@ namespace LHDS.Core.Clients
                 terminologyDetailOrchestrationDependencyException)
             {
                 throw new TerminologyClientDependencyException(
-                    message: "Terminology client dependency error occurred, contact support.",
+                    message: "Terminology client dependency error occurred, please contact support.",
                     innerException: terminologyDetailOrchestrationDependencyException.InnerException as Xeption);
             }
             catch (TerminologyDetailOrchestrationServiceException

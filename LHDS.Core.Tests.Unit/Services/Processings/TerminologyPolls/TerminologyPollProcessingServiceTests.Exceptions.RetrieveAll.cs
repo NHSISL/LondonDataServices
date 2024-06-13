@@ -99,12 +99,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
             var failedTerminologyPollProcessingServiceException =
                 new FailedTerminologyPollProcessingServiceException(
-                    message: "Failed terminology poll processing service error occurred, contact support.",
+                    message: "Failed terminology poll processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedTerminologyPollProcessingServiceException =
                 new TerminologyPollProcessingServiceException(
-                    message: "Terminology poll processing service error occurred, contact support.",
+                    message: "Terminology poll processing service error occurred, please contact support.",
                     innerException: failedTerminologyPollProcessingServiceException);
 
             this.terminologyPollServiceMock.Setup(service =>

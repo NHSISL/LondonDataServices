@@ -52,7 +52,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             {
                 var failedObjectColumnProcessingServiceException =
                     new FailedObjectColumnProcessingServiceException(
-                        message: "Failed ObjectColumn processing service error occurred, contact support.",
+                        message: "Failed ObjectColumn processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedObjectColumnProcessingServiceException);
@@ -85,7 +85,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             {
                 var failedObjectColumnProcessingServiceException =
                     new FailedObjectColumnProcessingServiceException(
-                        message: "Failed ObjectColumn processing service error occurred, contact support.",
+                        message: "Failed ObjectColumn processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedObjectColumnProcessingServiceException);
@@ -133,7 +133,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
         {
             var objectColumnProcessingServiceException = new
                 ObjectColumnProcessingServiceException(
-                    message: "ObjectColumn processing service error occurred, contact support.",
+                    message: "ObjectColumn processing service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(objectColumnProcessingServiceException);

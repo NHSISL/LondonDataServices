@@ -23,6 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             // Given
             Guid SubscriberCredentialId = Guid.NewGuid();
             string filePath = CreateRandomFilePath(SubscriberCredentialId);
+            Guid inputSupplierId = Guid.NewGuid();
 
             var expectedEmisLandingCoordinationDependencyValidationException =
                 new EmisLandingCoordinationDependencyValidationException(
@@ -34,8 +35,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .ThrowsAsync(dependancyValidationException);
 
             // When
-            ValueTask<string> processDataTask =
-                this.emisLandingCoordinationService.ProcessFileAsync(filePath);
+            ValueTask<string> processDataTask = this.emisLandingCoordinationService
+                .ProcessFileAsync(ftpFileName: filePath, supplierId: inputSupplierId);
 
             EmisLandingCoordinationDependencyValidationException
                 actuaEmisLandingCoordinationDependencyValidationException =
@@ -68,6 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             // Given
             Guid SubscriberCredentialId = Guid.NewGuid();
             string filePath = CreateRandomFilePath(SubscriberCredentialId);
+            Guid inputSupplierId = Guid.NewGuid();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
                 service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
@@ -79,7 +81,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             // When
-            ValueTask<string> processDataTask = this.emisLandingCoordinationService.ProcessFileAsync(filePath);
+            ValueTask<string> processDataTask = this.emisLandingCoordinationService
+                .ProcessFileAsync(ftpFileName: filePath, supplierId: inputSupplierId);
 
             EmisLandingCoordinationDependencyException actualEmisLandingCoordinationDependencyException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(async () =>
@@ -110,6 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             var serviceException = new Exception();
             Guid SubscriberCredentialId = Guid.NewGuid();
             string filePath = CreateRandomFilePath(SubscriberCredentialId);
+            Guid inputSupplierId = Guid.NewGuid();
             List<Exception> exceptions = new List<Exception>();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
@@ -118,16 +122,17 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             var failedEmisLandingCoordinationServiceException =
                 new FailedEmisLandingCoordinationServiceException(
-                    message: "Failed EMIS landing coordination service occurred, please contact support.",
+                    message: "Failed EMIS landing coordination service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedEmisLandingCoordinationServiceException =
                 new EmisLandingCoordinationServiceException(
-                    message: "EMIS landing coordination service error occurred, contact support.",
+                    message: "EMIS landing coordination service error occurred, please contact support.",
                     innerException: failedEmisLandingCoordinationServiceException);
 
             // When
-            ValueTask<string> processDataTask = this.emisLandingCoordinationService.ProcessFileAsync(filePath);
+            ValueTask<string> processDataTask = this.emisLandingCoordinationService
+                .ProcessFileAsync(ftpFileName: filePath, supplierId: inputSupplierId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationServiceException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>

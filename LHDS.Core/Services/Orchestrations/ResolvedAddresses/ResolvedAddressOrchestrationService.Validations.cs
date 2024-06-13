@@ -27,7 +27,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 (Rule: IsInvalid(container), Parameter: "container"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
@@ -42,19 +42,19 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
+            var invalidDataException = (T?)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataException.UpsertDataList(
+                    invalidDataException?.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataException.ThrowIfContainsErrors();
+            invalidDataException?.ThrowIfContainsErrors();
         }
     }
 }

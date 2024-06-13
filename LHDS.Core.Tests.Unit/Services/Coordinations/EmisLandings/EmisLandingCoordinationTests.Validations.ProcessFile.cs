@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
@@ -16,9 +17,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnProcessFileIfFileNameIsNullAndLogItAsync(string invalidData)
+        public async Task ShouldThrowValidationExceptionOnProcessFileIfArgumentsInvalidAndLogItAsync(string invalidData)
         {
             // given
+            Guid invalidSupplierId = Guid.Empty;
+
             var invalidArgumentEmisLandingCoordinationException =
                 new InvalidArgumentEmisLandingCoordinationException(
                     message: "Invalid Emis Landing coordination argument, please correct the errors and try again.");
@@ -27,14 +30,18 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 key: "FileName",
                 values: "Text is required");
 
+            invalidArgumentEmisLandingCoordinationException.AddData(
+                key: "SupplierId",
+                values: "Id is required");
+
             var expectedEmisLandingCoordinationValidationException =
                 new EmisLandingCoordinationValidationException(
                     message: "Emis Landing coordination validation error occurred, please try again.",
                     innerException: invalidArgumentEmisLandingCoordinationException);
 
             // when
-            ValueTask<string> processDataTask =
-                this.emisLandingCoordinationService.ProcessFileAsync(invalidData);
+            ValueTask<string> processDataTask = this.emisLandingCoordinationService
+                .ProcessFileAsync(ftpFileName: invalidData, supplierId: invalidSupplierId);
 
             EmisLandingCoordinationValidationException actualEmisLandingCoordinationValidationException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(async () =>

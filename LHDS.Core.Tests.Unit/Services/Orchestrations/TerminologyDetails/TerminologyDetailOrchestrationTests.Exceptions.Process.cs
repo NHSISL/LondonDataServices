@@ -373,11 +373,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                   .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask retrireveTask =
+            ValueTask retrieveTask =
                 this.terminologyDetailOrchestrationService.RetrieveArtifactDetailsAsync();
 
             TerminologyDetailOrchestrationDependencyException actualException =
-                await Assert.ThrowsAsync<TerminologyDetailOrchestrationDependencyException>(retrireveTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyDetailOrchestrationDependencyException>(retrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
@@ -406,12 +406,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
 
             var failedTerminologyDetailOrchestrationServiceException =
                 new FailedTerminologyDetailOrchestrationServiceException(
-                    message: "Failed terminology detail orchestration service occurred, please contact support",
+                    message: "Failed terminology detail orchestration service error occurred, please contact support.",
                     serviceException);
 
             var expectedTerminologyDetailOrchestrationServiceException =
                 new TerminologyDetailOrchestrationServiceException(
-                    message: "Terminology detail orchestration service error occurred, contact support.",
+                    message: "Terminology detail orchestration service error occurred, please contact support.",
                     failedTerminologyDetailOrchestrationServiceException);
 
             this.terminologyArtifactProcessingServiceMock.Setup(service =>
@@ -419,11 +419,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                   .ThrowsAsync(serviceException);
 
             // when
-            ValueTask retrireveTask =
+            ValueTask retrieveTask =
                 this.terminologyDetailOrchestrationService.RetrieveArtifactDetailsAsync();
 
             TerminologyDetailOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<TerminologyDetailOrchestrationServiceException>(retrireveTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyDetailOrchestrationServiceException>(retrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyDetailOrchestrationServiceException);

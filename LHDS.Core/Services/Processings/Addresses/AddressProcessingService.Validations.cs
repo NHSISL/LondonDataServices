@@ -3,17 +3,26 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Processings.Addresses
 {
-    public partial class AddressProcessingService : IAddressProcessingService
+    public partial class AddressProcessingService
     {
         private void ValidateAddress(Address address)
         {
             ValidateAddressIsNotNull(address);
+        }
+
+        private void ValidateArguments(List<Address> addresses, string fileName)
+        {
+            Validate<InvalidArgumentAddressProcessingException>(
+                message: "Invalid argument(s). Please correct the errors and try again.",
+                (Rule: IsInvalid(addresses), Parameter: "Addresses"),
+                (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
         private void ValidateAddress(string address)
@@ -28,6 +37,14 @@ namespace LHDS.Core.Services.Processings.Addresses
             if (address is null)
             {
                 throw new NullAddressProcessingException(message: "Address is null.");
+            }
+        }
+
+        private static void ValidateAddressesIsNotNull(List<Address> addresses)
+        {
+            if (addresses is null)
+            {
+                throw new NullAddressProcessingException(message: "Addresses is null.");
             }
         }
 
@@ -47,7 +64,13 @@ namespace LHDS.Core.Services.Processings.Addresses
             Message = "Id is required"
         };
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(List<Address>? addresses) => new
+        {
+            Condition = addresses is null,
+            Message = "Addresses is required"
+        };
+
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
@@ -56,19 +79,19 @@ namespace LHDS.Core.Services.Processings.Addresses
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
+            var invalidDataException = (T?)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataException.UpsertDataList(
+                    invalidDataException?.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataException.ThrowIfContainsErrors();
+            invalidDataException?.ThrowIfContainsErrors();
         }
     }
 }

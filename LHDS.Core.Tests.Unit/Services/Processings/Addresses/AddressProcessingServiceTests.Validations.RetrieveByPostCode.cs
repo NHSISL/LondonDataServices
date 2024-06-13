@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             // when
             ValueTask<List<Address>> RetrieveAddressListTask =
-                this.addressProcessingService.RetrieveAddressByPostCodeAsync(invalidPostCode);
+                this.addressProcessingService.RetrieveAddressesByPostCodeAsync(invalidPostCode);
 
             AddressProcessingValidationException actualAddressProcessingValidationException =
                 await Assert.ThrowsAsync<AddressProcessingValidationException>(RetrieveAddressListTask.AsTask);

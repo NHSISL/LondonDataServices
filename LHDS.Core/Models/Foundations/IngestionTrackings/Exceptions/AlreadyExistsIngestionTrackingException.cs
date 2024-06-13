@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions
 {
     public class AlreadyExistsIngestionTrackingException : Xeption
     {
-        public AlreadyExistsIngestionTrackingException(string message, Exception innerException)
+        public AlreadyExistsIngestionTrackingException(string message, Exception? innerException)
             : base(message, innerException) 
         { }
     }

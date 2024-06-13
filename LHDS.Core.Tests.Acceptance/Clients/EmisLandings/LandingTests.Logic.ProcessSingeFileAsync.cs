@@ -7,8 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Tests.Acceptance.Clients.EmisLandings.Models;
 using Xunit;
@@ -22,8 +24,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         {
             // Given
             CleanupDownloadFolder();
-            Guid supplierId = landingConfiguration.LandingSupplierId;
+            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            Guid supplierId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            DataSet randomDataSet = CreateRandomDataSet(supplierId);
+            DataSetSpecification activeDataSetSpecifications = CreateRandomDataSetSpecification(randomDataSet);
+            Supplier randomSupplier = CreateRandomSupplier(supplierId, randomDateTime);
+            await this.supplierService.AddSupplierAsync(randomSupplier);
+            await this.dataSetService.AddDataSetAsync(randomDataSet);
+            await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecifications);
+
 
             SubscriberCredential inputSubscriberCredential = await this.subscriberCredentialOrchestration
                 .ModifyOrAddSubscriberCredentialAsync(
@@ -44,7 +54,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             string expectedString = randomFile.DecryptedBlobPath;
 
             // When
-            var actualString = await this.landingClient.ProcessAsync(inputFileName);
+            var actualString = await this.landingClient.ProcessAsync(fileName: inputFileName, supplierId);
 
             // Then
             actualString.Should().BeEquivalentTo(expectedString);
@@ -60,11 +70,18 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
             }
 
+            await this.dataSetSpecificationProcessingService
+               .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecifications.Id);
+
+            await this.dataSetService.RemoveDataSetByIdAsync(randomDataSet.Id);
+
             await this.subscriberCredentialOrchestration
                 .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
 
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(retrievedInestionTracking.Id);
             CleanupDownloadFolder();
+
+            await this.supplierService.RemoveSupplierByIdAsync(supplierId: supplierId);
         }
 
         [Fact]
@@ -72,8 +89,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         {
             // Given
             CleanupDownloadFolder();
-            Guid supplierId = landingConfiguration.LandingSupplierId;
+            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            Guid supplierId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            DataSet randomDataSet = CreateRandomDataSet(supplierId);
+            DataSetSpecification activeDataSetSpecifications = CreateRandomDataSetSpecification(randomDataSet);
+            Supplier randomSupplier = CreateRandomSupplier(supplierId, randomDateTime);
+            await this.supplierService.AddSupplierAsync(randomSupplier);
+            await this.dataSetService.AddDataSetAsync(randomDataSet);
+            await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecifications);
 
             SubscriberCredential inputSubscriberCredential = await this.subscriberCredentialOrchestration
                 .ModifyOrAddSubscriberCredentialAsync(
@@ -91,15 +115,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 count: 1).First();
 
             List<IngestionTracking> ingestionTrackings = await CreateRandomIngestionTrackings(
-                dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
                 documentSources: new List<DocumentSource> { randomFile },
-                supplierId: landingConfiguration.LandingSupplierId);
+                supplierId: supplierId);
 
             string inputFileName = randomFile.FtpPath;
             string expectedString = randomFile.DecryptedBlobPath;
 
             // When
-            var actualString = await this.landingClient.ProcessAsync(inputFileName);
+            var actualString = await this.landingClient.ProcessAsync(fileName: inputFileName, supplierId);
 
             // Then
             actualString.Should().BeEquivalentTo(expectedString);
@@ -115,11 +138,18 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
             }
 
+            await this.dataSetSpecificationProcessingService
+               .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecifications.Id);
+
+            await this.dataSetService.RemoveDataSetByIdAsync(randomDataSet.Id);
+
             await this.subscriberCredentialOrchestration
                 .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
 
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(retrievedInestionTracking.Id);
             CleanupDownloadFolder();
+
+            await this.supplierService.RemoveSupplierByIdAsync(supplierId: supplierId);
         }
     }
 }

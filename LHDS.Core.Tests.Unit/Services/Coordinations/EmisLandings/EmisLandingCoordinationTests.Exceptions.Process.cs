@@ -22,6 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         {
             // Given
             int randomNumber = GetRandomNumber();
+            Guid inputSupplierId = Guid.NewGuid();
+
             List<Guid> randomActiveSubscriberAgreementIds =
                 CreateRandomActiveSubscriberAgreementIds(number: randomNumber);
 
@@ -53,16 +55,17 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             var failedEmisLandingCoordinationServiceException =
                 new FailedEmisLandingCoordinationServiceException(
-                    message: "Failed EMIS landing aggregate coordination service occurred, please contact support.",
+                    message: "Failed EMIS landing aggregate coordination service error occurred, please contact support.",
                     innerException: aggregateException);
 
             var expectedEmisLandingCoordinationServiceException =
                 new EmisLandingCoordinationServiceException(
-                    message: "EMIS landing coordination service error occurred, contact support.",
+                    message: "EMIS landing coordination service error occurred, please contact support.",
                     innerException: failedEmisLandingCoordinationServiceException);
 
             // When
-            ValueTask<List<string>> processDataTask = this.emisLandingCoordinationService.ProcessAsync();
+            ValueTask<List<string>> processDataTask = this.emisLandingCoordinationService.ProcessAsync(
+                supplierId: inputSupplierId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
@@ -110,6 +113,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         {
             // Given
             int randomNumber = GetRandomNumber();
+            Guid inputSupplierId = Guid.NewGuid();
+
             List<Guid> randomActiveSubscriberAgreementIds =
                 CreateRandomActiveSubscriberAgreementIds(number: randomNumber);
 
@@ -141,16 +146,17 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             var failedEmisLandingCoordinationServiceException =
                 new FailedEmisLandingCoordinationServiceException(
-                    message: "Failed EMIS landing aggregate coordination service occurred, please contact support.",
+                    message: "Failed EMIS landing aggregate coordination service error occurred, please contact support.",
                     innerException: aggregateException);
 
             var expectedEmisLandingCoordinationServiceException =
                 new EmisLandingCoordinationServiceException(
-                    message: "EMIS landing coordination service error occurred, contact support.",
+                    message: "EMIS landing coordination service error occurred, please contact support.",
                     innerException: failedEmisLandingCoordinationServiceException);
 
             // When
-            ValueTask<List<string>> processDataTask = this.emisLandingCoordinationService.ProcessAsync();
+            ValueTask<List<string>> processDataTask = this.emisLandingCoordinationService
+                .ProcessAsync(supplierId: inputSupplierId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
@@ -197,6 +203,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             // Given
             int randomNumber = 1; // GetRandomNumber();
             var serviceException = new Exception();
+            Guid inputSupplierId = Guid.NewGuid();
+
             List<Guid> randomActiveSubscriberAgreementIds =
                 CreateRandomActiveSubscriberAgreementIds(number: randomNumber);
 
@@ -209,12 +217,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             var innerFailedEmisLandingCoordinationServiceException =
                 new FailedEmisLandingCoordinationServiceException(
-                    message: "Failed EMIS landing coordination service occurred, please contact support.",
+                    message: "Failed EMIS landing coordination service error occurred, please contact support.",
                     innerException: serviceException);
 
             var innerEmisLandingCoordinationServiceException =
                 new EmisLandingCoordinationServiceException(
-                    message: "EMIS landing coordination service error occurred, contact support.",
+                    message: "EMIS landing coordination service error occurred, please contact support.",
                     innerException: innerFailedEmisLandingCoordinationServiceException);
 
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
@@ -233,16 +241,17 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             var failedEmisLandingCoordinationServiceException =
                 new FailedEmisLandingCoordinationServiceException(
-                    message: "Failed EMIS landing aggregate coordination service occurred, please contact support.",
+                    message: "Failed EMIS landing aggregate coordination service error occurred, please contact support.",
                     innerException: aggregateException);
 
             var expectedEmisLandingCoordinationServiceException =
                 new EmisLandingCoordinationServiceException(
-                    message: "EMIS landing coordination service error occurred, contact support.",
+                    message: "EMIS landing coordination service error occurred, please contact support.",
                     innerException: failedEmisLandingCoordinationServiceException);
 
             // When
-            ValueTask<List<string>> processDataTask = this.emisLandingCoordinationService.ProcessAsync();
+            ValueTask<List<string>> processDataTask = this.emisLandingCoordinationService
+                .ProcessAsync(supplierId: inputSupplierId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
@@ -285,6 +294,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         {
             // Given
             int randomNumber = GetRandomNumber();
+            Guid inputSupplierId = Guid.NewGuid();
+
             List<Guid> randomActiveSubscriberAgreementIds =
                 CreateRandomActiveSubscriberAgreementIds(number: randomNumber);
 
@@ -300,7 +311,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             // When
-            ValueTask<List<string>> processDataTask = this.emisLandingCoordinationService.ProcessAsync();
+            ValueTask<List<string>> processDataTask = this.emisLandingCoordinationService
+                .ProcessAsync(supplierId: inputSupplierId);
 
             EmisLandingCoordinationDependencyValidationException
                 actualEmisLandingCoordinationDependencyValidationException =
@@ -332,6 +344,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         {
             // Given
             int randomNumber = GetRandomNumber();
+            Guid inputSupplierId = Guid.NewGuid();
+
             List<Guid> randomActiveSubscriberAgreementIds =
                 CreateRandomActiveSubscriberAgreementIds(number: randomNumber);
 
@@ -347,7 +361,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             // When
-            ValueTask<List<string>> processDataTask = this.emisLandingCoordinationService.ProcessAsync();
+            ValueTask<List<string>> processDataTask = this.emisLandingCoordinationService
+                .ProcessAsync(supplierId: inputSupplierId);
 
             EmisLandingCoordinationDependencyException actualEmisLandingCoordinationDependencyException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(async () =>
@@ -377,6 +392,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             // Given
             int randomNumber = GetRandomNumber();
             var serviceException = new Exception();
+            Guid inputSupplierId = Guid.NewGuid();
+
             List<Guid> randomActiveSubscriberAgreementIds =
                 CreateRandomActiveSubscriberAgreementIds(number: randomNumber);
 
@@ -389,16 +406,17 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             var failedEmisLandingCoordinationServiceException =
                 new FailedEmisLandingCoordinationServiceException(
-                    message: "Failed EMIS landing coordination service occurred, please contact support.",
+                    message: "Failed EMIS landing coordination service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedEmisLandingCoordinationServiceException =
                 new EmisLandingCoordinationServiceException(
-                    message: "EMIS landing coordination service error occurred, contact support.",
+                    message: "EMIS landing coordination service error occurred, please contact support.",
                     innerException: failedEmisLandingCoordinationServiceException);
 
             // When
-            ValueTask<List<string>> processDataTask = this.emisLandingCoordinationService.ProcessAsync();
+            ValueTask<List<string>> processDataTask = this.emisLandingCoordinationService
+                .ProcessAsync(supplierId: inputSupplierId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>

@@ -33,8 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 this.terminologyPollService.AddTerminologyPollAsync(nullTerminologyPoll);
 
             TerminologyPollValidationException actualTerminologyPollValidationException =
-                await Assert.ThrowsAsync<TerminologyPollValidationException>(() =>
-                    addTerminologyPollTask.AsTask());
+                await Assert.ThrowsAsync<TerminologyPollValidationException>(addTerminologyPollTask.AsTask);
 
             // then
             actualTerminologyPollValidationException.Should()
@@ -104,8 +103,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 this.terminologyPollService.AddTerminologyPollAsync(invalidTerminologyPoll);
 
             TerminologyPollValidationException actualTerminologyPollValidationException =
-                await Assert.ThrowsAsync<TerminologyPollValidationException>(() =>
-                    addTerminologyPollTask.AsTask());
+                await Assert.ThrowsAsync<TerminologyPollValidationException>(addTerminologyPollTask.AsTask);
 
             // then
             actualTerminologyPollValidationException.Should()
@@ -163,8 +161,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 this.terminologyPollService.AddTerminologyPollAsync(invalidTerminologyPoll);
 
             TerminologyPollValidationException actualTerminologyPollValidationException =
-                await Assert.ThrowsAsync<TerminologyPollValidationException>(() =>
-                    addTerminologyPollTask.AsTask());
+                await Assert.ThrowsAsync<TerminologyPollValidationException>(addTerminologyPollTask.AsTask);
 
             // then
             actualTerminologyPollValidationException.Should()
@@ -219,8 +216,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 this.terminologyPollService.AddTerminologyPollAsync(invalidTerminologyPoll);
 
             TerminologyPollValidationException actualTerminologyPollValidationException =
-                await Assert.ThrowsAsync<TerminologyPollValidationException>(() =>
-                    addTerminologyPollTask.AsTask());
+                await Assert.ThrowsAsync<TerminologyPollValidationException>(addTerminologyPollTask.AsTask);
 
             // then
             actualTerminologyPollValidationException.Should()
@@ -280,8 +276,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 this.terminologyPollService.AddTerminologyPollAsync(invalidTerminologyPoll);
 
             TerminologyPollValidationException actualTerminologyPollValidationException =
-                await Assert.ThrowsAsync<TerminologyPollValidationException>(() =>
-                    addTerminologyPollTask.AsTask());
+                await Assert.ThrowsAsync<TerminologyPollValidationException>(addTerminologyPollTask.AsTask);
 
             // then
             actualTerminologyPollValidationException.Should()

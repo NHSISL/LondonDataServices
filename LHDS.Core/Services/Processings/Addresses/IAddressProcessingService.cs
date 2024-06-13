@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+// Ignore Spelling: Processings
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +14,7 @@ namespace LHDS.Core.Services.Processings.Addresses
 {
     public interface IAddressProcessingService
     {
+        ValueTask BulkAddAddressesAsync(List<Address> addresses, string fileName);
         ValueTask<Address> AddAddressAsync(Address address);
         IQueryable<Address> RetrieveAllAddresses();
         ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId);
@@ -19,7 +22,7 @@ namespace LHDS.Core.Services.Processings.Addresses
         ValueTask<Address> ModifyOrAddAddressAsync(Address address);
         ValueTask<Address> ModifyAddressAsync(Address address);
         ValueTask<Address> RemoveAddressByIdAsync(Guid addressId);
-        ValueTask<List<Address>> RetrieveAddressByPostCodeAsync(string postCode);
+        ValueTask<List<Address>> RetrieveAddressesByPostCodeAsync(string postCode);
         ValueTask<bool> IsExactMatchForAddressAsync(string addressToMatch);
     }
 }

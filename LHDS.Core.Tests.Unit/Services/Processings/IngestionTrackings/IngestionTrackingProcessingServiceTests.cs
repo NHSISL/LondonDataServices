@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 loggingBroker: loggingBrokerMock.Object);
         }
 
-        public static TheoryData DependencyValidationExceptions()
+        public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             };
         }
 
-        public static TheoryData DependencyExceptions()
+        public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     message: "IngestionTracking validation errors occurred, please try again.", innerException),
 
                 new IngestionTrackingServiceException(
-                    message : "IngestionTracking service error occurred, contact support.", innerException)
+                    message : "IngestionTracking service error occurred, please contact support.", innerException)
             };
         }
 

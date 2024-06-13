@@ -76,9 +76,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getSpecificationObjectbyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getSpecificationObjectbyIdTask.AsTask);
         }
 
         [Fact]

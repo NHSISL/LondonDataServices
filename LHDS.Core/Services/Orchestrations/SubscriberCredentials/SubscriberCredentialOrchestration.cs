@@ -140,7 +140,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                         .Where(SubscriberAgreement => SubscriberAgreement.IsActive)
                             .Select(SubscriberAgreement => SubscriberAgreement.Id).ToList();
 
-                return retrievedActiveIds;
+                return await ValueTask.FromResult(retrievedActiveIds);
             });
 
         /// <summary>

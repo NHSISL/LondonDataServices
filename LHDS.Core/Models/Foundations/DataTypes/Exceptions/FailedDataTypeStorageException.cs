@@ -5,7 +5,7 @@ namespace LHDS.Core.Models.Foundations.DataTypes.Exceptions
 {
     public class FailedDataTypeStorageException : Xeption
     {
-        public FailedDataTypeStorageException(string message, Exception innerException)
+        public FailedDataTypeStorageException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

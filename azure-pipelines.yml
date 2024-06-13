@@ -247,6 +247,20 @@ steps:
       projects: '**/LHDS.Functions.Landings.Tpp.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_tpp_func --configuration Release
 
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Build (Addresses Function)"
+    inputs:
+      command: 'build'
+      projects: '**/LHDS.Functions.Addresses.csproj'
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_addresses_func --configuration Release
+
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Build (Terminology Function)"
+    inputs:
+      command: 'build'
+      projects: '**/LHDS.Functions.Terminology.csproj'
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_terminology_func --configuration Release
+
   #- task: DotNetCoreCLI@2
   #  displayName: C# Integration Tests
   #  inputs:
@@ -423,6 +437,26 @@ steps:
       archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_tpp_func.zip
       replaceExistingArchive: true
 
+  - task: ArchiveFiles@2
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Archive files - Addresses Function'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_addresses_func'
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_addresses_func.zip
+      replaceExistingArchive: true
+
+  - task: ArchiveFiles@2
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Archive files - Terminology Function'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_terminology_func'
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_terminology_func.zip
+      replaceExistingArchive: true
+
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_api_website
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Publish Artifact - API'
@@ -472,3 +506,13 @@ steps:
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Publish Artifact - Tpp Function'
     artifact: drop-tpp-func
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_addresses_func.zip
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Publish Artifact - Addresses Function'
+    artifact: drop-addresses-func
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_terminology_func.zip
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Publish Artifact - Terminology Function'
+    artifact: drop-terminology-func

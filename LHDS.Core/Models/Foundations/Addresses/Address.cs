@@ -25,6 +25,9 @@ namespace LHDS.Core.Models.Foundations.Addresses
         public string? PostCode { get; set; }
         public string? PostalAddress { get; set; }
         public string? JsonPostalAddress { get; set; }
+        public bool Processing { get; set; }
+        public bool IsNormalised { get; set; }
+        public bool IsErrored { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }

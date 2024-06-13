@@ -47,6 +47,11 @@ namespace LHDS.Core.Brokers.Ontologies
                 await SetupApiClient();
             }
 
+            if (apiClient is null)
+            {
+                throw new InvalidOperationException("Failed to setup API client");
+            }
+
             if (typeof(T) == typeof(string))
             {
                 return (T)(object)await this.apiClient.GetContentStringAsync(relativeUrl);
@@ -78,7 +83,7 @@ namespace LHDS.Core.Brokers.Ontologies
                 {
                     DateTimeOffset now = DateTimeOffset.UtcNow;
                     string responseContent = await response.Content.ReadAsStringAsync() ?? string.Empty;
-                    OntologyAccessToken token = JsonConvert.DeserializeObject<OntologyAccessToken>(responseContent);
+                    OntologyAccessToken? token = JsonConvert.DeserializeObject<OntologyAccessToken>(responseContent);
 
                     if (token is null)
                     {
@@ -108,7 +113,7 @@ namespace LHDS.Core.Brokers.Ontologies
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(
                     scheme: "Bearer",
-                    parameter: this.ontologyAccessToken.AccessToken);
+                    parameter: this.ontologyAccessToken?.AccessToken ?? "");
 
             this.apiClient = new RESTFulApiFactoryClient(httpClient);
         }

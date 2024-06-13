@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Foundations.Downloads.Exceptions
 {
     public class DownloadDependencyValidationException : Xeption
     {
-        public DownloadDependencyValidationException(string message, Xeption innerException)
+        public DownloadDependencyValidationException(string message, Xeption? innerException)
             : base(message,innerException)
         { }
     }

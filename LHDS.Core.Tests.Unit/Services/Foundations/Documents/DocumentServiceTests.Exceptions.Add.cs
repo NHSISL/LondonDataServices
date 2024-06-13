@@ -90,12 +90,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             var requestFailedException = new RequestFailedException(randomMessage);
 
             var failedDocumentRequestException = new FailedDocumentRequestException(
-                message: "Failed document request occurred, please contact support",
+                message: "Failed document request occurred, please contact support.",
                 innerException: requestFailedException);
 
             var expectedDependencyException =
                  new DocumentDependencyException(
-                     message: "Document dependency error occurred, contact support.",
+                     message: "Document dependency error occurred, please contact support.",
                      innerException: failedDocumentRequestException);
 
             var stream = new MemoryStream(document.DocumentData);
@@ -144,12 +144,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             var serviceException = new Exception(randomMessage);
 
             var failedDocumentServiceException = new FailedDocumentServiceException(
-                message: "Failed document service error occurred, contact support.",
+                message: "Failed document service error occurred, please contact support.",
                 innerException: serviceException);
 
             var expectedDocumentServiceException =
                 new DocumentServiceException(
-                    message: "Document service error occurred, contact support.",
+                    message: "Document service error occurred, please contact support.",
                     innerException: failedDocumentServiceException);
 
             var stream = new MemoryStream(document.DocumentData);

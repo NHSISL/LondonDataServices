@@ -108,12 +108,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             var failedPdsOrchestrationServiceException =
                 new FailedPdsOrchestrationServiceException(
-                    message: "Failed PDS orchestration service occurred, please contact support",
+                    message: "Failed PDS orchestration service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedPdsOrchestrationServiceException =
                 new PdsOrchestrationServiceException(
-                    message: "PDS orchestration service error occurred, contact support.",
+                    message: "PDS orchestration service error occurred, please contact support.",
                     innerException: failedPdsOrchestrationServiceException);
 
             this.meshServiceMock.Setup(service =>

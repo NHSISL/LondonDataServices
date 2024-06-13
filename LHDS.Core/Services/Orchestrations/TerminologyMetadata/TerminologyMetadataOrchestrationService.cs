@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -46,28 +48,54 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
             this.identifierBroker = identifierBroker;
         }
 
-        public ValueTask RetrieveArtifactMetadataAsync(string resourceType) =>
+        public ValueTask RetrieveArtifactMetadataAsync(string[] resourceTypes) =>
             TryCatch(async () =>
             {
-                ValidateResourceType(resourceType);
+                ValidateResourceTypes(resourceTypes);
+                var exceptions = new List<Exception>();
 
-                TerminologyPoll retrievedTerminologyPoll =
-                    await this.terminologyPollProcessingService.RetrieveOrAddTerminologyPollAsync(resourceType);
+                foreach (var resourceType in resourceTypes)
+                {
+                    try
+                    {
+                        await TryCatch(async () =>
+                        {
+                            ValidateResourceType(resourceType);
 
-                string relativeUrl = this.ontologyConfiguration.TerminologyServerResourceRelativeUrl;
-                ValidateResourceURL(relativeUrl);
-                relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
+                            TerminologyPoll retrievedTerminologyPoll =
+                                await this.terminologyPollProcessingService
+                                    .RetrieveOrAddTerminologyPollAsync(resourceType);
 
-                relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll
-                    .ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+                            string relativeUrl = this.ontologyConfiguration.TerminologyServerResourceRelativeUrl;
+                            ValidateResourceURL(relativeUrl);
+                            relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
 
-                DateTimeOffset currentDateTimeOffset =
-                    this.dateTimeBroker.GetCurrentDateTimeOffset();
+                            relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll
+                                .ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
 
-                await ProcessArtifacts(relativeUrl, resourceType);
-                retrievedTerminologyPoll.LastPoll = currentDateTimeOffset;
-                retrievedTerminologyPoll.UpdatedDate = currentDateTimeOffset;
-                await this.terminologyPollProcessingService.ModifyTerminologyPollAsync(retrievedTerminologyPoll);
+                            DateTimeOffset currentDateTimeOffset =
+                                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                            await ProcessArtifacts(relativeUrl, resourceType);
+                            retrievedTerminologyPoll.LastPoll = currentDateTimeOffset;
+                            retrievedTerminologyPoll.UpdatedDate = currentDateTimeOffset;
+
+                            await this.terminologyPollProcessingService
+                                .ModifyTerminologyPollAsync(retrievedTerminologyPoll);
+                        });
+                    }
+                    catch (Exception exception)
+                    {
+                        exceptions.Add(exception);
+                    }
+                }
+
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to retrieve metadata for {exceptions.Count} artifacts",
+                        exceptions);
+                }
             });
 
         private async ValueTask ProcessArtifacts(string relativeUrl, string resourceType)

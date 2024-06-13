@@ -29,7 +29,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             {
                 var failedOntologyServiceException =
                     new FailedOntologyServiceException(
-                        message: "Failed ontology service error occurred, please contact support",
+                        message: "Failed ontology service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedOntologyServiceException);
@@ -50,7 +50,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             {
                 var failedOntologyServiceException =
                     new FailedOntologyServiceException(
-                        message: "Failed ontology service error occurred, please contact support",
+                        message: "Failed ontology service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedOntologyServiceException);
@@ -71,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
         private OntologyServiceException CreateAndLogServiceException(Xeption exception)
         {
             var ontologyServiceException = new OntologyServiceException(
-                message: "Ontology service error occurred, contact support.",
+                message: "Ontology service error occurred, please contact support.",
                 innerException: exception);
 
             this.loggingBroker.LogError(ontologyServiceException);

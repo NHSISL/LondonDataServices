@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                 loggingBroker: loggingBrokerMock.Object);
         }
 
-        public static TheoryData DependencyValidationExceptions()
+        public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             };
         }
 
-        public static TheoryData DependencyExceptions()
+        public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     message: "SubscriberAgreement validation errors occurred, please try again.", innerException),
 
                 new SubscriberAgreementServiceException(
-                    message : "SubscriberAgreement service error occurred, contact support.", innerException)
+                    message : "SubscriberAgreement service error occurred, please contact support.", innerException)
             };
         }
 

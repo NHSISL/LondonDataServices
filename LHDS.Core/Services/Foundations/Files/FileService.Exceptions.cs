@@ -61,7 +61,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: serializationException);
 
                 throw CreateAndLogDependencyException(failedFileDependencyException);
@@ -70,7 +70,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: outOfMemoryException);
 
                 throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
@@ -79,7 +79,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: ioException);
 
                 throw CreateAndLogDependencyException(failedFileDependencyException);
@@ -88,7 +88,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: unauthorizedAccessException);
 
                 throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
@@ -97,7 +97,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileServiceException =
                     new FailedFileServiceException(
-                        message: "Failed file service error occurred, contact support.",
+                        message: "Failed file service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedFileServiceException);
@@ -145,7 +145,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: serializationException);
 
                 throw CreateAndLogDependencyException(failedFileDependencyException);
@@ -154,7 +154,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: outOfMemoryException);
 
                 throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
@@ -163,7 +163,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: ioException);
 
                 throw CreateAndLogDependencyException(failedFileDependencyException);
@@ -172,7 +172,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: unauthorizedAccessException);
 
                 throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
@@ -181,7 +181,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileServiceException =
                     new FailedFileServiceException(
-                        message: "Failed file service error occurred, contact support.",
+                        message: "Failed file service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedFileServiceException);
@@ -229,7 +229,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: serializationException);
 
                 throw CreateAndLogDependencyException(failedFileDependencyException);
@@ -238,7 +238,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: outOfMemoryException);
 
                 throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
@@ -247,7 +247,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: ioException);
 
                 throw CreateAndLogDependencyException(failedFileDependencyException);
@@ -256,7 +256,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: unauthorizedAccessException);
 
                 throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
@@ -265,7 +265,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileServiceException =
                     new FailedFileServiceException(
-                        message: "Failed file service error occurred, contact support.",
+                        message: "Failed file service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedFileServiceException);
@@ -313,7 +313,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: serializationException);
 
                 throw CreateAndLogDependencyException(failedFileDependencyException);
@@ -322,7 +322,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: outOfMemoryException);
 
                 throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
@@ -331,7 +331,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: ioException);
 
                 throw CreateAndLogDependencyException(failedFileDependencyException);
@@ -340,7 +340,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: unauthorizedAccessException);
 
                 throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
@@ -349,7 +349,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileServiceException =
                     new FailedFileServiceException(
-                        message: "Failed file service error occurred, contact support.",
+                        message: "Failed file service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedFileServiceException);
@@ -397,7 +397,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: serializationException);
 
                 throw CreateAndLogDependencyException(failedFileDependencyException);
@@ -406,7 +406,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: outOfMemoryException);
 
                 throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
@@ -415,7 +415,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: ioException);
 
                 throw CreateAndLogDependencyException(failedFileDependencyException);
@@ -424,7 +424,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileDependencyException =
                     new FailedFileDependencyException(
-                        message: "Failed file dependency error occurred, contact support.",
+                        message: "Failed file dependency error occurred, please contact support.",
                         innerException: unauthorizedAccessException);
 
                 throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
@@ -433,7 +433,7 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 var failedFileServiceException =
                     new FailedFileServiceException(
-                        message: "Failed file service error occurred, contact support.",
+                        message: "Failed file service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedFileServiceException);
@@ -453,7 +453,7 @@ namespace LHDS.Core.Services.Foundations.Files
         {
             var fileServiceDependencyValidationException =
                 new FileDependencyValidationException(
-                    message: "File dependency validation error occurred, contact support.",
+                    message: "File dependency validation error occurred, please contact support.",
                     innerException: exception);
 
             return fileServiceDependencyValidationException;
@@ -462,7 +462,7 @@ namespace LHDS.Core.Services.Foundations.Files
         private FileDependencyException CreateAndLogDependencyException(Xeption exception)
         {
             var fileServiceDependencyException = new FileDependencyException(
-                message: "File dependency error occurred, contact support.",
+                message: "File dependency error occurred, please contact support.",
                 innerException: exception);
 
             return fileServiceDependencyException;
@@ -472,7 +472,7 @@ namespace LHDS.Core.Services.Foundations.Files
             Xeption exception)
         {
             var fileServiceDependencyException = new FileDependencyException(
-                message: "File dependency error occurred, contact support.",
+                message: "File dependency error occurred, please contact support.",
                 innerException: exception);
 
             return fileServiceDependencyException;
@@ -482,7 +482,7 @@ namespace LHDS.Core.Services.Foundations.Files
             Xeption exception)
         {
             var fileServiceException = new FileServiceException(
-                message: "File service error occurred, contact support.",
+                message: "File service error occurred, please contact support.",
                 innerException: exception);
 
             return fileServiceException;

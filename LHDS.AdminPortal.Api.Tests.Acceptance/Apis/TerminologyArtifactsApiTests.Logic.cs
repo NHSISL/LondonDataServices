@@ -100,9 +100,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyArtifacts
 
             // then
             deletedTerminologyArtifact.Should().BeEquivalentTo(expectedTerminologyArtifact);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getTerminologyArtifactbyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getTerminologyArtifactbyIdTask.AsTask);
         }
     }
 }

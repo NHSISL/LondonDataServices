@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -40,7 +40,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 ValidateOptOutProcessingOnRetrieveOrAdd(optOut);
 
-                OptOut maybeOptOut = this.optOutService.RetrieveAllOptOuts()
+                OptOut? maybeOptOut = this.optOutService.RetrieveAllOptOuts()
                     .FirstOrDefault(item => item.NhsNumber == optOut.NhsNumber);
 
                 if (maybeOptOut == null)
@@ -58,7 +58,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
                 IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
 
-                OptOut maybeOptOut = allOptOuts.FirstOrDefault(item =>
+                OptOut? maybeOptOut = allOptOuts.FirstOrDefault(item =>
                     item.NhsNumber == optOut.NhsNumber);
 
                 if (maybeOptOut == null)
@@ -91,14 +91,14 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 return await this.optOutService.RetrieveOptOutByIdAsync(optOutId);
             });
 
-        public ValueTask<OptOut> RetrieveOptOutByNhsNumberAsync(string optOutNhsNumber) =>
+        public ValueTask<OptOut?> RetrieveOptOutByNhsNumberAsync(string optOutNhsNumber) =>
             TryCatch(async () =>
             {
                 ValidateOptOutNhsNumber(optOutNhsNumber);
 
                 IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
 
-                OptOut foundOptOut = allOptOuts.FirstOrDefault(optOut =>
+                OptOut? foundOptOut = allOptOuts.FirstOrDefault(optOut =>
                     optOut.NhsNumber == optOutNhsNumber);
 
                 return await ValueTask.FromResult(foundOptOut);

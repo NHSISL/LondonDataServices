@@ -3,16 +3,22 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 
 namespace LHDS.Core.Services.Coordinations.EmisLandings
 {
     public partial class EmisLandingCoordinationService
     {
-        private static void ValidateFileNameOnLand(string fileName)
+        private static void ValidateProcessArgs(Guid supplierId)
         {
-            Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
+            Validate((Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
+        }
+
+        private static void ValidateProcessFileArgs(string fileName, Guid supplierId)
+        {
+            Validate(
+                (Rule: IsInvalid(fileName), Parameter: "FileName"),
+                (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
 
         private static void ValidateFileNameOnRetrieve(string fileName)
@@ -32,7 +38,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             Validate((Rule: IsInvalid(ingestionTrackingId), Parameter: "ingestionTrackingId"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"

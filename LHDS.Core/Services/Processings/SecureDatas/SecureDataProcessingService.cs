@@ -91,7 +91,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                             SetPropertyValue(
                                 subscriberCredential,
                                 propertyName: keyType,
-                                value: retrievedSecureData.Value);
+                                value: retrievedSecureData.Value ?? "");
                         });
                     }
                     catch (Exception ex)
@@ -144,7 +144,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
 
         virtual internal List<SecureData> GetSecureDataItems(SubscriberCredential subscriberCredential)
         {
-            
+
             List<string> keyTypes = GetPropertyList();
             List<SecureData> secureDataList = new List<SecureData>();
             ValidateKeysExist(keyTypes, subscriberCredential);
@@ -183,7 +183,8 @@ namespace LHDS.Core.Services.Processings.SecureDatas
 
         private static string GetPropertyValue(SubscriberCredential subscriberCredential, string propertyName)
         {
-            PropertyInfo propertyInfo = typeof(SubscriberCredential).GetProperty(propertyName);
+            PropertyInfo? propertyInfo = typeof(SubscriberCredential).GetProperty(propertyName);
+
             if (propertyInfo != null)
             {
                 var value = propertyInfo.GetValue(subscriberCredential);
@@ -201,8 +202,8 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             string propertyName,
             object value)
         {
-            PropertyInfo propertyInfo = typeof(SubscriberCredential).GetProperty(propertyName);
-            propertyInfo.SetValue(subscriberCredential, value);
+            PropertyInfo? propertyInfo = typeof(SubscriberCredential).GetProperty(propertyName);
+            propertyInfo?.SetValue(subscriberCredential, value);
         }
     }
 }

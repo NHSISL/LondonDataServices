@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.Ontologies.Exceptions
 {
     public class OntologyProcessingDependencyValidationException : Xeption
     {
-        public OntologyProcessingDependencyValidationException(string message, Xeption innerException)
+        public OntologyProcessingDependencyValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

@@ -17,7 +17,7 @@ namespace LHDS.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "8.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -60,6 +60,12 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<bool>("IsErrored")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsNormalised")
+                        .HasColumnType("bit");
+
                     b.Property<string>("JsonPostalAddress")
                         .HasColumnType("nvarchar(max)");
 
@@ -77,6 +83,9 @@ namespace LHDS.Core.Migrations
 
                     b.Property<string>("PostalAddress")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Processing")
+                        .HasColumnType("bit");
 
                     b.Property<string>("SubBuildingName")
                         .HasMaxLength(255)
@@ -103,6 +112,16 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsErrored");
+
+                    b.HasIndex("IsNormalised");
+
+                    b.HasIndex("PostCode");
+
+                    b.HasIndex("Processing");
+
+                    b.HasIndex("UPRN");
 
                     b.ToTable("Address", "UPRN");
                 });
@@ -552,10 +571,19 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("IsDownloaded")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsProcessing")
+                        .HasColumnType("bit");
+
                     b.Property<DateTimeOffset>("LastSeen")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<int>("RecordCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RetryCount")
                         .HasColumnType("int");
 
                     b.Property<Guid>("SupplierId")
@@ -889,6 +917,9 @@ namespace LHDS.Core.Migrations
                     b.Property<string>("MatchedDoubleDependentLocality")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("MatchedJsonPostalAddress")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("MatchedOrganisationName")
                         .HasColumnType("nvarchar(max)");
 
@@ -896,6 +927,9 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MatchedPostTown")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MatchedPostalAddress")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MatchedSubBuildingName")
@@ -911,12 +945,6 @@ namespace LHDS.Core.Migrations
                     b.Property<string>("MatchedUPSN")
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
-
-                    b.Property<string>("MatchedWithJsonPostalAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MatchedWithPostalAddress")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostCode")
                         .IsRequired()

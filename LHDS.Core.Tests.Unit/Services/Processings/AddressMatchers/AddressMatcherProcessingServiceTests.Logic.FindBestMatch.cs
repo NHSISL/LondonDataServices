@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.AddressMatchers;
 using Moq;
 using Xunit;
@@ -185,13 +186,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             // given
             HashSet<AddressMatch> inputAddressMatches = CreateSingleBestMatch();
             HashSet<AddressMatch> outputAddressMatches = inputAddressMatches;
-
-            AddressMatch expectedAddressMatch = new AddressMatch
-            {
-                IsMatched = false,
-                BestMatch = BestMatchEnum.Multiple
-            };
-
+            AddressMatch expectedAddressMatch = inputAddressMatches.First().DeepClone();
+            expectedAddressMatch.IsMatched = true;
+            expectedAddressMatch.BestMatch = BestMatchEnum.Multiple;
             List<KeyValuePair<string, string>> randomAddressComponents = CreateKeyValuePairList();
             List<KeyValuePair<string, string>> inputAddressComponents = randomAddressComponents;
 

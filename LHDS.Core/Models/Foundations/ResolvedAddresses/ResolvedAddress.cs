@@ -12,14 +12,14 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses
         public Guid Id { get; set; }
         public Guid UniqueReference { get; set; }
         public Guid? BatchReference { get; set; }
-        public string UnstructuredPostalAddress { get; set; }
+        public string UnstructuredPostalAddress { get; set; } = string.Empty;
         public string? PostCode { get; set; }
         public string? PostalAddress { get; set; }
         public string? JsonPostalAddress { get; set; }
         public MatchAlgorithmEnum MatchAlgorithmEnum { get; set; }
         public bool IsMatched { get; set; }
-        public string? MatchedWithPostalAddress { get; set; }
-        public string? MatchedWithJsonPostalAddress { get; set; }
+        public string? MatchedPostalAddress { get; set; }
+        public string? MatchedJsonPostalAddress { get; set; }
         public string? MatchedUPRN { get; set; }
         public string? MatchedUPSN { get; set; }
         public string? MatchedOrganisationName { get; set; }

@@ -1,11 +1,15 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Audits
@@ -33,7 +37,7 @@ namespace LHDS.Core.Services.Foundations.Audits
             {
                 var failedAuditStorageException =
                     new FailedAuditStorageException(
-                        message: "Failed audit storage error occurred, contact support.",
+                        message: "Failed audit storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedAuditStorageException);
@@ -55,14 +59,14 @@ namespace LHDS.Core.Services.Foundations.Audits
             {
                 var invalidAuditReferenceException =
                     new InvalidAuditReferenceException(
-                        message: "Invalid audit reference error occurred.", 
+                        message: "Invalid audit reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidAuditReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedAuditException = 
+                var lockedAuditException =
                     new LockedAuditException(
                         message: "Locked audit record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
@@ -73,7 +77,7 @@ namespace LHDS.Core.Services.Foundations.Audits
             {
                 var failedAuditStorageException =
                     new FailedAuditStorageException(
-                        message: "Failed audit storage error occurred, contact support.",
+                        message: "Failed audit storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedAuditStorageException);
@@ -82,7 +86,7 @@ namespace LHDS.Core.Services.Foundations.Audits
             {
                 var failedAuditServiceException =
                     new FailedAuditServiceException(
-                        message: "Failed audit service occurred, please contact support", 
+                        message: "Failed audit service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAuditServiceException);
@@ -99,7 +103,7 @@ namespace LHDS.Core.Services.Foundations.Audits
             {
                 var failedAuditStorageException =
                     new FailedAuditStorageException(
-                        message: "Failed audit storage error occurred, contact support.",
+                        message: "Failed audit storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedAuditStorageException);
@@ -108,7 +112,7 @@ namespace LHDS.Core.Services.Foundations.Audits
             {
                 var failedAuditServiceException =
                     new FailedAuditServiceException(
-                        message: "Failed audit service occurred, please contact support", 
+                        message: "Failed audit service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAuditServiceException);
@@ -129,10 +133,10 @@ namespace LHDS.Core.Services.Foundations.Audits
 
         private AuditDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var auditDependencyException = 
+            var auditDependencyException =
                 new AuditDependencyException(
-                    message: "Audit dependency error occurred, contact support.",
-                    innerException: exception); 
+                    message: "Audit dependency error occurred, please contact support.",
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(auditDependencyException);
 
@@ -154,10 +158,10 @@ namespace LHDS.Core.Services.Foundations.Audits
         private AuditDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var auditDependencyException = 
+            var auditDependencyException =
                 new AuditDependencyException(
-                    message: "Audit dependency error occurred, contact support.",
-                    innerException: exception); 
+                    message: "Audit dependency error occurred, please contact support.",
+                    innerException: exception);
 
             this.loggingBroker.LogError(auditDependencyException);
 
@@ -167,9 +171,9 @@ namespace LHDS.Core.Services.Foundations.Audits
         private AuditServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var auditServiceException = 
+            var auditServiceException =
                 new AuditServiceException(
-                    message: "Audit service error occurred, contact support.",
+                    message: "Audit service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(auditServiceException);

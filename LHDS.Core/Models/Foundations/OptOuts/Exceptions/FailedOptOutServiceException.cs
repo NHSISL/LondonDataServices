@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.OptOuts.Exceptions
 {
     public class FailedOptOutServiceException : Xeption
     {
-        public FailedOptOutServiceException(string message, Exception innerException)
+        public FailedOptOutServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

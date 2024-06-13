@@ -137,10 +137,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
 
             // then
             deletedIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getIngestionTrackingbyIdTask.AsTask());
-
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getIngestionTrackingbyIdTask.AsTask);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
 

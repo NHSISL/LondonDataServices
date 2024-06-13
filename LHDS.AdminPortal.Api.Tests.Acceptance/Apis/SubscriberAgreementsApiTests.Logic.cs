@@ -100,9 +100,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberAgreements
 
             // then
             deletedSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getSubscriberAgreementbyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getSubscriberAgreementbyIdTask.AsTask);
         }
     }
 }

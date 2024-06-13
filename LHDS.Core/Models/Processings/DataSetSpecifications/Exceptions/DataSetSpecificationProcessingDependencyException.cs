@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.DataSetSpecifications.Exceptions
 {
     public class DataSetSpecificationProcessingDependencyException : Xeption
     {
-        public DataSetSpecificationProcessingDependencyException(string message, Xeption innerException) :
+        public DataSetSpecificationProcessingDependencyException(string message, Xeption? innerException) :
             base(message, innerException)
         { }
     }

@@ -25,11 +25,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             SqlException sqlException = GetSqlException();
 
             var failedOptOutStorageException = new FailedOptOutStorageException(
-                message: "Failed optOut storage error occurred, contact support.",
+                message: "Failed optOut storage error occurred, please contact support.",
                 innerException: sqlException);
 
             var expectedOptOutDependencyException = new OptOutDependencyException(
-                message: "OptOut dependency error occurred, contact support.",
+                message: "OptOut dependency error occurred, please contact support.",
                 innerException: failedOptOutStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -183,11 +183,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 new DbUpdateException();
 
             var failedOptOutStorageException = new FailedOptOutStorageException(
-                message: "Failed optOut storage error occurred, contact support.",
+                message: "Failed optOut storage error occurred, please contact support.",
                 innerException: databaseUpdateException);
 
             var expectedOptOutDependencyException = new OptOutDependencyException(
-                message: "OptOut dependency error occurred, contact support.",
+                message: "OptOut dependency error occurred, please contact support.",
                 innerException: failedOptOutStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -232,11 +232,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             var serviceException = new Exception();
 
             var failedOptOutServiceException = new FailedOptOutServiceException(
-                message: "Failed optOut service occurred, please contact support",
+                message: "Failed optOut service error occurred, please contact support.",
                 innerException: serviceException);
 
             var expectedOptOutServiceException = new OptOutServiceException(
-                message: "OptOut service error occurred, contact support.",
+                message: "OptOut service error occurred, please contact support.",
                 innerException: failedOptOutServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>

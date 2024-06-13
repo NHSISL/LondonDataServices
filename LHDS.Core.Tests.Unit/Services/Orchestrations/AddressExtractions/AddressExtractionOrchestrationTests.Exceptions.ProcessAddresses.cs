@@ -5,12 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using Moq;
@@ -21,305 +18,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationServiceTests
     {
-        [Theory]
-        [MemberData(nameof(AddressExtractionOrchestrationDependencyValidationExceptions))]
-        public async Task
-            ShouldThrowAggregateDependencyValidationExceptionOnProcessAddressesIfErrorsInLoopAndLogItAsync(
-            Xeption dependencyValidationException)
-        {
-            // Given
-            string someFilename = GetRandomString();
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
-            List<Exception> exceptions = new List<Exception>();
-
-            this.csvMapperServiceMock.Setup(service =>
-                service.MapCsvToObjectAsync<Address>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
-                    .ReturnsAsync(randomAddresses);
-
-            foreach (Address address in randomAddresses)
-            {
-                string addressString = address.GetFormattedAddress();
-
-                this.addressNormalisationServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(addressString))
-                        .ThrowsAsync(dependencyValidationException);
-
-                var addressExtractionOrchestrationDependencyValidationException =
-                    new AddressExtractionOrchestrationDependencyValidationException(
-                        message: "Address extraction orchestration dependency validation error occurred, " +
-                        "please try again.",
-                        innerException: dependencyValidationException.InnerException as Xeption);
-
-                exceptions.Add(addressExtractionOrchestrationDependencyValidationException);
-            }
-
-            var aggregateException =
-                new AggregateException(
-                    $"Unable to normalise address for {exceptions.Count} addresses",
-                    exceptions);
-
-            var failedAddressExtractionOrchestrationServiceException =
-                new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction aggregate orchestration service occurred, " +
-                    "please contact support.",
-                    innerException: aggregateException);
-
-            var expectedAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
-                    innerException: failedAddressExtractionOrchestrationServiceException);
-
-            // When
-            ValueTask<List<Address>> processAddressTask =
-                this.addressExtractionOrchestrationService.ProcessAddressesAsync(randomData, someFilename);
-
-            AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
-                await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
-                    await processAddressTask);
-
-            // Then
-            actualAddressExtractionOrchestrationServiceException.Should()
-                .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
-
-            this.csvMapperServiceMock.Verify(service =>
-                service.MapCsvToObjectAsync<Address>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
-                        Times.Once);
-
-            foreach (Address address in randomAddresses)
-            {
-                string addressString = address.GetFormattedAddress();
-
-                this.addressNormalisationServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(addressString),
-                        Times.Once);
-            }
-
-            var addressExtractionOrchestrationDependencyValidationLoggingException =
-                new AddressExtractionOrchestrationDependencyValidationException(
-                    message: "Address extraction orchestration dependency validation error occurred, " +
-                    "fix the errors and try again.",
-                    innerException: dependencyValidationException.InnerException as Xeption);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    addressExtractionOrchestrationDependencyValidationLoggingException))),
-                        Times.Exactly(randomAddresses.Count));
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    actualAddressExtractionOrchestrationServiceException))),
-                        Times.Once);
-
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Theory]
-        [MemberData(nameof(AddressExtractionDependencyExceptions))]
-        public async Task
-            ShouldThrowAggregateDependencyExceptionOnProcessAddressesIfErrorsInLoopAndLogItAsync(
-            Xeption dependencyException)
-        {
-            // Given
-            string someFilename = GetRandomString();
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
-            List<Exception> exceptions = new List<Exception>();
-
-            this.csvMapperServiceMock.Setup(service =>
-                service.MapCsvToObjectAsync<Address>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
-                    .ReturnsAsync(randomAddresses);
-
-            foreach (Address address in randomAddresses)
-            {
-                string addressString = address.GetFormattedAddress();
-
-                this.addressNormalisationServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(addressString))
-                        .ThrowsAsync(dependencyException);
-
-                var addressExtractionOrchestrationDependencyException =
-                    new AddressExtractionOrchestrationDependencyException(
-                        message: "Address extraction orchestration dependency error occurred, " +
-                        "please try again.",
-                        innerException: dependencyException.InnerException as Xeption);
-
-                exceptions.Add(addressExtractionOrchestrationDependencyException);
-            }
-
-            var aggregateException =
-                new AggregateException(
-                    $"Unable to normalise address for {exceptions.Count} addresses",
-                    exceptions);
-
-            var failedAddressExtractionOrchestrationServiceException =
-                new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction aggregate orchestration service occurred, " +
-                    "please contact support.",
-                    innerException: aggregateException);
-
-            var expectedAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
-                    innerException: failedAddressExtractionOrchestrationServiceException);
-
-            // When
-            ValueTask<List<Address>> processAddressTask =
-                this.addressExtractionOrchestrationService.ProcessAddressesAsync(randomData, someFilename);
-
-            AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
-                await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
-                    await processAddressTask);
-
-            // Then
-            actualAddressExtractionOrchestrationServiceException.Should()
-                .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
-
-            this.csvMapperServiceMock.Verify(service =>
-                service.MapCsvToObjectAsync<Address>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
-                        Times.Once);
-
-            foreach (Address address in randomAddresses)
-            {
-                string addressString = address.GetFormattedAddress();
-
-                this.addressNormalisationServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(addressString),
-                        Times.Once);
-            }
-
-            var addressExtractionOrchestrationDependencyLoggingException =
-                new AddressExtractionOrchestrationDependencyException(
-                    message: "Address extraction orchestration dependency error occurred, " +
-                    "fix the errors and try again.",
-                    innerException: dependencyException.InnerException as Xeption);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    addressExtractionOrchestrationDependencyLoggingException))),
-                        Times.Exactly(randomAddresses.Count));
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    actualAddressExtractionOrchestrationServiceException))),
-                        Times.Once);
-
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowAggregateServiceExceptionOnProcessAddressIfErrorsInLoopAndLogItAsync()
-        {
-            // Given
-            string someFilename = GetRandomString();
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
-            var serviceException = new Exception();
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
-            List<Exception> exceptions = new List<Exception>();
-
-            this.csvMapperServiceMock.Setup(service =>
-                service.MapCsvToObjectAsync<Address>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
-                    .ReturnsAsync(randomAddresses);
-
-            var innerFailedAddressExtractionOrchestrationServiceException =
-                new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction orchestration service error occurred, please contact support.",
-                    innerException: serviceException);
-
-            var innerAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
-                    innerException: innerFailedAddressExtractionOrchestrationServiceException);
-
-            foreach (Address address in randomAddresses)
-            {
-                string stringAddress = address.GetFormattedAddress();
-
-                this.addressNormalisationServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(stringAddress))
-                        .ThrowsAsync(serviceException);
-
-                exceptions.Add(innerAddressExtractionOrchestrationServiceException);
-            }
-
-            var aggregateException =
-                new AggregateException(
-                    $"Unable to normalise address for {exceptions.Count} addresses",
-                    exceptions);
-
-            var failedAddressExtractionOrchestrationServiceException =
-                new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction aggregate orchestration service occurred, " +
-                        "please contact support.",
-                    innerException: aggregateException);
-
-            var expectedAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
-                    innerException: failedAddressExtractionOrchestrationServiceException);
-
-            // When
-            ValueTask<List<Address>> processAddressTask =
-                this.addressExtractionOrchestrationService.ProcessAddressesAsync(randomData, someFilename);
-
-            AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
-                await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
-                    await processAddressTask);
-
-            // Then
-            actualAddressExtractionOrchestrationServiceException.Should()
-                .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
-
-            this.csvMapperServiceMock.Verify(service =>
-                service.MapCsvToObjectAsync<Address>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
-                        Times.Once);
-
-            foreach (Address address in randomAddresses)
-            {
-                string addressString = address.GetFormattedAddress();
-
-                this.addressNormalisationServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(addressString),
-                        Times.Once);
-            }
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    innerAddressExtractionOrchestrationServiceException))),
-                        Times.Exactly(randomAddresses.Count));
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedAddressExtractionOrchestrationServiceException))),
-                        Times.Once);
-
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
         [Theory]
         [MemberData(nameof(AddressExtractionOrchestrationDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationOnAddressExtractionIfDependencyValidationOccursAndLogItAsync(
@@ -340,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                         "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.csvMapperServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<Address>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -359,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
-            this.csvMapperServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<Address>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -371,10 +69,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedDependencyException))),
                        Times.Once);
 
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -397,7 +98,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                         "fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
-            this.csvMapperServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<Address>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -416,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
-            this.csvMapperServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<Address>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -428,10 +129,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedDependencyException))),
                        Times.Once);
 
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -454,10 +158,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             var expectedAddressExtractionOrchestrationServiceException =
                 new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, contact support.",
+                    message: "Address extraction orchestration service error occurred, please contact support.",
                     innerException: failedAddressPersistanceOrchestrationServiceException);
 
-            this.csvMapperServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<Address>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -476,7 +180,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             actualException.Should()
                  .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
 
-            this.csvMapperServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<Address>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
@@ -488,10 +192,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                    expectedAddressExtractionOrchestrationServiceException))),
                        Times.Once);
 
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

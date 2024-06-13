@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Orchestrations.TppLandings.Exceptions
 {
     public class FailedTppLandingOrchestrationServiceException : Xeption
     {
-        public FailedTppLandingOrchestrationServiceException(string message, Exception innerException)
+        public FailedTppLandingOrchestrationServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

@@ -100,9 +100,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
 
             // then
             deletedSupplier.Should().BeEquivalentTo(expectedSupplier);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getSupplierbyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getSupplierbyIdTask.AsTask);
         }
     }
 }

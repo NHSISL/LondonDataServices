@@ -40,7 +40,7 @@ namespace LHDS.Core.Clients
                 decryptionOrchestrationDependencyException)
             {
                 throw new DecryptionClientDependencyException(
-                    message: "Decryption client dependency error occurred, contact support.",
+                    message: "Decryption client dependency error occurred, please contact support.",
                     innerException: decryptionOrchestrationDependencyException.InnerException as Xeption);
             }
             catch (DecryptionOrchestrationServiceException

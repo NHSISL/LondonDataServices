@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.PdsAudits.Exceptions
 {
     public class AlreadyExistsPdsAuditException : Xeption
     {
-        public AlreadyExistsPdsAuditException(string message, Exception innerException)
+        public AlreadyExistsPdsAuditException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

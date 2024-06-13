@@ -13,7 +13,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
 {
     public partial class AddressMatcherProcessingService : IAddressMatcherProcessingService
     {
-        virtual internal void ValidateAddress(string address) =>
+        virtual internal void ValidateAddress(string? address) =>
             Validate<InvalidArgumentAddressMatcherProcessingException>(
                 message: "Invalid address matcher processing argument(s), please correct the errors and try again.",
                 (Rule: IsInvalid(address), Parameter: "address"));
@@ -50,7 +50,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             }
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
@@ -71,19 +71,19 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
+            var invalidDataException = (T?)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataException.UpsertDataList(
+                    invalidDataException?.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataException.ThrowIfContainsErrors();
+            invalidDataException?.ThrowIfContainsErrors();
         }
     }
 }

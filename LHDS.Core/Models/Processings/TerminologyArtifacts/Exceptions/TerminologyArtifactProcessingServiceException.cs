@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions
 {
     public class TerminologyArtifactProcessingServiceException : Xeption
     {
-        public TerminologyArtifactProcessingServiceException(string message, Xeption innerException)
+        public TerminologyArtifactProcessingServiceException(string message, Xeption? innerException)
           : base(message, innerException)
         { }
     }

@@ -65,7 +65,7 @@ namespace LHDS.Core.Services.Foundations.Documents
             Message = "Data is required"
         };
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"

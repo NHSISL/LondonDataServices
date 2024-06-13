@@ -82,7 +82,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             {
                 var failedTppLandingOrchestrationServiceException =
                     new FailedTppLandingOrchestrationServiceException(
-                        message: "Failed TPP landing orchestration service occurred, please contact support",
+                        message: "Failed TPP landing orchestration service error occurred, please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(failedTppLandingOrchestrationServiceException);
@@ -133,7 +133,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             var
                 tppLandingOrchestrationServiceException =
                 new TppLandingOrchestrationServiceException(
-                    message: "TPP landing orchestration service error occurred, contact support.",
+                    message: "TPP landing orchestration service error occurred, please contact support.",
                     exception);
 
             this.loggingBroker.LogError(tppLandingOrchestrationServiceException);

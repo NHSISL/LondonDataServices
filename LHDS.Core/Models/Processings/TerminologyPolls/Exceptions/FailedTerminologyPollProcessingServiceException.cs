@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Processings.TerminologyPolls.Exceptions
 {
     public class FailedTerminologyPollProcessingServiceException : Xeption
     {
-        public FailedTerminologyPollProcessingServiceException(string message, Exception innerException)
+        public FailedTerminologyPollProcessingServiceException(string message, Exception? innerException)
           : base(message, innerException)
         { }
     }

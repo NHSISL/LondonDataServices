@@ -112,12 +112,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
 
             var failedAddressNormalisationProcessingServiceException =
                 new FailedAddressNormalisationProcessingServiceException(
-                    message: "Failed address normalisation processing service error occurred, contact support.",
+                    message: "Failed address normalisation processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedAddressNormalisationProcessingServiveException =
                 new AddressNormalisationProcessingServiceException(
-                    message: "Address normalisation processing service error occurred, contact support.",
+                    message: "Address normalisation processing service error occurred, please contact support.",
                     innerException: failedAddressNormalisationProcessingServiceException);
 
             this.addressNormalisationServiceMock.Setup(service =>

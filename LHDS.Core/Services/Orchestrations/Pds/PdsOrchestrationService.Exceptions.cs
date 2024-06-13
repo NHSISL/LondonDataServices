@@ -89,7 +89,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             {
                 var failedPdsServiceException =
                     new FailedPdsOrchestrationServiceException(
-                        message: "Failed PDS orchestration service occurred, please contact support",
+                        message: "Failed PDS orchestration service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedPdsServiceException);
@@ -166,7 +166,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             {
                 var failedPdsServiceException =
                     new FailedPdsOrchestrationServiceException(
-                        message: "Failed PDS orchestration service occurred, please contact support",
+                        message: "Failed PDS orchestration service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedPdsServiceException);
@@ -235,7 +235,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             {
                 var failedPdsServiceException =
                     new FailedPdsOrchestrationServiceException(
-                        message: "Failed PDS orchestration service occurred, please contact support",
+                        message: "Failed PDS orchestration service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedPdsServiceException);
@@ -285,7 +285,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         {
             var pdsOrchestrationServiceException =
                 new PdsOrchestrationServiceException(
-                    message: "PDS orchestration service error occurred, contact support.",
+                    message: "PDS orchestration service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(pdsOrchestrationServiceException);

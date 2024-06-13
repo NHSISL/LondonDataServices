@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Orchestrations.TerminologyDetails.Exceptions
 {
     public class TerminologyDetailOrchestrationDependencyValidationException : Xeption
     {
-        public TerminologyDetailOrchestrationDependencyValidationException(string message, Xeption innerException)
+        public TerminologyDetailOrchestrationDependencyValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

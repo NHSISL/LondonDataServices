@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             {
                 var failedTerminologyPollProcessingServiceException =
                     new FailedTerminologyPollProcessingServiceException(
-                        message: "Failed terminology poll processing service error occurred, contact support.",
+                        message: "Failed terminology poll processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedTerminologyPollProcessingServiceException);
@@ -86,7 +86,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             {
                 var failedTerminologyPollProcessingServiceException =
                     new FailedTerminologyPollProcessingServiceException(
-                        message: "Failed terminology poll processing service error occurred, contact support.",
+                        message: "Failed terminology poll processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedTerminologyPollProcessingServiceException);
@@ -136,7 +136,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
         {
             var terminologyPollProcessingServiceException =
                 new TerminologyPollProcessingServiceException(
-                    message: "Terminology poll processing service error occurred, contact support.",
+                    message: "Terminology poll processing service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(terminologyPollProcessingServiceException);

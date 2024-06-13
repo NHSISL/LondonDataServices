@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Cryptographies.Exceptions
 {
     public class CryptographyServiceException : Xeption
     {
-        public CryptographyServiceException(string message, Exception innerException)
+        public CryptographyServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

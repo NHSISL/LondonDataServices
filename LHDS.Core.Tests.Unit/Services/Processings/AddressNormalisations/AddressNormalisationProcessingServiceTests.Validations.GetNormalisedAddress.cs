@@ -42,8 +42,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
                 this.addressNormalisationProcessingService.GetNormalisedAddress(invalidAddress);
 
             AddressNormalisationProcessingValidationException actualAddressNormalisationProcessingValidationException =
-                await Assert.ThrowsAsync<AddressNormalisationProcessingValidationException>(() =>
-                    addAddressNormalisationTask.AsTask());
+                await Assert.ThrowsAsync<AddressNormalisationProcessingValidationException>(
+                    addAddressNormalisationTask.AsTask);
 
             // then
             actualAddressNormalisationProcessingValidationException.Should()

@@ -16,7 +16,7 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
     {
         public async ValueTask<byte[]> EncryptAsync(byte[] data, SubscriberCredential subscriberCredential)
         {
-            var publicKeyDecoded = Convert.FromBase64String(subscriberCredential.GpgPublicKey);
+            var publicKeyDecoded = Convert.FromBase64String(subscriberCredential.GpgPublicKey ?? "");
 
             using (Stream inputFileStream = new MemoryStream(data))
             using (Stream publicKeyFileStream = new MemoryStream(publicKeyDecoded))
@@ -56,8 +56,8 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
 
         public async ValueTask<byte[]> DecryptAsync(byte[] data, SubscriberCredential subscriberCredential)
         {
-            var privateKeyDecoded = Convert.FromBase64String(subscriberCredential.GpgPrivateKey);
-            char[] privateKeyPassphrase = subscriberCredential.GpgPassPhrase.ToCharArray();
+            var privateKeyDecoded = Convert.FromBase64String(subscriberCredential.GpgPrivateKey ?? "");
+            char[] privateKeyPassphrase = subscriberCredential?.GpgPassPhrase?.ToCharArray() ?? Array.Empty<char>();
 
             using (Stream encryptedFileStream = new MemoryStream(data))
             using (Stream privateKeyFileStream = new MemoryStream(privateKeyDecoded))
@@ -65,8 +65,8 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
                 PgpObjectFactory pgpFactory = new PgpObjectFactory(PgpUtilities.GetDecoderStream(encryptedFileStream));
                 PgpEncryptedDataList encryptedDataList = (PgpEncryptedDataList)pgpFactory.NextPgpObject();
 
-                PgpPrivateKey privateKey = null;
-                PgpPublicKeyEncryptedData encryptedData = null;
+                PgpPrivateKey? privateKey = null;
+                PgpPublicKeyEncryptedData? encryptedData = null;
 
                 foreach (PgpPublicKeyEncryptedData encryptedDataItem in encryptedDataList.GetEncryptedDataObjects())
                 {
@@ -87,6 +87,11 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
                     throw new ArgumentException("Private key not found in the key file");
                 }
 
+                if (encryptedData == null)
+                {
+                    throw new ArgumentException("No encrypted data found in the message");
+                }
+
                 Stream decryptedStream = encryptedData.GetDataStream(privateKey);
                 PgpObjectFactory decryptedFactory = new PgpObjectFactory(inputStream: decryptedStream);
                 PgpObject pgpObject = decryptedFactory.NextPgpObject();
@@ -98,7 +103,7 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
                     pgpObject = compressedFactory.NextPgpObject();
                 }
 
-                byte[] decryptedData = null;
+                byte[] decryptedData = ""u8.ToArray();
 
                 if (pgpObject is PgpLiteralData)
                 {
@@ -143,24 +148,24 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
                 }
             }
 
-            return null;
+            throw new ArgumentException("No public key found in key ring.");
         }
 
         private static PgpPrivateKey FindPrivateKey(Stream privateKeyStream, long keyId, char[] passphrase)
         {
             var decoderStream = PgpUtilities.GetDecoderStream(privateKeyStream);
 
-            PgpSecretKeyRingBundle secretKeyRingBundle =
+            PgpSecretKeyRingBundle? secretKeyRingBundle =
                 new PgpSecretKeyRingBundle(decoderStream);
 
-            PgpSecretKey secretKey = secretKeyRingBundle.GetSecretKey(keyId);
+            PgpSecretKey? secretKey = secretKeyRingBundle.GetSecretKey(keyId);
 
             if (secretKey != null)
             {
                 return secretKey.ExtractPrivateKey(passphrase);
             }
 
-            return null;
+            throw new ArgumentException("No secret key found in key ring.");
         }
     }
 }

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressNormalisations;
 using Moq;
 using Xunit;
 
@@ -20,32 +19,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         public async Task ShouldProcessAddressesAndLogAsync()
         {
             // Given
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            List<Address> randomAddresses = CreateRandomAddresses(GetRandomNumber()).ToList();
             List<Address> inputAddresses = randomAddresses.DeepClone();
             string someFileName = GetRandomString();
             List<Address> processedAddresses = new List<Address>();
 
             foreach (Address address in inputAddresses)
             {
-                AddressNormalisation addressNormalisation = new AddressNormalisation
-                {
-                    PostalAddress = GetRandomString(),
-                    JsonPostalAddress = GetRandomString()
-                };
-
-                var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
-                    $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
-                    $"{address.DependentThoroughfare},{address.Thoroughfare}," +
-                    $"{address.DoubleDependentLocality}," +
-                    $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
-
-                this.addressNormalisationProcessingServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(stringAddress))
-                        .ReturnsAsync(addressNormalisation);
-
-                address.PostalAddress = addressNormalisation.PostalAddress;
-                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-
                 this.addressProcessingServiceMock.Setup(service =>
                     service.ModifyOrAddAddressAsync(address))
                         .ReturnsAsync(address);
@@ -64,31 +44,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             foreach (Address address in inputAddresses)
             {
-                var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
-                    $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
-                    $"{address.DependentThoroughfare},{address.Thoroughfare}," +
-                    $"{address.DoubleDependentLocality}," +
-                    $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
-
-                this.addressNormalisationProcessingServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(stringAddress),
-                        Times.Once());
-
                 this.addressProcessingServiceMock.Verify(service =>
                     service.ModifyOrAddAddressAsync(It.Is(SameAddressAs(address))),
                         Times.Once());
 
-                this.auditBrokerMock.Verify(broker => 
+                this.auditBrokerMock.Verify(broker =>
                     broker.LogInformation(
-                        "Address", 
-                        "Successfully loaded address from Ordinance Database",
-                        $"Successfully loaded address with id: {address.Id} from file: {someFileName}",
+                        "Address",
+                        "Successfully persisted Address to Database",
+                        $"Successfully persisted address with id: {address.Id} from file: {someFileName}",
                         someFileName,
-                        address.Id), 
+                        address.Id),
                             Times.Once());
             }
 
-            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

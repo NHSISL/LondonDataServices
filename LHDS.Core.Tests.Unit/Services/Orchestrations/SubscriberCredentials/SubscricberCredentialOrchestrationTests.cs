@@ -255,7 +255,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             return filler;
         }
 
-        public static TheoryData SubscriberCredentialOrchestrationDependencyValidationExceptions()
+        public static TheoryData<Xeption> SubscriberCredentialOrchestrationDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -281,7 +281,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             };
         }
 
-        public static TheoryData SubscriberCredentialOrchestrationDependencyExceptions()
+        public static TheoryData<Xeption> SubscriberCredentialOrchestrationDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -290,19 +290,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             return new TheoryData<Xeption>
             {
                 new SubscriberAgreementProcessingDependencyException(
-                    message: "Subscriber agreement processing dependency error occurred, contact support.",
+                    message: "Subscriber agreement processing dependency error occurred, please contact support.",
                     innerException),
 
                 new SubscriberAgreementProcessingServiceException(
-                    message: "Subscriber agreement processing service error occurred, contact support.",
+                    message: "Subscriber agreement processing service error occurred, please contact support.",
                     innerException),
 
                 new SubscriberCredentialProcessingDependencyException(
-                    message: "Subscriber credential processing dependency error occurred, contact support.",
+                    message: "Subscriber credential processing dependency error occurred, please contact support.",
                     innerException),
 
                 new SubscriberCredentialProcessingServiceException(
-                    message: "Subscriber credential processing service error occurred, contact support.",
+                    message: "Subscriber credential processing service error occurred, please contact support.",
                     innerException),
             };
         }

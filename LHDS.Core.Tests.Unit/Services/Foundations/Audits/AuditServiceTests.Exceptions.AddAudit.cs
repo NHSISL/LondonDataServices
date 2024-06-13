@@ -25,12 +25,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             var failedAuditStorageException =
                 new FailedAuditStorageException(
-                    message: "Failed audit storage error occurred, contact support.",
+                    message: "Failed audit storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedAuditDependencyException =
                 new AuditDependencyException(
-                    message: "Audit dependency error occurred, contact support.",
+                    message: "Audit dependency error occurred, please contact support.",
                     innerException: failedAuditStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -208,12 +208,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             var failedAuditStorageException =
                 new FailedAuditStorageException(
-                    message: "Failed audit storage error occurred, contact support.",
+                    message: "Failed audit storage error occurred, please contact support.",
                     innerException: databaseUpdateException);
 
             var expectedAuditDependencyException =
                 new AuditDependencyException(
-                    message: "Audit dependency error occurred, contact support.",
+                    message: "Audit dependency error occurred, please contact support.",
                     innerException: failedAuditStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -266,12 +266,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             var failedAuditServiceException =
                 new FailedAuditServiceException(
-                    message: "Failed audit service occurred, please contact support",
+                    message: "Failed audit service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedAuditServiceException =
                 new AuditServiceException(
-                    message: "Audit service error occurred, contact support.",
+                    message: "Audit service error occurred, please contact support.",
                     innerException: failedAuditServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>

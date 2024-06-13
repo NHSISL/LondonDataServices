@@ -33,7 +33,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             {
                 var failedSpecificationObjectStorageException =
                     new FailedSpecificationObjectStorageException(
-                        message: "Failed specificationObject storage error occurred, contact support.",
+                        message: "Failed specificationObject storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedSpecificationObjectStorageException);
@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             {
                 var failedSpecificationObjectStorageException =
                     new FailedSpecificationObjectStorageException(
-                        message: "Failed specificationObject storage error occurred, contact support.",
+                        message: "Failed specificationObject storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedSpecificationObjectStorageException);
@@ -82,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             {
                 var failedSpecificationObjectServiceException =
                     new FailedSpecificationObjectServiceException(
-                        message: "Failed specificationObject service occurred, please contact support", 
+                        message: "Failed specificationObject service error occurred, please contact support.", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedSpecificationObjectServiceException);
@@ -99,7 +99,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             {
                 var failedSpecificationObjectStorageException =
                     new FailedSpecificationObjectStorageException(
-                        message: "Failed specificationObject storage error occurred, contact support.",
+                        message: "Failed specificationObject storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedSpecificationObjectStorageException);
@@ -108,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             {
                 var failedSpecificationObjectServiceException =
                     new FailedSpecificationObjectServiceException(
-                        message: "Failed specificationObject service occurred, please contact support", 
+                        message: "Failed specificationObject service error occurred, please contact support.", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedSpecificationObjectServiceException);
@@ -131,7 +131,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
         {
             var specificationObjectDependencyException = 
                 new SpecificationObjectDependencyException(
-                    message: "SpecificationObject dependency error occurred, contact support.",
+                    message: "SpecificationObject dependency error occurred, please contact support.",
                     innerException: exception); 
 
             this.loggingBroker.LogCritical(specificationObjectDependencyException);
@@ -156,7 +156,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
         {
             var specificationObjectDependencyException = 
                 new SpecificationObjectDependencyException(
-                    message: "SpecificationObject dependency error occurred, contact support.",
+                    message: "SpecificationObject dependency error occurred, please contact support.",
                     innerException: exception); 
 
             this.loggingBroker.LogError(specificationObjectDependencyException);
@@ -169,7 +169,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
         {
             var specificationObjectServiceException = 
                 new SpecificationObjectServiceException(
-                    message: "SpecificationObject service error occurred, contact support.",
+                    message: "SpecificationObject service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(specificationObjectServiceException);

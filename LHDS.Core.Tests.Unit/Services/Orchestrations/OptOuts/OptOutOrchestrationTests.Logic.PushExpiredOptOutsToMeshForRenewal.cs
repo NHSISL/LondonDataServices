@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDate);
+                    .Returns(currentDateTime);
 
             this.optOutProcessingServiceMock.Setup(processing =>
                 processing.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays))
@@ -125,9 +125,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
             }
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Exactly(outputOptOuts.Count + 1));
+
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -159,8 +167,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

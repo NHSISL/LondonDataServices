@@ -3,9 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
-using LHDS.Core.Models.Foundations.Addresses;
 using Xeptions;
 
 namespace LHDS.Core.Services.Coordinations.AddressCoordinations
@@ -20,7 +18,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                     (Rule: IsInvalid(filename), Parameter: "filename"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
@@ -32,31 +30,22 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             Message = "Data is required"
         };
 
-        private void ValidateAddressListIsNotNull(List<Address> addresses)
-        {
-            if (addresses == null)
-            {
-                throw new NullAddressCoordinationListException(
-                    message: "Address list is null, please correct the errors and try again.");
-            }
-        }
-
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
+            var invalidDataException = (T?)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataException.UpsertDataList(
+                    invalidDataException?.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataException.ThrowIfContainsErrors();
+            invalidDataException?.ThrowIfContainsErrors();
         }
     }
 }

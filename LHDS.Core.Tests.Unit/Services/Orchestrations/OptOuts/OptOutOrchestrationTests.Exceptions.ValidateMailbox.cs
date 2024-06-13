@@ -50,12 +50,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     expectedDependencyException))),
                         Times.Once);
 
-            this.meshProcessingServiceMock.VerifyNoOtherCalls();
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -93,12 +94,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     expectedDependencyException))),
                         Times.Once);
 
-            this.meshProcessingServiceMock.VerifyNoOtherCalls();
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -109,12 +111,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             var failedOptOutOrchestrationServiceException =
                 new FailedOptOutOrchestrationServiceException(
-                    message: "Failed opt out orchestration service occurred, please contact support",
+                    message: "Failed opt out orchestration service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedOptOrchestrationServiceException =
                 new OptOutOrchestrationServiceException(
-                    message: "Opt Out orchestration service error occurred, contact support.",
+                    message: "Opt Out orchestration service error occurred, please contact support.",
                     innerException: failedOptOutOrchestrationServiceException);
 
             this.meshProcessingServiceMock.Setup(processing =>
@@ -141,12 +143,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     expectedOptOrchestrationServiceException))),
                         Times.Once);
 
-            this.meshProcessingServiceMock.VerifyNoOtherCalls();
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -114,7 +114,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 var failedDownloadServiceException =
                     new FailedEmisLandingOrchestrationServiceException(
-                        message: "Failed EMIS landing orchestration service occurred, please contact support",
+                        message: "Failed EMIS landing orchestration service error occurred, please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(failedDownloadServiceException);
@@ -217,7 +217,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 var failedEmisLandingOrchestrationServiceException =
                     new FailedEmisLandingOrchestrationServiceException(
-                        message: "Failed EMIS landing orchestration service occurred, please contact support",
+                        message: "Failed EMIS landing orchestration service error occurred, please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(failedEmisLandingOrchestrationServiceException);
@@ -320,7 +320,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 var failedEmisLandingOrchestrationServiceException =
                     new FailedEmisLandingOrchestrationServiceException(
-                        message: "Failed EMIS landing orchestration service occurred, please contact support",
+                        message: "Failed EMIS landing orchestration service error occurred, please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(failedEmisLandingOrchestrationServiceException);
@@ -405,7 +405,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 var failedEmisLandingOrchestrationServiceException =
                     new FailedEmisLandingOrchestrationServiceException(
-                        message: "Failed EMIS landing orchestration service occurred, please contact support",
+                        message: "Failed EMIS landing orchestration service error occurred, please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(failedEmisLandingOrchestrationServiceException);
@@ -455,7 +455,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         {
             var emisLandingOrchestrationServiceException =
                 new EmisLandingOrchestrationServiceException(
-                    message: "EMIS landing orchestration service error occurred, contact support.",
+                    message: "EMIS landing orchestration service error occurred, please contact support.",
                     exception);
 
             this.loggingBroker.LogError(emisLandingOrchestrationServiceException);

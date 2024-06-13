@@ -5,7 +5,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
+using System.Runtime.CompilerServices;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
-        public static TheoryData MinutesBeforeOrAfter()
+        public static TheoryData<int> MinutesBeforeOrAfter()
         {
             int randomNumber = GetRandomNumber();
             int randomNegativeNumber = GetRandomNegativeNumber();
@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
         private static SqlException GetSqlException() =>
-            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+            (SqlException)RuntimeHelpers.GetUninitializedObject(typeof(SqlException));
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();

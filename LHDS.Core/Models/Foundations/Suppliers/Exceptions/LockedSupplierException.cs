@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Suppliers.Exceptions
 {
     public class LockedSupplierException : Xeption
     {
-        public LockedSupplierException(string message, Exception innerException)
+        public LockedSupplierException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

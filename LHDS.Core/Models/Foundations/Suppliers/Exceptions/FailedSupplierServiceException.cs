@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Suppliers.Exceptions
 {
     public class FailedSupplierServiceException : Xeption
     {
-        public FailedSupplierServiceException(string message, Exception innerException)
+        public FailedSupplierServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

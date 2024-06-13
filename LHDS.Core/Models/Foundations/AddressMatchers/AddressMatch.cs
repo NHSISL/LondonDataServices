@@ -13,7 +13,10 @@ namespace LHDS.Core.Models.Foundations.AddressMatchers
         public string? UPRN { get; set; }
         public string? UPSN { get; set; }
 
-        public IList<KeyValuePair<string, string>> AddressComponents { get; set; }
+        public IList<KeyValuePair<string, string>> NormalisedAddressComponents { get; set; }
+            = new List<KeyValuePair<string, string>>();
+
+        public IList<KeyValuePair<string, string>> OriginalAddressComponents { get; set; }
             = new List<KeyValuePair<string, string>>();
 
         public int MatchedComponents { get; set; } = 0;

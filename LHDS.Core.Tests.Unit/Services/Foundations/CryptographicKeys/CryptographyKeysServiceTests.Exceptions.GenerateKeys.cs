@@ -25,12 +25,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
 
             var failedCryptographyKeyServiceException =
                 new FailedCryptographyKeyServiceException(
-                    message: "Failed cryptography key service occurred, please contact support",
+                    message: "Failed cryptography key service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedCryptographyKeyServiceException =
                 new CryptographyKeyServiceException(
-                    message: "Cryptography key service error occurred, contact support.",
+                    message: "Cryptography key service error occurred, please contact support.",
                     innerException: failedCryptographyKeyServiceException);
 
             this.cryptographyKeyBrokerMock.Setup(broker =>

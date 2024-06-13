@@ -115,12 +115,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             var failedAddressCoordinationServiceException =
                 new FailedAddressCoordinationServiceException(
-                    message: "Failed address coordination service error occurred, please contact support",
+                    message: "Failed address coordination service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedAddressCoordinationServiceException =
                 new AddressCoordinationServiceException(
-                    message: "Address coordination service error occurred, contact support.",
+                    message: "Address coordination service error occurred, please contact support.",
                     innerException: failedAddressCoordinationServiceException);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>

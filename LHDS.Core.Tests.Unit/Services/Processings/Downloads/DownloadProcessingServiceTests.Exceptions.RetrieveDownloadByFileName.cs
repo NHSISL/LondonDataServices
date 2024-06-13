@@ -106,12 +106,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
 
             var failedDownloadProcessingServiceException =
                 new FailedDownloadProcessingServiceException(
-                    message: "Failed Download processing service error occurred, contact support.",
+                    message: "Failed Download processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedDownloadProcessingServiveException =
                 new DownloadProcessingServiceException(
-                    message: "Download processing service error occurred, contact support.",
+                    message: "Download processing service error occurred, please contact support.",
                     innerException: failedDownloadProcessingServiceException);
 
             this.downloadServiceMock.Setup(service =>

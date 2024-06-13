@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                     .AreEqual;
         }
 
-        public static TheoryData ExternalDependencyValidationExceptions()
+        public static TheoryData<Exception> ExternalDependencyValidationExceptions()
         {
             return new TheoryData<Exception>
             {

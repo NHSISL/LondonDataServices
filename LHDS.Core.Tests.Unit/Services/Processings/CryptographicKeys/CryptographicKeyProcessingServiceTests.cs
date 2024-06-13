@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq.Expressions;
+using System.Text;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.CryptographicKeys;
 using LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions;
@@ -68,7 +69,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
             };
         }
 
-        public static TheoryData DependencyValidationExceptions()
+        private string ConvertToBase64(string value)
+        {
+            byte[] byteValue = Encoding.UTF8.GetBytes(value);
+
+            return Convert.ToBase64String(byteValue);
+        }
+
+        public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -84,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
             };
         }
 
-        public static TheoryData DependencyExceptions()
+        public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -96,7 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
                     message: "Cryptography key dependency errors occurred, please try again.", innerException),
 
                 new CryptographyKeyServiceException(
-                    message : "Cryptography key service error occurred, contact support.", innerException)
+                    message : "Cryptography key service error occurred, please contact support.", innerException)
             };
         }
     }

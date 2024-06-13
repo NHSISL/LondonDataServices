@@ -34,8 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                 this.secureDataProcessingService.AddOrModifySecureDataAsync(nullSubscriberCredential);
 
             SubscriberCredentialValidationException actualSubscriberCredentialValidationException =
-                await Assert.ThrowsAsync<SubscriberCredentialValidationException>(() =>
-                    addSubscriberCredentialTask.AsTask());
+                await Assert.ThrowsAsync<SubscriberCredentialValidationException>(addSubscriberCredentialTask.AsTask);
 
             // then
             actualSubscriberCredentialValidationException.Should().BeEquivalentTo(
@@ -69,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             var invalidArgumentSubscriberCredentialProcessingException =
                 new InvalidArgumentSubscriberCredentialProcessingException(
-                    message: "Invalid argument subscriber credential processing error occurred, contact support.");
+                    message: "Invalid argument subscriber credential processing error occurred, please contact support.");
 
             foreach (string keyType in invalidProperties)
             {
@@ -88,8 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                 secureDataProcessingServiceMock.Object.AddOrModifySecureDataAsync(inputSubscriberCredential);
 
             SubscriberCredentialValidationException actualSubscriberCredentialValidationException =
-                await Assert.ThrowsAsync<SubscriberCredentialValidationException>(() =>
-                    addSubscriberCredentialTask.AsTask());
+                await Assert.ThrowsAsync<SubscriberCredentialValidationException>(addSubscriberCredentialTask.AsTask);
 
             // then
             actualSubscriberCredentialValidationException.Should().BeEquivalentTo(

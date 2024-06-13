@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<ResolvedAddress> ReturningResolvedAddressFunction();
-        private delegate ValueTask<Guid> ReturningGuidFunction();
+        private delegate ValueTask<Guid?> ReturningGuidFunction();
 
         private async ValueTask<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
         {
@@ -41,12 +41,12 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 throw CreateAndLogDependencyValidationException(
                     addressExtractionOrchestrationDependencyValidationException);
             }
-            catch (AddressPersistanceOrchestrationValidationException
+            catch (AddressPersistenceOrchestrationValidationException
                 addressPersistanceOrchestrationValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
             }
-            catch (AddressPersistanceOrchestrationDependencyValidationException
+            catch (AddressPersistenceOrchestrationDependencyValidationException
                 addressPersistanceOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
@@ -61,11 +61,11 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
             }
-            catch (AddressPersistanceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            catch (AddressPersistenceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
             }
-            catch (AddressPersistanceOrchestrationDependencyException
+            catch (AddressPersistenceOrchestrationDependencyException
                 addressPersistanceOrchestrationDependencyException)
             {
                 throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 var failedDecryptServiceException =
                     new FailedAddressCoordinationServiceException(
-                        message: "Failed address coordination service error occurred, please contact support",
+                        message: "Failed address coordination service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDecryptServiceException);
@@ -102,12 +102,12 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 throw CreateAndLogDependencyValidationException(
                     addressExtractionOrchestrationDependencyValidationException);
             }
-            catch (AddressPersistanceOrchestrationValidationException
+            catch (AddressPersistenceOrchestrationValidationException
                 addressPersistanceOrchestrationValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
             }
-            catch (AddressPersistanceOrchestrationDependencyValidationException
+            catch (AddressPersistenceOrchestrationDependencyValidationException
                 addressPersistanceOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
@@ -122,11 +122,11 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
             }
-            catch (AddressPersistanceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            catch (AddressPersistenceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
             }
-            catch (AddressPersistanceOrchestrationDependencyException
+            catch (AddressPersistenceOrchestrationDependencyException
                 addressPersistanceOrchestrationDependencyException)
             {
                 throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
@@ -173,12 +173,12 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 throw CreateAndLogDependencyValidationException(
                     addressExtractionOrchestrationDependencyValidationException);
             }
-            catch (AddressPersistanceOrchestrationValidationException
+            catch (AddressPersistenceOrchestrationValidationException
                 addressPersistanceOrchestrationValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
             }
-            catch (AddressPersistanceOrchestrationDependencyValidationException
+            catch (AddressPersistenceOrchestrationDependencyValidationException
                 addressPersistanceOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
@@ -193,11 +193,11 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
             }
-            catch (AddressPersistanceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            catch (AddressPersistenceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
             }
-            catch (AddressPersistanceOrchestrationDependencyException
+            catch (AddressPersistenceOrchestrationDependencyException
                 addressPersistanceOrchestrationDependencyException)
             {
                 throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
@@ -223,7 +223,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             }
         }
 
-        private async ValueTask<Guid> TryCatch(ReturningGuidFunction returningGuidFunction)
+        private async ValueTask<Guid?> TryCatch(ReturningGuidFunction returningGuidFunction)
         {
             try
             {
@@ -243,12 +243,12 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 throw CreateAndLogDependencyValidationException(
                     addressExtractionOrchestrationDependencyValidationException);
             }
-            catch (AddressPersistanceOrchestrationValidationException
+            catch (AddressPersistenceOrchestrationValidationException
                 addressPersistanceOrchestrationValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
             }
-            catch (AddressPersistanceOrchestrationDependencyValidationException
+            catch (AddressPersistenceOrchestrationDependencyValidationException
                 addressPersistanceOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
@@ -263,11 +263,11 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
             }
-            catch (AddressPersistanceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            catch (AddressPersistenceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
             }
-            catch (AddressPersistanceOrchestrationDependencyException
+            catch (AddressPersistenceOrchestrationDependencyException
                 addressPersistanceOrchestrationDependencyException)
             {
                 throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
@@ -324,7 +324,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         {
             var addressCoordinationServiceException =
                 new AddressCoordinationServiceException(
-                    message: "Address coordination service error occurred, contact support.",
+                    message: "Address coordination service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressCoordinationServiceException);

@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        public static TheoryData DependencyValidationExceptions()
+        public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             };
         }
 
-        public static TheoryData DependencyExceptions()
+        public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -61,11 +61,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             return new TheoryData<Xeption>
             {
                 new DocumentDependencyException(
-                    message: "Document dependency error occurred, contact support.",
+                    message: "Document dependency error occurred, please contact support.",
                     innerException),
 
                 new DocumentServiceException(
-                    message: "Document service error occurred, contact support.",
+                    message: "Document service error occurred, please contact support.",
                     innerException)
             };
         }

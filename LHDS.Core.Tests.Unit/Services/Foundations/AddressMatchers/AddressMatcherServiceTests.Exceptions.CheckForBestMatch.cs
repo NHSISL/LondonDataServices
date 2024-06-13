@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.AddressMatchers;
 using LHDS.Core.Models.Foundations.AddressMatchers.Exceptions;
@@ -18,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
     public partial class AddressMatcherServiceTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnCheckForBestMatchIfServiceErrorOccursAsync()
+        public void ShouldThrowServiceExceptionOnCheckForBestMatchIfServiceErrorOccurs()
         {
             // given
             List<KeyValuePair<string, string>> someIncomingAddressComponents =

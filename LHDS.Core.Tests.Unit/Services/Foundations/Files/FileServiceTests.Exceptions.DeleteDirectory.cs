@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Files
 
             var expectedFileDependencyValidationException =
                 new FileDependencyValidationException(
-                    message: "File dependency validation error occurred, contact support.",
+                    message: "File dependency validation error occurred, please contact support.",
                     innerException: invalidFileServiceDependencyException);
 
             this.fileBrokerMock.Setup(broker =>
@@ -70,12 +70,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Files
 
             var failedFileDependencyException =
                 new FailedFileDependencyException(
-                    message: "Failed file dependency error occurred, contact support.",
+                    message: "Failed file dependency error occurred, please contact support.",
                     innerException: invalidFileServiceDependencyException);
 
             var expectedFileDependencyException =
                 new FileDependencyException(
-                    message: "File dependency error occurred, contact support.",
+                    message: "File dependency error occurred, please contact support.",
                     innerException: failedFileDependencyException);
 
             this.fileBrokerMock.Setup(broker =>
@@ -109,12 +109,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Files
 
             var failedFileServiceException =
                 new FailedFileServiceException(
-                    message: "Failed file service error occurred, contact support.",
+                    message: "Failed file service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedFileServiceException =
                 new FileServiceException(
-                    message: "File service error occurred, contact support.",
+                    message: "File service error occurred, please contact support.",
                     innerException: failedFileServiceException);
 
             this.fileBrokerMock.Setup(broker =>

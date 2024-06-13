@@ -139,7 +139,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
 
             var expectedDependencyException =
                 new CryptographicKeyProcessingServiceException(
-                    message: "Cryptography key processing service error occurred, contact support.",
+                    message: "Cryptography key processing service error occurred, please contact support.",
                     innerException: failedSubscriberCredentialOrchestrationServiceException);
 
             this.cryptographyKeyServiceMock.Setup(service =>

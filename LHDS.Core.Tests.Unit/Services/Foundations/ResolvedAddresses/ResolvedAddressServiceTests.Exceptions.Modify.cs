@@ -26,12 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var failedResolvedAddressStorageException =
                 new FailedResolvedAddressStorageException(
-                    message: "Failed resolvedAddress storage error occurred, contact support.",
+                    message: "Failed resolvedAddress storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedResolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
-                    message: "ResolvedAddress dependency error occurred, contact support.",
+                    message: "ResolvedAddress dependency error occurred, please contact support.",
                     innerException: failedResolvedAddressStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -139,12 +139,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var failedResolvedAddressStorageException =
                 new FailedResolvedAddressStorageException(
-                    message: "Failed resolvedAddress storage error occurred, contact support.",
+                    message: "Failed resolvedAddress storage error occurred, please contact support.",
                     innerException: databaseUpdateException);
 
             var expectedResolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
-                    message: "ResolvedAddress dependency error occurred, contact support.",
+                    message: "ResolvedAddress dependency error occurred, please contact support.",
                     innerException: failedResolvedAddressStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -249,12 +249,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var failedResolvedAddressServiceException =
                 new FailedResolvedAddressServiceException(
-                    message: "Failed resolvedAddress service occurred, please contact support",
+                    message: "Failed resolvedAddress service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedResolvedAddressServiceException =
                 new ResolvedAddressServiceException(
-                    message: "ResolvedAddress service error occurred, contact support.",
+                    message: "ResolvedAddress service error occurred, please contact support.",
                     innerException: failedResolvedAddressServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>

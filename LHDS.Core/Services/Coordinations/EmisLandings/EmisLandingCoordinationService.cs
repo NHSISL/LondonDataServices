@@ -31,9 +31,11 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<string>> ProcessAsync() =>
+        public ValueTask<List<string>> ProcessAsync(Guid supplierId) =>
             TryCatch(async () =>
             {
+                ValidateProcessArgs(supplierId);
+
                 List<Guid> subscriberAgreementIds = await this.subscriberCredentialOrchestration
                     .RetrieveAllActiveSubscriberCredentialIds();
 
@@ -51,7 +53,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                                     .RetrieveSubscriberCredentialByIdAsync(subscriberAgreementId, false);
 
                             List<string> processedItems = await this.emisLandingOrchestrationService
-                                .ProcessAsync(maybeSubscriberCredential);
+                                .ProcessAsync(maybeSubscriberCredential, supplierId);
 
                             return processedItems;
                         });
@@ -74,10 +76,10 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 return processedPaths;
             });
 
-        public ValueTask<string> ProcessFileAsync(string ftpFileName) =>
+        public ValueTask<string> ProcessFileAsync(string ftpFileName, Guid supplierId) =>
             TryCatch(async () =>
             {
-                ValidateFileNameOnLand(ftpFileName);
+                ValidateProcessFileArgs(fileName: ftpFileName, supplierId);
                 string[] parts = ftpFileName.Split("/");
 
                 if (parts.Length > 0)
@@ -90,7 +92,8 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                     string processedItem =
                         await this.emisLandingOrchestrationService.ProcessFileAsync(
                             ftpFileName: ftpFileName,
-                            subscriberCredential: maybeSubscriberCredential);
+                            subscriberCredential: maybeSubscriberCredential,
+                            supplierId);
 
                     return processedItem;
                 }

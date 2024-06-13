@@ -33,8 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 this.dataTypeService.AddDataTypeAsync(nullDataType);
 
             DataTypeValidationException actualDataTypeValidationException =
-                await Assert.ThrowsAsync<DataTypeValidationException>(() =>
-                    addDataTypeTask.AsTask());
+                await Assert.ThrowsAsync<DataTypeValidationException>(addDataTypeTask.AsTask);
 
             // then
             actualDataTypeValidationException.Should()
@@ -100,8 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 this.dataTypeService.AddDataTypeAsync(invalidDataType);
 
             DataTypeValidationException actualDataTypeValidationException =
-                await Assert.ThrowsAsync<DataTypeValidationException>(() =>
-                    addDataTypeTask.AsTask());
+                await Assert.ThrowsAsync<DataTypeValidationException>(addDataTypeTask.AsTask);
 
             // then
             actualDataTypeValidationException.Should()
@@ -156,8 +154,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 this.dataTypeService.AddDataTypeAsync(invalidDataType);
 
             DataTypeValidationException actualDataTypeValidationException =
-                await Assert.ThrowsAsync<DataTypeValidationException>(() =>
-                    addDataTypeTask.AsTask());
+                await Assert.ThrowsAsync<DataTypeValidationException>(addDataTypeTask.AsTask);
 
             // then
             actualDataTypeValidationException.Should()
@@ -215,8 +212,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 this.dataTypeService.AddDataTypeAsync(invalidDataType);
 
             DataTypeValidationException actualDataTypeValidationException =
-                await Assert.ThrowsAsync<DataTypeValidationException>(() =>
-                    addDataTypeTask.AsTask());
+                await Assert.ThrowsAsync<DataTypeValidationException>(addDataTypeTask.AsTask);
 
             // then
             actualDataTypeValidationException.Should()
@@ -271,8 +267,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 this.dataTypeService.AddDataTypeAsync(invalidDataType);
 
             DataTypeValidationException actualDataTypeValidationException =
-                await Assert.ThrowsAsync<DataTypeValidationException>(() =>
-                    addDataTypeTask.AsTask());
+                await Assert.ThrowsAsync<DataTypeValidationException>(addDataTypeTask.AsTask);
 
             // then
             actualDataTypeValidationException.Should()
@@ -332,8 +327,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 this.dataTypeService.AddDataTypeAsync(invalidDataType);
 
             DataTypeValidationException actualDataTypeValidationException =
-                await Assert.ThrowsAsync<DataTypeValidationException>(() =>
-                    addDataTypeTask.AsTask());
+                await Assert.ThrowsAsync<DataTypeValidationException>(addDataTypeTask.AsTask);
 
             // then
             actualDataTypeValidationException.Should()

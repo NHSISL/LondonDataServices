@@ -11,9 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressNormalisations;
 using Moq;
 using Xunit;
 
@@ -25,16 +23,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         public async Task ShouldProcessAddressesAsync()
         {
             // Given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid randomId = Guid.NewGuid();
+            int randomItems = 1; // GetRandomNumber();
             string inputFilename = GetRandomString();
             string assembly = Assembly.GetExecutingAssembly().Location;
 
             string inputFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
-                 @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessResolvedAddressesAsync.csv");
+                @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithZippedCsvAddressesData.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
-            string stringData = Encoding.UTF8.GetString(inputData);
+
+            string csvFilePath = Path.Combine(
+                Path.GetDirectoryName(assembly),
+                @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithOnlyCsvAddressesData.csv");
+
+            byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
+            string stringData = Encoding.UTF8.GetString(csvData);
             List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
 
             List<string> filteredRecords = records.Where(record =>
@@ -60,33 +66,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     { "PostCode", 15 }
                 };
 
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            List<Address> randomAddresses = CreateRandomAddresses(count: randomItems).ToList();
             List<Address> outputAddresses = randomAddresses.DeepClone();
 
-            this.csvMapperServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings))
                     .ReturnsAsync(outputAddresses);
 
-            List<Address> expectedAddresses = new List<Address>();
-
-            foreach (Address address in outputAddresses)
-            {
-                string stringAddress = address.GetFormattedAddress();
-
-                AddressNormalisation addressNormalisation = new AddressNormalisation
-                {
-                    PostalAddress = GetRandomString(),
-                    JsonPostalAddress = GetRandomString()
-                };
-
-                this.addressNormalisationServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(stringAddress))
-                        .ReturnsAsync(addressNormalisation);
-
-                address.PostalAddress = addressNormalisation.PostalAddress;
-                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                expectedAddresses.Add(address);
-            }
+            List<Address> expectedAddresses = outputAddresses.DeepClone();
 
             // When
             List<Address> actualAddresses = await this.addressExtractionOrchestrationService
@@ -94,35 +81,28 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
-                options.Excluding(address => address.Id));
+                options
+                    .Excluding(address => address.Id)
+                    .Excluding(address => address.CreatedBy)
+                    .Excluding(address => address.CreatedDate)
+                    .Excluding(address => address.UpdatedBy)
+                    .Excluding(address => address.UpdatedDate));
 
-            this.csvMapperServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings),
                     Times.Once());
 
-            foreach (Address address in randomAddresses)
-            {
-                string stringAddress = address.GetFormattedAddress();
+            this.addressProcessingServiceMock.Verify(service =>
+                service.BulkAddAddressesAsync(outputAddresses, inputFilename),
+                    Times.Once);
 
-                this.addressNormalisationServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(stringAddress),
-                        Times.Once);
-
-                this.auditBrokerMock.Verify(broker =>
-                    broker.LogInformation(
-                        "Address",
-                        "Successfully extracted address from Ordinance Database",
-                        $"Successfully extracted address with id: {address.Id} from file: {inputFilename}",
-                        inputFilename,
-                        address.Id),
-                            Times.Once);
-            }
-
-            this.csvMapperServiceMock.VerifyNoOtherCalls();
-            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.auditBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

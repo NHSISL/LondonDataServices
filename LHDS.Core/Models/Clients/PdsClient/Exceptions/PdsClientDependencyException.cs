@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Clients.PdsClient.Exceptions
     public class PdsClientDependencyException : Xeption
     {
         public PdsClientDependencyException(Xeption innerException)
-            : base(message: "PDS client dependency error occurred, contact support.",
+            : base(message: "PDS client dependency error occurred, please contact support.",
                   innerException)
         { }
     }

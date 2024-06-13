@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.LandingClient.Exceptions;
@@ -22,11 +23,11 @@ namespace LHDS.Core.Clients
             this.emisLandingCoordinationService = emisLandingCoordinationService;
         }
 
-        public async ValueTask<List<string>> ProcessAsync()
+        public async ValueTask<List<string>> ProcessAsync(Guid supplierId)
         {
             try
             {
-                return await this.emisLandingCoordinationService.ProcessAsync();
+                return await this.emisLandingCoordinationService.ProcessAsync(supplierId);
             }
             catch (EmisLandingOrchestrationValidationException emisLandingOrchestrationValidationException)
             {
@@ -43,7 +44,7 @@ namespace LHDS.Core.Clients
                 emisLandingOrchestrationDependencyException)
             {
                 throw new LandingClientDependencyException(
-                    message: "Landing client dependency error occurred, contact support.",
+                    message: "Landing client dependency error occurred, please contact support.",
                     innerException: emisLandingOrchestrationDependencyException.InnerException as Xeption);
             }
             catch (EmisLandingOrchestrationServiceException
@@ -55,11 +56,11 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<string> ProcessAsync(string fileName)
+        public async ValueTask<string> ProcessAsync(string fileName, Guid supplierId)
         {
             try
             {
-                return await this.emisLandingCoordinationService.ProcessFileAsync(fileName);
+                return await this.emisLandingCoordinationService.ProcessFileAsync(fileName, supplierId);
             }
             catch (DecryptionOrchestrationValidationException downloadOrchestrationValidationException)
             {
@@ -75,7 +76,7 @@ namespace LHDS.Core.Clients
             catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
             {
                 throw new LandingClientDependencyException(
-                    message: "Landing client dependency error occurred, contact support.",
+                    message: "Landing client dependency error occurred, please contact support.",
                     innerException: emisLandingOrchestrationDependencyException.InnerException as Xeption);
             }
             catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)

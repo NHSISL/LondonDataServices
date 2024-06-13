@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.AddressMatchers.Exceptions
 {
     public class AddressMatcherServiceException : Xeption
     {
-        public AddressMatcherServiceException(string message, Exception innerException)
+        public AddressMatcherServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

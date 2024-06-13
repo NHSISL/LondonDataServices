@@ -78,7 +78,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 IQueryable<TerminologyPoll> allTerminologyPolls =
                     this.terminologyPollService.RetrieveAllTerminologyPolls();
 
-                TerminologyPoll maybeTerminologyPoll = allTerminologyPolls
+                TerminologyPoll? maybeTerminologyPoll = allTerminologyPolls
                     .Where(terminologyPoll => terminologyPoll.ResourceType == resourceType)
                         .FirstOrDefault();
 

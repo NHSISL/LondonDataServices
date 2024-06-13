@@ -4,10 +4,10 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
+using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
@@ -15,7 +15,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
     public partial class ResolvedAddressOrchestrationService
     {
         private delegate ValueTask ReturningNothingFunction();
-        private delegate ValueTask<Guid> ReturningGuidFunction();
+        private delegate ValueTask<Guid?> ReturningGuidFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
@@ -45,6 +45,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
                 throw CreateAndLogDependencyValidationException(resolvedAddressProcessingDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (DocumentProcessingDependencyException documentProcessingDependencyException)
             {
                 throw CreateAndLogDependencyException(documentProcessingDependencyException);
@@ -61,6 +65,14 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
                 throw CreateAndLogDependencyException(resolvedAddressProcessingServiceException);
             }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
+            }
             catch (Exception exception)
             {
                 var failedResolvedAddressOrchestrationServiceException =
@@ -73,7 +85,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             }
         }
 
-        private async ValueTask<Guid> TryCatch(ReturningGuidFunction returningGuidFunction)
+        private async ValueTask<Guid?> TryCatch(ReturningGuidFunction returningGuidFunction)
         {
             try
             {
@@ -101,6 +113,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
                 throw CreateAndLogDependencyValidationException(resolvedAddressProcessingDependencyValidationException);
             }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
             catch (DocumentProcessingDependencyException documentProcessingDependencyException)
             {
                 throw CreateAndLogDependencyException(documentProcessingDependencyException);
@@ -116,6 +132,14 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             catch (ResolvedAddressProcessingServiceException resolvedAddressProcessingServiceException)
             {
                 throw CreateAndLogDependencyException(resolvedAddressProcessingServiceException);
+            }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -181,7 +205,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             var resolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, contact support.",
+                    message: "Resolved address orchestration service error occurred, please contact support.",
                     exception);
 
             this.loggingBroker.LogError(resolvedAddressOrchestrationServiceException);

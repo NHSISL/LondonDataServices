@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Processings.Documents.Exceptions
 {
     public class FailedDocumentProcessingServiceException : Xeption
     {
-        public FailedDocumentProcessingServiceException(string message, Exception innerException)
+        public FailedDocumentProcessingServiceException(string message, Exception? innerException)
           : base(message, innerException)
         { }
     }

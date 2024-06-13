@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 {
     public partial class TerminologyArtifactProcessingService
     {
-        private delegate ValueTask<TerminologyArtifact> ReturningTerminologyArtifactProcessingFunction();
+        private delegate ValueTask<T> ReturningTerminologyArtifactProcessingFunction<T>();
         private delegate IQueryable<TerminologyArtifact> ReturningTerminologyArtifactsFunction();
 
         private IQueryable<TerminologyArtifact> TryCatch(
@@ -44,15 +44,15 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             {
                 var failedTerminologyArtifactProcessingServiceException =
                     new FailedTerminologyArtifactProcessingServiceException(
-                        message: "Failed terminology artifact processing service error occurred, contact support.",
+                        message: "Failed terminology artifact processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedTerminologyArtifactProcessingServiceException);
             }
         }
 
-        private async ValueTask<TerminologyArtifact> TryCatch(
-            ReturningTerminologyArtifactProcessingFunction returningTerminologyArtifactProcessingFunction)
+        private async ValueTask<T> TryCatch<T>(
+            ReturningTerminologyArtifactProcessingFunction<T> returningTerminologyArtifactProcessingFunction)
         {
             try
             {
@@ -62,7 +62,8 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             {
                 throw CreateAndLogValidationException(nullTerminologyArtifactException);
             }
-            catch (InvalidArgumentTerminologyArtifactProcessingException invalidArgumentTerminologyArtifactProcessingException)
+            catch (InvalidArgumentTerminologyArtifactProcessingException
+                invalidArgumentTerminologyArtifactProcessingException)
             {
                 throw CreateAndLogValidationException(invalidArgumentTerminologyArtifactProcessingException);
             }
@@ -86,7 +87,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             {
                 var failedTerminologyArtifactProcessingServiceException =
                     new FailedTerminologyArtifactProcessingServiceException(
-                        message: "Failed terminology artifact processing service error occurred, contact support.",
+                        message: "Failed terminology artifact processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedTerminologyArtifactProcessingServiceException);
@@ -136,7 +137,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
         {
             var terminologyArtifactProcessingServiceException =
                 new TerminologyArtifactProcessingServiceException(
-                    message: "Terminology artifact processing service error occurred, contact support.",
+                    message: "Terminology artifact processing service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(terminologyArtifactProcessingServiceException);

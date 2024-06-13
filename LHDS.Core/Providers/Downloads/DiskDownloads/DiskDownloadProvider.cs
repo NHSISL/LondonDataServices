@@ -21,7 +21,7 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
 
         public DiskDownloadProvider()
         {
-            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
             string defaultFolderPath = Path.Combine(assemblyPath, "temp", "downloads");
 
             this.diskDownloadProviderSettings = new DiskDownloadProviderSettings
@@ -38,20 +38,21 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
 
         public async ValueTask<Download> GetDocumentByFileNameAsync(Download download)
         {
-            string relativePath = download.Document.FileName.Replace("/", "\\");
+            string docFileName = download?.Document?.FileName ?? "";
+            string relativePath = docFileName.Replace("/", "\\");
             string filePath = Path.Combine(diskDownloadProviderSettings.LocalRootFolder, relativePath);
             byte[] data = await File.ReadAllBytesAsync(filePath);
 
             var document = new Document()
             {
-                FileName = download.Document.FileName,
+                FileName = docFileName,
                 DocumentData = data
             };
 
             var downloadedItem = new Download
             {
                 Document = document,
-                SubscriberCredential = download.SubscriberCredential
+                SubscriberCredential = download?.SubscriberCredential
             };
 
             return downloadedItem;
@@ -68,7 +69,7 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
             List<string> relativePaths = files.Select(file =>
                 Path.GetRelativePath(diskDownloadProviderSettings.LocalRootFolder, file).Replace("\\", "/")).ToList();
 
-            return relativePaths;
+            return await ValueTask.FromResult(relativePaths);
         }
     }
 }

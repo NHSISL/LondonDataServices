@@ -25,16 +25,13 @@ namespace LHDS.Functions.Pds
         }
 
         [Function("RetreiveMessagesFromMeshAndUpdateStorage")]
-        public void Run([TimerTrigger("0 */15 * * * *")] MyInformation myTimer)
+        public async Task Run([TimerTrigger("0 */15 * * * *")] MyInformation myTimer)
         {
             this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
-                Task.Run(async () =>
-                {
-                    await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
-                }).Wait();
+                await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
             }
             catch (Exception ex)
             {

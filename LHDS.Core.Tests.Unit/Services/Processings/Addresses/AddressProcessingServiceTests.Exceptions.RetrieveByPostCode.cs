@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             // when
             ValueTask<List<Address>> addressRetrieveByPostCodeTask =
-                this.addressProcessingService.RetrieveAddressByPostCodeAsync(somePostCode);
+                this.addressProcessingService.RetrieveAddressesByPostCodeAsync(somePostCode);
 
             AddressProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressProcessingDependencyValidationException>(
@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             // when
             ValueTask<List<Address>> addressRetrieveByPostCodeTask =
-                this.addressProcessingService.RetrieveAddressByPostCodeAsync(somePostCode);
+                this.addressProcessingService.RetrieveAddressesByPostCodeAsync(somePostCode);
 
             AddressProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<AddressProcessingDependencyException>(addressRetrieveByPostCodeTask.AsTask);
@@ -106,12 +106,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             var failedAddressProcessingServiceException =
                 new FailedAddressProcessingServiceException(
-                    message: "Failed Address processing service error occurred, contact support.",
+                    message: "Failed Address processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedAddressProcessingServiveException =
                 new AddressProcessingServiceException(
-                    message: "Address processing service error occurred, contact support.",
+                    message: "Address processing service error occurred, please contact support.",
                     innerException: failedAddressProcessingServiceException);
 
             this.addressServiceMock.Setup(service =>
@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             // when
             ValueTask<List<Address>> addressRetrieveByPostCodeTask =
-                this.addressProcessingService.RetrieveAddressByPostCodeAsync(somePostCode);
+                this.addressProcessingService.RetrieveAddressesByPostCodeAsync(somePostCode);
 
             AddressProcessingServiceException actualException =
                 await Assert.ThrowsAsync<AddressProcessingServiceException>(addressRetrieveByPostCodeTask.AsTask);

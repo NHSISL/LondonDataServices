@@ -33,8 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 this.pdsAuditService.AddPdsAuditAsync(nullPdsAudit);
 
             PdsAuditValidationException actualPdsAuditValidationException =
-                await Assert.ThrowsAsync<PdsAuditValidationException>(() =>
-                    addPdsAuditTask.AsTask());
+                await Assert.ThrowsAsync<PdsAuditValidationException>(addPdsAuditTask.AsTask);
 
             // then
             actualPdsAuditValidationException.Should()
@@ -104,8 +103,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 this.pdsAuditService.AddPdsAuditAsync(invalidPdsAudit);
 
             PdsAuditValidationException actualPdsAuditValidationException =
-                await Assert.ThrowsAsync<PdsAuditValidationException>(() =>
-                    addPdsAuditTask.AsTask());
+                await Assert.ThrowsAsync<PdsAuditValidationException>(addPdsAuditTask.AsTask);
 
             // then
             actualPdsAuditValidationException.Should()
@@ -162,8 +160,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 this.pdsAuditService.AddPdsAuditAsync(invalidPdsAudit);
 
             PdsAuditValidationException actualPdsAuditValidationException =
-                await Assert.ThrowsAsync<PdsAuditValidationException>(() =>
-                    addPdsAuditTask.AsTask());
+                await Assert.ThrowsAsync<PdsAuditValidationException>(addPdsAuditTask.AsTask);
 
             // then
             actualPdsAuditValidationException.Should()
@@ -217,8 +214,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 this.pdsAuditService.AddPdsAuditAsync(invalidPdsAudit);
 
             PdsAuditValidationException actualPdsAuditValidationException =
-                await Assert.ThrowsAsync<PdsAuditValidationException>(() =>
-                    addPdsAuditTask.AsTask());
+                await Assert.ThrowsAsync<PdsAuditValidationException>(addPdsAuditTask.AsTask);
 
             // then
             actualPdsAuditValidationException.Should()
@@ -277,8 +273,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 this.pdsAuditService.AddPdsAuditAsync(invalidPdsAudit);
 
             PdsAuditValidationException actualPdsAuditValidationException =
-                await Assert.ThrowsAsync<PdsAuditValidationException>(() =>
-                    addPdsAuditTask.AsTask());
+                await Assert.ThrowsAsync<PdsAuditValidationException>(addPdsAuditTask.AsTask);
 
             // then
             actualPdsAuditValidationException.Should()
@@ -337,8 +332,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 this.pdsAuditService.AddPdsAuditAsync(invalidPdsAudit);
 
             PdsAuditValidationException actualPdsAuditValidationException =
-                await Assert.ThrowsAsync<PdsAuditValidationException>(() =>
-                    addPdsAuditTask.AsTask());
+                await Assert.ThrowsAsync<PdsAuditValidationException>(addPdsAuditTask.AsTask);
 
             // then
             actualPdsAuditValidationException.Should()

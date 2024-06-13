@@ -106,12 +106,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
 
             var failedOntologyProcessingServiceException =
                 new FailedOntologyProcessingServiceException(
-                    message: "Failed ontology processing service error occurred, contact support.",
+                    message: "Failed ontology processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedOntologyProcessingServiceException =
                 new OntologyProcessingServiceException(
-                    message: "Ontology processing service error occurred, contact support.",
+                    message: "Ontology processing service error occurred, please contact support.",
                     innerException: failedOntologyProcessingServiceException);
 
             this.ontologyServiceMock.Setup(service =>

@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier())
                     .Returns(batchReference);
 
-            this.csvMapperProcessingServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapObjectToCsvAsync(
                     It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()))
                         .ReturnsAsync(ouputCsv);
@@ -88,11 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var expectedResolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, contact support.",
+                    message: "Resolved address orchestration service error occurred, please contact support.",
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask<Guid> uploadResolvedAddressTask =
+            ValueTask<Guid?> uploadResolvedAddressTask =
                 this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException
@@ -112,7 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier(),
                     Times.Once);
 
-            this.csvMapperProcessingServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapObjectToCsvAsync(
                     It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()),
                     Times.Once);
@@ -145,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                         Times.Once);
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -183,7 +183,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier())
                     .Returns(batchReference);
 
-            this.csvMapperProcessingServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapObjectToCsvAsync(
                     It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()))
                         .ReturnsAsync(ouputCsv);
@@ -220,11 +220,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var expectedResolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, contact support.",
+                    message: "Resolved address orchestration service error occurred, please contact support.",
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask<Guid> uploadResolvedAddressTask =
+            ValueTask<Guid?> uploadResolvedAddressTask =
                  this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
@@ -243,7 +243,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier(),
                     Times.Once);
 
-            this.csvMapperProcessingServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapObjectToCsvAsync(
                     It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()),
                         Times.Once);
@@ -277,7 +277,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                         Times.Once);
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -313,7 +313,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier())
                     .Returns(batchReference);
 
-            this.csvMapperProcessingServiceMock.Setup(service =>
+            this.csvHelperBrokerMock.Setup(service =>
                 service.MapObjectToCsvAsync(
                     It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()))
                         .ReturnsAsync(ouputCsv);
@@ -325,7 +325,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var innerResolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, contact support.",
+                    message: "Resolved address orchestration service error occurred, please contact support.",
                     innerException: innerFailedResolvedAddressOrchestrationServiceException);
 
             foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
@@ -355,11 +355,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var expectedResolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, contact support.",
+                    message: "Resolved address orchestration service error occurred, please contact support.",
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask<Guid> uploadResolvedAddressTask =
+            ValueTask<Guid?> uploadResolvedAddressTask =
                   this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
@@ -378,7 +378,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier(),
                     Times.Once);
 
-            this.csvMapperProcessingServiceMock.Verify(service =>
+            this.csvHelperBrokerMock.Verify(service =>
                 service.MapObjectToCsvAsync(
                     It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()),
                         Times.Once);
@@ -406,7 +406,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                         Times.Once);
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -430,7 +430,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<Guid> documentAddTask =
+            ValueTask<Guid?> documentAddTask =
                 this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationDependencyValidationException actualException =
@@ -452,7 +452,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
@@ -473,7 +473,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Throws(dependencyException);
 
             // when
-            ValueTask<Guid> documentAddTask =
+            ValueTask<Guid?> documentAddTask =
                 this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationDependencyException actualException =
@@ -494,7 +494,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
@@ -512,7 +512,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var expectedResolvedAddressOrchestrationServiveException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, contact support.",
+                    message: "Resolved address orchestration service error occurred, please contact support.",
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             this.resolvedAddressProcessingServiceMock.Setup(service =>
@@ -520,7 +520,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Throws(serviceException);
 
             // when
-            ValueTask<Guid> uploadResolvedAddressTask =
+            ValueTask<Guid?> uploadResolvedAddressTask =
                  this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualException =
@@ -542,7 +542,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }

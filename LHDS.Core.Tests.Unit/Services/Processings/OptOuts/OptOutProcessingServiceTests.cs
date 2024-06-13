@@ -68,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
         private static int GetRandomValidExpiryDays(int expiryMin) =>
             new IntRange(min: expiryMin + 1, max: 20).GetValue();
 
-        public static TheoryData DependencyValidationExceptions()
+        public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -85,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     innerException)
             };
         }
-        public static TheoryData DependencyExceptions()
+        public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -94,10 +94,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             return new TheoryData<Xeption>
             {
                 new OptOutDependencyException(
-                    message: "OptOut dependency error occurred, contact support.",
+                    message: "OptOut dependency error occurred, please contact support.",
                     innerException),
 
-                new OptOutServiceException(message: "OptOut service error occurred, contact support.", innerException)
+                new OptOutServiceException(message: "OptOut service error occurred, please contact support.", innerException)
             };
         }
 

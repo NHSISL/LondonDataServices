@@ -121,9 +121,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
 
             // then
             deletedObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getObjectColumnbyIdTask.AsTask());
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(getObjectColumnbyIdTask.AsTask);
 
             // Cleanup
             await CleanupTask(objectColumn: deletedObjectColumn, isObjectColumnDeleted: true);

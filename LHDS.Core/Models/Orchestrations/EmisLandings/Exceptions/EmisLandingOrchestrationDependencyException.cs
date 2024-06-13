@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions
 {
     public class EmisLandingOrchestrationDependencyException : Xeption
     {
-        public EmisLandingOrchestrationDependencyException(string message, Xeption innerException)
+        public EmisLandingOrchestrationDependencyException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Clients.LandingClient.Exceptions
 {
     public class LandingClientDependencyException : Xeption
     {
-        public LandingClientDependencyException(string message, Xeption innerException)
+        public LandingClientDependencyException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

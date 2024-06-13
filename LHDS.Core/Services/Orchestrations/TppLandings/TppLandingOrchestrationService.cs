@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -60,11 +60,12 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             this.landingConfiguration = landingConfiguration;
         }
 
-        public async ValueTask<Guid> ProcessAsync(Document document) =>
+        public async ValueTask<Guid> ProcessAsync(Document document, Guid supplierId) =>
             await TryCatch(async () =>
             {
+
                 ValidateDocumentIsNotNull(document);
-                ValidateDocumentFileNameIsNotNull(document.FileName);
+                ValidateArgumentsOnProcess(fileName: document.FileName, supplierId);
 
                 IngestionTracking? maybeIngestionTracking =
                     this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
@@ -78,8 +79,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
                     DataSetSpecification retrievedDataSetSpecification = await
-                        this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
-                            landingConfiguration.LandingSupplierId);
+                        this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
 
                     var filename = document.FileName.StartsWith('/')
                         ? document.FileName
@@ -87,8 +87,8 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
                     var decryptedFileName =
                                 $"/{landingConfiguration.DecryptedFolder}"
-                                + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
-                                + $"/{retrievedDataSetSpecification.Id}"
+                                + $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}"
+                                + $"/{retrievedDataSetSpecification?.Id}"
                                 + $"{filename}";
 
                     IngestionTracking newIngestionTracking =
@@ -96,7 +96,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         {
                             Id = this.identifierBroker.GetIdentifier(),
                             FileName = document.FileName,
-                            SupplierId = landingConfiguration.LandingSupplierId,
+                            SupplierId = supplierId,
                             EncryptedFileName = "Not Encrypted",
                             EncryptedFileSize = 0,
                             EncryptedFileSha256Hash = "Not Encrypted",

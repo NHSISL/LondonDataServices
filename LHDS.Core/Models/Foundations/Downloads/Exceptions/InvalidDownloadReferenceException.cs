@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Downloads.Exceptions
 {
     public class InvalidDownloadReferenceException : Xeption
     {
-        public InvalidDownloadReferenceException(string message, Exception innerException)
+        public InvalidDownloadReferenceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

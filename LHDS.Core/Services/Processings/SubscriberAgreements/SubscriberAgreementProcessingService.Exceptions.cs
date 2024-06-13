@@ -33,27 +33,28 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
             {
                 throw CreateAndLogValidationException(invalidArgumentSubscriberAgreementProcessingException);
             }
-            catch (SubscriberAgreementValidationException dataSetValidationException)
+            catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
             {
-                throw CreateAndLogDependencyValidationException(dataSetValidationException);
+                throw CreateAndLogDependencyValidationException(subscriberAgreementValidationException);
             }
-            catch (SubscriberAgreementDependencyValidationException dataSetDependencyValidationException)
+            catch (SubscriberAgreementDependencyValidationException subscriberAgreementDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(dataSetDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(subscriberAgreementDependencyValidationException);
             }
-            catch (SubscriberAgreementDependencyException dataSetDependencyException)
+            catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
             {
-                throw CreateAndLogDependencyException(dataSetDependencyException);
+                throw CreateAndLogDependencyException(subscriberAgreementDependencyException);
             }
-            catch (SubscriberAgreementServiceException dataSetServiceException)
+            catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
             {
-                throw CreateAndLogDependencyException(dataSetServiceException);
+                throw CreateAndLogDependencyException(subscriberAgreementServiceException);
             }
             catch (Exception exception)
             {
                 var failedSubscriberAgreementProcessingServiceException =
                     new FailedSubscriberAgreementProcessingServiceException(
-                        message: "Failed subscriber agreement processing service error occurred, contact support.",
+                        message: "Failed subscriber agreement processing service error occurred, " +
+                            "please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedSubscriberAgreementProcessingServiceException);
@@ -67,27 +68,27 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
             {
                 return returningSubscriberAgreementsFunction();
             }
-            catch (SubscriberAgreementValidationException dataSetValidationException)
+            catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
             {
-                throw CreateAndLogDependencyValidationException(dataSetValidationException);
+                throw CreateAndLogDependencyValidationException(subscriberAgreementValidationException);
             }
-            catch (SubscriberAgreementDependencyValidationException dataSetDependencyValidationException)
+            catch (SubscriberAgreementDependencyValidationException subscriberAgreementDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(dataSetDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(subscriberAgreementDependencyValidationException);
             }
-            catch (SubscriberAgreementDependencyException dataSetDependencyException)
+            catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
             {
-                throw CreateAndLogDependencyException(dataSetDependencyException);
+                throw CreateAndLogDependencyException(subscriberAgreementDependencyException);
             }
-            catch (SubscriberAgreementServiceException dataSetServiceException)
+            catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
             {
-                throw CreateAndLogDependencyException(dataSetServiceException);
+                throw CreateAndLogDependencyException(subscriberAgreementServiceException);
             }
             catch (Exception exception)
             {
                 var failedSubscriberAgreementProcessingServiceException =
                     new FailedSubscriberAgreementProcessingServiceException(
-                        message: "Failed subscriber agreement processing service error occurred, contact support.",
+                        message: "Failed subscriber agreement processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedSubscriberAgreementProcessingServiceException);
@@ -97,14 +98,14 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
 
         private SubscriberAgreementProcessingValidationException CreateAndLogValidationException(Xeption exception)
         {
-            var dataSetProcessingValidationExceptionn =
+            var subscriberAgreementProcessingValidationException =
                 new SubscriberAgreementProcessingValidationException(
                     message: "Subscriber agreement processing validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataSetProcessingValidationExceptionn);
+            this.loggingBroker.LogError(subscriberAgreementProcessingValidationException);
 
-            return dataSetProcessingValidationExceptionn;
+            return subscriberAgreementProcessingValidationException;
         }
 
         private SubscriberAgreementProcessingDependencyValidationException CreateAndLogDependencyValidationException(
@@ -122,26 +123,26 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
 
         private SubscriberAgreementProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
         {
-            var dataSetProcessingDependencyException =
+            var subscriberAgreementProcessingDependencyException =
                 new SubscriberAgreementProcessingDependencyException(
                     message: "Subscriber agreement processing dependency error occurred, please try again.",
                     innerException: exception?.InnerException as Xeption);
 
-            this.loggingBroker.LogError(dataSetProcessingDependencyException);
+            this.loggingBroker.LogError(subscriberAgreementProcessingDependencyException);
 
-            throw dataSetProcessingDependencyException;
+            throw subscriberAgreementProcessingDependencyException;
         }
 
         private SubscriberAgreementProcessingServiceException CreateAndLogServiceException(Xeption exception)
         {
-            var dataSetProcessingServiceException = new
+            var subscriberAgreementProcessingServiceException = new
                 SubscriberAgreementProcessingServiceException(
-                    message: "Subscriber agreement processing service error occurred, contact support.",
+                    message: "Subscriber agreement processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataSetProcessingServiceException);
+            this.loggingBroker.LogError(subscriberAgreementProcessingServiceException);
 
-            return dataSetProcessingServiceException;
+            return subscriberAgreementProcessingServiceException;
         }
     }
 }

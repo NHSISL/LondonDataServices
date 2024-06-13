@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions
 {
     public class ResolvedAddressOrchestrationDependencyValidationException : Xeption
     {
-        public ResolvedAddressOrchestrationDependencyValidationException(string message, Xeption innerException)
+        public ResolvedAddressOrchestrationDependencyValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

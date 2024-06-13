@@ -275,7 +275,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        public static TheoryData DownloadDependencyValidationExceptions()
+        public static TheoryData<Xeption> DownloadDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -317,7 +317,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             };
         }
 
-        public static TheoryData DownloadDependencyExceptions()
+        public static TheoryData<Xeption> DownloadDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -326,35 +326,35 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             return new TheoryData<Xeption>
             {
                 new DocumentDependencyException(
-                    message: "Document dependency error occurred, contact support.",
+                    message: "Document dependency error occurred, please contact support.",
                     innerException),
 
                 new DocumentServiceException(
-                    message: "Document service error occurred, contact support.",
+                    message: "Document service error occurred, please contact support.",
                     innerException),
 
                 new DownloadDependencyException(
-                    message: "Download dependency error occurred, contact support.",
+                    message: "Download dependency error occurred, please contact support.",
                     innerException),
 
                 new DownloadServiceException(
-                    message: "Download service error occurred, contact support.",
+                    message: "Download service error occurred, please contact support.",
                     innerException),
 
                 new IngestionTrackingDependencyException(
-                    message: "Failed ingestion tracking storage error occurred, contact support.",
+                    message: "Failed ingestion tracking storage error occurred, please contact support.",
                     innerException),
 
                 new IngestionTrackingServiceException(
-                    message: "Ingestion tracking service error occurred, contact support.",
+                    message: "Ingestion tracking service error occurred, please contact support.",
                     innerException),
 
                 new IngestionTrackingAuditDependencyException(
-                    message: "Audit dependency error occurred, contact support.",
+                    message: "Audit dependency error occurred, please contact support.",
                     innerException),
 
                 new IngestionTrackingAuditServiceException(
-                    message: "Audit service error occurred, contact support.",
+                    message: "Audit service error occurred, please contact support.",
                     innerException)
             };
         }

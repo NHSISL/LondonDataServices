@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Clients.LibPostalClient.Exceptions
 {
     public class InvalidLibPostalDependencyException : Xeption
     {
-        public InvalidLibPostalDependencyException(string message, Xeption innerException)
+        public InvalidLibPostalDependencyException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.OptOuts.Exceptions
 {
     public class LockedOptOutException : Xeption
     {
-        public LockedOptOutException(string message, Exception innerException)
+        public LockedOptOutException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

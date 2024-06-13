@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             {
                 var failedResolvedAddressProcessingServiceException =
                     new FailedResolvedAddressProcessingServiceException(
-                        message: "Failed ResolvedAddress processing service error occurred, contact support.",
+                        message: "Failed ResolvedAddress processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedResolvedAddressProcessingServiceException);
@@ -91,7 +91,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             {
                 var failedResolvedAddressProcessingServiceException =
                     new FailedResolvedAddressProcessingServiceException(
-                        message: "Failed ResolvedAddress processing service error occurred, contact support.",
+                        message: "Failed ResolvedAddress processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedResolvedAddressProcessingServiceException);
@@ -125,7 +125,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             {
                 var failedResolvedAddressProcessingServiceException =
                     new FailedResolvedAddressProcessingServiceException(
-                        message: "Failed ResolvedAddress processing service error occurred, contact support.",
+                        message: "Failed ResolvedAddress processing service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedResolvedAddressProcessingServiceException);
@@ -174,7 +174,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         {
             var resolvedAddressProcessingServiceException = new
                 ResolvedAddressProcessingServiceException(
-                    message: "ResolvedAddress processing service error occurred, contact support.",
+                    message: "ResolvedAddress processing service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(resolvedAddressProcessingServiceException);

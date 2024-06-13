@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -89,7 +89,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
@@ -141,7 +141,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 return true;
             }
 
-            string value = dictionary[key].FirstOrDefault();
+            string? value = dictionary[key].FirstOrDefault();
 
             return String.IsNullOrWhiteSpace(value);
         }
@@ -149,19 +149,19 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
+            var invalidDataException = (T?)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataException.UpsertDataList(
+                    invalidDataException?.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataException.ThrowIfContainsErrors();
+            invalidDataException?.ThrowIfContainsErrors();
         }
     }
 }

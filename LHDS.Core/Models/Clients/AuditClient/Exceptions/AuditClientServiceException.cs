@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Clients.AuditClient.Exceptions
 {
     public class AuditClientServiceException : Xeption
     {
-        public AuditClientServiceException(string message, Xeption innerException)
+        public AuditClientServiceException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

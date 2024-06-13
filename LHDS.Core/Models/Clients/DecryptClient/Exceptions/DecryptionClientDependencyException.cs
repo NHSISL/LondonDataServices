@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Clients.DecryptClient.Exceptions
 {
     public class DecryptionClientDependencyException : Xeption
     {
-        public DecryptionClientDependencyException(string message, Xeption innerException)
+        public DecryptionClientDependencyException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

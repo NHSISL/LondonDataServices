@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                 loggingBroker: loggingBrokerMock.Object);
         }
 
-        public static TheoryData DependencyValidationExceptions()
+        public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             };
         }
 
-        public static TheoryData DependencyExceptions()
+        public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                     message: "Address validation errors occurred, please try again.", innerException),
 
                 new AddressServiceException(
-                    message : "Address service error occurred, contact support.", innerException)
+                    message : "Address service error occurred, please contact support.", innerException)
             };
         }
 

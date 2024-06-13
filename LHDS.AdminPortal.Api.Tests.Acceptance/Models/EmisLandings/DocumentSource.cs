@@ -6,9 +6,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.EmisLandings
 {
     public class DocumentSource
     {
-        public string FtpPath { get; set; }
-        public string EncryptedBlobPath { get; set; }
-        public string DecryptedBlobPath { get; set; }
-        public string FilePath { get; set; }
+        public string FtpPath { get; set; } = string.Empty;
+        public string EncryptedBlobPath { get; set; } = string.Empty;
+        public string DecryptedBlobPath { get; set; } = string.Empty;
+        public string FilePath { get; set; } = string.Empty;
     }
 }

@@ -26,12 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var failedSpecificationObjectStorageException =
                 new FailedSpecificationObjectStorageException(
-                    message: "Failed specificationObject storage error occurred, contact support.",
+                    message: "Failed specificationObject storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedSpecificationObjectDependencyException =
                 new SpecificationObjectDependencyException(
-                    message: "SpecificationObject dependency error occurred, contact support.",
+                    message: "SpecificationObject dependency error occurred, please contact support.",
                     innerException: failedSpecificationObjectStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -139,12 +139,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var failedSpecificationObjectStorageException =
                 new FailedSpecificationObjectStorageException(
-                    message: "Failed specificationObject storage error occurred, contact support.",
+                    message: "Failed specificationObject storage error occurred, please contact support.",
                     innerException: databaseUpdateException);
 
             var expectedSpecificationObjectDependencyException =
                 new SpecificationObjectDependencyException(
-                    message: "SpecificationObject dependency error occurred, contact support.",
+                    message: "SpecificationObject dependency error occurred, please contact support.",
                     innerException: failedSpecificationObjectStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -249,12 +249,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var failedSpecificationObjectServiceException =
                 new FailedSpecificationObjectServiceException(
-                    message: "Failed specificationObject service occurred, please contact support",
+                    message: "Failed specificationObject service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedSpecificationObjectServiceException =
                 new SpecificationObjectServiceException(
-                    message: "SpecificationObject service error occurred, contact support.",
+                    message: "SpecificationObject service error occurred, please contact support.",
                     innerException: failedSpecificationObjectServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>

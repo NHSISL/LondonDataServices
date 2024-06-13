@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections;
@@ -21,23 +21,26 @@ namespace LHDS.Core.Providers.Downloads.Extensions
             IConfiguration configuration,
             Action<FtpProviderRegistrationBuilder> builderAction)
         {
-            IFtpDownloadProviderSettings ftpDownloadProviderSettings =
+            IFtpDownloadProviderSettings? ftpDownloadProviderSettings =
                 configuration.GetSection("ftpDownload").Get<FtpDownloadProviderSettings>();
 
             ValidateFtpProviderSettings(ftpDownloadProviderSettings);
 
-            FtpProviderRegistrationBuilder builder =
-                new FtpProviderRegistrationBuilder(ftpDownloadProviderSettings);
+            if (ftpDownloadProviderSettings != null)
+            {
+                FtpProviderRegistrationBuilder builder =
+                    new FtpProviderRegistrationBuilder(ftpDownloadProviderSettings);
 
-            builderAction(builder);
+                builderAction(builder);
+                services.AddTransient<IFtpDownloadProviderSettings>(_ => ftpDownloadProviderSettings);
+            }
 
-            services.AddTransient<IFtpDownloadProviderSettings>(_ => ftpDownloadProviderSettings);
             services.AddTransient<IDownloadProvider, FtpDownloadProvider>();
 
             return services;
         }
 
-        private static void ValidateFtpProviderSettings(IFtpDownloadProviderSettings ftpDownloadProviderSettings)
+        private static void ValidateFtpProviderSettings(IFtpDownloadProviderSettings? ftpDownloadProviderSettings)
         {
             if (ftpDownloadProviderSettings is null)
             {
@@ -47,9 +50,6 @@ namespace LHDS.Core.Providers.Downloads.Extensions
             Validate(
                 (Rule: IsInvalid(ftpDownloadProviderSettings.FtpPort),
                     Parameter: "ftpDownload__ftpPort"),
-
-                (Rule: IsInvalid(ftpDownloadProviderSettings.FtpUserName),
-                    Parameter: "ftpDownload__ftpUserName"),
 
                 (Rule: IsInvalid(ftpDownloadProviderSettings.IncludeSubDirectories),
                     Parameter: "ftpDownload__includeSubDirectories"));
@@ -61,13 +61,13 @@ namespace LHDS.Core.Providers.Downloads.Extensions
             Message = "Configuration value does not exist"
         };
 
-        private static dynamic IsInvalid(bool value) => new
+        private static dynamic IsInvalid(bool? value) => new
         {
             Condition = value == null,
             Message = "Configuration value does not exist"
         };
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Configuration value does not exist"

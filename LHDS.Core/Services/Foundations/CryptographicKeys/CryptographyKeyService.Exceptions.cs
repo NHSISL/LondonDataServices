@@ -33,7 +33,7 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             {
                 var failedCryptographyKeyServiceException =
                     new FailedCryptographyKeyServiceException(
-                        message: "Failed cryptography key service occurred, please contact support",
+                        message: "Failed cryptography key service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedCryptographyKeyServiceException);
@@ -56,7 +56,7 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
            Xeption exception)
         {
             var generateKeysServiceException = new CryptographyKeyServiceException(
-                message: "Cryptography key service error occurred, contact support.",
+                message: "Cryptography key service error occurred, please contact support.",
                 innerException: exception);
 
             this.loggingBroker.LogError(generateKeysServiceException);

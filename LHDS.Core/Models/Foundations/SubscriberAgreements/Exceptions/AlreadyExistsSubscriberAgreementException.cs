@@ -5,7 +5,7 @@ namespace LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions
 {
     public class AlreadyExistsSubscriberAgreementException : Xeption
     {
-        public AlreadyExistsSubscriberAgreementException(string message, Exception innerException)
+        public AlreadyExistsSubscriberAgreementException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

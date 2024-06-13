@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.OptOuts.Exceptions
 {
     public class FailedOptOutStorageException : Xeption
     {
-        public FailedOptOutStorageException(string message, Exception innerException)
+        public FailedOptOutStorageException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

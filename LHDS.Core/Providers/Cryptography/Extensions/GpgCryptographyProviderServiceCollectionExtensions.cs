@@ -31,7 +31,7 @@ namespace LHDS.Core.Providers.Cryptography.Extensions
             return services;
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Configuration value does not exist"

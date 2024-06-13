@@ -23,12 +23,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologies
 
             var failedOntologyServiceException =
                 new FailedOntologyServiceException(
-                    message: "Failed ontology service error occurred, please contact support",
+                    message: "Failed ontology service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedOntologyServiceException =
                 new OntologyServiceException(
-                    message: "Ontology service error occurred, contact support.",
+                    message: "Ontology service error occurred, please contact support.",
                     innerException: failedOntologyServiceException);
 
             this.ontologyBrokerMock.Setup(broker =>

@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.OptOuts.Exceptions
 {
     public class AlreadyExistsOptOutException : Xeption
     {
-        public AlreadyExistsOptOutException(string message, Exception innerException)
+        public AlreadyExistsOptOutException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

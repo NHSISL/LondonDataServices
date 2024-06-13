@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions
 {
     public class AddressCoordinationServiceException : Xeption
     {
-        public AddressCoordinationServiceException(string message, Exception innerException)
+        public AddressCoordinationServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

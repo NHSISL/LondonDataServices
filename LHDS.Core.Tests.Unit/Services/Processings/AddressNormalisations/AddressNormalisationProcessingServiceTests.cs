@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
-        public static TheoryData DependencyValidationExceptions()
+        public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -54,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
             };
         }
 
-        public static TheoryData DependencyExceptions()
+        public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -63,11 +63,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
             return new TheoryData<Xeption>
             {
                 new AddressNormalisationDependencyException(
-                    message: "Address normalisation dependency error occurred, contact support.",
+                    message: "Address normalisation dependency error occurred, please contact support.",
                     innerException),
 
                 new AddressNormalisationServiceException(
-                    message: "Address normalisation service error occurred, contact support.",
+                    message: "Address normalisation service error occurred, please contact support.",
                     innerException)
             };
         }

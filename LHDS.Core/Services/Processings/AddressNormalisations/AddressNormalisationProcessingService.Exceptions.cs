@@ -46,7 +46,7 @@ namespace LHDS.Core.Services.Processings.AddressNormalisations
             {
                 var failedAddressNormalisationProcessingServiceException =
                     new FailedAddressNormalisationProcessingServiceException(
-                        message: "Failed address normalisation processing service error occurred, contact support.",
+                        message: "Failed address normalisation processing service error occurred, please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(failedAddressNormalisationProcessingServiceException);
@@ -95,7 +95,7 @@ namespace LHDS.Core.Services.Processings.AddressNormalisations
         {
             var addressNormalisationProcessingServiceException = new
                 AddressNormalisationProcessingServiceException(
-                message: "Address normalisation processing service error occurred, contact support.",
+                message: "Address normalisation processing service error occurred, please contact support.",
                 innerException: exception);
 
             this.loggingBroker.LogError(addressNormalisationProcessingServiceException);

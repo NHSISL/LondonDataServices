@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -78,11 +78,20 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
             {
                 throw CreateAndLogDependencyException(ontologyProcessingServiceException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedAddressCoordinationServiceException =
+                    new FailedTerminologyMetadataOrchestrationServiceException(
+                        message: "Failed terminology metadata orchestration aggregate service error occurred, please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedAddressCoordinationServiceException);
+            }
             catch (Exception exception)
             {
                 var FailedTerminologyMetadataOrchestrationServiceException =
                     new FailedTerminologyMetadataOrchestrationServiceException(
-                        message: "Failed terminology metadata orchestration service occurred, please contact support",
+                        message: "Failed terminology metadata orchestration service error occurred, please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(FailedTerminologyMetadataOrchestrationServiceException);
@@ -135,7 +144,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
         {
             var terminologyMetadataOrchestrationServiceException =
                 new TerminologyMetadataOrchestrationServiceException(
-                    message: "Terminology metadata orchestration service error occurred, contact support.",
+                    message: "Terminology metadata orchestration service error occurred, please contact support.",
                     exception);
 
             this.loggingBroker.LogError(terminologyMetadataOrchestrationServiceException);

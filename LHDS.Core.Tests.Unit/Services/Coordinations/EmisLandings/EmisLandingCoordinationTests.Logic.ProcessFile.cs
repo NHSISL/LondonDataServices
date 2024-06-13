@@ -18,6 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             // Given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             Guid SubscriberCredentialId = Guid.NewGuid();
+            Guid inputSupplierId = Guid.NewGuid();
 
             string filePath = CreateRandomFilePath(SubscriberCredentialId);
 
@@ -32,12 +33,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .ReturnsAsync(randomActiveSubscriberCredential);
 
             this.emisLandingOrchestrationServiceMock.Setup(service =>
-                service.ProcessFileAsync(filePath, storageSubscriberCredential))
+                service.ProcessFileAsync(filePath, storageSubscriberCredential, inputSupplierId))
                     .ReturnsAsync(randomEmisLandingPath);
 
             // When
             string actualPath = await this.emisLandingCoordinationService.
-                ProcessFileAsync(filePath);
+                ProcessFileAsync(ftpFileName: filePath, supplierId: inputSupplierId);
 
             // Then
             this.subscriberCredentialOrchestrationMock.Verify(service =>
@@ -45,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     Times.Once);
 
             this.emisLandingOrchestrationServiceMock.Verify(service =>
-                service.ProcessFileAsync(filePath, storageSubscriberCredential),
+                service.ProcessFileAsync(filePath, storageSubscriberCredential, inputSupplierId),
                     Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();

@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Clients.TppLandingClient.Exceptions
 {
     public class TppLandingClientValidationException : Xeption
     {
-        public TppLandingClientValidationException(string message, Xeption innerException)
+        public TppLandingClientValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

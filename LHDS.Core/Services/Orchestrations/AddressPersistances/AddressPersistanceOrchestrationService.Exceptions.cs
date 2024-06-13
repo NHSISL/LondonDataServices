@@ -6,11 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
-using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
-using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
+using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.AddressPersistances
@@ -18,6 +18,8 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
     internal partial class AddressPersistanceOrchestrationService
     {
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
+        private delegate ValueTask<Address> ReturningAddressFunction();
+        private delegate ValueTask<ResolvedAddress> ReturningResolvedFunction();
 
         private async ValueTask<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
         {
@@ -25,73 +27,200 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             {
                 return await returningAddressListFunction();
             }
-            catch (InvalidArgumentAddressPersistanceOrchestrationException
-                invalidArgumentAddressPersistanceOrchestrationException)
+            catch (InvalidArgumentAddressPersistenceOrchestrationException invalidArgumentAddressPersistanceOrchestrationException)
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressPersistanceOrchestrationException);
-            }
-            catch (AddressNormalisationProcessingValidationException addressNormalisationProcessingValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(addressNormalisationProcessingValidationException);
-            }
-            catch (AddressNormalisationDependencyValidationException addressNormalisationDependencyValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
             }
             catch (AddressProcessingValidationException addressProcessingValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressProcessingValidationException);
             }
+            catch (AddressMatcherProcessingValidationException addressMatcherProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressMatcherProcessingValidationException);
+            }
+            catch (ResolvedAddressValidationException resolvedAddressValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressValidationException);
+            }
             catch (AddressProcessingDependencyValidationException addressProcessingDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressProcessingDependencyValidationException);
             }
-            catch (AddressLoadingAuditProcessingDependencyValidationException
-                addressLoadingAuditProcessingDependencyValidationException)
+            catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
-                    addressLoadingAuditProcessingDependencyValidationException);
-            }
-            catch (AddressNormalisationProcessingDependencyException addressNormalisationProcessingDependencyException)
-            {
-                throw CreateAndLogDependencyException(addressNormalisationProcessingDependencyException);
-            }
-            catch (AddressNormalisationProcessingServiceException addressNormalisationProcessingServiceException)
-            {
-                throw CreateAndLogDependencyException(addressNormalisationProcessingServiceException);
+                throw CreateAndLogDependencyValidationException(resolvedAddressDependencyValidationException);
             }
             catch (AddressProcessingDependencyException addressProcessingDependencyException)
             {
                 throw CreateAndLogDependencyException(addressProcessingDependencyException);
             }
+            catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressDependencyException);
+            }
             catch (AddressProcessingServiceException addressProcessingServiceException)
             {
                 throw CreateAndLogDependencyException(addressProcessingServiceException);
             }
-            catch (AddressLoadingAuditProcessingDependencyException addressLoadingAuditProcessingDependencyException)
+            catch (AddressMatcherProcessingServiceException addressMatcherProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(addressLoadingAuditProcessingDependencyException);
+                throw CreateAndLogDependencyException(addressMatcherProcessingServiceException);
             }
-            catch (AddressLoadingAuditProcessingServiceException addressLoadingAuditProcessingServiceException)
+            catch (ResolvedAddressServiceException resolvedAddressServiceException)
             {
-                throw CreateAndLogDependencyException(addressLoadingAuditProcessingServiceException);
+                throw CreateAndLogDependencyException(resolvedAddressServiceException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedAddressPersistenceOrchestrationServiceException =
+                    new FailedAddressPersistenceOrchestrationServiceException(
+                        message: "Failed address persistence aggregate orchestration service error occurred, " +
+                        "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedAddressPersistenceOrchestrationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressPersistenceOrchestrationServiceException =
+                    new FailedAddressPersistenceOrchestrationServiceException(
+                        message: "Failed address persistence orchestration service error occurred, " +
+                        "please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressPersistenceOrchestrationServiceException);
+            }
+        }
+
+        private async ValueTask<Address> TryCatch(ReturningAddressFunction returningAddressFunction)
+        {
+            try
+            {
+                return await returningAddressFunction();
+            }
+            catch (InvalidArgumentAddressPersistenceOrchestrationException invalidArgumentAddressPersistanceOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressPersistanceOrchestrationException);
+            }
+            catch (AddressProcessingValidationException addressProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressProcessingValidationException);
+            }
+            catch (AddressMatcherProcessingValidationException addressMatcherProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressMatcherProcessingValidationException);
+            }
+            catch (ResolvedAddressValidationException resolvedAddressValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressValidationException);
+            }
+            catch (AddressProcessingDependencyValidationException addressProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressProcessingDependencyValidationException);
+            }
+            catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressDependencyValidationException);
+            }
+            catch (AddressProcessingDependencyException addressProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressProcessingDependencyException);
+            }
+            catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressDependencyException);
+            }
+            catch (AddressProcessingServiceException addressProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(addressProcessingServiceException);
+            }
+            catch (AddressMatcherProcessingServiceException addressMatcherProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(addressMatcherProcessingServiceException);
+            }
+            catch (ResolvedAddressServiceException resolvedAddressServiceException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressServiceException);
             }
             catch (Exception exception)
             {
                 var failedAddressPersistanceOrchestrationServiceException =
-                    new FailedAddressPersistanceOrchestrationServiceException(
-                        message: "Failed address persistance orchestration service error occurred, " +
-                        "please contact support",
+                    new FailedAddressPersistenceOrchestrationServiceException(
+                        message: "Failed address persistence orchestration service error occurred, " +
+                        "please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressPersistanceOrchestrationServiceException);
             }
         }
-        private AddressPersistanceOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
+
+        private async ValueTask<ResolvedAddress> TryCatch(ReturningResolvedFunction returningResolvedFunction)
+        {
+            try
+            {
+                return await returningResolvedFunction();
+            }
+            catch (InvalidArgumentAddressPersistenceOrchestrationException invalidArgumentAddressPersistanceOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressPersistanceOrchestrationException);
+            }
+            catch (AddressProcessingValidationException addressProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressProcessingValidationException);
+            }
+            catch (AddressMatcherProcessingValidationException addressMatcherProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressMatcherProcessingValidationException);
+            }
+            catch (ResolvedAddressValidationException resolvedAddressValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressValidationException);
+            }
+            catch (AddressProcessingDependencyValidationException addressProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressProcessingDependencyValidationException);
+            }
+            catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressDependencyValidationException);
+            }
+            catch (AddressProcessingDependencyException addressProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressProcessingDependencyException);
+            }
+            catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressDependencyException);
+            }
+            catch (AddressProcessingServiceException addressProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(addressProcessingServiceException);
+            }
+            catch (AddressMatcherProcessingServiceException addressMatcherProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(addressMatcherProcessingServiceException);
+            }
+            catch (ResolvedAddressServiceException resolvedAddressServiceException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressPersistanceOrchestrationServiceException =
+                    new FailedAddressPersistenceOrchestrationServiceException(
+                        message: "Failed address persistence orchestration service error occurred, " +
+                        "please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressPersistanceOrchestrationServiceException);
+            }
+        }
+        private AddressPersistenceOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var addressPersistanceOrchestrationValidationException =
-                new AddressPersistanceOrchestrationValidationException(
-                    message: "Address persistance orchestration validation error occured, please try again",
+                new AddressPersistenceOrchestrationValidationException(
+                    message: "Address persistence orchestration validation error occurred, please try again",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressPersistanceOrchestrationValidationException);
@@ -99,13 +228,12 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             return addressPersistanceOrchestrationValidationException;
         }
 
-        private AddressPersistanceOrchestrationDependencyValidationException
+        private AddressPersistenceOrchestrationDependencyValidationException
             CreateAndLogDependencyValidationException(Xeption exception)
         {
             var addressPersistanceOrchestrationDependencyValidationException =
-                new AddressPersistanceOrchestrationDependencyValidationException(
-                    message: "Address persistance orchestration dependency validation error occurred, " +
-                    "fix the errors and try again.",
+                new AddressPersistenceOrchestrationDependencyValidationException(
+                    message: "Address persistence orchestration dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(addressPersistanceOrchestrationDependencyValidationException);
@@ -113,13 +241,12 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             return addressPersistanceOrchestrationDependencyValidationException;
         }
 
-        private AddressPersistanceOrchestrationDependencyException
+        private AddressPersistenceOrchestrationDependencyException
             CreateAndLogDependencyException(Xeption exception)
         {
             var addressPersistanceOrchestrationDependencyException =
-                new AddressPersistanceOrchestrationDependencyException(
-                    message: "Address persistance orchestration dependency error occurred, " +
-                    "fix the errors and try again.",
+                new AddressPersistenceOrchestrationDependencyException(
+                    message: "Address persistence orchestration dependency error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(addressPersistanceOrchestrationDependencyException);
@@ -127,11 +254,11 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             throw addressPersistanceOrchestrationDependencyException;
         }
 
-        private AddressPersistanceOrchestrationServiceException CreateAndLogServiceException(Xeption exception)
+        private AddressPersistenceOrchestrationServiceException CreateAndLogServiceException(Xeption exception)
         {
             var addressPersistanceOrchestrationServiceException =
-                new AddressPersistanceOrchestrationServiceException(
-                    message: "Address persistance orchestration service error occurred, contact support.",
+                new AddressPersistenceOrchestrationServiceException(
+                    message: "Address persistence orchestration service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressPersistanceOrchestrationServiceException);

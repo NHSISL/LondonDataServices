@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.ObjectColumns.Exceptions
 {
     public class ObjectColumnProcessingServiceException : Xeption
     {
-        public ObjectColumnProcessingServiceException(string message, Xeption innerException)
+        public ObjectColumnProcessingServiceException(string message, Xeption? innerException)
           : base(message, innerException)
         { }
     }

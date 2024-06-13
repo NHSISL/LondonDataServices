@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions
 {
     public class AddressCoordinationDependencyException : Xeption
     {
-        public AddressCoordinationDependencyException(string message, Xeption innerException)
+        public AddressCoordinationDependencyException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

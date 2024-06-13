@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                 loggingBroker: loggingBrokerMock.Object);
         }
 
-        public static TheoryData DependencyValidationExceptions()
+        public static TheoryData<Xeption> DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
             };
         }
 
-        public static TheoryData DependencyExceptions()
+        public static TheoryData<Xeption> DependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     message: "ResolvedAddress validation errors occurred, please try again.", innerException),
 
                 new ResolvedAddressServiceException(
-                    message : "ResolvedAddress service error occurred, contact support.", innerException)
+                    message : "ResolvedAddress service error occurred, please contact support.", innerException)
             };
         }
 

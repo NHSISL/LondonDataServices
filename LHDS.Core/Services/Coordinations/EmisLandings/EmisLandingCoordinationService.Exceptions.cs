@@ -75,7 +75,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             {
                 var failedEmisLandingCoordinationServiceException =
                     new FailedEmisLandingCoordinationServiceException(
-                        message: "Failed EMIS landing aggregate coordination service occurred, please contact support.",
+                        message: "Failed EMIS landing aggregate coordination service error occurred, please contact support.",
                         innerException: aggregateException);
 
                 throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
@@ -84,7 +84,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             {
                 var failedEmisLandingCoordinationServiceException =
                     new FailedEmisLandingCoordinationServiceException(
-                        message: "Failed EMIS landing coordination service occurred, please contact support.",
+                        message: "Failed EMIS landing coordination service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
@@ -146,7 +146,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             {
                 var failedEmisLandingCoordinationServiceException =
                     new FailedEmisLandingCoordinationServiceException(
-                        message: "Failed EMIS landing aggregate coordination service occurred, please contact support.",
+                        message: "Failed EMIS landing aggregate coordination service error occurred, please contact support.",
                         innerException: aggregateException);
 
                 throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
@@ -155,7 +155,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             {
                 var failedEmisLandingCoordinationServiceException =
                     new FailedEmisLandingCoordinationServiceException(
-                        message: "Failed EMIS landing coordination service occurred, please contact support.",
+                        message: "Failed EMIS landing coordination service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
@@ -217,7 +217,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             {
                 var failedEmisLandingCoordinationServiceException =
                     new FailedEmisLandingCoordinationServiceException(
-                        message: "Failed EMIS landing coordination service occurred, please contact support.",
+                        message: "Failed EMIS landing coordination service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
@@ -279,7 +279,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             {
                 var failedEmisLandingCoordinationServiceException =
                     new FailedEmisLandingCoordinationServiceException(
-                        message: "Failed EMIS landing coordination service occurred, please contact support.",
+                        message: "Failed EMIS landing coordination service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
@@ -327,7 +327,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
         {
             var emisLandingCoordinationServiceException =
                 new EmisLandingCoordinationServiceException(
-                    message: "EMIS landing coordination service error occurred, contact support.",
+                    message: "EMIS landing coordination service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(emisLandingCoordinationServiceException);

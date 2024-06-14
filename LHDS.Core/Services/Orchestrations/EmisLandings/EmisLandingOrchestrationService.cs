@@ -12,7 +12,6 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
-using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -89,114 +88,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     {
                         string decryptedFile = await TryCatch(async () =>
                         {
-                            IngestionTracking? maybeIngestionTracking =
-                                this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
-                                    .FirstOrDefault(ingestionTracking =>
-                                        ingestionTracking.FileName == fileName);
-
-                            if (maybeIngestionTracking == null)
-                            {
-                                Download fileToRetrieve = new Download
-                                {
-                                    Document = new Document { FileName = fileName },
-                                    SubscriberCredential = subscriberCredential
-                                };
-
-                                Download retrievedDownload =
-                                    await this.downloadProcessingService
-                                        .RetrieveDownloadByFileNameAsync(fileToRetrieve);
-
-                                string encryptedFileSha256Hash =
-                                    this.hashBroker.GenerateSha256Hash(
-                                        retrievedDownload.Document?.DocumentData ?? Array.Empty<byte>());
-
-                                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
-                                DataSetSpecification? retrievedDataSetSpecification = await
-                                    this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
-                                        supplierId);
-
-                                if (retrievedDataSetSpecification == null)
-                                {
-                                    throw new NotFoundDocumentProcessingException(
-                                        $"No active dataset specification found for supplier id: " +
-                                        $"{landingConfiguration.LandingSupplierId}");
-                                }
-
-                                var filename = fileName.StartsWith('/')
-                                    ? fileName
-                                    : "/" + fileName;
-
-                                string[] splitFileName = filename.Split('/');
-                                string newFileName = "";
-
-                                if (splitFileName.Length < 6)
-                                {
-                                    throw new InvalidDocumentProcessingFileNameException(filename);
-                                }
-                                else
-                                {
-                                    newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
-                                }
-
-                                var encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
-
-                                var decryptedFileName =
-                                    $"/{landingConfiguration.DecryptedFolder}" +
-                                    $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}" +
-                                    $"/{retrievedDataSetSpecification?.Id}" +
-                                    $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
-                                    $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
-
-                                IngestionTracking newIngestionTracking =
-                                  new IngestionTracking
-                                  {
-                                      Id = this.identifierBroker.GetIdentifier(),
-                                      FileName = fileName,
-                                      SupplierId = landingConfiguration.LandingSupplierId,
-                                      EncryptedFileName = encryptedFileName,
-                                      DecryptedFileName = decryptedFileName,
-                                      Decrypted = false,
-                                      LastSeen = currentDateTime,
-                                      FileDeleted = false,
-                                      RecordCount = 0,
-                                      EncryptedFileSize = retrievedDownload?.Document?.DocumentData?.Length ?? 0,
-                                      EncryptedFileSha256Hash = encryptedFileSha256Hash,
-                                      DecryptedFileSize = 0,
-                                      DecryptedFileSha256Hash = string.Empty,
-                                      CreatedBy = "System",
-                                      CreatedDate = currentDateTime,
-                                      UpdatedBy = "System",
-                                      UpdatedDate = currentDateTime
-                                  };
-
-                                await this.ingestionTrackingProcessingService
-                                    .AddIngestionTrackingAsync(newIngestionTracking);
-
-                                Document newBlobDocument = new Document
-                                {
-                                    DocumentData = retrievedDownload?.Document?.DocumentData ?? Array.Empty<byte>(),
-                                    FileName = newIngestionTracking.EncryptedFileName
-                                };
-
-                                await this.documentProcessingService
-                                    .AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
-
-                                LogAudit(newIngestionTracking, "Landed");
-
-                                return newIngestionTracking.DecryptedFileName;
-                            }
-                            else
-                            {
-                                DateTimeOffset currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                                maybeIngestionTracking.LastSeen = currentDateTime;
-                                maybeIngestionTracking.UpdatedDate = currentDateTime;
-
-                                await this.ingestionTrackingProcessingService
-                                    .ModifyIngestionTrackingAsync(maybeIngestionTracking);
-                            }
-
-                            return string.Empty;
+                            return await ProcessFileAsync(subscriberCredential, supplierId, fileName);
                         });
 
                         if (!string.IsNullOrWhiteSpace(decryptedFile))
@@ -207,7 +99,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     catch (Exception ex)
                     {
                         this.loggingBroker.LogError(ex);
-                        Console.WriteLine($"Unable to land document: {fileName}");
+                        Console.WriteLine($"Unable to download document: {fileName}");
                         exceptions.Add(ex);
                     }
                 }
@@ -232,152 +124,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 }
 
                 return files;
-            });
-
-        public async ValueTask<string> ProcessFileAsync(
-            string ftpFileName,
-            SubscriberCredential subscriberCredential,
-            Guid supplierId) =>
-            await TryCatch(async () =>
-            {
-                ValidateConfigurationSettings();
-                ValidateSubscriberCredentials(subscriberCredential);
-                ValidateProcessFileArguments(ftpFileName, supplierId);
-
-                Download download = new Download
-                {
-                    Document = new Document { FileName = ftpFileName },
-                    SubscriberCredential = subscriberCredential
-                };
-
-                Download externalDownload =
-                    await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
-
-                ValidateStorageDownload(externalDownload, ftpFileName);
-
-                IngestionTracking? maybeIngestionTracking =
-                    this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
-                        .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == ftpFileName);
-
-                if (maybeIngestionTracking != null)
-                {
-                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                    maybeIngestionTracking.UpdatedDate = currentDateTime;
-                    maybeIngestionTracking.LastSeen = currentDateTime;
-                    maybeIngestionTracking.EncryptedFileSize = externalDownload.Document?.DocumentData?.Length ?? 0;
-
-                    try
-                    {
-                        await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                            maybeIngestionTracking.EncryptedFileName, blobContainers.EmisLanding);
-                    }
-                    catch (DocumentProcessingDependencyException documentProcessingDependencyException)
-                        when (documentProcessingDependencyException.InnerException is FailedDocumentRequestException
-                            && documentProcessingDependencyException.InnerException.InnerException.Message
-                                .StartsWith("The specified blob does not exist.")
-                        )
-                    { }
-
-                    Document newBlobDocument = new Document
-                    {
-                        DocumentData = externalDownload.Document?.DocumentData ?? Array.Empty<byte>(),
-                        FileName = maybeIngestionTracking.EncryptedFileName
-                    };
-
-                    await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
-                    await this.documentProcessingService.AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
-
-                    LogAudit(
-                        ingestionTracking: maybeIngestionTracking,
-                        message: "Refreshed");
-
-                    return maybeIngestionTracking.DecryptedFileName;
-                }
-                else
-                {
-                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                    string externalFileName = externalDownload.Document?.FileName ?? string.Empty;
-
-                    var filename = externalFileName.StartsWith('/')
-                        ? externalFileName
-                        : "/" + externalFileName;
-
-                    string encryptedFileSha256Hash =
-                        this.hashBroker.GenerateSha256Hash(externalDownload.Document?.DocumentData ?? []);
-
-                    DataSetSpecification? retrievedDataSetSpecification = await
-                        this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
-                            supplierId);
-
-                    if (retrievedDataSetSpecification == null)
-                    {
-                        throw new NotFoundDocumentProcessingException(
-                            $"No active dataset specification found for supplier id: " +
-                            $"{landingConfiguration.LandingSupplierId}");
-                    }
-
-                    string[] splitFileName = filename.Split('/');
-                    string newFileName = "";
-
-                    if (splitFileName.Length < 6)
-                    {
-                        throw new InvalidDocumentProcessingFileNameException(filename);
-                    }
-                    else
-                    {
-                        newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
-                    }
-
-                    var encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
-
-                    if (retrievedDataSetSpecification.DataSet is null)
-                    {
-                        throw new NotFoundDocumentProcessingException(
-                            $"No dataset found for supplier id: " +
-                            $"{landingConfiguration.LandingSupplierId}");
-                    }
-
-                    var decryptedFileName =
-                        $"/{landingConfiguration.DecryptedFolder}" +
-                        $"/{retrievedDataSetSpecification.DataSet?.DataSetName}" +
-                        $"/{retrievedDataSetSpecification.Id}" +
-                        $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
-                        $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
-
-                    IngestionTracking newIngestionTracking =
-                      new IngestionTracking
-                      {
-                          Id = this.identifierBroker.GetIdentifier(),
-                          FileName = externalDownload.Document?.FileName ?? string.Empty,
-                          SupplierId = landingConfiguration.LandingSupplierId,
-                          EncryptedFileName = encryptedFileName,
-                          DecryptedFileName = decryptedFileName,
-                          Decrypted = false,
-                          LastSeen = currentDateTime,
-                          FileDeleted = false,
-                          RecordCount = 0,
-                          EncryptedFileSize = externalDownload.Document?.DocumentData?.Length ?? 0,
-                          EncryptedFileSha256Hash = encryptedFileSha256Hash,
-                          DecryptedFileSize = 0,
-                          DecryptedFileSha256Hash = string.Empty,
-                          CreatedBy = "System",
-                          CreatedDate = currentDateTime,
-                          UpdatedBy = "System",
-                          UpdatedDate = currentDateTime
-                      };
-
-                    Document newBlobDocument = new Document
-                    {
-                        DocumentData = externalDownload.Document?.DocumentData ?? [],
-                        FileName = newIngestionTracking.EncryptedFileName
-                    };
-
-                    await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);
-                    await this.documentProcessingService.AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
-                    LogAudit(newIngestionTracking, "Re-Landed");
-
-                    return newIngestionTracking.DecryptedFileName;
-                }
             });
 
         public ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(
@@ -429,6 +175,103 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         retrievedIngestionTracking);
             });
 
+        private async ValueTask<string> ProcessFileAsync(
+            SubscriberCredential subscriberCredential,
+            Guid supplierId,
+            string fileName)
+        {
+            IngestionTracking? maybeIngestionTracking =
+                this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
+                    .FirstOrDefault(ingestionTracking =>
+                        ingestionTracking.FileName == fileName);
+
+            if (maybeIngestionTracking == null)
+            {
+                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                (string encryptedFileName, string decryptedFileName) =
+                        await GetFileNames(subscriberCredential, fileName, supplierId);
+
+                IngestionTracking newIngestionTracking =
+                  new IngestionTracking
+                  {
+                      Id = this.identifierBroker.GetIdentifier(),
+                      FileName = fileName,
+                      SupplierId = landingConfiguration.LandingSupplierId,
+                      EncryptedFileName = encryptedFileName,
+                      DecryptedFileName = decryptedFileName,
+                      Decrypted = false,
+                      LastSeen = currentDateTime,
+                      FileDeleted = false,
+                      RecordCount = 0,
+                      RetryCount = 0,
+                      EncryptedFileSize = 0,
+                      EncryptedFileSha256Hash = string.Empty,
+                      DecryptedFileSize = 0,
+                      DecryptedFileSha256Hash = string.Empty,
+                      IsDownloaded = false,
+                      CreatedBy = "System",
+                      CreatedDate = currentDateTime,
+                      UpdatedBy = "System",
+                      UpdatedDate = currentDateTime
+                  };
+
+                maybeIngestionTracking = await this.ingestionTrackingProcessingService
+                    .AddIngestionTrackingAsync(newIngestionTracking);
+
+                LogAudit(maybeIngestionTracking, $"New file found - {fileName}");
+            }
+
+            if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
+            {
+                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                maybeIngestionTracking.RetryCount += 1;
+                maybeIngestionTracking.IsDownloaded = false;
+                maybeIngestionTracking.FileDeleted = false;
+                maybeIngestionTracking.EncryptedFileSize = 0;
+                maybeIngestionTracking.EncryptedFileSha256Hash = string.Empty;
+                maybeIngestionTracking.LastSeen = currentDateTime;
+                maybeIngestionTracking.UpdatedDate = currentDateTime;
+
+                LogAudit(maybeIngestionTracking, $"Downloading {fileName};  " +
+                    $"Attempt: {maybeIngestionTracking.RetryCount}");
+
+                IngestionTracking updatedIngestionTracking =
+                    await this.ingestionTrackingProcessingService
+                        .ModifyIngestionTrackingAsync(maybeIngestionTracking);
+
+                Download retrievedDownload =
+                    await DownloadFile(subscriberCredential, fileName);
+
+                Document newBlobDocument = new Document
+                {
+                    DocumentData = retrievedDownload?.Document?.DocumentData ?? Array.Empty<byte>(),
+                    FileName = updatedIngestionTracking.EncryptedFileName,
+                    SHA256Hash = retrievedDownload?.Document?.SHA256Hash ?? string.Empty
+                };
+
+                await this.documentProcessingService
+                    .AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
+
+                updatedIngestionTracking.IsDownloaded = true;
+                updatedIngestionTracking.FileDeleted = false;
+                updatedIngestionTracking.EncryptedFileSize = newBlobDocument.DocumentData.Length;
+                updatedIngestionTracking.EncryptedFileSha256Hash = newBlobDocument.SHA256Hash;
+                updatedIngestionTracking.LastSeen = currentDateTime;
+                updatedIngestionTracking.UpdatedDate = currentDateTime;
+
+                await this.ingestionTrackingProcessingService
+                    .ModifyIngestionTrackingAsync(updatedIngestionTracking);
+
+                LogAudit(updatedIngestionTracking, $"Downloaded {fileName};  " +
+                    $"Attempt: {updatedIngestionTracking.RetryCount}");
+
+                return updatedIngestionTracking.DecryptedFileName;
+            }
+
+            return string.Empty;
+        }
+
         private void LogAudit(
             IngestionTracking ingestionTracking,
             string message)
@@ -440,7 +283,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 {
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
-                    Message = $"{message} document",
+                    Message = $"{message}",
                     CreatedBy = "DownloadOrchestrationService",
                     CreatedDate = currentDateTime,
                     UpdatedBy = "DownloadOrchestrationService",
@@ -448,6 +291,77 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 };
 
             this.auditService.AddIngestionTrackingAuditAsync(newAudit);
+        }
+
+        private async ValueTask<(string encryptedFileName, string decryptedFileName)> GetFileNames(
+            SubscriberCredential subscriberCredential,
+            string fileName,
+            Guid supplierId)
+        {
+            DataSetSpecification? retrievedDataSetSpecification = await
+                this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
+                    supplierId);
+
+            if (retrievedDataSetSpecification == null)
+            {
+                throw new NotFoundDocumentProcessingException(
+                    $"No active dataset specification found for supplier id: " +
+                    $"{landingConfiguration.LandingSupplierId}");
+            }
+
+            var filename = fileName.StartsWith('/')
+                ? fileName
+                : "/" + fileName;
+
+            string[] splitFileName = filename.Split('/');
+            string newFileName = "";
+
+            if (splitFileName.Length < 6)
+            {
+                throw new InvalidDocumentProcessingFileNameException(filename);
+            }
+            else
+            {
+                newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
+            }
+
+            string encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
+
+            string decryptedFileName = $"/{landingConfiguration.DecryptedFolder}" +
+                $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}" +
+                $"/{retrievedDataSetSpecification?.Id}" +
+                $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
+                $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
+            return (encryptedFileName, decryptedFileName);
+        }
+
+        private async ValueTask<Download> DownloadFile(SubscriberCredential subscriberCredential, string fileName)
+        {
+            Download fileToRetrieve = new Download
+            {
+                Document = new Document { FileName = fileName },
+                SubscriberCredential = subscriberCredential
+            };
+
+            Download retrievedDownload = await this.downloadProcessingService
+                .RetrieveDownloadByFileNameAsync(fileToRetrieve);
+
+            string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(
+                retrievedDownload.Document?.DocumentData ?? Array.Empty<byte>());
+
+            Download download = new Download
+            {
+                Document = new Document
+                {
+                    FileName = retrievedDownload.Document.FileName,
+                    DocumentData = retrievedDownload.Document?.DocumentData ?? Array.Empty<byte>(),
+                    SHA256Hash = encryptedFileSha256Hash
+                },
+                SubscriberCredential = subscriberCredential
+            };
+
+            return download;
         }
     }
 }

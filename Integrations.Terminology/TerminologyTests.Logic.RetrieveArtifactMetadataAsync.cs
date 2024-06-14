@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -21,7 +20,6 @@ namespace LHDS.Core.Tests.Integration.Terminology
         public async Task ShouldRetrieveArtifactMetadataAsync(string resourceType)
         {
             //Given
-            DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
             string[] resourceTypes = new string[] { resourceType };
 
             //When

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -86,17 +87,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     broker.GenerateSha256Hash(storageFileDownload.Document.DocumentData))
                         .Returns(randomHash);
 
+                var filename = externalFileName.StartsWith('/')
+                    ? externalFileName
+                    : "/" + externalFileName;
+
                 (string encryptedFileName, string decryptedFileName) = GetFileNames(
                     inputSubscriberCredential,
                     randomDataSet,
                     randomDataSetSpecification,
-                    externalFileName);
+                    filename);
+
+                string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
+                sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
 
                 IngestionTracking newIngestionTracking =
                     new IngestionTracking
                     {
                         Id = randomGuid,
-                        FileName = externalFileName,
+                        FileName = filename,
+                        SourceFolderPath = sourceFolderPath,
                         SupplierId = landingConfiguration.LandingSupplierId,
                         EncryptedFileName = encryptedFileName,
                         DecryptedFileName = decryptedFileName,
@@ -199,17 +208,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     broker.GenerateSha256Hash(storageFileDownload.Document.DocumentData),
                         Times.Once);
 
+                var filename = externalFileName.StartsWith('/')
+                    ? externalFileName
+                    : "/" + externalFileName;
+
                 (string encryptedFileName, string decryptedFileName) = GetFileNames(
                     inputSubscriberCredential,
                     randomDataSet,
                     randomDataSetSpecification,
-                    externalFileName);
+                    filename);
+
+                string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
+                sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
 
                 IngestionTracking newIngestionTracking =
                     new IngestionTracking
                     {
                         Id = randomGuid,
-                        FileName = externalFileName,
+                        FileName = filename,
+                        SourceFolderPath = sourceFolderPath,
                         SupplierId = landingConfiguration.LandingSupplierId,
                         EncryptedFileName = encryptedFileName,
                         DecryptedFileName = decryptedFileName,

@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnProcessIfErrorsAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnDecryptIfErrorsAndLogItAsync(
             Xeption dependancyValidationException)
         {
             // Given
@@ -62,7 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnProcessIfErrorsAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnDecryptIfErrorsAndLogItAsync(
            Xeption dependancyValidationException)
         {
             // Given
@@ -104,7 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnProcessIfErrorsAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnDecryptIfErrorsAndLogItAsync()
         {
             // Given
             var serviceException = new Exception();

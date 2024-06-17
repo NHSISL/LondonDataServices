@@ -92,6 +92,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 ingestionTracking.RecordCount = lines.Length - 2;
                 ingestionTracking.DecryptedFileSize = newDecryptedDocument.DocumentData.Length;
                 ingestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
+                ingestionTracking.IsProcessing = false;
                 ingestionTracking.UpdatedDate = currentDateTime;
 
                 await this.documentService.AddDocumentAsync(
@@ -105,6 +106,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 return ingestionTracking.DecryptedFileName;
             });
+
+        public ValueTask<string?> GetNextItemToBeDecrypted() =>
+            throw new NotImplementedException();
 
         private void LogAudit(IngestionTracking ingestionTracking, Document document, DateTimeOffset currentDateTime)
         {

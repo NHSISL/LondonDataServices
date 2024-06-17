@@ -63,5 +63,52 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                     throw new InvalidArgumentDecryptionCoordinationException("Invalid file name format.");
                 }
             });
+
+        public ValueTask RetryDecryptOnAllAsync() =>
+            TryCatch(async () =>
+            {
+                string? encryptedFileName;
+
+                while (!string.IsNullOrEmpty(encryptedFileName =
+                    await this.decryptionOrchestrationService.GetNextItemToBeDecrypted()))
+                {
+                    try
+                    {
+                        ValidateFileNameOnDecrypt(encryptedFileName);
+                        string[] parts = encryptedFileName.Split("/");
+
+                        if (parts.Length > 0)
+                        {
+                            string extractSubscriberCredentialIdString = parts[2];
+                            Guid subscriberCredentialId;
+
+                            if (!Guid.TryParse(extractSubscriberCredentialIdString, out subscriberCredentialId))
+                            {
+                                throw new InvalidArgumentDecryptionCoordinationException(
+                                    $"Failed to parse {extractSubscriberCredentialIdString} to Guid. " +
+                                    $"Encrypted File Name is {encryptedFileName}.");
+                            }
+
+                            SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
+                                .RetrieveSubscriberCredentialByIdAsync(
+                                    subscriberCredentialId: new Guid(extractSubscriberCredentialIdString),
+                                    externalUse: false);
+
+                            string decryptItem =
+                                await this.decryptionOrchestrationService.DecryptAsync(
+                                    encryptedFileName,
+                                    maybeSubscriberCredential);
+                        }
+                        else
+                        {
+                            throw new InvalidArgumentDecryptionCoordinationException("Invalid file name format.");
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        this.loggingBroker.LogError(exception);
+                    }
+                }
+            });
     }
 }

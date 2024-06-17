@@ -51,5 +51,39 @@ namespace LHDS.Core.Clients
                     innerException: decryptionOrchestrationServiceException.InnerException as Xeption);
             }
         }
+
+        public async ValueTask RetryDecryptOnAllAsync()
+        {
+            try
+            {
+                await decryptionCoordinationService.RetryDecryptOnAllAsync();
+            }
+            catch (DecryptionOrchestrationValidationException decryptionOrchestrationValidationException)
+            {
+                throw new DecryptionClientValidationException(
+                    decryptionOrchestrationValidationException.InnerException as Xeption);
+            }
+            catch (DecryptionOrchestrationDependencyValidationException
+                decryptionOrchestrationDependencyValidationException)
+            {
+                throw new DecryptionClientValidationException(
+                    decryptionOrchestrationDependencyValidationException.InnerException as Xeption);
+            }
+            catch (DecryptionOrchestrationDependencyException
+                decryptionOrchestrationDependencyException)
+            {
+                throw new DecryptionClientDependencyException(
+                    message: "Decryption client dependency error occurred, please contact support.",
+                    innerException: decryptionOrchestrationDependencyException.InnerException as Xeption);
+            }
+            catch (DecryptionOrchestrationServiceException
+                decryptionOrchestrationServiceException)
+            {
+                throw new DecryptionClientServiceException(
+                    message: "Decryption client service error occurred, fix errors and try again.",
+                    innerException: decryptionOrchestrationServiceException.InnerException as Xeption);
+            }
+        }
+
     }
 }

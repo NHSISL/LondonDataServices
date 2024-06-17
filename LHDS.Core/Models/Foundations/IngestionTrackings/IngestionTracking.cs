@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -15,10 +15,14 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings
     {
         public Guid Id { get; set; }
         public string FileName { get; set; } = string.Empty;
+        public string? SourceFolderPath { get; set; } = string.Empty;
         public Guid SupplierId { get; set; }
         public string EncryptedFileName { get; set; } = string.Empty;
         public string DecryptedFileName { get; set; } = string.Empty;
         public bool Decrypted { get; set; }
+        public bool IsDownloaded { get; set; } = false;
+        public bool IsProcessing { get; set; } = false;
+        public int RetryCount { get; set; } = 0;
         public DateTimeOffset LastSeen { get; set; }
         public bool FileDeleted { get; set; }
         public int RecordCount { get; set; }

@@ -149,7 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             return filler;
         }
 
-        public static TheoryData AddressCoordinationDependencyValidationExceptions()
+        public static TheoryData<Xeption> AddressCoordinationDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -176,7 +176,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             };
         }
 
-        public static TheoryData AddressCoordinationDependencyExceptions()
+        public static TheoryData<Xeption> AddressCoordinationDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;

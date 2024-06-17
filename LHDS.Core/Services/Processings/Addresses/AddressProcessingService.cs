@@ -25,6 +25,14 @@ namespace LHDS.Core.Services.Processings.Addresses
             this.loggingBroker = loggingBroker;
         }
 
+        public ValueTask BulkAddAddressesAsync(List<Address> addresses, string fileName) =>
+            TryCatch(async () =>
+            {
+                ValidateArguments(addresses, fileName);
+
+                await this.addressService.BulkAddAddressesAsync(addresses, fileName);
+            });
+
         public ValueTask<Address> AddAddressAsync(Address address) =>
             TryCatch(async () =>
             {
@@ -60,7 +68,7 @@ namespace LHDS.Core.Services.Processings.Addresses
                 ValidateAddress(address);
                 ValidateAddressId(address.Id);
 
-                var maybeAddress = 
+                var maybeAddress =
                     this.addressService.RetrieveAllAddresses()
                         .FirstOrDefault(storageAddress => storageAddress.Id == address.Id);
 

@@ -200,7 +200,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             return pdsAudit;
         }
 
-        public static TheoryData PdsDependencyValidationExceptions()
+        public static TheoryData<Xeption> PdsDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -234,7 +234,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             };
         }
 
-        public static TheoryData PdsDependencyExceptions()
+        public static TheoryData<Xeption> PdsDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;

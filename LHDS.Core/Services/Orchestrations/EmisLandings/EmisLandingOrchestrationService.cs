@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -189,14 +190,22 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
+                var filename = fileName.StartsWith('/')
+                    ? fileName
+                    : "/" + fileName;
+
                 (string encryptedFileName, string decryptedFileName) =
-                        await GetFileNames(subscriberCredential, fileName, supplierId);
+                        await GetFileNames(subscriberCredential, filename, supplierId);
+
+                string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
+                sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
 
                 IngestionTracking newIngestionTracking =
                   new IngestionTracking
                   {
                       Id = this.identifierBroker.GetIdentifier(),
-                      FileName = fileName,
+                      FileName = filename,
+                      SourceFolderPath = sourceFolderPath,
                       SupplierId = landingConfiguration.LandingSupplierId,
                       EncryptedFileName = encryptedFileName,
                       DecryptedFileName = decryptedFileName,
@@ -309,16 +318,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     $"{landingConfiguration.LandingSupplierId}");
             }
 
-            var filename = fileName.StartsWith('/')
-                ? fileName
-                : "/" + fileName;
-
-            string[] splitFileName = filename.Split('/');
+            string[] splitFileName = fileName.Split('/');
             string newFileName = "";
 
             if (splitFileName.Length < 6)
             {
-                throw new InvalidDocumentProcessingFileNameException(filename);
+                throw new InvalidDocumentProcessingFileNameException(fileName);
             }
             else
             {
@@ -330,7 +335,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             string decryptedFileName = $"/{landingConfiguration.DecryptedFolder}" +
                 $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}" +
                 $"/{retrievedDataSetSpecification?.Id}" +
-                $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
+                $"/{fileName.Split('_')[2]}_{fileName.Split('_')[3]}" +
                 $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
             return (encryptedFileName, decryptedFileName);

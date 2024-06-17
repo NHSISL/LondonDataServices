@@ -15,6 +15,7 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings
     {
         public Guid Id { get; set; }
         public string FileName { get; set; } = string.Empty;
+        public string? SourceFolderPath { get; set; } = string.Empty;
         public Guid SupplierId { get; set; }
         public string EncryptedFileName { get; set; } = string.Empty;
         public string DecryptedFileName { get; set; } = string.Empty;

@@ -1,8 +1,9 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
+using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
@@ -30,15 +31,21 @@ namespace LHDS.Functions.Landings.Tpp
 
         [Function("TppLandingFunction")]
         public async Task Run(
-            [BlobTrigger("tpplanding", Connection = "BlobStorage")] Document document)
+            [BlobTrigger("tpplanding", Connection = "BlobStorage")] string myBlob, string name)
         {
-            this.loggingBroker
-                .LogInformation(
-                    $"C# Blob trigger function Processing document\n " +
-                    $"Name: FileName: {document.FileName}");
-
             try
             {
+                this.loggingBroker
+                    .LogInformation(
+                        $"C# Blob trigger function Processing document\n " +
+                        $"Name: FileName: {name}");
+
+                Document document = new Document
+                {
+                    FileName = name,
+                    DocumentData = Encoding.ASCII.GetBytes(myBlob)
+                };
+
                 await tppLandingClient.ProcessAsync(document, supplierId: landingConfiguration.LandingSupplierId);
             }
             catch (Exception ex)

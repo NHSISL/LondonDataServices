@@ -108,30 +108,31 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 return ingestionTracking.DecryptedFileName;
             });
 
-        public async ValueTask<string?> GetNextItemToBeDecrypted()
-        {
-            DateTimeOffset olderThanDateTimeOffset =
+        public ValueTask<string?> GetNextItemToBeDecrypted() =>
+            TryCatch(async () =>
+            {
+                DateTimeOffset olderThanDateTimeOffset =
                 this.dateTimeBroker.GetCurrentDateTimeOffset().AddMinutes(-15);
 
-            var item = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
-                .FirstOrDefault(ingestionTrackingItem =>
-                    ingestionTrackingItem.Decrypted == false
-                    && ingestionTrackingItem.IsProcessing == false
-                    && ingestionTrackingItem.UpdatedDate < olderThanDateTimeOffset);
+                var item = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                    .FirstOrDefault(ingestionTrackingItem =>
+                        ingestionTrackingItem.Decrypted == false
+                        && ingestionTrackingItem.IsProcessing == false
+                        && ingestionTrackingItem.UpdatedDate < olderThanDateTimeOffset);
 
-            if (item == null)
-            {
-                return null;
-            }
+                if (item == null)
+                {
+                    return null;
+                }
 
-            DateTimeOffset currentDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                DateTimeOffset currentDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-            item.IsProcessing = true;
-            item.UpdatedDate = currentDateTimeOffset;
-            var modifiedItem = await this.ingestionTrackingService.ModifyIngestionTrackingAsync(item);
+                item.IsProcessing = true;
+                item.UpdatedDate = currentDateTimeOffset;
+                var modifiedItem = await this.ingestionTrackingService.ModifyIngestionTrackingAsync(item);
 
-            return modifiedItem.EncryptedFileName;
-        }
+                return modifiedItem.EncryptedFileName;
+            });
 
         private void LogAudit(IngestionTracking ingestionTracking, Document document, DateTimeOffset currentDateTime)
         {

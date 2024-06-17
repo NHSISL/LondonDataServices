@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
-using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
@@ -74,7 +73,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>()
                 .AddTransient<IDocumentProcessingService, DocumentProcessingService>();
 
-            serviceCollection.AddTppLandingClientForAcceptance(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();

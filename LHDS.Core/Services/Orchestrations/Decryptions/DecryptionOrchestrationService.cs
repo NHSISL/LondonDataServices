@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
@@ -107,8 +108,30 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 return ingestionTracking.DecryptedFileName;
             });
 
-        public ValueTask<string?> GetNextItemToBeDecrypted() =>
-            throw new NotImplementedException();
+        public async ValueTask<string?> GetNextItemToBeDecrypted()
+        {
+            DateTimeOffset olderThanDateTimeOffset =
+                this.dateTimeBroker.GetCurrentDateTimeOffset().AddMinutes(-15);
+
+            var item = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                .FirstOrDefault(ingestionTrackingItem =>
+                    ingestionTrackingItem.Decrypted == false
+                    && ingestionTrackingItem.IsProcessing == false
+                    && ingestionTrackingItem.UpdatedDate < olderThanDateTimeOffset);
+
+            if (item == null)
+            {
+                return null;
+            }
+
+            DateTimeOffset currentDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            item.IsProcessing = true;
+            item.UpdatedDate = currentDateTimeOffset;
+            var modifiedItem = await this.ingestionTrackingService.ModifyIngestionTrackingAsync(item);
+
+            return modifiedItem.EncryptedFileName;
+        }
 
         private void LogAudit(IngestionTracking ingestionTracking, Document document, DateTimeOffset currentDateTime)
         {

@@ -31,37 +31,7 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
         public ValueTask<string> DecryptAsync(string encryptedFileName) =>
             TryCatch(async () =>
             {
-                ValidateFileNameOnDecrypt(encryptedFileName);
-                string[] parts = encryptedFileName.Split("/");
-
-                if (parts.Length > 0)
-                {
-                    string extractSubscriberCredentialIdString = parts[2];
-                    Guid subscriberCredentialId;
-
-                    if (!Guid.TryParse(extractSubscriberCredentialIdString, out subscriberCredentialId))
-                    {
-                        throw new InvalidArgumentDecryptionCoordinationException(
-                            $"Failed to parse {extractSubscriberCredentialIdString} to Guid. " +
-                            $"Encrypted File Name is {encryptedFileName}.");
-                    }
-
-                    SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
-                        .RetrieveSubscriberCredentialByIdAsync(
-                            subscriberCredentialId: new Guid(extractSubscriberCredentialIdString),
-                            externalUse: false);
-
-                    string decryptItem =
-                        await this.decryptionOrchestrationService.DecryptAsync(
-                            encryptedFileName,
-                            maybeSubscriberCredential);
-
-                    return decryptItem;
-                }
-                else
-                {
-                    throw new InvalidArgumentDecryptionCoordinationException("Invalid file name format.");
-                }
+                return await DecryptFileAsync(encryptedFileName);
             });
 
         public ValueTask RetryDecryptOnAllAsync() =>
@@ -74,35 +44,7 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                 {
                     try
                     {
-                        ValidateFileNameOnDecrypt(encryptedFileName);
-                        string[] parts = encryptedFileName.Split("/");
-
-                        if (parts.Length > 0)
-                        {
-                            string extractSubscriberCredentialIdString = parts[2];
-                            Guid subscriberCredentialId;
-
-                            if (!Guid.TryParse(extractSubscriberCredentialIdString, out subscriberCredentialId))
-                            {
-                                throw new InvalidArgumentDecryptionCoordinationException(
-                                    $"Failed to parse {extractSubscriberCredentialIdString} to Guid. " +
-                                    $"Encrypted File Name is {encryptedFileName}.");
-                            }
-
-                            SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
-                                .RetrieveSubscriberCredentialByIdAsync(
-                                    subscriberCredentialId: new Guid(extractSubscriberCredentialIdString),
-                                    externalUse: false);
-
-                            string decryptItem =
-                                await this.decryptionOrchestrationService.DecryptAsync(
-                                    encryptedFileName,
-                                    maybeSubscriberCredential);
-                        }
-                        else
-                        {
-                            throw new InvalidArgumentDecryptionCoordinationException("Invalid file name format.");
-                        }
+                        await DecryptFileAsync(encryptedFileName);
                     }
                     catch (Exception exception)
                     {
@@ -110,5 +52,40 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                     }
                 }
             });
+
+        private async ValueTask<string> DecryptFileAsync(string encryptedFileName)
+        {
+            ValidateFileNameOnDecrypt(encryptedFileName);
+            string[] parts = encryptedFileName.Split("/");
+
+            if (parts.Length > 0)
+            {
+                string extractSubscriberCredentialIdString = parts[2];
+                Guid subscriberCredentialId;
+
+                if (!Guid.TryParse(extractSubscriberCredentialIdString, out subscriberCredentialId))
+                {
+                    throw new InvalidArgumentDecryptionCoordinationException(
+                        $"Failed to parse {extractSubscriberCredentialIdString} to Guid. " +
+                        $"Encrypted File Name is {encryptedFileName}.");
+                }
+
+                SubscriberCredential maybeSubscriberCredential = await this.subscriberCredentialOrchestration
+                    .RetrieveSubscriberCredentialByIdAsync(
+                        subscriberCredentialId: new Guid(extractSubscriberCredentialIdString),
+                        externalUse: false);
+
+                string decryptItem =
+                    await this.decryptionOrchestrationService.DecryptAsync(
+                        encryptedFileName,
+                        maybeSubscriberCredential);
+
+                return decryptItem;
+            }
+            else
+            {
+                throw new InvalidArgumentDecryptionCoordinationException("Invalid file name format.");
+            }
+        }
     }
 }

@@ -17,25 +17,22 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnProcessIfErrorsAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRetryDecryptIfErrorsAndLogItAsync(
             Xeption dependancyValidationException)
         {
             // Given
-            Guid SubscriberCredentialId = Guid.NewGuid();
-            string filePath = CreateRandomFilePath(SubscriberCredentialId);
-
             var expectedDecryptionCoordinationDependencyValidationException =
                 new DecryptionCoordinationDependencyValidationException(
                     message: "Decryption coordination dependency validation error occurred, please try again.",
                     innerException: dependancyValidationException.InnerException as Xeption);
 
-            this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
+            this.decryptionOrchestrationServiceMock.Setup(service =>
+                service.GetNextItemToBeDecrypted())
                     .ThrowsAsync(dependancyValidationException);
 
             // When
-            ValueTask<string> processDataTask =
-                this.decryptionCoordinationService.DecryptAsync(filePath);
+            ValueTask processDataTask =
+                this.decryptionCoordinationService.RetryDecryptOnAllAsync();
 
             DecryptionCoordinationDependencyValidationException
                 actualDecryptionCoordinationDependencyValidationException =
@@ -46,8 +43,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             actualDecryptionCoordinationDependencyValidationException.Should()
                 .BeEquivalentTo(expectedDecryptionCoordinationDependencyValidationException);
 
-            this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()),
+            this.decryptionOrchestrationServiceMock.Verify(service =>
+                service.GetNextItemToBeDecrypted(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -62,15 +59,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnProcessIfErrorsAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRetryDecryptIfErrorsAndLogItAsync(
            Xeption dependancyValidationException)
         {
             // Given
-            Guid SubscriberCredentialId = Guid.NewGuid();
-            string filePath = CreateRandomFilePath(SubscriberCredentialId);
-
-            this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
+            this.decryptionOrchestrationServiceMock.Setup(service =>
+                service.GetNextItemToBeDecrypted())
                     .ThrowsAsync(dependancyValidationException);
 
             var expectedDecryptionCoordinationDependencyException =
@@ -79,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             // When
-            ValueTask<string> processDataTask = this.decryptionCoordinationService.DecryptAsync(filePath);
+            ValueTask processDataTask = this.decryptionCoordinationService.RetryDecryptOnAllAsync();
 
             DecryptionCoordinationDependencyException actualEmisLandingCoordinationDependencyException =
                 await Assert.ThrowsAsync<DecryptionCoordinationDependencyException>(async () =>
@@ -89,8 +83,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             actualEmisLandingCoordinationDependencyException.Should()
                 .BeEquivalentTo(expectedDecryptionCoordinationDependencyException);
 
-            this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()),
+            this.decryptionOrchestrationServiceMock.Verify(service =>
+                service.GetNextItemToBeDecrypted(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -104,7 +98,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnProcessIfErrorsAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetryDecryptIfErrorsAndLogItAsync()
         {
             // Given
             var serviceException = new Exception();
@@ -112,8 +106,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             string encryptedFileName = CreateRandomFilePath(SubscriberCredentialId);
             List<Exception> exceptions = new List<Exception>();
 
-            this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
+            this.decryptionOrchestrationServiceMock.Setup(service =>
+                service.GetNextItemToBeDecrypted())
                     .ThrowsAsync(serviceException);
 
             var failedDecryptionCoordinationServiceException =
@@ -127,7 +121,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     innerException: failedDecryptionCoordinationServiceException);
 
             // When
-            ValueTask<string> processDataTask = this.decryptionCoordinationService.DecryptAsync(encryptedFileName);
+            ValueTask processDataTask = this.decryptionCoordinationService.RetryDecryptOnAllAsync();
 
             DecryptionCoordinationServiceException actualDecryptionCoordinationServiceException =
                 await Assert.ThrowsAsync<DecryptionCoordinationServiceException>(async () =>
@@ -137,8 +131,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             actualDecryptionCoordinationServiceException.Should()
                 .BeEquivalentTo(expectedDecryptionCoordinationServiceException);
 
-            this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()),
+            this.decryptionOrchestrationServiceMock.Verify(service =>
+                service.GetNextItemToBeDecrypted(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

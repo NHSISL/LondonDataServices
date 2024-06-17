@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnProcessFileIfFileNameIsNullAndLogItAsync(string invalidData)
+        public async Task ShouldThrowValidationExceptionOnDecryptFileIfFileNameIsNullAndLogItAsync(string invalidData)
         {
             // given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();

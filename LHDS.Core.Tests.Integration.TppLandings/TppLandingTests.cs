@@ -16,7 +16,6 @@ using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
-using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
@@ -68,7 +67,6 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                     builder.AddApplicationInsights();
                 })
                 .AddTppLandingClient(configuration)
-                .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider())
                 .BuildServiceProvider();
 
             landingConfiguration = serviceProvider.GetService<LandingConfiguration>();

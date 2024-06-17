@@ -10,6 +10,8 @@ using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
+using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
+using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using RESTFulSense.Exceptions;
 using Xunit;
@@ -386,7 +388,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            await Assert.ThrowsAsync<HttpResponseInternalServerErrorException>(getSubscriberCredentialbyIdTask.AsTask);
+            await Assert.ThrowsAsync<SubscriberCredentialOrchestrationDependencyValidationException>(() => 
+                getSubscriberCredentialbyIdTask.AsTask());
         }
     }
 }

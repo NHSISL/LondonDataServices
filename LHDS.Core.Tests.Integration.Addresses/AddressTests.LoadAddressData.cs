@@ -15,17 +15,13 @@ namespace LHDS.Core.Tests.Integration.Addresses
         [Fact]
         public async Task LoadAddressDataAsync()
         {
+            var filePath = @"Resources\Ordnance\0040176014-6414006-1.zip";
+            //var filePath = @"Resources\Ordnance\0040176014-6414006-1SMALL.zip";
+            //var filePath = @"Resources\Ordnance\0040176014-6414006-1VERYSMALL.zip";
+
             // Given
-            byte[] fileBytes =
-                File.ReadAllBytes(
-                    //@"Resources\0040176014-6414006-1.zip");
-                    @"Resources\Ordnance\0040176014-6414006-1SMALL.zip");
-
-            FileInfo fi =
-                new FileInfo(
-                    //@"Resources\0040176014-6414006-1.zip");
-                    @"Resources\Ordnance\0040176014-6414006-1SMALL.zip");
-
+            byte[] fileBytes = File.ReadAllBytes(filePath);
+            FileInfo fi = new FileInfo(filePath);
             var fileName = fi.Name;
 
             // When

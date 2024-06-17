@@ -11,6 +11,7 @@ using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.Cryptographies;
+using LHDS.Core.Brokers.CryptographyKeys;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Hashing;
@@ -116,6 +117,8 @@ namespace LHDS.Core.Clients.Extensions
         {
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<ICryptographyBroker, CryptographyBroker>();
+            services.AddTransient<ICryptographyKeyBroker, GpgKeyBroker>();
+            services.AddTransient<ICryptographyKeyBroker, SshKeyBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();

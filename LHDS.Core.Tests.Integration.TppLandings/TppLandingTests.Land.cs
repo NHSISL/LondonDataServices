@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Integration.TppLandings
             DataSetSpecification dataSetSpecification = await SetupDataSetSpecification(dataSet.Id);
 
             // when
-            Guid actualGuid = await this.tppLandingClient.ProcessAsync(document);
+            Guid actualGuid = await this.tppLandingClient.ProcessAsync(document, supplier.Id);
 
             // then
             actualGuid.Should().NotBe(Guid.Empty);

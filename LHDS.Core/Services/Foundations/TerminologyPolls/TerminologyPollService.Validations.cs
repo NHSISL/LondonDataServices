@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
@@ -63,7 +63,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         public void ValidateTerminologyPollId(Guid terminologyPollId) =>
             Validate((Rule: IsInvalid(terminologyPollId), Parameter: nameof(TerminologyPoll.Id)));
 
-        private static void ValidateStorageTerminologyPoll(TerminologyPoll maybeTerminologyPoll, Guid terminologyPollId)
+        private static void ValidateStorageTerminologyPoll(
+            TerminologyPoll maybeTerminologyPoll, 
+            Guid terminologyPollId)
         {
             if (maybeTerminologyPoll is null)
             {
@@ -79,7 +81,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             }
         }
 
-        private static void ValidateAgainstStorageTerminologyPollOnModify(TerminologyPoll inputTerminologyPoll, TerminologyPoll storageTerminologyPoll)
+        private static void ValidateAgainstStorageTerminologyPollOnModify(
+            TerminologyPoll inputTerminologyPoll, 
+            TerminologyPoll storageTerminologyPoll)
         {
             Validate(
                 (Rule: IsNotSame(

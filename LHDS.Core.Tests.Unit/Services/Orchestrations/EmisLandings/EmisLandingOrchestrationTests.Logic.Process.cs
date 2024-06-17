@@ -150,6 +150,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
                 IngestionTracking modifiedIngestionTracking = downloadingIngestionTracking.DeepClone();
                 modifiedIngestionTracking.IsDownloaded = true;
+                modifiedIngestionTracking.RetryCount = 0;
                 modifiedIngestionTracking.FileDeleted = false;
                 modifiedIngestionTracking.EncryptedFileSize = storageFileDownload.Document.DocumentData.Length;
                 modifiedIngestionTracking.EncryptedFileSha256Hash = randomHash;
@@ -269,6 +270,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
                 IngestionTracking modifiedIngestionTracking = downloadingIngestionTracking.DeepClone();
                 modifiedIngestionTracking.IsDownloaded = true;
+                modifiedIngestionTracking.RetryCount = 0;
                 modifiedIngestionTracking.FileDeleted = false;
                 modifiedIngestionTracking.EncryptedFileSize = storageFileDownload.Document.DocumentData.Length;
                 modifiedIngestionTracking.EncryptedFileSha256Hash = randomHash;

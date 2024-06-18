@@ -214,6 +214,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                       FileDeleted = false,
                       RecordCount = 0,
                       RetryCount = 0,
+                      LastAttempt = currentDateTime,
                       EncryptedFileSize = 0,
                       EncryptedFileSha256Hash = string.Empty,
                       DecryptedFileSize = 0,
@@ -263,6 +264,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     .AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
 
                 updatedIngestionTracking.IsDownloaded = true;
+                updatedIngestionTracking.RetryCount = 0;
                 updatedIngestionTracking.FileDeleted = false;
                 updatedIngestionTracking.EncryptedFileSize = newBlobDocument.DocumentData.Length;
                 updatedIngestionTracking.EncryptedFileSha256Hash = newBlobDocument.SHA256Hash;

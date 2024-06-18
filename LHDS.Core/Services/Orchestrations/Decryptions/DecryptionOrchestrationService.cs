@@ -119,7 +119,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                         ingestionTrackingItem.Decrypted == false
                         && ingestionTrackingItem.IsProcessing == false
                         && ingestionTrackingItem.RetryCount < 4
-                        && ingestionTrackingItem.UpdatedDate < olderThanDateTimeOffset);
+                        && ingestionTrackingItem.LastAttempt <= olderThanDateTimeOffset);
 
                 if (item == null)
                 {
@@ -130,6 +130,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 item.IsProcessing = true;
                 item.RetryCount += 1;
+                item.LastAttempt = currentDateTimeOffset;
                 item.UpdatedDate = currentDateTimeOffset;
                 var modifiedItem = await this.ingestionTrackingService.ModifyIngestionTrackingAsync(item);
 

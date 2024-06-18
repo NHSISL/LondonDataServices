@@ -32,7 +32,7 @@ namespace LHDS.Functions.Landings.Emis
             this.landingConfiguration = landingConfiguration;
         }
 
-        [Function("EmisLandingTimerFunction")]
+        [Function("RedecryptionTimerFunction")]
         public async Task Run([TimerTrigger("0 */15 * * * *")] MyInfo myTimer)
         {
             this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");

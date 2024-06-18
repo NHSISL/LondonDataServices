@@ -13,13 +13,18 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
     public partial class DecryptionCoordinationServiceTests
     {
         [Fact]
-        public async Task ShouldProcessExistingFileAndLogAsync()
+        public async Task ShouldRetryDecryptionOfExistingFilesAndLogAsync()
         {
             // Given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             Guid SubscriberCredentialId = Guid.NewGuid();
 
             string filePath = CreateRandomFilePath(SubscriberCredentialId);
+
+            this.decryptionOrchestrationServiceMock.SetupSequence(service =>
+                service.GetNextItemToBeDecrypted())
+                    .ReturnsAsync(filePath)
+                    .ReturnsAsync(string.Empty);
 
             SubscriberCredential randomActiveSubscriberCredential =
                 CreateRandomSubscriberCredential(SubscriberCredentialId);
@@ -36,9 +41,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                         .ReturnsAsync(randomEmisLandingPath);
 
             // When
-            string actualPath = await this.decryptionCoordinationService.DecryptAsync(filePath);
+            await this.decryptionCoordinationService.RetryDecryptOnAllAsync();
 
             // Then
+            this.decryptionOrchestrationServiceMock.Verify(service =>
+                service.GetNextItemToBeDecrypted(),
+                    Times.Exactly(2));
+
             this.subscriberCredentialOrchestrationMock.Verify(service =>
                 service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId, false),
                     Times.Once);

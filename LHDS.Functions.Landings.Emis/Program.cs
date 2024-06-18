@@ -37,7 +37,7 @@ var host = new HostBuilder()
                 setup.AddApplicationInsights();
                 setup.AddConsole();
             })
-           .AddLandingClient(context.Configuration)
+           .AddEmisLandingClient(context.Configuration)
            .AddDecryptionClient(context.Configuration)
            .UseGpgCryptographyProvider(context.Configuration, builder => builder.AddGpgCryptographyProvider())
            .UseFtpDownloadProvider(context.Configuration, builder => builder.AddFtpDownloadProvider());

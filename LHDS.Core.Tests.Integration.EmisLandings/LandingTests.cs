@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Integration.Landings
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddLandingClient(configuration)
+                .AddEmisLandingClient(configuration)
                 .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider())
                 .BuildServiceProvider();
 

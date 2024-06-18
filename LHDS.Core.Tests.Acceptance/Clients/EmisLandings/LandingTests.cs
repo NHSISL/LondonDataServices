@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
                 .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
 
-            serviceCollection.AddLandingClient(this.dependencyBroker.Configuration);
+            serviceCollection.AddEmisLandingClient(this.dependencyBroker.Configuration);
             serviceCollection.Remove(new ServiceDescriptor(typeof(IDownloadProvider), typeof(FtpDownloadProvider)));
 
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);

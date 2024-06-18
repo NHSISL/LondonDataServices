@@ -2,80 +2,88 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.Suppliers;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
+using Xunit;
+
 namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 {
     public partial class DecryptionTests
     {
-        // TODO: @Hassan, to fix this test and remove the mocks on the acceptance tests.  
-        // Removed to test for now to allow testing of self-hosted agent.
+        [Fact]
+        public async Task ShouldDecryptNewDocumentsAsync()
+        {
+            //Given
+            DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            Guid supplierId = Guid.NewGuid();
+            byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
+            Supplier randomSupplier = CreateRandomSupplier(supplierId, dateTimeOffset);
+            SubscriberCredential subscriberCredential = CreateRandomSubscriberCredential();
 
-        //[Fact]
-        //public async Task ShouldDecryptNewDocumentsAsync()
-        //{
-        //    //Given
-        //    string fileName = GetRandomString();
-        //    byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
-        //    byte[] encryptedData = await this.cryptographyProvider.EncryptAsync(documentData);
+            SubscriberCredential generatedSubscriberCredential = await this.subscriberCredentialOrchestration
+                .ModifyOrAddSubscriberCredentialAsync(subscriberCredential, regenerateKeys: true);
 
-        //    Document document = new Document
-        //    {
-        //        DocumentData = encryptedData,
-        //        FileName = fileName
-        //    };
+            string fileName = CreateRandomFileName(subscriberCredential.Id);
 
-        //    IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
-        //        dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
-        //        document,
-        //        supplierId: this.landingConfiguration.LandingSupplierId);
+            byte[] encryptedData = 
+                await this.cryptographyProvider.EncryptAsync(documentData, generatedSubscriberCredential);
 
-        //    await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
+            Document document = new Document
+            {
+                DocumentData = encryptedData,
+                FileName = fileName
+            };
 
-        //    this.blobStorageBrokerMock.Setup(broker =>
-        //        broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName))
-        //            .ReturnsAsync(encryptedData);
+            await this.documentService.AddDocumentAsync(document, blobContainers.EmisLanding);
+            await this.supplierService.AddSupplierAsync(randomSupplier);
 
-        //    //When
-        //    var actualString = await this.decryptionClient.DecryptAsync(fileName);
+            IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
+                dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                document,
+                supplierId: supplierId);
 
-        //    //Then
-        //    actualString.Should().BeEquivalentTo(ingestionTracking.DecryptedFileName);
+            await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 
-        //    this.blobStorageBrokerMock.Verify(broker =>
-        //        broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName),
-        //            Times.Once);
+            //When
+            var actualString = await this.decryptionClient.DecryptAsync(fileName);
 
-        //    ingestionTracking.Should().NotBeNull();
+            //Then
+            actualString.Should().BeEquivalentTo(ingestionTracking.DecryptedFileName);
 
-        //    IngestionTracking decryptedIngestionTracking =
-        //        await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
+            Document decryptedDocument =
+                await this.documentService.RetrieveDocumentByFileNameAsync(
+                    ingestionTracking.DecryptedFileName, blobContainers.Versioner);
 
-        //    this.blobStorageBrokerMock.Verify(broker =>
-        //        broker.InsertFileAsync(decryptedIngestionTracking.DecryptedFileName, It.IsAny<Stream>()),
-        //            Times.Once());
+            decryptedDocument.DocumentData.Should().BeEquivalentTo(documentData);
 
-        //    this.downloadBrokerMock.VerifyNoOtherCalls();
-        //    this.blobStorageBrokerMock.VerifyNoOtherCalls();
-        //    await DeleteAudits(ingestionTracking);
-        //    await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-        //}
+            IngestionTracking decryptedIngestionTracking =
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-        //private async Task DeleteAudits(IngestionTracking ingestionTracking)
-        //{
-        //    var auditIds = this.auditService.RetrieveAllAudits()
-        //        .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id)
-        //        .Select(ingestionTracking => ingestionTracking.Id)
-        //        .ToList();
+            var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
-        //    foreach (var id in auditIds)
-        //    {
-        //        await this.auditService.RemoveAuditByIdAsync(id);
-        //    }
+            foreach (var audit in audits)
+            {
+                await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+            }
 
-        //    if (this.auditService.RetrieveAllAudits()
-        //        .Any(audit => audit.IngestionTrackingId == ingestionTracking.Id))
-        //    {
-        //        await DeleteAudits(ingestionTracking);
-        //    }
-        //}
+            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
+            await this.subscriberCredentialOrchestration
+                .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: subscriberCredential.Id);
+
+            await this.supplierService.RemoveSupplierByIdAsync(supplierId: supplierId);
+            await this.documentService.RemoveDocumentByFileNameAsync(fileName, blobContainers.EmisLanding);
+
+            await this.documentService.RemoveDocumentByFileNameAsync(
+                decryptedDocument.FileName, blobContainers.Versioner);
+        }
     }
 }

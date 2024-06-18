@@ -16,7 +16,7 @@
 	  <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
 	  <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
 	  <PackageReference Include="Microsoft.AspNet.WebPages" Version="3.3.0" />
-	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.5" />
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.6" />
 	  <PackageReference Include="Microsoft.AspNetCore.OData" Version="8.2.5" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.6" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.5">
@@ -25,12 +25,12 @@
 	  </PackageReference>
 	  <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.3" />
 	  <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-	  <PackageReference Include="Microsoft.Identity.Web" Version="2.18.2" />
+	  <PackageReference Include="Microsoft.Identity.Web" Version="2.19.0" />
 	  <PackageReference Include="RESTFulSense" Version="3.0.0" />
 	  <PackageReference Include="SshKeyGenerator" Version="1.1.51" />
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 	  <PackageReference Include="Xeption" Version="2.6.0" />
-	  <PackageReference Include="xunit.extensibility.core" Version="2.8.0" />
+	  <PackageReference Include="xunit.extensibility.core" Version="2.8.1" />
   </ItemGroup>
 
   <ItemGroup>

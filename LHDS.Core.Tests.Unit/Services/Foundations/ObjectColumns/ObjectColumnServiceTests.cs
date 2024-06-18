@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
-        public static TheoryData MinutesBeforeOrAfter()
+        public static TheoryData<int> MinutesBeforeOrAfter()
         {
             int randomNumber = GetRandomNumber();
             int randomNegativeNumber = GetRandomNegativeNumber();

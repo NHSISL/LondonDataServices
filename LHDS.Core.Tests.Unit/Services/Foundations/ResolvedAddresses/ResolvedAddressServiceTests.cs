@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
-        public static TheoryData MinutesBeforeOrAfter()
+        public static TheoryData<int> MinutesBeforeOrAfter()
         {
             int randomNumber = GetRandomNumber();
             int randomNegativeNumber = GetRandomNegativeNumber();

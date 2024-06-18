@@ -17,7 +17,7 @@ namespace LHDS.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "8.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -63,6 +63,9 @@ namespace LHDS.Core.Migrations
                     b.Property<bool>("IsErrored")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsNormalised")
+                        .HasColumnType("bit");
+
                     b.Property<string>("JsonPostalAddress")
                         .HasColumnType("nvarchar(max)");
 
@@ -80,6 +83,9 @@ namespace LHDS.Core.Migrations
 
                     b.Property<string>("PostalAddress")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Processing")
+                        .HasColumnType("bit");
 
                     b.Property<string>("SubBuildingName")
                         .HasMaxLength(255)
@@ -106,6 +112,16 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsErrored");
+
+                    b.HasIndex("IsNormalised");
+
+                    b.HasIndex("PostCode");
+
+                    b.HasIndex("Processing");
+
+                    b.HasIndex("UPRN");
 
                     b.ToTable("Address", "UPRN");
                 });
@@ -555,11 +571,26 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("IsDownloaded")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsProcessing")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("LastAttempt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<DateTimeOffset>("LastSeen")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<int>("RecordCount")
                         .HasColumnType("int");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SourceFolderPath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("SupplierId")
                         .HasColumnType("uniqueidentifier");

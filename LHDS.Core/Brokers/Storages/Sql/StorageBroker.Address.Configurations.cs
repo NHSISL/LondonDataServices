@@ -20,6 +20,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired(false);
 
             modelBuilder.Entity<Address>()
+                .HasIndex(address => address.UPRN);
+
+            modelBuilder.Entity<Address>()
                 .Property(address => address.UPSN)
                 .HasMaxLength(15)
                 .IsRequired(false);
@@ -78,6 +81,18 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .Property(address => address.PostCode)
                 .HasMaxLength(255)
                 .IsRequired(false);
+
+            modelBuilder.Entity<Address>()
+                .HasIndex(address => address.PostCode);
+
+            modelBuilder.Entity<Address>()
+                .HasIndex(address => address.IsErrored);
+
+            modelBuilder.Entity<Address>()
+                .HasIndex(address => address.IsNormalised);
+
+            modelBuilder.Entity<Address>()
+                .HasIndex(address => address.Processing);
 
             modelBuilder.Entity<Address>()
                 .Property(address => address.PostalAddress)

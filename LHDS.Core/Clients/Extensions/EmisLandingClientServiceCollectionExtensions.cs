@@ -52,7 +52,7 @@ namespace LHDS.Core.Clients.Extensions
 {
     public static class EmisLandingClientServiceCollectionExtensions
     {
-        public static IServiceCollection AddLandingClient(
+        public static IServiceCollection AddEmisLandingClient(
             this IServiceCollection services,
             IConfiguration configuration)
         {

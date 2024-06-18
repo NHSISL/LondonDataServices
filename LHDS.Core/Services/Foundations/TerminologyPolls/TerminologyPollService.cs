@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -57,7 +61,10 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                     await this.storageBroker.SelectTerminologyPollByIdAsync(terminologyPoll.Id);
 
                 ValidateStorageTerminologyPoll(maybeTerminologyPoll, terminologyPoll.Id);
-                ValidateAgainstStorageTerminologyPollOnModify(inputTerminologyPoll: terminologyPoll, storageTerminologyPoll: maybeTerminologyPoll);
+
+                ValidateAgainstStorageTerminologyPollOnModify(
+                    inputTerminologyPoll: terminologyPoll, 
+                    storageTerminologyPoll: maybeTerminologyPoll);
 
                 return await this.storageBroker.UpdateTerminologyPollAsync(terminologyPoll);
             });

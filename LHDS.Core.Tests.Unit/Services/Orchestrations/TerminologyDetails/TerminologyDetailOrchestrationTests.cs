@@ -143,7 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        public static TheoryData TerminologyDetailOrchestrationDependencyValidationExceptions()
+        public static TheoryData<Xeption> TerminologyDetailOrchestrationDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -177,7 +177,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             };
         }
 
-        public static TheoryData TerminologyDetailOrchestrationDependencyExceptions()
+        public static TheoryData<Xeption> TerminologyDetailOrchestrationDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;

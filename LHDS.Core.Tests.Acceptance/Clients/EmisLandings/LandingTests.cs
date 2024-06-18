@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
                 .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
 
-            serviceCollection.AddLandingClient(this.dependencyBroker.Configuration);
+            serviceCollection.AddEmisLandingClient(this.dependencyBroker.Configuration);
             serviceCollection.Remove(new ServiceDescriptor(typeof(IDownloadProvider), typeof(FtpDownloadProvider)));
 
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -224,7 +224,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
 
         private async ValueTask<List<IngestionTracking>> CreateRandomIngestionTrackings(
-            DateTimeOffset dateTimeOffset,
             List<DocumentSource> documentSources,
             Guid supplierId)
         {
@@ -233,7 +232,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             foreach (var documentSource in documentSources)
             {
                 var item = CreateIngestionTrackingFiller(
-                    dateTimeOffset,
+                    this.dateTimeBroker.GetCurrentDateTimeOffset(),
                     documentSource,
                     supplierId)
                         .Create();

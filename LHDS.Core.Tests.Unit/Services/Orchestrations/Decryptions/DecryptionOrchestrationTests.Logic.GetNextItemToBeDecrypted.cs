@@ -29,15 +29,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             DateTimeOffset olderThanDateTimeOffset = randomDateTimeOffset.AddMinutes(-15);
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
+            randomIngestionTracking.Decrypted = false;
             randomIngestionTracking.IsProcessing = false;
             randomIngestionTracking.RetryCount = 0;
-            randomIngestionTracking.Decrypted = false;
-            randomIngestionTracking.UpdatedDate = olderThanDateTimeOffset.AddSeconds(-1);
+            randomIngestionTracking.LastAttempt = olderThanDateTimeOffset;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             var updatedIngestionTracking = storageIngestionTracking.DeepClone();
             updatedIngestionTracking.IsProcessing = true;
-            updatedIngestionTracking.RetryCount = 1;
-            updatedIngestionTracking.UpdatedDate = randomDateTimeOffset;
+            updatedIngestionTracking.RetryCount += 1;
+            updatedIngestionTracking.LastAttempt = randomDateTimeOffset;
             var outputIngestionTracking = updatedIngestionTracking.DeepClone();
 
             this.ingestionTrackingServiceMock.Setup(service =>

@@ -52,7 +52,7 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask RetryDecryptOnAllAsync()
+        public async ValueTask RetryDecryptAsync()
         {
             try
             {

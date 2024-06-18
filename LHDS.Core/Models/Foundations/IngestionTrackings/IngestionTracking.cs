@@ -23,6 +23,7 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings
         public bool IsDownloaded { get; set; } = false;
         public bool IsProcessing { get; set; } = false;
         public int RetryCount { get; set; } = 0;
+        public DateTimeOffset LastAttempt { get; set; }
         public DateTimeOffset LastSeen { get; set; }
         public bool FileDeleted { get; set; }
         public int RecordCount { get; set; }

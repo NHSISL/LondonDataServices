@@ -9,5 +9,6 @@ namespace LHDS.Core.Clients
     public interface IDecryptionClient
     {
         ValueTask<string> DecryptAsync(string encryptedFileName);
+        ValueTask RetryDecryptOnAllAsync();
     }
 }

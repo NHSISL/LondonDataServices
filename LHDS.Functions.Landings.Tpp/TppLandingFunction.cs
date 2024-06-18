@@ -31,7 +31,7 @@ namespace LHDS.Functions.Landings.Tpp
 
         [Function("TppLandingFunction")]
         public async Task Run(
-            [BlobTrigger("tpplanding", Connection = "BlobStorage")] string myBlob, string name)
+            [BlobTrigger("tpplanding/{name}", Connection = "BlobStorage")] string myBlob, string name)
         {
             try
             {

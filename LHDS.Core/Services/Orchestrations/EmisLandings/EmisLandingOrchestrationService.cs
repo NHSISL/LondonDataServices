@@ -214,6 +214,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                       FileDeleted = false,
                       RecordCount = 0,
                       RetryCount = 0,
+                      LastAttempt = currentDateTime,
                       EncryptedFileSize = 0,
                       EncryptedFileSha256Hash = string.Empty,
                       DecryptedFileSize = 0,

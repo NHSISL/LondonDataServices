@@ -49,14 +49,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 document,
                 supplierId: supplierId);
 
+            ingestionTracking.Decrypted = false;
+            ingestionTracking.IsProcessing = false;
+            ingestionTracking.RetryCount = 0;
+            ingestionTracking.LastAttempt = dateTimeOffset.AddMinutes(-15);
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 
             //When
-            var actualString = await this.decryptionClient.DecryptAsync(fileName);
+            await this.decryptionClient.RetryDecryptAsync();
 
             //Then
-            actualString.Should().BeEquivalentTo(ingestionTracking.DecryptedFileName);
-
             Document decryptedDocument =
                 await this.documentService.RetrieveDocumentByFileNameAsync(
                     ingestionTracking.DecryptedFileName, blobContainers.Versioner);
@@ -65,6 +67,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             IngestionTracking decryptedIngestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
+            decryptedIngestionTracking.Decrypted.Should().BeTrue();
 
             var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);

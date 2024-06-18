@@ -39,7 +39,7 @@ namespace LHDS.Functions.Landings.Emis
 
             try
             {
-                await this.decryptionClient.RetryDecryptOnAllAsync();
+                await this.decryptionClient.RetryDecryptAsync();
             }
             catch (Exception ex)
             {

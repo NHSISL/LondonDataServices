@@ -116,7 +116,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 var item = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
                     .FirstOrDefault(ingestionTrackingItem =>
-                        ingestionTrackingItem.Decrypted == false
+                        ingestionTrackingItem.IsDownloaded == true
+                        && ingestionTrackingItem.Decrypted == false
                         && ingestionTrackingItem.IsProcessing == false
                         && ingestionTrackingItem.RetryCount < 4
                         && ingestionTrackingItem.LastAttempt <= olderThanDateTimeOffset);

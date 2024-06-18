@@ -20,7 +20,8 @@ namespace LHDS.Core.Tests.Integration.Decryptions
 
             var itemsThatRequireDecryption = ingestionTrackingService.RetrieveAllIngestionTrackings()
                 .Where(ingestionTrackingItem =>
-                        ingestionTrackingItem.Decrypted == false
+                        ingestionTrackingItem.IsDownloaded == true
+                        && ingestionTrackingItem.Decrypted == false
                         && ingestionTrackingItem.IsProcessing == false
                         && ingestionTrackingItem.RetryCount < 4
                         && ingestionTrackingItem.LastAttempt <= olderThanDateTimeOffset)
@@ -33,7 +34,8 @@ namespace LHDS.Core.Tests.Integration.Decryptions
             // then
             var remainingItems = ingestionTrackingService.RetrieveAllIngestionTrackings()
                 .Where(ingestionTrackingItem =>
-                        ingestionTrackingItem.Decrypted == false
+                        ingestionTrackingItem.IsDownloaded == true
+                        && ingestionTrackingItem.Decrypted == false
                         && ingestionTrackingItem.IsProcessing == false
                         && ingestionTrackingItem.RetryCount < 4
                         && ingestionTrackingItem.LastAttempt <= olderThanDateTimeOffset)

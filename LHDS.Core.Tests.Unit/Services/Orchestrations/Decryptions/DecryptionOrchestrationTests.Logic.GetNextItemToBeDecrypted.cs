@@ -29,6 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             DateTimeOffset olderThanDateTimeOffset = randomDateTimeOffset.AddMinutes(-15);
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
+            randomIngestionTracking.IsDownloaded = true;
             randomIngestionTracking.Decrypted = false;
             randomIngestionTracking.IsProcessing = false;
             randomIngestionTracking.RetryCount = 0;

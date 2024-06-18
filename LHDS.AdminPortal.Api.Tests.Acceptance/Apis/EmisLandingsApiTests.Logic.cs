@@ -200,7 +200,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             // when
             List<string> actualDocuments =
-                await this.apiBroker.DownloadDocumentsAsync();
+                await this.apiBroker.DownloadDocumentsAsync(emisSupplierId);
 
             // then
             actualDocuments.Count.Should().BeGreaterThanOrEqualTo(randomFilesNumber);

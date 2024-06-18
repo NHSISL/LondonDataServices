@@ -44,23 +44,8 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            return AddTppLandingClient(services, configuration, acceptanceTest: false);
-        }
-
-        internal static IServiceCollection AddTppLandingClientForAcceptance(
-            this IServiceCollection services,
-            IConfiguration configuration)
-        {
-            return AddTppLandingClient(services, configuration, acceptanceTest: true);
-        }
-
-        private static IServiceCollection AddTppLandingClient(
-            this IServiceCollection services,
-            IConfiguration configuration,
-            bool acceptanceTest)
-        {
             services.AddSingleton<IConfiguration>(_ => configuration);
-            AddBrokers(services, configuration, acceptanceTest);
+            AddBrokers(services, configuration);
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
@@ -69,14 +54,17 @@ namespace LHDS.Core.Clients.Extensions
             return services;
         }
 
-        private static void AddBrokers(IServiceCollection services, IConfiguration configuration, bool acceptanceTest)
+        private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
-            var landingConfiguration = configuration.GetSection("landingSettings").Get<LandingConfiguration>();
+
+            LandingConfiguration landingConfiguration =
+                configuration.GetSection("landingSettings").Get<LandingConfiguration>();
+
             ValidateLandingConfiguration(landingConfiguration);
 
             var blobStorageSettings = configuration
@@ -86,29 +74,26 @@ namespace LHDS.Core.Clients.Extensions
             services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
             services.AddSingleton(landingConfiguration);
 
-            if (!acceptanceTest)
+            services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+
+            var blobServiceClientOptions = new BlobClientOptions()
             {
-                services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+                Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
+                Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                EnableTenantDiscovery = true
+            };
 
-                var blobServiceClientOptions = new BlobClientOptions()
-                {
-                    Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
-                    Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
-                    EnableTenantDiscovery = true
-                };
+            services.AddSingleton(
+                new BlobServiceClient(
+                    serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
+                    credential: new DefaultAzureCredential(
+                        new DefaultAzureCredentialOptions
+                        {
+                            VisualStudioTenantId = blobStorageSettings.AzureTenantId,
+                        }),
+                    options: blobServiceClientOptions));
 
-                services.AddSingleton(
-                    new BlobServiceClient(
-                        serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
-                        credential: new DefaultAzureCredential(
-                            new DefaultAzureCredentialOptions
-                            {
-                                VisualStudioTenantId = blobStorageSettings.AzureTenantId,
-                            }),
-                        options: blobServiceClientOptions));
-
-                services.AddTransient<IAzureBlobClient, AzureBlobClient>();
-            }
+            services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
 
         private static void AddServices(IServiceCollection services)

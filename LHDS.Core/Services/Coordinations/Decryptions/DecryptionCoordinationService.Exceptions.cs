@@ -13,7 +13,70 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
 {
     public partial class DecryptionCoordinationService
     {
+        private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<string> ReturningStringFunction();
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (InvalidArgumentDecryptionCoordinationException invalidArgumentDecryptionCoordinationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentDecryptionCoordinationException);
+            }
+            catch (SubscriberCredentialValidationOrchestrationException
+                subscriberCredentialValidationOrchestrationException)
+            {
+                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationOrchestrationException);
+            }
+            catch (SubscriberCredentialOrchestrationDependencyValidationException
+                subscriberCredentialOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    subscriberCredentialOrchestrationDependencyValidationException);
+            }
+            catch (DecryptionOrchestrationValidationException
+                decryptionOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(decryptionOrchestrationValidationException);
+            }
+            catch (DecryptionOrchestrationDependencyValidationException
+                decryptionOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(decryptionOrchestrationDependencyValidationException);
+            }
+            catch (SubscriberCredentialDependencyOrchestrationException
+                subscriberCredentialDependencyOrchestrationException)
+            {
+                throw CreateAndLogDependencyException(subscriberCredentialDependencyOrchestrationException);
+            }
+            catch (SubscriberCredentialOrchestrationServiceException
+                subscriberCredentialOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(subscriberCredentialOrchestrationServiceException);
+            }
+            catch (DecryptionOrchestrationDependencyException
+                decryptionOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(decryptionOrchestrationDependencyException);
+            }
+            catch (DecryptionOrchestrationServiceException
+                decryptionOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(decryptionOrchestrationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedDecryptionCoordinationServiceException =
+                    new FailedDecryptionCoordinationServiceException(
+                        message: "Failed decryption coordination service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDecryptionCoordinationServiceException);
+            }
+        }
 
         private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
         {

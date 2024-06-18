@@ -13,21 +13,21 @@ using Microsoft.Extensions.Logging;
 
 namespace LHDS.Functions.Landings.Emis
 {
-    public class EmisLandingTimerFunction
+    public class RedecryptionTimerFunction
     {
         private readonly ILoggingBroker loggingBroker;
-        private readonly IEmisLandingClient landingClient;
+        private readonly IDecryptionClient decryptionClient;
         private readonly ILogger logger;
         private readonly LandingConfiguration landingConfiguration;
 
-        public EmisLandingTimerFunction(
+        public RedecryptionTimerFunction(
             ILoggingBroker loggingBroker,
-            IEmisLandingClient landingClient,
+            IDecryptionClient decryptionClient,
             ILoggerFactory loggerFactory,
             LandingConfiguration landingConfiguration)
         {
             this.loggingBroker = loggingBroker;
-            this.landingClient = landingClient;
+            this.decryptionClient = decryptionClient;
             this.logger = loggerFactory.CreateLogger<EmisLandingTimerFunction>();
             this.landingConfiguration = landingConfiguration;
         }
@@ -39,7 +39,7 @@ namespace LHDS.Functions.Landings.Emis
 
             try
             {
-                await this.landingClient.ProcessAsync(supplierId: landingConfiguration.LandingSupplierId);
+                await this.decryptionClient.RetryDecryptOnAllAsync();
             }
             catch (Exception ex)
             {

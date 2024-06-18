@@ -49,6 +49,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 document,
                 supplierId: supplierId);
 
+            ingestionTracking.IsDownloaded = true;
             ingestionTracking.Decrypted = false;
             ingestionTracking.IsProcessing = false;
             ingestionTracking.RetryCount = 0;

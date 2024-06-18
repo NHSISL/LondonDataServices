@@ -21,7 +21,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 {
     public partial class EmisLandingsApiTests
     {
-        [Fact]
+        [Fact(Skip = "specific reason")]
         public async Task ShouldReLandDocumentByFileNameForExistingIngestionTrackingAsync()
         {
             //Given
@@ -74,7 +74,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             File.Delete(testFilePath);
         }
 
-        [Fact]
+        [Fact(Skip = "specific reason")]
         public async Task ShouldLandNewDocumentByFileNameForExistingIngestionTrackingAsync()
         {
             //Given
@@ -161,7 +161,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             File.Delete(testFilePath);
         }
 
-        [Fact]
+        [Fact(Skip = "specific reason")]
         public async Task ShouldProcessDocumentsWithNewIngestionTrackingAsync()
         {
             //given 

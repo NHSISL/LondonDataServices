@@ -74,8 +74,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
-            Console.WriteLine(audits);
-
             foreach (var audit in audits)
             {
                 await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);

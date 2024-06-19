@@ -112,7 +112,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             }
 
             IQueryable<TerminologyArtifact> retrievedTerminologyArtifacts =
-                this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
+                this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
+                    .Where(artifact => artifact.ResourceType == resourceType);
 
             retrievedTerminologyArtifacts.Count().Should().BeGreaterThan(0);
 

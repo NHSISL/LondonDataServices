@@ -27,9 +27,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             List<string> randomMessageIds = GetRandomStrings(GetRandomNumber());
             List<Exception> exceptions = new List<Exception>();
 
-            this.meshServiceMock.Setup(service =>
-              service.RetrieveMessageIdsFromInboxAsync())
-                .ReturnsAsync(randomMessageIds);
+            this.meshServiceMock.SetupSequence(service =>
+                service.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(randomMessageIds)
+                    .ReturnsAsync(new List<string>());
 
             foreach (var id in randomMessageIds)
             {
@@ -76,40 +77,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Verify(service =>
              service.RetrieveMessageIdsFromInboxAsync(),
-                        Times.Once);
+                        Times.Exactly(2));
 
             foreach (var id in randomMessageIds)
             {
-                string addressString = resolvedAddress.PostalAddress ?? string.Empty;
-
-                this.addressNormalisationProcessingServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(addressString),
+                this.meshServiceMock.Verify(service =>
+                    service.RetrieveMessageByIdAsync(id),
                         Times.Once);
             }
 
-            var addressExtractionOrchestrationDependencyValidationLoggingException =
-                new AddressExtractionOrchestrationDependencyValidationException(
-                    message: "Address extraction orchestration dependency validation error occurred, " +
+            var pdsOrchestrationDependencyValidationLoggingException =
+                new PdsOrchestrationDependencyValidationException(
+                    message: "Pds dependency validation error occurred, " +
                     "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    addressExtractionOrchestrationDependencyValidationLoggingException))),
-                        Times.Exactly(randomResolvedAddresses.Count));
+                    pdsOrchestrationDependencyValidationLoggingException))),
+                        Times.Exactly(randomMessageIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    actualAddressExtractionOrchestrationServiceException))),
+                    actualPdsOrchestrationServiceException))),
                         Times.Once);
 
-            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
-            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
-            this.auditBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -119,211 +117,179 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             Xeption dependencyException)
         {
             // Given
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
-            string randomFilename = GetRandomString();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
+            List<string> randomMessageIds = GetRandomStrings(GetRandomNumber());
             List<Exception> exceptions = new List<Exception>();
 
-            this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
-                        .ReturnsAsync(randomResolvedAddresses);
+            this.meshServiceMock.SetupSequence(service =>
+                service.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(randomMessageIds)
+                    .ReturnsAsync(new List<string>());
 
-            foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
+            foreach (var id in randomMessageIds)
             {
-                string addressString = resolvedAddress.PostalAddress ?? string.Empty;
-
-                this.addressNormalisationProcessingServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(addressString))
+                this.meshServiceMock.Setup(service =>
+                    service.RetrieveMessageByIdAsync(id))
                         .ThrowsAsync(dependencyException);
 
-                var addressExtractionOrchestrationDependencyException =
-                    new AddressExtractionOrchestrationDependencyException(
-                        message: "Address extraction orchestration dependency error occurred, " +
+                var pdsOrchestrationDependencyException =
+                    new PdsOrchestrationDependencyException(
+                        message: "Pds orchestration dependency validation error occurred, " +
                         "please try again.",
                         innerException: dependencyException.InnerException as Xeption);
 
-                exceptions.Add(addressExtractionOrchestrationDependencyException);
+                exceptions.Add(pdsOrchestrationDependencyException);
             }
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to normalise address for {exceptions.Count} resolved addresses",
+                    $"Unable to retrieve message for {exceptions.Count} message IDs",
                     exceptions);
 
-            var failedAddressExtractionOrchestrationServiceException =
-                new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction aggregate orchestration service error occurred, " +
+            var failedPdsOrchestrationServiceException =
+                new FailedPdsOrchestrationServiceException(
+                    message: "Failed pds aggregate orchestration service error occurred, " +
                     "please contact support.",
                     innerException: aggregateException);
 
-            var expectedAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, please contact support.",
-                    innerException: failedAddressExtractionOrchestrationServiceException);
+            var expectedPdsOrchestrationServiceException =
+                new PdsOrchestrationServiceException(
+                    message: "Pds orchestration service error occurred, please contact support.",
+                    innerException: failedPdsOrchestrationServiceException);
 
             // When
-            ValueTask<List<ResolvedAddress>> processResolvedAddressTask =
-                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(randomData, randomFilename);
+            ValueTask<List<PdsAudit>> actualPdsAudits =
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
-            AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
-                await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
-                    await processResolvedAddressTask);
+            PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(async () =>
+                    await actualPdsAudits);
 
             // Then
-            actualAddressExtractionOrchestrationServiceException.Should()
-                .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
+            actualPdsOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedPdsOrchestrationServiceException);
 
-            this.csvHelperBrokerMock.Verify(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
-                        Times.Once);
+            this.meshServiceMock.Verify(service =>
+             service.RetrieveMessageIdsFromInboxAsync(),
+                        Times.Exactly(2));
 
-            this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
-                    Times.Exactly(randomResolvedAddresses.Count()));
-
-            foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
+            foreach (var id in randomMessageIds)
             {
-                string addressString = resolvedAddress.PostalAddress ?? string.Empty;
-
-                this.addressNormalisationProcessingServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(addressString),
+                this.meshServiceMock.Verify(service =>
+                    service.RetrieveMessageByIdAsync(id),
                         Times.Once);
             }
 
-            var addressExtractionOrchestrationDependencyLoggingException =
-                new AddressExtractionOrchestrationDependencyException(
-                    message: "Address extraction orchestration dependency error occurred, " +
+            var pdsOrchestrationDependencyLoggingException =
+                new PdsOrchestrationDependencyException(
+                    message: "Pds dependency validation error occurred, " +
                     "fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    addressExtractionOrchestrationDependencyLoggingException))),
-                        Times.Exactly(randomResolvedAddresses.Count));
+                    pdsOrchestrationDependencyLoggingException))),
+                        Times.Exactly(randomMessageIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    actualAddressExtractionOrchestrationServiceException))),
+                    actualPdsOrchestrationServiceException))),
                         Times.Once);
 
-            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
-            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
-            this.auditBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
         public async Task ShouldThrowAggregateServiceExceptionOnRetrieveAndUpdateIfErrorsInLoopAndLogItAsync()
         {
             // Given
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
-            string randomFilename = GetRandomString();
-            var serviceException = new Exception();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
+            List<string> randomMessageIds = GetRandomStrings(GetRandomNumber());
             List<Exception> exceptions = new List<Exception>();
+            var serviceException = new Exception();
 
-            this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
-                        .ReturnsAsync(randomResolvedAddresses);
+            this.meshServiceMock.SetupSequence(service =>
+                service.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(randomMessageIds)
+                    .ReturnsAsync(new List<string>());
 
-            var innerFailedAddressExtractionOrchestrationServiceException =
-                new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction orchestration service error occurred, please contact support.",
+            var innerFailedPdsOrchestrationServiceException =
+                new FailedPdsOrchestrationServiceException(
+                    message: "Failed pds orchestration service error occurred, please contact support.",
                     innerException: serviceException);
 
-            var innerAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, please contact support.",
-                    innerException: innerFailedAddressExtractionOrchestrationServiceException);
+            var innerPdsOrchestrationServiceException =
+                new PdsOrchestrationServiceException(
+                    message: "Pds orchestration service error occurred, please contact support.",
+                    innerException: innerFailedPdsOrchestrationServiceException);
 
-            foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
+            foreach (var id in randomMessageIds)
             {
-                string stringAddress = resolvedAddress.PostalAddress ?? string.Empty;
-
-                this.addressNormalisationProcessingServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(stringAddress))
+                this.meshServiceMock.Setup(service =>
+                    service.RetrieveMessageByIdAsync(id))
                         .ThrowsAsync(serviceException);
 
-                exceptions.Add(innerAddressExtractionOrchestrationServiceException);
+                exceptions.Add(innerPdsOrchestrationServiceException);
             }
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to normalise address for {exceptions.Count} resolved addresses",
+                    $"Unable to retrieve message for {exceptions.Count} message IDs",
                     exceptions);
 
-            var failedAddressExtractionOrchestrationServiceException =
-                new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction aggregate orchestration service error occurred, " +
+            var failedPdsOrchestrationServiceException =
+                new FailedPdsOrchestrationServiceException(
+                    message: "Failed pds aggregate orchestration service error occurred, " +
                         "please contact support.",
                     innerException: aggregateException);
 
-            var expectedAddressExtractionOrchestrationServiceException =
-                new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration service error occurred, please contact support.",
-                    innerException: failedAddressExtractionOrchestrationServiceException);
+            var expectedPdsOrchestrationServiceException =
+                new PdsOrchestrationServiceException(
+                    message: "Pds orchestration service error occurred, please contact support.",
+                    innerException: failedPdsOrchestrationServiceException);
 
             // When
-            ValueTask<List<ResolvedAddress>> processResolvedAddressTask =
-                this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(randomData, randomFilename);
+            ValueTask<List<PdsAudit>> actualPdsAudits =
+                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
-            AddressExtractionOrchestrationServiceException actualAddressExtractionOrchestrationServiceException =
-                await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(async () =>
-                    await processResolvedAddressTask);
+            PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(async () =>
+                    await actualPdsAudits);
 
             // Then
-            actualAddressExtractionOrchestrationServiceException.Should()
-                .BeEquivalentTo(expectedAddressExtractionOrchestrationServiceException);
+            actualPdsOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedPdsOrchestrationServiceException);
 
-            this.csvHelperBrokerMock.Verify(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
-                        Times.Once);
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessageIdsFromInboxAsync(),
+                        Times.Exactly(2));
 
-            this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
-                    Times.Exactly(randomResolvedAddresses.Count()));
-
-            foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
+            foreach (var id in randomMessageIds)
             {
-                string addressString = resolvedAddress.PostalAddress ?? string.Empty;
-
-                this.addressNormalisationProcessingServiceMock.Verify(service =>
-                    service.GetNormalisedAddress(addressString),
+                this.meshServiceMock.Verify(service =>
+                    service.RetrieveMessageByIdAsync(id),
                         Times.Once);
             }
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    innerAddressExtractionOrchestrationServiceException))),
-                        Times.Exactly(randomResolvedAddresses.Count));
+                    innerPdsOrchestrationServiceException))),
+                        Times.Exactly(randomMessageIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedAddressExtractionOrchestrationServiceException))),
+                    expectedPdsOrchestrationServiceException))),
                         Times.Once);
 
-            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
-            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
-            this.auditBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]

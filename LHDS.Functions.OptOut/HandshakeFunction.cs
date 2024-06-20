@@ -25,7 +25,7 @@ namespace LHDS.Functions.OptOut
         }
 
         [Function("HandshakeFunction")]
-        public async Task Run([TimerTrigger("0 0 0 * * *")] MyInformation myTimer)
+        public async Task Run([TimerTrigger("0 0 23 * * *")] MyInformation myTimer)
         {
             this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 

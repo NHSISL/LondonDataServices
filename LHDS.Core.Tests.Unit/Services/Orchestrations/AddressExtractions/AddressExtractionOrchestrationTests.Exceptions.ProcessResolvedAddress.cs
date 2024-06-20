@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 var addressExtractionOrchestrationDependencyValidationException =
                     new AddressExtractionOrchestrationDependencyValidationException(
                         message: "Address extraction orchestration dependency validation error occurred, " +
-                        "please try again.",
+                            "please try again.",
                         innerException: dependencyValidationException.InnerException as Xeption);
 
                 exceptions.Add(addressExtractionOrchestrationDependencyValidationException);
@@ -64,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             var failedAddressExtractionOrchestrationServiceException =
                 new FailedAddressExtractionOrchestrationServiceException(
                     message: "Failed address extraction aggregate orchestration service error occurred, " +
-                    "please contact support.",
+                        "please contact support.",
                     innerException: aggregateException);
 
             var expectedAddressExtractionOrchestrationServiceException =
@@ -107,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             var addressExtractionOrchestrationDependencyValidationLoggingException =
                 new AddressExtractionOrchestrationDependencyValidationException(
                     message: "Address extraction orchestration dependency validation error occurred, " +
-                    "fix the errors and try again.",
+                        "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>

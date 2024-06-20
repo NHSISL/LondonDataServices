@@ -5,7 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
+using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -173,6 +175,28 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        //private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)
+        //{
+        //    return actualException =>
+        //       CompareExceptions(expectedException, actualException);
+        //}
+
+        //private bool CompareExceptions(
+        //   Xeption expectedException,
+        //   Xeption actualException)
+        //{
+        //    try
+        //    {
+        //        actualException.Should().BeEquivalentTo(expectedException);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //    }
+
+        //    return this.compareLogic.Compare(expectedException, actualException).AreEqual;
+        //}
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);

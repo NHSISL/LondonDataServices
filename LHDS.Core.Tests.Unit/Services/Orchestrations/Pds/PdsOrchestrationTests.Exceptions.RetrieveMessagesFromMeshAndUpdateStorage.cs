@@ -11,7 +11,6 @@ using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
-using Xunit.Sdk;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 {
@@ -24,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             Xeption dependencyValidationException)
         {
             // Given
-            List<string> randomMessageIds = GetRandomStrings(GetRandomNumber());
+            List<string> randomMessageIds = GetRandomStrings(1);
             List<Exception> exceptions = new List<Exception>();
 
             this.meshServiceMock.SetupSequence(service =>
@@ -40,8 +39,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
                 var pdsOrchestrationDependencyValidationException =
                     new PdsOrchestrationDependencyValidationException(
-                        message: "Pds orchestration dependency validation error occurred, " +
-                        "please try again.",
+                        message: "PDS orchestration dependency validation errors occurred, " +
+                            "fix the errors and try again.",
                         innerException: dependencyValidationException.InnerException as Xeption);
 
                 exceptions.Add(pdsOrchestrationDependencyValidationException);
@@ -54,13 +53,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             var failedPdsOrchestrationServiceException =
                 new FailedPdsOrchestrationServiceException(
-                    message: "Failed pds aggregate orchestration service error occurred, " +
-                    "please contact support.",
+                    message: "Failed PDS aggregate orchestration service error occurred, " +
+                        "please contact support.",
                     innerException: aggregateException);
 
             var expectedPdsOrchestrationServiceException =
                 new PdsOrchestrationServiceException(
-                    message: "Pds orchestration service error occurred, please contact support.",
+                    message: "PDS orchestration service error occurred, please contact support.",
                     innerException: failedPdsOrchestrationServiceException);
 
             // When
@@ -76,8 +75,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedPdsOrchestrationServiceException);
 
             this.meshServiceMock.Verify(service =>
-             service.RetrieveMessageIdsFromInboxAsync(),
-                        Times.Exactly(2));
+                service.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
 
             foreach (var id in randomMessageIds)
             {
@@ -88,8 +87,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             var pdsOrchestrationDependencyValidationLoggingException =
                 new PdsOrchestrationDependencyValidationException(
-                    message: "Pds dependency validation error occurred, " +
-                    "fix the errors and try again.",
+                    message: "PDS orchestration dependency validation errors occurred, " +
+                        "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -133,8 +132,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
                 var pdsOrchestrationDependencyException =
                     new PdsOrchestrationDependencyException(
-                        message: "Pds orchestration dependency validation error occurred, " +
-                        "please try again.",
+                        message: "PDS orchestration dependency error occurred, " +
+                        "fix the errors and try again.",
                         innerException: dependencyException.InnerException as Xeption);
 
                 exceptions.Add(pdsOrchestrationDependencyException);
@@ -147,13 +146,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             var failedPdsOrchestrationServiceException =
                 new FailedPdsOrchestrationServiceException(
-                    message: "Failed pds aggregate orchestration service error occurred, " +
+                    message: "Failed PDS aggregate orchestration service error occurred, " +
                     "please contact support.",
                     innerException: aggregateException);
 
             var expectedPdsOrchestrationServiceException =
                 new PdsOrchestrationServiceException(
-                    message: "Pds orchestration service error occurred, please contact support.",
+                    message: "PDS orchestration service error occurred, please contact support.",
                     innerException: failedPdsOrchestrationServiceException);
 
             // When
@@ -169,8 +168,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedPdsOrchestrationServiceException);
 
             this.meshServiceMock.Verify(service =>
-             service.RetrieveMessageIdsFromInboxAsync(),
-                        Times.Exactly(2));
+                service.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
 
             foreach (var id in randomMessageIds)
             {
@@ -181,7 +180,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             var pdsOrchestrationDependencyLoggingException =
                 new PdsOrchestrationDependencyException(
-                    message: "Pds dependency validation error occurred, " +
+                    message: "PDS orchestration dependency error occurred, " +
                     "fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
@@ -218,12 +217,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             var innerFailedPdsOrchestrationServiceException =
                 new FailedPdsOrchestrationServiceException(
-                    message: "Failed pds orchestration service error occurred, please contact support.",
+                    message: "Failed PDS orchestration service error occurred, please contact support.",
                     innerException: serviceException);
 
             var innerPdsOrchestrationServiceException =
                 new PdsOrchestrationServiceException(
-                    message: "Pds orchestration service error occurred, please contact support.",
+                    message: "PDS orchestration service error occurred, please contact support.",
                     innerException: innerFailedPdsOrchestrationServiceException);
 
             foreach (var id in randomMessageIds)
@@ -242,13 +241,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             var failedPdsOrchestrationServiceException =
                 new FailedPdsOrchestrationServiceException(
-                    message: "Failed pds aggregate orchestration service error occurred, " +
+                    message: "Failed PDS aggregate orchestration service error occurred, " +
                         "please contact support.",
                     innerException: aggregateException);
 
             var expectedPdsOrchestrationServiceException =
                 new PdsOrchestrationServiceException(
-                    message: "Pds orchestration service error occurred, please contact support.",
+                    message: "PDS orchestration service error occurred, please contact support.",
                     innerException: failedPdsOrchestrationServiceException);
 
             // When
@@ -265,7 +264,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Verify(service =>
                 service.RetrieveMessageIdsFromInboxAsync(),
-                        Times.Exactly(2));
+                    Times.Once);
 
             foreach (var id in randomMessageIds)
             {
@@ -299,7 +298,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         {
             var expectedDependencyException =
                 new PdsOrchestrationDependencyValidationException(
-                    message: "PDS orchestration validation errors occurred, please try again.",
+                    message: "PDS orchestration dependency validation errors occurred, fix the errors and try again.",
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>

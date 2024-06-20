@@ -158,6 +158,8 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                                 UpdatedBy = "System"
                             };
 
+                            await this.pdsAuditService.AddPdsAuditAsync(pdsAudit);
+                            
                             return pdsAudit;
                         });
 
@@ -166,7 +168,6 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                             continue;
                         }
 
-                        await this.pdsAuditService.AddPdsAuditAsync(pdsAudit);
                         pdsAudits.Add(pdsAudit);
                     }
                     catch (Exception ex)

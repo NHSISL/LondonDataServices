@@ -75,7 +75,7 @@ namespace LHDS.Functions.Landings.Emis
                         new FileStream(tempEncryptedFilePath, FileMode.Open, FileAccess.Read))
                     {
                         await this.azureBlobClient.UploadFileAsync(
-                            fileName: $"poc/encrypted/{name}",
+                            fileName: $"poc/encrypted/encrypted_{name}",
                             stream: encryptedFileStream,
                             container: "emislanding");
                     }
@@ -102,7 +102,7 @@ namespace LHDS.Functions.Landings.Emis
                         new FileStream(tempDecryptedFilePath, FileMode.Open, FileAccess.Read))
                     {
                         await this.azureBlobClient.UploadFileAsync(
-                            fileName: $"poc/decrypted/{name}",
+                            fileName: $"poc/decrypted/decrypted_{name}",
                             stream: decryptedFileStream,
                             container: "emislanding");
                     }

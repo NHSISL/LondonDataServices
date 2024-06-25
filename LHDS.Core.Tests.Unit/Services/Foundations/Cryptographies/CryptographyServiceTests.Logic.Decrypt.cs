@@ -37,6 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
                     inputSubscriberCredential))
                 .Callback<Stream, Stream, SubscriberCredential>((inputStream, outputStream, subscriberCredential) =>
                     {
+                        returnedDecryptedStream.Position = 0;
                         returnedDecryptedStream.CopyTo(outputStream);
                     })
                 .Returns(ValueTask.CompletedTask);

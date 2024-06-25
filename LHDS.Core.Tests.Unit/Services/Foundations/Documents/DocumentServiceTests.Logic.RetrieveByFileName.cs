@@ -29,6 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                 .Setup(broker => broker.SelectByFileNameAsync(dataStream, inputFileName, inputContainer))
                 .Callback<Stream, string, string>((output, fileName, container) =>
                     {
+                        output.Position = 0;
                         outputStream.CopyTo(output);
                     })
                 .Returns(ValueTask.CompletedTask);

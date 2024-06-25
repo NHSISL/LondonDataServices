@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
             // given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            Document randomDocument = CreateRandomDocument();
+            string fileName = GetRandomString();
 
             Download download = new Download
             {
@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
 
                 Document = new Document
                 {
-                    FileName = randomDocument.FileName,
+                    FileName = fileName,
                     DocumentData = new MemoryStream()
                 }
             };
@@ -44,7 +44,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
 
             this.downloadServiceMock.Setup(service =>
                 service.RetrieveDownloadByFileNameAsync(download))
-                    .Callback<Download>(download => download.Document.DocumentData = downloadedStream)
+                    .Callback<Download>(download =>
+                    {
+                        downloadedStream.Position = 0;
+                        downloadedStream.CopyTo(download.Document.DocumentData);
+                    })
                     .Returns(ValueTask.CompletedTask);
 
             // when

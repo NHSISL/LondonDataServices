@@ -43,9 +43,20 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
         private Expression<Func<Download, bool>> SameDownloadAs(
             Download expectedDownload)
         {
-            return actualDownload =>
-                this.compareLogic.Compare(expectedDownload, actualDownload)
+            return actualDownload => IsSameDownload(expectedDownload, actualDownload);
+        }
+
+        private bool IsSameDownload(
+            Download expectedDownload,
+            Download actualDownload)
+        {
+            bool matchingSubscriberCredential = this.compareLogic
+                .Compare(expectedDownload.SubscriberCredential, actualDownload.SubscriberCredential)
                     .AreEqual;
+
+            bool matchingFileNames = expectedDownload.Document?.FileName == actualDownload.Document?.FileName;
+
+            return matchingSubscriberCredential && matchingFileNames;
         }
 
         public static TheoryData<Xeption> DependencyValidationExceptions()

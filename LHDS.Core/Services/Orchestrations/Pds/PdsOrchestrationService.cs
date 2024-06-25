@@ -130,23 +130,21 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                             $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
 
                         fileNameOutput += Path.GetExtension(filename);
+                        string fileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
 
-                        var document = new Models.Foundations.Documents.Document
+                        using (Stream input = new MemoryStream(message.FileContent))
                         {
-                            FileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}",
-                            DocumentData = message.FileContent,
-                        };
+                            await this.documentService.AddDocumentAsync(input, fileName, container: blobContainers.Pds);
+                        }
 
-                        await this.documentService.AddDocumentAsync(document, blobContainers.Pds);
                         var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
-                        var fileName = message.Headers["mex-filename"].FirstOrDefault();
                         DateTimeOffset currentDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
                         var pdsAudit = new PdsAudit
                         {
                             Id = this.identifierBroker.GetIdentifier(),
                             CorrelationId = correlationId,
-                            FileName = document.FileName,
+                            FileName = fileName,
                             Message = $"Received message from mesh with id {message.MessageId}",
                             MessageId = message.MessageId,
                             CreatedDate = currentDate,

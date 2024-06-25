@@ -140,23 +140,22 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 return retrievedDownloadList;
             });
 
-        public ValueTask<byte[]> RetrieveDownloadByFileNameAsync(
-            string fileName, SubscriberCredential subscriberCredential) =>
+        public ValueTask RetrieveDownloadByFileNameAsync(
+            Stream output,
+            string fileName,
+            SubscriberCredential subscriberCredential) =>
             TryCatch(async () =>
             {
                 ValidateSubscriberCredentials(subscriberCredential);
-                ValidateRetrieveDownloadByFileNameArguments(fileName);
+                ValidateRetrieveDownloadByFileNameArguments(output, fileName);
 
                 Download download = new Download
                 {
-                    Document = new Document { FileName = fileName },
+                    Document = new Document { FileName = fileName, DocumentData = output },
                     SubscriberCredential = subscriberCredential
                 };
 
-                Download storageDownload =
-                    await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
-
-                return storageDownload.Document?.DocumentData ?? [];
+                await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
             });
 
         public ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId) =>
@@ -250,24 +249,24 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     await this.ingestionTrackingProcessingService
                         .ModifyIngestionTrackingAsync(maybeIngestionTracking);
 
-                Download retrievedDownload =
-                    await DownloadFile(subscriberCredential, fileName);
-
-                Document newBlobDocument = new Document
+                using (Stream downloadStream = new MemoryStream())
                 {
-                    DocumentData = retrievedDownload?.Document?.DocumentData ?? Array.Empty<byte>(),
-                    FileName = updatedIngestionTracking.EncryptedFileName,
-                    SHA256Hash = retrievedDownload?.Document?.SHA256Hash ?? string.Empty
-                };
+                    await DownloadFile(output: downloadStream, fileName, subscriberCredential);
+                    string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(downloadStream);
+                    updatedIngestionTracking.EncryptedFileSize = downloadStream.Length;
+                    updatedIngestionTracking.EncryptedFileSha256Hash = encryptedFileSha256Hash;
 
-                await this.documentProcessingService
-                    .AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
+                    await this.documentProcessingService.AddDocumentAsync(
+                        input: downloadStream,
+                        fileName: maybeIngestionTracking.EncryptedFileName,
+                        container: blobContainers.EmisLanding);
+                }
 
                 updatedIngestionTracking.IsDownloaded = true;
+                updatedIngestionTracking.Decrypted = false;
+                updatedIngestionTracking.IsProcessing = false;
                 updatedIngestionTracking.RetryCount = 0;
                 updatedIngestionTracking.FileDeleted = false;
-                updatedIngestionTracking.EncryptedFileSize = newBlobDocument.DocumentData.Length;
-                updatedIngestionTracking.EncryptedFileSha256Hash = newBlobDocument.SHA256Hash;
                 updatedIngestionTracking.LastSeen = currentDateTime;
                 updatedIngestionTracking.UpdatedDate = currentDateTime;
 
@@ -325,7 +324,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
             if (splitFileName.Length < 6)
             {
-                throw new InvalidDocumentProcessingFileNameException(fileName);
+                throw new InvalidArgumentsDocumentProcessingException(fileName);
             }
             else
             {
@@ -343,32 +342,19 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             return (encryptedFileName, decryptedFileName);
         }
 
-        private async ValueTask<Download> DownloadFile(SubscriberCredential subscriberCredential, string fileName)
+        private async ValueTask DownloadFile(
+            Stream output,
+            string fileName,
+            SubscriberCredential subscriberCredential)
         {
             Download fileToRetrieve = new Download
             {
-                Document = new Document { FileName = fileName },
+                Document = new Document { FileName = fileName, DocumentData = output },
                 SubscriberCredential = subscriberCredential
             };
 
-            Download retrievedDownload = await this.downloadProcessingService
+            await this.downloadProcessingService
                 .RetrieveDownloadByFileNameAsync(fileToRetrieve);
-
-            string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(
-                retrievedDownload.Document?.DocumentData ?? Array.Empty<byte>());
-
-            Download download = new Download
-            {
-                Document = new Document
-                {
-                    FileName = retrievedDownload.Document.FileName,
-                    DocumentData = retrievedDownload.Document?.DocumentData ?? Array.Empty<byte>(),
-                    SHA256Hash = encryptedFileSha256Hash
-                },
-                SubscriberCredential = subscriberCredential
-            };
-
-            return download;
         }
     }
 }

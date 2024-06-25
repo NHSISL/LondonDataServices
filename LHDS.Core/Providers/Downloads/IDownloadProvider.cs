@@ -13,6 +13,6 @@ namespace LHDS.Core.Providers.Downloads
         string Name { get; }
         bool IsOfflineProvider { get; }
         ValueTask<List<string>> GetListOfDocumentsToProcessAsync(Download download);
-        ValueTask<Download> GetDocumentByFileNameAsync(Download download);
+        ValueTask GetDocumentByFileNameAsync(Download download);
     }
 }

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -30,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             Document inputDocument = new Document
             {
                 FileName = randomString,
-                DocumentData = randomBytes
+                DocumentData = new MemoryStream(randomBytes)
             };
 
             var expectedDocumentProcessingDependencyValidationException =
@@ -39,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.documentServiceMock.Setup(service =>
-                service.RemoveDocumentByFileNameAsync(inputDocument.FileName, randomContainer))
+                service.RemoveDocumentByFileNameAsync(It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(dependencyValidationException);
 
             // when
@@ -54,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             actualException.Should().BeEquivalentTo(expectedDocumentProcessingDependencyValidationException);
 
             this.documentServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(inputDocument.FileName, randomContainer),
+                service.RemoveDocumentByFileNameAsync(It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -80,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             Document inputDocument = new Document
             {
                 FileName = randomString,
-                DocumentData = randomBytes
+                DocumentData = new MemoryStream(randomBytes)
             };
 
             var expectedDocumentProcessingDependencyException =
@@ -89,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     innerException: dependencyException.InnerException as Xeption);
 
             this.documentServiceMock.Setup(service =>
-                service.RemoveDocumentByFileNameAsync(inputDocument.FileName, randomContainer))
+                service.RemoveDocumentByFileNameAsync(It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(dependencyException);
 
             // when
@@ -104,7 +105,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             actualException.Should().BeEquivalentTo(expectedDocumentProcessingDependencyException);
 
             this.documentServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(inputDocument.FileName, randomContainer),
+                service.RemoveDocumentByFileNameAsync(It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -128,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             Document inputDocument = new Document
             {
                 FileName = randomString,
-                DocumentData = randomBytes
+                DocumentData = new MemoryStream(randomBytes)
             };
 
             var serviceException = new Exception();
@@ -144,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     failedDocumentProcessingServiceException);
 
             this.documentServiceMock.Setup(service =>
-                service.RemoveDocumentByFileNameAsync(inputDocument.FileName, randomContainer))
+                service.RemoveDocumentByFileNameAsync(It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(serviceException);
 
             // when
@@ -159,7 +160,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             actualException.Should().BeEquivalentTo(expectedDocumentProcessingServiveException);
 
             this.documentServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(inputDocument.FileName, randomContainer),
+                service.RemoveDocumentByFileNameAsync(It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

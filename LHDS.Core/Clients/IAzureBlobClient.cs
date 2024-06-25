@@ -10,8 +10,8 @@ namespace LHDS.Core.Clients
 
     public interface IAzureBlobClient
     {
-        ValueTask UploadFileAsync(string fileName, Stream stream, string container);
-        ValueTask<MemoryStream> DownloadFileAsync(string fileName, string container);
+        ValueTask UploadFileAsync(Stream input, string fileName, string container);
+        ValueTask DownloadFileAsync(Stream output, string fileName, string container);
         ValueTask DeleteFileAsync(string fileName, string container);
         ValueTask<Uri> GetDownloadUriAsync(string fileName, string container, DateTimeOffset expiresOn);
     }

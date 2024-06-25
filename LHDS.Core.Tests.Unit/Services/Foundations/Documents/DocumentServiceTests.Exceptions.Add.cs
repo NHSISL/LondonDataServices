@@ -23,14 +23,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         {
             // given
             string encryptedFileContainer = "emislanding";
-            var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
-            var randomMessage = GetRandomString();
+            string randomString = GetRandomString();
+            byte[] randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            Stream someStream = new MemoryStream(randomBytes);
+            string randomMessage = GetRandomString();
 
             Document document = new Document
             {
                 FileName = randomString,
-                DocumentData = randomBytes
+                DocumentData = someStream
             };
 
             var duplicateKeyException =
@@ -47,11 +48,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     innerException: alreadyExistsDocumentException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), encryptedFileContainer))
+                broker.InsertFileAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
                    .Throws(duplicateKeyException);
 
             // when
-            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document, encryptedFileContainer);
+            ValueTask uploadFileTask = this.documentService
+                .AddDocumentAsync(
+                    input: document.DocumentData,
+                    fileName: document.FileName,
+                    container: encryptedFileContainer);
 
             var actualDependencyException =
                  await Assert.ThrowsAsync<DocumentDependencyValidationException>(uploadFileTask.AsTask);
@@ -60,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyValidationException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), encryptedFileContainer),
+                 broker.InsertFileAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -79,12 +84,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             string encryptedFileContainer = "emislanding";
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            Stream someStream = new MemoryStream(randomBytes);
             var randomMessage = GetRandomString();
 
             Document document = new Document
             {
                 FileName = randomString,
-                DocumentData = randomBytes
+                DocumentData = someStream
             };
 
             var requestFailedException = new RequestFailedException(randomMessage);
@@ -98,14 +104,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                      message: "Document dependency error occurred, please contact support.",
                      innerException: failedDocumentRequestException);
 
-            var stream = new MemoryStream(document.DocumentData);
-
             this.blobStorageBrokerMock.Setup(broker =>
-                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), encryptedFileContainer))
+                 broker.InsertFileAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(requestFailedException);
 
             // when
-            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document, encryptedFileContainer);
+            ValueTask uploadFileTask = this.documentService
+                .AddDocumentAsync(
+                    input: document.DocumentData,
+                    fileName: document.FileName,
+                    container: encryptedFileContainer);
 
             var actualDependencyException =
                  await Assert.ThrowsAsync<DocumentDependencyException>(uploadFileTask.AsTask);
@@ -114,7 +122,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), encryptedFileContainer),
+                 broker.InsertFileAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -133,12 +141,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             string encryptedFileContainer = "emislanding";
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            Stream someStream = new MemoryStream(randomBytes);
             var randomMessage = GetRandomString();
 
             Document document = new Document
             {
                 FileName = randomString,
-                DocumentData = randomBytes
+                DocumentData = someStream
             };
 
             var serviceException = new Exception(randomMessage);
@@ -152,14 +161,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     message: "Document service error occurred, please contact support.",
                     innerException: failedDocumentServiceException);
 
-            var stream = new MemoryStream(document.DocumentData);
-
             this.blobStorageBrokerMock.Setup(broker =>
-                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), encryptedFileContainer))
+                 broker.InsertFileAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
                      .Throws(failedDocumentServiceException);
 
             // when
-            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document, encryptedFileContainer);
+            ValueTask uploadFileTask = this.documentService
+                .AddDocumentAsync(
+                    input: document.DocumentData,
+                    fileName: document.FileName,
+                    container: encryptedFileContainer);
 
             var actualServiceException =
                  await Assert.ThrowsAsync<DocumentServiceException>(uploadFileTask.AsTask);
@@ -168,7 +179,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), encryptedFileContainer),
+                broker.InsertFileAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
@@ -17,57 +18,37 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
         public async Task ShouldThrowValidationExceptionOnDecryptIfDataIsNullAndLogItAsync()
         {
             // given
-            byte[] nullData = null;
-            SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
-
-            var nullDecryptionException =
-                new NullDataCryptographyException(message: "Data is null.");
-
-            var expectedDecryptionValidationException =
-                new CryptographyValidationException(
-                    message: "Cryptography validation errors occurred, please try again.",
-                    innerException: nullDecryptionException);
-
-            // when
-            Task<byte[]> decryptTask =
-                this.cryptographyService.DecryptAsync(data: nullData, subscriberCredential: someSubscriberCredential);
-
-            CryptographyValidationException actualDecryptionValidationException =
-                await Assert.ThrowsAsync<CryptographyValidationException>(async () =>
-                    await decryptTask);
-
-            // then
-            actualDecryptionValidationException.Should()
-                .BeEquivalentTo(expectedDecryptionValidationException);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedDecryptionValidationException))),
-                        Times.Once);
-
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.cryptographyBroker.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnDecryptIfSubscriberCredentialIsNullAndLogItAsync()
-        {
-            // given
-            byte[] someData = CreateRandomData();
+            Stream invalidInputStream = null;
+            Stream invalidOutputStream = null;
             SubscriberCredential nullSubscriberCredential = null;
 
-            var nullSubscriberCredentialCryptographyException =
-                new NullSubscriberCredentialCryptographyException(message: "Subscriber credential is null.");
+            var invalidArgumentCryptographyException =
+                new InvalidArgumentCryptographyException(
+                    message: "Invalid cryptography arguments. Please correct the errors and try again.");
+
+            invalidArgumentCryptographyException.AddData(
+                key: "input",
+                values: "Stream is required");
+
+            invalidArgumentCryptographyException.AddData(
+                key: "output",
+                values: "Stream is required");
+
+            invalidArgumentCryptographyException.AddData(
+                key: "subscriberCredential",
+                values: "SubscriberCredential is required");
 
             var expectedDecryptionValidationException =
                 new CryptographyValidationException(
                     message: "Cryptography validation errors occurred, please try again.",
-                    innerException: nullSubscriberCredentialCryptographyException);
+                    innerException: invalidArgumentCryptographyException);
 
             // when
-            Task<byte[]> decryptTask = this.cryptographyService.DecryptAsync(
-                data: someData,
-                subscriberCredential: nullSubscriberCredential);
+            ValueTask decryptTask =
+                this.cryptographyService.DecryptAsync(
+                    input: invalidInputStream,
+                    output: invalidOutputStream,
+                    subscriberCredential: nullSubscriberCredential);
 
             CryptographyValidationException actualDecryptionValidationException =
                 await Assert.ThrowsAsync<CryptographyValidationException>(async () =>

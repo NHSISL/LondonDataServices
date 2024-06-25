@@ -1,11 +1,10 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
-using System.ComponentModel;
+using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Documents;
 
 namespace LHDS.Core.Services.Processings.Documents
@@ -23,21 +22,18 @@ namespace LHDS.Core.Services.Processings.Documents
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<string> AddDocumentAsync(Document document, string container) =>
+        public ValueTask AddDocumentAsync(Stream input, string fileName, string container) =>
             TryCatch(async () =>
             {
-                ValidateDocumentProcessingOnAdd(document, container);
-                await this.documentService.AddDocumentAsync(document, container);
-
-                return document.FileName;
+                ValidateDocumentProcessingOnAdd(input, fileName, container);
+                await this.documentService.AddDocumentAsync(input, fileName, container);
             });
 
-        public ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName, string container) =>
+        public ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container) =>
             TryCatch(async () =>
             {
                 ValidateDocumentProcessingOnRetrieve(fileName, container);
-
-                return await this.documentService.RetrieveDocumentByFileNameAsync(fileName, container);
+                await this.documentService.RetrieveDocumentByFileNameAsync(output, fileName, container);
             });
 
         public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>

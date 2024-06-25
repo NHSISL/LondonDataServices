@@ -4,10 +4,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.Downloads;
@@ -24,15 +27,25 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
         private readonly Mock<IDownloadService> downloadServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IDownloadProcessingService downloadProcessingService;
+        private readonly ICompareLogic compareLogic;
 
         public DownloadProcessingServiceTests()
         {
             this.downloadServiceMock = new Mock<IDownloadService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.compareLogic = new CompareLogic();
 
             this.downloadProcessingService = new DownloadProcessingService(
                 downloadService: this.downloadServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
+        }
+
+        private Expression<Func<Download, bool>> SameDownloadAs(
+            Download expectedDownload)
+        {
+            return actualDownload =>
+                this.compareLogic.Compare(expectedDownload, actualDownload)
+                    .AreEqual;
         }
 
         public static TheoryData<Xeption> DependencyValidationExceptions()
@@ -106,6 +119,20 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
     }
 }

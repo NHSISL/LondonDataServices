@@ -23,6 +23,7 @@ namespace LHDS.Core.Tests.Integration.TppLandings
         {
             // given
             byte[] fileBytes = File.ReadAllBytes(@"Resources\TppLandingTests\ShouldLandTPPFileAsync.txt");
+            Stream fileStream = new MemoryStream(fileBytes);
             FileInfo fi = new FileInfo(@"Resources\TppLandingTests\ShouldLandTPPFileAsync.txt");
             var fileNameWithoutExtension = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
             string sha256Hash = CalculateSHA256Hash(fileBytes);
@@ -30,7 +31,7 @@ namespace LHDS.Core.Tests.Integration.TppLandings
             Document document = new Document
             {
                 FileName = fileNameWithoutExtension,
-                DocumentData = fileBytes,
+                DocumentData = fileStream,
                 SHA256Hash = sha256Hash
             };
 

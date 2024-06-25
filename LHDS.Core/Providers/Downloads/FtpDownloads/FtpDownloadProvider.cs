@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Providers.FtpDownloads.Exceptions;
 using Renci.SshNet;
@@ -28,7 +27,7 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
             this.IsOfflineProvider = false;
         }
 
-        public async ValueTask<Download> GetDocumentByFileNameAsync(Download download)
+        public async ValueTask GetDocumentByFileNameAsync(Download download)
         {
             IFtpDownloadProviderSettings settings = new FtpDownloadProviderSettings
             {
@@ -36,37 +35,22 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
                 FtpPort = this.ftpDownloadProviderSettings.FtpPort,
                 FtpRootFolder = this.ftpDownloadProviderSettings.FtpRootFolder,
                 IncludeSubDirectories = this.ftpDownloadProviderSettings.IncludeSubDirectories,
-                FtpUserName = download.SubscriberCredential.FtpUserName,
-                FtpPassword = download.SubscriberCredential.FtpPassword,
-                FtpPassPhrase = download.SubscriberCredential.FtpPassPhrase,
-                FtpPrivateKey = download.SubscriberCredential.FtpPrivateKey
+                FtpUserName = download?.SubscriberCredential?.FtpUserName ?? string.Empty,
+                FtpPassword = download?.SubscriberCredential?.FtpPassword ?? string.Empty,
+                FtpPassPhrase = download?.SubscriberCredential?.FtpPassPhrase ?? string.Empty,
+                FtpPrivateKey = download?.SubscriberCredential?.FtpPrivateKey ?? string.Empty
             };
 
             using (SftpClient client = new SftpClient(GetConnectionInfo(settings)))
             {
                 this.EnsureClientIsConnected(client);
 
-                var attrs = client.GetAttributes(download.Document.FileName);
-                MemoryStream stream = new MemoryStream();
-                client.DownloadFile(download.Document.FileName, stream);
-                byte[] data = stream.ToArray();
-
-                var document = new Document()
-                {
-                    FileName = download.Document.FileName,
-                    DocumentData = data
-                };
-
-                var downloadedItem = new Download
-                {
-                    Document = document,
-                    SubscriberCredential = download.SubscriberCredential
-                };
-
+                var attrs = client.GetAttributes(download?.Document?.FileName);
+                client.DownloadFile(path: download?.Document?.FileName, output: download?.Document?.DocumentData);
                 client.Disconnect();
                 client.Dispose();
 
-                return await ValueTask.FromResult(downloadedItem);
+                await ValueTask.FromResult(true);
             }
         }
 

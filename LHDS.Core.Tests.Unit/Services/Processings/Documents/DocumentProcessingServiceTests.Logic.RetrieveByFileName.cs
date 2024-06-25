@@ -30,6 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     .RetrieveDocumentByFileNameAsync(randomStream, randomFileName, randomContainer))
                 .Callback<Stream, string, string>((output, fileName, container) =>
                 {
+                    returnedStream.Position = 0;
                     returnedStream.CopyTo(output);
                 })
                 .Returns(ValueTask.CompletedTask);

@@ -21,6 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             string randomFileName = GetRandomString();
             byte[] randomfileData = Encoding.ASCII.GetBytes(GetRandomString());
             byte[] expectedData = randomfileData;
+            Stream returnedStream = new MemoryStream(randomfileData);
             Stream randomStream = new MemoryStream();
             Stream outputStream = randomStream;
 
@@ -29,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     .RetrieveDocumentByFileNameAsync(randomStream, randomFileName, randomContainer))
                 .Callback<Stream, string, string>((output, fileName, container) =>
                 {
-                    output = new MemoryStream(randomfileData);
+                    returnedStream.CopyTo(output);
                 })
                 .Returns(ValueTask.CompletedTask);
 
@@ -46,7 +47,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             this.documentServiceMock.Verify(service =>
                 service.RetrieveDocumentByFileNameAsync(
-                    It.Is(SameStreamAs(new MemoryStream())), randomFileName, randomContainer),
+                    It.IsAny<Stream>(),
+                    randomFileName,
+                    randomContainer),
                         Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

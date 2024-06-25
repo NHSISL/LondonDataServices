@@ -94,8 +94,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static List<Document> CreateRandomDocuments() =>
-            CreateDocumentFiller().Create(count: GetRandomNumber()).ToList();
+        private static List<string> CreateRandomStringList() =>
+            Enumerable.Range(1, GetRandomNumber())
+                .Select(item => new MnemonicString().GetValue())
+                .ToList();
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();

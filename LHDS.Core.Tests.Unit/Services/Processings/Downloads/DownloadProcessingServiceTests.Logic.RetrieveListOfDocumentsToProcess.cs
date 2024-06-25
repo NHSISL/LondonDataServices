@@ -3,11 +3,9 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
@@ -24,8 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
-            List<Document> randomDocuments = CreateRandomDocuments();
-            List<string> externalDownloadList = randomDocuments.Select(document => document.FileName).ToList();
+            List<string> randomList = CreateRandomStringList();
+            List<string> externalDownloadList = randomList;
             List<string> expectedDownloadList = externalDownloadList.DeepClone();
 
             this.downloadServiceMock.Setup(broker =>

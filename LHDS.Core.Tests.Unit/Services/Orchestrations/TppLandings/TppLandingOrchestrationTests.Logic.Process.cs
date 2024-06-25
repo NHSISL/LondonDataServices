@@ -4,9 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
 using Xunit;
@@ -15,121 +16,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 {
     public partial class TppLandingOrchestrationTests
     {
-        [Fact(Skip = "Conversion to stream")]
-        public async Task ShouldProcessExisitingDocumentAndUpdateHashAsync()
-        {
-            //// given
-            //DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            //Document randomDocument = CreateRandomDocument();
-            //string randomHash = GetRandomString(64);
-            //randomDocument.SHA256Hash = randomHash;
-            //int randomNumber = GetRandomNumber();
-            //Guid randomSupplierId = Guid.NewGuid();
-
-            //List<Document> randomDocuments = CreateRandomDocuments(randomNumber);
-            //randomDocuments[randomNumber - 1].FileName = randomDocument.FileName;
-
-            //List<IngestionTracking> randomIngestionTrackings =
-            //    CreateRandomIngestionTrackings(
-            //        dateTimeOffset: randomDateTime,
-            //        documents: randomDocuments,
-            //        supplierId: randomSupplierId);
-
-            //IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
-            //IngestionTracking storageIngestionTracking = randomIngestionTracking;
-            //IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
-            //updatedIngestionTracking.DecryptedFileSha256Hash = randomDocument.SHA256Hash;
-
-            //this.ingestionTrackingProcessingServiceMock.Setup(service =>
-            //    service.RetrieveAllIngestionTrackings())
-            //        .Returns(randomIngestionTrackings.AsQueryable());
-
-            //this.hashBrokerMock.Setup(broker =>
-            //   broker.GenerateSha256Hash(randomDocument.DocumentData))
-            //       .Returns(randomHash);
-
-            //this.dateTimeBrokerMock.Setup(broker =>
-            //    broker.GetCurrentDateTimeOffset())
-            //        .Returns(randomDateTime);
-
-            //this.documentProcessingServiceMock.Setup(service =>
-            //    service.AddDocumentAsync(
-            //        It.Is(SameDocumentAs(randomDocument)),
-            //            landingConfiguration.DecryptedFolder))
-            //                .ReturnsAsync(randomDocument.FileName);
-
-            //this.ingestionTrackingProcessingServiceMock.Setup(service =>
-            //    service.ModifyIngestionTrackingAsync(updatedIngestionTracking))
-            //        .ReturnsAsync(updatedIngestionTracking);
-
-            //IngestionTrackingAudit ingestionTrackingAudit = new IngestionTrackingAudit();
-            //ingestionTrackingAudit.Id = Guid.NewGuid();
-            //ingestionTrackingAudit.IngestionTrackingId = updatedIngestionTracking.Id;
-            //ingestionTrackingAudit.Message = "Updated TPP Hash";
-
-            //this.ingestionTrackingProcessingAuditServiceMock.Setup(service =>
-            //    service.AddIngestionTrackingAuditAsync(ingestionTrackingAudit))
-            //        .ReturnsAsync(value: ingestionTrackingAudit);
-
-            //// when
-            //ValueTask<Guid> returnedGuid = this.tppOrchestrationService
-            //    .ProcessAsync(document: randomDocument, supplierId: randomSupplierId);
-
-            //// then
-            //this.ingestionTrackingProcessingServiceMock.Verify(service =>
-            //    service.RetrieveAllIngestionTrackings(),
-            //        Times.Once);
-
-            //this.hashBrokerMock.Verify(broker =>
-            //    broker.GenerateSha256Hash(randomDocument.DocumentData),
-            //        Times.Once);
-
-            //this.dateTimeBrokerMock.Verify(broker =>
-            //    broker.GetCurrentDateTimeOffset(),
-            //        Times.Once);
-
-            //this.documentProcessingServiceMock.Verify(service =>
-            //    service.AddDocumentAsync(
-            //        It.Is(SameDocumentAs(randomDocument)),
-            //        It.IsAny<string>()),
-            //        Times.Once);
-
-            //this.ingestionTrackingProcessingServiceMock.Verify(service =>
-            //    service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
-            //        Times.Once);
-
-            //this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>
-            //    service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
-            //        Times.Once);
-
-            //this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            //this.hashBrokerMock.VerifyNoOtherCalls();
-            //this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            //this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            //this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
-            //this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
-            //this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-
         [Fact]
         public async Task ShouldNotProcessExistingDocumentAsync()
         {
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            Document randomDocument = CreateRandomDocument();
             string randomHash = GetRandomString(64);
-            randomDocument.SHA256Hash = randomHash;
             int randomNumber = GetRandomNumber();
             Guid randomSupplierId = Guid.NewGuid();
-
-            List<Document> randomDocuments = CreateRandomDocuments(randomNumber);
-            randomDocuments[randomNumber - 1].FileName = randomDocument.FileName;
+            Guid inputSupplierId = randomSupplierId;
+            List<string> randomFileNames = GetRandomStrings();
+            string randomFileName = randomFileNames.Last();
+            string inputFileName = randomFileName;
+            Stream randomData = new MemoryStream(Encoding.ASCII.GetBytes(GetRandomString()));
+            Stream inputData = randomData;
 
             List<IngestionTracking> randomIngestionTrackings =
                 CreateRandomIngestionTrackings(
                     dateTimeOffset: randomDateTime,
-                    documents: randomDocuments,
+                    fileNames: randomFileNames,
                     supplierId: randomSupplierId);
 
             IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
@@ -143,9 +48,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 broker.GetCurrentDateTimeOffset())
                    .Returns(randomDateTime);
 
+            this.hashBrokerMock.Setup(broker => broker.GenerateSha256Hash(inputData))
+                .Returns(randomHash);
+
             // when
-            ValueTask<Guid> returnedGuid = this.tppOrchestrationService
-                .ProcessAsync(document: randomDocument, supplierId: randomSupplierId);
+            ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(
+                input: inputData,
+                fileName: inputFileName,
+                supplierId: inputSupplierId);
 
             // then
             this.dateTimeBrokerMock.Verify(broker =>
@@ -157,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(randomDocument.DocumentData),
+                broker.GenerateSha256Hash(inputData),
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
@@ -313,6 +223,102 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             //this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             //this.documentProcessingServiceMock.VerifyNoOtherCalls();
             //this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
+            //this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact(Skip = "Conversion to stream")]
+        public async Task ShouldProcessExisitingDocumentIfUpdatedUpdateHashAsync()
+        {
+            //// given
+            //DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            //Document randomDocument = CreateRandomDocument();
+            //string randomHash = GetRandomString(64);
+            //randomDocument.SHA256Hash = randomHash;
+            //int randomNumber = GetRandomNumber();
+            //Guid randomSupplierId = Guid.NewGuid();
+
+            //List<Document> randomDocuments = CreateRandomDocuments(randomNumber);
+            //randomDocuments[randomNumber - 1].FileName = randomDocument.FileName;
+
+            //List<IngestionTracking> randomIngestionTrackings =
+            //    CreateRandomIngestionTrackings(
+            //        dateTimeOffset: randomDateTime,
+            //        documents: randomDocuments,
+            //        supplierId: randomSupplierId);
+
+            //IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
+            //IngestionTracking storageIngestionTracking = randomIngestionTracking;
+            //IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
+            //updatedIngestionTracking.DecryptedFileSha256Hash = randomDocument.SHA256Hash;
+
+            //this.ingestionTrackingProcessingServiceMock.Setup(service =>
+            //    service.RetrieveAllIngestionTrackings())
+            //        .Returns(randomIngestionTrackings.AsQueryable());
+
+            //this.hashBrokerMock.Setup(broker =>
+            //   broker.GenerateSha256Hash(randomDocument.DocumentData))
+            //       .Returns(randomHash);
+
+            //this.dateTimeBrokerMock.Setup(broker =>
+            //    broker.GetCurrentDateTimeOffset())
+            //        .Returns(randomDateTime);
+
+            //this.documentProcessingServiceMock.Setup(service =>
+            //    service.AddDocumentAsync(
+            //        It.Is(SameDocumentAs(randomDocument)),
+            //            landingConfiguration.DecryptedFolder))
+            //                .ReturnsAsync(randomDocument.FileName);
+
+            //this.ingestionTrackingProcessingServiceMock.Setup(service =>
+            //    service.ModifyIngestionTrackingAsync(updatedIngestionTracking))
+            //        .ReturnsAsync(updatedIngestionTracking);
+
+            //IngestionTrackingAudit ingestionTrackingAudit = new IngestionTrackingAudit();
+            //ingestionTrackingAudit.Id = Guid.NewGuid();
+            //ingestionTrackingAudit.IngestionTrackingId = updatedIngestionTracking.Id;
+            //ingestionTrackingAudit.Message = "Updated TPP Hash";
+
+            //this.ingestionTrackingProcessingAuditServiceMock.Setup(service =>
+            //    service.AddIngestionTrackingAuditAsync(ingestionTrackingAudit))
+            //        .ReturnsAsync(value: ingestionTrackingAudit);
+
+            //// when
+            //ValueTask<Guid> returnedGuid = this.tppOrchestrationService
+            //    .ProcessAsync(document: randomDocument, supplierId: randomSupplierId);
+
+            //// then
+            //this.ingestionTrackingProcessingServiceMock.Verify(service =>
+            //    service.RetrieveAllIngestionTrackings(),
+            //        Times.Once);
+
+            //this.hashBrokerMock.Verify(broker =>
+            //    broker.GenerateSha256Hash(randomDocument.DocumentData),
+            //        Times.Once);
+
+            //this.dateTimeBrokerMock.Verify(broker =>
+            //    broker.GetCurrentDateTimeOffset(),
+            //        Times.Once);
+
+            //this.documentProcessingServiceMock.Verify(service =>
+            //    service.AddDocumentAsync(
+            //        It.Is(SameDocumentAs(randomDocument)),
+            //        It.IsAny<string>()),
+            //        Times.Once);
+
+            //this.ingestionTrackingProcessingServiceMock.Verify(service =>
+            //    service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+            //        Times.Once);
+
+            //this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>
+            //    service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
+            //        Times.Once);
+
+            //this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            //this.hashBrokerMock.VerifyNoOtherCalls();
+            //this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            //this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            //this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
+            //this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             //this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

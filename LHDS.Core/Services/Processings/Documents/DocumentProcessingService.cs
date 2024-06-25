@@ -32,7 +32,7 @@ namespace LHDS.Core.Services.Processings.Documents
         public ValueTask RetrieveDocumentByFileNameAsync(Stream output, string fileName, string container) =>
             TryCatch(async () =>
             {
-                ValidateDocumentProcessingOnRetrieve(fileName, container);
+                ValidateDocumentProcessingOnRetrieve(output, fileName, container);
                 await this.documentService.RetrieveDocumentByFileNameAsync(output, fileName, container);
             });
 

@@ -18,9 +18,10 @@ namespace LHDS.Core.Services.Processings.Documents
                 (Rule: IsInvalid(container), Parameter: "Container"));
         }
 
-        private static void ValidateDocumentProcessingOnRetrieve(string fileName, string container)
+        private static void ValidateDocumentProcessingOnRetrieve(Stream output, string fileName, string container)
         {
             Validate(
+               (Rule: IsInvalidOutputStream(output), Parameter: "Output"),
                (Rule: IsInvalid(container), Parameter: "Container"),
                (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }

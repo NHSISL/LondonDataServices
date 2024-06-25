@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
-        private static string GetRandomMessage() =>
+        private static string GetRandomString() =>
                 new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
         private static int GetRandomNumber() =>
@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
 
         public byte[] CreateRandomData()
         {
-            string randomMessage = GetRandomMessage();
+            string randomMessage = GetRandomString();
             return Encoding.ASCII.GetBytes(randomMessage);
         }
 

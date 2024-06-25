@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
         public async Task ShouldThrowServiceExceptionOnDecryptIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            Stream someInputStream = new MemoryStream();
+            Stream someInputStream = new MemoryStream(CreateRandomData());
             Stream someOutputStream = new MemoryStream();
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
             var serviceException = new Exception();
@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
             // when
             ValueTask decryptTask = this.cryptographyService.DecryptAsync(
                 input: someInputStream,
-                output: someInputStream,
+                output: someOutputStream,
                 subscriberCredential: someSubscriberCredential);
 
             CryptographyServiceException actualDecryptionServiceException =

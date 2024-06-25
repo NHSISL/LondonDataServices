@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     message: "Invalid document processing arguments. Please correct the errors and try again.");
 
             invalidArgumentsDocumentProcessingException.AddData(
-                key: "Output",
+                key: "Input",
                 values: "Stream is required");
 
             invalidArgumentsDocumentProcessingException.AddData(

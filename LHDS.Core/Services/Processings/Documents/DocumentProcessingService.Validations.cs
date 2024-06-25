@@ -78,7 +78,7 @@ namespace LHDS.Core.Services.Processings.Documents
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidDocumentProcessingException = new InvalidArgumentsDocumentProcessingException(
-                message: "Invalid document processing file name. Please correct the errors and try again.");
+                message: "Invalid document processing arguments. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

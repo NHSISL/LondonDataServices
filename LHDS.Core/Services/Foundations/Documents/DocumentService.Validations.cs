@@ -13,7 +13,7 @@ namespace LHDS.Core.Services.Foundations.Documents
         private static void ValidateDocumentOnAdd(Stream input, string fileName, string container)
         {
             Validate(
-                (Rule: IsInvalid(input), Parameter: "Document"),
+                (Rule: IsInvalid(input), Parameter: "Input"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalid(container), Parameter: "Container"));
         }

@@ -13,7 +13,7 @@ namespace LHDS.Core.Services.Processings.Documents
         private static void ValidateDocumentProcessingOnAdd(Stream input, string fileName, string container)
         {
             Validate(
-                (Rule: IsInvalid(input), Parameter: "Input"),
+                (Rule: IsInvalidInputStream(input), Parameter: "Input"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalid(container), Parameter: "Container"));
         }
@@ -48,10 +48,16 @@ namespace LHDS.Core.Services.Processings.Documents
             }
         }
 
-        private static dynamic IsInvalid(Stream? data) => new
+        private static dynamic IsInvalidInputStream(Stream? stream) => new
         {
-            Condition = data == null,
-            Message = "Data is required"
+            Condition = stream is null || stream.Length == 0,
+            Message = "Stream is required"
+        };
+
+        private static dynamic IsInvalidOutputStream(Stream? stream) => new
+        {
+            Condition = stream is null || stream.Length > 0,
+            Message = "Stream is required"
         };
 
         private static dynamic IsInvalid(string? text) => new

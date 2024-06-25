@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             invalidDocumentException.AddData(
                 key: "Input",
-                values: "Data is required");
+                values: "Stream is required");
 
             invalidDocumentException.AddData(
                 key: "FileName",

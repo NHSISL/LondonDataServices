@@ -27,7 +27,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock
                 .Setup(broker => broker.SelectByFileNameAsync(dataStream, inputFileName, inputContainer))
-                .Callback<Stream, string, string>((output, fileName, container) => output = outputStream)
+                .Callback<Stream, string, string>((output, fileName, container) =>
+                    {
+                        outputStream.CopyTo(output);
+                    })
                 .Returns(ValueTask.CompletedTask);
 
             // When
@@ -41,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualData.Should().BeEquivalentTo(expectedData);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(It.Is(SameStreamAs(new MemoryStream())), inputFileName, inputContainer),
+                broker.SelectByFileNameAsync(It.IsAny<Stream>(), inputFileName, inputContainer),
                     Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

@@ -3,8 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Linq.Expressions;
 using System.Text;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Cryptographies;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -12,6 +14,7 @@ using LHDS.Core.Services.Foundations.Cryptographies;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
 {
@@ -20,11 +23,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
         private readonly Mock<ICryptographyBroker> cryptographyBroker;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ICryptographyService cryptographyService;
+        private readonly CompareLogic compareLogic;
+        private readonly ITestOutputHelper output;
 
-        public CryptographyServiceTests()
+        public CryptographyServiceTests(ITestOutputHelper output)
         {
             this.cryptographyBroker = new Mock<ICryptographyBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.compareLogic = new CompareLogic();
+            this.output = output;
 
             this.cryptographyService = new CryptographyService(
                 cryptographyBroker: this.cryptographyBroker.Object,
@@ -62,6 +69,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
     }
 }

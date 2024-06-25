@@ -1,7 +1,8 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
+using System.IO;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 
@@ -9,11 +10,11 @@ namespace LHDS.Core.Services.Processings.Documents
 {
     public partial class DocumentProcessingService
     {
-        private static void ValidateDocumentProcessingOnAdd(Document document, string container)
+        private static void ValidateDocumentProcessingOnAdd(Stream input, string fileName, string container)
         {
-            ValidateDocumentProcessingIsNotNull(document);
-
             Validate(
+                (Rule: IsInvalid(input), Parameter: "Input"),
+                (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalid(container), Parameter: "Container"));
         }
 
@@ -47,6 +48,12 @@ namespace LHDS.Core.Services.Processings.Documents
             }
         }
 
+        private static dynamic IsInvalid(Stream? data) => new
+        {
+            Condition = data == null,
+            Message = "Data is required"
+        };
+
         private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
@@ -64,7 +71,7 @@ namespace LHDS.Core.Services.Processings.Documents
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidDocumentProcessingException = new InvalidDocumentProcessingFileNameException(
+            var invalidDocumentProcessingException = new InvalidArgumentsDocumentProcessingException(
                 message: "Invalid document processing file name. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)

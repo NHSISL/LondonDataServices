@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -30,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             Document inputDocument = new Document
             {
                 FileName = randomString,
-                DocumentData = randomBytes
+                DocumentData = new MemoryStream(randomBytes)
             };
 
             var expectedDocumentProcessingDependencyValidationException =
@@ -39,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.documentServiceMock.Setup(service =>
-                service.GetDownloadLinkAsync(inputDocument.FileName, randomContainer))
+                service.GetDownloadLinkAsync(It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(dependencyValidationException);
 
             // when
@@ -81,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             Document inputDocument = new Document
             {
                 FileName = randomString,
-                DocumentData = randomBytes
+                DocumentData = new MemoryStream(randomBytes)
             };
 
             var expectedDocumentProcessingDependencyException =
@@ -130,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             Document inputDocument = new Document
             {
                 FileName = randomString,
-                DocumentData = randomBytes
+                DocumentData = new MemoryStream(randomBytes)
             };
 
             var serviceException = new Exception();

@@ -112,14 +112,13 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             UpdatedDate = currentDateTime,
                         };
 
-                    Document blobDocument = new Document
-                    {
-                        DocumentData = document.DocumentData,
-                        FileName = newIngestionTracking.DecryptedFileName
-                    };
-
                     await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);
-                    await this.documentProcessingService.AddDocumentAsync(blobDocument, blobContainers.Versioner);
+
+                    await this.documentProcessingService.AddDocumentAsync(
+                        input: document.DocumentData,
+                        fileName: newIngestionTracking.DecryptedFileName,
+                        container: blobContainers.Versioner);
+
                     LogAudit(newIngestionTracking, "Landed", currentDateTime);
 
                     return newIngestionTracking.Id;
@@ -134,7 +133,12 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     {
                         var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
                         document.SHA256Hash = encryptedFileSha256Hash;
-                        await this.documentProcessingService.AddDocumentAsync(document, blobContainers.Versioner);
+
+                        await this.documentProcessingService.AddDocumentAsync(
+                            input: document.DocumentData,
+                            fileName: maybeIngestionTracking.DecryptedFileName,
+                            container: blobContainers.Versioner);
+
                         maybeIngestionTracking.DecryptedFileSha256Hash = document.SHA256Hash;
                         maybeIngestionTracking.UpdatedDate = currentDateTime;
 

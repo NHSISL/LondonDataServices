@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -40,13 +41,16 @@ namespace LHDS.Functions.Landings.Tpp
                         $"C# Blob trigger function Processing document\n " +
                         $"Name: FileName: {name}");
 
-                Document document = new Document
+                using (Stream input = new MemoryStream(Encoding.ASCII.GetBytes(myBlob)))
                 {
-                    FileName = name,
-                    DocumentData = Encoding.ASCII.GetBytes(myBlob)
-                };
+                    Document document = new Document
+                    {
+                        FileName = name,
+                        DocumentData = input
+                    };
 
-                await tppLandingClient.ProcessAsync(document, supplierId: landingConfiguration.LandingSupplierId);
+                    await tppLandingClient.ProcessAsync(document, supplierId: landingConfiguration.LandingSupplierId);
+                }
             }
             catch (Exception ex)
             {

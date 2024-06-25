@@ -2,11 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Documents;
 using Moq;
 using Xunit;
 
@@ -19,32 +18,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldRetrieveFileAsync()
         {
             // Given
-            var randomContainer = GetRandomString();
-            string randomFileName = GetRandomString();
+            string inputFileName = GetRandomString();
+            string inputContainer = GetRandomString();
+            string randomData = GetRandomString();
+            string expectedData = randomData;
+            Stream dataStream = new MemoryStream();
+            Stream outputStream = new MemoryStream(Encoding.UTF8.GetBytes(randomData));
 
-            Document randomDocument = new Document
-            {
-                FileName = randomFileName,
-                DocumentData = Encoding.ASCII.GetBytes(GetRandomString()),
-            };
-
-            Document expectedDocument = randomDocument.DeepClone();
-            expectedDocument.SHA256Hash = ComputeSHA256Hash(randomDocument.DocumentData);
-
-            this.blobStorageBrokerMock.Setup(broker =>
-                broker.SelectByFileNameAsync(randomDocument.FileName, randomContainer))
-                    .ReturnsAsync(randomDocument.DocumentData);
+            this.blobStorageBrokerMock
+                .Setup(broker => broker.SelectByFileNameAsync(dataStream, inputFileName, inputContainer))
+                .Callback<Stream, string, string>((output, fileName, container) => output = outputStream)
+                .Returns(ValueTask.CompletedTask);
 
             // When
-            Document actualDocument =
-                await this.documentService
-                    .RetrieveDocumentByFileNameAsync(fileName: randomDocument.FileName, container: randomContainer);
+            await this.documentService.RetrieveDocumentByFileNameAsync(
+                output: dataStream,
+                fileName: inputFileName,
+                container: inputContainer);
 
             // Then
-            actualDocument.Should().BeEquivalentTo(expectedDocument);
+            string actualData = Encoding.UTF8.GetString(ReadAllBytesFromStream(dataStream));
+            actualData.Should().BeEquivalentTo(expectedData);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(randomDocument.FileName, randomContainer),
+                broker.SelectByFileNameAsync(It.Is(SameStreamAs(new MemoryStream())), inputFileName, inputContainer),
                     Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

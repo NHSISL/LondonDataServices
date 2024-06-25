@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
@@ -18,7 +19,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
         public async Task ShouldThrowServiceExceptionOnEncryptfServiceErrorOccursAndLogItAsync()
         {
             // given
-            byte[] someId = CreateRandomData();
+            Stream someInputStream = new MemoryStream();
+            Stream someOutputStream = new MemoryStream();
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
 
             var serviceException = new Exception();
@@ -34,12 +36,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
                     innerException: failedDecryptionServiceException);
 
             this.cryptographyBroker.Setup(broker =>
-                broker.EncryptAsync(It.IsAny<byte[]>(), It.IsAny<SubscriberCredential>()))
+                broker.EncryptAsync(It.IsAny<Stream>(), It.IsAny<Stream>(), It.IsAny<SubscriberCredential>()))
                     .ThrowsAsync(serviceException);
 
             // when
-            Task<byte[]> decryptTask =
-                this.cryptographyService.EncryptAsync(someId, someSubscriberCredential);
+            ValueTask decryptTask = this.cryptographyService.EncryptAsync(
+                input: someInputStream,
+                output: someInputStream,
+                subscriberCredential: someSubscriberCredential);
 
             CryptographyServiceException actualDecryptionServiceException =
                 await Assert.ThrowsAsync<CryptographyServiceException>(async () =>
@@ -50,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
                 .BeEquivalentTo(expectedDecryptionServiceException);
 
             this.cryptographyBroker.Verify(broker =>
-                broker.EncryptAsync(It.IsAny<byte[]>(), It.IsAny<SubscriberCredential>()),
+                broker.EncryptAsync(It.IsAny<Stream>(), It.IsAny<Stream>(), It.IsAny<SubscriberCredential>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

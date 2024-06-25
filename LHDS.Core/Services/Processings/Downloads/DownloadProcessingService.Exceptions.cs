@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Processings.Downloads.Exceptions;
 using Xeptions;
@@ -14,14 +13,14 @@ namespace LHDS.Core.Services.Processings.Downloads
 {
     public partial class DownloadProcessingService
     {
-        private delegate ValueTask<Download> ReturningDownloadFunction();
+        private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<List<string>> ReturningStringListFunction();
 
-        private async ValueTask<Download> TryCatch(ReturningDownloadFunction returningDownloadFunction)
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
             try
             {
-                return await returningDownloadFunction();
+                await returningNothingFunction();
             }
             catch (NullDownloadProcessingException nullDownloadProcessingException)
             {

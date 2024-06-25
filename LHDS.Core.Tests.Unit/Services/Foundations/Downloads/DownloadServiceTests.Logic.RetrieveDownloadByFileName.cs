@@ -2,9 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -16,43 +17,43 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
     public partial class DownloadServiceTests
     {
         [Fact]
-        public async Task ShouldRetrieveDownloadByIdAsync()
+        public async Task ShouldRetrieveDownloadByFileNameAsync()
         {
             // given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Document randomDocument = CreateRandomDocument();
 
-            Download inputDownload = new Download
+            Download download = new Download
             {
                 SubscriberCredential = inputSubscriberCredential,
-                Document = new Document { FileName = randomDocument.FileName }
+                Document = new Document
+                {
+                    FileName = randomDocument.FileName,
+                    DocumentData = new MemoryStream()
+                }
             };
 
-            Document inputDocument = randomDocument;
-            Document storageDocument = randomDocument;
-
-            Download storageDownload = new Download
-            {
-                SubscriberCredential = inputSubscriberCredential,
-                Document = storageDocument
-            };
-
-            Download expectedDownload = storageDownload.DeepClone();
+            string randomData = GetRandomString();
+            Stream downloadStream = new MemoryStream(Encoding.UTF8.GetBytes(randomData));
+            string expectedData = randomData;
 
             this.downloadBrokerMock.Setup(broker =>
-                broker.GetDownloadByFileNameAsync(inputDownload))
-                    .ReturnsAsync(storageDownload);
+                broker.GetDownloadByFileNameAsync(download))
+                    .Callback<Download>(download => download.Document.DocumentData = downloadStream)
+                    .Returns(ValueTask.CompletedTask);
 
             // when
-            Download actualDownload =
-                await this.downloadService.RetrieveDownloadByFileNameAsync(inputDownload);
+            await this.downloadService.RetrieveDownloadByFileNameAsync(download);
 
             // then
-            actualDownload.Should().BeEquivalentTo(expectedDownload);
+            string actualData = Encoding.UTF8.GetString(
+                ReadAllBytesFromStream(download.Document.DocumentData));
+
+            actualData.Should().BeEquivalentTo(expectedData);
 
             this.downloadBrokerMock.Verify(broker =>
-                broker.GetDownloadByFileNameAsync(inputDownload),
+                broker.GetDownloadByFileNameAsync(download),
                     Times.Once);
 
             this.downloadBrokerMock.VerifyNoOtherCalls();

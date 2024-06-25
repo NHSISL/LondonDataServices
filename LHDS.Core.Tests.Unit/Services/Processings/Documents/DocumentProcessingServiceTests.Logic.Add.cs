@@ -2,10 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using Moq;
 using Xunit;
 
@@ -20,25 +19,17 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             var randomContainer = GetRandomString();
             var randomFileName = GetRandomString();
             var randomfileData = Encoding.ASCII.GetBytes(GetRandomString());
-
-            Document document = new Document
-            {
-                FileName = randomFileName,
-                DocumentData = randomfileData
-            };
-
-            string expectedDocumentFileName = document.FileName;
+            Stream randomStream = new MemoryStream(randomfileData);
 
             // When
-            string actualDocumentFileName = await this.documentProcessingService
-                .AddDocumentAsync(document, container: randomContainer);
+            await this.documentProcessingService.AddDocumentAsync(
+                input: randomStream,
+                fileName: randomFileName,
+                container: randomContainer);
 
             // Then
-            actualDocumentFileName.Should().BeEquivalentTo(expectedDocumentFileName);
-
             this.documentServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is<Document>(doc =>
-                    doc.FileName == randomFileName && doc.DocumentData == randomfileData), randomContainer),
+                service.AddDocumentAsync(randomStream, randomFileName, randomContainer),
                     Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

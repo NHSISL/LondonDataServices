@@ -1,23 +1,21 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Foundations.Documents;
+using System.IO;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.Documents
 {
     public partial class DocumentService
     {
-        private static void ValidateDocumentOnAdd(Document document, string container)
+        private static void ValidateDocumentOnAdd(Stream input, string fileName, string container)
         {
-            ValidateDocumentIsNotNull(document);
-
             Validate(
-                (Rule: IsInvalid(container), Parameter: "Container"),
-                (Rule: IsInvalid(document.DocumentData), Parameter: nameof(Document.DocumentData)),
-                (Rule: IsInvalid(document.FileName), Parameter: nameof(Document.FileName)));
+                (Rule: IsInvalid(input), Parameter: "Document"),
+                (Rule: IsInvalid(fileName), Parameter: "FileName"),
+                (Rule: IsInvalid(container), Parameter: "Container"));
         }
 
         private static void ValidateDocumentOnRetrieve(string fileName, string container)
@@ -41,27 +39,19 @@ namespace LHDS.Core.Services.Foundations.Documents
                (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
-        private static void ValidateDocumentIsNotNull(Document document)
-        {
-            if (document is null)
-            {
-                throw new NullDocumentException(message: "Document is Null");
-            }
-        }
-
         private static void ValidateStorageDocument(
-            byte[] maybeRetrievedDocument,
+            Stream data,
             string fileName)
         {
-            if (maybeRetrievedDocument is null)
+            if (data is null || data.Length == 0)
             {
                 throw new NotFoundDocumentException(message: $"Couldn't find documents with fileName: {fileName}.");
             }
         }
 
-        private static dynamic IsInvalid(byte[] data) => new
+        private static dynamic IsInvalid(Stream input) => new
         {
-            Condition = (data == null || data.Length == 0),
+            Condition = (input == null || input.Length == 0),
             Message = "Data is required"
         };
 

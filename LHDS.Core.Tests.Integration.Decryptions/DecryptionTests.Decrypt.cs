@@ -2,10 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Xunit;
 
@@ -30,12 +30,13 @@ namespace LHDS.Core.Tests.Integration.Decryptions
                 // then
                 fileName.Should().NotBeNullOrWhiteSpace();
                 item.DecryptedFileName.Should().BeEquivalentTo(fileName);
+                Stream document = new MemoryStream();
 
-                Document document = await this.documentService
-                    .RetrieveDocumentByFileNameAsync(fileName, decryptedFileContainer);
+                await this.documentService
+                    .RetrieveDocumentByFileNameAsync(document, fileName, decryptedFileContainer);
 
                 document.Should().NotBeNull();
-                document.FileName.Should().BeEquivalentTo(fileName);
+                document.Length.Should().BeGreaterThan(0);
             }
         }
     }

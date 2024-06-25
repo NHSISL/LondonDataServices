@@ -4,10 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
@@ -91,7 +91,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 return listOfDocumentsToProcess;
             });
 
-        public ValueTask<Document> RetrieveDownloadByFileNameAsync(string fileName) =>
+        public ValueTask RetrieveDownloadByFileNameAsync(Stream output, string fileName) =>
             TryCatch(async () =>
             {
                 ValidateFileNameOnRetrieve(fileName);
@@ -101,18 +101,10 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                     await this.subscriberCredentialOrchestration.RetrieveSubscriberCredentialByIdAsync(
                         subscriberCredentialId, false);
 
-                byte[] documentData =
-                    await this.emisLandingOrchestrationService.RetrieveDownloadByFileNameAsync(
-                        fileName,
-                        subscriberCredential);
-
-                Document document = new Document
-                {
-                    FileName = fileName,
-                    DocumentData = documentData,
-                };
-
-                return document;
+                await this.emisLandingOrchestrationService.RetrieveDownloadByFileNameAsync(
+                    output,
+                    fileName,
+                    subscriberCredential);
             });
 
         public ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId) =>

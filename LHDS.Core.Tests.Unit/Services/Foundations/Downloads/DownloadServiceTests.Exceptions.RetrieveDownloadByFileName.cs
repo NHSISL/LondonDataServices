@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<Download> retrieveDownloadByIdTask =
+            ValueTask retrieveDownloadByIdTask =
                 this.downloadService.RetrieveDownloadByFileNameAsync(someDownload);
 
             DownloadServiceException actualDownloadServiceException =

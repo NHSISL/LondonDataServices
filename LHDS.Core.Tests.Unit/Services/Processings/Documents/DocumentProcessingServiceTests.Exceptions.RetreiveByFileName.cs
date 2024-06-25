@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -30,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             Document inputDocument = new Document
             {
                 FileName = randomString,
-                DocumentData = randomBytes
+                DocumentData = new MemoryStream(randomBytes)
             };
 
             var expectedDocumentProcessingDependencyValidationException =
@@ -39,13 +40,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.documentServiceMock.Setup(service =>
-                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer))
+                service.RetrieveDocumentByFileNameAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<Document> retrieveDocumentTask =
-                this.documentProcessingService
-                    .RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer);
+            ValueTask retrieveDocumentTask =
+                this.documentProcessingService.RetrieveDocumentByFileNameAsync(
+                    output: inputDocument.DocumentData,
+                    fileName: inputDocument.FileName,
+                    container: encryptedFileContainer);
 
             DocumentProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DocumentProcessingDependencyValidationException>(retrieveDocumentTask.AsTask);
@@ -54,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             actualException.Should().BeEquivalentTo(expectedDocumentProcessingDependencyValidationException);
 
             this.documentServiceMock.Verify(service =>
-                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer),
+                service.RetrieveDocumentByFileNameAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -80,7 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             Document inputDocument = new Document
             {
                 FileName = randomString,
-                DocumentData = randomBytes
+                DocumentData = new MemoryStream(randomBytes)
             };
 
             var expectedDocumentProcessingDependencyException =
@@ -89,13 +92,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     innerException: dependencyException.InnerException as Xeption);
 
             this.documentServiceMock.Setup(service =>
-                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer))
+                service.RetrieveDocumentByFileNameAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(dependencyException);
 
             // when
-            ValueTask<Document> retrieveDocumentTask =
-                this.documentProcessingService
-                    .RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer);
+            ValueTask retrieveDocumentTask =
+                this.documentProcessingService.RetrieveDocumentByFileNameAsync(
+                    output: inputDocument.DocumentData,
+                    fileName: inputDocument.FileName,
+                    container: encryptedFileContainer);
 
             DocumentProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<DocumentProcessingDependencyException>(retrieveDocumentTask.AsTask);
@@ -104,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             actualException.Should().BeEquivalentTo(expectedDocumentProcessingDependencyException);
 
             this.documentServiceMock.Verify(service =>
-                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer),
+                service.RetrieveDocumentByFileNameAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -128,7 +133,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             Document inputDocument = new Document
             {
                 FileName = randomString,
-                DocumentData = randomBytes
+                DocumentData = new MemoryStream(randomBytes)
             };
 
             var serviceException = new Exception();
@@ -144,13 +149,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     failedDocumentProcessingServiceException);
 
             this.documentServiceMock.Setup(service =>
-                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer))
+                service.RetrieveDocumentByFileNameAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(serviceException);
 
             // when
-            ValueTask<Document> retrieveDocumentTask =
+            ValueTask retrieveDocumentTask =
                 this.documentProcessingService.RetrieveDocumentByFileNameAsync(
-                    fileName: inputDocument.FileName, container: encryptedFileContainer);
+                    output: inputDocument.DocumentData,
+                    fileName: inputDocument.FileName,
+                    container: encryptedFileContainer);
 
             DocumentProcessingServiceException actualException =
                 await Assert.ThrowsAsync<DocumentProcessingServiceException>(retrieveDocumentTask.AsTask);
@@ -159,7 +166,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             actualException.Should().BeEquivalentTo(expectedDocumentProcessingServiveException);
 
             this.documentServiceMock.Verify(service =>
-                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer),
+                service.RetrieveDocumentByFileNameAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

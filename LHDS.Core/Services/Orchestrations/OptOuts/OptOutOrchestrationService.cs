@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts;
@@ -117,16 +117,15 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 var processedBytes = Encoding.ASCII.GetBytes(processedData);
 
-                Document document = new Document
+                using (Stream processed = new MemoryStream(processedBytes))
                 {
-                    FileName = $"{optOutConfiguration.OutputFolder}/{fileName}_Response.csv",
-                    DocumentData = processedBytes
-                };
+                    await this.documentProcessingService.AddDocumentAsync(
+                        input: processed,
+                        fileName,
+                        container: blobContainers.OptOut);
+                }
 
-                string saveDocument = await this.documentProcessingService
-                    .AddDocumentAsync(document, blobContainers.OptOut);
-
-                return saveDocument;
+                return fileName;
             });
 
         public ValueTask<MeshMessage?> PushExpiredOptOutsToMeshForRenewalAsync() =>
@@ -239,16 +238,14 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                     shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
 
                             string fileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
-
                             ValidateDocumentRequirements(csvDifferences, fileName);
+                            byte[] csvDifferencesBytes = Encoding.ASCII.GetBytes(csvDifferences);
 
-                            Document document = new Document
+                            using (Stream input = new MemoryStream(csvDifferencesBytes))
                             {
-                                DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                                FileName = fileName
-                            };
-
-                            await this.documentProcessingService.AddDocumentAsync(document, blobContainers.OptOut);
+                                await this.documentProcessingService.AddDocumentAsync(
+                                    input, fileName, container: blobContainers.OptOut);
+                            }
                         }
 
                         await this.meshProcessingService.AcknowledgeMessageByIdAsync(messageId);

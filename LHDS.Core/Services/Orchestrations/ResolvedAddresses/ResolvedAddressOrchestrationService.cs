@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,6 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
@@ -52,13 +52,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
                 ValidateResolvedAddressArgsOnAdd(data, fileName, container);
 
-                Document document = new Document
+                using (Stream input = new MemoryStream(data))
                 {
-                    FileName = fileName,
-                    DocumentData = data
-                };
-
-                await this.documentProcessingService.AddDocumentAsync(document, container);
+                    await this.documentProcessingService.AddDocumentAsync(input, fileName, container);
+                }
             });
 
         public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
@@ -106,14 +103,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     string container = blobContainers.Addresses;
                     var exceptions = new List<Exception>();
 
-                    Document resolvedAddressesDocument = new Document
+                    using (Stream input = new MemoryStream(documentData))
                     {
-                        FileName = fileName,
-                        DocumentData = documentData
-                    };
-
-                    await this.documentProcessingService
-                        .AddDocumentAsync(resolvedAddressesDocument, container);
+                        await this.documentProcessingService.AddDocumentAsync(input, fileName, container);
+                    }
 
                     foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
                     {

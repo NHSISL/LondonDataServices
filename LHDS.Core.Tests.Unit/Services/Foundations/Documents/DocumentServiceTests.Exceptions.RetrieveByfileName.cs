@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Azure;
@@ -26,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             Document randomDocument = new Document
             {
                 FileName = randomFileName,
-                DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
+                DocumentData = new MemoryStream(Encoding.ASCII.GetBytes(GetRandomString()))
             };
 
             var randomMessage = GetRandomString();
@@ -43,12 +44,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                      innerException: failedDocumentRequestException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                 broker.SelectByFileNameAsync(randomDocument.FileName, randomContainer))
+                 broker.SelectByFileNameAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(requestFailedException);
 
             // when
-            ValueTask<Document> getDownloadFileTask =
-                this.documentService.RetrieveDocumentByFileNameAsync(randomDocument.FileName, randomContainer);
+            ValueTask getDownloadFileTask =
+                this.documentService.RetrieveDocumentByFileNameAsync(
+                    output: randomDocument.DocumentData,
+                    fileName: randomDocument.FileName,
+                    container: randomContainer);
 
             var actualDependencyException =
                  await Assert.ThrowsAsync<DocumentDependencyException>(getDownloadFileTask.AsTask);
@@ -57,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                 broker.SelectByFileNameAsync(randomDocument.FileName, randomContainer),
+                 broker.SelectByFileNameAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -79,7 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             Document randomDocument = new Document
             {
                 FileName = randomFileName,
-                DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
+                DocumentData = new MemoryStream(Encoding.ASCII.GetBytes(GetRandomString()))
             };
 
             var randomMessage = GetRandomString();
@@ -96,12 +100,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     innerException: failedDocumentServiceException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.SelectByFileNameAsync(randomDocument.FileName, randomContainer))
+                broker.SelectByFileNameAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
                    .Throws(failedDocumentServiceException);
 
             // when
-            ValueTask<Document> getDownloadFileTask =
-                this.documentService.RetrieveDocumentByFileNameAsync(randomFileName, randomContainer);
+            ValueTask getDownloadFileTask =
+                this.documentService.RetrieveDocumentByFileNameAsync(
+                    output: randomDocument.DocumentData,
+                    fileName: randomDocument.FileName,
+                    container: randomContainer);
 
             var actualServiceException =
                  await Assert.ThrowsAsync<DocumentServiceException>(getDownloadFileTask.AsTask);
@@ -110,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(randomDocument.FileName, randomContainer),
+                broker.SelectByFileNameAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

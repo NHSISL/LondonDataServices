@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -67,9 +68,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
 
-        private static void ValidateRetrieveDownloadByFileNameArguments(string fileName)
+        private static void ValidateRetrieveDownloadByFileNameArguments(Stream output, string fileName)
         {
             Validate(
+                (Rule: IsInvalid(fileName), Parameter: "Output"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
@@ -86,6 +88,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(Stream? data) => new
+        {
+            Condition = data == null,
+            Message = "Data is required"
         };
 
         private static dynamic IsInvalid(string? text) => new

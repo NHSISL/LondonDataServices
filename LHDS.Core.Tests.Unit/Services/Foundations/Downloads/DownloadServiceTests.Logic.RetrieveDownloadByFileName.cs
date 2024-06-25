@@ -22,14 +22,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
             // given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            Document randomDocument = CreateRandomDocument();
+            string fileName = GetRandomString();
 
             Download download = new Download
             {
                 SubscriberCredential = inputSubscriberCredential,
                 Document = new Document
                 {
-                    FileName = randomDocument.FileName,
+                    FileName = fileName,
                     DocumentData = new MemoryStream()
                 }
             };
@@ -40,7 +40,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
 
             this.downloadBrokerMock.Setup(broker =>
                 broker.GetDownloadByFileNameAsync(download))
-                    .Callback<Download>(download => download.Document.DocumentData = downloadStream)
+                    .Callback<Download>(download =>
+                        {
+                            downloadStream.Position = 0;
+                            downloadStream.CopyTo(download.Document.DocumentData);
+                        })
                     .Returns(ValueTask.CompletedTask);
 
             // when

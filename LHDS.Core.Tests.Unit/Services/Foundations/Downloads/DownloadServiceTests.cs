@@ -5,13 +5,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.Downloads;
 using Microsoft.Data.SqlClient;
@@ -80,24 +78,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
 
         private static int GetRandomNegativeNumber() =>
             -1 * new IntRange(min: 2, max: 10).GetValue();
-
-        private static List<Document> CreateRandomDocuments()
-        {
-            return CreateDocumentFiller()
-                .Create(count: GetRandomNumber())
-                    .ToList();
-        }
-
-        private static Document CreateRandomDocument() =>
-            CreateDocumentFiller().Create();
-
-        private static Filler<Document> CreateDocumentFiller()
-        {
-            var filler = new Filler<Document>();
-            filler.Setup();
-
-            return filler;
-        }
 
         private static SubscriberCredential CreateRandomSubscriberCredential() =>
             CreateSubscriberCredentialFiller().Create();

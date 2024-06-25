@@ -13,15 +13,15 @@ namespace LHDS.Core.Services.Foundations.Documents
         private static void ValidateDocumentOnAdd(Stream input, string fileName, string container)
         {
             Validate(
-                (Rule: IsInvalid(input), Parameter: "Input"),
+                (Rule: IsInvalidInputStream(input), Parameter: "Input"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalid(container), Parameter: "Container"));
         }
 
-        private static void ValidateDocumentOnRetrieve(Stream output, string fileName, string container)
+        private static void ValidateArgumentsOnRetrieve(Stream output, string fileName, string container)
         {
             Validate(
-                (Rule: IsNotEmpty(output), Parameter: "Output"),
+                (Rule: IsInvalidOutputStream(output), Parameter: "Output"),
                 (Rule: IsInvalid(container), Parameter: "Container"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
@@ -50,15 +50,15 @@ namespace LHDS.Core.Services.Foundations.Documents
             }
         }
 
-        private static dynamic IsInvalid(Stream input) => new
+        private static dynamic IsInvalidInputStream(Stream? stream) => new
         {
-            Condition = (input == null || input.Length == 0),
-            Message = "Data is required"
+            Condition = stream is null || stream.Length == 0,
+            Message = "Stream is required"
         };
 
-        private static dynamic IsNotEmpty(Stream input) => new
+        private static dynamic IsInvalidOutputStream(Stream? stream) => new
         {
-            Condition = (input == null || input.Length > 0),
+            Condition = stream is null || stream.Length > 0,
             Message = "Stream is required"
         };
 

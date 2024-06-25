@@ -4,11 +4,9 @@
 
 using System;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using Azure;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using Moq;
 using Xunit;
@@ -21,15 +19,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowDependencyExceptionOnSelectFileAndLogItAsync()
         {
             // given
-            var randomContainer = GetRandomString();
-            var randomFileName = GetRandomString();
-
-            Document randomDocument = new Document
-            {
-                FileName = randomFileName,
-                DocumentData = new MemoryStream(Encoding.ASCII.GetBytes(GetRandomString()))
-            };
-
+            string randomContainer = GetRandomString();
+            string randomFileName = GetRandomString();
+            var outputStream = new MemoryStream();
+            string fileName = GetRandomString();
             var randomMessage = GetRandomString();
             var requestFailedException = new RequestFailedException(randomMessage);
 
@@ -50,8 +43,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             // when
             ValueTask getDownloadFileTask =
                 this.documentService.RetrieveDocumentByFileNameAsync(
-                    output: randomDocument.DocumentData,
-                    fileName: randomDocument.FileName,
+                    output: outputStream,
+                    fileName: fileName,
                     container: randomContainer);
 
             var actualDependencyException =
@@ -79,12 +72,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             // given
             var randomContainer = GetRandomString();
             var randomFileName = GetRandomString();
-
-            Document randomDocument = new Document
-            {
-                FileName = randomFileName,
-                DocumentData = new MemoryStream(Encoding.ASCII.GetBytes(GetRandomString()))
-            };
+            var outputStream = new MemoryStream();
+            string fileName = GetRandomString();
 
             var randomMessage = GetRandomString();
 
@@ -106,8 +95,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             // when
             ValueTask getDownloadFileTask =
                 this.documentService.RetrieveDocumentByFileNameAsync(
-                    output: randomDocument.DocumentData,
-                    fileName: randomDocument.FileName,
+                    output: outputStream,
+                    fileName: fileName,
                     container: randomContainer);
 
             var actualServiceException =

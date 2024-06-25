@@ -13,14 +13,20 @@ namespace LHDS.Core.Services.Foundations.Cryptographies
         private void ValidateInputs(Stream input, Stream output, SubscriberCredential subscriberCredential)
         {
             Validate(
-                (Rule: IsInvalid(input), Parameter: nameof(input)),
-                (Rule: IsInvalid(output), Parameter: nameof(output)),
+                (Rule: IsInvalidInputStream(input), Parameter: nameof(input)),
+                (Rule: IsInvalidOutputStream(output), Parameter: nameof(output)),
                 (Rule: IsInvalid(subscriberCredential), Parameter: nameof(subscriberCredential)));
         }
 
-        private static dynamic IsInvalid(Stream? stream) => new
+        private static dynamic IsInvalidInputStream(Stream? stream) => new
         {
-            Condition = stream is null,
+            Condition = stream is null || stream.Length == 0,
+            Message = "Stream is required"
+        };
+
+        private static dynamic IsInvalidOutputStream(Stream? stream) => new
+        {
+            Condition = stream is null || stream.Length > 0,
             Message = "Stream is required"
         };
 

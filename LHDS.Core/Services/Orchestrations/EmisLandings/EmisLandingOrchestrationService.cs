@@ -156,6 +156,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 };
 
                 await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
+
+                ValidateStorageDownload(output, fileName);
             });
 
         public ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId) =>

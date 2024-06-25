@@ -4,7 +4,6 @@
 
 using System;
 using System.IO;
-using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
@@ -71,13 +70,13 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private static void ValidateRetrieveDownloadByFileNameArguments(Stream output, string fileName)
         {
             Validate(
-                (Rule: IsInvalid(fileName), Parameter: "Output"),
+                (Rule: IsInvalidOutputStream(output), Parameter: "Output"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
-        private static void ValidateStorageDownload(Download maybeDownload, string fileName)
+        private static void ValidateStorageDownload(Stream output, string fileName)
         {
-            if (maybeDownload is null)
+            if (output is null || output.Length == 0)
             {
                 throw new NotFoundEmisLandingOrchestrationException(
                     message: $"Couldn't find download with file name: {fileName}.");
@@ -90,10 +89,16 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             Message = "Id is required"
         };
 
-        private static dynamic IsInvalid(Stream? data) => new
+        private static dynamic IsInvalidInputStream(Stream? stream) => new
         {
-            Condition = data == null,
-            Message = "Data is required"
+            Condition = stream is null || stream.Length == 0,
+            Message = "Stream is required"
+        };
+
+        private static dynamic IsInvalidOutputStream(Stream? stream) => new
+        {
+            Condition = stream is null || stream.Length > 0,
+            Message = "Stream is required"
         };
 
         private static dynamic IsInvalid(string? text) => new

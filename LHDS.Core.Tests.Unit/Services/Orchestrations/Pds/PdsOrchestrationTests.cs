@@ -113,8 +113,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
         {
             return actualStream =>
-                this.compareLogic.Compare(expectedStream, actualStream)
-                    .AreEqual;
+                IsSameStream(expectedStream, actualStream);
+        }
+
+        private static bool IsSameStream(Stream expectedStream, Stream actualStream)
+        {
+            try
+            {
+                actualStream.ShouldCompare(expectedStream);
+            }
+            catch (Exception ex)
+            {
+            }
+
+            return new CompareLogic().Compare(expectedStream, actualStream).AreEqual;
         }
 
         private static int GetRandomNumber() =>

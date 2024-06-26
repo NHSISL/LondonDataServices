@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
@@ -344,9 +343,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            List<Document> randomDocuments = CreateRandomDocuments();
-            List<Document> externalDocuments = randomDocuments;
-            List<string> externalDownloadList = randomDocuments.Select(document => document.FileName).ToList();
+            List<string> randomFileNames = GetRandomStrings();
+            List<string> externalDownloadList = randomFileNames;
             string randomHash = GetRandomString(64);
             Guid inputSupplierId = landingConfiguration.LandingSupplierId;
 
@@ -357,16 +355,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     isDownloaded,
                     retryCount);
 
-            List<IngestionTracking> externalDeletedIngestionTrackingsFound =
-                CreateRandomIngestionTrackings(
-                    dateTimeOffset: randomDateTime.AddMinutes(-16),
-                    fileNames: new List<string> { GetRandomFileName(Guid.NewGuid()) },
-                    isDownloaded: true,
-                    retryCount: 1);
-
             List<IngestionTracking> ftpFileList = new List<IngestionTracking>();
             ftpFileList.AddRange(externalIngestionTrackingsFound);
-            ftpFileList.AddRange(externalDeletedIngestionTrackingsFound);
 
             this.downloadProcessingServiceMock.Setup(service =>
                service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
@@ -392,22 +382,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackings(),
-                    Times.Exactly(externalDocuments.Count + 1));
+                    Times.Exactly(randomFileNames.Count + 1));
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.Exactly(externalDeletedIngestionTrackingsFound.Count + 2));
-
-            foreach (var item in externalDeletedIngestionTrackingsFound)
-            {
-                var maybeIngestionTracking = item.DeepClone();
-                maybeIngestionTracking.FileDeleted = true;
-                maybeIngestionTracking.UpdatedDate = randomDateTime;
-
-                this.ingestionTrackingProcessingServiceMock.Verify(broker =>
-                    broker.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(maybeIngestionTracking))),
-                        Times.Once);
-            }
+                    Times.Exactly(externalDownloadList.Count));
 
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

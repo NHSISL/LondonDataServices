@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             int randomNumber = GetRandomNumber();
-            List<string> randomFileNames = GetRandomStrings(count: randomNumber);
+            List<string> randomFileNames = GetRandomStrings();
             List<string> storageFileNames = randomFileNames;
             List<string> expectedFileNames = storageFileNames.DeepClone();
 

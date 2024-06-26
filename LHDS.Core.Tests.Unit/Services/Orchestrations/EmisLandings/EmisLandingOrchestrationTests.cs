@@ -103,42 +103,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 landingConfiguration: landingConfiguration);
         }
 
-        private static List<string> GetRandomStrings(int count)
-        {
-            var messages = new List<string>();
-
-            for (int i = 0; i < count; i++)
-            {
-                var message = GetRandomString();
-                messages.Add(message);
-            }
-
-            return messages;
-        }
+        private static List<string> GetRandomStrings() =>
+            Enumerable.Range(1, GetRandomNumber())
+                .Select(i => GetRandomString())
+                .ToList();
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
-
-        private static List<Document> CreateRandomDocuments()
-        {
-            return CreateDocumentFiller()
-                .Create(count: 1)
-                    .ToList();
-        }
-
-        private static Document CreateRandomDocument() =>
-            CreateDocumentFiller().Create();
-
-        private static Filler<Document> CreateDocumentFiller()
-        {
-            var filler = new Filler<Document>();
-            Guid supplierAgreementId = Guid.NewGuid();
-            string filename = GetRandomFileName(supplierAgreementId);
-            string filePath = CreateRandomFilePath(supplierAgreementId, filename);
-            filler.Setup().OnProperty(document => document.FileName).Use(() => filePath);
-
-            return filler;
-        }
 
         private static string GetRandomFileName(Guid subscriberAgreementId)
         {

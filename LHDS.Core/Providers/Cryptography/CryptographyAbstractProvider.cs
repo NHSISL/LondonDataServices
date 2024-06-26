@@ -12,13 +12,15 @@ namespace LHDS.Core.Providers.Cryptography
     {
         private readonly ICryptographyProvider provider;
 
-        public CryptographyAbstractProvider(ICryptographyProvider provider) =>
+        public CryptographyAbstractProvider(ICryptographyProvider provider)
+        {
             this.provider = provider;
+        }
 
         public async ValueTask EncryptAsync(Stream input, Stream output, SubscriberCredential subscriberCredential) =>
-            await provider.EncryptAsync(input, output, subscriberCredential);
+            await this.provider.EncryptAsync(input, output, subscriberCredential);
 
         public async ValueTask DecryptAsync(Stream input, Stream output, SubscriberCredential subscriberCredential) =>
-            await provider.DecryptAsync(input, output, subscriberCredential);
+            await this.provider.DecryptAsync(input, output, subscriberCredential);
     }
 }

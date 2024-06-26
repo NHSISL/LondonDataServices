@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LHDS.Core.Brokers.Files
 {
-    internal class FileBroker : IFileBroker
+    public class FileBroker : IFileBroker
     {
         public async ValueTask<bool> CheckIfFileExistsAsync(string path) =>
             await Task.FromResult(File.Exists(path));
@@ -50,5 +50,8 @@ namespace LHDS.Core.Brokers.Files
 
             return await Task.FromResult(true);
         }
+
+        public async ValueTask<string> GetTempFileName() =>
+            await ValueTask.FromResult(Path.GetTempFileName());
     }
 }

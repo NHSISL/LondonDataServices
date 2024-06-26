@@ -4,10 +4,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -50,6 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<IHashBroker> hashBrokerMock;
+        private readonly Mock<IFileBroker> fileBrokerMock;
         private readonly LandingConfiguration landingConfiguration;
         private readonly BlobContainers blobContainers;
         private readonly IEmisLandingOrchestrationService emisLandingOrchestrationService;
@@ -67,6 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             identifierBrokerMock = new Mock<IIdentifierBroker>();
             hashBrokerMock = new Mock<IHashBroker>();
+            fileBrokerMock = new Mock<IFileBroker>();
             compareLogic = new CompareLogic();
 
             landingConfiguration = new LandingConfiguration
@@ -95,6 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
                 hashBroker: hashBrokerMock.Object,
+                fileBroker: fileBrokerMock.Object,
                 landingConfiguration: landingConfiguration);
         }
 
@@ -202,10 +207,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .AreEqual;
         }
 
-        private Expression<Func<Download, bool>> SameDownloadAs(
-            Download expectedDownload)
+        private Expression<Func<Download, bool>> SameDownloadAs(Download expectedDownload)
         {
-            return actualDownload => this.compareLogic.Compare(expectedDownload, actualDownload).AreEqual;
+            return actualDownload =>
+                this.compareLogic.Compare(expectedDownload, actualDownload).AreEqual;
+        }
+
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
+        {
+            return actualStream =>
+                this.compareLogic.Compare(expectedStream, actualStream).AreEqual;
         }
 
         private static DataSet CreateRandomDataSet(Guid supplierId) =>

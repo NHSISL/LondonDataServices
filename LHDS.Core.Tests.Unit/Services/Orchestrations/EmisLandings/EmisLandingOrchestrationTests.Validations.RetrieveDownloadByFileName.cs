@@ -38,6 +38,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                key: "FileName",
                values: "Text is required");
 
+            invalidArgumentEmisLandingOrchestrationException.AddData(
+               key: "SubscriberCredential",
+               values: "SubscriberCredential is required");
+
             var expectedDownloadOrchestrationValidationException =
                 new EmisLandingOrchestrationValidationException(
                     message: "EMIS landing orchestration validation errors occurred, please try again.",

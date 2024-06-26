@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             await this.subscriberCredentialOrchestration
                 .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: inputSubscriberCredential.Id);
 
-            await this.supplierService.RemoveSupplierByIdAsync(supplierId: supplierId);
+            //await this.supplierService.RemoveSupplierByIdAsync(supplierId: supplierId);
 
             CleanupDownloadFolder();
         }

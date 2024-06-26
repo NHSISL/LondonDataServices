@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -16,152 +18,142 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 {
     public partial class PdsOrchestrationTests
     {
-        [Fact(Skip = "Conversion to stream")]
+        [Fact]
         public async Task ShouldRetreiveMessagesForMatchingPdsWorkflowIdFromMeshAsync()
         {
-            //// given
-            //DateTimeOffset randomDate = GetRandomDateTimeOffset();
-            //int randomNumber = GetRandomNumber();
-            //List<string> randomMessageIds = GetRandomStrings(randomNumber);
-            //string mexWorkflowId = this.pdsConfiguration.WorkflowId;
-            //List<MeshMessage> retrievedMessages = GetRandomMessages(randomMessageIds, mexWorkflowId);
-            //Guid identifier = Guid.NewGuid();
+            // given
+            DateTimeOffset randomDate = GetRandomDateTimeOffset();
+            int randomNumber = GetRandomNumber();
+            List<string> randomMessageIds = GetRandomStrings(randomNumber);
+            string mexWorkflowId = this.pdsConfiguration.WorkflowId;
+            List<MeshMessage> retrievedMessages = GetRandomMessages(randomMessageIds, mexWorkflowId);
+            string randomContainer = GetRandomString();
+            string inputContainer = randomContainer;
+            Guid identifier = Guid.NewGuid();
 
-            //this.dateTimeBrokerMock.Setup(broker =>
-            //    broker.GetCurrentDateTimeOffset())
-            //        .Returns(randomDate);
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDate);
 
-            //this.identifierBrokerMock.Setup(broker =>
-            //    broker.GetIdentifier())
-            //        .Returns(identifier);
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(identifier);
 
-            //this.meshServiceMock.SetupSequence(service =>
-            //    service.RetrieveMessageIdsFromInboxAsync())
-            //        .ReturnsAsync(randomMessageIds)
-            //        .ReturnsAsync(new List<string>());
+            this.meshServiceMock.SetupSequence(service =>
+                service.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(randomMessageIds)
+                    .ReturnsAsync(new List<string>());
 
-            //List<PdsAudit> pdsAuditsList = new List<PdsAudit>();
+            List<PdsAudit> pdsAuditsList = new List<PdsAudit>();
 
-            //foreach (var message in retrievedMessages)
-            //{
-            //    this.meshServiceMock.Setup(service =>
-            //        service.RetrieveMessageByIdAsync(message.MessageId))
-            //            .ReturnsAsync(message);
+            foreach (var message in retrievedMessages)
+            {
+                this.meshServiceMock.Setup(service =>
+                    service.RetrieveMessageByIdAsync(message.MessageId))
+                        .ReturnsAsync(message);
 
-            //    string filename = message.Headers["mex-filename"].FirstOrDefault();
-            //    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
-            //    string[] fileNameParts = fileNameWithoutExtension.Split('_');
+                string filename = message.Headers["mex-filename"].FirstOrDefault();
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+                string[] fileNameParts = fileNameWithoutExtension.Split('_');
 
-            //    string fileNameOutput =
-            //        $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
+                string fileNameOutput =
+                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
 
-            //    fileNameOutput += Path.GetExtension(filename);
+                fileNameOutput += Path.GetExtension(filename);
+                string inputFileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
+                Stream inputStream = new MemoryStream(message.FileContent);
+                Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
-            //    Document document = new Document
-            //    {
-            //        FileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}",
-            //        DocumentData = message.FileContent,
-            //    };
+                PdsAudit pdsAudit = new PdsAudit
+                {
+                    Id = identifier,
+                    CorrelationId = correlationId,
+                    FileName = inputFileName,
+                    Message = $"Received message from mesh with id {message.MessageId}",
+                    MessageId = message.MessageId,
+                    CreatedDate = randomDate,
+                    UpdatedDate = randomDate,
+                    CreatedBy = "System",
+                    UpdatedBy = "System"
+                };
 
-            //    this.documentServiceMock.Setup(broker =>
-            //        broker.AddDocumentAsync(document, It.IsAny<string>()));
+                this.pdsAuditServiceMock.Setup(service =>
+                    service.AddPdsAuditAsync(pdsAudit))
+                        .ReturnsAsync(pdsAudit);
 
-            //    Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
+                pdsAuditsList.Add(pdsAudit);
+            };
 
-            //    PdsAudit pdsAudit = new PdsAudit
-            //    {
-            //        Id = identifier,
-            //        CorrelationId = correlationId,
-            //        FileName = document.FileName,
-            //        Message = $"Received message from mesh with id {message.MessageId}",
-            //        MessageId = message.MessageId,
-            //        CreatedDate = randomDate,
-            //        UpdatedDate = randomDate,
-            //        CreatedBy = "System",
-            //        UpdatedBy = "System"
-            //    };
+            List<PdsAudit> expectedPdsAudits = pdsAuditsList.DeepClone();
 
-            //    this.pdsAuditServiceMock.Setup(service =>
-            //        service.AddPdsAuditAsync(pdsAudit))
-            //            .ReturnsAsync(pdsAudit);
+            //when
+            List<PdsAudit> actualPdsAudits =
+                await this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
-            //    pdsAuditsList.Add(pdsAudit);
-            //};
+            //then
+            actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
+            pdsAuditsList.Count.Should().Be(retrievedMessages.Count);
 
-            //List<PdsAudit> expectedPdsAudits = pdsAuditsList.DeepClone();
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Exactly(retrievedMessages.Count));
 
-            ////when
-            //List<PdsAudit> actualPdsAudits =
-            //    await this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Exactly(retrievedMessages.Count));
 
-            ////then
-            //actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
-            //pdsAuditsList.Count.Should().Be(retrievedMessages.Count);
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Exactly(2));
 
-            //this.dateTimeBrokerMock.Verify(broker =>
-            //    broker.GetCurrentDateTimeOffset(),
-            //        Times.Exactly(retrievedMessages.Count));
+            foreach (var message in retrievedMessages)
+            {
+                this.meshServiceMock.Verify(service =>
+                    service.RetrieveMessageByIdAsync(message.MessageId),
+                        Times.Once);
 
-            //this.identifierBrokerMock.Verify(broker =>
-            //    broker.GetIdentifier(),
-            //        Times.Exactly(retrievedMessages.Count));
+                string filename = message.Headers["mex-filename"].FirstOrDefault();
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+                string[] fileNameParts = fileNameWithoutExtension.Split('_');
 
-            //this.meshServiceMock.Verify(service =>
-            //    service.RetrieveMessageIdsFromInboxAsync(),
-            //        Times.Exactly(2));
+                string fileNameOutput =
+                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
 
-            //foreach (var message in retrievedMessages)
-            //{
-            //    this.meshServiceMock.Verify(service =>
-            //        service.RetrieveMessageByIdAsync(message.MessageId),
-            //            Times.Once);
+                fileNameOutput += Path.GetExtension(filename);
+                string inputFileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
+                Stream inputStream = new MemoryStream(message.FileContent);
+                Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
-            //    string filename = message.Headers["mex-filename"].FirstOrDefault();
-            //    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
-            //    string[] fileNameParts = fileNameWithoutExtension.Split('_');
+                this.documentServiceMock.Verify(service =>
+                    service.AddDocumentAsync(It.Is(SameStreamAs(inputStream)), inputFileName, inputContainer),
+                        Times.Once);
 
-            //    string fileNameOutput =
-            //        $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
 
-            //    fileNameOutput += Path.GetExtension(filename);
+                PdsAudit pdsAudit = new PdsAudit
+                {
+                    Id = identifier,
+                    CorrelationId = correlationId,
+                    FileName = inputFileName,
+                    Message = $"Received message from mesh with id {message.MessageId}",
+                    MessageId = message.MessageId,
+                    CreatedDate = randomDate,
+                    UpdatedDate = randomDate,
+                    CreatedBy = "System",
+                    UpdatedBy = "System"
+                };
 
-            //    Document document = new Document
-            //    {
-            //        FileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}",
-            //        DocumentData = message.FileContent,
-            //    };
+                this.pdsAuditServiceMock.Verify(service =>
+                    service.AddPdsAuditAsync(It.Is(SamePdsAuditAs(pdsAudit))),
+                        Times.Once);
 
-            //    this.documentServiceMock.Verify(service =>
-            //        service.AddDocumentAsync(It.Is(SameDocumentAs(document)), It.IsAny<string>()),
-            //            Times.Once);
+                pdsAuditsList.Add(pdsAudit);
+            };
 
-            //    Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
-
-            //    PdsAudit pdsAudit = new PdsAudit
-            //    {
-            //        Id = identifier,
-            //        CorrelationId = correlationId,
-            //        FileName = document.FileName,
-            //        Message = $"Received message from mesh with id {message.MessageId}",
-            //        MessageId = message.MessageId,
-            //        CreatedDate = randomDate,
-            //        UpdatedDate = randomDate,
-            //        CreatedBy = "System",
-            //        UpdatedBy = "System"
-            //    };
-
-            //    this.pdsAuditServiceMock.Verify(service =>
-            //        service.AddPdsAuditAsync(It.Is(SamePdsAuditAs(pdsAudit))),
-            //            Times.Once);
-
-            //    pdsAuditsList.Add(pdsAudit);
-            //};
-
-            //this.meshServiceMock.VerifyNoOtherCalls();
-            //this.documentServiceMock.VerifyNoOtherCalls();
-            //this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            //this.identifierBrokerMock.VerifyNoOtherCalls();
-            //this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]

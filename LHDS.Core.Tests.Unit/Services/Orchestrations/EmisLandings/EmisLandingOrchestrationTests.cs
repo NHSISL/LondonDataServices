@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Files;
@@ -101,6 +102,26 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 hashBroker: hashBrokerMock.Object,
                 fileBroker: fileBrokerMock.Object,
                 landingConfiguration: landingConfiguration);
+        }
+
+        static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
+
+        public byte[] CreateRandomData()
+        {
+            string randomMessage = GetRandomString();
+            return Encoding.ASCII.GetBytes(randomMessage);
         }
 
         private static List<string> GetRandomStrings() =>

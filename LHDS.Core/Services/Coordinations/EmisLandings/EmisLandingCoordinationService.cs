@@ -94,7 +94,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
         public ValueTask RetrieveDownloadByFileNameAsync(Stream output, string fileName) =>
             TryCatch(async () =>
             {
-                ValidateFileNameOnRetrieve(fileName);
+                ValidateFileNameOnRetrieve(output, fileName);
                 Guid subscriberCredentialId = Guid.Parse(fileName.Split("/")[5]);
 
                 SubscriberCredential subscriberCredential =

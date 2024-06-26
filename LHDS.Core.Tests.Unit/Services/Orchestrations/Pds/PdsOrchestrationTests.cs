@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq.Expressions;
 using System.Text;
 using KellermanSoftware.CompareNetObjects;
@@ -108,6 +109,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 pdsConfiguration: pdsConfiguration
                 );
         }
+
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
+        {
+            return actualStream =>
+                this.compareLogic.Compare(expectedStream, actualStream)
+                    .AreEqual;
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 

@@ -8,6 +8,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
 using Xunit;
@@ -80,246 +84,244 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
         }
 
-        [Fact(Skip = "Conversion to stream")]
+        [Fact]
         public async Task ShouldProcessNewDocumentAndAddAsync()
         {
-            //// given
-            //DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            //Guid randomGuid = Guid.NewGuid();
-            //Guid randomSupplierId = Guid.NewGuid();
-            //DataSet randomDataSet = CreateRandomDataSet(supplierId: randomSupplierId);
-            //Document randomDocument = CreateRandomDocument();
-            //string randomHash = GetRandomString(64);
-            //randomDocument.SHA256Hash = randomHash;
-            //int randomNumber = GetRandomNumber();
+            // given
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            Guid randomGuid = Guid.NewGuid();
+            Guid randomSupplierId = Guid.NewGuid();
+            DataSet randomDataSet = CreateRandomDataSet(supplierId: randomSupplierId);
+            string randomHash = GetRandomString(64);
+            int randomNumber = GetRandomNumber();
 
-            //List<Document> randomDocuments = CreateRandomDocuments(count: randomNumber);
+            List<string> randomFileNames = GetRandomStrings();
+            List<string> inputFileNames = randomFileNames;
+            string randomFileName = randomFileNames.Last();
+            string inputFileName = randomFileName;
+            byte[] randomData = CreateRandomData();
+            byte[] inputData = randomData;
+            Stream inputDataStream = new MemoryStream(inputData);
 
-            //List<IngestionTracking> randomIngestionTrackings =
-            //    CreateRandomIngestionTrackings(
-            //        dateTimeOffset: randomDateTime,
-            //        documents: randomDocuments,
-            //        supplierId: randomSupplierId);
+            List<IngestionTracking> randomIngestionTrackings =
+                CreateRandomIngestionTrackings(
+                    dateTimeOffset: randomDateTime,
+                    fileNames: inputFileNames,
+                    supplierId: randomSupplierId);
 
-            //IQueryable<DataSetSpecification> randomDataSetSpecificationList =
-            //   CreateRandomDataSetSpecifications(dataSet: randomDataSet);
+            IQueryable<DataSetSpecification> randomDataSetSpecificationList =
+               CreateRandomDataSetSpecifications(dataSet: randomDataSet);
 
-            //DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
-            //IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
-            //IngestionTracking storageIngestionTracking = randomIngestionTracking;
-            //IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
+            DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
+            IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
+            IngestionTracking storageIngestionTracking = randomIngestionTracking;
+            IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
 
-            //this.ingestionTrackingProcessingServiceMock.Setup(service =>
-            //    service.RetrieveAllIngestionTrackings())
-            //        .Returns(randomIngestionTrackings.AsQueryable());
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackings())
+                    .Returns(randomIngestionTrackings.AsQueryable());
 
-            //this.hashBrokerMock.Setup(broker =>
-            //    broker.GenerateSha256Hash(randomDocument.DocumentData))
-            //        .Returns(randomHash);
+            this.hashBrokerMock.Setup(broker =>
+                broker.GenerateSha256Hash(inputDataStream))
+                    .Returns(randomHash);
 
-            //this.dateTimeBrokerMock.Setup(broker =>
-            //    broker.GetCurrentDateTimeOffset())
-            //        .Returns(randomDateTime);
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTime);
 
-            //this.dataSetSpecificationProcessingServiceMock.Setup(service =>
-            //   service.GetActiveDataSetSpecification(randomSupplierId))
-            //       .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
+            this.dataSetSpecificationProcessingServiceMock.Setup(service =>
+               service.GetActiveDataSetSpecification(randomSupplierId))
+                   .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
 
-            //var filename = randomDocument.FileName.StartsWith('/')
-            //       ? randomDocument.FileName
-            //       : "/" + randomDocument.FileName;
+            var filename = inputFileName.StartsWith('/')
+                   ? inputFileName
+                   : "/" + inputFileName;
 
-            //IngestionTracking newIngestionTracking =
-            //       new IngestionTracking
-            //       {
-            //           Id = randomGuid,
-            //           FileName = randomDocument.FileName,
-            //           SupplierId = randomSupplierId,
-            //           EncryptedFileName = null,
+            IngestionTracking newIngestionTracking =
+                   new IngestionTracking
+                   {
+                       Id = randomGuid,
+                       FileName = filename,
+                       SupplierId = randomSupplierId,
+                       EncryptedFileName = null,
 
-            //           DecryptedFileName =
-            //                    $"/{landingConfiguration.DecryptedFolder}"
-            //                    + $"/{randomDataSet.DataSetName}"
-            //                    + $"/{randomDataSetSpecification.Id}"
-            //                    + $"{filename}",
+                       DecryptedFileName =
+                                $"/{landingConfiguration.DecryptedFolder}"
+                                + $"/{randomDataSet.DataSetName}"
+                                + $"/{randomDataSetSpecification.Id}"
+                                + $"{filename}",
 
-            //           Decrypted = false,
-            //           LastSeen = randomDateTime,
-            //           FileDeleted = false,
-            //           RecordCount = 0,
-            //           EncryptedFileSize = randomDocument.DocumentData.Length,
-            //           EncryptedFileSha256Hash = randomHash,
-            //           DecryptedFileSize = 0,
-            //           DecryptedFileSha256Hash = string.Empty,
-            //           CreatedBy = "System",
-            //           CreatedDate = randomDateTime,
-            //           UpdatedBy = "System",
-            //           UpdatedDate = randomDateTime
-            //       };
+                       Decrypted = false,
+                       LastSeen = randomDateTime,
+                       FileDeleted = false,
+                       RecordCount = 0,
+                       EncryptedFileSize = inputData.Length,
+                       EncryptedFileSha256Hash = randomHash,
+                       DecryptedFileSize = 0,
+                       DecryptedFileSha256Hash = string.Empty,
+                       CreatedBy = "System",
+                       CreatedDate = randomDateTime,
+                       UpdatedBy = "System",
+                       UpdatedDate = randomDateTime
+                   };
 
-            //IngestionTracking savedIngestionTracking = newIngestionTracking.DeepClone();
+            IngestionTracking savedIngestionTracking = newIngestionTracking.DeepClone();
 
-            //this.ingestionTrackingProcessingServiceMock.Setup(service =>
-            //        service.AddIngestionTrackingAsync(newIngestionTracking))
-            //           .ReturnsAsync(storageIngestionTracking);
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                    service.AddIngestionTrackingAsync(newIngestionTracking))
+                       .ReturnsAsync(storageIngestionTracking);
 
-            //Document newBlobDocument = new Document
-            //{
-            //    DocumentData = randomDocument.DocumentData,
-            //    FileName = savedIngestionTracking.DecryptedFileName
-            //};
+            IngestionTrackingAudit ingestionTrackingAudit = new IngestionTrackingAudit();
+            ingestionTrackingAudit.Id = Guid.NewGuid();
+            ingestionTrackingAudit.IngestionTrackingId = updatedIngestionTracking.Id;
 
-            //this.documentProcessingServiceMock.Setup(service =>
-            //    service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), blobContainers.Versioner));
+            ingestionTrackingAudit.Message =
+                "Received and updated file from TPP which has now been uploaded to the blob store";
 
-            //IngestionTrackingAudit ingestionTrackingAudit = new IngestionTrackingAudit();
-            //ingestionTrackingAudit.Id = Guid.NewGuid();
-            //ingestionTrackingAudit.IngestionTrackingId = updatedIngestionTracking.Id;
+            this.ingestionTrackingProcessingAuditServiceMock.Setup(service =>
+                service.AddIngestionTrackingAuditAsync(ingestionTrackingAudit))
+                    .ReturnsAsync(value: ingestionTrackingAudit);
 
-            //ingestionTrackingAudit.Message =
-            //    "Received and updated file from TPP which has now been uploaded to the blob store";
+            // when
+            ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(
+                input: inputDataStream,
+                fileName: inputFileName,
+                supplierId: randomIngestionTracking.SupplierId);
 
-            //this.ingestionTrackingProcessingAuditServiceMock.Setup(service =>
-            //    service.AddIngestionTrackingAuditAsync(ingestionTrackingAudit))
-            //        .ReturnsAsync(value: ingestionTrackingAudit);
+            // then
 
-            //// when
-            //ValueTask<Guid> returnedGuid = this.tppOrchestrationService
-            //    .ProcessAsync(document: randomDocument, supplierId: randomIngestionTracking.SupplierId);
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+               service.RetrieveAllIngestionTrackings(),
+                   Times.Once);
 
-            //// then
+            this.hashBrokerMock.Verify(broker =>
+                broker.GenerateSha256Hash(inputDataStream),
+                    Times.Once);
 
-            //this.ingestionTrackingProcessingServiceMock.Verify(service =>
-            //   service.RetrieveAllIngestionTrackings(),
-            //       Times.Once);
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
 
-            //this.hashBrokerMock.Verify(broker =>
-            //    broker.GenerateSha256Hash(randomDocument.DocumentData),
-            //        Times.Once);
+            this.dataSetSpecificationProcessingServiceMock.Verify(service =>
+                service.GetActiveDataSetSpecification(randomSupplierId),
+                    Times.Once);
 
-            //this.dateTimeBrokerMock.Verify(broker =>
-            //    broker.GetCurrentDateTimeOffset(),
-            //        Times.Once);
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.AddIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                    Times.Once);
 
-            //this.dataSetSpecificationProcessingServiceMock.Verify(service =>
-            //    service.GetActiveDataSetSpecification(randomSupplierId),
-            //        Times.Once);
+            this.documentProcessingServiceMock.Verify(service =>
+                service.AddDocumentAsync(
+                    inputDataStream,
+                    newIngestionTracking.DecryptedFileName,
+                    blobContainers.Versioner),
+                        Times.Once);
 
-            //this.ingestionTrackingProcessingServiceMock.Verify(service =>
-            //    service.AddIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
-            //        Times.Once);
+            this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>
+                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
+                    Times.Once);
 
-            //this.documentProcessingServiceMock.Verify(service =>
-            //    service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), blobContainers.Versioner),
-            //        Times.Once);
-
-            //this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>
-            //    service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
-            //        Times.Once);
-
-            //this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            //this.hashBrokerMock.VerifyNoOtherCalls();
-            //this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            //this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
-            //this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            //this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
-            //this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact(Skip = "Conversion to stream")]
+        [Fact]
         public async Task ShouldProcessExisitingDocumentIfUpdatedUpdateHashAsync()
         {
-            //// given
-            //DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            //Document randomDocument = CreateRandomDocument();
-            //string randomHash = GetRandomString(64);
-            //randomDocument.SHA256Hash = randomHash;
-            //int randomNumber = GetRandomNumber();
-            //Guid randomSupplierId = Guid.NewGuid();
+            // given
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            string randomHash = GetRandomString(64);
+            string inputContainer = GetRandomString();
+            int randomNumber = GetRandomNumber();
+            Guid randomSupplierId = Guid.NewGuid();
+            List<string> randomFileNames = GetRandomStrings();
+            string randomFileName = randomFileNames.Last();
+            string inputFileName = randomFileName;
+            byte[] inputBytes = Encoding.UTF8.GetBytes(inputFileName);
+            Stream inputStream = new MemoryStream(inputBytes);
 
-            //List<Document> randomDocuments = CreateRandomDocuments(randomNumber);
-            //randomDocuments[randomNumber - 1].FileName = randomDocument.FileName;
+            List<IngestionTracking> randomIngestionTrackings =
+                CreateRandomIngestionTrackings(
+                    dateTimeOffset: randomDateTime,
+                    fileNames: randomFileNames,
+                    supplierId: randomSupplierId);
 
-            //List<IngestionTracking> randomIngestionTrackings =
-            //    CreateRandomIngestionTrackings(
-            //        dateTimeOffset: randomDateTime,
-            //        documents: randomDocuments,
-            //        supplierId: randomSupplierId);
+            IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
+            IngestionTracking storageIngestionTracking = randomIngestionTracking;
+            IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
+            updatedIngestionTracking.DecryptedFileSha256Hash = randomHash;
 
-            //IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
-            //IngestionTracking storageIngestionTracking = randomIngestionTracking;
-            //IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
-            //updatedIngestionTracking.DecryptedFileSha256Hash = randomDocument.SHA256Hash;
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackings())
+                    .Returns(randomIngestionTrackings.AsQueryable());
 
-            //this.ingestionTrackingProcessingServiceMock.Setup(service =>
-            //    service.RetrieveAllIngestionTrackings())
-            //        .Returns(randomIngestionTrackings.AsQueryable());
+            this.hashBrokerMock.Setup(broker =>
+               broker.GenerateSha256Hash(inputStream))
+                   .Returns(randomHash);
 
-            //this.hashBrokerMock.Setup(broker =>
-            //   broker.GenerateSha256Hash(randomDocument.DocumentData))
-            //       .Returns(randomHash);
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTime);
 
-            //this.dateTimeBrokerMock.Setup(broker =>
-            //    broker.GetCurrentDateTimeOffset())
-            //        .Returns(randomDateTime);
+            this.documentProcessingServiceMock
+                .Setup(service => service.AddDocumentAsync(inputStream, inputFileName, inputContainer))
+                .Callback(() => { })
+                .Returns(ValueTask.CompletedTask);
 
-            //this.documentProcessingServiceMock.Setup(service =>
-            //    service.AddDocumentAsync(
-            //        It.Is(SameDocumentAs(randomDocument)),
-            //            landingConfiguration.DecryptedFolder))
-            //                .ReturnsAsync(randomDocument.FileName);
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.ModifyIngestionTrackingAsync(updatedIngestionTracking))
+                    .ReturnsAsync(updatedIngestionTracking);
 
-            //this.ingestionTrackingProcessingServiceMock.Setup(service =>
-            //    service.ModifyIngestionTrackingAsync(updatedIngestionTracking))
-            //        .ReturnsAsync(updatedIngestionTracking);
+            IngestionTrackingAudit ingestionTrackingAudit = new IngestionTrackingAudit();
+            ingestionTrackingAudit.Id = Guid.NewGuid();
+            ingestionTrackingAudit.IngestionTrackingId = updatedIngestionTracking.Id;
+            ingestionTrackingAudit.Message = "Updated TPP Hash";
 
-            //IngestionTrackingAudit ingestionTrackingAudit = new IngestionTrackingAudit();
-            //ingestionTrackingAudit.Id = Guid.NewGuid();
-            //ingestionTrackingAudit.IngestionTrackingId = updatedIngestionTracking.Id;
-            //ingestionTrackingAudit.Message = "Updated TPP Hash";
+            this.ingestionTrackingProcessingAuditServiceMock.Setup(service =>
+                service.AddIngestionTrackingAuditAsync(ingestionTrackingAudit))
+                    .ReturnsAsync(value: ingestionTrackingAudit);
 
-            //this.ingestionTrackingProcessingAuditServiceMock.Setup(service =>
-            //    service.AddIngestionTrackingAuditAsync(ingestionTrackingAudit))
-            //        .ReturnsAsync(value: ingestionTrackingAudit);
+            // when
+            ValueTask<Guid> returnedGuid = this.tppOrchestrationService
+                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: randomSupplierId);
 
-            //// when
-            //ValueTask<Guid> returnedGuid = this.tppOrchestrationService
-            //    .ProcessAsync(document: randomDocument, supplierId: randomSupplierId);
+            // then
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.RetrieveAllIngestionTrackings(),
+                    Times.Once);
 
-            //// then
-            //this.ingestionTrackingProcessingServiceMock.Verify(service =>
-            //    service.RetrieveAllIngestionTrackings(),
-            //        Times.Once);
+            this.hashBrokerMock.Verify(broker =>
+                broker.GenerateSha256Hash(inputStream),
+                    Times.Once);
 
-            //this.hashBrokerMock.Verify(broker =>
-            //    broker.GenerateSha256Hash(randomDocument.DocumentData),
-            //        Times.Once);
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
 
-            //this.dateTimeBrokerMock.Verify(broker =>
-            //    broker.GetCurrentDateTimeOffset(),
-            //        Times.Once);
+            this.documentProcessingServiceMock.Verify(service =>
+                service.AddDocumentAsync(inputStream, inputFileName, inputContainer),
+                    Times.Once);
 
-            //this.documentProcessingServiceMock.Verify(service =>
-            //    service.AddDocumentAsync(
-            //        It.Is(SameDocumentAs(randomDocument)),
-            //        It.IsAny<string>()),
-            //        Times.Once);
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                    Times.Once);
 
-            //this.ingestionTrackingProcessingServiceMock.Verify(service =>
-            //    service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
-            //        Times.Once);
+            this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>
+                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
+                    Times.Once);
 
-            //this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>
-            //    service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
-            //        Times.Once);
-
-            //this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            //this.hashBrokerMock.VerifyNoOtherCalls();
-            //this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            //this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            //this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
-            //this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
-            //this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -4,10 +4,8 @@
 
 using System;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Moq;
 using Xeptions;
@@ -71,16 +69,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
           Xeption dependencyException)
         {
             // given
-            string encryptedFileContainer = "emislanding";
-            var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            string inputContainer = GetRandomString();
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+            Stream randomStream = new MemoryStream();
+            Stream outputStream = randomStream;
             var randomMessage = GetRandomString();
-
-            Document inputDocument = new Document
-            {
-                FileName = randomString,
-                DocumentData = new MemoryStream(randomBytes)
-            };
 
             var expectedDocumentProcessingDependencyException =
                 new DocumentProcessingDependencyException(
@@ -94,9 +88,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             // when
             ValueTask retrieveDocumentTask =
                 this.documentProcessingService.RetrieveDocumentByFileNameAsync(
-                    output: inputDocument.DocumentData,
-                    fileName: inputDocument.FileName,
-                    container: encryptedFileContainer);
+                    output: outputStream,
+                    fileName: inputFileName,
+                    container: inputContainer);
 
             DocumentProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<DocumentProcessingDependencyException>(retrieveDocumentTask.AsTask);
@@ -121,17 +115,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         public async Task ShouldThrowServiceExceptionOnRetrieveIfServiceErrorOccursAsync()
         {
             // given
-            string encryptedFileContainer = "emislanding";
-            var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            string inputContainer = GetRandomString();
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+            Stream randomStream = new MemoryStream();
+            Stream outputStream = randomStream;
             var randomMessage = GetRandomString();
-
-            Document inputDocument = new Document
-            {
-                FileName = randomString,
-                DocumentData = new MemoryStream(randomBytes)
-            };
-
             var serviceException = new Exception();
 
             var failedDocumentProcessingServiceException =
@@ -151,9 +140,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             // when
             ValueTask retrieveDocumentTask =
                 this.documentProcessingService.RetrieveDocumentByFileNameAsync(
-                    output: inputDocument.DocumentData,
-                    fileName: inputDocument.FileName,
-                    container: encryptedFileContainer);
+                    output: outputStream,
+                    fileName: inputFileName,
+                    container: inputContainer);
 
             DocumentProcessingServiceException actualException =
                 await Assert.ThrowsAsync<DocumentProcessingServiceException>(retrieveDocumentTask.AsTask);

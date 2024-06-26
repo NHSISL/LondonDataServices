@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
@@ -25,6 +26,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             };
 
             this.cryptographyProvider = new GpgCryptographyProvider();
+        }
+
+        static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
 
         private static string GetRandomString() =>

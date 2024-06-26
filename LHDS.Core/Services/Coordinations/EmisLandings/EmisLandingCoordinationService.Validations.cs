@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 
 namespace LHDS.Core.Services.Coordinations.EmisLandings
@@ -21,11 +22,12 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                 (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
 
-        private static void ValidateFileNameOnRetrieve(string fileName)
+        private static void ValidateFileNameOnRetrieve(Stream output, string fileName)
         {
             Validate(
+                (Rule: IsInvalidOutputStream(output), Parameter: "Output"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
-                (Rule: IsInvalidArray(fileName), Parameter: "FileName"));
+                (Rule: IsInvalidFileNameSegments(fileName), Parameter: "FileName"));
         }
 
         private static void ValidateArgsOnRetrieveListOfDocumentsToProcess(Guid subscriberAgreementId)
@@ -50,10 +52,22 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             Message = "Id is required"
         };
 
-        private static dynamic IsInvalidArray(string value) => new
+        private static dynamic IsInvalidFileNameSegments(string value) => new
         {
             Condition = value == null ? true : value.Split("/").Length < 6,
             Message = "File name is not valid"
+        };
+
+        private static dynamic IsInvalidInputStream(Stream? stream) => new
+        {
+            Condition = stream is null || stream.Length == 0,
+            Message = "Stream is required"
+        };
+
+        private static dynamic IsInvalidOutputStream(Stream? stream) => new
+        {
+            Condition = stream is null || stream.Length > 0,
+            Message = "Stream is required"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

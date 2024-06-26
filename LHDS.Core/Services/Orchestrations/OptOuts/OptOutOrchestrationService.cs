@@ -66,12 +66,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                   return await meshProcessingService.ValidateMailboxAccessAsync();
               });
 
-        public ValueTask<string> RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName) =>
+        public ValueTask<string> RetrieveOptOutStatusAsync(Stream input, string fileName) =>
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
-                ValidateOptOutFileIsNotNull(optOutFile);
-                ValidateRequestIdIsNotNull(fileName);
+                ValidateArgumentsOnRetrieveOptOutStatus(input, fileName);
 
                 bool withHeader =
                     optOutConfiguration.OptOutFileHasHeader;
@@ -81,7 +80,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 bool shouldAddTrailingComma =
                     optOutConfiguration.OptOutFileRequireTrailingComma;
 
-                var inputString = Encoding.ASCII.GetString(optOutFile);
+                var inputString = Encoding.UTF8.GetString(ReadAllBytesFromStream(input));
 
                 List<OptOutIdentifier> mappedOptOuts =
                     await this.csvHelperBroker
@@ -280,6 +279,20 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 : string.Empty;
 
             return value ?? string.Empty;
+        }
+
+        static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
     }
 }

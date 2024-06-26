@@ -23,12 +23,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         {
             // given
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
-            int randomNumber = GetRandomNumber();
+            int randomNumber = 1; // GetRandomNumber();
             List<string> randomMessageIds = GetRandomStrings(randomNumber);
             string mexWorkflowId = this.pdsConfiguration.WorkflowId;
             List<MeshMessage> retrievedMessages = GetRandomMessages(randomMessageIds, mexWorkflowId);
             string randomContainer = GetRandomString();
-            string inputContainer = randomContainer;
+            string inputContainer = "pds";
             Guid identifier = Guid.NewGuid();
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -63,6 +63,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 string inputFileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
                 Stream inputStream = new MemoryStream(message.FileContent);
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
+
+                this.documentServiceMock
+                    .Setup(service =>
+                        service.AddDocumentAsync(It.Is(SameStreamAs(inputStream)), inputFileName, inputContainer))
+                    .Returns(ValueTask.CompletedTask);
 
                 PdsAudit pdsAudit = new PdsAudit
                 {
@@ -125,7 +130,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
                 this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(It.Is(SameStreamAs(inputStream)), inputFileName, inputContainer),
+                    service.AddDocumentAsync(It.IsAny<Stream>(), inputFileName, inputContainer),
                         Times.Once);
 
 

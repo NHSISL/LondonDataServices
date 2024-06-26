@@ -31,7 +31,7 @@ namespace LHDS.Core.Providers.Downloads.MockDownloads
         public async ValueTask GetDocumentByFileNameAsync(Download download)
         {
             string randomString = GetRandomString();
-            byte[] data = Encoding.ASCII.GetBytes(randomString);
+            byte[] data = Encoding.UTF8.GetBytes(randomString);
 
             var document = new Document()
             {

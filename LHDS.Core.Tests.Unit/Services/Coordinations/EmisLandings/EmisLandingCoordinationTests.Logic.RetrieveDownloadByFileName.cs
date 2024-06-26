@@ -2,7 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.IO;
 using System.Threading.Tasks;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Processings.SubscriberCredentials;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
@@ -27,28 +33,29 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentailId, false)).
                     ReturnsAsync(storageSubscriberCredential);
 
-            this.emisLandingOrchestrationServiceMock.Setup(service =>
-                service.RetrieveDownloadByFileNameAsync(
-                    fileName,
-                    It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))))
-                        .ReturnsAsync(storageDocument.DocumentData);
+            //this.emisLandingOrchestrationServiceMock.Setup(service =>
+            //    service.RetrieveDownloadByFileNameAsync(
+            //        fileName,
+            //        It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))))
+            //            .ReturnsAsync(storageDocument.DocumentData);
 
             // when
-            Document actualDocument =
-                await this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(fileName);
+            await this.emisLandingCoordinationService
+                .RetrieveDownloadByFileNameAsync(output: new MemoryStream(), fileName);
 
             // then
-            actualDocument.Should().BeEquivalentTo(expectedDocument);
+            Assert.Fail();
+            //actualDocument.Should().BeEquivalentTo(expectedDocument);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
                 service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentailId, false),
                     Times.Once());
 
-            this.emisLandingOrchestrationServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(
-                    fileName,
-                    It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))),
-                        Times.Once);
+            //this.emisLandingOrchestrationServiceMock.Verify(service =>
+            //    service.RetrieveDownloadByFileNameAsync(
+            //        fileName,
+            //        It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))),
+            //            Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
             this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();

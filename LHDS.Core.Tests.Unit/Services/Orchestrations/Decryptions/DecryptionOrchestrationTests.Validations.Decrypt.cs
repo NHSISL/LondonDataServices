@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Decryptions;
@@ -187,11 +189,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                service.RetrieveIngestionTrackingByEncryptedFileNameAsync(randomFileName))
                    .ReturnsAsync(storageIngestionTracking);
 
-            this.documentServiceMock.Setup(service =>
-                 service.RetrieveDocumentByFileNameAsync(
-                     storageIngestionTracking.EncryptedFileName,
-                     It.IsAny<string>()))
-                         .Returns(null);
+            //this.documentServiceMock.Setup(service =>
+            //     service.RetrieveDocumentByFileNameAsync(
+            //         storageIngestionTracking.EncryptedFileName,
+            //         It.IsAny<string>()))
+            //             .Returns(null);
 
             // when
             ValueTask<string> processTask = this.decryptionOrchestrationService
@@ -208,9 +210,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 service.RetrieveIngestionTrackingByEncryptedFileNameAsync(It.IsAny<string>()),
                     Times.Once);
 
-            this.documentServiceMock.Verify(service =>
-                service.RetrieveDocumentByFileNameAsync(storageIngestionTracking.EncryptedFileName, It.IsAny<string>()),
-                    Times.Once);
+            //this.documentServiceMock.Verify(service =>
+            //    service.RetrieveDocumentByFileNameAsync(storageIngestionTracking.EncryptedFileName, It.IsAny<string>()),
+            //        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Mesh;
 
@@ -10,7 +11,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 {
     public interface IOptOutOrchestrationService
     {
-        ValueTask<string> RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName);
+        ValueTask<string> RetrieveOptOutStatusAsync(Stream input, string fileName);
         ValueTask<MeshMessage?> PushExpiredOptOutsToMeshForRenewalAsync();
         ValueTask<List<MeshMessage>> RetrieveUpdatedMeshConsentStatusesChangesAsync();
         ValueTask<bool> ValidateMailboxAccessAsync();

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -41,6 +42,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly IHashBroker hashBroker;
+        private readonly IFileBroker fileBroker;
         private readonly LandingConfiguration landingConfiguration;
 
         public EmisLandingOrchestrationService(
@@ -54,6 +56,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
             IHashBroker hashBroker,
+            IFileBroker fileBroker,
             LandingConfiguration landingConfiguration)
         {
             this.documentProcessingService = documentProcessingService;
@@ -66,6 +69,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
             this.hashBroker = hashBroker;
+            this.fileBroker = fileBroker;
             this.landingConfiguration = landingConfiguration;
         }
 
@@ -251,17 +255,31 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     await this.ingestionTrackingProcessingService
                         .ModifyIngestionTrackingAsync(maybeIngestionTracking);
 
-                using (Stream downloadStream = new MemoryStream())
-                {
-                    await DownloadFile(output: downloadStream, fileName, subscriberCredential);
-                    string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(downloadStream);
-                    updatedIngestionTracking.EncryptedFileSize = downloadStream.Length;
-                    updatedIngestionTracking.EncryptedFileSha256Hash = encryptedFileSha256Hash;
+                string tempEncryptedFilePath = await this.fileBroker.GetTempFileName();
 
-                    await this.documentProcessingService.AddDocumentAsync(
-                        input: downloadStream,
-                        fileName: maybeIngestionTracking.EncryptedFileName,
-                        container: blobContainers.EmisLanding);
+                try
+                {
+                    using (FileStream ftpFileStream =
+                        new FileStream(tempEncryptedFilePath, FileMode.Create, FileAccess.Write))
+                    {
+                        await DownloadFile(output: ftpFileStream, fileName, subscriberCredential);
+                        string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(ftpFileStream);
+                        updatedIngestionTracking.EncryptedFileSize = ftpFileStream.Length;
+                        updatedIngestionTracking.EncryptedFileSha256Hash = encryptedFileSha256Hash;
+
+                        await this.documentProcessingService.AddDocumentAsync(
+                            input: ftpFileStream,
+                            fileName: maybeIngestionTracking.EncryptedFileName,
+                            container: blobContainers.EmisLanding);
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                finally
+                {
+                    await this.fileBroker.DeleteFileAsync(tempEncryptedFilePath);
                 }
 
                 updatedIngestionTracking.IsDownloaded = true;

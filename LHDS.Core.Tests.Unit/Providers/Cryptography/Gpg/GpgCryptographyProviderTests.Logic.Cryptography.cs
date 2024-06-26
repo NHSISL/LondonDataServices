@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Providers.Cryptography.Gpg
     public partial class GpgCryptographyProviderTests
     {
         [Fact]
-        public async Task ShouldEncryptAndDecryptStringAsync()
+        public async Task ShouldEncryptAndDecryptStreamAsync()
         {
             // Given
             var gpgKeyBroker = new GpgKeyBroker();
@@ -50,14 +49,6 @@ namespace LHDS.Core.Tests.Unit.Providers.Cryptography.Gpg
             // Then
             string actualString = Encoding.UTF8.GetString(ReadAllBytesFromStream(decryptedStream));
             actualString.Should().BeEquivalentTo(expectedString);
-        }
-
-        private static string ConvertToBase64String(string input)
-        {
-            byte[] byteArray = Encoding.UTF8.GetBytes(input);
-            string base64String = Convert.ToBase64String(byteArray);
-
-            return base64String;
         }
     }
 }

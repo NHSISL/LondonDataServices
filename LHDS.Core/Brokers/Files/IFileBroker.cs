@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LHDS.Core.Brokers.Files
 {
-    internal interface IFileBroker
+    public interface IFileBroker
     {
         ValueTask<bool> CheckIfFileExistsAsync(string path);
         ValueTask<bool> WriteToFileAsync(string path, string content);
@@ -17,5 +17,6 @@ namespace LHDS.Core.Brokers.Files
         ValueTask<bool> CheckIfDirectoryExistsAsync(string path);
         ValueTask<bool> CreateDirectoryAsync(string path);
         ValueTask<bool> DeleteDirectoryAsync(string path, bool recursive = false);
+        ValueTask<string> GetTempFileName();
     }
 }

@@ -23,16 +23,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             Xeption dependencyValidationException)
         {
             // given
-            string encryptedFileContainer = "emislanding";
-            var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            string inputContainer = GetRandomString();
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+            Stream randomStream = new MemoryStream();
+            Stream outputStream = randomStream;
             var randomMessage = GetRandomString();
-
-            Document inputDocument = new Document
-            {
-                FileName = randomString,
-                DocumentData = new MemoryStream(randomBytes)
-            };
 
             var expectedDocumentProcessingDependencyValidationException =
                 new DocumentProcessingDependencyValidationException(
@@ -46,9 +42,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             // when
             ValueTask retrieveDocumentTask =
                 this.documentProcessingService.RetrieveDocumentByFileNameAsync(
-                    output: inputDocument.DocumentData,
-                    fileName: inputDocument.FileName,
-                    container: encryptedFileContainer);
+                    output: outputStream,
+                    fileName: inputFileName,
+                    container: inputContainer);
 
             DocumentProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DocumentProcessingDependencyValidationException>(retrieveDocumentTask.AsTask);

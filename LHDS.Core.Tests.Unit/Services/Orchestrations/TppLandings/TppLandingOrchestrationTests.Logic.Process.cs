@@ -41,8 +41,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     fileNames: randomFileNames,
                     supplierId: randomSupplierId);
 
-            IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
+            IngestionTracking randomIngestionTracking = randomIngestionTrackings.Last();
             randomIngestionTracking.DecryptedFileSha256Hash = randomHash;
+            randomIngestionTracking.FileName = inputFileName;
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())
@@ -113,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                CreateRandomDataSetSpecifications(dataSet: randomDataSet);
 
             DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
-            IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
+            IngestionTracking randomIngestionTracking = randomIngestionTrackings.Last();
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
 
@@ -236,7 +237,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             string randomHash = GetRandomString(64);
-            string inputContainer = GetRandomString();
+            string inputContainer = "versioner";
             int randomNumber = GetRandomNumber();
             Guid randomSupplierId = Guid.NewGuid();
             List<string> randomFileNames = GetRandomStrings();
@@ -251,7 +252,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     fileNames: randomFileNames,
                     supplierId: randomSupplierId);
 
-            IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
+            IngestionTracking randomIngestionTracking = randomIngestionTrackings.Last();
+            randomIngestionTracking.FileName = inputFileName;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
             updatedIngestionTracking.DecryptedFileSha256Hash = randomHash;
@@ -269,7 +271,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .Returns(randomDateTime);
 
             this.documentProcessingServiceMock
-                .Setup(service => service.AddDocumentAsync(inputStream, inputFileName, inputContainer))
+                .Setup(service =>
+                    service.AddDocumentAsync(inputStream, randomIngestionTracking.DecryptedFileName, inputContainer))
                 .Callback(() => { })
                 .Returns(ValueTask.CompletedTask);
 
@@ -304,7 +307,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(inputStream, inputFileName, inputContainer),
+                service.AddDocumentAsync(inputStream, randomIngestionTracking.DecryptedFileName, inputContainer),
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>

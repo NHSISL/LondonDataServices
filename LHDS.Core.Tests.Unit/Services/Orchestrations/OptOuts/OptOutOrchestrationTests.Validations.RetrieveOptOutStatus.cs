@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -13,12 +14,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 {
     public partial class OptOutOrchestrationTests
     {
+
         [Theory]
-        [InlineData(null)]
-        [InlineData(new byte[] { })]
+        [InlineData("null")]
+        [InlineData("empty")]
         public async Task ShouldThrowValidationExceptionOnRetrieveOptOutIfOptOutFileIsNullAndLogItAsync(
-            byte[] invalidData)
+            string type)
         {
+            Stream invalidStream = type switch
+            {
+                "null" => null,
+                _ => new MemoryStream()
+            };
+
             var randomString = GetRandomString();
 
             var invalidArgumentRetieveOptOutStatusOrchestrationException =
@@ -37,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // when
             ValueTask<string> RetrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(invalidData, randomString);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(invalidStream, randomString);
 
             OptOutOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(RetrieveOptOutStatusTask.AsTask);
@@ -69,6 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             var randomString = GetRandomString();
             byte[] randomBytes = Encoding.UTF8.GetBytes(randomString);
+            Stream inputStream = new MemoryStream(randomBytes);
 
             var invalidArgumentRetieveOptOutStatusOrchestrationException =
                 new InvalidArgumentOptOutOrchestrationException(
@@ -86,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // when
             ValueTask<string> RetrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, invalidText);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputStream, invalidText);
 
             OptOutOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(RetrieveOptOutStatusTask.AsTask);

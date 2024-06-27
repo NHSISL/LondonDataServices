@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
@@ -26,6 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var randomString = GetRandomString();
             var inputString = randomString;
             var inputBytes = Encoding.ASCII.GetBytes(inputString);
+            Stream inputStream = new MemoryStream(inputBytes);
             var randomRecieveName = GetRandomString();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DateTimeOffset expireDate = randomDateTimeOffset.AddDays(-optOutConfiguration.ExpiredAfterDays);
@@ -93,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             //    service.AddDocumentAsync(document, It.IsAny<string>()));
 
             // when
-            await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputBytes, randomRecieveName);
+            await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputStream, randomRecieveName);
 
             // then
             this.csvHelperBrokerMock.Verify(processing =>

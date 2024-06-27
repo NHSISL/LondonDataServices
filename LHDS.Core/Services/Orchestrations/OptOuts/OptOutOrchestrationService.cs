@@ -16,6 +16,7 @@ using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Mesh;
@@ -186,102 +187,125 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 ValidateConfigurationSettings();
                 bool withHeader = this.optOutConfiguration.OptOutFileHasHeader;
-
                 List<string> messageIds;
                 List<MeshMessage> meshMessageList = new List<MeshMessage>();
+                var exceptions = new List<Exception>();
 
                 while ((messageIds = await this.meshProcessingService.RetrieveMessageIdsFromInboxAsync()).Count > 0)
                 {
                     foreach (string messageId in messageIds)
                     {
-                        MeshMessage message = await meshProcessingService.RetrieveMessageByIdAsync(messageId);
-
-                        if (GetKeyStringValue("mex-workflowid", message.Headers) != this.optOutConfiguration.WorkflowId)
+                        try
                         {
-                            continue;
-                        }
-
-                        meshMessageList.Add(message);
-                        string[] delimiters = { "\r\n", "\n" };
-
-                        List<string> consentedIdentifiers = Encoding.UTF8
-                            .GetString(message.FileContent)
-                                .Replace(",", string.Empty)
-                                    .Split(delimiters, StringSplitOptions.RemoveEmptyEntries).ToList();
-
-                        ValidateLocalIdHeaderExists(message);
-
-                        string batchReference = GetHeaderValue(message, "mex-localid");
-
-                        ValidateBacthReferenceExists(batchReference);
-
-                        List<OptOut> originalBatch = await this.optOutProcessingService
-                            .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
-
-                        List<OptOut> delta = await this.optOutProcessingService
-                            .ConsolidateOptOutChangesAndReturnChangesOnly(originalBatch, consentedIdentifiers);
-
-                        if (delta?.Count > 0)
-                        {
-                            List<OptOutIdentifier> differentIdentifiers = delta
-                                .Select(identifier => new OptOutIdentifier
-                                {
-                                    NhsNumber = identifier.NhsNumber,
-                                    UniqueReference = identifier.UniqueReference,
-                                    Status = identifier.Status,
-                                    StatusChangedDateTime = identifier.CacheTime
-                                }).ToList();
-
-                            string csvDifferences = await this.csvHelperBroker
-                                .MapObjectToCsvAsync(
-                                    @object: differentIdentifiers,
-                                    addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
-                                    shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
-
-                            string fileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
-
-                            ValidateDocumentRequirements(csvDifferences, fileName);
-
-                            Document document = new Document
+                            MeshMessage returnedMessage = await TryCatch(async () =>
                             {
-                                DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                                FileName = fileName
-                            };
+                                MeshMessage message = await meshProcessingService.RetrieveMessageByIdAsync(messageId);
 
-                            await this.documentProcessingService.AddDocumentAsync(document, blobContainers.OptOut);
+                                if (GetKeyStringValue("mex-workflowid", message.Headers) !=
+                                    this.optOutConfiguration.WorkflowId)
+                                {
+                                    return null;
+                                }
+
+                                string[] delimiters = { "\r\n", "\n" };
+
+                                List<string> consentedIdentifiers = Encoding.UTF8
+                                    .GetString(message.FileContent)
+                                        .Replace(",", string.Empty)
+                                            .Split(delimiters, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+                                ValidateLocalIdHeaderExists(message);
+                                string batchReference = GetHeaderValue(message, "mex-localid");
+                                ValidateBacthReferenceExists(batchReference);
+
+                                List<OptOut> originalBatch = await this.optOutProcessingService
+                                    .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
+
+                                List<OptOut> delta = await this.optOutProcessingService
+                                    .ConsolidateOptOutChangesAndReturnChangesOnly(originalBatch, consentedIdentifiers);
+
+                                if (delta?.Count > 0)
+                                {
+                                    List<OptOutIdentifier> differentIdentifiers = delta
+                                        .Select(identifier => new OptOutIdentifier
+                                        {
+                                            NhsNumber = identifier.NhsNumber,
+                                            UniqueReference = identifier.UniqueReference,
+                                            Status = identifier.Status,
+                                            StatusChangedDateTime = identifier.CacheTime
+                                        }).ToList();
+
+                                    string csvDifferences = await this.csvHelperBroker
+                                        .MapObjectToCsvAsync(
+                                            @object: differentIdentifiers,
+                                            addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
+                                            shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                                    string fileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
+
+                                    ValidateDocumentRequirements(csvDifferences, fileName);
+
+                                    Document document = new Document
+                                    {
+                                        DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                                        FileName = fileName
+                                    };
+
+                                    await this.documentProcessingService.AddDocumentAsync(document, blobContainers.OptOut);
+                                }
+
+                                await this.meshProcessingService.AcknowledgeMessageByIdAsync(messageId);
+
+                                return message;
+                            });
+
+                            if (returnedMessage == null)
+                            {
+                                continue;
+                            }
+
+                            meshMessageList.Add(returnedMessage);
                         }
-
-                        await this.meshProcessingService.AcknowledgeMessageByIdAsync(messageId);
+                        catch (Exception ex)
+                        {
+                            exceptions.Add(ex);
+                        }
+                    }
+                    if (exceptions.Any())
+                    {
+                        throw new AggregateException(
+                            $"Unable to retrieve message for {exceptions.Count} message IDs",
+                            exceptions);
                     }
                 }
 
                 return meshMessageList;
             });
 
-        private static string GetHeaderValue(MeshMessage message, string keyToFind)
-        {
-            List<string>? value = new List<string>();
+    private static string GetHeaderValue(MeshMessage message, string keyToFind)
+    {
+        List<string>? value = new List<string>();
 
-            foreach (var key in message.Headers.Keys)
+        foreach (var key in message.Headers.Keys)
+        {
+            if (key.ToLower() == keyToFind.ToLower())
             {
-                if (key.ToLower() == keyToFind.ToLower())
-                {
-                    message.Headers.TryGetValue(key, out value);
+                message.Headers.TryGetValue(key, out value);
 
-                    break;
-                }
+                break;
             }
-
-            return value?.FirstOrDefault() ?? string.Empty;
         }
 
-        private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)
-        {
-            var value = dictionary.ContainsKey(key)
-                ? dictionary[key]?.First()
-                : string.Empty;
-
-            return value ?? string.Empty;
-        }
+        return value?.FirstOrDefault() ?? string.Empty;
     }
+
+    private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)
+    {
+        var value = dictionary.ContainsKey(key)
+            ? dictionary[key]?.First()
+            : string.Empty;
+
+        return value ?? string.Empty;
+    }
+}
 }

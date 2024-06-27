@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
+using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
@@ -23,6 +24,126 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             try
             {
                 return await returningFunction();
+            }
+            catch (NullBlobContainersOptOutOrchestrationException nullBlobContainersOptOutOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullBlobContainersOptOutOrchestrationException);
+            }
+            catch (NullConfigOptOutOrchestrationException nullConfigOptOutOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullConfigOptOutOrchestrationException);
+            }
+            catch (InvalidConfigOptOutOrchestrationException invalidConfigOptOutOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidConfigOptOutOrchestrationException);
+            }
+            catch (InvalidArgumentOptOutOrchestrationException invalidArgumentRetieveOptOutStatusOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentRetieveOptOutStatusOrchestrationException);
+            }
+            catch (OptOutOrchestrationDependencyValidationException optOutOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(optOutOrchestrationDependencyValidationException);
+            }
+            catch (OptOutProcessingValidationException csvMapperProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvMapperProcessingValidationException);
+            }
+            catch (OptOutProcessingDependencyValidationException csvMapperProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvMapperProcessingDependencyValidationException);
+            }
+            catch (MeshProcessingValidationException meshProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshProcessingValidationException);
+            }
+            catch (MeshProcessingDependencyValidationException meshProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
+            }
+            catch (DocumentProcessingValidationException meshProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshProcessingValidationException);
+            }
+            catch (DocumentProcessingDependencyValidationException meshProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
+            }
+            catch (CsvHelperClientValidationException csvHelperClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+            }
+            catch (OptOutOrchestrationDependencyException optOutOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+            }
+            catch (OptOutOrchestrationServiceException optOutOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+            }
+            catch (OptOutProcessingDependencyException optOutOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+            }
+            catch (OptOutProcessingServiceException optOutOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+            }
+            catch (MeshProcessingDependencyException optOutOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+            }
+            catch (MeshProcessingServiceException optOutOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+            }
+            catch (DocumentProcessingDependencyException optOutOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+            }
+            catch (DocumentProcessingServiceException optOutOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+            }
+            catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+            }
+            catch (CsvHelperClientServiceException csvHelperClientServiceException)
+            {
+                throw CreateAndLogDependencyException(csvHelperClientServiceException);
+            }
+
+            catch (InvalidMeshMessageOrchestrationException invalidMeshMessageOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidMeshMessageOrchestrationException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedOptOutOrchestrationServiceException =
+                    new FailedOptOutOrchestrationServiceException(
+                        message: "Failed opt out aggregate orchestration service error occurred, " +
+                            "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedOptOutOrchestrationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedOptOutServiceException =
+                    new FailedOptOutOrchestrationServiceException(
+                        message: "Failed opt out orchestration service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedOptOutServiceException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
             }
             catch (NullBlobContainersOptOutOrchestrationException nullBlobContainersOptOutOrchestrationException)
             {

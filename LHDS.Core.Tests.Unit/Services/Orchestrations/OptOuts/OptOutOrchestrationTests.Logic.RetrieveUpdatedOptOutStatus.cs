@@ -160,7 +160,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 Document testDocument = new Document
                 {
-                    DocumentData = new MemoryStream(Encoding.ASCII.GetBytes(csvDifferences)),
+                    DocumentData = new MemoryStream(Encoding.UTF8.GetBytes(csvDifferences)),
                     FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv"
                 };
 
@@ -257,7 +257,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     Document document = new Document
                     {
-                        //DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                        //DocumentData = Encoding.UTF8.GetBytes(csvDifferences),
                         FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv",
                     };
 

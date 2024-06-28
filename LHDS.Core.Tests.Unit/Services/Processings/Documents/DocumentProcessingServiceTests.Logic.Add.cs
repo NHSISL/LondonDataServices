@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             // Given
             var randomContainer = GetRandomString();
             var randomFileName = GetRandomString();
-            var randomfileData = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomfileData = Encoding.UTF8.GetBytes(GetRandomString());
             Stream randomStream = new MemoryStream(randomfileData);
 
             // When

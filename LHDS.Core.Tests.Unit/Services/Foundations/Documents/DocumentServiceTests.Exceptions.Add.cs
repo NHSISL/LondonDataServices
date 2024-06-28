@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             // given
             string encryptedFileContainer = "emislanding";
             string randomString = GetRandomString();
-            byte[] randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] randomBytes = Encoding.UTF8.GetBytes(GetRandomString());
             Stream someStream = new MemoryStream(randomBytes);
             string randomMessage = GetRandomString();
 
@@ -83,7 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             // given
             string encryptedFileContainer = "emislanding";
             var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomBytes = Encoding.UTF8.GetBytes(GetRandomString());
             Stream someStream = new MemoryStream(randomBytes);
             var randomMessage = GetRandomString();
 
@@ -140,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             // given
             string encryptedFileContainer = "emislanding";
             var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomBytes = Encoding.UTF8.GetBytes(GetRandomString());
             Stream someStream = new MemoryStream(randomBytes);
             var randomMessage = GetRandomString();
 

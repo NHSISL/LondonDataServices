@@ -151,7 +151,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 Download storageFileDownload = inputFileDownload.DeepClone();
 
                 Stream downloadedContent = new MemoryStream(
-                    Encoding.ASCII.GetBytes(externalFileName));
+                    Encoding.UTF8.GetBytes(externalFileName));
 
                 this.downloadProcessingServiceMock
                     .Setup(service =>
@@ -228,7 +228,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 Download storageFileDownload = inputFileDownload.DeepClone();
 
                 Stream downloadedContent = new MemoryStream(
-                    Encoding.ASCII.GetBytes(externalFileName));
+                    Encoding.UTF8.GetBytes(externalFileName));
 
                 this.downloadProcessingServiceMock.Verify(service =>
                     service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputFileDownload))),

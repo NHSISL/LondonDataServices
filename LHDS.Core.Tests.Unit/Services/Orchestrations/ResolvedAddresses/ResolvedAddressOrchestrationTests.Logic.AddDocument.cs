@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Given
             var randomContainer = GetRandomString();
             var randomFileName = GetRandomString();
-            var randomfileData = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomfileData = Encoding.UTF8.GetBytes(GetRandomString());
 
             // When
             await this.resolvedAddressOrchestrationService

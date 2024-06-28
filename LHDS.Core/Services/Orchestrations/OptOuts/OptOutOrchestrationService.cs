@@ -111,16 +111,19 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     processedOptOuts.Add(item);
                 }
 
-                var processedData = await this.csvHelperBroker
+                string processedData = await this.csvHelperBroker
                     .MapObjectToCsvAsync(processedOptOuts, withHeader, fieldMappings, shouldAddTrailingComma);
 
-                var processedBytes = Encoding.ASCII.GetBytes(processedData);
+                byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
+
+                string csvFileName = $"{optOutConfiguration.OutputFolder}/" +
+                    $"{Path.GetFileNameWithoutExtension(fileName)}_Response.csv";
 
                 using (Stream processed = new MemoryStream(processedBytes))
                 {
                     await this.documentProcessingService.AddDocumentAsync(
                         input: processed,
-                        fileName,
+                        csvFileName,
                         container: blobContainers.OptOut);
                 }
 
@@ -238,7 +241,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                             string fileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
                             ValidateDocumentRequirements(csvDifferences, fileName);
-                            byte[] csvDifferencesBytes = Encoding.ASCII.GetBytes(csvDifferences);
+                            byte[] csvDifferencesBytes = Encoding.UTF8.GetBytes(csvDifferences);
 
                             using (Stream input = new MemoryStream(csvDifferencesBytes))
                             {

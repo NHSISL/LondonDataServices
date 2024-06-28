@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             List<string> randomFileNames = GetRandomStrings();
             string randomFileName = randomFileNames.Last();
             string inputFileName = randomFileName;
-            Stream randomData = new MemoryStream(Encoding.ASCII.GetBytes(GetRandomString()));
+            Stream randomData = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
             Stream inputData = randomData;
 
             List<IngestionTracking> randomIngestionTrackings =
@@ -274,7 +274,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             this.documentProcessingServiceMock
                 .Setup(service =>
                     service.AddDocumentAsync(inputStream, randomIngestionTracking.DecryptedFileName, inputContainer))
-                .Callback(() => { })
                 .Returns(ValueTask.CompletedTask);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>

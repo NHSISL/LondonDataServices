@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.OptOuts;
 using Moq;
 using Xunit;
@@ -26,13 +25,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             var randomString = GetRandomString();
             var inputString = randomString;
-            var inputBytes = Encoding.ASCII.GetBytes(inputString);
+            var inputBytes = Encoding.UTF8.GetBytes(inputString);
             Stream inputStream = new MemoryStream(inputBytes);
-            var randomRecieveName = GetRandomString();
+            var randomRecieveName = $"{GetRandomString()}.csv";
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DateTimeOffset expireDate = randomDateTimeOffset.AddDays(-optOutConfiguration.ExpiredAfterDays);
             List<OptOutIdentifier> randomOptOuts = CreateRandomOptOutIdentifiersList();
             List<OptOutIdentifier> outputOptOuts = randomOptOuts;
+            string inputContainer = "optout";
 
             this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))
@@ -41,6 +41,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.identifierBrokerMock.Setup(processing =>
                 processing.GetIdentifier())
                     .Returns(identifier);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
 
             List<OptOut> processedOptOuts = new List<OptOut>();
 
@@ -79,25 +83,32 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     shouldAddTrailingComma))
                         .ReturnsAsync(processedString);
 
-            var processedBytes = Encoding.ASCII.GetBytes(processedString);
+            var processedBytes = Encoding.UTF8.GetBytes(processedString);
+            Stream csvInputStream = new MemoryStream(processedBytes);
+            Stream expectedStream = csvInputStream;
+            Stream actualStream = new MemoryStream();
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+            string csvInputFileName = $"{optOutConfiguration.OutputFolder}/" +
+                $"{Path.GetFileNameWithoutExtension(randomRecieveName)}_Response.csv";
 
-            Document document = new Document
-            {
-                FileName = $"{optOutConfiguration.OutputFolder}/{randomRecieveName}_Response.csv",
-                //DocumentData = processedBytes
-            };
-
-            //this.documentProcessingServiceMock.Setup(service =>
-            //    service.AddDocumentAsync(document, It.IsAny<string>()));
+            this.documentProcessingServiceMock
+                .Setup(service => service.AddDocumentAsync(
+                    It.Is(SameStreamAs(csvInputStream)),
+                    csvInputFileName,
+                    inputContainer))
+                .Callback<Stream, string, string>((stream, fileName, container) =>
+                {
+                    stream.Position = 0;
+                    stream.CopyTo(actualStream);
+                })
+                .Returns(ValueTask.CompletedTask);
 
             // when
             await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputStream, randomRecieveName);
 
             // then
+            Assert.True(IsSameStream(actualStream, expectedStream));
+
             this.csvHelperBrokerMock.Verify(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings),
                     Times.Once);
@@ -142,9 +153,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     shouldAddTrailingComma),
                         Times.Once);
 
-            //this.documentProcessingServiceMock.Verify(service =>
-            //    service.AddDocumentAsync(It.Is(SameDocumentAs(document)), It.IsAny<string>()),
-            //        Times.Once);
+            this.documentProcessingServiceMock.Verify(service =>
+                service.AddDocumentAsync(It.IsAny<Stream>(), csvInputFileName, inputContainer),
+                    Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

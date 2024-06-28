@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             // given
             var randomContainer = GetRandomString();
             var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomBytes = Encoding.UTF8.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
 
             Document inputDocument = new Document
@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             // given
             var randomContainer = GetRandomString();
             var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomBytes = Encoding.UTF8.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
 
             Document inputDocument = new Document
@@ -123,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             // given
             var randomContainer = GetRandomString();
             var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomBytes = Encoding.UTF8.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
 
             Document inputDocument = new Document

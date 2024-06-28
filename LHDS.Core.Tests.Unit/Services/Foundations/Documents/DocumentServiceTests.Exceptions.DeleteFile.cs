@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             Document randomDocument = new Document
             {
                 FileName = randomFileName,
-                DocumentData = new MemoryStream(Encoding.ASCII.GetBytes(GetRandomString()))
+                DocumentData = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()))
             };
 
             var requestFailedException = new RequestFailedException(randomMessage);
@@ -81,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             Document randomDocument = new Document
             {
                 FileName = randomFileName,
-                DocumentData = new MemoryStream(Encoding.ASCII.GetBytes(GetRandomString()))
+                DocumentData = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()))
             };
 
             var serviceException = new Exception(randomMessage);

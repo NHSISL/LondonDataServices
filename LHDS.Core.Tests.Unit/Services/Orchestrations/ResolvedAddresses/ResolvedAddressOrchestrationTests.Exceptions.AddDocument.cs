@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // given
             var randomContainer = GetRandomString();
             var randomFileName = GetRandomString();
-            var randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomData = Encoding.UTF8.GetBytes(GetRandomString());
 
             var expectedResolvedAddressOrchestrationDependencyValidationException =
                 new ResolvedAddressOrchestrationDependencyValidationException(
@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // given
             var randomContainer = GetRandomString();
             var randomFileName = GetRandomString();
-            var randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomData = Encoding.UTF8.GetBytes(GetRandomString());
 
             var expectedResolvedAddressOrchestrationDependencyException =
                 new ResolvedAddressOrchestrationDependencyException(
@@ -111,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // given
             var randomContainer = GetRandomString();
             var randomFileName = GetRandomString();
-            var randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomData = Encoding.UTF8.GetBytes(GetRandomString());
             var serviceException = new Exception();
 
             var failedResolvedAddressOrchestrationServiceException =

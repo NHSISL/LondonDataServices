@@ -121,7 +121,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         public byte[] CreateRandomData()
         {
             string randomMessage = GetRandomString();
-            return Encoding.ASCII.GetBytes(randomMessage);
+            return Encoding.UTF8.GetBytes(randomMessage);
         }
 
         private static List<string> GetRandomStrings() =>

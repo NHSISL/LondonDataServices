@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             // Given
             string randomContainer = GetRandomString();
             string randomFileName = GetRandomString();
-            Stream randomStream = new MemoryStream(Encoding.ASCII.GetBytes(GetRandomString()));
+            Stream randomStream = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
 
             // When
             await this.documentService.AddDocumentAsync(

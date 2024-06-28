@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
            Xeption dependancyValidationException)
         {
             var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(randomString);
+            var randomBytes = Encoding.UTF8.GetBytes(randomString);
             var randomRecieveFileName = GetRandomString();
 
             var expectedDependencyException =
@@ -70,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         {
             // given
             var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(randomString);
+            var randomBytes = Encoding.UTF8.GetBytes(randomString);
             var randomRecieveFileName = GetRandomString();
 
             var expectedDependencyException =
@@ -115,7 +115,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         {
             // given
             var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(randomString);
+            var randomBytes = Encoding.UTF8.GetBytes(randomString);
             var randomRecieveFileName = GetRandomString();
 
             var serviceException = new Exception();

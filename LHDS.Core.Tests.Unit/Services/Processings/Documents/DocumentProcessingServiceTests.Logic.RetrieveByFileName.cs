@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             // Given
             string randomContainer = GetRandomString();
             string randomFileName = GetRandomString();
-            byte[] randomfileData = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] randomfileData = Encoding.UTF8.GetBytes(GetRandomString());
             byte[] expectedData = randomfileData;
             Stream returnedStream = new MemoryStream(randomfileData);
             Stream randomStream = new MemoryStream();

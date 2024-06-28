@@ -35,7 +35,7 @@ namespace LHDS.Functions.OptOut
 
             try
             {
-                byte[] optOutFile = Encoding.ASCII.GetBytes(myBlob);
+                byte[] optOutFile = Encoding.UTF8.GetBytes(myBlob);
                 await optOutClient.RetrieveOptOutStatusAsync(optOutFile, fileName: name);
             }
             catch (Exception ex)

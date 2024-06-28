@@ -94,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         public byte[] CreateRandomData()
         {
             string randomMessage = GetRandomString();
-            return Encoding.ASCII.GetBytes(randomMessage);
+            return Encoding.UTF8.GetBytes(randomMessage);
         }
 
         private static int GetRandomNumber() =>

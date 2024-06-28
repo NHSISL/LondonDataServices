@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             // given
             var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(randomString);
+            var randomBytes = Encoding.UTF8.GetBytes(randomString);
             Stream randomStream = new MemoryStream(randomBytes);
             var randomRecieveName = GetRandomString();
 
@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             // given
             var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(randomString);
+            var randomBytes = Encoding.UTF8.GetBytes(randomString);
             Stream randomStream = new MemoryStream(randomBytes);
             var randomRecieveName = GetRandomString();
 
@@ -128,7 +128,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             // given
             string randomString = GetRandomString();
-            byte[] randomBytes = Encoding.ASCII.GetBytes(randomString);
+            byte[] randomBytes = Encoding.UTF8.GetBytes(randomString);
             Stream randomStream = new MemoryStream(randomBytes);
             var randomRecieveName = GetRandomString();
             var serviceException = new Exception();

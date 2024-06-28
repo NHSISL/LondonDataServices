@@ -172,7 +172,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 MeshMessage message = ComposeMessage.CreateMeshMessage(
                     mexTo: GetRandomString(),
                     mexWorkflowId,
-                    fileContent: Encoding.ASCII.GetBytes(GetRandomString()),
+                    fileContent: Encoding.UTF8.GetBytes(GetRandomString()),
                     mexSubject: GetRandomString(),
                     mexLocalId: Guid.NewGuid().ToString(),
                     mexFileName: fileName);

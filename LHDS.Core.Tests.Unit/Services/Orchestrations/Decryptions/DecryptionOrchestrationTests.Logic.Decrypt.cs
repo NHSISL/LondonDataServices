@@ -26,8 +26,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string randomFileName = GetRandomMessage();
-            byte[] randomEncryptedBytes = Encoding.ASCII.GetBytes(GetRandomMessage());
-            byte[] randomDecryptedBytes = Encoding.ASCII.GetBytes(GetRandomMessage());
+            byte[] randomEncryptedBytes = Encoding.UTF8.GetBytes(GetRandomMessage());
+            byte[] randomDecryptedBytes = Encoding.UTF8.GetBytes(GetRandomMessage());
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
             randomIngestionTracking.FileName = randomFileName;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;

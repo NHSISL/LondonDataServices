@@ -65,6 +65,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 blobContainers: blobContainers);
         }
 
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
+        {
+            return actualStream =>
+                IsSameStream(expectedStream, actualStream);
+        }
+
         private static bool IsSameStream(Stream expectedStream, Stream actualStream)
         {
             byte[] expectedBytes = ReadAllBytesFromStream(expectedStream);

@@ -172,7 +172,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             }
         }
 
-
         private X509Certificate2Collection GetCertificates(List<string> values)
         {
             var certificates = new X509Certificate2Collection();

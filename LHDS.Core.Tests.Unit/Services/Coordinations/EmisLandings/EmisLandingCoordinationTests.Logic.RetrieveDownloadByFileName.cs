@@ -5,8 +5,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Moq;
 using Xunit;
@@ -20,42 +18,47 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         {
             // given
             Guid subscriberCredentailId = Guid.NewGuid();
-            string fileName = CreateRandomSubscriberCredentialIdFileName(subscriberCredentailId);
+            string outputFileName = CreateRandomSubscriberCredentialIdFileName(subscriberCredentailId);
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential(subscriberCredentailId);
             SubscriberCredential storageSubscriberCredential = randomSubscriberCredential;
-            Document randomDocument = CreateRandomDocument();
-            randomDocument.FileName = fileName;
-            randomDocument.SHA256Hash = string.Empty;
-            Document storageDocument = randomDocument.DeepClone();
-            Document expectedDocument = storageDocument.DeepClone();
+            Stream downloadStream = new MemoryStream(CreateRandomData());
+            Stream expectedStream = downloadStream;
+            Stream outputStream = new MemoryStream();
+            Stream actualStream = outputStream;
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
                 service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentailId, false)).
                     ReturnsAsync(storageSubscriberCredential);
 
-            //this.emisLandingOrchestrationServiceMock.Setup(service =>
-            //    service.RetrieveDownloadByFileNameAsync(
-            //        fileName,
-            //        It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))))
-            //            .ReturnsAsync(storageDocument.DocumentData);
+            this.emisLandingOrchestrationServiceMock
+                .Setup(service => service.RetrieveDownloadByFileNameAsync(
+                    It.Is(SameStreamAs(outputStream)),
+                    outputFileName,
+                    It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))))
+                .Callback<Stream, string, SubscriberCredential>((output, fileName, subscriberCredential) =>
+                {
+                    downloadStream.Position = 0;
+                    downloadStream.CopyTo(outputStream);
+                })
+                .Returns(ValueTask.CompletedTask);
 
             // when
             await this.emisLandingCoordinationService
-                .RetrieveDownloadByFileNameAsync(output: new MemoryStream(), fileName);
+                .RetrieveDownloadByFileNameAsync(output: new MemoryStream(), outputFileName);
 
             // then
-            Assert.Fail();
-            //actualDocument.Should().BeEquivalentTo(expectedDocument);
+            Assert.True(IsSameStream(expectedStream, actualStream));
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
                 service.RetrieveSubscriberCredentialByIdAsync(subscriberCredentailId, false),
                     Times.Once());
 
-            //this.emisLandingOrchestrationServiceMock.Verify(service =>
-            //    service.RetrieveDownloadByFileNameAsync(
-            //        fileName,
-            //        It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))),
-            //            Times.Once);
+            this.emisLandingOrchestrationServiceMock.Verify(service =>
+                service.RetrieveDownloadByFileNameAsync(
+                    It.IsAny<Stream>(),
+                    outputFileName,
+                    It.Is(SameSubscriberCredentialAs(storageSubscriberCredential))),
+                        Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
             this.emisLandingOrchestrationServiceMock.VerifyNoOtherCalls();

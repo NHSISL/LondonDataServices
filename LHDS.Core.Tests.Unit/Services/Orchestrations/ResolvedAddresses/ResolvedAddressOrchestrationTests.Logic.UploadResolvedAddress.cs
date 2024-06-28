@@ -4,11 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Moq;
 using Xunit;
@@ -29,15 +29,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             List<ResolvedAddressReturn> returnResolvedAddresses = MapToResolvedAddressReturn(storageResolvedAddresses);
             string ouputCsv = GetRandomString();
             byte[] inputData = Encoding.UTF8.GetBytes(ouputCsv);
+            Stream inputStream = new MemoryStream(inputData);
+            Stream expectedStream = inputStream;
+            Stream actualStream = new MemoryStream();
             Guid batchReference = Guid.NewGuid();
-            string fileName = $"{batchReference}.csv";
-            string container = blobContainers.Addresses;
-
-            Document inputDocument = new Document
-            {
-                //DocumentData = inputData,
-                FileName = fileName
-            };
+            string inputFileName = $"{batchReference}.csv";
+            string inputContainer = blobContainers.Addresses;
 
             this.resolvedAddressProcessingServiceMock.Setup(service =>
                 service.RetrieveAllResolvedAddresses()).
@@ -51,6 +48,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.MapObjectToCsvAsync(
                     It.Is(SameResolvedAddressReturnsAs(returnResolvedAddresses)), false, null, true))
                         .ReturnsAsync(ouputCsv);
+
+            this.documentProcessingServiceMock
+                .Setup(service => service.AddDocumentAsync(
+                    It.Is(SameStreamAs(inputStream)),
+                    inputFileName,
+                    inputContainer))
+                .Callback<Stream, string, string>((input, fileName, container) =>
+                {
+                    input.Position = 0;
+                    input.CopyTo(actualStream);
+                })
+                .Returns(ValueTask.CompletedTask);
 
             foreach (ResolvedAddress resolvedAddress in updatedResolvedAddresses)
             {
@@ -71,6 +80,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 await this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
 
             // Then
+            Assert.True(IsSameStream(expectedStream, actualStream));
+
             this.resolvedAddressProcessingServiceMock.Verify(service =>
                 service.RetrieveAllResolvedAddresses(),
                     Times.Once);
@@ -84,13 +95,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     It.Is(SameResolvedAddressReturnsAs(returnResolvedAddresses)), false, null, true),
                         Times.Once);
 
-            //this.documentProcessingServiceMock.Verify(service =>
-            //    service.AddDocumentAsync(It.Is(SameDocumentAs(inputDocument)), container),
-            //        Times.Once);
+            this.documentProcessingServiceMock.Verify(service =>
+                service.AddDocumentAsync(It.IsAny<Stream>(), inputFileName, inputContainer),
+                    Times.Once);
 
-            //this.dateTimeBrokerMock.Verify(broker =>
-            //    broker.GetCurrentDateTimeOffset(),
-            //        Times.Exactly(storageResolvedAddresses.Count));
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Exactly(storageResolvedAddresses.Count));
 
             foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
             {

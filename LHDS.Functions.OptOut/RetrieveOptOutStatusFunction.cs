@@ -3,7 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
@@ -26,7 +26,7 @@ namespace LHDS.Functions.OptOut
 
         [Function("RetrieveOptOutStatusFunction")]
         public async Task Run(
-            [BlobTrigger("optout/in/{name}", Connection = "BlobStorage")] string myBlob, string name)
+            [BlobTrigger("optout/in/{name}", Connection = "BlobStorage")] Stream myBlob, string name)
         {
             this.loggingBroker
                 .LogInformation(
@@ -35,8 +35,7 @@ namespace LHDS.Functions.OptOut
 
             try
             {
-                byte[] optOutFile = Encoding.UTF8.GetBytes(myBlob);
-                await optOutClient.RetrieveOptOutStatusAsync(optOutFile, fileName: name);
+                await optOutClient.RetrieveOptOutStatusAsync(input: myBlob, fileName: name);
             }
             catch (Exception ex)
             {

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -95,8 +96,11 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                     string errorPath = String.Join("/", splitFilePath);
                     string addressContainer = this.blobContainers.Addresses;
 
-                    await this.resolvedAddressOrchestrationService.
-                        AddDocumentAsync(data, fileName: errorPath, container: addressContainer);
+                    using (Stream input = new MemoryStream(data))
+                    {
+                        await this.resolvedAddressOrchestrationService.
+                            AddDocumentAsync(data, fileName: errorPath, container: addressContainer);
+                    }
 
                     await this.resolvedAddressOrchestrationService.
                         RemoveDocumentByFileNameAsync(filename, container: addressContainer);

@@ -92,14 +92,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             Guid randomGuid = Guid.NewGuid();
             Guid randomSupplierId = Guid.NewGuid();
+            Guid inputSupplierId = randomSupplierId;
             DataSet randomDataSet = CreateRandomDataSet(supplierId: randomSupplierId);
             string randomHash = GetRandomString(64);
             int randomNumber = GetRandomNumber();
 
             List<string> randomFileNames = GetRandomStrings();
             List<string> inputFileNames = randomFileNames;
-            string randomFileName = randomFileNames.Last();
-            string inputFileName = randomFileName;
+
             byte[] randomData = CreateRandomData();
             byte[] inputData = randomData;
             Stream inputDataStream = new MemoryStream(inputData);
@@ -114,7 +114,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                CreateRandomDataSetSpecifications(dataSet: randomDataSet);
 
             DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
-            IngestionTracking randomIngestionTracking = randomIngestionTrackings.Last();
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
+            string inputFileName = randomIngestionTracking.FileName;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
 
@@ -135,36 +136,36 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                    .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
 
             var filename = inputFileName.StartsWith('/')
-                   ? inputFileName
-                   : "/" + inputFileName;
+                ? inputFileName
+                : "/" + inputFileName;
 
             IngestionTracking newIngestionTracking =
-                   new IngestionTracking
-                   {
-                       Id = randomGuid,
-                       FileName = filename,
-                       SupplierId = randomSupplierId,
-                       EncryptedFileName = null,
+                new IngestionTracking
+                {
+                    Id = randomGuid,
+                    FileName = filename,
+                    SupplierId = randomSupplierId,
+                    EncryptedFileName = null,
 
-                       DecryptedFileName =
-                                $"/{landingConfiguration.DecryptedFolder}"
-                                + $"/{randomDataSet.DataSetName}"
-                                + $"/{randomDataSetSpecification.Id}"
-                                + $"{filename}",
+                    DecryptedFileName =
+                        $"/{landingConfiguration.DecryptedFolder}"
+                        + $"/{randomDataSet.DataSetName}"
+                        + $"/{randomDataSetSpecification.Id}"
+                        + $"{filename}",
 
-                       Decrypted = false,
-                       LastSeen = randomDateTime,
-                       FileDeleted = false,
-                       RecordCount = 0,
-                       EncryptedFileSize = inputData.Length,
-                       EncryptedFileSha256Hash = randomHash,
-                       DecryptedFileSize = 0,
-                       DecryptedFileSha256Hash = string.Empty,
-                       CreatedBy = "System",
-                       CreatedDate = randomDateTime,
-                       UpdatedBy = "System",
-                       UpdatedDate = randomDateTime
-                   };
+                    Decrypted = false,
+                    LastSeen = randomDateTime,
+                    FileDeleted = false,
+                    RecordCount = 0,
+                    EncryptedFileSize = inputData.Length,
+                    EncryptedFileSha256Hash = randomHash,
+                    DecryptedFileSize = 0,
+                    DecryptedFileSha256Hash = string.Empty,
+                    CreatedBy = "System",
+                    CreatedDate = randomDateTime,
+                    UpdatedBy = "System",
+                    UpdatedDate = randomDateTime
+                };
 
             IngestionTracking savedIngestionTracking = newIngestionTracking.DeepClone();
 
@@ -187,7 +188,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(
                 input: inputDataStream,
                 fileName: inputFileName,
-                supplierId: randomIngestionTracking.SupplierId);
+                supplierId: inputSupplierId);
 
             // then
 

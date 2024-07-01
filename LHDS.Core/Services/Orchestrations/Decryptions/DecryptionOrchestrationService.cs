@@ -65,7 +65,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 var ingestionTracking = await this.ingestionTrackingService
                     .RetrieveIngestionTrackingByEncryptedFileNameAsync(encryptedFileName);
 
-                long lines = 0;
+                long recordCount = 0;
                 string decryptedFileSha256Hash = string.Empty;
                 long fileSize = 0;
 
@@ -88,7 +88,6 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                         this.hashBroker.GenerateSha256Hash(decryptedDocument);
 
                     fileSize = decryptedDocument?.Length ?? 0;
-                    lines = CountLines(decryptedDocument);
 
                     await this.documentService.AddDocumentAsync(
                         input: decryptedDocument,
@@ -98,7 +97,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
                 ingestionTracking.Decrypted = true;
-                ingestionTracking.RecordCount = lines;
+                ingestionTracking.RecordCount = 0;
                 ingestionTracking.DecryptedFileSize = fileSize;
                 ingestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
                 ingestionTracking.IsProcessing = false;
@@ -111,34 +110,6 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 return ingestionTracking.DecryptedFileName;
             });
-
-        static long CountLines(Stream input)
-        {
-            const int bufferSize = 1024 * 1024;
-            byte[] buffer = new byte[bufferSize];
-            int count = 0;
-            int bytesRead;
-            bool lastWasNewLine = true;
-
-            while ((bytesRead = input.Read(buffer, 0, bufferSize)) > 0)
-            {
-                for (int i = 0; i < bytesRead; i++)
-                {
-                    if (buffer[i] == '\n')
-                    {
-                        count++;
-                    }
-                }
-                lastWasNewLine = (buffer[bytesRead - 1] == '\n');
-            }
-
-            if (!lastWasNewLine)
-            {
-                count++;
-            }
-
-            return count;
-        }
 
         public ValueTask<string?> GetNextItemToBeDecrypted() =>
             TryCatch(async () =>

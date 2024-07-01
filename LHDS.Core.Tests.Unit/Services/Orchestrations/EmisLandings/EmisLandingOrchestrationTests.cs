@@ -214,8 +214,42 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         private Expression<Func<Download, bool>> SameDownloadAs(Download expectedDownload)
         {
             return actualDownload =>
-                this.compareLogic.Compare(expectedDownload, actualDownload).AreEqual;
+                IsSameSubsciberCredentialAs(
+                    expectedDownload.SubscriberCredential,
+                    actualDownload.SubscriberCredential)
+
+                && IsSameDocumentAs(
+                    expectedDownload.Document,
+                    actualDownload.Document);
         }
+
+        private bool IsSameDocumentAs(Document expectedDocument, Document actualDocument)
+        {
+            if (expectedDocument == actualDocument)
+            {
+                return true;
+            }
+
+            bool sameFileName = expectedDocument.FileName == actualDocument.FileName;
+
+            return sameFileName;
+        }
+
+        private static bool IsSameStream(Stream expectedStream, Stream actualStream)
+        {
+            byte[] expectedBytes = ReadAllBytesFromStream(expectedStream);
+            byte[] actualBytes = ReadAllBytesFromStream(actualStream);
+
+            return new CompareLogic().Compare(expectedBytes, actualBytes).AreEqual;
+        }
+
+        private bool IsSameSubsciberCredentialAs(
+            SubscriberCredential expectedSubscriberCredential,
+            SubscriberCredential actualSubscriberCredential)
+        {
+            return this.compareLogic.Compare(expectedSubscriberCredential, actualSubscriberCredential).AreEqual;
+        }
+
 
         private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
         {

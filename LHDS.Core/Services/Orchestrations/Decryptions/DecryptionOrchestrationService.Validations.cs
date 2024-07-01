@@ -30,9 +30,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             }
         }
 
-        private static void ValidateStorageDocumentIsNotNull(Stream document, string encryptedFileName)
+        private static void ValidateStorageDocumentIsNotNull(Stream stream, string encryptedFileName)
         {
-            if (document is null)
+            if (stream is null || stream.Length == 0)
             {
                 throw new NotFoundDecryptionOrchestrationException(
                     message: $"Couldn't find document with file name: {encryptedFileName}.");

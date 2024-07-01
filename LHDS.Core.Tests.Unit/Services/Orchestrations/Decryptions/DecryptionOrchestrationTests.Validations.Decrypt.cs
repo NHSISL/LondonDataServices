@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -175,6 +176,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
             randomIngestionTracking.FileName = randomFileName;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
+            Stream outputStream = new MemoryStream();
+            Stream storageStream = new MemoryStream();
 
             var notFoundDecryptionOrchestrationException =
                 new NotFoundDecryptionOrchestrationException(
@@ -189,11 +192,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                service.RetrieveIngestionTrackingByEncryptedFileNameAsync(randomFileName))
                    .ReturnsAsync(storageIngestionTracking);
 
-            //this.documentServiceMock.Setup(service =>
-            //     service.RetrieveDocumentByFileNameAsync(
-            //         storageIngestionTracking.EncryptedFileName,
-            //         It.IsAny<string>()))
-            //             .Returns(null);
+            this.documentServiceMock
+                .Setup(service => service.RetrieveDocumentByFileNameAsync(
+                     storageStream,
+                     storageIngestionTracking.EncryptedFileName,
+                     It.IsAny<string>()))
+                .Callback<Stream, string, string>((stream, fileName, container) =>
+                {
+                    storageStream.Position = 0;
+                    storageStream.CopyTo(outputStream);
+                })
+                .Returns(ValueTask.CompletedTask);
 
             // when
             ValueTask<string> processTask = this.decryptionOrchestrationService
@@ -210,9 +219,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 service.RetrieveIngestionTrackingByEncryptedFileNameAsync(It.IsAny<string>()),
                     Times.Once);
 
-            //this.documentServiceMock.Verify(service =>
-            //    service.RetrieveDocumentByFileNameAsync(storageIngestionTracking.EncryptedFileName, It.IsAny<string>()),
-            //        Times.Once);
+            this.documentServiceMock.Verify(service =>
+                service.RetrieveDocumentByFileNameAsync(
+                    It.IsAny<Stream>(),
+                    storageIngestionTracking.EncryptedFileName,
+                    It.IsAny<string>()),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

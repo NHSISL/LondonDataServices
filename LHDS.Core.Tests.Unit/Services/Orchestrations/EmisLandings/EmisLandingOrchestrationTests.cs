@@ -145,6 +145,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             return filename;
         }
 
+        private static string CreateRandomFileName()
+        {
+            string filename = $"{GetRandomString()}/" +
+                   $"{GetRandomString()}/" +
+                   $"{GetRandomString()}/" +
+                   $"{GetRandomString()}/" +
+                   $"{0122235}/{GetRandomString(10)}_{GetRandomString(10)}_{GetRandomString(10)}_{GetRandomString(10)}";
+
+            return filename;
+        }
+
+
         private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
         {
             return $"emisnightingale-data-preprod-provider-extracts" +

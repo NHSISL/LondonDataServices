@@ -32,10 +32,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             Download inputDownload = new Download { SubscriberCredential = inputSubscriberCredential };
             Guid randomGuid = Guid.NewGuid();
-            Guid supplierId = landingConfiguration.LandingSupplierId;
+            Guid supplierId = randomGuid;
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            List<Document> randomDocuments = new List<Document>();
-            List<string> externalDownloadList = randomDocuments.Select(document => document.FileName).ToList();
+
+            List<string> randomDocuments = new List<string>()
+                {
+                    CreateRandomFileName()
+                };
+
+            List<string> externalDownloadList = randomDocuments;
             List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking>();
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
             string randomHash = GetRandomString(64);

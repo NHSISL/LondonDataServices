@@ -272,8 +272,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                             container: blobContainers.EmisLanding);
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    LogAudit(updatedIngestionTracking, $"Error Downloading {fileName};  " +
+                        $"Error: {ex.Message} {ex?.InnerException?.Message}");
+
                     throw;
                 }
                 finally

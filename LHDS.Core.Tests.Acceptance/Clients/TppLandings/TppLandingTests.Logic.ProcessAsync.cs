@@ -63,7 +63,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 $"/{landingConfiguration.DecryptedFolder}"
                 + $"/{activeDataSet.DataSetName}"
                 + $"/{activeDataSetSpecification?.Id}"
-                + $"/{randomDocument.FileName}";
+                + $"/{inputFileName}";
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                 decryptedFileName,

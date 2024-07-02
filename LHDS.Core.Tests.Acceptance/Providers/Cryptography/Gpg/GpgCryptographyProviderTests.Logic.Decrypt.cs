@@ -18,9 +18,6 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
             // Given
             string randomString = GetRandomString();
             byte[] randomBytes = Encoding.UTF8.GetBytes(randomString);
-            Stream randomStream = new MemoryStream(randomBytes);
-            Stream encryptedStream = new MemoryStream();
-            Stream decryptedStream = new MemoryStream();
             string expectedString = randomString;
             byte[] decryptedBytes;
 

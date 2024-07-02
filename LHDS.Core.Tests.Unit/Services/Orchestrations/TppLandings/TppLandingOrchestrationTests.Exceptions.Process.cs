@@ -3,9 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
 using Moq;
 using Xeptions;
@@ -22,11 +22,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         {
             // given
             Guid randomSupplierId = Guid.NewGuid();
-            Document randomDocument = CreateRandomDocument();
+            Stream randomStream = new MemoryStream(CreateRandomData());
+            Stream inputStream = randomStream;
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
 
             var expectedDependencyException =
                 new TppLandingOrchestrationDependencyValidationException(
-                    message: "TPP landing orchestration dependency validation error occurred, fix the errors and try again.",
+
+                    message: "TPP landing orchestration dependency validation error occurred, " +
+                        "fix the errors and try again.",
+
                     dependancyValidationException.InnerException as Xeption);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
@@ -35,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService
-                .ProcessAsync(document: randomDocument, supplierId: randomSupplierId);
+                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: randomSupplierId);
 
             TppLandingOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationDependencyValidationException>(processTask.AsTask);
@@ -68,7 +74,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         {
             // given
             Guid randomSupplierId = Guid.NewGuid();
-            Document randomDocument = CreateRandomDocument();
+            Stream randomStream = new MemoryStream(CreateRandomData());
+            Stream inputStream = randomStream;
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
 
             var expectedDependencyException =
                 new TppLandingOrchestrationDependencyException(
@@ -81,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService
-                .ProcessAsync(document: randomDocument, supplierId: randomSupplierId);
+                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: randomSupplierId);
 
             TppLandingOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationDependencyException>(processTask.AsTask);
@@ -112,7 +121,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         {
             //Given
             Guid randomSupplierId = Guid.NewGuid();
-            Document randomDocument = CreateRandomDocument();
+            Stream randomStream = new MemoryStream(CreateRandomData());
+            Stream inputStream = randomStream;
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
             var serviceException = new Exception();
 
             var failedTppOrchestrationServiceException =
@@ -131,7 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService
-                .ProcessAsync(document: randomDocument, supplierId: randomSupplierId);
+                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId: randomSupplierId);
 
             TppLandingOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationServiceException>(processTask.AsTask);

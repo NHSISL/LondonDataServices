@@ -35,14 +35,11 @@ namespace LHDS.Core.Services.Foundations.Downloads
                 return await this.downloadBroker.GetListOfDownloadsToProcessAsync(download);
             });
 
-        public ValueTask<Download> RetrieveDownloadByFileNameAsync(Download download) =>
+        public ValueTask RetrieveDownloadByFileNameAsync(Download download) =>
             TryCatch(async () =>
             {
                 ValidateOnRetrieveDownloadByFileName(download);
-                Download maybeDownload = await this.downloadBroker.GetDownloadByFileNameAsync(download);
-                ValidateStorageDownload(maybeDownload, download.Document.FileName);
-
-                return maybeDownload;
+                await this.downloadBroker.GetDownloadByFileNameAsync(download);
             });
     }
 }

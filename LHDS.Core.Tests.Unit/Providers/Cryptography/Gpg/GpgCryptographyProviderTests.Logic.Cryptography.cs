@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,27 +10,10 @@ using LHDS.Core.Brokers.CryptographyKeys;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
+namespace LHDS.Core.Tests.Unit.Providers.Cryptography.Gpg
 {
     public partial class GpgCryptographyProviderTests
     {
-        [Fact]
-        public async Task ShouldEncryptAndDecryptByteArrayAsync()
-        {
-            // Given
-            string randomString = GetRandomString();
-            byte[] randomBytes = Encoding.UTF8.GetBytes(randomString);
-            string expectedString = randomString;
-
-            // When
-            byte[] encryptedData = await this.cryptographyProvider.EncryptAsync(randomBytes, subscriberCredential);
-            byte[] decryptedData = await this.cryptographyProvider.DecryptAsync(encryptedData, subscriberCredential);
-            string actualString = Encoding.UTF8.GetString(decryptedData);
-
-            // Then
-            actualString.Should().BeEquivalentTo(expectedString);
-        }
-
         [Fact]
         public async Task ShouldEncryptAndDecryptStreamAsync()
         {
@@ -67,14 +49,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             // Then
             string actualString = Encoding.UTF8.GetString(ReadAllBytesFromStream(decryptedStream));
             actualString.Should().BeEquivalentTo(expectedString);
-        }
-
-        private static string ConvertToBase64String(string input)
-        {
-            byte[] byteArray = Encoding.UTF8.GetBytes(input);
-            string base64String = Convert.ToBase64String(byteArray);
-
-            return base64String;
         }
     }
 }

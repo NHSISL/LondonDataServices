@@ -13,6 +13,7 @@ using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.CryptographyKeys;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.KeyVaults;
@@ -83,6 +84,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<ICryptographyKeyBroker, GpgKeyBroker>();
             services.AddTransient<ICryptographyKeyBroker, SshKeyBroker>();
+            services.AddTransient<IFileBroker, FileBroker>();
 
             LandingConfiguration landingConfiguration =
                 configuration.GetSection("landingSettings").Get<LandingConfiguration>();

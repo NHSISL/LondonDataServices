@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -11,12 +10,6 @@ namespace LHDS.Core.Brokers.Cryptographies
 {
     public interface ICryptographyBroker
     {
-        [Obsolete]
-        ValueTask<byte[]> EncryptAsync(byte[] data, SubscriberCredential subscriberCredential);
-
-        [Obsolete]
-        ValueTask<byte[]> DecryptAsync(byte[] data, SubscriberCredential subscriberCredential);
-
         ValueTask EncryptAsync(Stream input, Stream output, SubscriberCredential subscriberCredential);
         ValueTask DecryptAsync(Stream input, Stream output, SubscriberCredential subscriberCredential);
     }

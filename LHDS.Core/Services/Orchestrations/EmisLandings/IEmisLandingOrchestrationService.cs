@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
@@ -13,7 +14,7 @@ namespace LHDS.Core.Services.Orchestrations.EmisLandings
     {
         ValueTask<List<string>> ProcessAsync(SubscriberCredential subscriberCredential, Guid supplierId);
         ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(SubscriberCredential subscriberCredential);
-        ValueTask<byte[]> RetrieveDownloadByFileNameAsync(string fileName, SubscriberCredential subscriberCredential);
+        ValueTask RetrieveDownloadByFileNameAsync(Stream output, string fileName, SubscriberCredential subscriberCredential);
         ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId);
     }
 }

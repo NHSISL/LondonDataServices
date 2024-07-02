@@ -24,7 +24,7 @@ namespace LHDS.Core.Providers.Downloads
         public async ValueTask<List<string>> GetListOfDownloadsToProcessAsync(Download download) =>
             await this.provider.GetListOfDocumentsToProcessAsync(download);
 
-        public async ValueTask<Download> GetDownloadByFileNameAsync(Download download) =>
+        public async ValueTask GetDownloadByFileNameAsync(Download download) =>
             await this.provider.GetDocumentByFileNameAsync(download);
     }
 }

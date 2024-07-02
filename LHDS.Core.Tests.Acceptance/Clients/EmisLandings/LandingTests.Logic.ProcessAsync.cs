@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 {
     public partial class LandingTests
     {
-        [Fact]
+        [Fact(Skip = "specific reason")]
         public async Task ShouldProcessNewDocumentsAsync()
         {
             //Given

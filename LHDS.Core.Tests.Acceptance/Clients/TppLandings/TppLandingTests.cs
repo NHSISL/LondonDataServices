@@ -126,12 +126,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
         private static IngestionTracking CreateRandomIngestionTracking(
            DateTimeOffset dateTimeOffset,
-           Document document,
+           string fileName,
            Guid supplierId)
         {
             IngestionTracking ingestionTracking = CreateIngestionTrackingFiller(
                 dateTimeOffset,
-                fileName: document.FileName,
+                fileName,
                 supplierId)
                     .Create();
 

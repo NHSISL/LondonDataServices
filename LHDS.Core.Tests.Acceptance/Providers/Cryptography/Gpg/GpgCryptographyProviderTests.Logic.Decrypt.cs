@@ -22,22 +22,24 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
             Stream encryptedStream = new MemoryStream();
             Stream decryptedStream = new MemoryStream();
             string expectedString = randomString;
+            byte[] decryptedBytes;
 
             // When
-            await this.cryptographyProvider.EncryptAsync(
-                input: randomStream, 
-                output: encryptedStream,
-                subscriberCredential);
+            using (Stream inputStream = new MemoryStream(randomBytes))
+            using (Stream encryptedStream = new MemoryStream())
+            using (Stream decryptedStream = new MemoryStream())
+            {
+                await this.cryptographyProvider
+                    .EncryptAsync(input: inputStream, output: encryptedStream, subscriberCredential);
 
-            await this.cryptographyProvider.DecryptAsync(
-                input: encryptedStream, 
-                output: decryptedStream,
-                subscriberCredential);
+                await this.cryptographyProvider
+                    .DecryptAsync(input: encryptedStream, output: decryptedStream, subscriberCredential);
 
-            byte[] decryptedData = ReadAllBytesFromStream(decryptedStream);
-            string actualString = Encoding.UTF8.GetString(decryptedData);
+                decryptedBytes = ReadAllBytesFromStream(stream: decryptedStream);
+            }
 
             // Then
+            string actualString = Encoding.UTF8.GetString(decryptedBytes);
             actualString.Should().BeEquivalentTo(expectedString);
         }
     }

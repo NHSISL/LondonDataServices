@@ -33,7 +33,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.dataSetSpecificationService.AddDataSetSpecificationAsync(activeDataSetSpecification);
 
             //When
-            Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomDocument, supplierId);
+            Guid actualGuid = await this.tppLandingClient.ProcessAsync(
+                input: randomDocument.DocumentData, 
+                fileName: randomDocument.FileName, 
+                supplierId);
 
             //Then
             IngestionTracking ingestionTracking =

@@ -70,11 +70,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             await this.decryptionClient.RetryDecryptAsync();
 
             //Then
-            Document decryptedDocument =
-                await this.documentService.RetrieveDocumentByFileNameAsync(
-                    ingestionTracking.DecryptedFileName, blobContainers.Versioner);
+            await this.documentService.RetrieveDocumentByFileNameAsync(
+                output: decryptedStream,
+                fileName: ingestionTracking.DecryptedFileName, 
+                container: blobContainers.Versioner);
 
-            decryptedDocument.DocumentData.Should().BeEquivalentTo(documentData);
+            byte[] decryptedData = ReadAllBytesFromStream(decryptedStream);
+            decryptedData.Should().BeEquivalentTo(documentData);
 
             IngestionTracking decryptedIngestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
@@ -98,7 +100,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             await this.documentService.RemoveDocumentByFileNameAsync(fileName, blobContainers.EmisLanding);
 
             await this.documentService.RemoveDocumentByFileNameAsync(
-                decryptedDocument.FileName, blobContainers.Versioner);
+                filename: decryptedIngestionTracking.DecryptedFileName, 
+                container: blobContainers.Versioner);
         }
     }
 }

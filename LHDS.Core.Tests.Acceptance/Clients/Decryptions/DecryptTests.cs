@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -164,6 +165,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .OnProperty(supplier => supplier.DataSets).IgnoreIt();
 
             return filler;
+        }
+
+        static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
     }
 }

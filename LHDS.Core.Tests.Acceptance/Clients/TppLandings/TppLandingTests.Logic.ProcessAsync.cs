@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -70,6 +71,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             Document randomDocument = CreateRandomDocument();
             string fileName = GetRandomFileName();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+            Stream randomStream = new MemoryStream(documentData);
             Guid supplierId = Guid.NewGuid();
             Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
             await this.supplierService.AddSupplierAsync(landingSupplier);
@@ -81,7 +83,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             Document document = new Document
             {
-                DocumentData = documentData,
+                DocumentData = randomStream,
                 FileName = fileName
             };
 
@@ -93,7 +95,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
 
             //When
-            Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomDocument, supplierId);
+            Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomStream, fileName, supplierId);
 
             //Then
             IngestionTracking ingestionTracking =

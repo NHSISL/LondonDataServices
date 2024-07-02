@@ -3,24 +3,17 @@
 // ---------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Foundations.Documents;
+using System.IO;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
 
 namespace LHDS.Core.Services.Orchestrations.Tpp
 {
     public partial class TppLandingOrchestrationService
     {
-        private static void ValidateDocumentIsNotNull(Document document)
-        {
-            if (document is null)
-            {
-                throw new NullDocumentTppLandingException(message: "Document is Null");
-            }
-        }
-
-        private static void ValidateArgumentsOnProcess(string fileName, Guid supplierId)
+        private static void ValidateArgumentsOnProcess(Stream input, string fileName, Guid supplierId)
         {
             Validate(
+                (Rule: IsInvalidInputStream(input), Parameter: "Input"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
 
@@ -36,6 +29,12 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalidInputStream(Stream? stream) => new
+        {
+            Condition = stream is null || stream.Length == 0,
+            Message = "Stream is required"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             string addressContainer = this.blobContainers.Addresses;
             string errorFolder = this.addressConfiguration.ErrorFolder;
             string errorFileName = CreateErrorFileName(someFilename, errorFolder);
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
             List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses();
             List<Exception> exceptions = new List<Exception>();
 
@@ -134,7 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             string addressContainer = this.blobContainers.Addresses;
             string errorFolder = this.addressConfiguration.ErrorFolder;
             string errorFileName = CreateErrorFileName(someFilename, errorFolder);
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
             List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses();
             List<Exception> exceptions = new List<Exception>();
 
@@ -232,7 +232,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             string addressContainer = this.blobContainers.Addresses;
             string errorFolder = this.addressConfiguration.ErrorFolder;
             string errorFileName = CreateErrorFileName(someFilename, errorFolder);
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
             var serviceException = new Exception();
             List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses();
             List<Exception> exceptions = new List<Exception>();

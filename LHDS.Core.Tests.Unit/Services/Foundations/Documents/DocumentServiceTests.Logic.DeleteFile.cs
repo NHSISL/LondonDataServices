@@ -2,9 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Text;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
 using Moq;
 using Xunit;
 
@@ -18,20 +16,14 @@ public partial class DocumentServiceTests
         var randomContainer = GetRandomString();
         string randomFileName = GetRandomString();
 
-        Document randomDocument = new Document
-        {
-            FileName = randomFileName,
-            DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
-        };
-
         // When
         await this.documentService.RemoveDocumentByFileNameAsync(
-            filename: randomDocument.FileName,
+            filename: randomFileName,
             container: randomContainer);
 
         // Then
         this.blobStorageBrokerMock.Verify(broker =>
-            broker.DeleteFileAsync(randomDocument.FileName, randomContainer),
+            broker.DeleteFileAsync(randomFileName, randomContainer),
                 Times.Once);
 
         this.blobStorageBrokerMock.VerifyNoOtherCalls();

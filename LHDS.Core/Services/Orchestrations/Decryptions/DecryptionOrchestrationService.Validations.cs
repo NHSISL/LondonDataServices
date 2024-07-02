@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using LHDS.Core.Models.Foundations.Documents;
+using System.IO;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
@@ -30,9 +30,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             }
         }
 
-        private static void ValidateStorageDocumentIsNotNull(Document document, string encryptedFileName)
+        private static void ValidateStorageDocumentIsNotNull(Stream stream, string encryptedFileName)
         {
-            if (document is null)
+            if (stream is null || stream.Length == 0)
             {
                 throw new NotFoundDecryptionOrchestrationException(
                     message: $"Couldn't find document with file name: {encryptedFileName}.");

@@ -25,7 +25,7 @@ namespace LHDS.Functions.Terminology
         }
 
         [Function("TerminologyMetadataFunction")]
-        public async Task Run([TimerTrigger("0 0 0 * * *")] MyInformation myTimer)
+        public async Task Run([TimerTrigger("0 0 23 * * *")] MyInformation myTimer)
         {
             loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 

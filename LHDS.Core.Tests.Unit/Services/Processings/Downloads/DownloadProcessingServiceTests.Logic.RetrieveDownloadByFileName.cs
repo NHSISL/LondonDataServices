@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -21,35 +23,45 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
             // given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            Document randomDocument = CreateRandomDocument();
+            string fileName = GetRandomString();
 
-            Download inputDownload = new Download
+            Download download = new Download
             {
                 SubscriberCredential = inputSubscriberCredential,
-                Document = new Document { FileName = randomDocument.FileName }
+
+                Document = new Document
+                {
+                    FileName = fileName,
+                    DocumentData = new MemoryStream()
+                }
             };
 
-            Download storageDownload = new Download
-            {
-                Document = randomDocument,
-                SubscriberCredential = inputSubscriberCredential
-            };
-
-            Download expectedDownload = storageDownload.DeepClone();
+            Download initialDownload = download.DeepClone();
+            string randomData = GetRandomString();
+            string expectedData = randomData;
+            Stream randomStream = new MemoryStream(Encoding.UTF8.GetBytes(randomData));
+            Stream downloadedStream = randomStream;
 
             this.downloadServiceMock.Setup(service =>
-                service.RetrieveDownloadByFileNameAsync(inputDownload))
-                    .ReturnsAsync(storageDownload);
+                service.RetrieveDownloadByFileNameAsync(download))
+                    .Callback<Download>(download =>
+                    {
+                        downloadedStream.Position = 0;
+                        downloadedStream.CopyTo(download.Document.DocumentData);
+                    })
+                    .Returns(ValueTask.CompletedTask);
 
             // when
-            Download actualDownload =
-                await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(inputDownload);
+            await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
 
             // then
-            actualDownload.Should().BeEquivalentTo(expectedDownload);
+            string actualData = Encoding.UTF8.GetString(
+                ReadAllBytesFromStream(download.Document.DocumentData));
+
+            actualData.Should().BeEquivalentTo(expectedData);
 
             this.downloadServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(inputDownload),
+                service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(initialDownload))),
                     Times.Once);
 
             this.downloadServiceMock.VerifyNoOtherCalls();

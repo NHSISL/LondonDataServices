@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -41,6 +42,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly IHashBroker hashBroker;
+        private readonly IFileBroker fileBroker;
         private readonly LandingConfiguration landingConfiguration;
 
         public EmisLandingOrchestrationService(
@@ -54,6 +56,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
             IHashBroker hashBroker,
+            IFileBroker fileBroker,
             LandingConfiguration landingConfiguration)
         {
             this.documentProcessingService = documentProcessingService;
@@ -66,6 +69,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
             this.hashBroker = hashBroker;
+            this.fileBroker = fileBroker;
             this.landingConfiguration = landingConfiguration;
         }
 
@@ -140,23 +144,23 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 return retrievedDownloadList;
             });
 
-        public ValueTask<byte[]> RetrieveDownloadByFileNameAsync(
-            string fileName, SubscriberCredential subscriberCredential) =>
+        public ValueTask RetrieveDownloadByFileNameAsync(
+            Stream output,
+            string fileName,
+            SubscriberCredential subscriberCredential) =>
             TryCatch(async () =>
             {
-                ValidateSubscriberCredentials(subscriberCredential);
-                ValidateRetrieveDownloadByFileNameArguments(fileName);
+                ValidateRetrieveDownloadByFileNameArguments(output, fileName, subscriberCredential);
 
                 Download download = new Download
                 {
-                    Document = new Document { FileName = fileName },
+                    Document = new Document { FileName = fileName, DocumentData = output },
                     SubscriberCredential = subscriberCredential
                 };
 
-                Download storageDownload =
-                    await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
+                await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(download);
 
-                return storageDownload.Document?.DocumentData ?? [];
+                ValidateStorageDownload(output, fileName);
             });
 
         public ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId) =>
@@ -250,24 +254,38 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     await this.ingestionTrackingProcessingService
                         .ModifyIngestionTrackingAsync(maybeIngestionTracking);
 
-                Download retrievedDownload =
-                    await DownloadFile(subscriberCredential, fileName);
+                string tempEncryptedFilePath = await this.fileBroker.GetTempFileName();
 
-                Document newBlobDocument = new Document
+                try
                 {
-                    DocumentData = retrievedDownload?.Document?.DocumentData ?? Array.Empty<byte>(),
-                    FileName = updatedIngestionTracking.EncryptedFileName,
-                    SHA256Hash = retrievedDownload?.Document?.SHA256Hash ?? string.Empty
-                };
+                    using (FileStream ftpFileStream =
+                        new FileStream(tempEncryptedFilePath, FileMode.Create, FileAccess.Write))
+                    {
+                        await DownloadFile(output: ftpFileStream, fileName, subscriberCredential);
+                        string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(ftpFileStream);
+                        updatedIngestionTracking.EncryptedFileSize = ftpFileStream.Length;
+                        updatedIngestionTracking.EncryptedFileSha256Hash = encryptedFileSha256Hash;
 
-                await this.documentProcessingService
-                    .AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
+                        await this.documentProcessingService.AddDocumentAsync(
+                            input: ftpFileStream,
+                            fileName: maybeIngestionTracking.EncryptedFileName,
+                            container: blobContainers.EmisLanding);
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                finally
+                {
+                    await this.fileBroker.DeleteFileAsync(tempEncryptedFilePath);
+                }
 
                 updatedIngestionTracking.IsDownloaded = true;
+                updatedIngestionTracking.Decrypted = false;
+                updatedIngestionTracking.IsProcessing = false;
                 updatedIngestionTracking.RetryCount = 0;
                 updatedIngestionTracking.FileDeleted = false;
-                updatedIngestionTracking.EncryptedFileSize = newBlobDocument.DocumentData.Length;
-                updatedIngestionTracking.EncryptedFileSha256Hash = newBlobDocument.SHA256Hash;
                 updatedIngestionTracking.LastSeen = currentDateTime;
                 updatedIngestionTracking.UpdatedDate = currentDateTime;
 
@@ -325,7 +343,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
             if (splitFileName.Length < 6)
             {
-                throw new InvalidDocumentProcessingFileNameException(fileName);
+                throw new InvalidArgumentsDocumentProcessingException(fileName);
             }
             else
             {
@@ -343,32 +361,19 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             return (encryptedFileName, decryptedFileName);
         }
 
-        private async ValueTask<Download> DownloadFile(SubscriberCredential subscriberCredential, string fileName)
+        private async ValueTask DownloadFile(
+            Stream output,
+            string fileName,
+            SubscriberCredential subscriberCredential)
         {
             Download fileToRetrieve = new Download
             {
-                Document = new Document { FileName = fileName },
+                Document = new Document { FileName = fileName, DocumentData = output },
                 SubscriberCredential = subscriberCredential
             };
 
-            Download retrievedDownload = await this.downloadProcessingService
+            await this.downloadProcessingService
                 .RetrieveDownloadByFileNameAsync(fileToRetrieve);
-
-            string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(
-                retrievedDownload.Document?.DocumentData ?? Array.Empty<byte>());
-
-            Download download = new Download
-            {
-                Document = new Document
-                {
-                    FileName = retrievedDownload.Document.FileName,
-                    DocumentData = retrievedDownload.Document?.DocumentData ?? Array.Empty<byte>(),
-                    SHA256Hash = encryptedFileSha256Hash
-                },
-                SubscriberCredential = subscriberCredential
-            };
-
-            return download;
         }
     }
 }

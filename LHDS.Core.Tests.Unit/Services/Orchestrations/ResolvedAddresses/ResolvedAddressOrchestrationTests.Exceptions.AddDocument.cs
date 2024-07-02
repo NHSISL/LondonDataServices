@@ -3,10 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using Moq;
 using Xeptions;
@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // given
             var randomContainer = GetRandomString();
             var randomFileName = GetRandomString();
-            var randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomData = Encoding.UTF8.GetBytes(GetRandomString());
 
             var expectedResolvedAddressOrchestrationDependencyValidationException =
                 new ResolvedAddressOrchestrationDependencyValidationException(
@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.documentProcessingServiceMock.Setup(service =>
-                service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()))
+                service.AddDocumentAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(dependencyValidationException);
 
             // when
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationDependencyValidationException);
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
+                service.AddDocumentAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // given
             var randomContainer = GetRandomString();
             var randomFileName = GetRandomString();
-            var randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomData = Encoding.UTF8.GetBytes(GetRandomString());
 
             var expectedResolvedAddressOrchestrationDependencyException =
                 new ResolvedAddressOrchestrationDependencyException(
@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: dependencyException.InnerException as Xeption);
 
             this.documentProcessingServiceMock.Setup(service =>
-                service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()))
+                service.AddDocumentAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(dependencyException);
 
             // when
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationDependencyException);
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
+                service.AddDocumentAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -111,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // given
             var randomContainer = GetRandomString();
             var randomFileName = GetRandomString();
-            var randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomData = Encoding.UTF8.GetBytes(GetRandomString());
             var serviceException = new Exception();
 
             var failedResolvedAddressOrchestrationServiceException =
@@ -125,7 +125,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             this.documentProcessingServiceMock.Setup(service =>
-                service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()))
+                service.AddDocumentAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(serviceException);
 
             // when
@@ -139,7 +139,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationServiveException);
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
+                service.AddDocumentAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

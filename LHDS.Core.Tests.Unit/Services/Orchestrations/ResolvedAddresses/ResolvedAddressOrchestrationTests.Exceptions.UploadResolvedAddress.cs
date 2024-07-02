@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             Document inputDocument = new Document
             {
-                DocumentData = inputData,
+                DocumentData = new MemoryStream(inputData),
                 FileName = fileName
             };
 
@@ -118,7 +119,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
+                service.AddDocumentAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -171,7 +172,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             Document inputDocument = new Document
             {
-                DocumentData = inputData,
+                DocumentData = new MemoryStream(inputData),
                 FileName = fileName
             };
 
@@ -249,7 +250,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                         Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
+                service.AddDocumentAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -301,7 +302,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             Document inputDocument = new Document
             {
-                DocumentData = inputData,
+                DocumentData = new MemoryStream(inputData),
                 FileName = fileName
             };
 
@@ -384,7 +385,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                         Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
+                service.AddDocumentAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>

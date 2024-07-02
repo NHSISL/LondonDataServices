@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
             Guid supplierId = Guid.NewGuid();
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
+            Stream randomStream = new MemoryStream(documentData);
+            Stream encryptedStream = new MemoryStream();
+            Stream decryptedStream = new MemoryStream();
             Supplier randomSupplier = CreateRandomSupplier(supplierId, dateTimeOffset);
             SubscriberCredential subscriberCredential = CreateRandomSubscriberCredential();
 
@@ -32,16 +36,22 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             string fileName = CreateRandomFileName(subscriberCredential.Id);
 
-            byte[] encryptedData =
-                await this.cryptographyProvider.EncryptAsync(documentData, generatedSubscriberCredential);
+            await this.cryptographyProvider.EncryptAsync(
+                input: randomStream, 
+                output: encryptedStream, 
+                generatedSubscriberCredential);
 
             Document document = new Document
             {
-                DocumentData = encryptedData,
+                DocumentData = encryptedStream,
                 FileName = fileName
             };
 
-            await this.documentService.AddDocumentAsync(document, blobContainers.EmisLanding);
+            await this.documentService.AddDocumentAsync(
+                input: encryptedStream, 
+                fileName, 
+                container: blobContainers.EmisLanding);
+
             await this.supplierService.AddSupplierAsync(randomSupplier);
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(

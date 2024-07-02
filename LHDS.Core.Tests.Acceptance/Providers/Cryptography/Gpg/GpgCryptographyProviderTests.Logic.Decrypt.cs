@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -17,11 +18,23 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
             // Given
             string randomString = GetRandomString();
             byte[] randomBytes = Encoding.UTF8.GetBytes(randomString);
+            Stream randomStream = new MemoryStream(randomBytes);
+            Stream encryptedStream = new MemoryStream();
+            Stream decryptedStream = new MemoryStream();
             string expectedString = randomString;
 
             // When
-            byte[] encryptedData = await this.cryptographyProvider.EncryptAsync(randomBytes, subscriberCredential);
-            byte[] decryptedData = await this.cryptographyProvider.DecryptAsync(encryptedData, subscriberCredential);
+            await this.cryptographyProvider.EncryptAsync(
+                input: randomStream, 
+                output: encryptedStream,
+                subscriberCredential);
+
+            await this.cryptographyProvider.DecryptAsync(
+                input: encryptedStream, 
+                output: decryptedStream,
+                subscriberCredential);
+
+            byte[] decryptedData = ReadAllBytesFromStream(decryptedStream);
             string actualString = Encoding.UTF8.GetString(decryptedData);
 
             // Then

@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Foundations.Cryptographies.Exceptions
 {
-    public class NullDataCryptographyException : Xeption
+    public class InvalidArgumentCryptographyException : Xeption
     {
-        public NullDataCryptographyException(string message)
+        public InvalidArgumentCryptographyException(string message)
             : base(message)
         { }
     }

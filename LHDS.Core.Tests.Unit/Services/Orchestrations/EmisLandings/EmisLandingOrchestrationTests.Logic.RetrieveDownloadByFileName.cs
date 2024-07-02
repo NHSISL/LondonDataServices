@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -20,37 +21,49 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         {
             // given
             string randomFileName = GetRandomString();
+            string fileName = randomFileName;
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-            Document randomDocument = CreateRandomDocument();
-            Document externalDocument = randomDocument;
+            byte[] randomoutputData = CreateRandomData();
+            byte[] expectedData = randomoutputData.DeepClone();
+            Stream initialOutputStream = new MemoryStream();
+            Stream outputStream = new MemoryStream();
+            Stream returnedOutputStream = new MemoryStream(randomoutputData);
+
 
             Download inputDownload = new Download
             {
                 SubscriberCredential = inputSubscriberCredential,
-                Document = new Document { FileName = externalDocument.FileName }
+                Document = new Document
+                {
+                    FileName = fileName,
+                    DocumentData = outputStream
+                }
             };
 
-            Download storageDownload = new Download
-            {
-                SubscriberCredential = inputSubscriberCredential,
-                Document = externalDocument
-            };
+            byte[] expectedDownload = randomoutputData.DeepClone();
 
-            byte[] expectedDownload = storageDownload.Document.DocumentData.DeepClone();
-
-            this.downloadProcessingServiceMock.Setup(service =>
+            this.downloadProcessingServiceMock
+                .Setup(service =>
                     service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))))
-                        .ReturnsAsync(storageDownload);
+                .Callback<Download>(download =>
+                    {
+                        returnedOutputStream.Position = 0;
+                        returnedOutputStream.CopyTo(outputStream);
+                    })
+                .Returns(ValueTask.CompletedTask);
 
             // when
-            byte[] actualDownload = await this.emisLandingOrchestrationService
+            await this.emisLandingOrchestrationService
                 .RetrieveDownloadByFileNameAsync(
-                    fileName: externalDocument.FileName,
+                    output: outputStream,
+                    fileName: fileName,
                     subscriberCredential: inputSubscriberCredential);
 
+            byte[] actualData = ReadAllBytesFromStream(outputStream);
+
             // then
-            actualDownload.Should().BeEquivalentTo(expectedDownload);
+            actualData.Should().BeEquivalentTo(expectedData);
 
             this.downloadProcessingServiceMock.Verify(service =>
                 service.RetrieveDownloadByFileNameAsync(It.Is(SameDownloadAs(inputDownload))),

@@ -27,7 +27,7 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 throw CreateAndLogValidationException(nullDocumentException);
             }
-            catch (InvalidDocumentProcessingFileNameException exception)
+            catch (InvalidArgumentsDocumentProcessingException exception)
             {
                 throw CreateAndLogValidationException(exception);
             }
@@ -64,7 +64,7 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 return await returningDocumentProcessingFunction();
             }
-            catch (InvalidDocumentProcessingFileNameException exception)
+            catch (InvalidArgumentsDocumentProcessingException exception)
             {
                 throw CreateAndLogValidationException(exception);
             }
@@ -101,7 +101,7 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 return await returningStringFunction();
             }
-            catch (InvalidDocumentProcessingFileNameException exception)
+            catch (InvalidArgumentsDocumentProcessingException exception)
             {
                 throw CreateAndLogValidationException(exception);
             }

@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         public async Task ShouldThrowValidationExceptionIfConfigurationIsNullOnPickupAndLogItAsync()
         {
             // Given
-            byte[] somePdsFile = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] somePdsFile = Encoding.UTF8.GetBytes(GetRandomString());
             string someFileName = GetRandomString();
             PdsConfiguration invalidPdsConfiguration = null;
 
@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         public async Task ShouldThrowValidationExceptionIfBlobContainersIsNullonPickupAndLogItAsync()
         {
             // Given
-            byte[] somePdsFile = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] somePdsFile = Encoding.UTF8.GetBytes(GetRandomString());
             string someFileName = GetRandomString();
             BlobContainers invalidBlobContainers = null;
 

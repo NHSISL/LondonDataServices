@@ -36,12 +36,13 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
             this.diskDownloadProviderSettings = diskDownloadProviderSettings;
         }
 
-        public async ValueTask<Download> GetDocumentByFileNameAsync(Download download)
+        public async ValueTask GetDocumentByFileNameAsync(Download download)
         {
             string docFileName = download?.Document?.FileName ?? "";
             string relativePath = docFileName.Replace("/", "\\");
             string filePath = Path.Combine(diskDownloadProviderSettings.LocalRootFolder, relativePath);
-            byte[] data = await File.ReadAllBytesAsync(filePath);
+            byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
+            Stream data = new MemoryStream(fileBytes);
 
             var document = new Document()
             {
@@ -55,7 +56,7 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
                 SubscriberCredential = download?.SubscriberCredential
             };
 
-            return downloadedItem;
+            await Task.FromResult(true);
         }
 
         public async ValueTask<List<string>> GetListOfDocumentsToProcessAsync(Download download)

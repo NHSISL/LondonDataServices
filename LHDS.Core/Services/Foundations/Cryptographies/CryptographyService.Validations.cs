@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
@@ -9,17 +10,37 @@ namespace LHDS.Core.Services.Foundations.Cryptographies
 {
     public partial class CryptographyService
     {
-        private void ValidateInputs(byte[] data, SubscriberCredential subscriberCredential)
+        private void ValidateInputs(Stream input, Stream output, SubscriberCredential subscriberCredential)
         {
-            ValidateDataIsNotNull(data);
-            ValidateSubscriberCredentialsIsNotNull(subscriberCredential);
+            Validate(
+                (Rule: IsInvalidInputStream(input), Parameter: nameof(input)),
+                (Rule: IsInvalidOutputStream(output), Parameter: nameof(output)),
+                (Rule: IsInvalid(subscriberCredential), Parameter: nameof(subscriberCredential)));
         }
 
-        private static void ValidateDataIsNotNull(byte[] data)
+        private static dynamic IsInvalidInputStream(Stream? stream) => new
         {
-            if (data is null)
+            Condition = stream is null || stream.Length == 0,
+            Message = "Stream is required"
+        };
+
+        private static dynamic IsInvalidOutputStream(Stream? stream) => new
+        {
+            Condition = stream is null || stream.Length > 0,
+            Message = "Stream is required"
+        };
+
+        private static dynamic IsInvalid(SubscriberCredential? subscriberCredential) => new
+        {
+            Condition = subscriberCredential is null,
+            Message = "SubscriberCredential is required"
+        };
+
+        private static void ValidateDataIsNotNull(Stream input)
+        {
+            if (input is null)
             {
-                throw new NullDataCryptographyException(message: "Data is null.");
+                throw new InvalidArgumentCryptographyException(message: "Data is null.");
             }
         }
 
@@ -29,6 +50,24 @@ namespace LHDS.Core.Services.Foundations.Cryptographies
             {
                 throw new NullSubscriberCredentialCryptographyException(message: "Subscriber credential is null.");
             }
+        }
+
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        {
+            var invalidDocumentProcessingException = new InvalidArgumentCryptographyException(
+                message: "Invalid cryptography arguments. Please correct the errors and try again.");
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidDocumentProcessingException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidDocumentProcessingException.ThrowIfContainsErrors();
         }
     }
 }

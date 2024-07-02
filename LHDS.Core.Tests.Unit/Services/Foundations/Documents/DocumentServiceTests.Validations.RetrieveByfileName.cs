@@ -2,13 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using LHDS.Core.Services.Foundations.Documents;
-using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
 
@@ -23,17 +20,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowValidationExceptionOnSelectByFileNameIfInputsIsInvalid(string invalidInput)
         {
             // Given
+            Stream invalidStream = null;
+            string invalidFileName = invalidInput;
             string invalidContainer = invalidInput;
-            string containerName = invalidInput;
-
-            Document document = new Document
-            {
-                FileName = invalidInput
-            };
 
             var invalidDocumentException =
                 new InvalidDocumentException(
                     message: "Invalid document. Please correct the errors and try again.");
+
+            invalidDocumentException.AddData(
+                key: "Output",
+                values: "Stream is required");
 
             invalidDocumentException.AddData(
                 key: "FileName",
@@ -43,29 +40,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                 key: "Container",
                 values: "Text is required");
 
-            var expectedDocumentValidationException
-                = new DocumentValidationException(
-                    message: "Document validation errors occured, please try again",
-                    innerException: invalidDocumentException);
-
-            var appSettingsStub = new Dictionary<string, string> {
-                {"blobContainerName", invalidInput}
-            };
-
-            var inMemoryConfiguration = new ConfigurationBuilder()
-                .AddInMemoryCollection(appSettingsStub)
-                .Build();
-
-            var documentService = new DocumentService(
-                    blobStorageBroker: this.blobStorageBrokerMock.Object,
-                    dateTimeBroker: this.dateTimeBrokerMock.Object,
-                    loggingBroker: this.loggingBrokerMock.Object,
-                    configuration: inMemoryConfiguration);
+            var expectedDocumentValidationException = new DocumentValidationException(
+                message: "Document validation errors occured, please try again",
+                innerException: invalidDocumentException);
 
             // When
-            ValueTask<Document> getDownloadLinkTask =
+            ValueTask getDownloadLinkTask =
                 documentService.RetrieveDocumentByFileNameAsync(
-                    fileName: document.FileName,
+                    output: invalidStream,
+                    fileName: invalidFileName,
                     container: invalidContainer);
 
             DocumentValidationException actualDocumentBlobValidationException =
@@ -79,10 +62,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     expectedDocumentValidationException))),
                         Times.Once);
 
-            this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(It.IsAny<string>(), It.IsAny<string>()),
-                    Times.Never);
-
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
@@ -93,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             //given
             string someContainer = GetRandomString();
             string someFileName = GetRandomString();
-            byte[] nullByte = null;
+            Stream someStream = new MemoryStream();
 
             var notFoundDocumentException =
                 new NotFoundDocumentException(message: $"Couldn't find documents with fileName: {someFileName}.");
@@ -104,12 +83,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     innerException: notFoundDocumentException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.SelectByFileNameAsync(It.IsAny<string>(), It.IsAny<string>()))
-                    .ReturnsAsync(nullByte);
+                broker.SelectByFileNameAsync(someStream, It.IsAny<string>(), It.IsAny<string>()))
+                    .Returns(ValueTask.CompletedTask);
 
             //when
-            ValueTask<Document> retrieveDocumentByIdTask =
+            ValueTask retrieveDocumentByIdTask =
                 this.documentService.RetrieveDocumentByFileNameAsync(
+                    output: someStream,
                     fileName: someFileName,
                     container: someContainer);
 
@@ -121,7 +101,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(It.IsAny<string>(), It.IsAny<string>()),
+                broker.SelectByFileNameAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

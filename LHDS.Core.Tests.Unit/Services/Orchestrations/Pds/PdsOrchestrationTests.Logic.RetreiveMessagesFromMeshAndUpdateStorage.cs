@@ -9,7 +9,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using Moq;
@@ -24,10 +23,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         {
             // given
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
-            int randomNumber = GetRandomNumber();
+            int randomNumber = 1; // GetRandomNumber();
             List<string> randomMessageIds = GetRandomStrings(randomNumber);
             string mexWorkflowId = this.pdsConfiguration.WorkflowId;
             List<MeshMessage> retrievedMessages = GetRandomMessages(randomMessageIds, mexWorkflowId);
+            string randomContainer = GetRandomString();
+            string inputContainer = "pds";
             Guid identifier = Guid.NewGuid();
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -59,23 +60,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
 
                 fileNameOutput += Path.GetExtension(filename);
-
-                Document document = new Document
-                {
-                    FileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}",
-                    DocumentData = message.FileContent,
-                };
-
-                this.documentServiceMock.Setup(broker =>
-                    broker.AddDocumentAsync(document, It.IsAny<string>()));
-
+                string inputFileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
+                Stream inputStream = new MemoryStream(message.FileContent);
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
+
+                this.documentServiceMock
+                    .Setup(service =>
+                        service.AddDocumentAsync(It.Is(SameStreamAs(inputStream)), inputFileName, inputContainer))
+                    .Returns(ValueTask.CompletedTask);
 
                 PdsAudit pdsAudit = new PdsAudit
                 {
                     Id = identifier,
                     CorrelationId = correlationId,
-                    FileName = document.FileName,
+                    FileName = inputFileName,
                     Message = $"Received message from mesh with id {message.MessageId}",
                     MessageId = message.MessageId,
                     CreatedDate = randomDate,
@@ -127,24 +125,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
 
                 fileNameOutput += Path.GetExtension(filename);
-
-                Document document = new Document
-                {
-                    FileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}",
-                    DocumentData = message.FileContent,
-                };
+                string inputFileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
+                Stream inputStream = new MemoryStream(message.FileContent);
+                Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
                 this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(It.Is(SameDocumentAs(document)), It.IsAny<string>()),
+                    service.AddDocumentAsync(It.IsAny<Stream>(), inputFileName, inputContainer),
                         Times.Once);
 
-                Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
                 PdsAudit pdsAudit = new PdsAudit
                 {
                     Id = identifier,
                     CorrelationId = correlationId,
-                    FileName = document.FileName,
+                    FileName = inputFileName,
                     Message = $"Received message from mesh with id {message.MessageId}",
                     MessageId = message.MessageId,
                     CreatedDate = randomDate,

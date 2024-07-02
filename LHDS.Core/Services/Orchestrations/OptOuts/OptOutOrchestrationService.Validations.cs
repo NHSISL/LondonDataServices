@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -15,19 +16,14 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 {
     public partial class OptOutOrchestrationService
     {
-        private static void ValidateOptOutFileIsNotNull(byte[] optOutFile)
-        {
-            Validate<InvalidArgumentOptOutOrchestrationException>(
-                message: "Invalid Retrieve Opt Out Status orchestration argument(s), please correct the errors and try again.",
-                (Rule: IsInvalid(optOutFile), Parameter: "OptOutFile"));
-        }
-
-        private static void ValidateRequestIdIsNotNull(string requestId)
+        private static void ValidateArgumentsOnRetrieveOptOutStatus(Stream input, string fileName)
         {
             Validate<InvalidArgumentOptOutOrchestrationException>(
                 message: "Invalid Retrieve Opt Out Status orchestration argument(s), " +
                     "please correct the errors and try again.",
-                (Rule: IsInvalid(requestId), Parameter: "RequestId"));
+
+                (Rule: IsInvalidInputStream(input), Parameter: "Input"),
+                (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
         private void ValidateConfigurationSettings()
@@ -46,6 +42,12 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 (Rule: IsInvalid(this.blobContainers.OptOut),
                     Parameter: nameof(BlobContainers.OptOut)));
         }
+
+        private static dynamic IsInvalidInputStream(Stream? stream) => new
+        {
+            Condition = stream is null || stream.Length == 0,
+            Message = "Stream is required"
+        };
 
         private void ValidateConfigurationIsNotNull()
         {

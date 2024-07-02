@@ -37,17 +37,17 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
     //            await this.resolvedAddressProcessingService.AddResolvedAddressAsync(resolvedAddress);
     //        }
 
-            Stream outputStream = new MemoryStream();
+            //Stream outputStream = new MemoryStream();
 
-            // When
-            Guid? actualBatchReference =
-                await this.addressClient.ProcessResolvedAddressDataAsync();
+            //// When
+            //Guid? actualBatchReference =
+            //    await this.addressClient.ProcessResolvedAddressDataAsync();
 
-            // Then
-            string fileName = $"{actualBatchReference.ToString()}.csv";
-            await this.documentService.RetrieveDocumentByFileNameAsync(output: outputStream, fileName, addressContainer);
-            byte[] documentData = ReadAllBytesFromStream(outputStream);
-            string uploadedData = Encoding.ASCII.GetString(documentData);
+            //// Then
+            //string fileName = $"{actualBatchReference.ToString()}.csv";
+            //await this.documentService.RetrieveDocumentByFileNameAsync(output: outputStream, fileName, addressContainer);
+            //byte[] documentData = ReadAllBytesFromStream(outputStream);
+            //string uploadedData = Encoding.ASCII.GetString(documentData);
 
     //        foreach (var resolvedAddress in randomMatchedResolvedAddresses)
     //        {

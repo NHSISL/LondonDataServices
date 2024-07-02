@@ -259,7 +259,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 try
                 {
                     using (FileStream ftpFileStream =
-                        new FileStream(tempEncryptedFilePath, FileMode.Create, FileAccess.Write))
+                        new FileStream(tempEncryptedFilePath, FileMode.Create, FileAccess.ReadWrite))
                     {
                         await DownloadFile(output: ftpFileStream, fileName, subscriberCredential);
                         string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(ftpFileStream);

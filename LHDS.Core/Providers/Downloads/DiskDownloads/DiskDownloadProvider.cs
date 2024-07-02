@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
 
 namespace LHDS.Core.Providers.Downloads.DiskDownloads
@@ -41,20 +40,16 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
             string docFileName = download?.Document?.FileName ?? "";
             string relativePath = docFileName.Replace("/", "\\");
             string filePath = Path.Combine(diskDownloadProviderSettings.LocalRootFolder, relativePath);
-            byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
-            Stream data = new MemoryStream(fileBytes);
 
-            var document = new Document()
+            if (!File.Exists(filePath))
             {
-                FileName = docFileName,
-                DocumentData = data
-            };
+                throw new FileNotFoundException("The specified file was not found.", filePath);
+            }
 
-            var downloadedItem = new Download
+            using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
-                Document = document,
-                SubscriberCredential = download?.SubscriberCredential
-            };
+                await fileStream.CopyToAsync(download.Document.DocumentData);
+            }
 
             await Task.FromResult(true);
         }

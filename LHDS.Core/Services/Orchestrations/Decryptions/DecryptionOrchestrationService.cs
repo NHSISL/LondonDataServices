@@ -3,13 +3,13 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -65,45 +65,48 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 var ingestionTracking = await this.ingestionTrackingService
                     .RetrieveIngestionTrackingByEncryptedFileNameAsync(encryptedFileName);
 
-                Document document = await this.documentService
-                   .RetrieveDocumentByFileNameAsync(
-                       fileName: ingestionTracking.EncryptedFileName,
-                       container: blobContainers.EmisLanding);
+                long recordCount = 0;
+                string decryptedFileSha256Hash = string.Empty;
+                long fileSize = 0;
 
-                ValidateStorageDocumentIsNotNull(document, encryptedFileName);
-
-                byte[] decryptedData = await this.cryptographyService.DecryptAsync(
-                    data: document.DocumentData,
-                    subscriberCredential);
-
-                string decryptedFileSha256Hash =
-                    this.hashBroker.GenerateSha256Hash(decryptedData);
-
-                string[] lines = System.Text.Encoding.UTF8.GetString(decryptedData)
-                    .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-
-                Document newDecryptedDocument = new Document
+                using (Stream encryptedDocument = new MemoryStream())
+                using (Stream decryptedDocument = new MemoryStream())
                 {
-                    DocumentData = decryptedData,
-                    FileName = ingestionTracking.DecryptedFileName
-                };
+                    await this.documentService.RetrieveDocumentByFileNameAsync(
+                        output: encryptedDocument,
+                        fileName: ingestionTracking?.EncryptedFileName ?? string.Empty,
+                        container: blobContainers.EmisLanding);
+
+                    ValidateStorageDocumentIsNotNull(stream: encryptedDocument, encryptedFileName);
+
+                    await this.cryptographyService.DecryptAsync(
+                        input: encryptedDocument,
+                        output: decryptedDocument,
+                        subscriberCredential);
+
+                    decryptedFileSha256Hash =
+                        this.hashBroker.GenerateSha256Hash(decryptedDocument);
+
+                    fileSize = decryptedDocument?.Length ?? 0;
+
+                    await this.documentService.AddDocumentAsync(
+                        input: decryptedDocument,
+                        fileName: ingestionTracking.DecryptedFileName,
+                        container: blobContainers.Versioner);
+                }
 
                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
                 ingestionTracking.Decrypted = true;
-                ingestionTracking.RecordCount = lines.Length - 2;
-                ingestionTracking.DecryptedFileSize = newDecryptedDocument.DocumentData.Length;
+                ingestionTracking.RecordCount = 0;
+                ingestionTracking.DecryptedFileSize = fileSize;
                 ingestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
                 ingestionTracking.IsProcessing = false;
                 ingestionTracking.UpdatedDate = currentDateTime;
 
-                await this.documentService.AddDocumentAsync(
-                    document: newDecryptedDocument,
-                    container: blobContainers.Versioner);
-
                 await this.ingestionTrackingService
                     .ModifyIngestionTrackingAsync(ingestionTracking);
 
-                LogAudit(ingestionTracking, document: document, currentDateTime);
+                LogAudit(ingestionTracking, currentDateTime);
 
                 return ingestionTracking.DecryptedFileName;
             });
@@ -138,7 +141,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 return modifiedItem.EncryptedFileName;
             });
 
-        private void LogAudit(IngestionTracking ingestionTracking, Document document, DateTimeOffset currentDateTime)
+        private void LogAudit(IngestionTracking ingestionTracking, DateTimeOffset currentDateTime)
         {
             IngestionTrackingAudit newAudit =
                 new IngestionTrackingAudit

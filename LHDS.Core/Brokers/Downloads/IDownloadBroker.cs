@@ -11,6 +11,6 @@ namespace LHDS.Core.Brokers.Downloads
     public interface IDownloadBroker
     {
         ValueTask<List<string>> GetListOfDownloadsToProcessAsync(Download download);
-        ValueTask<Download> GetDownloadByFileNameAsync(Download download);
+        ValueTask GetDownloadByFileNameAsync(Download download);
     }
 }

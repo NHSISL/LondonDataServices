@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             Xeption dependencyValidationException)
         {
             // Given
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
             string randomFilename = GetRandomString();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
             List<Exception> exceptions = new List<Exception>();
@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             Xeption dependencyException)
         {
             // Given
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
             string randomFilename = GetRandomString();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();
             List<Exception> exceptions = new List<Exception>();
@@ -242,7 +242,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         public async Task ShouldThrowAggregateServiceExceptionOnProcessResolvedAddressesIfErrorsInLoopAndLogItAsync()
         {
             // Given
-            byte[] randomData = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
             string randomFilename = GetRandomString();
             var serviceException = new Exception();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses().ToList();

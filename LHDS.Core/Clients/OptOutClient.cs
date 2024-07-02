@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.OptOutClient.Exceptions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -53,11 +54,11 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<string> RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName)
+        public async ValueTask<string> RetrieveOptOutStatusAsync(Stream input, string fileName)
         {
             try
             {
-                return await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(optOutFile, fileName);
+                return await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(input, fileName);
             }
             catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
             {

@@ -41,8 +41,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private readonly IIngestionTrackingAuditService auditService;
         private readonly ISubscriberCredentialOrchestration subscriberCredentialOrchestration;
 
-
-
         public DecryptionTests(DependencyBroker dependencyBroker)
         {
             this.dependencyBroker = dependencyBroker;
@@ -85,7 +83,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             for (int i = 0; i < 6; i++)
             {
-                if(i == 1)
+                if (i == 1)
                 {
                     fileName += "/" + subscriberCredentialId.ToString();
                 }

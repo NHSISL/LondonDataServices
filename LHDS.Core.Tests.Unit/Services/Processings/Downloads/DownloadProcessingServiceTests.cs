@@ -4,10 +4,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.Downloads;
@@ -24,15 +27,36 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
         private readonly Mock<IDownloadService> downloadServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IDownloadProcessingService downloadProcessingService;
+        private readonly ICompareLogic compareLogic;
 
         public DownloadProcessingServiceTests()
         {
             this.downloadServiceMock = new Mock<IDownloadService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.compareLogic = new CompareLogic();
 
             this.downloadProcessingService = new DownloadProcessingService(
                 downloadService: this.downloadServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
+        }
+
+        private Expression<Func<Download, bool>> SameDownloadAs(
+            Download expectedDownload)
+        {
+            return actualDownload => IsSameDownload(expectedDownload, actualDownload);
+        }
+
+        private bool IsSameDownload(
+            Download expectedDownload,
+            Download actualDownload)
+        {
+            bool matchingSubscriberCredential = this.compareLogic
+                .Compare(expectedDownload.SubscriberCredential, actualDownload.SubscriberCredential)
+                    .AreEqual;
+
+            bool matchingFileNames = expectedDownload.Document?.FileName == actualDownload.Document?.FileName;
+
+            return matchingSubscriberCredential && matchingFileNames;
         }
 
         public static TheoryData<Xeption> DependencyValidationExceptions()
@@ -70,8 +94,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static List<Document> CreateRandomDocuments() =>
-            CreateDocumentFiller().Create(count: GetRandomNumber()).ToList();
+        private static List<string> CreateRandomStringList() =>
+            Enumerable.Range(1, GetRandomNumber())
+                .Select(item => new MnemonicString().GetValue())
+                .ToList();
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
@@ -106,6 +132,20 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
     }
 }

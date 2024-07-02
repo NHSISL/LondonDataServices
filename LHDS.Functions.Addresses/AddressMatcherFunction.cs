@@ -35,7 +35,7 @@ namespace LHDS.Functions.Addresses
 
             try
             {
-                byte[] addressData = Encoding.ASCII.GetBytes(myBlob);
+                byte[] addressData = Encoding.UTF8.GetBytes(myBlob);
                 await addressClient.MatchPatientAddressDataAsync(data: addressData, filename: name);
             }
             catch (Exception ex)

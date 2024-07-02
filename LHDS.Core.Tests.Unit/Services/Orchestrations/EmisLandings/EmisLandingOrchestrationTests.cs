@@ -4,10 +4,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -50,6 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<IHashBroker> hashBrokerMock;
+        private readonly Mock<IFileBroker> fileBrokerMock;
         private readonly LandingConfiguration landingConfiguration;
         private readonly BlobContainers blobContainers;
         private readonly IEmisLandingOrchestrationService emisLandingOrchestrationService;
@@ -67,6 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             identifierBrokerMock = new Mock<IIdentifierBroker>();
             hashBrokerMock = new Mock<IHashBroker>();
+            fileBrokerMock = new Mock<IFileBroker>();
             compareLogic = new CompareLogic();
 
             landingConfiguration = new LandingConfiguration
@@ -95,45 +100,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
                 hashBroker: hashBrokerMock.Object,
+                fileBroker: fileBrokerMock.Object,
                 landingConfiguration: landingConfiguration);
         }
 
-        private static List<string> GetRandomStrings(int count)
+        static byte[] ReadAllBytesFromStream(Stream stream)
         {
-            var messages = new List<string>();
-
-            for (int i = 0; i < count; i++)
+            if (stream.CanSeek)
             {
-                var message = GetRandomString();
-                messages.Add(message);
+                stream.Seek(0, SeekOrigin.Begin);
             }
 
-            return messages;
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
+
+        public byte[] CreateRandomData()
+        {
+            string randomMessage = GetRandomString();
+            return Encoding.UTF8.GetBytes(randomMessage);
+        }
+
+        private static List<string> GetRandomStrings() =>
+            Enumerable.Range(1, GetRandomNumber())
+                .Select(i => GetRandomString())
+                .ToList();
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
-
-        private static List<Document> CreateRandomDocuments()
-        {
-            return CreateDocumentFiller()
-                .Create(count: 1)
-                    .ToList();
-        }
-
-        private static Document CreateRandomDocument() =>
-            CreateDocumentFiller().Create();
-
-        private static Filler<Document> CreateDocumentFiller()
-        {
-            var filler = new Filler<Document>();
-            Guid supplierAgreementId = Guid.NewGuid();
-            string filename = GetRandomFileName(supplierAgreementId);
-            string filePath = CreateRandomFilePath(supplierAgreementId, filename);
-            filler.Setup().OnProperty(document => document.FileName).Use(() => filePath);
-
-            return filler;
-        }
 
         private static string GetRandomFileName(Guid subscriberAgreementId)
         {
@@ -147,6 +144,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             return filename;
         }
+
+        private static string CreateRandomFileName()
+        {
+            string filename = $"{GetRandomString()}/" +
+                   $"{GetRandomString()}/" +
+                   $"{GetRandomString()}/" +
+                   $"{GetRandomString()}/" +
+                   $"{0122235}/{GetRandomString(10)}_{GetRandomString(10)}_{GetRandomString(10)}_{GetRandomString(10)}";
+
+            return filename;
+        }
+
 
         private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
         {
@@ -202,10 +211,50 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .AreEqual;
         }
 
-        private Expression<Func<Download, bool>> SameDownloadAs(
-            Download expectedDownload)
+        private Expression<Func<Download, bool>> SameDownloadAs(Download expectedDownload)
         {
-            return actualDownload => this.compareLogic.Compare(expectedDownload, actualDownload).AreEqual;
+            return actualDownload =>
+                IsSameSubsciberCredentialAs(
+                    expectedDownload.SubscriberCredential,
+                    actualDownload.SubscriberCredential)
+
+                && IsSameDocumentAs(
+                    expectedDownload.Document,
+                    actualDownload.Document);
+        }
+
+        private bool IsSameDocumentAs(Document expectedDocument, Document actualDocument)
+        {
+            if (expectedDocument == actualDocument)
+            {
+                return true;
+            }
+
+            bool sameFileName = expectedDocument.FileName == actualDocument.FileName;
+
+            return sameFileName;
+        }
+
+        private static bool IsSameStream(Stream expectedStream, Stream actualStream)
+        {
+            byte[] expectedBytes = ReadAllBytesFromStream(expectedStream);
+            byte[] actualBytes = ReadAllBytesFromStream(actualStream);
+
+            return new CompareLogic().Compare(expectedBytes, actualBytes).AreEqual;
+        }
+
+        private bool IsSameSubsciberCredentialAs(
+            SubscriberCredential expectedSubscriberCredential,
+            SubscriberCredential actualSubscriberCredential)
+        {
+            return this.compareLogic.Compare(expectedSubscriberCredential, actualSubscriberCredential).AreEqual;
+        }
+
+
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
+        {
+            return actualStream =>
+                this.compareLogic.Compare(expectedStream, actualStream).AreEqual;
         }
 
         private static DataSet CreateRandomDataSet(Guid supplierId) =>

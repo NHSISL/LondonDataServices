@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts;
@@ -66,12 +66,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                   return await meshProcessingService.ValidateMailboxAccessAsync();
               });
 
-        public ValueTask<string> RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName) =>
+        public ValueTask<string> RetrieveOptOutStatusAsync(Stream input, string fileName) =>
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
-                ValidateOptOutFileIsNotNull(optOutFile);
-                ValidateRequestIdIsNotNull(fileName);
+                ValidateArgumentsOnRetrieveOptOutStatus(input, fileName);
 
                 bool withHeader =
                     optOutConfiguration.OptOutFileHasHeader;
@@ -81,7 +80,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 bool shouldAddTrailingComma =
                     optOutConfiguration.OptOutFileRequireTrailingComma;
 
-                var inputString = Encoding.ASCII.GetString(optOutFile);
+                var inputString = Encoding.UTF8.GetString(ReadAllBytesFromStream(input));
 
                 List<OptOutIdentifier> mappedOptOuts =
                     await this.csvHelperBroker
@@ -112,21 +111,23 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     processedOptOuts.Add(item);
                 }
 
-                var processedData = await this.csvHelperBroker
+                string processedData = await this.csvHelperBroker
                     .MapObjectToCsvAsync(processedOptOuts, withHeader, fieldMappings, shouldAddTrailingComma);
 
-                var processedBytes = Encoding.ASCII.GetBytes(processedData);
+                byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
 
-                Document document = new Document
+                string csvFileName = $"{optOutConfiguration.OutputFolder}/" +
+                    $"{Path.GetFileNameWithoutExtension(fileName)}_Response.csv";
+
+                using (Stream processed = new MemoryStream(processedBytes))
                 {
-                    FileName = $"{optOutConfiguration.OutputFolder}/{fileName}_Response.csv",
-                    DocumentData = processedBytes
-                };
+                    await this.documentProcessingService.AddDocumentAsync(
+                        input: processed,
+                        csvFileName,
+                        container: blobContainers.OptOut);
+                }
 
-                string saveDocument = await this.documentProcessingService
-                    .AddDocumentAsync(document, blobContainers.OptOut);
-
-                return saveDocument;
+                return fileName;
             });
 
         public ValueTask<MeshMessage?> PushExpiredOptOutsToMeshForRenewalAsync() =>
@@ -239,16 +240,14 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                     shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
 
                             string fileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
-
                             ValidateDocumentRequirements(csvDifferences, fileName);
+                            byte[] csvDifferencesBytes = Encoding.UTF8.GetBytes(csvDifferences);
 
-                            Document document = new Document
+                            using (Stream input = new MemoryStream(csvDifferencesBytes))
                             {
-                                DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                                FileName = fileName
-                            };
-
-                            await this.documentProcessingService.AddDocumentAsync(document, blobContainers.OptOut);
+                                await this.documentProcessingService.AddDocumentAsync(
+                                    input, fileName, container: blobContainers.OptOut);
+                            }
                         }
 
                         await this.meshProcessingService.AcknowledgeMessageByIdAsync(messageId);
@@ -283,6 +282,20 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 : string.Empty;
 
             return value ?? string.Empty;
+        }
+
+        static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
     }
 }

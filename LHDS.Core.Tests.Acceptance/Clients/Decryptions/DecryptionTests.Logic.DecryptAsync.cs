@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -26,7 +25,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
             Guid supplierId = Guid.NewGuid();
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
-            Stream randomStream = new MemoryStream(documentData);
+            Stream inputStream = new MemoryStream(documentData);
             Stream encryptedStream = new MemoryStream();
             Stream decryptedStream = new MemoryStream();
             Supplier randomSupplier = CreateRandomSupplier(supplierId, dateTimeOffset);
@@ -35,29 +34,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             SubscriberCredential generatedSubscriberCredential = await this.subscriberCredentialOrchestration
                 .ModifyOrAddSubscriberCredentialAsync(subscriberCredential, regenerateKeys: true);
 
+            await this.cryptographyProvider.EncryptAsync(inputStream, encryptedStream, generatedSubscriberCredential);
             string fileName = CreateRandomFileName(subscriberCredential.Id);
-
-            await this.cryptographyProvider.EncryptAsync(
-                input: randomStream, 
-                output: encryptedStream,  
-                generatedSubscriberCredential);
-
-            Document document = new Document
-            {
-                DocumentData = encryptedStream,
-                FileName = fileName
-            };
-
-            await this.documentService.AddDocumentAsync(
-                input: encryptedStream, 
-                fileName, 
-                container: blobContainers.EmisLanding);
-
+            await this.documentService.AddDocumentAsync(encryptedStream, fileName, blobContainers.EmisLanding);
             await this.supplierService.AddSupplierAsync(randomSupplier);
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                document,
+                fileName,
                 supplierId: supplierId);
 
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
@@ -70,7 +54,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             await this.documentService.RetrieveDocumentByFileNameAsync(
                 output: decryptedStream,
-                ingestionTracking.DecryptedFileName, 
+                fileName: ingestionTracking.DecryptedFileName,
                 container: blobContainers.Versioner);
 
             byte[] decryptedData = ReadAllBytesFromStream(decryptedStream);

@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Xunit;
@@ -25,8 +24,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
             Guid supplierId = Guid.NewGuid();
             Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
-            Document randomDocument = CreateRandomDocument();
             DataSet activeDataSet = CreateRandomDataSet(supplierId);
+            string randomContent = GetRandomString();
+            byte[] randomBytes = Encoding.UTF8.GetBytes(randomContent);
+            Stream randomStream = new MemoryStream(randomBytes);
+            Stream inputStream = randomStream;
+            string inputFileName = GetRandomFileName();
+
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
             await this.supplierService.AddSupplierAsync(landingSupplier);
             await this.dataSetService.AddDataSetAsync(activeDataSet);
@@ -34,8 +38,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             //When
             Guid actualGuid = await this.tppLandingClient.ProcessAsync(
-                input: randomDocument.DocumentData, 
-                fileName: randomDocument.FileName, 
+                input: inputStream,
+                fileName: inputFileName,
                 supplierId);
 
             //Then
@@ -71,10 +75,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         {
             //Given
             DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            Document randomDocument = CreateRandomDocument();
-            string fileName = GetRandomFileName();
+            string randomFileName = GetRandomFileName();
+            string fileName = randomFileName;
+            string randomHash = GetRandomString();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
-            Stream randomStream = new MemoryStream(documentData);
+            Stream inputStream = new MemoryStream(documentData);
+
             Guid supplierId = Guid.NewGuid();
             Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
             await this.supplierService.AddSupplierAsync(landingSupplier);
@@ -84,21 +90,18 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.dataSetService.AddDataSetAsync(activeDataSet);
             await this.dataSetSpecificationService.AddDataSetSpecificationAsync(activeDataSetSpecification);
 
-            Document document = new Document
-            {
-                DocumentData = randomStream,
-                FileName = fileName
-            };
-
             IngestionTracking randomIngestionTracking =
-                CreateRandomIngestionTracking(randomDateTime, document, supplierId);
+                CreateRandomIngestionTracking(randomDateTime, fileName, supplierId);
 
-            randomIngestionTracking.FileName = randomDocument.FileName;
-            randomIngestionTracking.DecryptedFileSha256Hash = randomDocument.SHA256Hash;
+            randomIngestionTracking.FileName = randomFileName;
+            randomIngestionTracking.DecryptedFileSha256Hash = randomHash;
             await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
 
             //When
-            Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomStream, fileName, supplierId);
+            Guid actualGuid = await this.tppLandingClient.ProcessAsync(
+                input: inputStream,
+                fileName,
+                supplierId);
 
             //Then
             IngestionTracking ingestionTracking =
@@ -116,6 +119,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
             await this.supplierService.RemoveSupplierByIdAsync(supplierId);
+
+            await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                randomFileName,
+                blobContainers.Versioner);
         }
 
         [Fact]
@@ -123,9 +130,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         {
             //Given
             DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            string fileName = GetRandomFileName();
-            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString()); 
-            Stream randomStream = new MemoryStream(documentData);
+            string randomFileName = GetRandomFileName();
+            string fileName = randomFileName;
+            string randomHash = GetRandomString();
+            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+            Stream inputStream = new MemoryStream(documentData);
             Guid supplierId = Guid.NewGuid();
             Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
             await this.supplierService.AddSupplierAsync(landingSupplier);
@@ -135,22 +144,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.dataSetService.AddDataSetAsync(activeDataSet);
             await this.dataSetSpecificationService.AddDataSetSpecificationAsync(activeDataSetSpecification);
 
-            Document document = new Document
-            {
-                DocumentData = randomStream,
-                FileName = fileName
-            };
-
             IngestionTracking randomIngestionTracking =
-                CreateRandomIngestionTracking(randomDateTime, document, supplierId);
+                CreateRandomIngestionTracking(randomDateTime, fileName, supplierId);
 
-            randomIngestionTracking.FileName = fileName;
+            randomIngestionTracking.FileName = randomFileName;
             await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
 
             //When
             Guid actualGuid = await this.tppLandingClient.ProcessAsync(
-                input: randomStream,
-                fileName, 
+                input: inputStream,
+                fileName,
                 supplierId);
 
             //Then
@@ -171,7 +174,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                fileName,
+                randomFileName,
                 blobContainers.Versioner);
         }
     }

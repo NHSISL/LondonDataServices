@@ -262,6 +262,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         new FileStream(tempEncryptedFilePath, FileMode.Create, FileAccess.Write))
                     {
                         await DownloadFile(output: ftpFileStream, fileName, subscriberCredential);
+                    }
+
+                    using (FileStream ftpFileStream =
+                        new FileStream(tempEncryptedFilePath, FileMode.Open, FileAccess.Read))
+                    {
                         string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(ftpFileStream);
                         updatedIngestionTracking.EncryptedFileSize = ftpFileStream.Length;
                         updatedIngestionTracking.EncryptedFileSha256Hash = encryptedFileSha256Hash;
@@ -272,8 +277,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                             container: blobContainers.EmisLanding);
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    LogAudit(updatedIngestionTracking, $"Error Downloading {fileName};  " +
+                        $"Error: {ex.Message} {ex?.InnerException?.Message}");
+
                     throw;
                 }
                 finally

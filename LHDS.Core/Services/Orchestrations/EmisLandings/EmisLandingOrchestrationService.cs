@@ -258,21 +258,21 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                 try
                 {
-                    using (FileStream ftpFileStream =
+                    using (FileStream writeFtpFileStream =
                         new FileStream(tempEncryptedFilePath, FileMode.Create, FileAccess.ReadWrite))
                     {
-                        await DownloadFile(output: ftpFileStream, fileName, subscriberCredential);
+                        await DownloadFile(output: writeFtpFileStream, fileName, subscriberCredential);
                     }
 
-                    using (FileStream ftpFileStream =
-                        new FileStream(tempEncryptedFilePath, FileMode.Open, FileAccess.Read))
+                    using (FileStream readFtpFileStream =
+                        new FileStream(tempEncryptedFilePath, FileMode.Open, FileAccess.ReadWrite))
                     {
-                        string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(ftpFileStream);
-                        updatedIngestionTracking.EncryptedFileSize = ftpFileStream.Length;
+                        string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(readFtpFileStream);
+                        updatedIngestionTracking.EncryptedFileSize = readFtpFileStream.Length;
                         updatedIngestionTracking.EncryptedFileSha256Hash = encryptedFileSha256Hash;
 
                         await this.documentProcessingService.AddDocumentAsync(
-                            input: ftpFileStream,
+                            input: readFtpFileStream,
                             fileName: maybeIngestionTracking.EncryptedFileName,
                             container: blobContainers.EmisLanding);
                     }

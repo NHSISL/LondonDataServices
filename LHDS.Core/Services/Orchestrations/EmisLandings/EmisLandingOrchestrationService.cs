@@ -262,6 +262,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         new FileStream(tempEncryptedFilePath, FileMode.Create, FileAccess.ReadWrite))
                     {
                         await DownloadFile(output: ftpFileStream, fileName, subscriberCredential);
+                    }
+
+                    using (FileStream ftpFileStream =
+                        new FileStream(tempEncryptedFilePath, FileMode.Open, FileAccess.Read))
+                    {
                         string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(ftpFileStream);
                         updatedIngestionTracking.EncryptedFileSize = ftpFileStream.Length;
                         updatedIngestionTracking.EncryptedFileSha256Hash = encryptedFileSha256Hash;
@@ -284,13 +289,15 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     await this.fileBroker.DeleteFileAsync(tempEncryptedFilePath);
                 }
 
+                var updatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
                 updatedIngestionTracking.IsDownloaded = true;
                 updatedIngestionTracking.Decrypted = false;
                 updatedIngestionTracking.IsProcessing = false;
                 updatedIngestionTracking.RetryCount = 0;
                 updatedIngestionTracking.FileDeleted = false;
                 updatedIngestionTracking.LastSeen = currentDateTime;
-                updatedIngestionTracking.UpdatedDate = currentDateTime;
+                updatedIngestionTracking.UpdatedDate = updatedDate;
 
                 await this.ingestionTrackingProcessingService
                     .ModifyIngestionTrackingAsync(updatedIngestionTracking);

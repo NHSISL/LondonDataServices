@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 
             // WHEN
             string DocumentFileName = await optOutClient
-                .RetrieveOptOutStatusAsync(optOutFile: fileBytes, fileName: fileName);
+                .RetrieveOptOutStatusAsync(input: fileBytes, fileName: fileName);
 
             // THEN
             DocumentFileName.Should().NotBeNullOrWhiteSpace();

@@ -123,9 +123,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         {
             //Given
             DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            Document randomDocument = CreateRandomDocument();
             string fileName = GetRandomFileName();
-            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString()); 
+            Stream randomStream = new MemoryStream(documentData);
             Guid supplierId = Guid.NewGuid();
             Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
             await this.supplierService.AddSupplierAsync(landingSupplier);
@@ -137,18 +137,21 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             Document document = new Document
             {
-                DocumentData = documentData,
+                DocumentData = randomStream,
                 FileName = fileName
             };
 
             IngestionTracking randomIngestionTracking =
                 CreateRandomIngestionTracking(randomDateTime, document, supplierId);
 
-            randomIngestionTracking.FileName = randomDocument.FileName;
+            randomIngestionTracking.FileName = fileName;
             await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
 
             //When
-            Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomDocument, supplierId);
+            Guid actualGuid = await this.tppLandingClient.ProcessAsync(
+                input: randomStream,
+                fileName, 
+                supplierId);
 
             //Then
             IngestionTracking ingestionTracking =
@@ -168,7 +171,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                randomDocument.FileName,
+                fileName,
                 blobContainers.Versioner);
         }
     }

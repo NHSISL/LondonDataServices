@@ -4,10 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Xunit;
 
@@ -37,17 +37,17 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 await this.resolvedAddressProcessingService.AddResolvedAddressAsync(resolvedAddress);
             }
 
+            Stream outputStream = new MemoryStream();
+
             // When
             Guid? actualBatchReference =
                 await this.addressClient.ProcessResolvedAddressDataAsync();
 
             // Then
             string fileName = $"{actualBatchReference.ToString()}.csv";
-
-            Document uploadedDocument =
-                await this.documentService.RetrieveDocumentByFileNameAsync(fileName, addressContainer);
-
-            string uploadedData = Encoding.ASCII.GetString(uploadedDocument.DocumentData);
+            await this.documentService.RetrieveDocumentByFileNameAsync(output: outputStream, fileName, addressContainer);
+            byte[] documentData = ReadAllBytesFromStream(outputStream);
+            string uploadedData = Encoding.ASCII.GetString(documentData);
 
             foreach (var resolvedAddress in randomMatchedResolvedAddresses)
             {

@@ -289,13 +289,15 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     await this.fileBroker.DeleteFileAsync(tempEncryptedFilePath);
                 }
 
+                var updatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
                 updatedIngestionTracking.IsDownloaded = true;
                 updatedIngestionTracking.Decrypted = false;
                 updatedIngestionTracking.IsProcessing = false;
                 updatedIngestionTracking.RetryCount = 0;
                 updatedIngestionTracking.FileDeleted = false;
                 updatedIngestionTracking.LastSeen = currentDateTime;
-                updatedIngestionTracking.UpdatedDate = currentDateTime;
+                updatedIngestionTracking.UpdatedDate = updatedDate;
 
                 await this.ingestionTrackingProcessingService
                     .ModifyIngestionTrackingAsync(updatedIngestionTracking);

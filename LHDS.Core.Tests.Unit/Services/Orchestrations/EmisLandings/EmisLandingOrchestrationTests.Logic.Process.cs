@@ -212,7 +212,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.Exactly(5 * externalDownloadList.Count));
+                    Times.Exactly(6 * externalDownloadList.Count));
 
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>
                 service.GetActiveDataSetSpecification(supplierId),

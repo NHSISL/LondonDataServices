@@ -233,7 +233,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 maybeIngestionTracking = await this.ingestionTrackingProcessingService
                     .AddIngestionTrackingAsync(newIngestionTracking);
 
-                LogAudit(maybeIngestionTracking, $"New file found - {fileName}");
+                await LogAudit(maybeIngestionTracking, $"New file found - {fileName}");
             }
 
             if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
@@ -247,7 +247,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 maybeIngestionTracking.LastSeen = currentDateTime;
                 maybeIngestionTracking.UpdatedDate = currentDateTime;
 
-                LogAudit(maybeIngestionTracking, $"Downloading {fileName};  " +
+                await LogAudit(maybeIngestionTracking, $"Downloading {fileName};  " +
                     $"Attempt: {maybeIngestionTracking.RetryCount}");
 
                 IngestionTracking updatedIngestionTracking =
@@ -258,28 +258,28 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                 try
                 {
-                    using (FileStream ftpFileStream =
-                        new FileStream(tempEncryptedFilePath, FileMode.Create, FileAccess.Write))
+                    using (FileStream writeFtpFileStream =
+                        new FileStream(tempEncryptedFilePath, FileMode.Create, FileAccess.ReadWrite))
                     {
-                        await DownloadFile(output: ftpFileStream, fileName, subscriberCredential);
+                        await DownloadFile(output: writeFtpFileStream, fileName, subscriberCredential);
                     }
 
-                    using (FileStream ftpFileStream =
-                        new FileStream(tempEncryptedFilePath, FileMode.Open, FileAccess.Read))
+                    using (FileStream readFtpFileStream =
+                        new FileStream(tempEncryptedFilePath, FileMode.Open, FileAccess.ReadWrite))
                     {
-                        string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(ftpFileStream);
-                        updatedIngestionTracking.EncryptedFileSize = ftpFileStream.Length;
+                        string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(readFtpFileStream);
+                        updatedIngestionTracking.EncryptedFileSize = readFtpFileStream.Length;
                         updatedIngestionTracking.EncryptedFileSha256Hash = encryptedFileSha256Hash;
 
                         await this.documentProcessingService.AddDocumentAsync(
-                            input: ftpFileStream,
+                            input: readFtpFileStream,
                             fileName: maybeIngestionTracking.EncryptedFileName,
                             container: blobContainers.EmisLanding);
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogAudit(updatedIngestionTracking, $"Error Downloading {fileName};  " +
+                    await LogAudit(updatedIngestionTracking, $"Error Downloading {fileName};  " +
                         $"Error: {ex.Message} {ex?.InnerException?.Message}");
 
                     throw;
@@ -289,18 +289,20 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     await this.fileBroker.DeleteFileAsync(tempEncryptedFilePath);
                 }
 
+                var updatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
                 updatedIngestionTracking.IsDownloaded = true;
                 updatedIngestionTracking.Decrypted = false;
                 updatedIngestionTracking.IsProcessing = false;
                 updatedIngestionTracking.RetryCount = 0;
                 updatedIngestionTracking.FileDeleted = false;
                 updatedIngestionTracking.LastSeen = currentDateTime;
-                updatedIngestionTracking.UpdatedDate = currentDateTime;
+                updatedIngestionTracking.UpdatedDate = updatedDate;
 
                 await this.ingestionTrackingProcessingService
                     .ModifyIngestionTrackingAsync(updatedIngestionTracking);
 
-                LogAudit(updatedIngestionTracking, $"Downloaded {fileName};  " +
+                await LogAudit(updatedIngestionTracking, $"Downloaded {fileName};  " +
                     $"Attempt: {updatedIngestionTracking.RetryCount}");
 
                 return updatedIngestionTracking.DecryptedFileName;
@@ -309,7 +311,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             return string.Empty;
         }
 
-        private void LogAudit(
+        private async ValueTask LogAudit(
             IngestionTracking ingestionTracking,
             string message)
         {
@@ -327,7 +329,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     UpdatedDate = currentDateTime
                 };
 
-            this.auditService.AddIngestionTrackingAuditAsync(newAudit);
+            await this.auditService.AddIngestionTrackingAuditAsync(newAudit);
         }
 
         private async ValueTask<(string encryptedFileName, string decryptedFileName)> GetFileNames(

@@ -127,7 +127,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         container: blobContainers.OptOut);
                 }
 
-                return fileName;
+                return csvFileName;
             });
 
         public ValueTask<MeshMessage?> PushExpiredOptOutsToMeshForRenewalAsync() =>

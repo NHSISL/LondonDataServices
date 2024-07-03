@@ -21,10 +21,8 @@ using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
-using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -61,18 +59,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 builder.AddConsole();
             });
 
-            var blobStorageSettings = dependencyBroker.Configuration
-                .GetSection("blobStorage").Get<BlobStorageSettings>();
+            serviceCollection.AddTppLandingClient(this.dependencyBroker.Configuration);
 
-            serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+            //var blobStorageSettings = dependencyBroker.Configuration
+            //    .GetSection("blobStorage").Get<BlobStorageSettings>();
 
-            serviceCollection
-                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
-                .AddTransient<ISupplierService, SupplierService>()
-                .AddTransient<IDataSetService, DataSetService>()
-                .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
-                .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>()
-                .AddTransient<IDocumentProcessingService, DocumentProcessingService>();
+            //serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+
+            //serviceCollection
+            //    .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
+            //    .AddTransient<ISupplierService, SupplierService>()
+            //    .AddTransient<IDataSetService, DataSetService>()
+            //    .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
+            //    .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>()
+            //    .AddTransient<IDocumentProcessingService, DocumentProcessingService>();
 
             serviceCollection.AddTppLandingClient(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();

@@ -59,14 +59,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
             await this.supplierService.RemoveSupplierByIdAsync(supplierId);
 
-            var decryptedFileName =
-                $"/{landingConfiguration.DecryptedFolder}"
-                + $"/{activeDataSet.DataSetName}"
-                + $"/{activeDataSetSpecification?.Id}"
-                + $"/{inputFileName}";
-
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                decryptedFileName,
+                ingestionTracking.DecryptedFileName,
                 blobContainers.Versioner);
         }
 
@@ -121,7 +115,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.supplierService.RemoveSupplierByIdAsync(supplierId);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                randomFileName,
+                ingestionTracking.DecryptedFileName,
                 blobContainers.Versioner);
         }
 
@@ -174,7 +168,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                randomFileName,
+                ingestionTracking.DecryptedFileName,
                 blobContainers.Versioner);
         }
     }

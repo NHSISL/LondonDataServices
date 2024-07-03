@@ -364,7 +364,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
             string decryptedFileName = $"/{landingConfiguration.DecryptedFolder}" +
                 $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}" +
-                $"/{retrievedDataSetSpecification?.Id}" +
+                $"/{retrievedDataSetSpecification?.OurSpecificationVersion}" +
                 $"/{fileName.Split('_')[2]}_{fileName.Split('_')[3]}" +
                 $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 

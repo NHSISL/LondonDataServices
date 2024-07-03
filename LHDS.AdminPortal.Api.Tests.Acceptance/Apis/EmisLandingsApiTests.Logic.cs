@@ -150,7 +150,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             File.Delete(testFilePath);
         }
 
-        [Fact(Skip = "specific reason")]
+        [Fact]
         public async Task ShouldProcessDocumentsWithNewIngestionTrackingAsync()
         {
             //given 

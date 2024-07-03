@@ -117,7 +117,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         fileName: newIngestionTracking.DecryptedFileName,
                         container: blobContainers.Versioner);
 
-                    LogAudit(newIngestionTracking, "Landed", currentDateTime);
+                    await LogAudit(newIngestionTracking, "Landed", currentDateTime);
 
                     return newIngestionTracking.Id;
                 }
@@ -142,7 +142,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(
                             maybeIngestionTracking);
 
-                        LogAudit(
+                        await LogAudit(
                             maybeIngestionTracking,
                             "Received and updated file from TPP which has now been uploaded to the blob store",
                             currentDateTime);
@@ -152,7 +152,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                 }
             });
 
-        private void LogAudit(
+        private async ValueTask LogAudit(
            IngestionTracking ingestionTracking,
            string message,
            DateTimeOffset currentDateTime)
@@ -169,7 +169,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     UpdatedDate = currentDateTime
                 };
 
-            this.ingestionTrackingProcessingAuditService.AddIngestionTrackingAuditAsync(newAudit);
+            await this.ingestionTrackingProcessingAuditService.AddIngestionTrackingAuditAsync(newAudit);
         }
     }
 }

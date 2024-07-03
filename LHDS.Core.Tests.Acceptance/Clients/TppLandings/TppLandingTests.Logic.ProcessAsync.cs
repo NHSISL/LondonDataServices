@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.supplierService.RemoveSupplierByIdAsync(supplierId);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                inputFileName,
+                ingestionTracking.DecryptedFileName,
                 blobContainers.Versioner);
         }
 

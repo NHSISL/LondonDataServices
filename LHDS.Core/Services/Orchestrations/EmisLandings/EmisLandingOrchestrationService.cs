@@ -233,7 +233,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 maybeIngestionTracking = await this.ingestionTrackingProcessingService
                     .AddIngestionTrackingAsync(newIngestionTracking);
 
-                LogAudit(maybeIngestionTracking, $"New file found - {fileName}");
+                await LogAudit(maybeIngestionTracking, $"New file found - {fileName}");
             }
 
             if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
@@ -247,7 +247,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 maybeIngestionTracking.LastSeen = currentDateTime;
                 maybeIngestionTracking.UpdatedDate = currentDateTime;
 
-                LogAudit(maybeIngestionTracking, $"Downloading {fileName};  " +
+                await LogAudit(maybeIngestionTracking, $"Downloading {fileName};  " +
                     $"Attempt: {maybeIngestionTracking.RetryCount}");
 
                 IngestionTracking updatedIngestionTracking =
@@ -279,7 +279,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 }
                 catch (Exception ex)
                 {
-                    LogAudit(updatedIngestionTracking, $"Error Downloading {fileName};  " +
+                    await LogAudit(updatedIngestionTracking, $"Error Downloading {fileName};  " +
                         $"Error: {ex.Message} {ex?.InnerException?.Message}");
 
                     throw;
@@ -302,7 +302,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 await this.ingestionTrackingProcessingService
                     .ModifyIngestionTrackingAsync(updatedIngestionTracking);
 
-                LogAudit(updatedIngestionTracking, $"Downloaded {fileName};  " +
+                await LogAudit(updatedIngestionTracking, $"Downloaded {fileName};  " +
                     $"Attempt: {updatedIngestionTracking.RetryCount}");
 
                 return updatedIngestionTracking.DecryptedFileName;
@@ -311,7 +311,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             return string.Empty;
         }
 
-        private void LogAudit(
+        private async ValueTask LogAudit(
             IngestionTracking ingestionTracking,
             string message)
         {
@@ -329,7 +329,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     UpdatedDate = currentDateTime
                 };
 
-            this.auditService.AddIngestionTrackingAuditAsync(newAudit);
+            await this.auditService.AddIngestionTrackingAuditAsync(newAudit);
         }
 
         private async ValueTask<(string encryptedFileName, string decryptedFileName)> GetFileNames(

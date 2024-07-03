@@ -388,8 +388,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SubscriberCredentials
                 this.apiBroker.GetSubscriberCredentialByIdAsync(subscriberAgreementId);
 
             // then
-            await Assert.ThrowsAsync<SubscriberCredentialOrchestrationDependencyValidationException>(() => 
-                getSubscriberCredentialbyIdTask.AsTask());
+            await Assert.ThrowsAsync<SubscriberCredentialOrchestrationDependencyValidationException>( 
+                getSubscriberCredentialbyIdTask.AsTask);  
         }
     }
 }

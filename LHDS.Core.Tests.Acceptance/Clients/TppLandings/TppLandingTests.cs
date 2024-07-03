@@ -61,19 +61,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             serviceCollection.AddTppLandingClient(this.dependencyBroker.Configuration);
 
-            //var blobStorageSettings = dependencyBroker.Configuration
-            //    .GetSection("blobStorage").Get<BlobStorageSettings>();
-
-            //serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
-
-            //serviceCollection
-            //    .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
-            //    .AddTransient<ISupplierService, SupplierService>()
-            //    .AddTransient<IDataSetService, DataSetService>()
-            //    .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
-            //    .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>()
-            //    .AddTransient<IDocumentProcessingService, DocumentProcessingService>();
-
             serviceCollection.AddTppLandingClient(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();

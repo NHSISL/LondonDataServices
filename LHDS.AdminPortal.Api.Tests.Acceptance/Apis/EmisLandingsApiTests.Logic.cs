@@ -1,291 +1,291 @@
-//// ---------------------------------------------------------
-//// Copyright (c) North East London ICB. All rights reserved.
-//// ---------------------------------------------------------
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
 
-//using System;
-//using System.Collections.Generic;
-//using System.IO;
-//using System.Reflection;
-//using System.Text;
-//using System.Threading.Tasks;
-//using FluentAssertions;
-//using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
-//using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
-//using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
-//using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
-//using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
-//using LHDS.Core.Models.Foundations.Documents;
-//using Xunit;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using LHDS.Core.Models.Foundations.Documents;
+using Xunit;
 
-//namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
-//{
-//    public partial class EmisLandingsApiTests
-//    {
-//        [Fact(Skip = "specific reason")]
-//        public async Task ShouldReLandDocumentByFileNameForExistingIngestionTrackingAsync()
-//        {
-//            //Given
-//            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-//            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-//            await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);
-//            string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
-//            string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
-//            Supplier randomSupplier = await PostRandomSupplierAsync();
-//            string encryptedFilePath = $"{encryptedFolder}/{randomFilePath}";
-//            string decryptedFilePath = $"{decryptedFolder}/{randomFilePath}";
-//            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-//            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
-//            string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
-//            FileInfo fileInfo = new FileInfo(testFilePath);
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
+{
+    public partial class EmisLandingsApiTests
+    {
+        [Fact(Skip = "specific reason")]
+        public async Task ShouldReLandDocumentByFileNameForExistingIngestionTrackingAsync()
+        {
+            //Given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);
+            string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
+            string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            string encryptedFilePath = $"{encryptedFolder}/{randomFilePath}";
+            string decryptedFilePath = $"{decryptedFolder}/{randomFilePath}";
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+            string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
+            FileInfo fileInfo = new FileInfo(testFilePath);
 
-//            if (!fileInfo.Directory.Exists)
-//            {
-//                fileInfo.Directory.Create();
-//            }
+            if (!fileInfo.Directory.Exists)
+            {
+                fileInfo.Directory.Create();
+            }
 
-//            File.WriteAllText(testFilePath, GetRandomString());
+            File.WriteAllText(testFilePath, GetRandomString());
 
-           
 
-//            await this.apiBroker.documentService.AddDocumentAsync(, "emislanding");
 
-//            IngestionTracking randomIngestionTracking =
-//                await PostRandomIngestionTrackingAsync(
-//                    randomSupplier.Id,
-//                    randomFilePath,
-//                    encryptedFilePath,
-//                    decryptedFilePath);
+            await this.apiBroker.documentService.AddDocumentAsync(, "emislanding");
 
-//            IngestionTracking inputIngestionTracking = randomIngestionTracking;
-//            IngestionTracking expectedIngestionTracking = inputIngestionTracking;
+            IngestionTracking randomIngestionTracking =
+                await PostRandomIngestionTrackingAsync(
+                    randomSupplier.Id,
+                    randomFilePath,
+                    encryptedFilePath,
+                    decryptedFilePath);
 
-//            //When
-//            string actualDecryptedFileName =
-//                await this.apiBroker.ReLandDocumentByFileNameAsync(randomFilePath);
+            IngestionTracking inputIngestionTracking = randomIngestionTracking;
+            IngestionTracking expectedIngestionTracking = inputIngestionTracking;
 
-//            //Then
-//            actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
-//            await CleanupTask(expectedIngestionTracking.Id);
-//            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(randomFilePath, "emislanding");
-//            File.Delete(testFilePath);
-//        }
+            //When
+            string actualDecryptedFileName =
+                await this.apiBroker.ReLandDocumentByFileNameAsync(randomFilePath);
 
-//        [Fact(Skip = "specific reason")]
-//        public async Task ShouldLandNewDocumentByFileNameForExistingIngestionTrackingAsync()
-//        {
-//            //Given
-//            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-//            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-//            await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);
-//            string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
-//            string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
-//            Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
-//            DataSet randomDataSet = await PostRandomActiveDataSetAsync(emisSupplierId);
+            //Then
+            actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
+            await CleanupTask(expectedIngestionTracking.Id);
+            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(randomFilePath, "emislanding");
+            File.Delete(testFilePath);
+        }
 
-//            DataSetSpecification randomDataSetSpecification =
-//                await PostRandomActiveDataSetSpecificationAsync(randomDataSet.Id);
+        [Fact(Skip = "specific reason")]
+        public async Task ShouldLandNewDocumentByFileNameForExistingIngestionTrackingAsync()
+        {
+            //Given
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            await this.apiBroker.PostSubscriberCredentialAsync(inputSubscriberCredential);
+            string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
+            string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
+            Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
+            DataSet randomDataSet = await PostRandomActiveDataSetAsync(emisSupplierId);
 
-//            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-//            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
-//            string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
-//            FileInfo fileInfo = new FileInfo(testFilePath);
+            DataSetSpecification randomDataSetSpecification =
+                await PostRandomActiveDataSetSpecificationAsync(randomDataSet.Id);
 
-//            if (!fileInfo.Directory.Exists)
-//            {
-//                fileInfo.Directory.Create();
-//            }
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+            string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
+            FileInfo fileInfo = new FileInfo(testFilePath);
 
-//            File.WriteAllText(testFilePath, GetRandomString());
+            if (!fileInfo.Directory.Exists)
+            {
+                fileInfo.Directory.Create();
+            }
 
-//            Document document = new Document
-//            {
-//                FileName = randomFilePath,
-//                DocumentData = Encoding.ASCII.GetBytes(GetRandomString()),
-//            };
+            File.WriteAllText(testFilePath, GetRandomString());
 
-//            await this.apiBroker.documentService.AddDocumentAsync(document, "emislanding");
+            Document document = new Document
+            {
+                FileName = randomFilePath,
+                DocumentData = Encoding.ASCII.GetBytes(GetRandomString()),
+            };
 
-//            //When
-//            string actualDecryptedFileName =
-//                await this.apiBroker.ReLandDocumentByFileNameAsync(randomFilePath);
+            await this.apiBroker.documentService.AddDocumentAsync(document, "emislanding");
 
-//            //Then
-//            await CleanupTask(randomFilePath);
-//            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(randomFilePath, "emislanding");
-//            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
-//            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
-//            File.Delete(testFilePath);
-//        }
+            //When
+            string actualDecryptedFileName =
+                await this.apiBroker.ReLandDocumentByFileNameAsync(randomFilePath);
 
-//        [Fact]
-//        public async Task ShouldRetrieveListOfDocumentsToProcessAsync()
-//        {
-//            //given 
-//            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-//            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-//            await this.apiBroker.PostSubscriberCredentialAndGenerateKeysAsync(inputSubscriberCredential);
-//            string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
-//            string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
-//            Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
-//            DataSet randomDataSet = await PostRandomActiveDataSetAsync(emisSupplierId);
+            //Then
+            await CleanupTask(randomFilePath);
+            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(randomFilePath, "emislanding");
+            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+            File.Delete(testFilePath);
+        }
 
-//            DataSetSpecification randomDataSetSpecification =
-//                await PostRandomActiveDataSetSpecificationAsync(randomDataSet.Id);
+        [Fact]
+        public async Task ShouldRetrieveListOfDocumentsToProcessAsync()
+        {
+            //given 
+            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+            SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+            await this.apiBroker.PostSubscriberCredentialAndGenerateKeysAsync(inputSubscriberCredential);
+            string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
+            string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
+            Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
+            DataSet randomDataSet = await PostRandomActiveDataSetAsync(emisSupplierId);
 
-//            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-//            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
-//            string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
-//            FileInfo fileInfo = new FileInfo(testFilePath);
+            DataSetSpecification randomDataSetSpecification =
+                await PostRandomActiveDataSetSpecificationAsync(randomDataSet.Id);
 
-//            if (!fileInfo.Directory.Exists)
-//            {
-//                fileInfo.Directory.Create();
-//            }
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+            string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
+            FileInfo fileInfo = new FileInfo(testFilePath);
 
-//            File.WriteAllText(testFilePath, GetRandomString());
+            if (!fileInfo.Directory.Exists)
+            {
+                fileInfo.Directory.Create();
+            }
 
-//            // when
-//            List<string> actualDocuments =
-//                await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputSubscriberCredential.Id);
+            File.WriteAllText(testFilePath, GetRandomString());
 
-//            // then
-//            actualDocuments.Count.Should().BeGreaterThan(0);
-//            await CleanupTask(randomFilePath);
-//            await this.apiBroker.DeleteSubscriberCredentialByIdAsync(inputSubscriberCredential.Id);
-//            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
-//            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
-//            File.Delete(testFilePath);
-//        }
+            // when
+            List<string> actualDocuments =
+                await this.apiBroker.RetrieveListOfDocumentsToProcessAsync(inputSubscriberCredential.Id);
 
-//        [Fact(Skip = "specific reason")]
-//        public async Task ShouldProcessDocumentsWithNewIngestionTrackingAsync()
-//        {
-//            //given 
-//            int randomFilesNumber = GetRandomNumber();
+            // then
+            actualDocuments.Count.Should().BeGreaterThan(0);
+            await CleanupTask(randomFilePath);
+            await this.apiBroker.DeleteSubscriberCredentialByIdAsync(inputSubscriberCredential.Id);
+            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+            File.Delete(testFilePath);
+        }
 
-//            List<Guid> subscriberCredentialIds = new List<Guid>();
-//            List<string> testFilePaths = new List<string>();
+        [Fact(Skip = "specific reason")]
+        public async Task ShouldProcessDocumentsWithNewIngestionTrackingAsync()
+        {
+            //given 
+            int randomFilesNumber = GetRandomNumber();
 
-//            for (int i = 0; i < randomFilesNumber; i++)
-//            {
-//                SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-//                SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
-//                await this.apiBroker.PostSubscriberCredentialAndGenerateKeysAsync(inputSubscriberCredential);
-//                subscriberCredentialIds.Add(inputSubscriberCredential.Id);
-//                string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
-//                string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
-//                string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-//                string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
-//                string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
-//                FileInfo fileInfo = new FileInfo(testFilePath);
+            List<Guid> subscriberCredentialIds = new List<Guid>();
+            List<string> testFilePaths = new List<string>();
 
-//                if (!fileInfo.Directory.Exists)
-//                {
-//                    fileInfo.Directory.Create();
-//                }
+            for (int i = 0; i < randomFilesNumber; i++)
+            {
+                SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
+                SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
+                await this.apiBroker.PostSubscriberCredentialAndGenerateKeysAsync(inputSubscriberCredential);
+                subscriberCredentialIds.Add(inputSubscriberCredential.Id);
+                string randomFileName = GetRandomFileName(inputSubscriberCredential.Id);
+                string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
+                string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+                string testFilePath = Path.Combine(defaultFolderPath, randomFilePath.Replace("/", "\\"));
+                FileInfo fileInfo = new FileInfo(testFilePath);
 
-//                File.WriteAllText(testFilePath, GetRandomString());
-//                testFilePaths.Add(testFilePath);
-//            }
+                if (!fileInfo.Directory.Exists)
+                {
+                    fileInfo.Directory.Create();
+                }
 
-//            Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
-//            DataSet randomDataSet = await PostRandomActiveDataSetAsync(emisSupplierId);
+                File.WriteAllText(testFilePath, GetRandomString());
+                testFilePaths.Add(testFilePath);
+            }
 
-//            DataSetSpecification randomDataSetSpecification =
-//                await PostRandomActiveDataSetSpecificationAsync(randomDataSet.Id);
+            Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
+            DataSet randomDataSet = await PostRandomActiveDataSetAsync(emisSupplierId);
 
-//            // when
-//            List<string> actualDocuments =
-//                await this.apiBroker.DownloadDocumentsAsync(emisSupplierId);
+            DataSetSpecification randomDataSetSpecification =
+                await PostRandomActiveDataSetSpecificationAsync(randomDataSet.Id);
 
-//            // then
-//            actualDocuments.Count.Should().BeGreaterThanOrEqualTo(randomFilesNumber);
+            // when
+            List<string> actualDocuments =
+                await this.apiBroker.DownloadDocumentsAsync(emisSupplierId);
 
-//            foreach (Guid id in subscriberCredentialIds)
-//            {
-//                await this.apiBroker.DeleteSubscriberCredentialByIdAsync(id);
-//            };
+            // then
+            actualDocuments.Count.Should().BeGreaterThanOrEqualTo(randomFilesNumber);
 
-//            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
-//            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+            foreach (Guid id in subscriberCredentialIds)
+            {
+                await this.apiBroker.DeleteSubscriberCredentialByIdAsync(id);
+            };
 
-//            foreach (string testFilePath in testFilePaths)
-//            {
-//                File.Delete(testFilePath);
+            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
 
-//            }
-//        }
+            foreach (string testFilePath in testFilePaths)
+            {
+                File.Delete(testFilePath);
 
-//        [Fact]
-//        public async Task ShouldRedecryptDocumentByIngestionTrackingAsync()
-//        {
-//            //given 
-//            Supplier randomSupplier = await PostRandomSupplierAsync();
-//            string fileName = GetRandomString(10);
-//            string encryptedFilePath = "encrypted";
-//            string decryptedFilePath = "decrypted";
+            }
+        }
 
-//            IngestionTracking randomIngestionTracking =
-//                CreateRandomIngestionTracking(
-//                    supplierId: randomSupplier.Id,
-//                    fileName,
-//                    encryptedFilePath,
-//                    decryptedFilePath);
+        [Fact]
+        public async Task ShouldRedecryptDocumentByIngestionTrackingAsync()
+        {
+            //given 
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            string fileName = GetRandomString(10);
+            string encryptedFilePath = "encrypted";
+            string decryptedFilePath = "decrypted";
 
-//            randomIngestionTracking.Decrypted = true;
-//            await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
+            IngestionTracking randomIngestionTracking =
+                CreateRandomIngestionTracking(
+                    supplierId: randomSupplier.Id,
+                    fileName,
+                    encryptedFilePath,
+                    decryptedFilePath);
 
-//            // when
-//            await this.apiBroker.RedecryptDocumentByIngestionTrackingIdAsync(randomIngestionTracking.Id);
+            randomIngestionTracking.Decrypted = true;
+            await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
 
-//            // then
-//            IngestionTracking redecryptedIngestionTracking =
-//                await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+            // when
+            await this.apiBroker.RedecryptDocumentByIngestionTrackingIdAsync(randomIngestionTracking.Id);
 
-//            redecryptedIngestionTracking.Decrypted.Should().BeFalse();
-//            await CleanupTask(randomIngestionTracking.Id);
-//            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
-//        }
+            // then
+            IngestionTracking redecryptedIngestionTracking =
+                await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
 
-//        private async ValueTask CleanupTask(string fileName)
-//        {
-//            IngestionTracking? maybeIngestionTracking =
-//                await this.apiBroker.FindIngestionTrackingByFileNameAsync(fileName);
+            redecryptedIngestionTracking.Decrypted.Should().BeFalse();
+            await CleanupTask(randomIngestionTracking.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
+        }
 
-//            if (maybeIngestionTracking == null)
-//            {
-//                return;
-//            }
+        private async ValueTask CleanupTask(string fileName)
+        {
+            IngestionTracking? maybeIngestionTracking =
+                await this.apiBroker.FindIngestionTrackingByFileNameAsync(fileName);
 
-//            var ingestionTrackingAudits = await this.apiBroker
-//                .FindIngestionTrackingAuditByIngestionTrackingIdAsync(maybeIngestionTracking.Id);
+            if (maybeIngestionTracking == null)
+            {
+                return;
+            }
 
-//            foreach (var ingestionTrackingAudit in ingestionTrackingAudits)
-//            {
-//                await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(ingestionTrackingAudit.Id);
-//            }
+            var ingestionTrackingAudits = await this.apiBroker
+                .FindIngestionTrackingAuditByIngestionTrackingIdAsync(maybeIngestionTracking.Id);
 
-//            await this.apiBroker.DeleteIngestionTrackingByIdAsync(maybeIngestionTracking.Id);
-//        }
+            foreach (var ingestionTrackingAudit in ingestionTrackingAudits)
+            {
+                await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(ingestionTrackingAudit.Id);
+            }
 
-//        private async ValueTask CleanupTask(Guid ingestionTrackingId)
-//        {
-//            var maybeIngestionTracking = await this.apiBroker.GetIngestionTrackingByIdAsync(ingestionTrackingId);
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(maybeIngestionTracking.Id);
+        }
 
-//            if (maybeIngestionTracking == null)
-//            {
-//                return;
-//            }
+        private async ValueTask CleanupTask(Guid ingestionTrackingId)
+        {
+            var maybeIngestionTracking = await this.apiBroker.GetIngestionTrackingByIdAsync(ingestionTrackingId);
 
-//            var ingestionTrackingAudits = await this.apiBroker
-//                .FindIngestionTrackingAuditByIngestionTrackingIdAsync(maybeIngestionTracking.Id);
+            if (maybeIngestionTracking == null)
+            {
+                return;
+            }
 
-//            foreach (var ingestionTrackingAudit in ingestionTrackingAudits)
-//            {
-//                await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(ingestionTrackingAudit.Id);
-//            }
+            var ingestionTrackingAudits = await this.apiBroker
+                .FindIngestionTrackingAuditByIngestionTrackingIdAsync(maybeIngestionTracking.Id);
 
-//            await this.apiBroker.DeleteIngestionTrackingByIdAsync(maybeIngestionTracking.Id);
-//        }
-//    }
-//}
+            foreach (var ingestionTrackingAudit in ingestionTrackingAudits)
+            {
+                await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(ingestionTrackingAudit.Id);
+            }
+
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(maybeIngestionTracking.Id);
+        }
+    }
+}

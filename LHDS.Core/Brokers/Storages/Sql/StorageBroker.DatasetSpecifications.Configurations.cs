@@ -31,9 +31,17 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<DataSetSpecification>()
+                .HasIndex(dataSet => new { dataSet.DataSetId, dataSet.SupplierSpecificationVersion })
+                .IsUnique();
+
+            modelBuilder.Entity<DataSetSpecification>()
                 .Property(dataSetSpecification => dataSetSpecification.OurSpecificationVersion)
                 .HasMaxLength(10)
                 .IsRequired();
+
+            modelBuilder.Entity<DataSetSpecification>()
+                .HasIndex(dataSet => new { dataSet.DataSetId, dataSet.OurSpecificationVersion })
+                .IsUnique();
 
             modelBuilder.Entity<DataSetSpecification>()
                 .Property(dataSetSpecification => dataSetSpecification.IsMultiAuthorPerBatch)

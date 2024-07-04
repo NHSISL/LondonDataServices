@@ -216,7 +216,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 service.AddDocumentAsync(
                     inputDataStream,
                     newIngestionTracking.DecryptedFileName,
-                    blobContainers.Versioner),
+                    blobContainers.Ingress),
                         Times.Once);
 
             this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>

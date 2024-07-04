@@ -106,7 +106,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 await this.ingestionTrackingService
                     .ModifyIngestionTrackingAsync(ingestionTracking);
 
-                LogAudit(ingestionTracking, currentDateTime);
+                await LogAudit(ingestionTracking, currentDateTime);
 
                 return ingestionTracking.DecryptedFileName;
             });
@@ -141,7 +141,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 return modifiedItem.EncryptedFileName;
             });
 
-        private void LogAudit(IngestionTracking ingestionTracking, DateTimeOffset currentDateTime)
+        private async ValueTask LogAudit(
+            IngestionTracking ingestionTracking,
+            DateTimeOffset currentDateTime)
         {
             IngestionTrackingAudit newAudit =
                 new IngestionTrackingAudit
@@ -155,7 +157,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     UpdatedBy = "DecryptionOrchestrationService",
                 };
 
-            this.auditService.AddIngestionTrackingAuditAsync(newAudit);
+            await this.auditService.AddIngestionTrackingAuditAsync(newAudit);
         }
     }
 }

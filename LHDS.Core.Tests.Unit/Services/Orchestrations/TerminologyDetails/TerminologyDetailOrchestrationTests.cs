@@ -51,6 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             {
                 EmisLanding = "emislanding",
                 Versioner = "versioner",
+                Ingress = "ingress",
                 OptOut = "optout",
                 Pds = "pds",
                 Terminology = "terminology",

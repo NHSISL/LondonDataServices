@@ -92,7 +92,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     await this.documentService.AddDocumentAsync(
                         input: decryptedDocument,
                         fileName: ingestionTracking.DecryptedFileName,
-                        container: blobContainers.Versioner);
+                        container: blobContainers.Ingress);
                 }
 
                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();

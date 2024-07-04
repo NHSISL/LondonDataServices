@@ -115,7 +115,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     await this.documentProcessingService.AddDocumentAsync(
                         input,
                         fileName: newIngestionTracking.DecryptedFileName,
-                        container: blobContainers.Versioner);
+                        container: blobContainers.Ingress);
 
                     await LogAudit(newIngestionTracking, "Landed", currentDateTime);
 
@@ -134,7 +134,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         await this.documentProcessingService.AddDocumentAsync(
                             input,
                             fileName: maybeIngestionTracking.DecryptedFileName,
-                            container: blobContainers.Versioner);
+                            container: blobContainers.Ingress);
 
                         maybeIngestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
                         maybeIngestionTracking.UpdatedDate = currentDateTime;

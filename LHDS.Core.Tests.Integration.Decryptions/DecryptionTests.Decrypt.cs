@@ -7,17 +7,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
-using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Decryptions
 {
     public partial class DecryptionTests
     {
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldDecryptAsync()
         {
             // given
-            string decryptedFileContainer = "versioner";
+            string decryptedFileContainer = "ingress";
 
             var items = ingestionTrackingService.RetrieveAllIngestionTrackings()
                 .Where(ingestionTrackingService => ingestionTrackingService.Decrypted == false);

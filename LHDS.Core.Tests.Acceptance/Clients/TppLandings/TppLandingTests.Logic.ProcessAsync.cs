@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                 ingestionTracking.DecryptedFileName,
-                blobContainers.Versioner);
+                blobContainers.Ingress);
         }
 
         [Fact]
@@ -116,7 +116,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                 ingestionTracking.DecryptedFileName,
-                blobContainers.Versioner);
+                blobContainers.Ingress);
         }
 
         [Fact]
@@ -169,7 +169,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                 ingestionTracking.DecryptedFileName,
-                blobContainers.Versioner);
+                blobContainers.Ingress);
         }
     }
 }

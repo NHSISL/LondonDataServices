@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             await this.documentService.RetrieveDocumentByFileNameAsync(
                 output: decryptedStream,
                 ingestionTracking.DecryptedFileName,
-                blobContainers.Versioner);
+                blobContainers.Ingress);
 
             ReadAllBytesFromStream(decryptedStream).Should().BeEquivalentTo(documentData);
 
@@ -87,7 +87,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             await this.documentService.RemoveDocumentByFileNameAsync(fileName, blobContainers.EmisLanding);
 
             await this.documentService.RemoveDocumentByFileNameAsync(
-                ingestionTracking.DecryptedFileName, blobContainers.Versioner);
+                ingestionTracking.DecryptedFileName, blobContainers.Ingress);
         }
     }
 }

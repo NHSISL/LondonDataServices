@@ -9,13 +9,11 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Force.DeepCloner;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Extensions.Addresses;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
@@ -68,66 +66,68 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
         public ValueTask NormaliseAddressesAsync() =>
             TryCatch(async () =>
             {
-                var exceptions = new List<Exception>();
-                Address? address;
+                throw new NotImplementedException("NormaliseAddressesAsync is not implemented");
 
-                while ((address = this.addressProcessingService.RetrieveAllAddresses()
-                    .FirstOrDefault(address =>
-                        address.IsNormalised == false
-                        && address.IsErrored == false
-                        && address.Processing == false)) != null)
-                {
-                    try
-                    {
-                        Address addressToProcess = address.DeepClone();
+                //var exceptions = new List<Exception>();
+                //Address? address;
 
-                        addressToProcess = await TryCatch(async () =>
-                        {
-                            addressToProcess.Processing = true;
-                            addressToProcess.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                            var lockedForProcessingAddress = await this.addressProcessingService.ModifyAddressAsync(addressToProcess);
-                            string addressString = lockedForProcessingAddress.GetFormattedAddress();
+                //while ((address = this.addressProcessingService.RetrieveAllAddresses()
+                //    .FirstOrDefault(address =>
+                //        address.IsNormalised == false
+                //        && address.IsErrored == false
+                //        && address.IsProcessing == false)) != null)
+                //{
+                //    try
+                //    {
+                //        Address addressToProcess = address.DeepClone();
 
-                            AddressNormalisation addressNormalisation =
-                                await this.addressNormalisationProcessingService.GetNormalisedAddress(addressString);
+                //        addressToProcess = await TryCatch(async () =>
+                //        {
+                //            addressToProcess.IsProcessing = true;
+                //            addressToProcess.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                //            var lockedForProcessingAddress = await this.addressProcessingService.ModifyAddressAsync(addressToProcess);
+                //            string addressString = lockedForProcessingAddress.GetFormattedAddress();
 
-                            lockedForProcessingAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                            lockedForProcessingAddress.PostalAddress = addressNormalisation.PostalAddress;
-                            lockedForProcessingAddress.IsErrored = false;
-                            lockedForProcessingAddress.IsNormalised = true;
-                            lockedForProcessingAddress.Processing = false;
-                            lockedForProcessingAddress.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                            var amendedAddress = await this.addressProcessingService.ModifyAddressAsync(lockedForProcessingAddress);
+                //            AddressNormalisation addressNormalisation =
+                //                await this.addressNormalisationProcessingService.GetNormalisedAddress(addressString);
 
-                            return amendedAddress;
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        await this.auditBroker.LogWarning(
-                            auditType: "Address",
-                            title: "Unable to normalise address",
-                            message: $"Unable to normalise address with UPRN: {address.UPRN} " +
-                                $"error message: {ex?.InnerException?.Message}" + Environment.NewLine +
-                                $"parts: {ex?.InnerException?.InnerException?.InnerException?.InnerException?.Message}",
-                            string.Empty,
-                            correlationId: address.Id);
+                //            lockedForProcessingAddress.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                //            lockedForProcessingAddress.PostalAddress = addressNormalisation.PostalAddress;
+                //            lockedForProcessingAddress.IsErrored = false;
+                //            lockedForProcessingAddress.IsNormalised = true;
+                //            lockedForProcessingAddress.IsProcessing = false;
+                //            lockedForProcessingAddress.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                //            var amendedAddress = await this.addressProcessingService.ModifyAddressAsync(lockedForProcessingAddress);
 
-                        address.IsErrored = true;
-                        address.IsNormalised = false;
-                        address.Processing = false;
-                        address.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                        address = await this.addressProcessingService.ModifyAddressAsync(address);
-                        exceptions.Add(ex);
-                    }
-                }
+                //            return amendedAddress;
+                //        });
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        await this.auditBroker.LogWarning(
+                //            auditType: "Address",
+                //            title: "Unable to normalise address",
+                //            message: $"Unable to normalise address with UPRN: {address.UPRN} " +
+                //                $"error message: {ex?.InnerException?.Message}" + Environment.NewLine +
+                //                $"parts: {ex?.InnerException?.InnerException?.InnerException?.InnerException?.Message}",
+                //            string.Empty,
+                //            correlationId: address.Id);
 
-                if (exceptions.Any())
-                {
-                    throw new AggregateException(
-                        $"Unable to normalise address for {exceptions.Count} addresses",
-                        exceptions);
-                }
+                //        address.IsErrored = true;
+                //        address.IsNormalised = false;
+                //        address.IsProcessing = false;
+                //        address.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                //        address = await this.addressProcessingService.ModifyAddressAsync(address);
+                //        exceptions.Add(ex);
+                //    }
+                //}
+
+                //if (exceptions.Any())
+                //{
+                //    throw new AggregateException(
+                //        $"Unable to normalise address for {exceptions.Count} addresses",
+                //        exceptions);
+                //}
             });
 
         private async ValueTask<List<Address>> CsvToAddressAsync(List<byte[]> csvData)

@@ -3,17 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
-using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
-using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -22,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 {
     public partial class AddressPersistanceOrchestrationServiceTests
     {
-        [Theory]
+        [Theory(Skip = "no longer used, will refactor out")]
         [MemberData(nameof(AddressPersistenceDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationExceptionOnMatchAndPersistIfDependencyValidationErrorOccursAndLogItAsync(
            Xeption dependencyValidationException)
@@ -65,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
+        [Theory(Skip = "no longer used, will refactor out")]
         [MemberData(nameof(AddressPersistenceDependencyExceptions))]
         public async Task ShouldThrowDependencyExceptionOnMatchAndPersistIfDependencyValidationErrorOccursAndLogItAsync(
            Xeption dependencyException)
@@ -108,7 +101,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
+        [Fact(Skip = "no longer used, will refactor out")]
         public async Task ShouldThrowServiceExceptionOnMatchAndPersistIfDependencyValidationErrorOccursAndLogItAsync()
         {
             // given

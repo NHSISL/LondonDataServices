@@ -111,8 +111,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(address => address.JsonPostalAddress).IgnoreIt()
-                .OnProperty(address => address.PostalAddress).IgnoreIt()
                 .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.UpdatedBy).Use(user);

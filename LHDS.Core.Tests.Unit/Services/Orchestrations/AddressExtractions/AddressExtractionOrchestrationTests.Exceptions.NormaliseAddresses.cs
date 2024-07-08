@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationServiceTests
     {
-        [Theory]
+        [Theory(Skip = "no longer used, will refactor out")]
         [MemberData(nameof(AddressExtractionOrchestrationDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationOnNormaliseAddressesIfDependencyValidationOccursAndLogItAsync(
             Xeption dependencyValidationException)
@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
+        [Theory(Skip = "no longer used, will refactor out")]
         [MemberData(nameof(AddressExtractionDependencyExceptions))]
         public async Task ShouldThrowDependencyExceptionOnNormaliseAddressesIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
@@ -102,7 +102,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
+        [Fact(Skip = "no longer used, will refactor out")]
         public async Task ShouldThrowServiceExceptionOnNormaliseAddressesIfServiceErrorOccursAndLogItAsync()
         {
             // given

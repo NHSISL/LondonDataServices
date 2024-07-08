@@ -114,8 +114,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(address => address.PostalAddress).Use(() => ConvertToString(compomnents))
-                .OnProperty(address => address.JsonPostalAddress).Use(() => ConvertToJSONString(compomnents))
                 .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.UpdatedBy).Use(user);
 

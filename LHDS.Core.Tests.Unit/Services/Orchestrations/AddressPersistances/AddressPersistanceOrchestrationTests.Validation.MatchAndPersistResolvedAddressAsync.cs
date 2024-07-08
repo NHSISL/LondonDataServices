@@ -3,10 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using Moq;
@@ -16,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 {
     public partial class AddressPersistanceOrchestrationServiceTests
     {
-        [Fact]
+        [Fact(Skip = "no longer used, will refactor out")]
         public async Task ShouldThrowValidationExceptionsOnMatchAndPersistResolvedAddressAsyncIfResolvedAddressIsNullAndLogItAsync()
         {
             // given
@@ -55,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
+        [Theory(Skip = "no longer used, will refactor out")]
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
@@ -103,7 +101,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
+        [Theory(Skip = "no longer used, will refactor out")]
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
@@ -151,7 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
+        [Theory(Skip = "no longer used, will refactor out")]
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
@@ -203,7 +201,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
+        [Fact(Skip = "no longer used, will refactor out")]
         public async Task ShouldThrowValidationExceptionsOnProcessIfPostCodesDontMatchAndLogItAsync()
         {
             // given

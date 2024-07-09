@@ -52,7 +52,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             TryCatch(async () =>
             {
                 ValidateDataOnProcessData(data, filename);
-                await this.resolvedAddressOrchestrationService.MatchAddressDataFromFileAsync(data, filename);
+                await this.resolvedAddressOrchestrationService.MatchAddressDataFromStreamAsync(data, filename);
             });
 
         public ValueTask MatchAddressDataAsync() =>

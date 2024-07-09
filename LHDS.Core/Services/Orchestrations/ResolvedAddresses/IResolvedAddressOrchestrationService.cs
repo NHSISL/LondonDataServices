@@ -10,7 +10,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 {
     public interface IResolvedAddressOrchestrationService
     {
-        ValueTask MatchAddressDataFromFileAsync(Stream input, string fileName);
+        ValueTask MatchAddressDataFromStreamAsync(Stream input, string fileName);
         ValueTask MatchAddressDataAsync();
         ValueTask<Guid?> UploadResolvedAddressesAsync();
 

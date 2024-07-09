@@ -52,15 +52,13 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             TryCatch(async () =>
             {
                 ValidateDataOnProcessData(data, filename);
-                throw new NotImplementedException();
-                //await this.resolvedAddressOrchestrationService.MatchAddressDataAsync(data, filename);
+                await this.resolvedAddressOrchestrationService.MatchAddressDataFromFileAsync(data, filename);
             });
 
         public ValueTask MatchAddressDataAsync() =>
             TryCatch(async () =>
             {
-                throw new NotImplementedException();
-                //await this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+                await this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
             });
 
         public ValueTask<Guid?> UploadResolvedAddressesAsync() =>

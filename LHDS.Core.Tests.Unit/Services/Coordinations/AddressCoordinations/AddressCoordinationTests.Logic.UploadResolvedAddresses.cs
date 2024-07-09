@@ -34,8 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     Times.Once());
 
             this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.addressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

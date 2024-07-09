@@ -52,7 +52,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             throw new NotImplementedException();
         }
 
-        public ValueTask MatchAddressDataFromFileAsync(Stream input, string fileName)
+        public ValueTask MatchAddressDataFromStreamAsync(Stream input, string fileName)
         {
             throw new NotImplementedException();
         }

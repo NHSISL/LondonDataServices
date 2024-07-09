@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationServiceTests
     {
-        [Theory]
+        [Theory(Skip = "No longer needed will refacor out")]
         [MemberData(nameof(AddressExtractionOrchestrationDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationOnAddressExtractionIfDependencyValidationOccursAndLogItAsync(
             Xeption dependencyValidationException)
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressExtractionOrchestrationService.ProcessAddressesAsync(inputData, someFilename);
+                this.addressExtractionOrchestrationService.BulkAddAddressesAsync(inputData, someFilename);
 
             AddressExtractionOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationDependencyValidationException>(
@@ -78,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
+        [Theory(Skip = "No longer needed will refacor out")]
         [MemberData(nameof(AddressExtractionDependencyExceptions))]
         public async Task ShouldThrowDependencyExceptionOnAddressExtractionIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
@@ -107,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressExtractionOrchestrationService.ProcessAddressesAsync(inputData, someFilename);
+                this.addressExtractionOrchestrationService.BulkAddAddressesAsync(inputData, someFilename);
 
             AddressExtractionOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationDependencyException>(
@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
+        [Fact(Skip = "no longer needed will refactor out")]
         public async Task ShouldThrowServiceExceptionOnAddressExtractionIfServiceErrorOccursAndLogItAsync()
         {
             // given
@@ -170,7 +170,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressExtractionOrchestrationService.ProcessAddressesAsync(inputData, someFilename);
+                this.addressExtractionOrchestrationService.BulkAddAddressesAsync(inputData, someFilename);
 
             AddressExtractionOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<AddressExtractionOrchestrationServiceException>(

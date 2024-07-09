@@ -533,7 +533,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             string decryptedFileName = $"/{landingConfiguration.DecryptedFolder}"
                         + $"/{randomDataSet.DataSetName}"
-                        + $"/{randomDataSetSpecification.Id}"
+                        + $"/{randomDataSetSpecification.OurSpecificationVersion}"
                         + $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}"
                         + $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 

@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Addresses;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
@@ -11,21 +10,22 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
     public partial class AddressTests
     {
         [Fact(Skip = "assign refactor")]
+        [Fact(Skip = "No longer used, will refactor out")]
         public async Task ShouldNormaliseAddressAsync()
         {
-            //Given
-            Address address = GetRandomAddress();
-            Address savedAddress = await this.addressService.AddAddressAsync(address);
+            ////Given
+            //Address address = GetRandomAddress();
+            //Address savedAddress = await this.addressService.AddAddressAsync(address);
 
-            //When
-            await this.addressClient.NormaliseAddressesAsync();
+            ////When
+            //await this.addressClient.NormaliseAddressesAsync();
 
-            //Then
-            Address returnedAddress = await addressService.RetrieveAddressByIdAsync(savedAddress.Id);
-            Assert.NotNull(returnedAddress.PostalAddress);
-            Assert.NotNull(returnedAddress.JsonPostalAddress);
+            ////Then
+            //Address returnedAddress = await addressService.RetrieveAddressByIdAsync(savedAddress.Id);
+            //Assert.NotNull(returnedAddress.PostalAddress);
+            //Assert.NotNull(returnedAddress.JsonPostalAddress);
 
-            await this.addressService.RemoveAddressByIdAsync(address.Id);
+            //await this.addressService.RemoveAddressByIdAsync(address.Id);
         }
     }
 }

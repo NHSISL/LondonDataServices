@@ -73,6 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             {
                 EmisLanding = "emislanding",
                 Versioner = "versioner",
+                Ingress = "ingress",
                 OptOut = "optout",
                 Pds = "pds",
                 TppLanding = "tpplanding"

@@ -88,56 +88,57 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                 return processedAddresses;
             });
 
-        public ValueTask<ResolvedAddress> MatchAndPersistResolvedAddressAsync(ResolvedAddress resolvedAddresses) =>
-         TryCatch(async () =>
-         {
-             ValidateResolvedAddress(resolvedAddresses);
-             ValidatePostCode(resolvedAddresses.PostCode);
-             ValidateJsonPostalAddress(resolvedAddresses.JsonPostalAddress);
+        public ValueTask<ResolvedAddress> MatchAndPersistResolvedAddressAsync(ResolvedAddress resolvedAddresses)
+        {
+            throw new NotImplementedException();
 
-             string postCode = addressMatcherProcessingService.ExtractPostCode(resolvedAddresses.PostalAddress);
-             ValidatePostCode(postCode);
-             ValidatPostCodeMatch(resolvedAddresses.PostCode, postCode);
+            //ValidateResolvedAddress(resolvedAddresses);
+            //ValidatePostCode(resolvedAddresses.PostCode);
+            //ValidateJsonPostalAddress(resolvedAddresses.JsonPostalAddress);
 
-             List<Address> retrieveAddressesByPostCode =
-                 await addressProcessingService.RetrieveAddressesByPostCodeAsync(postCode);
+            //string postCode = addressMatcherProcessingService.ExtractPostCode(resolvedAddresses.PostalAddress);
+            //ValidatePostCode(postCode);
+            //ValidatPostCodeMatch(resolvedAddresses.PostCode, postCode);
 
-             List<KeyValuePair<string, string>> resolvedAddressComponents =
-                GenerateKeyValuePairAddressFromJson(resolvedAddresses.JsonPostalAddress);
+            //List<Address> retrieveAddressesByPostCode =
+            //    await addressProcessingService.RetrieveAddressesByPostCodeAsync(postCode);
 
-             HashSet<AddressMatch> addressesToMatch = retrieveAddressesByPostCode.Select(address => new AddressMatch
-             {
-                 PostalAddress = address.PostalAddress,
-                 JsonPostalAddress = address.JsonPostalAddress,
-                 NormalisedAddressComponents = GenerateKeyValuePairAddressFromJson(address.JsonPostalAddress),
-                 OriginalAddressComponents = GenerateKeyValuePairRepresentingAddress(address),
-             }).ToHashSet();
+            //List<KeyValuePair<string, string>> resolvedAddressComponents =
+            //   GenerateKeyValuePairAddressFromJson(resolvedAddresses.JsonPostalAddress);
 
-             AddressMatch matchedAddress =
-                 await addressMatcherProcessingService.FindBestMatch(
-                     matchedAddresses: addressesToMatch,
-                     addressComponents: resolvedAddressComponents);
+            //HashSet<AddressMatch> addressesToMatch = retrieveAddressesByPostCode.Select(address => new AddressMatch
+            //{
+            //    PostalAddress = address.PostalAddress,
+            //    JsonPostalAddress = address.JsonPostalAddress,
+            //    NormalisedAddressComponents = GenerateKeyValuePairAddressFromJson(address.JsonPostalAddress),
+            //    OriginalAddressComponents = GenerateKeyValuePairRepresentingAddress(address),
+            //}).ToHashSet();
 
-             ResolvedAddress UpdateFromMatch = populateMatchedAddress(resolvedAddresses, matchedAddress);
-             DateTimeOffset currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-             UpdateFromMatch.UpdatedDate = currentDateTime;
-             UpdateFromMatch.CreatedDate = currentDateTime;
-             UpdateFromMatch.CreatedBy = "System";
-             UpdateFromMatch.UpdatedBy = "System";
+            //AddressMatch matchedAddress =
+            //    await addressMatcherProcessingService.FindBestMatch(
+            //        matchedAddresses: addressesToMatch,
+            //        addressComponents: resolvedAddressComponents);
 
-             ResolvedAddress updatedResolvedAddress =
-                 await resolvedAddressProcessingService.ModifyOrAddResolvedAddressAsync(UpdateFromMatch);
+            //ResolvedAddress UpdateFromMatch = populateMatchedAddress(resolvedAddresses, matchedAddress);
+            //DateTimeOffset currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            //UpdateFromMatch.UpdatedDate = currentDateTime;
+            //UpdateFromMatch.CreatedDate = currentDateTime;
+            //UpdateFromMatch.CreatedBy = "System";
+            //UpdateFromMatch.UpdatedBy = "System";
 
-             await this.auditBroker.LogInformation(
-                 "Resolved Address",
-                 "Successfully resolved and address to the database",
-                 $"Successfully persisted address with id: " +
-                     $"{updatedResolvedAddress.Id} with a {updatedResolvedAddress.MatchAlgorithmEnum} match",
-                 updatedResolvedAddress.MatchAlgorithmEnum.ToString(),
-                 updatedResolvedAddress.Id);
+            //ResolvedAddress updatedResolvedAddress =
+            //    await resolvedAddressProcessingService.ModifyOrAddResolvedAddressAsync(UpdateFromMatch);
 
-             return updatedResolvedAddress;
-         });
+            //await this.auditBroker.LogInformation(
+            //    "Resolved Address",
+            //    "Successfully resolved and address to the database",
+            //    $"Successfully persisted address with id: " +
+            //        $"{updatedResolvedAddress.Id} with a {updatedResolvedAddress.MatchAlgorithmEnum} match",
+            //    updatedResolvedAddress.MatchAlgorithmEnum.ToString(),
+            //    updatedResolvedAddress.Id);
+
+            //return updatedResolvedAddress;
+        }
 
         private static ResolvedAddress populateMatchedAddress(
             ResolvedAddress resolvedAddresses,

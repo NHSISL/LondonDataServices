@@ -97,6 +97,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<DataSet>()
+                .HasIndex(dataSet => dataSet.DataSetName)
+                .IsUnique();
+
+            modelBuilder.Entity<DataSet>()
                 .HasOne(dataSet => dataSet.Supplier)
                 .WithMany(supplier => supplier.DataSets)
                 .HasForeignKey(dataSet => dataSet.SupplierId)

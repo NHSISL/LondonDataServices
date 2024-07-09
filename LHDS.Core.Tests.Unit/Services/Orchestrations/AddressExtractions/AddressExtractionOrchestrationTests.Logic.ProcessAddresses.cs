@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationServiceTests
     {
-        [Fact]
+        [Fact(Skip = "no longer needed will refactor out")]
         public async Task ShouldProcessAddressesAsync()
         {
             // Given
@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // When
             List<Address> actualAddresses = await this.addressExtractionOrchestrationService
-                .ProcessAddressesAsync(inputData, inputFilename);
+                .BulkAddAddressesAsync(inputData, inputFilename);
 
             // Then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>

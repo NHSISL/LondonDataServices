@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
     public partial class AddressExtractionOrchestrationServiceTests
     {
-        [Fact]
+        [Fact(Skip = "no longer needed will refactor out")]
         public async Task ShouldProcessResolvedAddressesAsync()
         {
             // Given

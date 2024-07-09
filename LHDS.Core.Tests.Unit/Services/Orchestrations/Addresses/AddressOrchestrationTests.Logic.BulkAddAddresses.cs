@@ -29,14 +29,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             string inputFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
-                $"Resources\\Services\\Orchestrations\\Addresses\\{zipFileName}");
+                $"Resources/Services/Orchestrations/Addresses/{zipFileName}");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);
 
             string csvFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
-                $"Resources\\Services\\Orchestrations\\Addresses\\{csvFileName}");
+                $"Resources/Services/Orchestrations/Addresses/{csvFileName}");
 
             byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
             string stringData = Encoding.UTF8.GetString(csvData);

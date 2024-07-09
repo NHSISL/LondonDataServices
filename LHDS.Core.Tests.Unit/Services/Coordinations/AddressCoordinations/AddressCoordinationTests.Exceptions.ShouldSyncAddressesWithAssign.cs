@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
     {
         [Theory]
         [MemberData(nameof(AddressCoordinationDependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationOnUploadIfDependencyValidationOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationOnSyncAddressesWithAssignIfErrorOccursAndLogItAsync(
             Xeption dependancyValidationException)
         {
             // given
@@ -25,23 +25,23 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     message: "Address coordination dependency validation error occurred, please try again.",
                     innerException: dependancyValidationException.InnerException as Xeption);
 
-            this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.UploadResolvedAddressesAsync())
+            this.addressOrchestrationServiceMock.Setup(service =>
+                service.SyncAddressesWithAssignAsync())
                     .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask<Guid?> uploadAddressesTask =
-                this.addressCoordinationService.UploadResolvedAddressesAsync();
+            ValueTask syncAddressesTask =
+                this.addressCoordinationService.SyncAddressesWithAssignAsync();
 
             AddressCoordinationDependencyValidationException actualException =
-                await Assert.ThrowsAsync<AddressCoordinationDependencyValidationException>(uploadAddressesTask.AsTask);
+                await Assert.ThrowsAsync<AddressCoordinationDependencyValidationException>(syncAddressesTask.AsTask);
 
             // then
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
-            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.UploadResolvedAddressesAsync(),
+            this.addressOrchestrationServiceMock.Verify(service =>
+                service.SyncAddressesWithAssignAsync(),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -49,14 +49,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                    expectedDependencyException))),
                        Times.Once);
 
-            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
         [MemberData(nameof(AddressCoordinationDependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnUploadAddressesDataIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnSyncAddressesWithAssignIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -65,23 +65,23 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     message: "Address coordination dependency error occurred, please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
-            this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.UploadResolvedAddressesAsync())
+            this.addressOrchestrationServiceMock.Setup(service =>
+                service.SyncAddressesWithAssignAsync())
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<Guid?> uploadAddressesTask =
-                this.addressCoordinationService.UploadResolvedAddressesAsync();
+            ValueTask syncAddressesTask =
+                this.addressCoordinationService.SyncAddressesWithAssignAsync();
 
             AddressCoordinationDependencyException actualException =
-                await Assert.ThrowsAsync<AddressCoordinationDependencyException>(uploadAddressesTask.AsTask);
+                await Assert.ThrowsAsync<AddressCoordinationDependencyException>(syncAddressesTask.AsTask);
 
             // then
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
-            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.UploadResolvedAddressesAsync(),
+            this.addressOrchestrationServiceMock.Verify(service =>
+                service.SyncAddressesWithAssignAsync(),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -89,13 +89,13 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                    expectedDependencyException))),
                        Times.Once);
 
-            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnUploadIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnSyncAddressesWithAssignIfServiceErrorOccursAndLogItAsync()
         {
             // given
             var serviceException = new Exception();
@@ -110,22 +110,22 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     message: "Address coordination service error occurred, please contact support.",
                     innerException: failedAddressCoordinationServiceException);
 
-            this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.UploadResolvedAddressesAsync())
+            this.addressOrchestrationServiceMock.Setup(service =>
+                service.SyncAddressesWithAssignAsync())
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<Guid?> uploadAddressesTask =
-                this.addressCoordinationService.UploadResolvedAddressesAsync();
+            ValueTask syncAddressesTask =
+                this.addressCoordinationService.SyncAddressesWithAssignAsync();
 
             AddressCoordinationServiceException actualException =
-                await Assert.ThrowsAsync<AddressCoordinationServiceException>(uploadAddressesTask.AsTask);
+                await Assert.ThrowsAsync<AddressCoordinationServiceException>(syncAddressesTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedAddressCoordinationServiceException);
 
-            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.UploadResolvedAddressesAsync(),
+            this.addressOrchestrationServiceMock.Verify(service =>
+                service.SyncAddressesWithAssignAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -133,9 +133,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     expectedAddressCoordinationServiceException))),
                         Times.Once);
 
-            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

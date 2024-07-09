@@ -49,7 +49,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 ValidateDataOnProcessData(data, filename);
 
                 List<Address> extractedAddresses =
-                    await this.addressExtractionOrchestrationService.ProcessAddressesAsync(data, filename);
+                    await this.addressExtractionOrchestrationService.BulkAddAddressesAsync(data, filename);
 
                 return extractedAddresses;
             });

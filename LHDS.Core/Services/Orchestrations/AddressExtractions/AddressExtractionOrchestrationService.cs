@@ -50,7 +50,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             this.identifierBroker = identifierBroker;
         }
 
-        public ValueTask<List<Address>> ProcessAddressesAsync(byte[] data, string filename) =>
+        public ValueTask<List<Address>> BulkAddAddressesAsync(byte[] data, string filename) =>
             TryCatch(async () =>
             {
                 ValidateDataOnProcessData(data, filename);

@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressExtractionOrchestrationService.ProcessAddressesAsync(invalidData, invalidFileName);
+                this.addressExtractionOrchestrationService.BulkAddAddressesAsync(invalidData, invalidFileName);
 
             AddressExtractionValidationOrchestrationException actualException =
                 await Assert.ThrowsAsync<AddressExtractionValidationOrchestrationException>(

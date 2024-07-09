@@ -18,5 +18,6 @@ namespace LHDS.Core.Brokers.Files
         ValueTask<bool> CreateDirectoryAsync(string path);
         ValueTask<bool> DeleteDirectoryAsync(string path, bool recursive = false);
         ValueTask<string> GetTempFileName();
+        ValueTask<string> GetTempPath();
     }
 }

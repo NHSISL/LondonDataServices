@@ -12,7 +12,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddResolvedAddressConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ResolvedAddress>()
-                .ToTable("ResolvedAddress", "UPRN");
+                .ToTable("ResolvedAddress", "Addresses");
 
             modelBuilder.Entity<ResolvedAddress>()
                 .Property(address => address.UniqueReference)

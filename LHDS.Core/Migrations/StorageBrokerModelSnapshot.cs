@@ -60,14 +60,11 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<bool>("IsErrored")
+                    b.Property<bool>("IsProcessing")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsNormalised")
+                    b.Property<bool>("IsSynced")
                         .HasColumnType("bit");
-
-                    b.Property<string>("JsonPostalAddress")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OrganisationName")
                         .HasMaxLength(255)
@@ -80,12 +77,6 @@ namespace LHDS.Core.Migrations
                     b.Property<string>("PostTown")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("PostalAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Processing")
-                        .HasColumnType("bit");
 
                     b.Property<string>("SubBuildingName")
                         .HasMaxLength(255)
@@ -113,17 +104,17 @@ namespace LHDS.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsErrored");
+                    b.HasIndex("IsProcessing");
 
-                    b.HasIndex("IsNormalised");
+                    b.HasIndex("IsSynced");
 
                     b.HasIndex("PostCode");
 
-                    b.HasIndex("Processing");
+                    b.HasIndex("UPRN")
+                        .IsUnique()
+                        .HasFilter("[UPRN] IS NOT NULL");
 
-                    b.HasIndex("UPRN");
-
-                    b.ToTable("Address", "UPRN");
+                    b.ToTable("Address", "Addresses");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.Audits.Audit", b =>
@@ -262,11 +253,15 @@ namespace LHDS.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DataSetId");
-
                     b.HasIndex("PresededById");
 
                     b.HasIndex("SupersededById");
+
+                    b.HasIndex("DataSetId", "OurSpecificationVersion")
+                        .IsUnique();
+
+                    b.HasIndex("DataSetId", "SupplierSpecificationVersion")
+                        .IsUnique();
 
                     b.ToTable("DataSetSpecifications", "Configuration");
 
@@ -280,28 +275,6 @@ namespace LHDS.Core.Migrations
                                     .HasPeriodEnd("PeriodEnd")
                                     .HasColumnName("PeriodEnd");
                             }));
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("e8ebce80-e619-40ca-b45f-9c3ac0328143"),
-                            ActiveFrom = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            ActiveTo = new DateTimeOffset(new DateTime(2123, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "System",
-                            CreatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            DataSetId = new Guid("6a62313a-7442-462e-b6e8-dec541ddd0ba"),
-                            DateImplemented = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            DateReleased = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            EntityChangeSynchronisation = "",
-                            IsActive = true,
-                            IsMultiAuthorPerBatch = true,
-                            IsPublished = true,
-                            Notes = "This is a test dataset specification",
-                            OurSpecificationVersion = "1.0",
-                            SupplierSpecificationVersion = "7.0",
-                            UpdatedBy = "System",
-                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        });
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSets.DataSet", b =>
@@ -392,6 +365,9 @@ namespace LHDS.Core.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DataSetName")
+                        .IsUnique();
+
                     b.HasIndex("SupplierId");
 
                     b.ToTable("DataSets", "Configuration");
@@ -406,28 +382,6 @@ namespace LHDS.Core.Migrations
                                     .HasPeriodEnd("PeriodEnd")
                                     .HasColumnName("PeriodEnd");
                             }));
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("6a62313a-7442-462e-b6e8-dec541ddd0ba"),
-                            ActiveFrom = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            ActiveTo = new DateTimeOffset(new DateTime(2123, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CollectedBy = "EMIS",
-                            CreatedBy = "System",
-                            CreatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            DataSetAliases = "PrimaryCareEMISDEV",
-                            DataSetAuthor = "EMISDEV",
-                            DataSetName = "PrimaryCareEMISDEV",
-                            DataSourceType = "PrimaryCareEMISDEV",
-                            IsActive = true,
-                            IsNationallyCollected = false,
-                            IsNationallySpecified = false,
-                            SpecifiedBy = "EMIS",
-                            SupplierId = new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"),
-                            UpdatedBy = "System",
-                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        });
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataTypes.DataType", b =>
@@ -978,7 +932,7 @@ namespace LHDS.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ResolvedAddress", "UPRN");
+                    b.ToTable("ResolvedAddress", "Addresses");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.SpecificationObjects.SpecificationObject", b =>
@@ -1184,23 +1138,10 @@ namespace LHDS.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Suppliers", "Configuration");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"),
-                            CanDecryptIngestionTracking = false,
-                            CanDownloadIngestionTracking = false,
-                            CreatedBy = "System",
-                            CreatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "Emis Supplier",
-                            FriendlyName = "EMIS",
-                            Name = "EMIS",
-                            UpdatedBy = "System",
-                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            canRelandIngestionTracking = false
-                        });
+                    b.ToTable("Suppliers", "Configuration");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.TerminologyArtifacts.TerminologyArtifact", b =>

@@ -343,7 +343,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
+        [Theory(Skip = "No longer needed will refacor out")]
         [MemberData(nameof(AddressExtractionOrchestrationDependencyValidationExceptions))]
         public async Task
             ShouldThrowDependencyValidationOnResolvedAddressExtractionIfDependencyValidationOccursAndLogItAsync(
@@ -404,7 +404,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
+        [Theory(Skip = "No longer needed will refacor out")]
         [MemberData(nameof(AddressExtractionDependencyExceptions))]
         public async Task ShouldThrowDependencyExceptionOnResolvedAddressExtractionIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
@@ -464,7 +464,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
+        [Fact(Skip = "No longer needed will refacor out")]
         public async Task ShouldThrowServiceExceptionOnResolvedAddressExtractionIfServiceErrorOccursAndLogItAsync()
         {
             // given

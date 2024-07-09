@@ -85,6 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             {
                 EmisLanding = "emislanding",
                 Versioner = "versioner",
+                Ingress = "ingress",
                 OptOut = "optout",
                 Pds = "pds",
             };

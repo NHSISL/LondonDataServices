@@ -53,5 +53,8 @@ namespace LHDS.Core.Brokers.Files
 
         public async ValueTask<string> GetTempFileName() =>
             await ValueTask.FromResult(Path.GetTempFileName());
+
+        public async ValueTask<string> GetTempPath() =>
+            await ValueTask.FromResult(Path.GetTempPath());
     }
 }

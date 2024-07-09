@@ -216,7 +216,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 service.AddDocumentAsync(
                     inputDataStream,
                     newIngestionTracking.DecryptedFileName,
-                    blobContainers.Versioner),
+                    blobContainers.Ingress),
                         Times.Once);
 
             this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>
@@ -238,7 +238,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             string randomHash = GetRandomString(64);
-            string inputContainer = "versioner";
+            string inputContainer = "ingress";
             int randomNumber = GetRandomNumber();
             Guid randomSupplierId = Guid.NewGuid();
             List<string> randomFileNames = GetRandomStrings();

@@ -215,10 +215,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 DependentLocality = "Westminister",
                 PostTown = "London",
                 PostCode = "SW1A2AA",
-                PostalAddress = "",
-                JsonPostalAddress = "",
-                IsNormalised = false,
-                IsErrored = false,
+                IsProcessing = false,
+                IsSynced = false,
                 CreatedBy = "system",
                 UpdatedBy = "system",
                 CreatedDate = randomDateTime,
@@ -247,8 +245,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.UpdatedBy).Use(user)
-                .OnProperty(address => address.PostalAddress).Use("9 The Woodfields, Sanderstead, Surrey, CR20HG")
-                .OnProperty(address => address.JsonPostalAddress).Use("{\"house_number\":\"789\",\"road\":\"david road\",\"city\":\"birmingham\",\"postcode\":\"b12 9xy\",\"state\":\"england\"}")
                 .OnProperty(address => address.PostCode).Use(() => GetRandomPostcode(postcodes));
 
             return filler;

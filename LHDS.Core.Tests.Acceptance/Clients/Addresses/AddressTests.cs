@@ -18,8 +18,7 @@ using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
-using LHDS.Core.Services.Orchestrations.AddressExtractions;
-using LHDS.Core.Services.Orchestrations.AddressPersistances;
+using LHDS.Core.Services.Orchestrations.Addresses;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
@@ -34,8 +33,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
     public partial class AddressTests
     {
         private readonly DependencyBroker dependencyBroker;
-        private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
-        private readonly IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService;
+        private readonly IAddressOrchestrationService addressOrchestrationService;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
         private readonly IDocumentService documentService;
@@ -55,8 +53,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             var serviceCollection = new ServiceCollection();
 
             serviceCollection
-                .AddTransient<IAddressExtractionOrchestrationService, AddressExtractionOrchestrationService>()
-                .AddTransient<IAddressPersistanceOrchestrationService, AddressPersistanceOrchestrationService>()
+                .AddTransient<IAddressOrchestrationService, AddressOrchestrationService>()
                 .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()
                 .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>()
                 .AddTransient<IDocumentService, DocumentService>()
@@ -72,11 +69,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             serviceCollection.AddAddressClient(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            this.addressExtractionOrchestrationService =
-                serviceProvider.GetService<IAddressExtractionOrchestrationService>();
-
-            this.addressPersistanceOrchestrationService =
-                    serviceProvider.GetService<IAddressPersistanceOrchestrationService>();
+            this.addressOrchestrationService =
+                serviceProvider.GetService<IAddressOrchestrationService>();
 
             this.resolvedAddressOrchestrationService =
                 serviceProvider.GetService<IResolvedAddressOrchestrationService>();

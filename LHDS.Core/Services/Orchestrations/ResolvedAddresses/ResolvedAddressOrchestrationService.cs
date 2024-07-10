@@ -47,23 +47,15 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             this.blobContainers = blobContainers;
         }
 
-        public ValueTask AddDocumentAsync(byte[] data, string fileName, string container) =>
-            TryCatch(async () =>
-            {
-                ValidateResolvedAddressArgsOnAdd(data, fileName, container);
+        public ValueTask MatchAddressDataAsync()
+        {
+            throw new NotImplementedException();
+        }
 
-                using (Stream input = new MemoryStream(data))
-                {
-                    await this.documentProcessingService.AddDocumentAsync(input, fileName, container);
-                }
-            });
-
-        public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
-            TryCatch(async () =>
-            {
-                ValidateResolvedAddressArgsOnRemove(fileName, container);
-                await this.documentProcessingService.RemoveDocumentByFileNameAsync(fileName, container);
-            });
+        public ValueTask MatchAddressDataFromStreamAsync(Stream input, string fileName)
+        {
+            throw new NotImplementedException();
+        }
 
         public ValueTask<Guid?> UploadResolvedAddressesAsync() =>
             TryCatch(async () =>
@@ -141,6 +133,24 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     return null;
                 }
 
+            });
+
+        public ValueTask AddDocumentAsync(byte[] data, string fileName, string container) =>
+            TryCatch(async () =>
+            {
+                ValidateResolvedAddressArgsOnAdd(data, fileName, container);
+
+                using (Stream input = new MemoryStream(data))
+                {
+                    await this.documentProcessingService.AddDocumentAsync(input, fileName, container);
+                }
+            });
+
+        public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
+            TryCatch(async () =>
+            {
+                ValidateResolvedAddressArgsOnRemove(fileName, container);
+                await this.documentProcessingService.RemoveDocumentByFileNameAsync(fileName, container);
             });
     }
 }

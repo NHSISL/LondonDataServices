@@ -9,14 +9,14 @@ using LHDS.Core.Clients;
 using LHDS.Functions.Addresses.Models;
 using Microsoft.Azure.Functions.Worker;
 
-namespace LHDS.Functions.Addresses
+namespace LHDS.Functions.Landings.Emis
 {
-    public class ResolvedAddressUploaderFunction
+    public class AddressMatchTimerFunction
     {
         private readonly ILoggingBroker loggingBroker;
         private readonly IAddressClient addressClient;
 
-        public ResolvedAddressUploaderFunction(
+        public AddressMatchTimerFunction(
             ILoggingBroker loggingBroker,
             IAddressClient addressClient)
         {
@@ -24,22 +24,22 @@ namespace LHDS.Functions.Addresses
             this.addressClient = addressClient;
         }
 
-        [Function("ResolvedAddressUploaderFunction")]
-        public async Task Run([TimerTrigger("0 */15 * * * *")] MyInformation myTimer)
+        [Function("AddressMatchTimerFunction")]
+        public async Task Run([TimerTrigger("0 0 * * * *")] MyInformation myTimer)
         {
-            loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+            this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
-                await addressClient.UploadResolvedAddressesAsync();
+                await this.addressClient.MatchAddressDataAsync();
             }
             catch (Exception ex)
             {
-                loggingBroker.LogError(ex);
+                this.loggingBroker.LogError(ex);
                 throw;
             }
 
-            loggingBroker.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
+            this.loggingBroker.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
         }
     }
 }

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using Xeptions;
 
@@ -10,12 +11,12 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 {
     public partial class AddressCoordinationService
     {
-        private void ValidateDataOnProcessData(byte[] data, string filename)
+        private void ValidateDataOnProcessData(Stream input, string filename)
         {
             Validate<InvalidArgumentAddressCoordinationException>(
                 message: "Invalid address coordination argument, please correct the errors and try again.",
-                    (Rule: IsInvalid(data), Parameter: "data"),
-                    (Rule: IsInvalid(filename), Parameter: "filename"));
+                    (Rule: IsInvalidInputStream(input), Parameter: nameof(input)),
+                    (Rule: IsInvalid(filename), Parameter: nameof(filename)));
         }
 
         private static dynamic IsInvalid(string? text) => new
@@ -24,10 +25,10 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             Message = "Text is required"
         };
 
-        private static dynamic IsInvalid(byte[] data) => new
+        private static dynamic IsInvalidInputStream(Stream? stream) => new
         {
-            Condition = data == null || data.Length == 0,
-            Message = "Data is required"
+            Condition = stream is null || stream.Length == 0,
+            Message = "Stream is required"
         };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)

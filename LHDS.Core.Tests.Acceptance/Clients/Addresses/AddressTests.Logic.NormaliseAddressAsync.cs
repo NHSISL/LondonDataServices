@@ -9,7 +9,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 {
     public partial class AddressTests
     {
-        [Fact(Skip = "assign refactor")]
         [Fact(Skip = "No longer used, will refactor out")]
         public async Task ShouldNormaliseAddressAsync()
         {

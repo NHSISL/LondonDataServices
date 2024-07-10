@@ -11,16 +11,17 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
     public partial class AddressCoordinationServiceTests
     {
         [Fact]
-        public async Task ShouldMatchAddressDataAsync()
+        public async Task ShouldSyncAddressesWithAssignAsync()
         {
             // Given
 
             // When
-            await this.addressCoordinationService.MatchAddressDataAsync();
+            await this.addressCoordinationService.SyncAddressesWithAssignAsync();
 
             // Then
-            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.MatchAddressDataAsync(),
+
+            this.addressOrchestrationServiceMock.Verify(service =>
+                service.SyncAddressesWithAssignAsync(),
                     Times.Once());
 
             this.addressOrchestrationServiceMock.VerifyNoOtherCalls();

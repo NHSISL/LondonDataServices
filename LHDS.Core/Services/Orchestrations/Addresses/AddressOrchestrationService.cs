@@ -67,7 +67,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 await this.fileBroker.DeleteDirectoryAsync(ordinanceTempFolder, true);
             });
 
-        public ValueTask SyncAddressesWithAssign() =>
+        public ValueTask SyncAddressesWithAssignAsync() =>
             throw new NotImplementedException();
 
         virtual internal async ValueTask UnZipAndExtractAsync(Stream data, string extractPath)

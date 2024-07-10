@@ -3,12 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -19,341 +16,32 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
     {
         [Theory]
         [MemberData(nameof(AddressCoordinationDependencyValidationExceptions))]
-        public async Task
-            ShouldThrowAggregateDependencyValidationExceptionOnMatchAddressesIfErrorsInLoopAndLogItAsync(
-            Xeption dependencyValidationException)
-        {
-            // Given
-            string someFilename = CreateRandomFileName();
-            string addressContainer = this.blobContainers.Addresses;
-            string errorFolder = this.addressConfiguration.ErrorFolder;
-            string errorFileName = CreateErrorFileName(someFilename, errorFolder);
-            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
-            List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses();
-            List<Exception> exceptions = new List<Exception>();
-
-            this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessResolvedAddressesAsync(randomData, someFilename))
-                    .ReturnsAsync(randomAddresses);
-
-            foreach (ResolvedAddress address in randomAddresses)
-            {
-                this.addressPersistanceOrchestrationServiceMock.Setup(service =>
-                    service.MatchAndPersistResolvedAddressAsync(address))
-                        .ThrowsAsync(dependencyValidationException);
-
-                var addressCoordinationDependencyValidationException =
-                    new AddressCoordinationDependencyValidationException(
-                        message: "Address coordination dependency validation error occurred, please try again.",
-                        innerException: dependencyValidationException.InnerException as Xeption);
-
-                exceptions.Add(addressCoordinationDependencyValidationException);
-            }
-
-            this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.AddDocumentAsync(randomData, errorFileName, addressContainer));
-
-            this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.RemoveDocumentByFileNameAsync(someFilename, addressContainer));
-
-            var aggregateException =
-                new AggregateException(
-                    $"Unable to match address for {exceptions.Count} address files",
-                    exceptions);
-
-            var failedAddressCoordinationServiceException =
-                new FailedAddressCoordinationServiceException(
-                    message: "Failed address coordination service aggregate error occurred, " +
-                        "please contact support.",
-                    innerException: aggregateException);
-
-            var expectedAddressCoordinationServiceException =
-                new AddressCoordinationServiceException(
-                    message: "Address coordination service error occurred, please contact support.",
-                    innerException: failedAddressCoordinationServiceException);
-
-            // When
-            ValueTask matchAddressTask =
-                this.addressCoordinationService.MatchAddressDataAsync(randomData, someFilename);
-
-            AddressCoordinationServiceException actualAddressCoordinationServiceException =
-                await Assert.ThrowsAsync<AddressCoordinationServiceException>(async () =>
-                    await matchAddressTask);
-
-            // Then
-            actualAddressCoordinationServiceException.Should()
-                .BeEquivalentTo(expectedAddressCoordinationServiceException);
-
-            this.addressExtractionOrchestrationServiceMock.Verify(service =>
-                service.ProcessResolvedAddressesAsync(randomData, someFilename),
-                    Times.Once);
-
-            foreach (ResolvedAddress address in randomAddresses)
-            {
-                this.addressPersistanceOrchestrationServiceMock.Verify(service =>
-                    service.MatchAndPersistResolvedAddressAsync(address),
-                        Times.Once);
-            }
-
-            var addressCoordinationDependencyValidationLoggingException =
-                new AddressCoordinationDependencyValidationException(
-                    message: "Address coordination dependency validation error occurred, please try again.",
-                    innerException: dependencyValidationException.InnerException as Xeption);
-
-            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.AddDocumentAsync(randomData, errorFileName, addressContainer),
-                    Times.Once);
-
-            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(someFilename, addressContainer),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    addressCoordinationDependencyValidationLoggingException))),
-                        Times.Exactly(randomAddresses.Count));
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedAddressCoordinationServiceException))),
-                        Times.Once);
-
-            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Theory]
-        [MemberData(nameof(AddressCoordinationDependencyExceptions))]
-        public async Task
-            ShouldThrowAggregateDependencyExceptionOnMatchAddressesIfErrorsInLoopAndLogItAsync(
-            Xeption dependencyException)
-        {
-            string someFilename = CreateRandomFileName();
-            string addressContainer = this.blobContainers.Addresses;
-            string errorFolder = this.addressConfiguration.ErrorFolder;
-            string errorFileName = CreateErrorFileName(someFilename, errorFolder);
-            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
-            List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses();
-            List<Exception> exceptions = new List<Exception>();
-
-            this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessResolvedAddressesAsync(randomData, someFilename))
-                    .ReturnsAsync(randomAddresses);
-
-            foreach (ResolvedAddress address in randomAddresses)
-            {
-                this.addressPersistanceOrchestrationServiceMock.Setup(service =>
-                    service.MatchAndPersistResolvedAddressAsync(address))
-                        .ThrowsAsync(dependencyException);
-
-                var addressCoordinationDependencyException =
-                    new AddressCoordinationDependencyException(
-                        message: "Address coordination dependency error occurred, please try again.",
-                        innerException: dependencyException.InnerException as Xeption);
-
-                exceptions.Add(addressCoordinationDependencyException);
-            }
-
-            var aggregateException =
-                new AggregateException(
-                    $"Unable to match address for {exceptions.Count} address files",
-                    exceptions);
-
-            var failedAddressCoordinationServiceException =
-                new FailedAddressCoordinationServiceException(
-                    message: "Failed address coordination service aggregate error occurred, " +
-                        "please contact support.",
-                    innerException: aggregateException);
-
-            var expectedAddressCoordinationServiceException =
-                new AddressCoordinationServiceException(
-                    message: "Address coordination service error occurred, please contact support.",
-                    innerException: failedAddressCoordinationServiceException);
-
-            // When
-            ValueTask matchAddressTask =
-                this.addressCoordinationService.MatchAddressDataAsync(randomData, someFilename);
-
-            AddressCoordinationServiceException actualAddressCoordinationServiceException =
-                await Assert.ThrowsAsync<AddressCoordinationServiceException>(async () =>
-                    await matchAddressTask);
-
-            // Then
-            actualAddressCoordinationServiceException.Should()
-                .BeEquivalentTo(expectedAddressCoordinationServiceException);
-
-            this.addressExtractionOrchestrationServiceMock.Verify(service =>
-                service.ProcessResolvedAddressesAsync(randomData, someFilename),
-                    Times.Once);
-
-            foreach (ResolvedAddress address in randomAddresses)
-            {
-                this.addressPersistanceOrchestrationServiceMock.Verify(service =>
-                    service.MatchAndPersistResolvedAddressAsync(address),
-                        Times.Once);
-            }
-
-            var addressCoordinationDependencyLoggingException =
-                new AddressCoordinationDependencyException(
-                    message: "Address coordination dependency error occurred, please try again.",
-                    innerException: dependencyException.InnerException as Xeption);
-
-            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.AddDocumentAsync(randomData, errorFileName, addressContainer),
-                    Times.Once);
-
-            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(someFilename, addressContainer),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    addressCoordinationDependencyLoggingException))),
-                        Times.Exactly(randomAddresses.Count));
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedAddressCoordinationServiceException))),
-                        Times.Once);
-
-            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowAggregateServiceExceptionOnMatchAddressIfErrorsInLoopAndLogItAsync()
-        {
-            // Given
-            string someFilename = CreateRandomFileName();
-            string addressContainer = this.blobContainers.Addresses;
-            string errorFolder = this.addressConfiguration.ErrorFolder;
-            string errorFileName = CreateErrorFileName(someFilename, errorFolder);
-            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
-            var serviceException = new Exception();
-            List<ResolvedAddress> randomAddresses = CreateRandomResolvedAddresses();
-            List<Exception> exceptions = new List<Exception>();
-
-            this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessResolvedAddressesAsync(randomData, someFilename))
-                    .ReturnsAsync(randomAddresses);
-
-            var innerFailedAddressCoordinationServiceException =
-                new FailedAddressCoordinationServiceException(
-                    message: "Failed address coordination service error occurred, please contact support.",
-                    innerException: serviceException);
-
-            var innerAddressCoordinationServiceException =
-                new AddressCoordinationServiceException(
-                    message: "Address coordination service error occurred, please contact support.",
-                    innerException: innerFailedAddressCoordinationServiceException);
-
-            foreach (ResolvedAddress address in randomAddresses)
-            {
-                this.addressPersistanceOrchestrationServiceMock.Setup(service =>
-                    service.MatchAndPersistResolvedAddressAsync(address))
-                        .ThrowsAsync(serviceException);
-
-                exceptions.Add(innerAddressCoordinationServiceException);
-            }
-
-            var aggregateException =
-                new AggregateException(
-                    $"Unable to match address for {exceptions.Count} address files",
-                    exceptions);
-
-            var failedAddressCoordinationServiceException =
-                new FailedAddressCoordinationServiceException(
-                    message: "Failed address coordination service aggregate error occurred, " +
-                        "please contact support.",
-                    innerException: aggregateException);
-
-            var expectedAddressCoordinationServiceException =
-                new AddressCoordinationServiceException(
-                    message: "Address coordination service error occurred, please contact support.",
-                    innerException: failedAddressCoordinationServiceException);
-
-            // When
-            ValueTask matchAddressTask =
-                this.addressCoordinationService.MatchAddressDataAsync(randomData, someFilename);
-
-            AddressCoordinationServiceException actualAddressCoordinationServiceException =
-                await Assert.ThrowsAsync<AddressCoordinationServiceException>(async () =>
-                    await matchAddressTask);
-
-            // Then
-            actualAddressCoordinationServiceException.Should()
-                .BeEquivalentTo(expectedAddressCoordinationServiceException);
-
-            this.addressExtractionOrchestrationServiceMock.Verify(service =>
-                service.ProcessResolvedAddressesAsync(randomData, someFilename),
-                    Times.Once);
-
-            foreach (ResolvedAddress address in randomAddresses)
-            {
-                this.addressPersistanceOrchestrationServiceMock.Verify(service =>
-                    service.MatchAndPersistResolvedAddressAsync(address),
-                        Times.Once);
-            }
-
-            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.AddDocumentAsync(randomData, errorFileName, addressContainer),
-                    Times.Once);
-
-            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(someFilename, addressContainer),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    innerAddressCoordinationServiceException))),
-                        Times.Exactly(randomAddresses.Count));
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedAddressCoordinationServiceException))),
-                        Times.Once);
-
-            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Theory]
-        [MemberData(nameof(AddressCoordinationDependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationOnMatchAddressDataIfDependencyValidationOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationOnMatchAddressDataIfErrorOccursAndLogItAsync(
             Xeption dependancyValidationException)
         {
             // given
-            string someFilename = GetRandomString();
-            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
-
             var expectedDependencyException =
                 new AddressCoordinationDependencyValidationException(
                     message: "Address coordination dependency validation error occurred, please try again.",
                     innerException: dependancyValidationException.InnerException as Xeption);
 
-            this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessResolvedAddressesAsync(randomData, someFilename))
+            this.resolvedAddressOrchestrationServiceMock.Setup(service =>
+                service.MatchAddressDataAsync())
                     .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask matchAddressDataTask =
-                this.addressCoordinationService.MatchAddressDataAsync(randomData, someFilename);
+            ValueTask matchAddressesTask =
+                this.addressCoordinationService.MatchAddressDataAsync();
 
             AddressCoordinationDependencyValidationException actualException =
-                await Assert.ThrowsAsync<AddressCoordinationDependencyValidationException>(matchAddressDataTask.AsTask);
+                await Assert.ThrowsAsync<AddressCoordinationDependencyValidationException>(matchAddressesTask.AsTask);
 
             // then
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
-            this.addressExtractionOrchestrationServiceMock.Verify(service =>
-             service.ProcessResolvedAddressesAsync(randomData, someFilename),
+            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
+                service.MatchAddressDataAsync(),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -361,10 +49,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                    expectedDependencyException))),
                        Times.Once);
 
-            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -373,31 +60,28 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             Xeption dependencyException)
         {
             // given
-            string someFilename = GetRandomString();
-            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
-
             var expectedDependencyException =
                 new AddressCoordinationDependencyException(
                     message: "Address coordination dependency error occurred, please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
-            this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessResolvedAddressesAsync(randomData, someFilename))
+            this.resolvedAddressOrchestrationServiceMock.Setup(service =>
+                service.MatchAddressDataAsync())
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask matchAddressDataTask =
-                this.addressCoordinationService.MatchAddressDataAsync(randomData, someFilename);
+            ValueTask matchAddressesTask =
+                this.addressCoordinationService.MatchAddressDataAsync();
 
             AddressCoordinationDependencyException actualException =
-                await Assert.ThrowsAsync<AddressCoordinationDependencyException>(matchAddressDataTask.AsTask);
+                await Assert.ThrowsAsync<AddressCoordinationDependencyException>(matchAddressesTask.AsTask);
 
             // then
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
-            this.addressExtractionOrchestrationServiceMock.Verify(service =>
-             service.ProcessResolvedAddressesAsync(randomData, someFilename),
+            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
+                service.MatchAddressDataAsync(),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -405,9 +89,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                    expectedDependencyException))),
                        Times.Once);
 
-            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.addressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
@@ -415,8 +98,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
         public async Task ShouldThrowServiceExceptionOnMatchAddressDataIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string someFilename = GetRandomString();
-            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
             var serviceException = new Exception();
 
             var failedAddressCoordinationServiceException =
@@ -429,22 +110,22 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     message: "Address coordination service error occurred, please contact support.",
                     innerException: failedAddressCoordinationServiceException);
 
-            this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessResolvedAddressesAsync(randomData, someFilename))
+            this.resolvedAddressOrchestrationServiceMock.Setup(service =>
+                service.MatchAddressDataAsync())
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask matchAddressDataTask = this.addressCoordinationService
-                .MatchAddressDataAsync(randomData, someFilename);
+            ValueTask matchAddressesTask =
+                this.addressCoordinationService.MatchAddressDataAsync();
 
             AddressCoordinationServiceException actualException =
-                await Assert.ThrowsAsync<AddressCoordinationServiceException>(matchAddressDataTask.AsTask);
+                await Assert.ThrowsAsync<AddressCoordinationServiceException>(matchAddressesTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedAddressCoordinationServiceException);
 
-            this.addressExtractionOrchestrationServiceMock.Verify(service =>
-                service.ProcessResolvedAddressesAsync(randomData, someFilename),
+            this.resolvedAddressOrchestrationServiceMock.Verify(service =>
+                service.MatchAddressDataAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -452,9 +133,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     expectedAddressCoordinationServiceException))),
                         Times.Once);
 
-            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.addressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
     }

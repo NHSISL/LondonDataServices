@@ -3,7 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
@@ -26,17 +26,16 @@ namespace LHDS.Functions.Addresses
 
         [Function("AddressMatcherFunction")]
         public async Task Run(
-            [BlobTrigger("addresses/patients/in/{name}", Connection = "BlobStorage")] string myBlob, string name)
+            [BlobTrigger("addresses/patients/in/{name}", Connection = "BlobStorage")] Stream myBlob, string name)
         {
             loggingBroker
                 .LogInformation(
                     $"C# Blob trigger function Processing blob\n " +
-                    $"Name: pds/in/{{name}} \n Data: {myBlob}");
+                    $"Name: address/in/{{name}}");
 
             try
             {
-                byte[] addressData = Encoding.UTF8.GetBytes(myBlob);
-                await addressClient.MatchPatientAddressDataAsync(data: addressData, filename: name);
+                await addressClient.MatchAddressDataFromStreamAsync(data: myBlob, filename: name);
             }
             catch (Exception ex)
             {

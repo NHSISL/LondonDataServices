@@ -24,6 +24,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
             Guid supplierId = Guid.NewGuid();
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
+            Stream randomStream = new MemoryStream(documentData);
+            Stream encryptedStream = new MemoryStream();
+            Stream decryptedStream = new MemoryStream();
             Supplier randomSupplier = CreateRandomSupplier(supplierId, dateTimeOffset);
             SubscriberCredential subscriberCredential = CreateRandomSubscriberCredential();
 
@@ -32,7 +35,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             string fileName = CreateRandomFileName(subscriberCredential.Id);
             Stream inputStream = new MemoryStream(documentData);
-            Stream encryptedStream = new MemoryStream();
 
             await this.cryptographyProvider
                 .EncryptAsync(input: inputStream, encryptedStream, generatedSubscriberCredential);
@@ -56,8 +58,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             await this.decryptionClient.RetryDecryptAsync();
 
             //Then
-            Stream decryptedStream = new MemoryStream();
-
             await this.documentService.RetrieveDocumentByFileNameAsync(
                 output: decryptedStream,
                 ingestionTracking.DecryptedFileName,

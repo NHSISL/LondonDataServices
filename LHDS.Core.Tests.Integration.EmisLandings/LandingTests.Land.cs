@@ -12,7 +12,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Xunit;
 
-namespace LHDS.Core.Tests.Integration.Landings
+namespace LHDS.Core.Tests.Integration.EmisLandings
 {
     public partial class LandingTests
     {

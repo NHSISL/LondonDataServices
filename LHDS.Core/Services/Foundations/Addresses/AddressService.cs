@@ -56,7 +56,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
         private async ValueTask BulkInsertBatch(List<Address> addresses, int batchSize, string fileName)
         {
             int totalRecords = addresses.Count;
-            int processedRecords = 0;
+            var exceptions = new List<Exception>();
 
             for (int i = 0; i < totalRecords; i += batchSize)
             {
@@ -77,13 +77,18 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     {
                         await this.storageBroker.BulkInsertAddressesAsync(newAddresses);
                     }
-
-                    processedRecords += batch.Count;
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
+                    exceptions.Add(ex);
                 }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Unable to process addresses in {exceptions.Count} of the batch(es) from {fileName}",
+                    exceptions);
             }
         }
 

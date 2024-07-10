@@ -1,17 +1,22 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 {
     public partial class ResolvedAddressService
     {
+        private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<ResolvedAddress> ReturningResolvedAddressFunction();
         private delegate IQueryable<ResolvedAddress> ReturningResolvedAddressesFunction();
 
@@ -55,14 +60,14 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var invalidResolvedAddressReferenceException =
                     new InvalidResolvedAddressReferenceException(
-                        message: "Invalid resolvedAddress reference error occurred.", 
+                        message: "Invalid resolvedAddress reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidResolvedAddressReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedResolvedAddressException = 
+                var lockedResolvedAddressException =
                     new LockedResolvedAddressException(
                         message: "Locked resolvedAddress record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
@@ -82,7 +87,81 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressServiceException =
                     new FailedResolvedAddressServiceException(
-                        message: "Failed resolvedAddress service error occurred, please contact support.", 
+                        message: "Failed resolvedAddress service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedResolvedAddressServiceException);
+            }
+        }
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (NullResolvedAddressException nullResolvedAddressException)
+            {
+                throw CreateAndLogValidationException(nullResolvedAddressException);
+            }
+            catch (InvalidResolvedAddressException invalidResolvedAddressException)
+            {
+                throw CreateAndLogValidationException(invalidResolvedAddressException);
+            }
+            catch (SqlException sqlException)
+            {
+                var failedResolvedAddressStorageException =
+                    new FailedResolvedAddressStorageException(
+                        message: "Failed resolvedAddress storage error occurred, please contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedResolvedAddressStorageException);
+            }
+            catch (NotFoundResolvedAddressException notFoundResolvedAddressException)
+            {
+                throw CreateAndLogValidationException(notFoundResolvedAddressException);
+            }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsResolvedAddressException =
+                    new AlreadyExistsResolvedAddressException(
+                        message: "ResolvedAddress with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsResolvedAddressException);
+            }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidResolvedAddressReferenceException =
+                    new InvalidResolvedAddressReferenceException(
+                        message: "Invalid resolvedAddress reference error occurred.",
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidResolvedAddressReferenceException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedResolvedAddressException =
+                    new LockedResolvedAddressException(
+                        message: "Locked resolvedAddress record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedResolvedAddressException);
+            }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedResolvedAddressStorageException =
+                    new FailedResolvedAddressStorageException(
+                        message: "Failed resolvedAddress storage error occurred, please contact support.",
+                        innerException: databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedResolvedAddressStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedResolvedAddressServiceException =
+                    new FailedResolvedAddressServiceException(
+                        message: "Failed resolvedAddress service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedResolvedAddressServiceException);
@@ -108,7 +187,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressServiceException =
                     new FailedResolvedAddressServiceException(
-                        message: "Failed resolvedAddress service error occurred, please contact support.", 
+                        message: "Failed resolvedAddress service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedResolvedAddressServiceException);
@@ -129,10 +208,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
         private ResolvedAddressDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var resolvedAddressDependencyException = 
+            var resolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
                     message: "ResolvedAddress dependency error occurred, please contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(resolvedAddressDependencyException);
 
@@ -154,10 +233,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         private ResolvedAddressDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var resolvedAddressDependencyException = 
+            var resolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
                     message: "ResolvedAddress dependency error occurred, please contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(resolvedAddressDependencyException);
 
@@ -167,7 +246,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         private ResolvedAddressServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var resolvedAddressServiceException = 
+            var resolvedAddressServiceException =
                 new ResolvedAddressServiceException(
                     message: "ResolvedAddress service error occurred, please contact support.",
                     innerException: exception);

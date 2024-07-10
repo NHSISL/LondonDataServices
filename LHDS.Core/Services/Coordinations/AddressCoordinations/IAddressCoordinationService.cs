@@ -3,17 +3,17 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Addresses;
 
 namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 {
     public interface IAddressCoordinationService
     {
-        public ValueTask<List<Address>> LoadAddressDataAsync(byte[] data, string filename);
-        public ValueTask NormaliseAddressesAsync();
-        public ValueTask MatchAddressDataAsync(byte[] data, string filename);
-        public ValueTask<Guid?> UploadResolvedAddressesAsync();
+        public ValueTask LoadAddressDataAsync(Stream data, string filename);
+        public ValueTask SyncAddressesWithAssignAsync();
+        public ValueTask LoadAddressesToResolveAsync(Stream data, string filename);
+        public ValueTask MatchAddressDataAsync();
+        public ValueTask<Guid?> ExportResolvedAddressesAsync();
     }
 }

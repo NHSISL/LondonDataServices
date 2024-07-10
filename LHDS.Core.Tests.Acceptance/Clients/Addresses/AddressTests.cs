@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
@@ -17,8 +18,7 @@ using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
-using LHDS.Core.Services.Orchestrations.AddressExtractions;
-using LHDS.Core.Services.Orchestrations.AddressPersistances;
+using LHDS.Core.Services.Orchestrations.Addresses;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
@@ -33,8 +33,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
     public partial class AddressTests
     {
         private readonly DependencyBroker dependencyBroker;
-        private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
-        private readonly IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService;
+        private readonly IAddressOrchestrationService addressOrchestrationService;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
         private readonly IDocumentService documentService;
@@ -54,8 +53,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             var serviceCollection = new ServiceCollection();
 
             serviceCollection
-                .AddTransient<IAddressExtractionOrchestrationService, AddressExtractionOrchestrationService>()
-                .AddTransient<IAddressPersistanceOrchestrationService, AddressPersistanceOrchestrationService>()
+                .AddTransient<IAddressOrchestrationService, AddressOrchestrationService>()
                 .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()
                 .AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>()
                 .AddTransient<IDocumentService, DocumentService>()
@@ -71,11 +69,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             serviceCollection.AddAddressClient(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            this.addressExtractionOrchestrationService =
-                serviceProvider.GetService<IAddressExtractionOrchestrationService>();
-
-            this.addressPersistanceOrchestrationService =
-                    serviceProvider.GetService<IAddressPersistanceOrchestrationService>();
+            this.addressOrchestrationService =
+                serviceProvider.GetService<IAddressOrchestrationService>();
 
             this.resolvedAddressOrchestrationService =
                 serviceProvider.GetService<IResolvedAddressOrchestrationService>();
@@ -96,6 +91,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             this.blobContainers = serviceProvider.GetService<BlobContainers>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             addressClient = serviceProvider.GetService<IAddressClient>();
+        }
+
+        static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
 
         private static string GetRandomString() =>
@@ -200,10 +209,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 DependentLocality = "Westminister",
                 PostTown = "London",
                 PostCode = "SW1A2AA",
-                PostalAddress = "",
-                JsonPostalAddress = "",
-                IsNormalised = false,
-                IsErrored = false,
+                IsProcessing = false,
+                IsSynced = false,
                 CreatedBy = "system",
                 UpdatedBy = "system",
                 CreatedDate = randomDateTime,
@@ -232,8 +239,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.UpdatedBy).Use(user)
-                .OnProperty(address => address.PostalAddress).Use("9 The Woodfields, Sanderstead, Surrey, CR20HG")
-                .OnProperty(address => address.JsonPostalAddress).Use("{\"house_number\":\"789\",\"road\":\"david road\",\"city\":\"birmingham\",\"postcode\":\"b12 9xy\",\"state\":\"england\"}")
                 .OnProperty(address => address.PostCode).Use(() => GetRandomPostcode(postcodes));
 
             return filler;
@@ -259,8 +264,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             var filler = new Filler<ResolvedAddress>();
 
             filler.Setup()
-                .OnProperty(resolvedAddress => resolvedAddress.IsMatched).Use(isMatched)
-                .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset);

@@ -3,7 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Foundations.Downloads;
+using System.IO;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 
@@ -67,15 +67,20 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
         }
 
-        private static void ValidateRetrieveDownloadByFileNameArguments(string fileName)
+        private static void ValidateRetrieveDownloadByFileNameArguments(
+            Stream output,
+            string fileName,
+            SubscriberCredential subscriberCredential)
         {
             Validate(
-                (Rule: IsInvalid(fileName), Parameter: "FileName"));
+                (Rule: IsInvalidOutputStream(output), Parameter: "Output"),
+                (Rule: IsInvalid(fileName), Parameter: "FileName"),
+                (Rule: IsInvalid(subscriberCredential), Parameter: "SubscriberCredential"));
         }
 
-        private static void ValidateStorageDownload(Download maybeDownload, string fileName)
+        private static void ValidateStorageDownload(Stream output, string fileName)
         {
-            if (maybeDownload is null)
+            if (output is null || output.Length == 0)
             {
                 throw new NotFoundEmisLandingOrchestrationException(
                     message: $"Couldn't find download with file name: {fileName}.");
@@ -86,6 +91,24 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(SubscriberCredential? subscriberCredential) => new
+        {
+            Condition = subscriberCredential is null,
+            Message = "SubscriberCredential is required"
+        };
+
+        private static dynamic IsInvalidInputStream(Stream? stream) => new
+        {
+            Condition = stream is null || stream.Length == 0,
+            Message = "Stream is required"
+        };
+
+        private static dynamic IsInvalidOutputStream(Stream? stream) => new
+        {
+            Condition = stream is null || stream.Length > 0,
+            Message = "Stream is required"
         };
 
         private static dynamic IsInvalid(string? text) => new

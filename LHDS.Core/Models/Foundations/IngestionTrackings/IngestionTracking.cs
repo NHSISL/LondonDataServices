@@ -26,10 +26,10 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings
         public DateTimeOffset LastAttempt { get; set; }
         public DateTimeOffset LastSeen { get; set; }
         public bool FileDeleted { get; set; }
-        public int RecordCount { get; set; }
-        public int EncryptedFileSize { get; set; }
+        public long RecordCount { get; set; }
+        public long EncryptedFileSize { get; set; }
         public string EncryptedFileSha256Hash { get; set; } = string.Empty;
-        public int DecryptedFileSize { get; set; }
+        public long DecryptedFileSize { get; set; }
         public string DecryptedFileSha256Hash { get; set; } = string.Empty;
         public DateTimeOffset CreatedDate { get; set; }
         public string CreatedBy { get; set; } = string.Empty;

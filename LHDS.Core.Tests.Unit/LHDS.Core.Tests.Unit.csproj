@@ -9,36 +9,29 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Services\Foundations\AddressParsers\AddressParserTests.cs" />
-	  <Compile Remove="Services\Foundations\AddressParsers\AddressParserTests.Exceptions.ProcessCSV.cs" />
-	  <Compile Remove="Services\Foundations\AddressParsers\AddressParserTests.Logic.ProcessCSV.cs" />
-	  <Compile Remove="Services\Foundations\AddressParsers\AddressParserTests.Validations.ProcessCSV.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Remove="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessAddressesAsync.csv" />
+	  <None Remove="Resources\Services\Orchestrations\Addresses\ShouldProcessAddressesAsync.csv" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Content Include="Resources\Services\Foundations\AddressParser\ShouldProcessAddressCsvAsync.csv">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessAddressesAsync.csv">
+	  <Content Include="Resources\Services\Orchestrations\Addresses\ShouldProcessAddressesAsync.csv">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessResolvedAddressesAsync.csv">
+	  <Content Include="Resources\Services\Orchestrations\Addresses\ShouldProcessResolvedAddressesAsync.csv">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithOnlyCsvAddressesData.csv">
+	  <Content Include="Resources\Services\Orchestrations\Addresses\ShouldProcessZipFileWithOnlyCsvAddressesData.csv">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Resources\Services\Foundations\ResolvedAddressParser\ShouldProcessResolvedAddressCsvAsync.csv">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithOnlyCsvAddressesData.zip">
+	  <Content Include="Resources\Services\Orchestrations\Addresses\ShouldProcessZipFileWithOnlyCsvAddressesData.zip">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithZippedCsvAddressesData.zip">
+	  <Content Include="Resources\Services\Orchestrations\Addresses\ShouldProcessZipFileWithZippedCsvAddressesData.zip">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
@@ -67,10 +60,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\LHDS.Core\LHDS.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Services\Foundations\AddressParsers\" />
 	</ItemGroup>
 
 </Project>

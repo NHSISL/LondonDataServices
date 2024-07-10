@@ -35,7 +35,7 @@ namespace LHDS.Functions.Pds
 
             try
             {
-                byte[] pdsFile = Encoding.ASCII.GetBytes(myBlob);
+                byte[] pdsFile = Encoding.UTF8.GetBytes(myBlob);
                 await pdsClient.PickupFileAndSendToMesh(pdsFile, fileName: name);
             }
             catch (Exception ex)

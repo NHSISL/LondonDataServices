@@ -28,6 +28,10 @@ namespace LHDS.Core.Services.Foundations.Documents
             {
                 throw CreateAndLogValidationException(nullDocumentException);
             }
+            catch (NotFoundDocumentException notFoundDocumentException)
+            {
+                throw CreateAndLogValidationException(notFoundDocumentException);
+            }
             catch (InvalidDocumentException invalidDocumentException)
             {
                 throw CreateAndLogValidationException(invalidDocumentException);

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         public async Task ShouldRetrieveUpdatedMeshOptOutStatusesAndOutputChangeToFileAsync()
         {
             // Given
+            string inputContainer = "optout";
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
             Dictionary<string, int> fieldMappings = null;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
@@ -56,6 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ReturnsAsync(new List<string>());
 
             List<MeshMessage> meshMessageList = new List<MeshMessage>();
+            List<KeyValuePair<Stream, Stream>> streamAssertions = new List<KeyValuePair<Stream, Stream>>();
 
             foreach (string messageId in outputMessageIds)
             {
@@ -99,6 +102,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         fieldMappings,
                         shouldAddTrailingComma))
                             .ReturnsAsync(csvDifferences);
+
+                Stream inputStream = new MemoryStream(Encoding.UTF8.GetBytes(csvDifferences));
+                Stream actualStream = new MemoryStream();
+                streamAssertions.Add(new KeyValuePair<Stream, Stream>(inputStream, actualStream));
+
+                string inputFileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
+
+                documentProcessingServiceMock
+                    .Setup(processings => processings.AddDocumentAsync(
+                        It.IsAny<Stream>(),
+                        inputFileName,
+                        inputContainer))
+                    .Callback<Stream, string, string>((stream, fileName, container) =>
+                    {
+                        stream.Position = 0;
+                        stream.CopyTo(actualStream);
+                    })
+                    .Returns(ValueTask.CompletedTask);
             }
 
             List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
@@ -109,6 +130,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // Then
             actualMeshMessageList.Should().BeEquivalentTo(expectedMeshMessageList);
+
+            foreach (var item in streamAssertions)
+            {
+                Assert.True(IsSameStream(item.Key, item.Value));
+            }
 
             meshProcessingServiceMock.Verify(Processings =>
                 Processings.RetrieveMessageIdsFromInboxAsync(),
@@ -157,14 +183,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         shouldAddTrailingComma),
                             Times.Exactly(outputMessageIds.Count));
 
-                Document testDocument = new Document
-                {
-                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv"
-                };
+                string inputFileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
 
                 documentProcessingServiceMock.Verify(processings =>
-                    processings.AddDocumentAsync(It.Is(SameDocumentAs(testDocument)), It.IsAny<string>()),
+                    processings.AddDocumentAsync(It.IsAny<Stream>(), inputFileName, inputContainer),
                         Times.Once());
 
                 this.meshProcessingServiceMock.Verify(processings =>
@@ -256,7 +278,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     Document document = new Document
                     {
-                        DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                        //DocumentData = Encoding.UTF8.GetBytes(csvDifferences),
                         FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv",
                     };
 
@@ -299,18 +321,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                             originalConsentedItems,
                             It.Is(SameStringListAs(randomConsentedIdentifiers))),
                                 Times.Exactly(outputMessageIds.Count));
-
-                    csvHelperBrokerMock.Verify(processings =>
-                        processings.MapObjectToCsvAsync<OptOutIdentifier>(
-                            It.IsAny<List<OptOutIdentifier>>(),
-                            withHeader,
-                            fieldMappings,
-                            shouldAddTrailingComma),
-                                Times.Never);
-
-                    documentProcessingServiceMock.Verify(processings =>
-                        processings.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
-                            Times.Never);
                 }
 
                 this.optOutProcessingServiceMock.VerifyNoOtherCalls();

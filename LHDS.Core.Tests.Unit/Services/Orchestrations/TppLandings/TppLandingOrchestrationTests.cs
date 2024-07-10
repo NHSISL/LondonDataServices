@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
@@ -14,7 +15,6 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -73,6 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             {
                 EmisLanding = "emislanding",
                 Versioner = "versioner",
+                Ingress = "ingress",
                 OptOut = "optout",
                 Pds = "pds",
                 TppLanding = "tpplanding"
@@ -91,32 +92,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 landingConfiguration: landingConfiguration);
         }
 
+        public byte[] CreateRandomData()
+        {
+            string randomMessage = GetRandomString();
+            return Encoding.UTF8.GetBytes(randomMessage);
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static List<Document> CreateRandomDocuments(int count)
-        {
-            return CreateDocumentFiller()
-                .Create(count)
-                    .ToList();
-        }
-
-        private static Document CreateRandomDocument() =>
-            CreateDocumentFiller().Create();
-
-        private static Filler<Document> CreateDocumentFiller()
-        {
-            var filler = new Filler<Document>();
-            string filename = $"{GetRandomString()}/{GetRandomString()}.csv";
-
-            filler.Setup()
-                .OnProperty(dataSet => dataSet.FileName).Use(() => filename);
-
-            return filler;
-        }
-
         private static string GetRandomString() =>
           new MnemonicString().GetValue();
+
+        private static List<string> GetRandomStrings() =>
+            Enumerable.Range(start: 1, count: GetRandomNumber())
+                .Select(index => GetRandomString())
+                .ToList();
 
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
@@ -126,16 +117,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
         private static List<IngestionTracking> CreateRandomIngestionTrackings(
             DateTimeOffset dateTimeOffset,
-            List<Document> documents,
+            List<string> fileNames,
             Guid supplierId)
         {
             List<IngestionTracking> items = new List<IngestionTracking>();
 
-            foreach (var document in documents)
+            foreach (var fileName in fileNames)
             {
                 items.Add(CreateIngestionTrackingFiller(
                     dateTimeOffset,
-                    fileName: document.FileName,
+                    fileName: fileName,
                     supplierId).Create());
             }
 
@@ -212,14 +203,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
 
             return filler;
-        }
-
-        private Expression<Func<Document, bool>> SameDocumentAs(
-            Document expectedDocument)
-        {
-            return actualDocument =>
-                this.compareLogic.Compare(expectedDocument, actualDocument)
-                    .AreEqual;
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

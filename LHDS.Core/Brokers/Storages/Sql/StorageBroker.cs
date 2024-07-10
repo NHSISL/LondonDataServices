@@ -86,6 +86,14 @@ namespace LHDS.Core.Brokers.Storages.Sql
             return @object;
         }
 
+        private async ValueTask BulkUpdateAsync<T>(IEnumerable<T> objects) where T : class
+        {
+            objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Modified);
+            this.AddRange(objects);
+            await this.SaveChangesAsync();
+            DetachSavedEntities(objects);
+        }
+
         private async ValueTask<T> DeleteAsync<T>(T @object)
         {
             this.Entry(@object).State = EntityState.Deleted;

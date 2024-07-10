@@ -17,6 +17,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
         IQueryable<Address> SelectAllAddresses();
         ValueTask<Address> SelectAddressByIdAsync(Guid addressId);
         ValueTask<Address> UpdateAddressAsync(Address address);
+        ValueTask BulkUpdateAddressesAsync(List<Address> address);
         ValueTask<Address> DeleteAddressAsync(Address address);
     }
 }

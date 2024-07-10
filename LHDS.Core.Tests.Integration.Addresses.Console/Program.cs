@@ -33,8 +33,10 @@ namespace LHDS.Core.Tests.Integration.Addresses.Console
                 .AddAddressClient(configuration)
                 .BuildServiceProvider();
 
-            var addressClient = serviceProvider.GetService<IAddressClient>();
-            //await addressClient.NormaliseAddressesAsync();
+            var addressClient =
+                serviceProvider.GetService<IAddressClient>();
+
+            throw new NotImplementedException();
         }
     }
 }

@@ -62,21 +62,24 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 try
                 {
-                    var batch = addresses.Skip(i).Take(batchSize).ToList();
-                    List<Address> validatedAddresses = await ExtractValidAddressesAndAssignIdAndAudit(batch, fileName);
-                    var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
-
-                    var existingUPRNs = this.storageBroker.SelectAllAddresses()
-                        .Where(address => batchUPRNs.Contains(address.UPRN))
-                        .Select(address => address.UPRN)
-                        .ToList();
-
-                    var newAddresses = batch.Where(address => !existingUPRNs.Contains(address.UPRN)).ToList();
-
-                    if (newAddresses.Count != 0)
+                    await TryCatch(async () =>
                     {
-                        await this.storageBroker.BulkInsertAddressesAsync(newAddresses);
-                    }
+                        var batch = addresses.Skip(i).Take(batchSize).ToList();
+                        List<Address> validatedAddresses = await ExtractValidAddressesAndAssignIdAndAudit(batch, fileName);
+                        var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
+
+                        var existingUPRNs = this.storageBroker.SelectAllAddresses()
+                            .Where(address => batchUPRNs.Contains(address.UPRN))
+                            .Select(address => address.UPRN)
+                            .ToList();
+
+                        var newAddresses = batch.Where(address => !existingUPRNs.Contains(address.UPRN)).ToList();
+
+                        if (newAddresses.Count != 0)
+                        {
+                            await this.storageBroker.BulkInsertAddressesAsync(newAddresses);
+                        }
+                    });
                 }
                 catch (Exception ex)
                 {

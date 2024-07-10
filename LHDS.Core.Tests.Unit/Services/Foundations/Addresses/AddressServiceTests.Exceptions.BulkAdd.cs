@@ -26,15 +26,28 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             List<Address> someAddresses = new List<Address> { CreateRandomAddress() };
             SqlException sqlException = GetSqlException();
 
-            var failedAddressStorageException =
-                new FailedAddressStorageException(
-                    message: "Failed address storage error occurred, please contact support.",
-                    innerException: sqlException);
+            var failedAddressStorageException = new FailedAddressStorageException(
+                message: "Failed address storage error occurred, please contact support.",
+                innerException: sqlException);
 
-            var expectedAddressDependencyException =
-                new AddressDependencyException(
+            var addressDependencyException = new AddressDependencyException(
                     message: "Address dependency error occurred, please contact support.",
                     innerException: failedAddressStorageException);
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to process addresses in 1 of the batch(es) from {someFileName}",
+                    addressDependencyException);
+
+            var failedAddressServiceException =
+                new FailedAddressServiceException(
+                    message: "Failed aggregate address service error occurred, please contact support.",
+                    innerException: sqlException);
+
+            var expectedAddressServiceException =
+                new AddressServiceException(
+                    message: "Address service error occurred, please contact support.",
+                    innerException: failedAddressServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -44,13 +57,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             ValueTask addAddressTask = this.addressService
                 .BulkAddAddressesAsync(addresses: someAddresses, fileName: someFileName);
 
-            AddressDependencyException actualAddressDependencyException =
-                await Assert.ThrowsAsync<AddressDependencyException>(
+            AddressServiceException actualAddressDependencyException =
+                await Assert.ThrowsAsync<AddressServiceException>(
                     addAddressTask.AsTask);
 
             // then
             actualAddressDependencyException.Should()
-                .BeEquivalentTo(expectedAddressDependencyException);
+                .BeEquivalentTo(expectedAddressServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -58,12 +71,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
-                    expectedAddressDependencyException))),
+                    addressDependencyException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressServiceException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -83,10 +102,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     message: "Invalid address reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
-            var expectedAddressValidationException =
-                new AddressDependencyValidationException(
+            var addressDependencyValidationException = new AddressDependencyValidationException(
                     message: "Address dependency validation occurred, please try again.",
                     innerException: invalidAddressReferenceException);
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to process addresses in 1 of the batch(es) from {someFileName}",
+                    addressDependencyValidationException);
+
+            var failedAddressServiceException =
+                new FailedAddressServiceException(
+                    message: "Failed aggregate address service error occurred, please contact support.",
+                    innerException: aggregateException);
+
+            var expectedAddressServiceException =
+                new AddressServiceException(
+                    message: "Address service error occurred, please contact support.",
+                    innerException: failedAddressServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -97,12 +130,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .BulkAddAddressesAsync(addresses: someAddresses, fileName: someFileName);
 
             // then
-            AddressDependencyValidationException actualAddressDependencyValidationException =
-                await Assert.ThrowsAsync<AddressDependencyValidationException>(
+            AddressServiceException actualAddressServiceException =
+                await Assert.ThrowsAsync<AddressServiceException>(
                     addAddressTask.AsTask);
 
-            actualAddressDependencyValidationException.Should()
-                .BeEquivalentTo(expectedAddressValidationException);
+            actualAddressServiceException.Should()
+                .BeEquivalentTo(expectedAddressServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -110,12 +143,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedAddressValidationException))),
+                    addressDependencyValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    actualAddressServiceException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -166,6 +205,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]

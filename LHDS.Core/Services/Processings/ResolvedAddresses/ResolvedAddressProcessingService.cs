@@ -59,7 +59,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                 ValidateResolvedAddressId(resolvedAddress.Id);
 
                 var maybeResolvedAddress = resolvedAddressService.RetrieveAllResolvedAddresses()
-                    .FirstOrDefault(address => address.UnstructuredPostalAddress == resolvedAddress.UnstructuredPostalAddress);
+                    .FirstOrDefault(address => address.UniqueReference == resolvedAddress.UniqueReference);
 
                 if (maybeResolvedAddress != null)
                 {
@@ -85,18 +85,6 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                 ValidateResolvedAddressId(resolvedAddressId);
 
                 return await resolvedAddressService.RemoveResolvedAddressByIdAsync(resolvedAddressId);
-            });
-
-        public ValueTask<bool> IsExactMatchForResolvedAddressAsync(string address) =>
-            TryCatch(async () =>
-            {
-                ValidateAddress(address);
-
-                bool result = this.resolvedAddressService.RetrieveAllResolvedAddresses()
-                    .Any(resolvedAddress => resolvedAddress.PostalAddress
-                        .Equals(address, StringComparison.InvariantCultureIgnoreCase));
-
-                return await ValueTask.FromResult(result);
             });
     }
 }

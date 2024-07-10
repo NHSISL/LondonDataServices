@@ -11,12 +11,12 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace LHDS.Functions.Addresses
 {
-    public class ResolvedAddressUploaderFunction
+    public class ResolvedAddressExporterTimerFunction
     {
         private readonly ILoggingBroker loggingBroker;
         private readonly IAddressClient addressClient;
 
-        public ResolvedAddressUploaderFunction(
+        public ResolvedAddressExporterTimerFunction(
             ILoggingBroker loggingBroker,
             IAddressClient addressClient)
         {
@@ -24,14 +24,14 @@ namespace LHDS.Functions.Addresses
             this.addressClient = addressClient;
         }
 
-        [Function("ResolvedAddressUploaderFunction")]
+        [Function("ResolvedAddressExporterTimerFunction")]
         public async Task Run([TimerTrigger("0 */15 * * * *")] MyInformation myTimer)
         {
             loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
-                await addressClient.UploadResolvedAddressesAsync();
+                await addressClient.ExportResolvedAddressesAsync();
             }
             catch (Exception ex)
             {

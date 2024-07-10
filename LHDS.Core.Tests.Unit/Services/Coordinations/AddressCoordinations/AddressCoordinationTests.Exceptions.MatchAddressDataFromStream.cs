@@ -32,12 +32,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.MatchAddressDataFromStreamAsync(someStream, someFilename))
+                service.UploadAddressesToReslveAsync(someStream, someFilename))
                     .ThrowsAsync(dependancyValidationException);
 
             // when
             ValueTask matchAddressDataTask = this.addressCoordinationService
-                .MatchAddressDataFromStreamAsync(someStream, someFilename);
+                .LoadAddressesToResolveAsync(someStream, someFilename);
 
             AddressCoordinationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationDependencyValidationException>(matchAddressDataTask.AsTask);
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                  .BeEquivalentTo(expectedDependencyException);
 
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-             service.MatchAddressDataFromStreamAsync(someStream, someFilename),
+             service.UploadAddressesToReslveAsync(someStream, someFilename),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -76,12 +76,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: dependencyException.InnerException as Xeption);
 
             this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.MatchAddressDataFromStreamAsync(someStream, someFilename))
+                service.UploadAddressesToReslveAsync(someStream, someFilename))
                     .ThrowsAsync(dependencyException);
 
             // when
             ValueTask matchAddressDataTask = this.addressCoordinationService
-                .MatchAddressDataFromStreamAsync(someStream, someFilename);
+                .LoadAddressesToResolveAsync(someStream, someFilename);
 
             AddressCoordinationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationDependencyException>(matchAddressDataTask.AsTask);
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                  .BeEquivalentTo(expectedDependencyException);
 
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-             service.MatchAddressDataFromStreamAsync(someStream, someFilename),
+             service.UploadAddressesToReslveAsync(someStream, someFilename),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -124,12 +124,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: failedAddressCoordinationServiceException);
 
             this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.MatchAddressDataFromStreamAsync(someStream, someFilename))
+                service.UploadAddressesToReslveAsync(someStream, someFilename))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask matchAddressDataTask = this.addressCoordinationService
-                .MatchAddressDataFromStreamAsync(someStream, someFilename);
+                .LoadAddressesToResolveAsync(someStream, someFilename);
 
             AddressCoordinationServiceException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationServiceException>(matchAddressDataTask.AsTask);
@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             actualException.Should().BeEquivalentTo(expectedAddressCoordinationServiceException);
 
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.MatchAddressDataFromStreamAsync(someStream, someFilename),
+                service.UploadAddressesToReslveAsync(someStream, someFilename),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

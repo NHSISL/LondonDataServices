@@ -11,12 +11,12 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace LHDS.Functions.Addresses
 {
-    public class AddressMatcherFunction
+    public class ResolvedAddressLoaderFunction
     {
         private readonly ILoggingBroker loggingBroker;
         private readonly IAddressClient addressClient;
 
-        public AddressMatcherFunction(
+        public ResolvedAddressLoaderFunction(
             ILoggingBroker loggingBroker,
             IAddressClient addressClient)
         {
@@ -24,9 +24,9 @@ namespace LHDS.Functions.Addresses
             this.addressClient = addressClient;
         }
 
-        [Function("AddressMatcherFunction")]
+        [Function("ResolvedAddressLoaderFunction")]
         public async Task Run(
-            [BlobTrigger("addresses/patients/in/{name}", Connection = "BlobStorage")] Stream myBlob, string name)
+            [BlobTrigger("addresses/resolve/in/{name}", Connection = "BlobStorage")] Stream myBlob, string name)
         {
             loggingBroker
                 .LogInformation(
@@ -35,7 +35,7 @@ namespace LHDS.Functions.Addresses
 
             try
             {
-                await addressClient.MatchAddressDataFromStreamAsync(data: myBlob, filename: name);
+                await addressClient.LoadAddressesToResolveAsync(data: myBlob, filename: name);
             }
             catch (Exception ex)
             {

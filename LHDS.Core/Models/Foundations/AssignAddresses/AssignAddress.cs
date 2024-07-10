@@ -5,7 +5,7 @@
 using System;
 using LHDS.Core.Models.Bases;
 using LHDS.Core.Models.Foundations.AssignABPAddresses;
-using LHDS.Core.Models.Foundations.AssignMatchPatterns;
+using LHDS.Core.Models.Foundations.AssignAddresses.AssignMatchPatterns;
 
 namespace LHDS.Core.Models.Foundations.AssignAddresses
 {

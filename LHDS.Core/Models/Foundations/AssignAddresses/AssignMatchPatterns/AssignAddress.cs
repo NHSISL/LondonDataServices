@@ -5,7 +5,7 @@
 using System;
 using LHDS.Core.Models.Bases;
 
-namespace LHDS.Core.Models.Foundations.AssignMatchPatterns
+namespace LHDS.Core.Models.Foundations.AssignAddresses.AssignMatchPatterns
 {
     public class AssignMatchPattern : IKey, IAudit
     {

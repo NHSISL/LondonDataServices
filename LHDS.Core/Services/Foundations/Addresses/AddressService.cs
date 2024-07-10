@@ -49,6 +49,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
         public ValueTask BulkAddAddressesAsync(List<Address> addresses, string fileName) =>
             TryCatch(async () =>
             {
+                ValidateOnBulkAddAddresses(addresses, fileName);
                 int batchSize = 10000;
                 await BulkInsertBatch(addresses, batchSize, fileName);
             });

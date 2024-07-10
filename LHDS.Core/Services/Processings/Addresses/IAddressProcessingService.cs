@@ -23,6 +23,5 @@ namespace LHDS.Core.Services.Processings.Addresses
         ValueTask<Address> ModifyAddressAsync(Address address);
         ValueTask<Address> RemoveAddressByIdAsync(Guid addressId);
         ValueTask<List<Address>> RetrieveAddressesByPostCodeAsync(string postCode);
-        ValueTask<bool> IsExactMatchForAddressAsync(string addressToMatch);
     }
 }

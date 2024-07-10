@@ -14,13 +14,11 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
 {
     public class GpgCryptographyProvider : ICryptographyProvider
     {
-        public async ValueTask<byte[]> EncryptAsync(byte[] data, SubscriberCredential subscriberCredential)
+        public async ValueTask EncryptAsync(Stream input, Stream output, SubscriberCredential subscriberCredential)
         {
             var publicKeyDecoded = Convert.FromBase64String(subscriberCredential.GpgPublicKey ?? "");
 
-            using (Stream inputFileStream = new MemoryStream(data))
             using (Stream publicKeyFileStream = new MemoryStream(publicKeyDecoded))
-            using (MemoryStream encryptedFileStream = new MemoryStream())
             {
                 PgpPublicKey publicKey = ReadPublicKey(publicKeyFileStream);
 
@@ -28,41 +26,39 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
                     new PgpEncryptedDataGenerator(SymmetricKeyAlgorithmTag.Cast5, true, new SecureRandom());
 
                 encryptedDataGenerator.AddMethod(publicKey);
-                Stream encryptedStream = encryptedDataGenerator.Open(encryptedFileStream, new byte[1 << 16]);
+                Stream encryptedStream = encryptedDataGenerator.Open(output, new byte[1 << 16]);
 
                 PgpCompressedDataGenerator compressedDataGenerator =
                     new PgpCompressedDataGenerator(CompressionAlgorithmTag.Zip);
 
                 Stream compressedStream = compressedDataGenerator.Open(encryptedStream);
                 PgpLiteralDataGenerator literalDataGenerator = new PgpLiteralDataGenerator();
+                input.Position = 0;
 
                 Stream literalStream = literalDataGenerator
                     .Open(
                         outStr: compressedStream,
                         format: PgpLiteralData.Binary,
                         name: string.Empty,
-                        length: inputFileStream.Length,
+                        length: input.Length,
                         modificationTime: DateTime.UtcNow);
 
-                inputFileStream.CopyTo(literalStream);
+                await input.CopyToAsync(literalStream);
                 literalStream.Close();
                 compressedStream.Close();
                 encryptedStream.Close();
-                var result = encryptedFileStream.ToArray();
-
-                return await ValueTask.FromResult(result);
             }
         }
 
-        public async ValueTask<byte[]> DecryptAsync(byte[] data, SubscriberCredential subscriberCredential)
+        public async ValueTask DecryptAsync(Stream input, Stream output, SubscriberCredential subscriberCredential)
         {
             var privateKeyDecoded = Convert.FromBase64String(subscriberCredential.GpgPrivateKey ?? "");
             char[] privateKeyPassphrase = subscriberCredential?.GpgPassPhrase?.ToCharArray() ?? Array.Empty<char>();
 
-            using (Stream encryptedFileStream = new MemoryStream(data))
             using (Stream privateKeyFileStream = new MemoryStream(privateKeyDecoded))
             {
-                PgpObjectFactory pgpFactory = new PgpObjectFactory(PgpUtilities.GetDecoderStream(encryptedFileStream));
+                input.Position = 0;
+                PgpObjectFactory pgpFactory = new PgpObjectFactory(PgpUtilities.GetDecoderStream(input));
                 PgpEncryptedDataList encryptedDataList = (PgpEncryptedDataList)pgpFactory.NextPgpObject();
 
                 PgpPrivateKey? privateKey = null;
@@ -103,21 +99,12 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
                     pgpObject = compressedFactory.NextPgpObject();
                 }
 
-                byte[] decryptedData = ""u8.ToArray();
-
                 if (pgpObject is PgpLiteralData)
                 {
                     PgpLiteralData literalData = (PgpLiteralData)pgpObject;
-
-                    using (MemoryStream outputStream = new MemoryStream())
-                    {
-                        Stream literalStream = literalData.GetInputStream();
-                        literalStream.CopyTo(outputStream);
-                        decryptedData = outputStream.ToArray();
-                    }
+                    Stream literalStream = literalData.GetInputStream();
+                    await literalStream.CopyToAsync(output);
                 }
-
-                return await ValueTask.FromResult(decryptedData);
             }
         }
 

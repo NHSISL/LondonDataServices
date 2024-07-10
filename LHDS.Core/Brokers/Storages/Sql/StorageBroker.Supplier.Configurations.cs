@@ -41,6 +41,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
             modelBuilder.Entity<Supplier>()
                 .Property(supplier => supplier.UpdatedDate)
                 .IsRequired();
+
+            modelBuilder.Entity<Supplier>()
+                .HasIndex(supplier => supplier.Name)
+                .IsUnique();
         }
     }
 }

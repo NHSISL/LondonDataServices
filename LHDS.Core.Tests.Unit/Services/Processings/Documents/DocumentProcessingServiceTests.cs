@@ -3,7 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Linq.Expressions;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Services.Foundations.Documents;
@@ -20,12 +22,37 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         private readonly Mock<IDocumentService> documentServiceMock = new Mock<IDocumentService>();
         private readonly Mock<ILoggingBroker> loggingBrokerMock = new Mock<ILoggingBroker>();
         private readonly IDocumentProcessingService documentProcessingService;
+        private readonly CompareLogic compareLogic = new CompareLogic();
 
         public DocumentProcessingServiceTests()
         {
+            this.compareLogic = new CompareLogic();
+
             this.documentProcessingService = new DocumentProcessingService(
                 this.documentServiceMock.Object,
                 this.loggingBrokerMock.Object);
+        }
+
+        private Expression<Func<Stream, bool>> SameStreamAs(
+            Stream expectedStream)
+        {
+            return actualStream =>
+                this.compareLogic.Compare(expectedStream, actualStream)
+                    .AreEqual;
+        }
+
+        static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

@@ -24,8 +24,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             string invalidFileName = invalidInput;
 
             var invalidDocumentProcessingFileNameException =
-                new InvalidDocumentProcessingFileNameException(
-                    message: "Invalid document processing file name. Please correct the errors and try again.");
+                new InvalidArgumentsDocumentProcessingException(
+                    message: "Invalid document processing arguments. Please correct the errors and try again.");
 
             invalidDocumentProcessingFileNameException.AddData(
                 key: "FileName",

@@ -2,10 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using Moq;
 using Xunit;
 
@@ -17,34 +17,41 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         public async Task ShouldRetrieveFileAsync()
         {
             // Given
-            string encryptedFileContainer = "emislanding";
-            var randomFileName = GetRandomString();
-            var randomfileData = Encoding.ASCII.GetBytes(GetRandomString());
+            string randomContainer = GetRandomString();
+            string randomFileName = GetRandomString();
+            byte[] randomfileData = Encoding.UTF8.GetBytes(GetRandomString());
+            byte[] expectedData = randomfileData;
+            Stream returnedStream = new MemoryStream(randomfileData);
+            Stream randomStream = new MemoryStream();
+            Stream outputStream = randomStream;
 
-            Document randomDocument = new Document
-            {
-                FileName = randomFileName,
-                DocumentData = randomfileData
-            };
-
-            Document expectedDocument = randomDocument;
-
-            this.documentServiceMock.Setup(service =>
-                service.RetrieveDocumentByFileNameAsync(randomDocument.FileName, encryptedFileContainer))
-                    .ReturnsAsync(randomDocument);
+            this.documentServiceMock
+                .Setup(service => service
+                    .RetrieveDocumentByFileNameAsync(randomStream, randomFileName, randomContainer))
+                .Callback<Stream, string, string>((output, fileName, container) =>
+                {
+                    returnedStream.Position = 0;
+                    returnedStream.CopyTo(output);
+                })
+                .Returns(ValueTask.CompletedTask);
 
             // When
-            Document actualDocument =
-                await this.documentProcessingService
-                    .RetrieveDocumentByFileNameAsync(
-                        fileName: randomDocument.FileName, container: encryptedFileContainer);
+            await this.documentProcessingService
+                .RetrieveDocumentByFileNameAsync(
+                    output: outputStream,
+                    fileName: randomFileName,
+                    container: randomContainer);
 
             // Then
-            actualDocument.Should().BeEquivalentTo(expectedDocument);
+            byte[] actualData = ReadAllBytesFromStream(outputStream);
+            actualData.Should().BeEquivalentTo(expectedData);
 
             this.documentServiceMock.Verify(service =>
-                service.RetrieveDocumentByFileNameAsync(randomDocument.FileName, encryptedFileContainer),
-                    Times.Once);
+                service.RetrieveDocumentByFileNameAsync(
+                    It.IsAny<Stream>(),
+                    randomFileName,
+                    randomContainer),
+                        Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

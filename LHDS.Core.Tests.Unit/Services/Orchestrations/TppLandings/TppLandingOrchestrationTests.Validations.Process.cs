@@ -3,9 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
 using Moq;
 using Xunit;
@@ -14,47 +14,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 {
     public partial class TppLandingOrchestrationTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionIfDocumentIsNullAndLogItAsync()
-        {
-            // given
-            Document randonNullDocument = null;
-            Guid randomSupplierId = Guid.NewGuid();
-
-            var nullTppDocumentException =
-                new NullDocumentTppLandingException(
-                     message: "Document is Null");
-
-            var expectepOrchestrationValidationException =
-                new TppLandingOrchestrationValidationException(
-                    message: "TPP landing orchestration validation errors occured, please try again.",
-                    innerException: nullTppDocumentException);
-
-            // when
-            ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService
-                .ProcessAsync(document: randonNullDocument, supplierId: randomSupplierId);
-
-            TppLandingOrchestrationValidationException actualException =
-                await Assert.ThrowsAsync<TppLandingOrchestrationValidationException>(returnedGuidTask.AsTask);
-
-            // then
-            actualException.Should()
-               .BeEquivalentTo(expectepOrchestrationValidationException);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectepOrchestrationValidationException))),
-                        Times.Once);
-
-            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
-            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
         [Theory]
         [InlineData(null)]
         [InlineData("")]
@@ -63,12 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         {
             // given
             Guid supplierId = Guid.Empty;
-            Document randomDocument = CreateRandomDocument();
-            randomDocument.FileName = invalidText;
+            Stream randomStream = new MemoryStream();
+            Stream inputStream = new MemoryStream();
+            string inputFileName = invalidText;
 
             var invalidArgumentException =
                 new InvalidArgumentTppLandingOrchestrationException(
-                    message: "Invalid TPP landing orchestration argument(s), please correct the errors and try again.");
+                    message: "Invalid TPP landing orchestration argument(s), " +
+                        "please correct the errors and try again.");
+
+            invalidArgumentException.AddData(
+               key: "Input",
+               values: "Stream is required");
 
             invalidArgumentException.AddData(
                key: "FileName",
@@ -85,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // when
             ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService
-                .ProcessAsync(document: randomDocument, supplierId);
+                .ProcessAsync(input: inputStream, fileName: inputFileName, supplierId);
 
             TppLandingOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<TppLandingOrchestrationValidationException>(returnedGuidTask.AsTask);

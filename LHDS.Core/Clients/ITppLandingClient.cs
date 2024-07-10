@@ -3,13 +3,13 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
 
 namespace LHDS.Core.Clients
 {
     public interface ITppLandingClient
     {
-        ValueTask<Guid> ProcessAsync(Document fileName, Guid supplierId);
+        ValueTask<Guid> ProcessAsync(Stream input, string fileName, Guid supplierId);
     }
 }

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
@@ -17,62 +18,40 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
         public async Task ShouldThrowValidationExceptionOnEncryptIfDataIsNullAndLogItAsync()
         {
             // given
-            byte[] nullData = null;
-            SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
-
-            var nullEncryptionException =
-                new NullDataCryptographyException(message: "Data is null.");
-
-            var expectedEncryptionValidationException =
-                new CryptographyValidationException(
-                    message: "Cryptography validation errors occurred, please try again.",
-                    innerException: nullEncryptionException);
-
-            // when
-            Task<byte[]> decryptTask = this.cryptographyService.EncryptAsync(
-                data: nullData,
-                subscriberCredential: randomSubscriberCredential);
-
-            CryptographyValidationException actualEncryptionValidationException =
-                await Assert.ThrowsAsync<CryptographyValidationException>(async () =>
-                    await decryptTask);
-
-            // then
-            actualEncryptionValidationException.Should()
-                .BeEquivalentTo(expectedEncryptionValidationException);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedEncryptionValidationException))),
-                        Times.Once);
-
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.cryptographyBroker.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnEncryptIfSubscriberCredentialIsNullAndLogItAsync()
-        {
-            // given
-            byte[] randomData = CreateRandomData();
+            Stream invalidInputStream = null;
+            Stream invalidOutputStream = null;
             SubscriberCredential nullSubscriberCredential = null;
 
-            var nullSubscriberCredentialCryptographyException =
-                new NullSubscriberCredentialCryptographyException(message: "Subscriber credential is null.");
+            var invalidArgumentCryptographyException =
+                new InvalidArgumentCryptographyException(
+                    message: "Invalid cryptography arguments. Please correct the errors and try again.");
+
+            invalidArgumentCryptographyException.AddData(
+                key: "input",
+                values: "Stream is required");
+
+            invalidArgumentCryptographyException.AddData(
+                key: "output",
+                values: "Stream is required");
+
+            invalidArgumentCryptographyException.AddData(
+                key: "subscriberCredential",
+                values: "SubscriberCredential is required");
 
             var expectedEncryptionValidationException =
                 new CryptographyValidationException(
                     message: "Cryptography validation errors occurred, please try again.",
-                    innerException: nullSubscriberCredentialCryptographyException);
+                    innerException: invalidArgumentCryptographyException);
 
             // when
-            Task<byte[]> decryptTask = this.cryptographyService.EncryptAsync(
-                data: randomData,
+            ValueTask encryptTask = this.cryptographyService.EncryptAsync(
+                input: invalidInputStream,
+                output: invalidOutputStream,
                 subscriberCredential: nullSubscriberCredential);
 
             CryptographyValidationException actualEncryptionValidationException =
                 await Assert.ThrowsAsync<CryptographyValidationException>(async () =>
-                    await decryptTask);
+                    await encryptTask);
 
             // then
             actualEncryptionValidationException.Should()

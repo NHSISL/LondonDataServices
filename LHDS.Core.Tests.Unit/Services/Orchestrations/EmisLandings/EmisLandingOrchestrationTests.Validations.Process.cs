@@ -41,6 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
                 hashBroker: hashBrokerMock.Object,
+                fileBroker: fileBrokerMock.Object,
                 landingConfiguration: invalidLandingConfiguration);
 
             var nullLandingConfigurationDownloadOrchestrationException =
@@ -145,6 +146,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
                 hashBroker: hashBrokerMock.Object,
+                fileBroker: fileBrokerMock.Object,
                 landingConfiguration: landingConfiguration);
 
             var nullBlobContainersEmisLandingOrchestrationException =

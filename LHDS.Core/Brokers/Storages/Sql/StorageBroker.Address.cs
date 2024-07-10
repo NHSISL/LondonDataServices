@@ -29,6 +29,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public async ValueTask<Address> UpdateAddressAsync(Address address) =>
             await UpdateAsync(address);
 
+        public async ValueTask BulkUpdateAddressesAsync(List<Address> addresses) =>
+            await BulkUpdateAsync(addresses);
+
         public async ValueTask<Address> DeleteAddressAsync(Address address) =>
             await DeleteAsync(address);
     }

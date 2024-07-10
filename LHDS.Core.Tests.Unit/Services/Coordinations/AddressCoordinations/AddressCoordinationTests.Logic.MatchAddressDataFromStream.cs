@@ -22,11 +22,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             // When
             await this.addressCoordinationService
-                .MatchAddressDataFromStreamAsync(inputStream, someFilename);
+                .LoadAddressesToResolveAsync(inputStream, someFilename);
 
             // Then
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.MatchAddressDataFromStreamAsync(inputStream, someFilename),
+                service.UploadAddressesToReslveAsync(inputStream, someFilename),
                     Times.Once());
 
             this.addressOrchestrationServiceMock.VerifyNoOtherCalls();

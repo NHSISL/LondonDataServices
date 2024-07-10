@@ -21,10 +21,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
             ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress();
             ResolvedAddress storageResolvedAddress = randomResolvedAddress;
             ResolvedAddress modifiedResolvedAddress = storageResolvedAddress.DeepClone();
-            modifiedResolvedAddress.PostalAddress = modifiedResolvedAddress.PostalAddress + "Modified";
+            modifiedResolvedAddress.UnstructuredPostalAddress = modifiedResolvedAddress.UnstructuredPostalAddress + "Modified";
             ResolvedAddress updatedResolvedAddress = modifiedResolvedAddress.DeepClone();
             ResolvedAddress expectedResolvedAddress = updatedResolvedAddress;
-            List<ResolvedAddress> storageResolvedAddresses = new List<ResolvedAddress>{storageResolvedAddress};
+            List<ResolvedAddress> storageResolvedAddresses = new List<ResolvedAddress> { storageResolvedAddress };
 
             this.resolvedAddressServiceMock.Setup(service =>
                 service.RetrieveAllResolvedAddresses())

@@ -140,8 +140,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(resolvedAddress => resolvedAddress.IsMatched).Use(true)
-                .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 
@@ -154,19 +152,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     new ResolvedAddressReturn
                     {
                         UniqueReference = resolvedAddress.UniqueReference,
-                        UPRN = resolvedAddress.MatchedUPRN,
-                        UPSN = resolvedAddress.MatchedUPSN,
-                        OrganisationName = resolvedAddress.MatchedOrganisationName,
-                        DepartmentName = resolvedAddress.MatchedDepartmentName,
-                        SubBuildingName = resolvedAddress.MatchedSubBuildingName,
-                        BuildingName = resolvedAddress.MatchedBuildingName,
-                        BuildingNumber = resolvedAddress.MatchedBuildingNumber,
-                        DependentThoroughfare = resolvedAddress.MatchedDependentThoroughfare,
-                        Thoroughfare = resolvedAddress.MatchedThoroughfare,
-                        DoubleDependentLocality = resolvedAddress.MatchedDoubleDependentLocality,
-                        DependentLocality = resolvedAddress.MatchedDependentLocality,
-                        PostTown = resolvedAddress.MatchedPostTown,
-                        PostCode = resolvedAddress.MatchedPostCode,
+                        UPRN = resolvedAddress.UPRN,
+                        UPSN = resolvedAddress.UPSN,
+                        OrganisationName = resolvedAddress.OrganisationName,
+                        DepartmentName = resolvedAddress.DepartmentName,
+                        SubBuildingName = resolvedAddress.SubBuildingName,
+                        BuildingName = resolvedAddress.BuildingName,
+                        BuildingNumber = resolvedAddress.BuildingNumber,
+                        DependentThoroughfare = resolvedAddress.DependentThoroughfare,
+                        Thoroughfare = resolvedAddress.Thoroughfare,
+                        DoubleDependentLocality = resolvedAddress.DoubleDependentLocality,
+                        DependentLocality = resolvedAddress.DependentLocality,
+                        PostTown = resolvedAddress.PostTown,
+                        PostCode = resolvedAddress.PostCode,
                     }).ToList();
 
             return returnAddresses;

@@ -91,11 +91,11 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask MatchAddressDataFromStreamAsync(Stream data, string filename)
+        public async ValueTask LoadAddressesToResolveAsync(Stream data, string filename)
         {
             try
             {
-                await this.addressCoordinationService.MatchAddressDataFromStreamAsync(data, filename);
+                await this.addressCoordinationService.LoadAddressesToResolveAsync(data, filename);
             }
             catch (AddressCoordinationValidationException addressCoordinationValidationException)
             {
@@ -161,11 +161,11 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<Guid?> UploadResolvedAddressesAsync()
+        public async ValueTask<Guid?> ExportResolvedAddressesAsync()
         {
             try
             {
-                return await this.addressCoordinationService.UploadResolvedAddressesAsync();
+                return await this.addressCoordinationService.ExportResolvedAddressesAsync();
             }
             catch (AddressCoordinationValidationException addressCoordinationValidationException)
             {

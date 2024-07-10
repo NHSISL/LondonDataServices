@@ -6,16 +6,17 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
+using LHDS.Functions.Addresses.Models;
 using Microsoft.Azure.Functions.Worker;
 
 namespace LHDS.Functions.Landings.Emis
 {
-    public class AddressExportTimerFunction
+    public class ResolvedAddressMatchTimerFunction
     {
         private readonly ILoggingBroker loggingBroker;
         private readonly IAddressClient addressClient;
 
-        public AddressExportTimerFunction(
+        public ResolvedAddressMatchTimerFunction(
             ILoggingBroker loggingBroker,
             IAddressClient addressClient)
         {
@@ -23,14 +24,14 @@ namespace LHDS.Functions.Landings.Emis
             this.addressClient = addressClient;
         }
 
-        [Function("AddressExportTimerFunction")]
-        public async Task Run([TimerTrigger("0 0 * * * *")] MyInfo myTimer)
+        [Function("ResolvedAddressMatchTimerFunction")]
+        public async Task Run([TimerTrigger("0 0 * * * *")] MyInformation myTimer)
         {
             this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
-                await this.addressClient.UploadResolvedAddressesAsync();
+                await this.addressClient.MatchAddressDataAsync();
             }
             catch (Exception ex)
             {
@@ -40,21 +41,5 @@ namespace LHDS.Functions.Landings.Emis
 
             this.loggingBroker.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
         }
-    }
-
-    public class MyInfo
-    {
-        public MyScheduleStatus ScheduleStatus { get; set; }
-
-        public bool IsPastDue { get; set; }
-    }
-
-    public class MyScheduleStatus
-    {
-        public DateTime Last { get; set; }
-
-        public DateTime Next { get; set; }
-
-        public DateTime LastUpdated { get; set; }
     }
 }

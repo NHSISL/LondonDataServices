@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace LHDS.Core.Tests.Integration.Landings
+namespace LHDS.Core.Tests.Integration.EmisLandings
 {
     public class ReleaseCandidateTestCaseDiscoverer : IXunitTestCaseDiscoverer
     {

@@ -9,7 +9,7 @@ using LHDS.Core.Clients;
 using LHDS.Functions.Addresses.Models;
 using Microsoft.Azure.Functions.Worker;
 
-namespace LHDS.Functions.Landings.Emis
+namespace LHDS.Functions.Addresses
 {
     public class AddressSyncToAssignTimerFunction
     {
@@ -27,19 +27,19 @@ namespace LHDS.Functions.Landings.Emis
         [Function("AddressSyncToAssignTimerFunction")]
         public async Task Run([TimerTrigger("0 0 * * * *")] MyInformation myTimer)
         {
-            this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+            loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
-                await this.addressClient.SyncAddressesWithAssign();
+                await addressClient.SyncAddressesWithAssign();
             }
             catch (Exception ex)
             {
-                this.loggingBroker.LogError(ex);
+                loggingBroker.LogError(ex);
                 throw;
             }
 
-            this.loggingBroker.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
+            loggingBroker.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
         }
     }
 }

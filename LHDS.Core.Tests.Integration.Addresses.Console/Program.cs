@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Integration.Addresses.Console
                 .BuildServiceProvider();
 
             var addressClient = serviceProvider.GetService<IAddressClient>();
-            await addressClient.NormaliseAddressesAsync();
+            //await addressClient.NormaliseAddressesAsync();
         }
     }
 }

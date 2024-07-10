@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 await BulkInsertBatch(addresses, batchSize, fileName);
             });
 
-        private async ValueTask BulkInsertBatch(List<Address> addresses, int batchSize, string fileName)
+        virtual internal async ValueTask BulkInsertBatch(List<Address> addresses, int batchSize, string fileName)
         {
             int totalRecords = addresses.Count;
             var exceptions = new List<Exception>();
@@ -95,7 +95,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             }
         }
 
-        private async ValueTask<List<Address>> ExtractValidAddressesAndAssignIdAndAudit(
+        virtual internal async ValueTask<List<Address>> ExtractValidAddressesAndAssignIdAndAudit(
             List<Address> addresses,
             string fileName)
         {

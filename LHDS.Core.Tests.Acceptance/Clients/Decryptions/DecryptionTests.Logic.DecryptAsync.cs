@@ -11,6 +11,7 @@ using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using Org.BouncyCastle.Crypto;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions

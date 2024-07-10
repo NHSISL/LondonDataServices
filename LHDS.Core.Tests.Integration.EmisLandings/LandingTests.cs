@@ -23,7 +23,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace LHDS.Core.Tests.Integration.Landings
+namespace LHDS.Core.Tests.Integration.EmisLandings
 {
     public partial class LandingTests
     {

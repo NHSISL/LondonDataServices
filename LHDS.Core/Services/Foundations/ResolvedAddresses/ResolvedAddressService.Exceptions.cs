@@ -157,6 +157,15 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
                 throw CreateAndLogDependencyException(failedResolvedAddressStorageException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedResolvedAddressServiceException =
+                    new FailedResolvedAddressServiceException(
+                        message: "Failed aggregate resolvedAddress service error occurred, please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedResolvedAddressServiceException);
+            }
             catch (Exception exception)
             {
                 var failedResolvedAddressServiceException =

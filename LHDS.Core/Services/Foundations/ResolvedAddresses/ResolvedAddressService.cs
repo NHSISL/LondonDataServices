@@ -97,8 +97,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 return await this.storageBroker.DeleteResolvedAddressAsync(maybeResolvedAddress);
             });
 
-
-        private async ValueTask BulkInsertBatch(List<ResolvedAddress> resolvedAddresses, int batchSize, string fileName)
+        virtual internal async ValueTask BulkInsertBatch(List<ResolvedAddress> resolvedAddresses, int batchSize, string fileName)
         {
             int totalRecords = resolvedAddresses.Count;
             var exceptions = new List<Exception>();
@@ -107,27 +106,30 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 try
                 {
-                    var batch = resolvedAddresses.Skip(i).Take(batchSize).ToList();
-
-                    List<ResolvedAddress> validatedResolvedAddresses =
-                        await ExtractValidResolvedAddressesAndAssignIdAndAudit(batch, fileName);
-
-                    var referencesFromValidatedResolvedAddresses = batch.Select(validatedResolvedAddress => validatedResolvedAddress.UniqueReference).ToList();
-
-                    var existingUniqueReferencesToExclude = this.storageBroker.SelectAllResolvedAddresses()
-                        .Where(resolvedAddress => referencesFromValidatedResolvedAddresses
-                            .Contains(resolvedAddress.UniqueReference))
-
-                        .Select(resolvedAddress => resolvedAddress.UPRN)
-                        .ToList();
-
-                    var newResolvedAddresses = batch.Where(address =>
-                        !existingUniqueReferencesToExclude.Contains(address.UPRN)).ToList();
-
-                    if (newResolvedAddresses.Count != 0)
+                    await TryCatch(async () =>
                     {
-                        await this.storageBroker.BulkInsertResolvedAddressesAsync(newResolvedAddresses);
-                    }
+                        var batch = resolvedAddresses.Skip(i).Take(batchSize).ToList();
+
+                        List<ResolvedAddress> validatedResolvedAddresses =
+                            await ExtractValidResolvedAddressesAndAssignIdAndAudit(batch, fileName);
+
+                        var referencesFromValidatedResolvedAddresses = batch.Select(validatedResolvedAddress => validatedResolvedAddress.UniqueReference).ToList();
+
+                        var existingUniqueReferencesToExclude = this.storageBroker.SelectAllResolvedAddresses()
+                            .Where(resolvedAddress => referencesFromValidatedResolvedAddresses
+                                .Contains(resolvedAddress.UniqueReference))
+
+                            .Select(resolvedAddress => resolvedAddress.UPRN)
+                            .ToList();
+
+                        var newResolvedAddresses = batch.Where(address =>
+                            !existingUniqueReferencesToExclude.Contains(address.UPRN)).ToList();
+
+                        if (newResolvedAddresses.Count != 0)
+                        {
+                            await this.storageBroker.BulkInsertResolvedAddressesAsync(newResolvedAddresses);
+                        }
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -143,7 +145,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             }
         }
 
-        private async ValueTask<List<ResolvedAddress>> ExtractValidResolvedAddressesAndAssignIdAndAudit(
+        virtual internal async ValueTask<List<ResolvedAddress>> ExtractValidResolvedAddressesAndAssignIdAndAudit(
             List<ResolvedAddress> resolvedAddresses,
             string fileName)
         {

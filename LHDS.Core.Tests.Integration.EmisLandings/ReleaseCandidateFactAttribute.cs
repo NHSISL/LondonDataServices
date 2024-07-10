@@ -6,11 +6,11 @@ using System;
 using Xunit;
 using Xunit.Sdk;
 
-namespace LHDS.Core.Tests.Integration.Landings
+namespace LHDS.Core.Tests.Integration.EmisLandings
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     [XunitTestCaseDiscoverer(
-        typeName: "LHDS.Core.Tests.Integration.Landings.ReleaseCandidateTestCaseDiscoverer",
-        assemblyName: "LHDS.Core.Tests.Integration.Landings")]
+        typeName: "LHDS.Core.Tests.Integration.EmisLandings.ReleaseCandidateTestCaseDiscoverer",
+        assemblyName: "LHDS.Core.Tests.Integration.EmisLandings")]
     public class ReleaseCandidateFactAttribute : FactAttribute { }
 }

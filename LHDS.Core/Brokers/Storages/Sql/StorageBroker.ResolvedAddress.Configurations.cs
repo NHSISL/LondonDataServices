@@ -19,30 +19,107 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<ResolvedAddress>()
-                .Property(address => address.PostCode)
-                .HasMaxLength(255)
-                .IsRequired();
-
-            modelBuilder.Entity<ResolvedAddress>()
                 .Property(address => address.UnstructuredPostalAddress)
                 .IsRequired();
 
             modelBuilder.Entity<ResolvedAddress>()
-                .Property(address => address.MatchedUPRN)
+                .Property(address => address.UPRN)
                 .HasMaxLength(15)
                 .IsRequired(false);
 
             modelBuilder.Entity<ResolvedAddress>()
-                .Property(address => address.MatchedUPSN)
+                .Property(address => address.UPSN)
                 .HasMaxLength(15)
                 .IsRequired(false);
 
             modelBuilder.Entity<ResolvedAddress>()
-                .Property(address => address.PostalAddress)
-                .IsRequired();
+                .Property(address => address.OrganisationName)
+                .HasMaxLength(255)
+                .IsRequired(false);
 
             modelBuilder.Entity<ResolvedAddress>()
-                .Property(address => address.JsonPostalAddress)
+                .Property(address => address.DepartmentName)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.SubBuildingName)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.BuildingName)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.BuildingNumber)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.DependentThoroughfare)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.Thoroughfare)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.DoubleDependentLocality)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.DependentLocality)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.PostTown)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.PostCode)
+                .HasMaxLength(15)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.AddressFormatQuality)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.PostCodeQuality)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.Matched)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.Qualifier)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.Classification)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.Algorithm)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ResolvedAddress>()
+                .Property(address => address.MatchPattern)
+                .HasMaxLength(255)
                 .IsRequired(false);
 
             modelBuilder.Entity<ResolvedAddress>()

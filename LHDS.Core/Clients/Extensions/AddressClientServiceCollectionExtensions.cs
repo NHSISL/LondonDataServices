@@ -10,7 +10,6 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
-using LHDS.Core.Brokers.AddressNormalisations;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
@@ -102,7 +101,6 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
             services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
-            services.AddTransient<IAddressNormalisationBroker, AddressNormalisationBroker>();
         }
 
         private static void AddServices(IServiceCollection services)

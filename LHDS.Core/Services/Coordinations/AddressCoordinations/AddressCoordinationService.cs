@@ -48,11 +48,11 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 await this.addressOrchestrationService.SyncAddressesWithAssignAsync();
             });
 
-        public ValueTask MatchAddressDataFromStreamAsync(Stream data, string filename) =>
+        public ValueTask LoadAddressesToResolveAsync(Stream data, string filename) =>
             TryCatch(async () =>
             {
                 ValidateDataOnProcessData(data, filename);
-                await this.resolvedAddressOrchestrationService.MatchAddressDataFromStreamAsync(data, filename);
+                await this.resolvedAddressOrchestrationService.UploadAddressesToReslveAsync(data, filename);
             });
 
         public ValueTask MatchAddressDataAsync() =>
@@ -61,10 +61,10 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 await this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
             });
 
-        public ValueTask<Guid?> UploadResolvedAddressesAsync() =>
+        public ValueTask<Guid?> ExportResolvedAddressesAsync() =>
             TryCatch(async () =>
             {
-                return await this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
+                return await this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
             });
     }
 }

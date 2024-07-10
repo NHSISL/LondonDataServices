@@ -264,8 +264,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             var filler = new Filler<ResolvedAddress>();
 
             filler.Setup()
-                .OnProperty(resolvedAddress => resolvedAddress.IsMatched).Use(isMatched)
-                .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset);

@@ -12,8 +12,8 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
     {
         public ValueTask LoadAddressDataAsync(Stream data, string filename);
         public ValueTask SyncAddressesWithAssignAsync();
-        public ValueTask MatchAddressDataFromStreamAsync(Stream data, string filename);
+        public ValueTask LoadAddressesToResolveAsync(Stream data, string filename);
         public ValueTask MatchAddressDataAsync();
-        public ValueTask<Guid?> UploadResolvedAddressesAsync();
+        public ValueTask<Guid?> ExportResolvedAddressesAsync();
     }
 }

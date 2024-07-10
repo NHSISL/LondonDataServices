@@ -130,6 +130,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             string randomFilePath = CreateRandomFilePath(inputSubscriberCredential.Id, randomFileName);
             Guid emisSupplierId = Guid.Parse("67680f17-9d0c-4474-8b35-56ca8f9df1f6");
             DataSet randomDataSet = await PostRandomActiveDataSetAsync(emisSupplierId);
+            Stream randomStream = new MemoryStream();
 
             DataSetSpecification randomDataSetSpecification =
                 await PostRandomActiveDataSetSpecificationAsync(randomDataSet.Id);
@@ -198,7 +199,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             // when
             List<string> actualDocuments =
-                await this.apiBroker.DownloadDocumentsAsync();
+                await this.apiBroker.DownloadDocumentsAsync(emisSupplierId);
 
             // then
             actualDocuments.Count.Should().BeGreaterThanOrEqualTo(randomFilesNumber);

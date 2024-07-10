@@ -12,8 +12,8 @@ namespace LHDS.Core.Clients
     {
         public ValueTask LoadAddressDataAsync(Stream data, string filename);
         public ValueTask SyncAddressesWithAssign();
-        public ValueTask MatchAddressDataFromStreamAsync(Stream data, string filename);
+        public ValueTask LoadAddressesToResolveAsync(Stream data, string filename);
         public ValueTask MatchAddressDataAsync();
-        public ValueTask<Guid?> UploadResolvedAddressesAsync();
+        public ValueTask<Guid?> ExportResolvedAddressesAsync();
     }
 }

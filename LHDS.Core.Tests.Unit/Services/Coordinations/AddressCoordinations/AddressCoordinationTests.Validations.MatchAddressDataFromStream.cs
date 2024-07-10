@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             // when
             ValueTask matchAddressDataTask =
-                this.addressCoordinationService.MatchAddressDataFromStreamAsync(invalidStream, invalidFilename);
+                this.addressCoordinationService.LoadAddressesToResolveAsync(invalidStream, invalidFilename);
 
             AddressCoordinationValidationException actualAddressCoordinationValidationException =
                 await Assert.ThrowsAsync<AddressCoordinationValidationException>(async () =>

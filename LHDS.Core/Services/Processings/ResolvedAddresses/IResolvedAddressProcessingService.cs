@@ -18,6 +18,5 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         ValueTask<ResolvedAddress> ModifyOrAddResolvedAddressAsync(ResolvedAddress resolvedAddress);
         ValueTask<ResolvedAddress> ModifyResolvedAddressAsync(ResolvedAddress resolvedAddress);
         ValueTask<ResolvedAddress> RemoveResolvedAddressByIdAsync(Guid resolvedAddressId);
-        ValueTask<bool> IsExactMatchForResolvedAddressAsync(string address);
     }
 }

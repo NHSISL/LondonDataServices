@@ -18,6 +18,8 @@ using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
+using LHDS.Core.Services.Processings.Addresses;
+using LHDS.Core.Services.Processings.Assigns;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Moq;
@@ -32,6 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
     {
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
         private readonly Mock<IResolvedAddressProcessingService> resolvedAddressProcessingServiceMock;
+        private readonly Mock<IAssignProcessingService> assignProcessingServiceMock;
+        private readonly Mock<IAddressProcessingService> addressProcessingServiceMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
@@ -44,6 +48,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         {
             this.documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
             this.resolvedAddressProcessingServiceMock = new Mock<IResolvedAddressProcessingService>();
+            this.assignProcessingServiceMock = new Mock<IAssignProcessingService>();
+            this.addressProcessingServiceMock = new Mock<IAddressProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
@@ -58,6 +64,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.resolvedAddressOrchestrationService = new ResolvedAddressOrchestrationService(
                 documentProcessingService: this.documentProcessingServiceMock.Object,
                 resolvedAddressProcessingService: this.resolvedAddressProcessingServiceMock.Object,
+                assignProcessingService: this.assignProcessingServiceMock.Object,
+                addressProcessingService: this.addressProcessingServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 csvHelperBroker: this.csvHelperBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
@@ -145,6 +153,38 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             return filler;
         }
+
+
+        private static List<ResolvedAddress> CreateRandomUnmatchedAddresses()
+        {
+            var fillers = Enumerable.Range(1, GetRandomNumber())
+                                    .Select(_ => CreateUnmatchedAddressFiller())
+                                    .ToList();
+
+            var result = fillers.Select(filler => filler.Create()).ToList();
+
+            return result.ToList();
+        }
+
+        private static Filler<ResolvedAddress> CreateUnmatchedAddressFiller()
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTimeOffset dateTimeOffset = DateTimeOffset.Now;
+
+            var filler = new Filler<ResolvedAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(resolvedAddress => resolvedAddress.Matched).Use("matched")
+                .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(false)
+                .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(0)
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
 
         private static List<ResolvedAddressReturn> MapToResolvedAddressReturn(List<ResolvedAddress> resolvedAddresses)
         {

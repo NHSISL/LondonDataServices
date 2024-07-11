@@ -31,7 +31,6 @@ const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDe
     const handleIsCoreUpdate = () => {
         terminologyArtifact.isCore = true;
         onUpdate(terminologyArtifact);
-        alert("Marked as Core")
     }
 
     const handleIsNotCoreUpdate = () => {

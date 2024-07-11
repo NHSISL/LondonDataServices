@@ -266,7 +266,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         {
             var retrieveOptOutStatusOrchestrationDependencyValidationException =
                 new OptOutOrchestrationDependencyValidationException(
-                    message: "Opt Out orchestration dependency error occurred, fix the errors and try again.",
+                    message: "Opt Out orchestration dependency validation errors occurred, fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(retrieveOptOutStatusOrchestrationDependencyValidationException);

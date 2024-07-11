@@ -20,11 +20,16 @@ const TerminologyArtifactDetail: FunctionComponent<TerminologyArtifactDetailProp
 
     const handleRefresh = async (terminologyArtifactView: TerminologyArtifactView) => { }
 
-    const updateDataSet = terminologyArtifactViewService.useUpdateTerminologyArtifact();
+    const updateTerminology = terminologyArtifactViewService.useUpdateTerminologyArtifact();
+
+    //const handleUpdate = async (terminologyArtifact: TerminologyArtifactView) => {
+    //    return updateDataSet.mutateAsync(terminologyArtifact);
+    //}
 
     const handleUpdate = async (terminologyArtifact: TerminologyArtifactView) => {
-        return updateDataSet.mutateAsync(terminologyArtifact);
-    }
+        console.log(terminologyArtifact);
+        return updateTerminology.mutateAsync(terminologyArtifact);
+    };
 
     return (
         <div>

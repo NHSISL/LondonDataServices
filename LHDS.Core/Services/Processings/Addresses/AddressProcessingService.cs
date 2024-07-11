@@ -105,5 +105,14 @@ namespace LHDS.Core.Services.Processings.Addresses
 
                 return await this.addressService.RetrieveAddressesByPostCodeAsync(postCode);
             });
+
+        public ValueTask<Address?> RetrieveAddressByUPRNAsync(string uprn) =>
+             TryCatch(async () =>
+             {
+                 ValidateUPRN(uprn);
+
+                 return this.addressService.RetrieveAllAddresses()
+                        .FirstOrDefault(storageAddress => storageAddress.UPRN == uprn);
+             });
     }
 }

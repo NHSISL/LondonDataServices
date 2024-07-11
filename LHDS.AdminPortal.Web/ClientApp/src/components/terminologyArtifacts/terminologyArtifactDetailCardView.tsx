@@ -18,12 +18,25 @@ import SummaryListBaseAction from "../bases/components/SummaryList/SummaryListBa
 interface TerminologyArtifactDetailCardViewProps {
     terminologyArtifact: TerminologyArtifactView;
     onRefresh: (terminologyArtifact: TerminologyArtifactView) => void;
+    onUpdate: (terminologyArtifact: TerminologyArtifactView) => void;
 }
 
 const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDetailCardViewProps> = (props) => {
     const {
         terminologyArtifact,
+        onUpdate
     } = props;
+
+
+    const handleIsCoreUpdate = () => {
+        terminologyArtifact.isCore = true;
+        onUpdate(terminologyArtifact);
+        alert("Marked as Core")
+    }
+
+    const handleIsNotCoreUpdate = () => {
+        terminologyArtifact.isCore = false;
+    }
 
     return (
         <>
@@ -76,13 +89,11 @@ const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDe
                                         <SummaryListBaseAction>
                                             <span style={{ float: "right" }}>
                                                 {terminologyArtifact.isCore ?
-                                                    <ButtonBase onClick={() => { }} add>
+                                                    <ButtonBase onClick={handleIsNotCoreUpdate} remove>
                                                         Mark Not Core
                                                     </ButtonBase> :
                                                     <span>
-                                                        <ButtonBase onClick={() => { }} add>
-                                                            Mark Core
-                                                        </ButtonBase>
+                                                        <ButtonBase onClick={handleIsCoreUpdate} add>Mark Core</ButtonBase>
                                                     </span>}
                                             </span>
                                         </SummaryListBaseAction>

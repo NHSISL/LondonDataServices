@@ -2,12 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using Moq;
+using Xeptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
@@ -32,45 +34,65 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             retrievedMessage.Headers.Remove("mex-localid");
 
-            var invalidMeshMessageOrchestrationException =
-                new InvalidMeshMessageOrchestrationException(
-                    message: "Invalid mesh message orchestration error, please correct the errors and try again.");
-
             this.meshProcessingServiceMock.Setup(service =>
                 service.RetrieveMessageByIdAsync(It.IsAny<string>()))
                     .ReturnsAsync(retrievedMessage);
+
+            var invalidMeshMessageOrchestrationException =
+                new InvalidMeshMessageOrchestrationException(
+                    message: "Invalid mesh message orchestration error, please correct the errors and try again.");
 
             invalidMeshMessageOrchestrationException.AddData(
                 key: "mex-localid",
                 values: "Header value is required");
 
             var expectedOptOutOrchestrationValidationException =
-            new OptOutOrchestrationValidationException(
-                message: "Opt Out orchestration validation errors occurred, please try again.",
-                innerException: invalidMeshMessageOrchestrationException);
+                new OptOutOrchestrationValidationException(
+                    message: "Opt Out orchestration validation errors occurred, please try again.",
+                    innerException: invalidMeshMessageOrchestrationException);
 
-            // when
-            ValueTask<List<MeshMessage>> retrieveUpdatedOptOutStatusTask =
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to retrieve message for 1 message IDs",
+                    expectedOptOutOrchestrationValidationException);
+
+            var failedOptOutOrchestrationServiceException =
+                new FailedOptOutOrchestrationServiceException(
+                    message: "Failed opt out aggregate orchestration service error occurred, " +
+                        "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedOptOutOrchestrationServiceException =
+                new OptOutOrchestrationServiceException(
+                    message: "Opt Out orchestration service error occurred, please contact support.",
+                    innerException: failedOptOutOrchestrationServiceException);
+
+            this.loggingBrokerMock.Setup(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedOptOutOrchestrationServiceException))));
+
+            // When
+            ValueTask<List<MeshMessage>> actualMeshMessages =
                 this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
-            OptOutOrchestrationValidationException actualOptOutOrchestrationValidationException =
-                await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(retrieveUpdatedOptOutStatusTask.AsTask);
+            OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
+                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(async () =>
+                    await actualMeshMessages);
 
-            //then
-            actualOptOutOrchestrationValidationException.Should()
-                .BeEquivalentTo(expectedOptOutOrchestrationValidationException);
-
-            this.meshProcessingServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
-                    Times.Once);
+            // Then
+            actualOptOutOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedOptOutOrchestrationServiceException);
 
             this.meshProcessingServiceMock.Verify(service =>
-                service.RetrieveMessageByIdAsync(It.IsAny<string>()),
+                 service.RetrieveMessageIdsFromInboxAsync(),
+                     Times.Once);
+
+            this.meshProcessingServiceMock.Verify(service =>
+                service.RetrieveMessageByIdAsync(randomMessage.MessageId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedOptOutOrchestrationValidationException))),
+                    expectedOptOutOrchestrationServiceException))),
                         Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();

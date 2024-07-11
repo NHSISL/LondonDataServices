@@ -10,6 +10,8 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Services.Processings.Addresses;
+using LHDS.Core.Services.Processings.Assigns;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 
@@ -19,6 +21,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
     {
         private readonly IDocumentProcessingService documentProcessingService;
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
+        private readonly IAssignProcessingService assignProcessingService;
+        private readonly IAddressProcessingService addressProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly ICsvHelperBroker csvHelperBroker;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -28,6 +32,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         public ResolvedAddressOrchestrationService(
             IDocumentProcessingService documentProcessingService,
             IResolvedAddressProcessingService resolvedAddressProcessingService,
+            IAssignProcessingService assignProcessingService,
+            IAddressProcessingService addressProcessingService,
             ILoggingBroker loggingBroker,
             ICsvHelperBroker csvHelperBroker,
             IDateTimeBroker dateTimeBroker,
@@ -36,6 +42,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             this.documentProcessingService = documentProcessingService;
             this.resolvedAddressProcessingService = resolvedAddressProcessingService;
+            this.assignProcessingService = assignProcessingService;
+            this.addressProcessingService = addressProcessingService;
             this.loggingBroker = loggingBroker;
             this.csvHelperBroker = csvHelperBroker;
             this.dateTimeBroker = dateTimeBroker;

@@ -12,6 +12,8 @@ import SummaryListBaseKey from "../bases/components/SummaryList/SummaryListBase.
 import SummaryListBase from "../bases/components/SummaryList/SummaryListBase";
 import GridBase from "../bases/layouts/Grid/GridBase";
 import { TerminologyArtifactView } from "../../models/views/components/terminologyArtifacts/terminologyArtifactsView";
+import ButtonBase from "../bases/buttons/ButtonBase";
+import SummaryListBaseAction from "../bases/components/SummaryList/SummaryListBase.Action";
 
 interface TerminologyArtifactDetailCardViewProps {
     terminologyArtifact: TerminologyArtifactView;
@@ -26,7 +28,7 @@ const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDe
     return (
         <>
             <div className="row">
-                <GridBase size="Two-Third">
+                <GridBase>
                     <CardBase>
                         <CardBaseBody>
                             <CardBaseTitle>
@@ -71,6 +73,20 @@ const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDe
                                             <FontAwesomeIcon icon={faCheck} className="text-success" /> :
                                             <FontAwesomeIcon icon={faTimes} className="text-danger" />}
                                         </SummaryListBaseValue>
+                                        <SummaryListBaseAction>
+                                            <span style={{ float: "right" }}>
+                                                {terminologyArtifact.isCore ?
+                                                    <ButtonBase onClick={() => { }} add>
+                                                        Mark Not Core
+                                                    </ButtonBase> :
+                                                    <span>
+                                                        <ButtonBase onClick={() => { }} add>
+                                                            Mark Core
+                                                        </ButtonBase>
+                                                    </span>}
+                                            </span>
+                                        </SummaryListBaseAction>
+                                        
                                     </SummaryListBaseRow>
 
                                     <SummaryListBaseRow>

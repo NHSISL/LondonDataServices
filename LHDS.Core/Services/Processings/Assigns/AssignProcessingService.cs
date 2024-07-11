@@ -9,6 +9,7 @@ using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Services.Foundations.Assigns;
 
 namespace LHDS.Core.Services.Processings.Assigns
@@ -31,6 +32,9 @@ namespace LHDS.Core.Services.Processings.Assigns
             this.loggingBroker = loggingBroker;
             this.auditBroker = auditBroker;
         }
+
+        public ValueTask<AssignAddress> MatchAddressAsync(string address) =>
+            throw new NotImplementedException();
 
         public ValueTask SyncAddressesAsync(List<Address> addresses) =>
             throw new NotImplementedException();

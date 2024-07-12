@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -30,6 +31,14 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                 ValidateResolvedAddress(resolvedAddress);
 
                 return await resolvedAddressService.AddResolvedAddressAsync(resolvedAddress);
+            });
+
+        public ValueTask BulkAddResolvedAddressesAsync(List<ResolvedAddress> resolvedAddresses, string fileName) =>
+            TryCatch(async () =>
+            {
+                ValidateArguments(resolvedAddresses, fileName);
+
+                await this.resolvedAddressService.BulkAddResolvedAddressesAsync(resolvedAddresses, fileName);
             });
 
         public IQueryable<ResolvedAddress> RetrieveAllResolvedAddresses() =>

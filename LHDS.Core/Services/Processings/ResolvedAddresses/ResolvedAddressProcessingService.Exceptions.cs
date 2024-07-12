@@ -14,9 +14,52 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
 {
     public partial class ResolvedAddressProcessingService : IResolvedAddressProcessingService
     {
+        private delegate ValueTask ReturningNothingProcessingFunction();
         private delegate ValueTask<ResolvedAddress> ReturningResolvedAddressProcessingFunction();
         private delegate ValueTask<bool> ReturningBooleanProcessingFunction();
         private delegate IQueryable<ResolvedAddress> ReturningResolvedAddressesFunction();
+
+        private async ValueTask TryCatch(
+            ReturningNothingProcessingFunction returningNothingProcessingFunction)
+        {
+            try
+            {
+                await returningNothingProcessingFunction();
+            }
+            catch (NullResolvedAddressProcessingException nullResolvedAddressException)
+            {
+                throw CreateAndLogValidationException(nullResolvedAddressException);
+            }
+            catch (InvalidArgumentResolvedAddressProcessingException invalidArgumentResolvedAddressProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentResolvedAddressProcessingException);
+            }
+            catch (ResolvedAddressValidationException resolvedAddressValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressValidationException);
+            }
+            catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(resolvedAddressDependencyValidationException);
+            }
+            catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressDependencyException);
+            }
+            catch (ResolvedAddressServiceException resolvedAddressServiceException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedResolvedAddressProcessingServiceException =
+                    new FailedResolvedAddressProcessingServiceException(
+                        message: "Failed ResolvedAddress processing service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedResolvedAddressProcessingServiceException);
+            }
+        }
 
         private async ValueTask<ResolvedAddress> TryCatch(
             ReturningResolvedAddressProcessingFunction returningResolvedAddressProcessingFunction)

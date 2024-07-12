@@ -12,11 +12,10 @@ using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Coordinations.AddressCoordinations;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
-using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
+using LHDS.Core.Models.Orchestrations.Addresses.Exceptions;
+using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
-using LHDS.Core.Services.Orchestrations.AddressExtractions;
-using LHDS.Core.Services.Orchestrations.AddressPersistances;
+using LHDS.Core.Services.Orchestrations.Addresses;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -27,8 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 {
     public partial class AddressCoordinationServiceTests
     {
-        private readonly Mock<IAddressExtractionOrchestrationService> addressExtractionOrchestrationServiceMock;
-        private readonly Mock<IAddressPersistanceOrchestrationService> addressPersistanceOrchestrationServiceMock;
+        private readonly Mock<IAddressOrchestrationService> addressOrchestrationServiceMock;
         private readonly Mock<IResolvedAddressOrchestrationService> resolvedAddressOrchestrationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly AddressConfiguration addressConfiguration;
@@ -38,8 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
         public AddressCoordinationServiceTests()
         {
-            this.addressExtractionOrchestrationServiceMock = new Mock<IAddressExtractionOrchestrationService>();
-            this.addressPersistanceOrchestrationServiceMock = new Mock<IAddressPersistanceOrchestrationService>();
+            this.addressOrchestrationServiceMock = new Mock<IAddressOrchestrationService>();
             this.resolvedAddressOrchestrationServiceMock = new Mock<IResolvedAddressOrchestrationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
@@ -56,8 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             };
 
             this.addressCoordinationService = new AddressCoordinationService(
-                addressExtractionOrchestrationService: addressExtractionOrchestrationServiceMock.Object,
-                addressPersistanceOrchestrationService: addressPersistanceOrchestrationServiceMock.Object,
+                addressOrchestrationService: addressOrchestrationServiceMock.Object,
                 resolvedAddressOrchestrationService: resolvedAddressOrchestrationServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 addressConfiguration: addressConfiguration,
@@ -157,20 +153,20 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             return new TheoryData<Xeption>
             {
-                new AddressExtractionValidationOrchestrationException(
-                    message: "Address extraction orchestration validation error occured, please try again",
+                new AddressValidationOrchestrationException(
+                    message: "Address orchestration validation error occured, please try again",
                     innerException),
 
-                new AddressExtractionOrchestrationDependencyValidationException(
-                    message: "Address extraction orchestration dependency validation error occurred, please try again.",
+                new AddressOrchestrationDependencyValidationException(
+                    message: "Address orchestration dependency validation error occurred, please try again.",
                     innerException),
 
-                new AddressPersistenceOrchestrationValidationException(
-                    message: "Address persistance orchestration validation error occured, please try again",
+                new ResolvedAddressOrchestrationValidationException(
+                    message: "Resolved address orchestration validation error occured, please try again",
                     innerException),
 
-                new AddressPersistenceOrchestrationDependencyValidationException(
-                    message: "Address persistance orchestration dependency validation error occurred, " +
+                new ResolvedAddressOrchestrationDependencyValidationException(
+                    message: "Resolved address orchestration dependency validation error occurred, " +
                     "please try again.",
                     innerException),
             };
@@ -184,20 +180,20 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             return new TheoryData<Xeption>
             {
-                new AddressExtractionOrchestrationDependencyException(
-                    message: "Address extraction orchestration dependency error occurred, please try again.",
+                new AddressOrchestrationDependencyException(
+                    message: "Address orchestration dependency error occurred, please try again.",
                     innerException),
 
-                new AddressExtractionOrchestrationServiceException(
-                    message: "Address extraction orchestration error occured, please try again",
+                new AddressOrchestrationServiceException(
+                    message: "Address orchestration error occured, please try again",
                     innerException),
 
-                new AddressPersistenceOrchestrationDependencyException(
-                    message: "Address persistance orchestration dependency error occurred, please try again.",
+                new ResolvedAddressOrchestrationDependencyException(
+                    message: "Resolved address orchestration dependency error occurred, please try again.",
                     innerException),
 
-                new AddressPersistenceOrchestrationServiceException(
-                    message: "Address persistance orchestration service error occured, please try again",
+                new ResolvedAddressOrchestrationServiceException(
+                    message: "Resolved address orchestration service error occured, please try again",
                     innerException),
             };
         }

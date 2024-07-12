@@ -4,8 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
@@ -44,6 +46,34 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 loggingBroker: loggingBrokerMock.Object);
         }
 
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
+        {
+            return actualStream =>
+                IsSameStream(expectedStream, actualStream);
+        }
+
+        private static bool IsSameStream(Stream expectedStream, Stream actualStream)
+        {
+            byte[] expectedBytes = ReadAllBytesFromStream(expectedStream);
+            byte[] actualBytes = ReadAllBytesFromStream(actualStream);
+
+            return new CompareLogic().Compare(expectedBytes, actualBytes).AreEqual;
+        }
+
+        private static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
+
         private static List<string> GetRandomStrings(int count)
         {
             var messages = new List<string>();
@@ -55,6 +85,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             }
 
             return messages;
+        }
+
+        public byte[] CreateRandomData()
+        {
+            string randomMessage = GetRandomString();
+            return Encoding.UTF8.GetBytes(randomMessage);
         }
 
         private static string GetRandomString() =>

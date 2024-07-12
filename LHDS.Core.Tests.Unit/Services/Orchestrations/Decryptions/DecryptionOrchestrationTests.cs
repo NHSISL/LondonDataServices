@@ -3,7 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Linq.Expressions;
+using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
@@ -27,6 +29,7 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 {
@@ -43,9 +46,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         private readonly IDecryptionOrchestrationService decryptionOrchestrationService;
         private readonly ICompareLogic compareLogic;
         private readonly BlobContainers blobContainers;
+        private readonly ITestOutputHelper output;
 
-        public DecryptionOrchestrationTests()
+        public DecryptionOrchestrationTests(ITestOutputHelper output)
         {
+            this.output = output;
             documentServiceMock = new Mock<IDocumentService>();
             downloadProcessingServiceMock = new Mock<IDownloadProcessingService>();
             cryptographyServiceMock = new Mock<ICryptographyService>();
@@ -71,6 +76,34 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 hashBroker: hashBrokerMock.Object);
+        }
+
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
+        {
+            return actualStream =>
+                IsSameStream(expectedStream, actualStream);
+        }
+
+        private static bool IsSameStream(Stream expectedStream, Stream actualStream)
+        {
+            byte[] expectedBytes = ReadAllBytesFromStream(expectedStream);
+            byte[] actualBytes = ReadAllBytesFromStream(actualStream);
+
+            return new CompareLogic().Compare(expectedBytes, actualBytes).AreEqual;
+        }
+
+        static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
 
         private static int GetRandomNumber() =>
@@ -111,8 +144,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             IngestionTracking exprectedIngestionTracking)
         {
             return actualIngestionTracking =>
-                this.compareLogic.Compare(exprectedIngestionTracking, actualIngestionTracking)
-                    .AreEqual;
+                IsSameIngestionTracking(exprectedIngestionTracking, actualIngestionTracking);
+        }
+
+        private bool IsSameIngestionTracking(
+            IngestionTracking expectedIngestionTracking,
+            IngestionTracking actualIngestionTracking)
+        {
+            try
+            {
+                actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
+            }
+            catch (Exception exception)
+            {
+                output.WriteLine(exception.Message);
+            }
+
+            return new CompareLogic().Compare(expectedIngestionTracking, actualIngestionTracking).AreEqual;
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

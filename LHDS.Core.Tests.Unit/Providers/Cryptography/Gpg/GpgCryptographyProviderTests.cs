@@ -3,12 +3,14 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
+using System.Text;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
 using Tynamix.ObjectFiller;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
+namespace LHDS.Core.Tests.Unit.Providers.Cryptography.Gpg
 {
     public partial class GpgCryptographyProviderTests
     {
@@ -25,6 +27,28 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             };
 
             this.cryptographyProvider = new GpgCryptographyProvider();
+        }
+
+        private static string ConvertToBase64String(string input)
+        {
+            byte[] byteArray = Encoding.UTF8.GetBytes(input);
+            string base64String = Convert.ToBase64String(byteArray);
+
+            return base64String;
+        }
+
+        static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
 
         private static string GetRandomString() =>

@@ -4,8 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
+using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -108,6 +111,26 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 pdsConfiguration: pdsConfiguration
                 );
         }
+
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
+        {
+            return actualStream =>
+                IsSameStream(expectedStream, actualStream);
+        }
+
+        private static bool IsSameStream(Stream expectedStream, Stream actualStream)
+        {
+            try
+            {
+                actualStream.ShouldCompare(expectedStream);
+            }
+            catch (Exception ex)
+            {
+            }
+
+            return new CompareLogic().Compare(expectedStream, actualStream).AreEqual;
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
@@ -151,7 +174,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 MeshMessage message = ComposeMessage.CreateMeshMessage(
                     mexTo: GetRandomString(),
                     mexWorkflowId,
-                    fileContent: Encoding.ASCII.GetBytes(GetRandomString()),
+                    fileContent: Encoding.UTF8.GetBytes(GetRandomString()),
                     mexSubject: GetRandomString(),
                     mexLocalId: Guid.NewGuid().ToString(),
                     mexFileName: fileName);

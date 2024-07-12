@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -19,7 +20,6 @@ using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
-using Document = LHDS.Core.Models.Foundations.Documents.Document;
 
 namespace LHDS.Core.Services.Orchestrations.Tpp
 {
@@ -60,19 +60,17 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             this.landingConfiguration = landingConfiguration;
         }
 
-        public async ValueTask<Guid> ProcessAsync(Document document, Guid supplierId) =>
+        public async ValueTask<Guid> ProcessAsync(Stream input, string fileName, Guid supplierId) =>
             await TryCatch(async () =>
             {
-
-                ValidateDocumentIsNotNull(document);
-                ValidateArgumentsOnProcess(fileName: document.FileName, supplierId);
+                ValidateArgumentsOnProcess(input, fileName, supplierId);
 
                 IngestionTracking? maybeIngestionTracking =
                     this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
-                        .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == document.FileName);
+                        .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
 
-                string encryptedFileSha256Hash =
-                    this.hashBroker.GenerateSha256Hash(document.DocumentData);
+                string decryptedFileSha256Hash =
+                    this.hashBroker.GenerateSha256Hash(data: input);
 
                 if (maybeIngestionTracking == null)
                 {
@@ -81,21 +79,21 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     DataSetSpecification retrievedDataSetSpecification = await
                         this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
 
-                    var filename = document.FileName.StartsWith('/')
-                        ? document.FileName
-                        : "/" + document.FileName;
+                    var filename = fileName.StartsWith('/')
+                        ? fileName
+                        : "/" + fileName;
 
                     var decryptedFileName =
-                                $"/{landingConfiguration.DecryptedFolder}"
-                                + $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}"
-                                + $"/{retrievedDataSetSpecification?.Id}"
-                                + $"{filename}";
+                        $"/{landingConfiguration.DecryptedFolder}"
+                        + $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}"
+                        + $"/{retrievedDataSetSpecification?.Id}"
+                        + $"{filename}";
 
                     IngestionTracking newIngestionTracking =
                         new IngestionTracking
                         {
                             Id = this.identifierBroker.GetIdentifier(),
-                            FileName = document.FileName,
+                            FileName = filename,
                             SupplierId = supplierId,
                             EncryptedFileName = "Not Encrypted",
                             EncryptedFileSize = 0,
@@ -103,7 +101,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             DecryptedFileName = decryptedFileName,
                             Decrypted = true,
                             DecryptedFileSize = 0,
-                            DecryptedFileSha256Hash = encryptedFileSha256Hash,
+                            DecryptedFileSha256Hash = decryptedFileSha256Hash,
                             FileDeleted = false,
                             RecordCount = 0,
                             CreatedBy = "System",
@@ -112,36 +110,39 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             UpdatedDate = currentDateTime,
                         };
 
-                    Document blobDocument = new Document
-                    {
-                        DocumentData = document.DocumentData,
-                        FileName = newIngestionTracking.DecryptedFileName
-                    };
-
                     await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);
-                    await this.documentProcessingService.AddDocumentAsync(blobDocument, blobContainers.Versioner);
-                    LogAudit(newIngestionTracking, "Landed", currentDateTime);
+
+                    await this.documentProcessingService.AddDocumentAsync(
+                        input,
+                        fileName: newIngestionTracking.DecryptedFileName,
+                        container: blobContainers.Ingress);
+
+                    await LogAudit(newIngestionTracking, "Landed", currentDateTime);
 
                     return newIngestionTracking.Id;
                 }
                 else
                 {
-                    if (maybeIngestionTracking.DecryptedFileSha256Hash == document.SHA256Hash)
+                    if (maybeIngestionTracking.DecryptedFileSha256Hash == decryptedFileSha256Hash)
                     {
                         return maybeIngestionTracking.Id;
                     }
                     else
                     {
                         var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                        document.SHA256Hash = encryptedFileSha256Hash;
-                        await this.documentProcessingService.AddDocumentAsync(document, blobContainers.Versioner);
-                        maybeIngestionTracking.DecryptedFileSha256Hash = document.SHA256Hash;
+
+                        await this.documentProcessingService.AddDocumentAsync(
+                            input,
+                            fileName: maybeIngestionTracking.DecryptedFileName,
+                            container: blobContainers.Ingress);
+
+                        maybeIngestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
                         maybeIngestionTracking.UpdatedDate = currentDateTime;
 
                         await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(
                             maybeIngestionTracking);
 
-                        LogAudit(
+                        await LogAudit(
                             maybeIngestionTracking,
                             "Received and updated file from TPP which has now been uploaded to the blob store",
                             currentDateTime);
@@ -151,7 +152,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                 }
             });
 
-        private void LogAudit(
+        private async ValueTask LogAudit(
            IngestionTracking ingestionTracking,
            string message,
            DateTimeOffset currentDateTime)
@@ -168,7 +169,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     UpdatedDate = currentDateTime
                 };
 
-            this.ingestionTrackingProcessingAuditService.AddIngestionTrackingAuditAsync(newAudit);
+            await this.ingestionTrackingProcessingAuditService.AddIngestionTrackingAuditAsync(newAudit);
         }
     }
 }

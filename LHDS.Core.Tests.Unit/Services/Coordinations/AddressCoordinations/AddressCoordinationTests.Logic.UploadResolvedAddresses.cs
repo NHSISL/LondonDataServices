@@ -19,23 +19,22 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             Guid expectedBatchReference = Guid.NewGuid();
 
             this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.UploadResolvedAddressesAsync())
+                service.ExportResolvedAddressesAsync())
                     .ReturnsAsync(expectedBatchReference);
 
             // When
             Guid? actualBatchReference =
-                await this.addressCoordinationService.UploadResolvedAddressesAsync();
+                await this.addressCoordinationService.ExportResolvedAddressesAsync();
 
             // Then
             actualBatchReference.Should().Be(expectedBatchReference);
 
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.UploadResolvedAddressesAsync(),
+                service.ExportResolvedAddressesAsync(),
                     Times.Once());
 
             this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.addressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

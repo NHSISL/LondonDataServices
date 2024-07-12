@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<Download> downloadRetrieveByFileNameTask =
+            ValueTask downloadRetrieveByFileNameTask =
                 this.downloadProcessingService.RetrieveDownloadByFileNameAsync(someDownload);
 
             DownloadProcessingDependencyValidationException actualException =
@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                     .Throws(dependencyException);
 
             // when
-            ValueTask<Download> downloadRetrieveByFileNameTask =
+            ValueTask downloadRetrieveByFileNameTask =
                 this.downloadProcessingService.RetrieveDownloadByFileNameAsync(someDownload);
 
             DownloadProcessingDependencyException actualException =
@@ -119,11 +119,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                     .Throws(serviceException);
 
             // when
-            ValueTask<Download> addDownloadTask =
+            ValueTask downloadRetrieveByFileNameTask =
                 this.downloadProcessingService.RetrieveDownloadByFileNameAsync(someDownload);
 
             DownloadProcessingServiceException actualException =
-                await Assert.ThrowsAsync<DownloadProcessingServiceException>(addDownloadTask.AsTask);
+                await Assert.ThrowsAsync<DownloadProcessingServiceException>(downloadRetrieveByFileNameTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDownloadProcessingServiveException);

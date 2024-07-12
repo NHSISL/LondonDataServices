@@ -25,25 +25,24 @@ namespace LHDS.Core.Clients
             blobServiceClient = defaultClient;
         }
 
-        public async ValueTask<MemoryStream> DownloadFileAsync(string fileName, string container)
+        public async ValueTask DownloadFileAsync(Stream output, string fileName, string container)
         {
             loggingBroker.LogInformation(fileName);
 
             var blobClient = blobServiceClient
                 .GetBlobContainerClient(container).GetBlobClient(fileName);
 
-            var memoryStream = new MemoryStream();
-            await blobClient.DownloadToAsync(memoryStream);
-            return memoryStream;
+            await blobClient.DownloadToAsync(output);
         }
 
-        public async ValueTask UploadFileAsync(string fileName, Stream stream, string container)
+        public async ValueTask UploadFileAsync(Stream input, string fileName, string container)
         {
             try
             {
-                loggingBroker.LogInformation($"file:{fileName}, size:{stream.Length}, container:{container}");
+                loggingBroker.LogInformation($"file:{fileName}, size:{input.Length}, container:{container}");
+                input.Position = 0;
                 var blobClient = blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
-                var streamLength = stream.Length;
+                var streamLength = input.Length;
 
                 var options = new BlobUploadOptions
                 {
@@ -55,11 +54,11 @@ namespace LHDS.Core.Clients
                     }),
                     TransferOptions = new Azure.Storage.StorageTransferOptions()
                     {
-                        InitialTransferSize = stream.Length
+                        InitialTransferSize = input.Length
                     }
                 };
 
-                await blobClient.UploadAsync(stream, options);
+                await blobClient.UploadAsync(input, options);
             }
             catch (Exception ex)
             {

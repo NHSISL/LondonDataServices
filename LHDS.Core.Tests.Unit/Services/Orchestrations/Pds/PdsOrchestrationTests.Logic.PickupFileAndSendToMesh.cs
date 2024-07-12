@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
             var randomString = GetRandomString();
             var inputString = randomString;
-            var inputBytes = Encoding.ASCII.GetBytes(inputString);
+            var inputBytes = Encoding.UTF8.GetBytes(inputString);
             var fileName = GetRandomString();
 
             string mexTo = this.pdsConfiguration.To;

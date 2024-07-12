@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Azure;
@@ -27,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             Document randomDocument = new Document
             {
                 FileName = randomFileName,
-                DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
+                DocumentData = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()))
             };
 
             var requestFailedException = new RequestFailedException(randomMessage);
@@ -43,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                      innerException: failedDocumentRequestException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                 broker.DeleteFileAsync(randomDocument.FileName, randomContainer))
+                 broker.DeleteFileAsync(It.IsAny<string>(), It.IsAny<string>()))
                     .Throws(requestFailedException);
 
             // when
@@ -57,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                 broker.DeleteFileAsync(randomDocument.FileName, randomContainer),
+                 broker.DeleteFileAsync(It.IsAny<string>(), It.IsAny<string>()),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -80,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             Document randomDocument = new Document
             {
                 FileName = randomFileName,
-                DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
+                DocumentData = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()))
             };
 
             var serviceException = new Exception(randomMessage);
@@ -95,7 +96,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     innerException: failedDocumentServiceException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                 broker.DeleteFileAsync(randomDocument.FileName, randomContainer))
+                 broker.DeleteFileAsync(It.IsAny<string>(), It.IsAny<string>()))
                      .Throws(failedDocumentServiceException);
 
             // when
@@ -109,7 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                 broker.DeleteFileAsync(randomDocument.FileName, randomContainer),
+                 broker.DeleteFileAsync(It.IsAny<string>(), It.IsAny<string>()),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

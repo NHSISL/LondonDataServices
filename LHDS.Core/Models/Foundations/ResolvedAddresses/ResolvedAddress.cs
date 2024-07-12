@@ -13,27 +13,29 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses
         public Guid UniqueReference { get; set; }
         public Guid? BatchReference { get; set; }
         public string UnstructuredPostalAddress { get; set; } = string.Empty;
+        public string? UPRN { get; set; }
+        public string? UPSN { get; set; }
+        public string? OrganisationName { get; set; }
+        public string? DepartmentName { get; set; }
+        public string? SubBuildingName { get; set; }
+        public string? BuildingName { get; set; }
+        public string? BuildingNumber { get; set; }
+        public string? DependentThoroughfare { get; set; }
+        public string? Thoroughfare { get; set; }
+        public string? DoubleDependentLocality { get; set; }
+        public string? DependentLocality { get; set; }
+        public string? PostTown { get; set; }
         public string? PostCode { get; set; }
-        public string? PostalAddress { get; set; }
-        public string? JsonPostalAddress { get; set; }
-        public MatchAlgorithmEnum MatchAlgorithmEnum { get; set; }
-        public bool IsMatched { get; set; }
-        public string? MatchedPostalAddress { get; set; }
-        public string? MatchedJsonPostalAddress { get; set; }
-        public string? MatchedUPRN { get; set; }
-        public string? MatchedUPSN { get; set; }
-        public string? MatchedOrganisationName { get; set; }
-        public string? MatchedDepartmentName { get; set; }
-        public string? MatchedSubBuildingName { get; set; }
-        public string? MatchedBuildingName { get; set; }
-        public string? MatchedBuildingNumber { get; set; }
-        public string? MatchedDependentThoroughfare { get; set; }
-        public string? MatchedThoroughfare { get; set; }
-        public string? MatchedDoubleDependentLocality { get; set; }
-        public string? MatchedDependentLocality { get; set; }
-        public string? MatchedPostTown { get; set; }
-        public string? MatchedPostCode { get; set; }
-        public bool IsProcessed { get; set; }
+        public string? AddressFormatQuality { get; set; }
+        public string? PostCodeQuality { get; set; }
+        public bool Matched { get; set; }
+        public string? Qualifier { get; set; }
+        public string? Classification { get; set; }
+        public string? Algorithm { get; set; }
+        public string? MatchPattern { get; set; }
+        public bool IsProcessing { get; set; }
+        public bool IsExported { get; set; }
+        public int RetryCount { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }

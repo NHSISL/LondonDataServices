@@ -3,13 +3,13 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
 
 namespace LHDS.Core.Services.Orchestrations.TppLandings
 {
     public interface ITppLandingOrchestrationService
     {
-        ValueTask<Guid> ProcessAsync(Document document, Guid supplierId);
+        ValueTask<Guid> ProcessAsync(Stream input, string fileName, Guid supplierId);
     }
 }

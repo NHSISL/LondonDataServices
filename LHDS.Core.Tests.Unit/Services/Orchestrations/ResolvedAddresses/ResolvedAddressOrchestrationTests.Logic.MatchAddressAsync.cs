@@ -61,24 +61,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 processing.RetrieveAddressByUPRNAsync(matchedUprn))
                     .Returns(storageAddress);
 
-
-            ResolvedAddress newResolvedAddress = processingResolvedAddress;
-            newResolvedAddress.AddressFormatQuality = assignAddress.AddressFormat;
-            newResolvedAddress.PostCodeQuality = assignAddress.PostcodeQuality;
-            newResolvedAddress.Matched = assignAddress.Matched);
-            newResolvedAddress.Qualifier = assignAddress.Qualifier;
-            newResolvedAddress.Classification = assignAddress.Classification;
-            newResolvedAddress.Algorithm = assignAddress.Algorithm;
-            newResolvedAddress.MatchPattern = assignAddress.MatchPattern.ToString();
-
-            newResolvedAddress.UPSN = ordananceAddress.UPSN;
-            newResolvedAddress.Thoroughfare
-
-            newResolvedAddress.IsProcessing = false;
-
-
-
-
+            ResolvedAddress newResolvedAddress =
+                MapOrdananceWithAssign(assignAddress, ordananceAddress, processingResolvedAddress);
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
                processing.ModifyResolvedAddressAsync(newResolvedAddress))
@@ -87,6 +71,36 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             //When
 
             //Then
+        }
+
+        private static ResolvedAddress MapOrdananceWithAssign(
+            AssignAddress assignAddress,
+            Address? ordananceAddress,
+            ResolvedAddress processingResolvedAddress)
+        {
+            ResolvedAddress newResolvedAddress = processingResolvedAddress;
+            newResolvedAddress.UPSN = ordananceAddress.UPSN ?? null;
+            newResolvedAddress.OrganisationName = ordananceAddress.OrganisationName;
+            newResolvedAddress.DepartmentName = ordananceAddress.DepartmentName;
+            newResolvedAddress.SubBuildingName = ordananceAddress.SubBuildingName;
+            newResolvedAddress.BuildingName = ordananceAddress.BuildingName;
+            newResolvedAddress.BuildingNumber = ordananceAddress.BuildingNumber;
+            newResolvedAddress.DependentThoroughfare = ordananceAddress.DependentThoroughfare;
+            newResolvedAddress.Thoroughfare = ordananceAddress.Thoroughfare;
+            newResolvedAddress.DoubleDependentLocality = ordananceAddress.DoubleDependentLocality;
+            newResolvedAddress.DependentLocality = ordananceAddress.DependentLocality;
+            newResolvedAddress.PostTown = ordananceAddress.PostTown;
+            newResolvedAddress.PostCode = ordananceAddress.PostCode;
+            newResolvedAddress.AddressFormatQuality = assignAddress.AddressFormat;
+            newResolvedAddress.PostCodeQuality = assignAddress.PostcodeQuality;
+            newResolvedAddress.Matched = assignAddress.Matched;
+            newResolvedAddress.Qualifier = assignAddress.Qualifier;
+            newResolvedAddress.Classification = assignAddress.Classification;
+            newResolvedAddress.Algorithm = assignAddress.Algorithm;
+            newResolvedAddress.MatchPattern = assignAddress.MatchPattern.ToString();
+            newResolvedAddress.IsProcessing = false;
+            newResolvedAddress.IsExported = false;
+            return newResolvedAddress;
         }
     }
 }

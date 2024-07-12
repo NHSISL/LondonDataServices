@@ -99,8 +99,8 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<ResolvedAddress>()
                 .Property(address => address.Matched)
-                .HasMaxLength(255)
-                .IsRequired(false);
+                .HasDefaultValue(false)
+                .IsRequired();
 
             modelBuilder.Entity<ResolvedAddress>()
                 .Property(address => address.Qualifier)

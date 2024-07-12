@@ -7,12 +7,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
@@ -119,7 +122,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
-
         private Expression<Func<List<ResolvedAddressReturn>, bool>> SameResolvedAddressReturnsAs(
             List<ResolvedAddressReturn> expectedResolvedAddressReturns)
         {
@@ -154,7 +156,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             return filler;
         }
 
-
         private static List<ResolvedAddress> CreateRandomUnmatchedAddresses()
         {
             var fillers = Enumerable.Range(1, GetRandomNumber())
@@ -185,6 +186,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             return filler;
         }
 
+        private static ValueTask<Address?> CreateRandomAddress(DateTimeOffset dateTimeOffset) =>
+             new ValueTask<Address?>(CreateAddressFiller(dateTimeOffset).Create());
+
+        private static Filler<Address?> CreateAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<Address?>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(address => address.CreatedBy).Use(user)
+                .OnProperty(address => address.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static ValueTask<AssignAddress> CreateRandomAssignAddress(DateTimeOffset dateTimeOffset) =>
+            new ValueTask<AssignAddress>(CreateAssignAddressFiller(dateTimeOffset).Create());
+
+        private static Filler<AssignAddress> CreateAssignAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<AssignAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(assignAddress => assignAddress.CreatedBy).Use(user)
+                .OnProperty(assignAddress => assignAddress.UpdatedBy).Use(user);
+
+            return filler;
+        }
 
         private static List<ResolvedAddressReturn> MapToResolvedAddressReturn(List<ResolvedAddress> resolvedAddresses)
         {

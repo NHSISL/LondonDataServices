@@ -2,7 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AssignAddresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
@@ -12,51 +19,74 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         [Fact]
         public async Task MatchAddressAsync()
         {
-            ////Given
-            //List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses();
-            //List<ResolvedAddress> unmatchedResolvedAddresses = randomResolvedAddresses;
+            //Given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
 
-            //string inputResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().UnstructuredPostalAddress;
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses();
+            List<ResolvedAddress> unmatchedResolvedAddresses = randomResolvedAddresses;
+            string inputResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().UnstructuredPostalAddress;
 
-            //ValueTask<AssignAddress> randomAssignAddress = CreateRandomAssignAddress();
-            //ValueTask<AssignAddress> storageAssignAddress = randomAssignAddress;
+            ValueTask<AssignAddress> randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
+            ValueTask<AssignAddress> storageAssignAddress = randomAssignAddress;
+            AssignAddress assignAddress = await randomAssignAddress;
+            string matchedUprn = assignAddress.UPRN.ToString();
 
-            //Address randomAddress = CreateRandomAddress();
-            //Address storageAddress = randomAddress;
+            ValueTask<Address?> randomAddress = CreateRandomAddress(randomDateTimeOffset);
+            ValueTask<Address?> storageAddress = randomAddress;
+            Address? ordananceAddress = await storageAddress;
 
-            //this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
-            //   service.RetrieveAllResolvedAddresses())
-            //       .Returns(unmatchedResolvedAddresses.AsQueryable())
-            //       .Returns(new List<ResolvedAddress>().AsQueryable());
+            this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
+               service.RetrieveAllResolvedAddresses())
+                   .Returns(unmatchedResolvedAddresses.AsQueryable())
+                   .Returns(new List<ResolvedAddress>().AsQueryable());
 
-            ////modify resolved to processinbg = true
-            //// retry count += 
-            ////updatedate = now
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            ResolvedAddress processingResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault();
+            processingResolvedAddress.IsProcessing = true;
+            processingResolvedAddress.RetryCount += 1;
+            processingResolvedAddress.UpdatedDate = randomDateTimeOffset;
+
+            this.resolvedAddressProcessingServiceMock.Setup(processing =>
+                processing.ModifyResolvedAddressAsync(processingResolvedAddress))
+                    .ReturnsAsync(processingResolvedAddress);
+
+            this.assignProcessingServiceMock.Setup(processing =>
+                processing.MatchAddressAsync(inputResolvedAddress))
+                    .Returns(storageAssignAddress);
+
+            this.addressProcessingServiceMock.Setup(processing =>
+                processing.RetrieveAddressByUPRNAsync(matchedUprn))
+                    .Returns(storageAddress);
+
+
+            ResolvedAddress newResolvedAddress = processingResolvedAddress;
+            newResolvedAddress.AddressFormatQuality = assignAddress.AddressFormat;
+            newResolvedAddress.PostCodeQuality = assignAddress.PostcodeQuality;
+            newResolvedAddress.Matched = assignAddress.Matched);
+            newResolvedAddress.Qualifier = assignAddress.Qualifier;
+            newResolvedAddress.Classification = assignAddress.Classification;
+            newResolvedAddress.Algorithm = assignAddress.Algorithm;
+            newResolvedAddress.MatchPattern = assignAddress.MatchPattern.ToString();
+
+            newResolvedAddress.UPSN = ordananceAddress.UPSN;
+            newResolvedAddress.Thoroughfare
+
+            newResolvedAddress.IsProcessing = false;
 
 
 
-            //this.assignProcessingServiceMock.Setup(processing =>
-            //    processing.MatchAddressAsync(inputResolvedAddress))
-            //        .Returns(storageAssignAddress);
-
-            //this.addressProcessingServiceMock.Setup(processing =>
-            //    processing.RetrieveAllAddresses())
-            //        .Returns(storageAddress);
 
 
-            //ResolvedAddress newResolvedAddress = unmatchedResolvedAddresses.DeepClone();
-            ////newResolvedAddress.Matched = storageAssignAddress.
-            ////newResolvedAddress.MatchPattern = storageAssignAddress.processing = 0;
+            this.resolvedAddressProcessingServiceMock.Setup(processing =>
+               processing.ModifyResolvedAddressAsync(newResolvedAddress))
+                   .ReturnsAsync(newResolvedAddress);
 
+            //When
 
-
-            //this.resolvedAddressProcessingServiceMock.Setup(processing =>
-            //   processing.ModifyResolvedAddressAsync(newResolvedAddress))
-            //       .Returns(newResolvedAddress);
-
-            ////When
-
-            ////Then
+            //Then
         }
     }
 }

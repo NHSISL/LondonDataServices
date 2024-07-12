@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             var expectedResolvedAddressProcessingValidationException =
                 new ResolvedAddressProcessingValidationException(
-                    message: "ResolvedAddress processing validation error occurred, please try again.",
+                    message: "Resolved address processing validation error occurred, please try again.",
                     innerException: invalidArgumentResolvedAddressProcessingException);
 
             // when

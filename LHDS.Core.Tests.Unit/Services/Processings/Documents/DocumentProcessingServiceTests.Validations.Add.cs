@@ -2,9 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Moq;
 using Xunit;
@@ -13,25 +13,45 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 {
     public partial class DocumentProcessingServiceTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionsOnAddIfDocumentProcessingIsNullAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionsOnAddIfDocumentProcessingIsNullAndLogItAsync(
+            string invalidInput)
         {
             // given
-            string randomContainer = GetRandomString();
-            Document nullDocument = null;
+            Stream invalidStream = null;
+            string invalidFileName = invalidInput;
+            string invalidContainer = invalidInput;
 
-            var nullDocumentProcessingException =
-                new NullDocumentProcessingException(
-                    message: $"Document processing is Null");
+            var invalidArgumentsDocumentProcessingException =
+                new InvalidArgumentsDocumentProcessingException(
+                    message: "Invalid document processing arguments. Please correct the errors and try again.");
+
+            invalidArgumentsDocumentProcessingException.AddData(
+                key: "Input",
+                values: "Stream is required");
+
+            invalidArgumentsDocumentProcessingException.AddData(
+                key: "FileName",
+                values: "Text is required");
+
+            invalidArgumentsDocumentProcessingException.AddData(
+                key: "Container",
+                values: "Text is required");
 
             var expectedDocumentProcessingValidationException =
                 new DocumentProcessingValidationException(
                     message: "Document processing validation errors occured, please try again",
-                    nullDocumentProcessingException);
+                    innerException: invalidArgumentsDocumentProcessingException);
 
             // when
-            ValueTask<string> addDocumentTask =
-                this.documentProcessingService.AddDocumentAsync(document: nullDocument, container: randomContainer);
+            ValueTask addDocumentTask =
+                this.documentProcessingService.AddDocumentAsync(
+                    input: invalidStream,
+                    fileName: invalidFileName,
+                    container: invalidContainer);
 
             DocumentProcessingValidationException actualDocumentProcessingValidationException =
                 await Assert.ThrowsAsync<DocumentProcessingValidationException>(addDocumentTask.AsTask);

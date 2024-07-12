@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
                     innerException: nullDownloadException);
 
             // when
-            ValueTask<Download> retrieveDownloadByIdTask =
+            ValueTask retrieveDownloadByIdTask =
                 this.downloadService.RetrieveDownloadByFileNameAsync(invalidDownload);
 
             DownloadValidationException actualDownloadValidationException =
@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
                     innerException: nullSubscriberCredentialException);
 
             // when
-            ValueTask<Download> retrieveDownloadByIdTask =
+            ValueTask retrieveDownloadByIdTask =
                 this.downloadService.RetrieveDownloadByFileNameAsync(invalidDownload);
 
             DownloadValidationException actualDownloadValidationException =
@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
                     innerException: nullDocumentException);
 
             // when
-            ValueTask<Download> retrieveDownloadByIdTask =
+            ValueTask retrieveDownloadByIdTask =
                 this.downloadService.RetrieveDownloadByFileNameAsync(invalidDownload);
 
             DownloadValidationException actualDownloadValidationException =
@@ -177,7 +177,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
                     innerException: invalidDownloadException);
 
             // when
-            ValueTask<Download> retrieveDownloadByIdTask =
+            ValueTask retrieveDownloadByIdTask =
                 this.downloadService.RetrieveDownloadByFileNameAsync(invalidDownload);
 
             DownloadValidationException actualDownloadValidationException =

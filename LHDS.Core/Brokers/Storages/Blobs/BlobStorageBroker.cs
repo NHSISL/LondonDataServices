@@ -13,34 +13,21 @@ namespace LHDS.Core.Brokers.Storages.Blobs
     {
         private readonly IAzureBlobClient azureBlobClient;
 
-        public BlobStorageBroker(IAzureBlobClient azureBlobClient)
-        {
+        public BlobStorageBroker(IAzureBlobClient azureBlobClient) =>
             this.azureBlobClient = azureBlobClient;
-        }
 
-        public async ValueTask InsertFileAsync(string fileName, Stream stream, string container) =>
-            await azureBlobClient.UploadFileAsync(
-                fileName,
-                stream,
-                container);
+        public async ValueTask InsertFileAsync(Stream input, string fileName, string container) =>
+            await azureBlobClient.UploadFileAsync(input, fileName, container);
 
-        public async ValueTask<byte[]> SelectByFileNameAsync(string fileName, string container)
-        {
-            MemoryStream ms = await azureBlobClient
-                .DownloadFileAsync(fileName, container);
-
-            return ms.ToArray();
-        }
+        public async ValueTask SelectByFileNameAsync(Stream output, string fileName, string container) =>
+            await azureBlobClient.DownloadFileAsync(output, fileName, container);
 
         public async ValueTask DeleteFileAsync(string fileName, string container) =>
             await azureBlobClient.DeleteFileAsync(fileName, container);
 
         public async ValueTask<string> GetDownloadLinkAsync(string fileName, string container, DateTimeOffset expiresOn)
         {
-            Uri uri = await azureBlobClient.GetDownloadUriAsync(
-                fileName,
-                container,
-                expiresOn);
+            Uri uri = await azureBlobClient.GetDownloadUriAsync(fileName, container, expiresOn);
 
             return uri.ToString();
         }

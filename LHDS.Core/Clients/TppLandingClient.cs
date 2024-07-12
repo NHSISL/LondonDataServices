@@ -3,9 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.TppLandingClient.Exceptions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
 using LHDS.Core.Services.Orchestrations.TppLandings;
 using Xeptions;
@@ -22,11 +22,11 @@ namespace LHDS.Core.Clients
             this.tppOrchestrationService = tppOrchestrationService;
         }
 
-        public async ValueTask<Guid> ProcessAsync(Document fileName, Guid supplierId)
+        public async ValueTask<Guid> ProcessAsync(Stream input, string fileName, Guid supplierId)
         {
             try
             {
-                return await this.tppOrchestrationService.ProcessAsync(fileName, supplierId);
+                return await this.tppOrchestrationService.ProcessAsync(input, fileName, supplierId);
             }
             catch (TppLandingOrchestrationValidationException tppOrchestrationValidationException)
             {

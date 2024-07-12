@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             var expectedResolvedAddressProcessingDependencyValidationException =
                 new ResolvedAddressProcessingDependencyValidationException(
-                    message: "ResolvedAddress processing dependency validation error occurred, please try again.",
+                    message: "Resolved address processing dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.resolvedAddressServiceMock.Setup(service =>
@@ -68,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             var expectedResolvedAddressProcessingDependencyException =
                 new ResolvedAddressProcessingDependencyException(
-                    message: "ResolvedAddress processing dependency error occurred, please try again.",
+                    message: "Resolved address processing dependency error occurred, please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.resolvedAddressServiceMock.Setup(service =>
@@ -110,12 +110,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             var failedResolvedAddressProcessingServiceException =
                 new FailedResolvedAddressProcessingServiceException(
-                    message: "Failed ResolvedAddress processing service error occurred, please contact support.",
+                    message: "Failed resolved address processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedResolvedAddressProcessingServiveException =
                 new ResolvedAddressProcessingServiceException(
-                    message: "ResolvedAddress processing service error occurred, please contact support.",
+                    message: "Resolved address processing service error occurred, please contact support.",
                     innerException: failedResolvedAddressProcessingServiceException);
 
             this.resolvedAddressServiceMock.Setup(service =>

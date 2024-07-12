@@ -5,7 +5,6 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
 using Moq;
 using Xunit;
 
@@ -20,22 +19,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             // Given
             string randomContainer = GetRandomString();
             string randomFileName = GetRandomString();
-
-            Document randomDocument = new Document
-            {
-                FileName = randomFileName,
-                DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
-            };
-
-            var stream = new MemoryStream(randomDocument.DocumentData);
+            Stream randomStream = new MemoryStream(Encoding.UTF8.GetBytes(GetRandomString()));
 
             // When
-            await this.documentService.AddDocumentAsync(document: randomDocument, container: randomContainer);
+            await this.documentService.AddDocumentAsync(
+                input: randomStream,
+                fileName: randomFileName,
+                container: randomContainer);
 
             // Then
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(randomDocument.FileName, It.IsAny<Stream>(), randomContainer),
-                Times.Once);
+                broker.InsertFileAsync(randomStream, randomFileName, randomContainer),
+                    Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

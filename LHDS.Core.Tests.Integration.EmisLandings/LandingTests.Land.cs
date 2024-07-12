@@ -9,11 +9,10 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Xunit;
 
-namespace LHDS.Core.Tests.Integration.Landings
+namespace LHDS.Core.Tests.Integration.EmisLandings
 {
     public partial class LandingTests
     {
@@ -23,9 +22,8 @@ namespace LHDS.Core.Tests.Integration.Landings
             try
             {
                 // given
-                string encryptedFileContainer = "emislanding";
-                Supplier supplier = await SetupSupplier();
-                SubscriberAgreement maybeSubscriberAgreement = await SetupSubscriberAgreement();
+                string encryptedFileContainer = blobContainers.EmisLanding;
+                Supplier supplier = await GetEmisSupplier();
 
                 // when
                 List<string> files = await landingClient.ProcessAsync(supplierId: supplier.Id);

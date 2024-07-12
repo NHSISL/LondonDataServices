@@ -2,12 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Ontologies;
@@ -52,19 +52,19 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                     {
                         string relativeUrl = artifact.FullUrl;
 
-                        string artifactDetail =
-                            await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(relativeUrl);
+                        string artifactDetail = await this.ontologyProcessingService
+                            .RetrieveArtifactDetailsAsync(relativeUrl);
 
                         byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
+                        string fileName = $"{artifact.ResourceType}/{artifact.Name}.json";
 
-                        Document artifactDetailDocument = new Document
+                        using (Stream input = new MemoryStream(artifactDetailData))
                         {
-                            FileName = $"{artifact.ResourceType}/{artifact.Name}.json",
-                            DocumentData = artifactDetailData
-                        };
-
-                        await this.documentProcessingService
-                            .AddDocumentAsync(artifactDetailDocument, blobContainers.Terminology);
+                            await this.documentProcessingService.AddDocumentAsync(
+                                input,
+                                fileName,
+                                container: blobContainers.Terminology);
+                        }
 
                         artifact.IsDownloaded = true;
                         artifact.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();

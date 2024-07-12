@@ -28,19 +28,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             string csvData = GenerateCsv(optOutIdentifiers, hasHeaderRecord, shouldAddTrailingComma);
 
             byte[] optOutFile = Encoding.ASCII.GetBytes(csvData);
+            Stream optOutStream = new MemoryStream(optOutFile);
             string fileName = GetRandomString();
 
             Stream stream = new MemoryStream(optOutFile);
             string expectedString = $"/out/{fileName}_Response.csv";
 
             //When
-            var actualString = await this.optOutClient.RetrieveOptOutStatusAsync(optOutFile, fileName);
+            var actualString = await this.optOutClient.RetrieveOptOutStatusAsync(input: optOutStream, fileName);
 
             //Then
             actualString.Should().Be(expectedString);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(expectedString, It.IsAny<Stream>(), It.IsAny<string>()),
+                broker.InsertFileAsync(It.IsAny<Stream>(), expectedString, It.IsAny<string>()),
                     Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

@@ -3,14 +3,15 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 {
     public interface IResolvedAddressOrchestrationService
     {
-        ValueTask<Guid?> UploadResolvedAddressesAsync();
-        ValueTask AddDocumentAsync(byte[] data, string fileName, string container);
-        ValueTask RemoveDocumentByFileNameAsync(string fileName, string container);
+        ValueTask UploadAddressesToReslveAsync(Stream input, string fileName);
+        ValueTask MatchAddressDataAsync();
+        ValueTask<Guid?> ExportResolvedAddressesAsync();
     }
 }

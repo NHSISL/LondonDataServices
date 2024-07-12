@@ -71,8 +71,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 DependentLocality = invalidText,
                 PostTown = invalidText,
                 PostCode = invalidText,
-                PostalAddress = invalidText,
-                JsonPostalAddress = invalidText
             };
 
             var invalidAddressException =

@@ -31,12 +31,11 @@ namespace LHDS.Core.Services.Processings.Downloads
                 return await this.downloadService.RetrieveListOfDocumentsToProcessAsync(download);
             });
 
-        public ValueTask<Download> RetrieveDownloadByFileNameAsync(Download download) =>
+        public ValueTask RetrieveDownloadByFileNameAsync(Download download) =>
             TryCatch(async () =>
             {
                 ValidateDownloadIsNotNull(download);
-
-                return await this.downloadService.RetrieveDownloadByFileNameAsync(download);
+                await this.downloadService.RetrieveDownloadByFileNameAsync(download);
             });
     }
 }

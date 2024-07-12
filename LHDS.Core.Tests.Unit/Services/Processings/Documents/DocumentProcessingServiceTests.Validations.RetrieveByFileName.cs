@@ -2,9 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Moq;
 using Xunit;
@@ -21,29 +21,37 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             string invalidInput)
         {
             // given
+            Stream invalidStream = null;
             string invalidFileName = invalidInput;
             string invalidContainer = invalidInput;
 
-            var invalidDocumentProcessingFileNameException =
-                new InvalidDocumentProcessingFileNameException(
-                    message: "Invalid document processing file name. Please correct the errors and try again.");
+            var invalidArgumentsDocumentProcessingException =
+                new InvalidArgumentsDocumentProcessingException(
+                    message: "Invalid document processing arguments. Please correct the errors and try again.");
 
-            invalidDocumentProcessingFileNameException.AddData(
+            invalidArgumentsDocumentProcessingException.AddData(
+                key: "Output",
+                values: "Stream is required");
+
+            invalidArgumentsDocumentProcessingException.AddData(
                 key: "FileName",
                 values: "Text is required");
 
-            invalidDocumentProcessingFileNameException.AddData(
+            invalidArgumentsDocumentProcessingException.AddData(
                 key: "Container",
                 values: "Text is required");
 
             var expectedDocumentProcessingValidationException =
                 new DocumentProcessingValidationException(
                     message: "Document processing validation errors occured, please try again",
-                    innerException: invalidDocumentProcessingFileNameException);
+                    innerException: invalidArgumentsDocumentProcessingException);
 
             // when
-            ValueTask<Document> RetrieveDocumentTask =
-                this.documentProcessingService.RetrieveDocumentByFileNameAsync(invalidFileName, invalidContainer);
+            ValueTask RetrieveDocumentTask = this.documentProcessingService
+                .RetrieveDocumentByFileNameAsync(
+                    output: invalidStream,
+                    fileName: invalidFileName,
+                    container: invalidContainer);
 
             DocumentProcessingValidationException actualDocumentProcessingValidationException =
                 await Assert.ThrowsAsync<DocumentProcessingValidationException>(RetrieveDocumentTask.AsTask);

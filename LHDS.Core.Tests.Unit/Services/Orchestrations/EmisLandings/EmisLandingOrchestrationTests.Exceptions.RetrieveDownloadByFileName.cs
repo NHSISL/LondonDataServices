@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Downloads;
@@ -22,6 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             Xeption dependancyValidationException)
         {
             // given
+            Stream someStream = new MemoryStream();
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
             var someFileName = GetRandomMessage();
 
@@ -37,8 +39,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Throws(dependancyValidationException);
 
             // when
-            ValueTask<byte[]> retrieveDownloadByFileNameTask = this.emisLandingOrchestrationService
+            ValueTask retrieveDownloadByFileNameTask = this.emisLandingOrchestrationService
                 .RetrieveDownloadByFileNameAsync(
+                    output: someStream,
                     fileName: someFileName,
                     subscriberCredential: someSubscriberCredential);
 
@@ -74,6 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
            Xeption dependancyException)
         {
             // given
+            Stream someStream = new MemoryStream();
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
             string someFileName = GetRandomMessage();
 
@@ -87,8 +91,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask<byte[]> retrieveDownloadByFileNameTask = this.emisLandingOrchestrationService
+            ValueTask retrieveDownloadByFileNameTask = this.emisLandingOrchestrationService
                 .RetrieveDownloadByFileNameAsync(
+                    output: someStream,
                     fileName: someFileName,
                     subscriberCredential: someSubscriberCredential);
 
@@ -122,6 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         public async Task ShouldThrowServiceExceptionOnRetrieveFileIfServiceErrorOccursAndLogItAsync()
         {
             //Given
+            Stream someStream = new MemoryStream();
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
             var someFileName = GetRandomMessage();
             var serviceException = new Exception();
@@ -141,8 +147,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Throws(serviceException);
 
             // when
-            ValueTask<byte[]> retrieveDownloadByFileNameTask = this.emisLandingOrchestrationService
+            ValueTask retrieveDownloadByFileNameTask = this.emisLandingOrchestrationService
                 .RetrieveDownloadByFileNameAsync(
+                    output: someStream,
                     fileName: someFileName,
                     subscriberCredential: someSubscriberCredential);
 

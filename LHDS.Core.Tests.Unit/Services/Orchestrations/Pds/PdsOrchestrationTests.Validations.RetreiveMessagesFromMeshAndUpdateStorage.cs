@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         public async Task ShouldThrowValidationExceptionIfBlobContainersIsNullOnRetrieveAndLogItAsync()
         {
             // Given
-            byte[] somePdsFile = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] somePdsFile = Encoding.UTF8.GetBytes(GetRandomString());
             string someFileName = GetRandomString();
             BlobContainers invalidBlobContainers = null;
 

@@ -4,8 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
 
 namespace LHDS.Core.Services.Coordinations.EmisLandings
 {
@@ -13,7 +13,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
     {
         ValueTask<List<string>> ProcessAsync(Guid supplierId);
         ValueTask<List<string>> RetrieveListOfDocumentsToProcessAsync(Guid subscriberAgreementId);
-        ValueTask<Document> RetrieveDownloadByFileNameAsync(string fileName);
+        ValueTask RetrieveDownloadByFileNameAsync(Stream output, string fileName);
         ValueTask RedecryptDocumentByIngestionIdAsync(Guid ingestionTrackingId);
     }
 }

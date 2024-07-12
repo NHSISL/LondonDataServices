@@ -69,8 +69,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    .ReturnsAsync(newResolvedAddress);
 
             //When
+            await this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
             //Then
+            this.resolvedAddressProcessingServiceMock.Verify(service =>
+               service.RetrieveAllResolvedAddresses(),
+                   Times.Exactly(2));
+
+            this.dateTimeBrokerMock.Verify(broker =>
+               broker.GetCurrentDateTimeOffset(),
+                   Times.Exactly(2));
+
+            this.resolvedAddressProcessingServiceMock.Verify(processing =>
+                processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(processingResolvedAddress))),
+                    Times.Once);
+
+            this.assignProcessingServiceMock.Verify(processing =>
+                processing.MatchAddressAsync(inputResolvedAddress),
+                    Times.Once);
+
+            this.addressProcessingServiceMock.Verify(processing =>
+                processing.RetrieveAddressByUPRNAsync(matchedUprn),
+                    Times.Once);
+
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
+            this.assignProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         private static ResolvedAddress MapOrdananceWithAssign(
@@ -78,6 +107,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             Address? ordananceAddress,
             ResolvedAddress processingResolvedAddress)
         {
+            DateTimeOffset randomUpdateDateTimeOffset = GetRandomDateTimeOffset();
+
             ResolvedAddress newResolvedAddress = processingResolvedAddress;
             newResolvedAddress.UPSN = ordananceAddress.UPSN ?? null;
             newResolvedAddress.OrganisationName = ordananceAddress.OrganisationName;
@@ -100,6 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             newResolvedAddress.MatchPattern = assignAddress.MatchPattern.ToString();
             newResolvedAddress.IsProcessing = false;
             newResolvedAddress.IsExported = false;
+            newResolvedAddress.UpdatedDate = randomUpdateDateTimeOffset;
             return newResolvedAddress;
         }
     }

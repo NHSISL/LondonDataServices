@@ -26,6 +26,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             string baseUrl = $"{ontologyConfiguration.TerminologyServerBaseUrl}";
             string authUri = $"{ontologyConfiguration.TerminologyServerAuthenticationRelativeUrl}";
             terminologyArtifact.FullUrl = $"{baseUrl}/test";
+            terminologyArtifact.IsCore = true;
             await this.terminologyArtifactService.AddTerminologyArtifactAsync(terminologyArtifact);
 
             OntologyAccessToken token = new OntologyAccessToken

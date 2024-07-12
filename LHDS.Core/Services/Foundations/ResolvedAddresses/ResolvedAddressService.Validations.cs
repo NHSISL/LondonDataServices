@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 
@@ -39,6 +40,13 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 Parameter: nameof(ResolvedAddress.UpdatedBy)),
 
                 (Rule: IsNotRecent(resolvedAddress.CreatedDate), Parameter: nameof(ResolvedAddress.CreatedDate)));
+        }
+
+        private void ValidateOnBulkAddResolvedAddresses(List<ResolvedAddress> resolvedAddresses, string fileName)
+        {
+            Validate(
+                (Rule: IsInvalid(resolvedAddresses), Parameter: nameof(resolvedAddresses)),
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
         private void ValidateResolvedAddressOnModify(ResolvedAddress resolvedAddress)
@@ -123,6 +131,12 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             Condition = date == default,
             Message = "Date is required"
+        };
+
+        private static dynamic IsInvalid(List<ResolvedAddress> resolvedAddresses) => new
+        {
+            Condition = resolvedAddresses == null,
+            Message = "ResolvedAddresses is required"
         };
 
         private static dynamic IsSame(

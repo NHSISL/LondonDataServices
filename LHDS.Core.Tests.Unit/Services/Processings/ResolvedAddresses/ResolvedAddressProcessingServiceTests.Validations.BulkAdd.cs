@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
@@ -13,26 +14,41 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 {
     public partial class ResolvedAddressProcessingServiceTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionsOnRetrieveOrAddIfResolvedAddressProcessingIsNullAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionsOnBulkAddIfResolvedAddressProcessingIsNullAndLogItAsync(
+                    string invalidText)
         {
             // given
-            ResolvedAddress nullResolvedAddress = null;
+            string invalidFileName = invalidText;
+            List<ResolvedAddress> nullResolvedAddresses = null;
 
-            var nullResolvedAddressProcessingException =
-                new NullResolvedAddressProcessingException(message: "ResolvedAddress is null.");
+            var invalidArgumentResolvedAddressProcessingException =
+                new InvalidArgumentResolvedAddressProcessingException(
+                    message: "Invalid argument(s). Please correct the errors and try again.");
+
+            invalidArgumentResolvedAddressProcessingException.AddData(
+                key: "resolvedAddresses",
+                values: "Resolved addresses is required");
+
+            invalidArgumentResolvedAddressProcessingException.AddData(
+                key: "fileName",
+                values: "Text is required");
 
             var expectedResolvedAddressProcessingValidationException =
                 new ResolvedAddressProcessingValidationException(
                     message: "Resolved address processing validation error occurred, please try again.",
-                    innerException: nullResolvedAddressProcessingException);
+                    innerException: invalidArgumentResolvedAddressProcessingException);
 
             // when
-            ValueTask<ResolvedAddress> AddResolvedAddressTask =
-                this.resolvedAddressProcessingService.RetrieveOrAddResolvedAddressAsync(nullResolvedAddress);
+            ValueTask BulkAddResolvedAddressTask = this.resolvedAddressProcessingService
+                .BulkAddResolvedAddressesAsync(resolvedAddresses: nullResolvedAddresses, fileName: invalidFileName);
 
             ResolvedAddressProcessingValidationException actualResolvedAddressProcessingValidationException =
-                await Assert.ThrowsAsync<ResolvedAddressProcessingValidationException>(AddResolvedAddressTask.AsTask);
+                await Assert.ThrowsAsync<ResolvedAddressProcessingValidationException>(
+                    BulkAddResolvedAddressTask.AsTask);
 
             //then
             actualResolvedAddressProcessingValidationException.Should()

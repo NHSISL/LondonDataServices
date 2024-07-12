@@ -34,6 +34,7 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses
         public string? Algorithm { get; set; }
         public string? MatchPattern { get; set; }
         public bool IsProcessing { get; set; }
+        public bool IsExported { get; set; }
         public int RetryCount { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;

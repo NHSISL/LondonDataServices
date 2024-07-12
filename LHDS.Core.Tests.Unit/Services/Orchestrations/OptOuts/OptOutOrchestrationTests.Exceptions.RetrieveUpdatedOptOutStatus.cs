@@ -110,6 +110,99 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         }
 
         [Theory]
+        [MemberData(nameof(OptOutDependencyExceptions))]
+        public async Task
+            ShouldThrowAggregateDependencyExceptionOnUpdateIfErrorsInLoopAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // Given
+            List<string> randomMessageIds = GetRandomStrings(1);
+            List<Exception> exceptions = new List<Exception>();
+
+            this.meshProcessingServiceMock.SetupSequence(service =>
+                service.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(randomMessageIds)
+                    .ReturnsAsync(new List<string>());
+
+            foreach (var id in randomMessageIds)
+            {
+                this.meshProcessingServiceMock.Setup(service =>
+                    service.RetrieveMessageByIdAsync(id))
+                        .ThrowsAsync(dependencyException);
+
+                var optOutOrchestrationDependencyException =
+                    new OptOutOrchestrationDependencyException(
+                        message: "Opt Out orchestration dependency error occurred, " +
+                            "fix the errors and try again.",
+                        innerException: dependencyException.InnerException as Xeption);
+
+                exceptions.Add(optOutOrchestrationDependencyException);
+            }
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to retrieve message for {exceptions.Count} message IDs",
+                    exceptions);
+
+            var failedOptOutOrchestrationServiceException =
+                new FailedOptOutOrchestrationServiceException(
+                    message: "Failed opt out aggregate orchestration service error occurred, " +
+                        "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedOptOutOrchestrationServiceException =
+                new OptOutOrchestrationServiceException(
+                    message: "Opt Out orchestration service error occurred, please contact support.",
+                    innerException: failedOptOutOrchestrationServiceException);
+
+            // When
+            ValueTask<List<MeshMessage>> actualMeshMessages =
+                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+
+            OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
+                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(async () =>
+                    await actualMeshMessages);
+
+            // Then
+            actualOptOutOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedOptOutOrchestrationServiceException);
+
+            this.meshProcessingServiceMock.Verify(service =>
+                service.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
+
+            foreach (var id in randomMessageIds)
+            {
+                this.meshProcessingServiceMock.Verify(service =>
+                    service.RetrieveMessageByIdAsync(id),
+                        Times.Once);
+            }
+
+            var optOutOrchestrationDependencyLoggingException =
+                new OptOutOrchestrationDependencyException(
+                    message: "Opt Out orchestration dependency error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    optOutOrchestrationDependencyLoggingException))),
+                        Times.Exactly(randomMessageIds.Count));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    actualOptOutOrchestrationServiceException))),
+                        Times.Once);
+
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
         [MemberData(nameof(OptOutDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationOnUpdateIfDependencyValidationOccursAndLogItAsync(
            Xeption dependancyValidationException)

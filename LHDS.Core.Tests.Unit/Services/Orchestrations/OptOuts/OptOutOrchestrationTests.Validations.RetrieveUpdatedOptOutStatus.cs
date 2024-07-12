@@ -67,9 +67,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     message: "Opt Out orchestration service error occurred, please contact support.",
                     innerException: failedOptOutOrchestrationServiceException);
 
-            this.loggingBrokerMock.Setup(broker =>
-                broker.LogError(It.Is(SameExceptionAs(expectedOptOutOrchestrationServiceException))));
-
             // When
             ValueTask<List<MeshMessage>> actualMeshMessages =
                 this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
@@ -89,6 +86,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.meshProcessingServiceMock.Verify(service =>
                 service.RetrieveMessageByIdAsync(randomMessage.MessageId),
                     Times.Once);
+
+            var expectedOptOutOrchestrationValidationLoggingException =
+                new OptOutOrchestrationValidationException(
+                    message: "Opt Out orchestration validation errors occurred, please try again.",
+                    innerException: invalidMeshMessageOrchestrationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutOrchestrationValidationLoggingException))),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

@@ -411,30 +411,30 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .AreEqual;
         }
 
-        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)
-        {
-            return actualException =>
-               CompareExceptions(expectedException, actualException);
-        }
+        //private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)
+        //{
+        //    return actualException =>
+        //       CompareExceptions(expectedException, actualException);
+        //}
 
-        private bool CompareExceptions(
-           Xeption expectedException,
-           Xeption actualException)
-        {
-            try
-            {
-                actualException.Should().BeEquivalentTo(expectedException);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+        //private bool CompareExceptions(
+        //   Xeption expectedException,
+        //   Xeption actualException)
+        //{
+        //    try
+        //    {
+        //        actualException.Should().BeEquivalentTo(expectedException);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //    }
 
-            return this.compareLogic.Compare(expectedException, actualException).AreEqual;
-        }
+        //    return this.compareLogic.Compare(expectedException, actualException).AreEqual;
+        //}
 
-        //private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
-        //    actualException => actualException.SameExceptionAs(expectedException);
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static OptOut CreateRandomOptOut(DateTimeOffset dateTimeOffset) =>
            CreateOptOutFiller(dateTimeOffset).Create();

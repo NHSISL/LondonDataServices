@@ -117,7 +117,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Given
             var expectedDependencyException =
                 new OptOutOrchestrationDependencyValidationException(
-                    message: "Opt Out orchestration dependency error occurred, fix the errors and try again.",
+                    message: "Opt Out orchestration dependency validation errors occurred, " +
+                        "fix the errors and try again.",
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.meshProcessingServiceMock.Setup(processings =>

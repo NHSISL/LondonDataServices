@@ -12,6 +12,7 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.PdsAudits;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Mesh;
@@ -115,19 +116,21 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                 {
                     try
                     {
-                        var message = await this.meshService.RetrieveMessageByIdAsync(id);
-
-                        if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                        PdsAudit pdsAudit = await TryCatch(async () =>
                         {
-                            continue;
-                        }
+                            var message = await this.meshService.RetrieveMessageByIdAsync(id);
 
-                        string filename = message.Headers["mex-filename"].FirstOrDefault();
-                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
-                        string[] fileNameParts = fileNameWithoutExtension?.Split('_') ?? Array.Empty<string>();
+                            if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                            {
+                                return null;
+                            }
 
-                        string fileNameOutput =
-                            $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
+                            string filename = message.Headers["mex-filename"].FirstOrDefault();
+                            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+                            string[] fileNameParts = fileNameWithoutExtension?.Split('_') ?? Array.Empty<string>();
+
+                            string fileNameOutput =
+                                $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
 
                         fileNameOutput += Path.GetExtension(filename);
                         string fileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
@@ -154,18 +157,30 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                             UpdatedBy = "System"
                         };
 
-                        await this.pdsAuditService.AddPdsAuditAsync(pdsAudit);
+                            await this.pdsAuditService.AddPdsAuditAsync(pdsAudit);
+                            
+                            return pdsAudit;
+                        });
+
+                        if (pdsAudit == null)
+                        {
+                            continue;
+                        }
+
                         pdsAudits.Add(pdsAudit);
                     }
                     catch (Exception ex)
                     {
-                        this.loggingBroker.LogError(ex);
-                        Console.WriteLine($"Unable to retrieve messages {id}");
                         exceptions.Add(ex);
                     }
                 }
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to retrieve message for {exceptions.Count} message IDs",
+                        exceptions);
+                }
             }
-
 
             return pdsAudits;
         });

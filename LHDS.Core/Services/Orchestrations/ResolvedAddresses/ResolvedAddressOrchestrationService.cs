@@ -3,13 +3,18 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AssignAddresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
 using LHDS.Core.Services.Processings.Documents;
@@ -56,9 +61,83 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             throw new NotImplementedException();
         }
 
-        public ValueTask MatchAddressDataAsync()
+        public async ValueTask MatchAddressDataAsync()
         {
-            throw new NotImplementedException();
+            ResolvedAddress? unMatchedResolvedAddress = null;
+
+            do
+            {
+                IEnumerable<ResolvedAddress> unresolvedAddresses =
+                    this.resolvedAddressProcessingService.RetrieveAllResolvedAddresses();
+
+                unMatchedResolvedAddress = unresolvedAddresses
+                    .FirstOrDefault(address =>
+                        !address.Matched &&
+                        !address.IsProcessing &&
+                        address.RetryCount < 4);
+
+                if (unMatchedResolvedAddress != null)
+                {
+                    unMatchedResolvedAddress.IsProcessing = true;
+                    unMatchedResolvedAddress.RetryCount += 1;
+                    unMatchedResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+
+                    await resolvedAddressProcessingService.
+                        ModifyResolvedAddressAsync(unMatchedResolvedAddress);
+
+                    AssignAddress foundAssignAddress =
+                        await assignProcessingService.MatchAddressAsync(
+                            unMatchedResolvedAddress.UnstructuredPostalAddress);
+
+                    //Validate UPRN
+                    Address? foundOrdananceAddress =
+                        await addressProcessingService
+                            .RetrieveAddressByUPRNAsync(foundAssignAddress.UPRN.ToString());
+
+                    ResolvedAddress newResolvedAddress =
+                        MapOrdananceWithAssign(
+                            unMatchedResolvedAddress,
+                            foundAssignAddress,
+                            foundOrdananceAddress);
+
+                    newResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+
+                    await resolvedAddressProcessingService
+                        .ModifyResolvedAddressAsync(unMatchedResolvedAddress);
+                }
+            } while (unMatchedResolvedAddress != null);
+        }
+
+        public static ResolvedAddress MapOrdananceWithAssign(
+            ResolvedAddress unMatchedResolvedAddress,
+            AssignAddress foundAssignAddress,
+            Address? foundOrdananceAddress)
+        {
+            ResolvedAddress UpdatedResolovedAddress = unMatchedResolvedAddress;
+            UpdatedResolovedAddress.IsProcessing = false;
+            UpdatedResolovedAddress.UPSN = foundOrdananceAddress.UPSN ?? null;
+            UpdatedResolovedAddress.OrganisationName = foundOrdananceAddress.OrganisationName;
+            UpdatedResolovedAddress.DepartmentName = foundOrdananceAddress.DepartmentName;
+            UpdatedResolovedAddress.SubBuildingName = foundOrdananceAddress.SubBuildingName;
+            UpdatedResolovedAddress.BuildingName = foundOrdananceAddress.BuildingName;
+            UpdatedResolovedAddress.BuildingNumber = foundOrdananceAddress.BuildingNumber;
+            UpdatedResolovedAddress.DependentThoroughfare = foundOrdananceAddress.DependentThoroughfare;
+            UpdatedResolovedAddress.Thoroughfare = foundOrdananceAddress.Thoroughfare;
+            UpdatedResolovedAddress.DoubleDependentLocality = foundOrdananceAddress.DoubleDependentLocality;
+            UpdatedResolovedAddress.DependentLocality = foundOrdananceAddress.DependentLocality;
+            UpdatedResolovedAddress.PostTown = foundOrdananceAddress.PostTown;
+            UpdatedResolovedAddress.PostCode = foundOrdananceAddress.PostCode;
+            UpdatedResolovedAddress.AddressFormatQuality = foundAssignAddress.AddressFormat;
+            UpdatedResolovedAddress.PostCodeQuality = foundAssignAddress.PostcodeQuality;
+            UpdatedResolovedAddress.Matched = foundAssignAddress.Matched;
+            UpdatedResolovedAddress.Qualifier = foundAssignAddress.Qualifier;
+            UpdatedResolovedAddress.Classification = foundAssignAddress.Classification;
+            UpdatedResolovedAddress.Algorithm = foundAssignAddress.Algorithm;
+            UpdatedResolovedAddress.MatchPattern = foundAssignAddress.MatchPattern.ToString();
+            UpdatedResolovedAddress.IsProcessing = false;
+            UpdatedResolovedAddress.IsExported = false;
+
+            return UpdatedResolovedAddress;
         }
 
         public ValueTask<Guid?> ExportResolvedAddressesAsync() =>

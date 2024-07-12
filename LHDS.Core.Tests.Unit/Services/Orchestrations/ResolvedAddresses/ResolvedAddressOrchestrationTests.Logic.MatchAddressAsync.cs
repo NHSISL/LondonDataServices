@@ -82,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                 processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(processingResolvedAddress))),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.assignProcessingServiceMock.Verify(processing =>
                 processing.MatchAddressAsync(inputResolvedAddress),

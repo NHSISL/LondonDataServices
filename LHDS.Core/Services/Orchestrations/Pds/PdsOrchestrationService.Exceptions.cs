@@ -231,6 +231,16 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             {
                 throw CreateAndLogDependencyException(meshServiceException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedPdsOrchestrationServiceException =
+                    new FailedPdsOrchestrationServiceException(
+                        message: "Failed PDS aggregate orchestration service error occurred, " +
+                            "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedPdsOrchestrationServiceException);
+            }
             catch (Exception exception)
             {
                 var failedPdsServiceException =
@@ -259,7 +269,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         {
             var pdsOrchestrationDependencyValidationException =
                 new PdsOrchestrationDependencyValidationException(
-                    message: "PDS orchestration validation errors occurred, please try again.",
+                    message: "PDS orchestration dependency validation errors occurred, fix the errors and try again.",
                     exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(pdsOrchestrationDependencyValidationException);

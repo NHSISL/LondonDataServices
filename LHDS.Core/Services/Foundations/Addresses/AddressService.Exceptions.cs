@@ -85,6 +85,15 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
                 throw CreateAndLogDependencyException(failedAddressStorageException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedAddressServiceException =
+                    new FailedAddressServiceException(
+                        message: "Failed aggregate address service error occurred, please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedAddressServiceException);
+            }
             catch (Exception exception)
             {
                 var failedAddressServiceException =

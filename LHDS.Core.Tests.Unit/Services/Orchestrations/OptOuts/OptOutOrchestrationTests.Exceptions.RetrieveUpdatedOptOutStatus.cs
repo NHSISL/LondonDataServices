@@ -203,7 +203,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         }
 
         [Fact]
-        public async Task v()
+        public async Task ShouldThrowAggregateServiceExceptionOnUpdateIfErrorsInLoopAndLogItAsync()
         {
             // Given
             List<string> randomMessageIds = GetRandomStrings(1);

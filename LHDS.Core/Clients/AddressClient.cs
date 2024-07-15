@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.AddressClient.Exceptions;
@@ -161,7 +162,7 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask<Guid?> ExportResolvedAddressesAsync()
+        public async ValueTask<List<Guid>> ExportResolvedAddressesAsync()
         {
             try
             {

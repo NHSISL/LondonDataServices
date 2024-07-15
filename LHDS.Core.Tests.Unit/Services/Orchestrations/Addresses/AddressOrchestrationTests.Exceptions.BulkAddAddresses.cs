@@ -122,7 +122,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             var expectedAddressOrchestrationServiceException =
                 new AddressOrchestrationServiceException(
-                    message: "PDS orchestration service error occurred, please contact support.",
+                    message: "Address orchestration service error occurred, please contact support.",
                     innerException: failedAddressOrchestrationServiceException);
 
             // When
@@ -137,15 +137,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             actualAddressOrchestrationServiceException.Should()
                 .BeEquivalentTo(expectedAddressOrchestrationServiceException);
 
-            this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
-                    Times.Once);
-
-            foreach (var id in randomMessageIds)
+            foreach (var csvFile in csvFiles)
             {
-                this.meshServiceMock.Verify(service =>
-                    service.RetrieveMessageByIdAsync(id),
-                        Times.Once);
+                this.fileBrokerMock.Verify(service =>
+                    service.ReadFileAsync(csvFile),
+                        Times.Once());
             }
 
             var addressOrchestrationDependencyValidationLoggingException =
@@ -157,19 +153,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     addressOrchestrationDependencyValidationLoggingException))),
-                        Times.Exactly(randomMessageIds.Count));
+                        Times.Exactly(csvFiles.Count));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     actualAddressOrchestrationServiceException))),
                         Times.Once);
 
-            this.meshServiceMock.VerifyNoOtherCalls();
+            this.fileBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.pdsAuditServiceMock.VerifyNoOtherCalls();
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.assignProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]

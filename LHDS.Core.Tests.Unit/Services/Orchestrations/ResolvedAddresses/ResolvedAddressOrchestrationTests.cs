@@ -257,13 +257,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             return new TheoryData<Xeption>
             {
-                new DocumentProcessingValidationException(
-                    message: "Document processing validation error occured, please try again",
-                    innerException),
+                //new DocumentProcessingValidationException(
+                //    message: "Document processing validation error occured, please try again",
+                //    innerException),
 
-                new DocumentProcessingDependencyValidationException(
-                    message: "Document processing dependency validation error occurred, please try again.",
-                    innerException),
+                //new DocumentProcessingDependencyValidationException(
+                //    message: "Document processing dependency validation error occurred, please try again.",
+                //    innerException),
 
                 new ResolvedAddressProcessingValidationException(
                     message: "Resolved address processing validation error occured, please try again",

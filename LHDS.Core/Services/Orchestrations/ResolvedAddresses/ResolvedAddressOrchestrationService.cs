@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -63,19 +62,11 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
         public async ValueTask MatchAddressDataAsync()
         {
-            ResolvedAddress? unMatchedResolvedAddress = null;
+            ResolvedAddress? unMatchedResolvedAddress;
 
-            do
+            while ((unMatchedResolvedAddress = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
+                .FirstOrDefault(x => !x.Matched && !x.IsProcessing && x.RetryCount < 4)) != null)
             {
-                IEnumerable<ResolvedAddress> unresolvedAddresses =
-                    this.resolvedAddressProcessingService.RetrieveAllResolvedAddresses();
-
-                unMatchedResolvedAddress = unresolvedAddresses
-                    .FirstOrDefault(address =>
-                        !address.Matched &&
-                        !address.IsProcessing &&
-                        address.RetryCount < 4);
-
                 if (unMatchedResolvedAddress != null)
                 {
                     unMatchedResolvedAddress.IsProcessing = true;
@@ -89,7 +80,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         await assignProcessingService.MatchAddressAsync(
                             unMatchedResolvedAddress.UnstructuredPostalAddress);
 
-                    //Validate UPRN
+                    ValidateUPRNHasValue(foundAssignAddress.UPRN);
+
                     Address? foundOrdananceAddress =
                         await addressProcessingService
                             .RetrieveAddressByUPRNAsync(foundAssignAddress.UPRN.ToString());
@@ -105,7 +97,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     await resolvedAddressProcessingService
                         .ModifyResolvedAddressAsync(unMatchedResolvedAddress);
                 }
-            } while (unMatchedResolvedAddress != null);
+            } while (unMatchedResolvedAddress != null) ;
         }
 
         public static ResolvedAddress MapOrdananceWithAssign(

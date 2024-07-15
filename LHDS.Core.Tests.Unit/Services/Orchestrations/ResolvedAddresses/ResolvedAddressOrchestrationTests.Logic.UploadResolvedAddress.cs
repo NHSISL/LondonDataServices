@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -19,7 +18,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         public async Task ShouldUploadResolvedAddressAsync()
         {
             // Given
-            DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
             string inputContent = GetRandomString();

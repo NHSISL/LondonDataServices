@@ -88,10 +88,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 service.CheckIfDirectoryExistsAsync(ordinanceTempFolder))
                     .ReturnsAsync(false);
 
-            foreach (var id in randomMessageIds)
+            List<string> csvFiles = new List<string> { ordinanceTempCsvFile };
+
+            this.fileBrokerMock.Setup(service =>
+                service.GetListOfFilesAsync(ordinanceTempFolder, "*.csv"))
+                    .ReturnsAsync(csvFiles);
+
+            foreach (var csvFile in csvFiles)
             {
-                this.meshServiceMock.Setup(service =>
-                    service.RetrieveMessageByIdAsync(id))
+                this.fileBrokerMock.Setup(service =>
+                    service.ReadFileAsync(csvFile))
                         .ThrowsAsync(dependencyValidationException);
 
                 var addressOrchestrationDependencyValidationException =
@@ -121,7 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
             // When
             ValueTask processDataTask = this.addressOrchestrationService
-                .BulkAddAddressesAsync(input: inputStream, fileName: someFilename);
+                .BulkAddAddressesAsync(input: inputStream, fileName: zipFileName);
 
             AddressOrchestrationServiceException actualAddressOrchestrationServiceException =
                 await Assert.ThrowsAsync<AddressOrchestrationServiceException>(

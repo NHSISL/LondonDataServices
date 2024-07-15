@@ -270,6 +270,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                             exceptions.Add(ex);
                         }
                     }
+                    
                     if (exceptions.Any())
                     {
                         throw new AggregateException(

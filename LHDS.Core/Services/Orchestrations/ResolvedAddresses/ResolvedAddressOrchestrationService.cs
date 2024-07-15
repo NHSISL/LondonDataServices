@@ -48,7 +48,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         public ValueTask UploadAddressesToReslveAsync(Stream input, string fileName) =>
         TryCatch(async () =>
         {
-            ValidateOnUploadAddressesToReslve(input, fileName);
+            ValidateOnUploadAddressesToResolve(input, fileName);
 
             using (StreamReader streamReader = new StreamReader(input))
             {

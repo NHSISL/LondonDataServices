@@ -14,7 +14,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         public void ValidateResolvedAddressArgsOnAdd(byte[] data, string fileName, string container)
         {
             Validate<InvalidArgumentResolvedAddressOrchestrationException>(
-                message: "Invalid resolved address orchestration argument.  Please correct the errors and try again.",
+                message: "Invalid argument resolved address orchestration exception, " +
+                    "please correct the errors and try again.",
                 (Rule: IsInvalid(data), Parameter: "data"),
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)),
                 (Rule: IsInvalid(container), Parameter: nameof(container)));
@@ -23,17 +24,19 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         public void ValidateResolvedAddressArgsOnRemove(string fileName, string container)
         {
             Validate<InvalidArgumentResolvedAddressOrchestrationException>(
-                message: "Invalid resolved address orchestration argument.  Please correct the errors and try again.",
+                message: "Invalid argument resolved address orchestration exception, " +
+                    "please correct the errors and try again.",
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)),
                 (Rule: IsInvalid(container), Parameter: nameof(container)));
         }
 
-        public void ValidateOnUploadAddressesToReslve(Stream input, string container)
+        public void ValidateOnUploadAddressesToResolve(Stream input, string fileName)
         {
             Validate<InvalidArgumentResolvedAddressOrchestrationException>(
-                message: "Invalid resolved address orchestration argument.  Please correct the errors and try again.",
+                message: "Invalid argument resolved address orchestration exception, " +
+                    "please correct the errors and try again.",
                 (Rule: IsInvalidInputStream(input), Parameter: nameof(input)),
-                (Rule: IsInvalid(container), Parameter: nameof(container)));
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
         private static dynamic IsInvalidInputStream(Stream? stream) => new

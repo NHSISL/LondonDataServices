@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var expectedResolvedAddressOrchestrationValidationException =
                 new ResolvedAddressOrchestrationValidationException(
-                    message: "Address extraction orchestration validation error occurred, please try again.",
+                    message: "Resolved address validation errors occured, please try again.",
                     innerException: invalidArgumentResolvedAddressOrchestrationException);
 
             // When
@@ -63,6 +63,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Then
             actualResolvedAddressOrchestrationValidationException.Should()
                 .BeEquivalentTo(expectedResolvedAddressOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedResolvedAddressOrchestrationValidationException))),
+                        Times.Once);
 
             this.csvHelperBrokerMock.Verify(service =>
                 service.MapCsvToObjectAsync<ResolvedAddress>(It.IsAny<string>(), true, fieldMappings),

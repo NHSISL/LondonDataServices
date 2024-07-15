@@ -47,11 +47,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var expectedResolvedAddressOrchestrationValidationException =
                 new ResolvedAddressOrchestrationValidationException(
-                    message: "Resolved Address orchestration validation errors occurred, please try again.",
+                    message: "Resolved address validation errors occured, please try again.\"",
                     innerException: nullUPRNResolvedAddressOrchestrationException);
 
             // when
             await this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+
 
             // then
             this.loggingBrokerMock.Verify(broker =>

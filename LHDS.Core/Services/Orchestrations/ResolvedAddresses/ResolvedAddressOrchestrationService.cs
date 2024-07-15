@@ -60,45 +60,46 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             throw new NotImplementedException();
         }
 
-        public async ValueTask MatchAddressDataAsync()
-        {
-            ResolvedAddress? unMatchedResolvedAddress;
-
-            while ((unMatchedResolvedAddress = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
-                .FirstOrDefault(x => !x.Matched && !x.IsProcessing && x.RetryCount < 4)) != null)
+        public ValueTask MatchAddressDataAsync() =>
+            TryCatch(async () =>
             {
-                if (unMatchedResolvedAddress != null)
+                ResolvedAddress? unMatchedResolvedAddress;
+
+                while ((unMatchedResolvedAddress = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
+                    .FirstOrDefault(x => !x.Matched && !x.IsProcessing && x.RetryCount < 4)) != null)
                 {
-                    unMatchedResolvedAddress.IsProcessing = true;
-                    unMatchedResolvedAddress.RetryCount += 1;
-                    unMatchedResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                    if (unMatchedResolvedAddress != null)
+                    {
+                        unMatchedResolvedAddress.IsProcessing = true;
+                        unMatchedResolvedAddress.RetryCount += 1;
+                        unMatchedResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
 
-                    await resolvedAddressProcessingService.
-                        ModifyResolvedAddressAsync(unMatchedResolvedAddress);
+                        await resolvedAddressProcessingService.
+                            ModifyResolvedAddressAsync(unMatchedResolvedAddress);
 
-                    AssignAddress foundAssignAddress =
-                        await assignProcessingService.MatchAddressAsync(
-                            unMatchedResolvedAddress.UnstructuredPostalAddress);
+                        AssignAddress foundAssignAddress =
+                            await assignProcessingService.MatchAddressAsync(
+                                unMatchedResolvedAddress.UnstructuredPostalAddress);
 
-                    ValidateUPRNHasValue(foundAssignAddress.UPRN);
+                        ValidateUPRNHasValue(foundAssignAddress.UPRN);
 
-                    Address? foundOrdananceAddress =
-                        await addressProcessingService
-                            .RetrieveAddressByUPRNAsync(foundAssignAddress.UPRN.ToString());
+                        Address? foundOrdananceAddress =
+                            await addressProcessingService
+                                .RetrieveAddressByUPRNAsync(foundAssignAddress.UPRN.ToString());
 
-                    ResolvedAddress newResolvedAddress =
-                        MapOrdananceWithAssign(
-                            unMatchedResolvedAddress,
+                        ResolvedAddress newResolvedAddress =
+                            MapOrdananceWithAssign(
+                                unMatchedResolvedAddress,
                             foundAssignAddress,
                             foundOrdananceAddress);
 
-                    newResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                        newResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
 
-                    await resolvedAddressProcessingService
-                        .ModifyResolvedAddressAsync(unMatchedResolvedAddress);
+                        await resolvedAddressProcessingService
+                            .ModifyResolvedAddressAsync(unMatchedResolvedAddress);
+                    }
                 }
-            } while (unMatchedResolvedAddress != null) ;
-        }
+            });
 
         public static ResolvedAddress MapOrdananceWithAssign(
             ResolvedAddress unMatchedResolvedAddress,

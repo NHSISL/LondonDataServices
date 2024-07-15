@@ -3,10 +3,15 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.Addresses.Exceptions;
 using Moq;
 using Xeptions;
@@ -16,6 +21,151 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 {
     public partial class AddressOrchestrationServiceTests
     {
+        [Theory]
+        [MemberData(nameof(AddressOrchestrationDependencyValidationExceptions))]
+        public async Task
+            ShouldThrowAggregateDependencyValidationExceptionOnAddressIfErrorsInLoopAndLogItAsync(
+            Xeption dependencyValidationException)
+        {
+            // Given
+            List<Exception> exceptions = new List<Exception>();
+            string assembly = Assembly.GetExecutingAssembly().Location;
+            string zipFileName = "ShouldProcessZipFileWithZippedCsvAddressesData.zip";
+            string csvFileName = "ShouldProcessZipFileWithOnlyCsvAddressesData.zip";
+
+            string inputFilePath = Path.Combine(
+                Path.GetDirectoryName(assembly),
+                $"Resources/Services/Orchestrations/Addresses/{zipFileName}");
+
+            byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+            Stream inputStream = new MemoryStream(inputData);
+
+            string csvFilePath = Path.Combine(
+                Path.GetDirectoryName(assembly),
+                $"Resources/Services/Orchestrations/Addresses/{csvFileName}");
+
+            byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
+            string stringData = Encoding.UTF8.GetString(csvData);
+            List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+
+            List<string> filteredRecords = records.Where(record =>
+               record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
+
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                {
+                    { "UPRN", 3 },
+                    { "UPSN", 4 },
+                    { "OrganisationName", 5 },
+                    { "DepartmentName", 6 },
+                    { "SubBuildingName", 7 },
+                    { "BuildingName", 8 },
+                    { "BuildingNumber", 9 },
+                    { "DependentThoroughfare", 10 },
+                    { "Thoroughfare", 11 },
+                    { "DoubleDependentLocality", 12 },
+                    { "DependentLocality", 13 },
+                    { "PostTown", 14 },
+                    { "PostCode", 15 }
+                };
+
+            Guid randomId = Guid.NewGuid();
+            List<Address> randomAddresses = CreateRandomAddresses(count: 1).ToList();//change to random number
+            List<Address> outputAddresses = randomAddresses.DeepClone();
+            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+            bool hasHeaderRecord = false;
+            string inputFileName = zipFileName;
+            string randomTempPath = Path.GetTempPath();
+            string ordinanceTempFolder = Path.Combine(randomTempPath, "OrdinanceData");
+
+            string ordinanceTempCsvFile =
+                Path.Combine(ordinanceTempFolder, "ShouldProcessZipFileWithOnlyCsvAddressesData.csv");
+
+            this.fileBrokerMock.Setup(service =>
+                service.GetTempPath())
+                    .ReturnsAsync(randomTempPath);
+
+            this.fileBrokerMock.Setup(service =>
+                service.CheckIfDirectoryExistsAsync(ordinanceTempFolder))
+                    .ReturnsAsync(false);
+
+            foreach (var id in randomMessageIds)
+            {
+                this.meshServiceMock.Setup(service =>
+                    service.RetrieveMessageByIdAsync(id))
+                        .ThrowsAsync(dependencyValidationException);
+
+                var addressOrchestrationDependencyValidationException =
+                    new AddressOrchestrationDependencyValidationException(
+                        message: "Address orchestration dependency validation errors occurred, " +
+                            "fix the errors and try again.",
+                        innerException: dependencyValidationException.InnerException as Xeption);
+
+                exceptions.Add(addressOrchestrationDependencyValidationException);
+            }
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to retrieve message for {exceptions.Count} message IDs",
+                    exceptions);
+
+            var failedAddressOrchestrationServiceException =
+                new FailedAddressOrchestrationServiceException(
+                    message: "Failed address aggregate orchestration service error occurred, " +
+                        "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedAddressOrchestrationServiceException =
+                new AddressOrchestrationServiceException(
+                    message: "PDS orchestration service error occurred, please contact support.",
+                    innerException: failedAddressOrchestrationServiceException);
+
+            // When
+            ValueTask processDataTask = this.addressOrchestrationService
+                .BulkAddAddressesAsync(input: inputStream, fileName: someFilename);
+
+            AddressOrchestrationServiceException actualAddressOrchestrationServiceException =
+                await Assert.ThrowsAsync<AddressOrchestrationServiceException>(
+                    processDataTask.AsTask);
+
+            // Then
+            actualAddressOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedAddressOrchestrationServiceException);
+
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
+
+            foreach (var id in randomMessageIds)
+            {
+                this.meshServiceMock.Verify(service =>
+                    service.RetrieveMessageByIdAsync(id),
+                        Times.Once);
+            }
+
+            var addressOrchestrationDependencyValidationLoggingException =
+                new AddressOrchestrationDependencyValidationException(
+                    message: "Address orchestration dependency validation errors occurred, " +
+                        "fix the errors and try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    addressOrchestrationDependencyValidationLoggingException))),
+                        Times.Exactly(randomMessageIds.Count));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    actualAddressOrchestrationServiceException))),
+                        Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
         [Theory]
         [MemberData(nameof(AddressOrchestrationDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationOnAddressIfDependencyValidationOccursAndLogItAsync(

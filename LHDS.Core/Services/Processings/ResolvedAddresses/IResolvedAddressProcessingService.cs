@@ -19,6 +19,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         ValueTask<ResolvedAddress> RetrieveOrAddResolvedAddressAsync(ResolvedAddress resolvedAddress);
         ValueTask<ResolvedAddress> ModifyOrAddResolvedAddressAsync(ResolvedAddress resolvedAddress);
         ValueTask<ResolvedAddress> ModifyResolvedAddressAsync(ResolvedAddress resolvedAddress);
+        ValueTask BulkModifyResolvedAddressAsync(List<ResolvedAddress> resolvedAddresses);
         ValueTask<ResolvedAddress> RemoveResolvedAddressByIdAsync(Guid resolvedAddressId);
     }
 }

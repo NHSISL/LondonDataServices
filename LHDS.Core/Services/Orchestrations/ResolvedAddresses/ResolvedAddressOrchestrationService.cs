@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.CsvHelpers;
@@ -10,6 +11,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 
@@ -43,10 +45,30 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             this.blobContainers = blobContainers;
         }
 
-        public ValueTask UploadAddressesToReslveAsync(Stream input, string fileName)
+        public ValueTask UploadAddressesToReslveAsync(Stream input, string fileName) =>
+        TryCatch(async () =>
         {
-            throw new NotImplementedException();
-        }
+            ValidateOnUploadAddressesToReslve(input, fileName);
+
+            using (StreamReader streamReader = new StreamReader(input))
+            {
+                input.Position = 0;
+                string content = streamReader.ReadToEnd();
+
+                Dictionary<string, int> fieldMappings =
+                    new Dictionary<string, int>
+                    {
+                        { nameof(ResolvedAddress.UniqueReference), 0 },
+                        { nameof(ResolvedAddress.UnstructuredPostalAddress), 2 }
+                    };
+
+                List<ResolvedAddress> resolvedAddresses = await this.csvHelperBroker
+                    .MapCsvToObjectAsync<ResolvedAddress>(data: content, hasHeaderRecord: true, fieldMappings);
+
+                await this.resolvedAddressProcessingService
+                    .BulkAddResolvedAddressesAsync(resolvedAddresses, fileName);
+            }
+        });
 
         public ValueTask MatchAddressDataAsync()
         {

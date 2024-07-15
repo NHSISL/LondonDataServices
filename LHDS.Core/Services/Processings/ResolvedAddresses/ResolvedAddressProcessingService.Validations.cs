@@ -10,7 +10,7 @@ using Xeptions;
 
 namespace LHDS.Core.Services.Processings.ResolvedAddresses
 {
-    public partial class ResolvedAddressProcessingService : IResolvedAddressProcessingService
+    public partial class ResolvedAddressProcessingService
     {
         private void ValidateResolvedAddress(ResolvedAddress resolvedAddress)
         {

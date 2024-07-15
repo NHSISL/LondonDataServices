@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
@@ -15,7 +16,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
     public partial class ResolvedAddressOrchestrationService
     {
         private delegate ValueTask ReturningNothingFunction();
-        private delegate ValueTask<Guid?> ReturningGuidFunction();
+        private delegate ValueTask<List<Guid>> ReturningGuidListFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
@@ -85,11 +86,11 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             }
         }
 
-        private async ValueTask<Guid?> TryCatch(ReturningGuidFunction returningGuidFunction)
+        private async ValueTask<List<Guid>> TryCatch(ReturningGuidListFunction returningGuidListFunction)
         {
             try
             {
-                return await returningGuidFunction();
+                return await returningGuidListFunction();
             }
             catch (InvalidArgumentResolvedAddressOrchestrationException
                 invalidArgumentResolvedAddressOrchestrationException)

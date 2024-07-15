@@ -30,7 +30,7 @@
 	  <PackageReference Include="SshKeyGenerator" Version="1.1.51" />
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 	  <PackageReference Include="Xeption" Version="2.6.0" />
-	  <PackageReference Include="xunit.extensibility.core" Version="2.8.1" />
+	  <PackageReference Include="xunit.extensibility.core" Version="2.9.0" />
   </ItemGroup>
 
   <ItemGroup>

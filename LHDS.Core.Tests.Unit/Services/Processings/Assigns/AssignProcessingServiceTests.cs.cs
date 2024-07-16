@@ -3,12 +3,14 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Services.Foundations.Assigns;
 using LHDS.Core.Services.Processings.Assigns;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.Assigns
 {
@@ -27,6 +29,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Assigns
                 assignService: this.assignServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();

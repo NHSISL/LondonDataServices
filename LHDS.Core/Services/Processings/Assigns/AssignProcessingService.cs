@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AssignAddresses;
@@ -23,7 +22,7 @@ namespace LHDS.Core.Services.Processings.Assigns
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<AssignAddress> MatchAddressAsync(string address) =>
-            throw new NotImplementedException();
+        public async ValueTask<AssignAddress> MatchAddressAsync(string address) =>
+            await this.assignService.MatchAddressAsync(address);
     }
 }

@@ -102,16 +102,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
                 var addressOrchestrationDependencyValidationException =
                     new AddressOrchestrationDependencyValidationException(
-                        message: "Address orchestration dependency validation errors occurred, " +
+                        message: "Address orchestration dependency validation error occurred, " +
                             "fix the errors and try again.",
                         innerException: dependencyValidationException.InnerException as Xeption);
 
+                //addressOrchestrationDependencyValidationException.Data.Add("ExtractionError", csvFile);
                 exceptions.Add(addressOrchestrationDependencyValidationException);
             }
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to retrieve message for {exceptions.Count} message IDs",
+                    message: $"Unable to extract {exceptions.Count} address files. " +
+                        "File has been moved to the error folder.", 
                     exceptions);
 
             var failedAddressOrchestrationServiceException =
@@ -137,23 +139,41 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             actualAddressOrchestrationServiceException.Should()
                 .BeEquivalentTo(expectedAddressOrchestrationServiceException);
 
+            this.fileBrokerMock.Verify(service =>
+                service.GetTempPath(),
+                    Times.Once());
+
+            this.fileBrokerMock.Verify(service =>
+                service.CheckIfDirectoryExistsAsync(ordinanceTempFolder),
+                    Times.Once());
+
+            this.fileBrokerMock.Verify(service =>
+                service.CreateDirectoryAsync(ordinanceTempFolder),
+                    Times.Once);
+
+            this.fileBrokerMock.Verify(service =>
+                service.GetListOfFilesAsync(ordinanceTempFolder, "*.csv"),
+                    Times.Once());
+
             foreach (var csvFile in csvFiles)
             {
                 this.fileBrokerMock.Verify(service =>
                     service.ReadFileAsync(csvFile),
                         Times.Once());
+
+                var addressOrchestrationDependencyValidationLoggingException =
+                    new AddressOrchestrationDependencyValidationException(
+                        message: "Address orchestration dependency validation error occurred, " +
+                            "fix the errors and try again.",
+                        innerException: dependencyValidationException.InnerException as Xeption);
+
+                //addressOrchestrationDependencyValidationLoggingException.Data.Add("ExtractionError", csvFile);
+
+                this.loggingBrokerMock.Verify(broker =>
+                    broker.LogError(It.Is(SameExceptionAs(
+                        addressOrchestrationDependencyValidationLoggingException))),
+                            Times.Once);
             }
-
-            var addressOrchestrationDependencyValidationLoggingException =
-                new AddressOrchestrationDependencyValidationException(
-                    message: "Address orchestration dependency validation errors occurred, " +
-                        "fix the errors and try again.",
-                    innerException: dependencyValidationException.InnerException as Xeption);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    addressOrchestrationDependencyValidationLoggingException))),
-                        Times.Exactly(csvFiles.Count));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

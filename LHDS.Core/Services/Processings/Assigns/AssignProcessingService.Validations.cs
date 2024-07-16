@@ -3,7 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Processings.AssignAddresses.Exceptions;
+using LHDS.Core.Models.Processings.Assigns.Exceptions;
 
 namespace LHDS.Core.Services.Processings.Assigns
 {
@@ -23,21 +23,21 @@ namespace LHDS.Core.Services.Processings.Assigns
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidArgumentAssignAddressProcessingException =
-                new InvalidArgumentAssignAddressProcessingException(
+            var invalidArgumentAssignProcessingException =
+                new InvalidArgumentAssignProcessingException(
                     message: "Invalid address. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidArgumentAssignAddressProcessingException.UpsertDataList(
+                    invalidArgumentAssignProcessingException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidArgumentAssignAddressProcessingException.ThrowIfContainsErrors();
+            invalidArgumentAssignProcessingException.ThrowIfContainsErrors();
         }
     }
 }

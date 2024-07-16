@@ -2,13 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using Xeptions;
 
 namespace LHDS.Core.Models.Processings.Assigns.Exceptions
 {
-    public class AssignProcessingServiceException : Xeption
+    public class FailedAssignProcessingServiceException : Xeption
     {
-        public AssignProcessingServiceException(string message, Xeption? innerException)
+        public FailedAssignProcessingServiceException(string message, Exception? innerException)
           : base(message, innerException)
         { }
     }

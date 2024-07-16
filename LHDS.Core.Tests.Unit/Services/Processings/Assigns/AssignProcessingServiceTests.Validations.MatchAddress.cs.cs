@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.AssignAddresses;
-using LHDS.Core.Models.Processings.AssignAddresses.Exceptions;
+using LHDS.Core.Models.Processings.Assigns.Exceptions;
 using Moq;
 using Xunit;
 
@@ -23,32 +23,32 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Assigns
             string invalidAssignAddress = invalidText;
 
             var invalidAssignAddressException =
-                new InvalidArgumentAssignAddressProcessingException(
+                new InvalidArgumentAssignProcessingException(
                     message: "Invalid address. Please correct the errors and try again.");
 
             invalidAssignAddressException.AddData(
                 key: "address",
                 values: "Text is required");
 
-            var expectedAssignAddressValidationException =
-                new AssignAddressProcessingValidationException(
-                    message: "Assign address validation errors occurred, please try again.",
+            var expectedAssignProcessingValidationException =
+                new AssignProcessingValidationException(
+                    message: "Assign processing validation errors occurred, please try again.",
                     innerException: invalidAssignAddressException);
 
             // when
             ValueTask<AssignAddress> addAssignAddressTask =
                 this.assignProcessingService.MatchAddressAsync(invalidAssignAddress);
 
-            AssignAddressProcessingValidationException actualAssignAddressValidationException =
-                await Assert.ThrowsAsync<AssignAddressProcessingValidationException>(addAssignAddressTask.AsTask);
+            AssignProcessingValidationException actualAssignProcessingValidationException =
+                await Assert.ThrowsAsync<AssignProcessingValidationException>(addAssignAddressTask.AsTask);
 
             // then
-            actualAssignAddressValidationException.Should()
-                .BeEquivalentTo(expectedAssignAddressValidationException);
+            actualAssignProcessingValidationException.Should()
+                .BeEquivalentTo(expectedAssignProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedAssignAddressValidationException))),
+                    expectedAssignProcessingValidationException))),
                         Times.Once);
 
             this.assignServiceMock.Verify(broker =>

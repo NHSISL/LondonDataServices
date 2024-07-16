@@ -25,7 +25,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
-        private void ValidateResolvedAddressesOnModify(List<ResolvedAddress> resolvedAddresses)
+        private void ValidateResolvedAddressesOnBulkModify(List<ResolvedAddress> resolvedAddresses)
         {
             Validate<InvalidArgumentResolvedAddressProcessingException>(
                 message: "Invalid argument(s). Please correct the errors and try again.",

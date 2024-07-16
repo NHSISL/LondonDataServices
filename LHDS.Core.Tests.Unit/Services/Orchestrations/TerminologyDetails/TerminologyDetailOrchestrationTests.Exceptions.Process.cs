@@ -121,6 +121,109 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
         }
 
         [Theory]
+        [MemberData(nameof(TerminologyDetailOrchestrationDependencyExceptions))]
+        public async Task
+            ShouldThrowAggregateDependencyExceptionOnRetrieveArtifactDetailsIfErrorsInLoopAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // Given
+            List<Exception> exceptions = new List<Exception>();
+            string inputContainer = blobContainers.Terminology;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            TerminologyArtifact randomTerminologyArtifacts = CreateRandomUndownloadedTerminologyArtifact();
+            TerminologyArtifact undownloadedTerminologyArtifact = randomTerminologyArtifacts;
+            string outputArtifactDetail = GetRandomString();
+
+            this.terminologyArtifactProcessingServiceMock.SetupSequence(service =>
+                service.GetNonDownloadedArtifactAsync())
+                    .ReturnsAsync(undownloadedTerminologyArtifact)
+                    .ReturnsAsync((TerminologyArtifact?)null);
+
+            this.ontologyProcessingServiceMock.Setup(service =>
+                service.RetrieveArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl))
+                    .ThrowsAsync(dependencyException);
+
+            var terminologyDetailOrchestrationDependencyException =
+                new TerminologyDetailOrchestrationDependencyException(
+                    message: "Terminology detail orchestration dependency validation error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            exceptions.Add(terminologyDetailOrchestrationDependencyException);
+            TerminologyArtifact erroredTerminologyArtifact = undownloadedTerminologyArtifact.DeepClone();
+            erroredTerminologyArtifact.IsError = true;
+
+            erroredTerminologyArtifact.ErrorMessage =
+                terminologyDetailOrchestrationDependencyException?.InnerException?.InnerException?.Message
+                ?? terminologyDetailOrchestrationDependencyException?.InnerException?.Message
+                ?? terminologyDetailOrchestrationDependencyException?.Message;
+
+            this.terminologyArtifactProcessingServiceMock.Setup(service =>
+                service.ModifyOrAddTerminologyArtifactAsync(erroredTerminologyArtifact));
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to retrieve terminology artifact details for {exceptions.Count} message IDs",
+                    exceptions);
+
+            var failedTerminologyDetailOrchestrationServiceException =
+                new FailedTerminologyDetailOrchestrationServiceException(
+                    message: "Failed terminology detail aggregate orchestration service error occurred, " +
+                        "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedOptOutOrchestrationServiceException =
+                new TerminologyDetailOrchestrationServiceException(
+                    message: "Terminology detail orchestration service error occurred, please contact support.",
+                    innerException: failedTerminologyDetailOrchestrationServiceException);
+
+            // When
+            ValueTask retrieveTask =
+                this.terminologyDetailOrchestrationService.RetrieveArtifactDetailsAsync();
+
+            TerminologyDetailOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<TerminologyDetailOrchestrationServiceException>(retrieveTask.AsTask);
+
+            // Then
+            actualException.Should()
+                .BeEquivalentTo(expectedOptOutOrchestrationServiceException);
+
+            this.terminologyArtifactProcessingServiceMock.Verify(service =>
+                service.GetNonDownloadedArtifactAsync(),
+                    Times.Exactly(2));
+
+            this.ontologyProcessingServiceMock.Verify(service =>
+                service.RetrieveArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl),
+                    Times.Once);
+
+            this.terminologyArtifactProcessingServiceMock.Verify(service =>
+                service.ModifyOrAddTerminologyArtifactAsync(It.Is(SameTerminologyArtifactAs(
+                    erroredTerminologyArtifact))),
+                        Times.Once);
+
+            var terminologyDetailOrchestrationDependencyLoggingException =
+                new TerminologyDetailOrchestrationDependencyException(
+                    message: "Terminology detail orchestration dependency error occurred, " +
+                        "fix the errors and try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    terminologyDetailOrchestrationDependencyLoggingException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    actualException))),
+                        Times.Once);
+
+            this.terminologyArtifactProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ontologyProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
         [MemberData(nameof(TerminologyDetailOrchestrationDependencyValidationExceptions))]
         public async Task
             ShouldThrowDependencyValidationOnRetrieveArtifactDetailsIfDependencyValidationOccursAndLogItAsync(

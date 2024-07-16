@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using LHDS.Core.Models.Orchestrations.TerminologyDetails.Exceptions;
 using Moq;
 using Xeptions;
@@ -210,6 +212,105 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     terminologyDetailOrchestrationDependencyLoggingException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    actualException))),
+                        Times.Once);
+
+            this.terminologyArtifactProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ontologyProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowAggregateServiceExceptionOnRetrieveArtifactDetailsIfErrorsInLoopAndLogItAsync()
+        {
+            // Given
+            List<Exception> exceptions = new List<Exception>();
+            var serviceException = new Exception();
+
+            string inputContainer = blobContainers.Terminology;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            TerminologyArtifact randomTerminologyArtifacts = CreateRandomUndownloadedTerminologyArtifact();
+            TerminologyArtifact undownloadedTerminologyArtifact = randomTerminologyArtifacts;
+            string outputArtifactDetail = GetRandomString();
+
+            this.terminologyArtifactProcessingServiceMock.SetupSequence(service =>
+                service.GetNonDownloadedArtifactAsync())
+                    .ReturnsAsync(undownloadedTerminologyArtifact)
+                    .ReturnsAsync((TerminologyArtifact?)null);
+
+            var innerFailedTerminologyDetailOrchestrationServiceException =
+                new FailedTerminologyDetailOrchestrationServiceException(
+                    message: "Failed terminology detail orchestration service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var innerTerminologyDetailOrchestrationServiceException =
+                new TerminologyDetailOrchestrationServiceException(
+                    message: "Terminology detail orchestration service error occurred, please contact support.",
+                    innerException: innerFailedTerminologyDetailOrchestrationServiceException);
+
+            this.ontologyProcessingServiceMock.Setup(service =>
+                service.RetrieveArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl))
+                    .ThrowsAsync(serviceException);
+
+            TerminologyArtifact erroredTerminologyArtifact = undownloadedTerminologyArtifact.DeepClone();
+            erroredTerminologyArtifact.IsError = true;
+
+            erroredTerminologyArtifact.ErrorMessage =
+                innerTerminologyDetailOrchestrationServiceException?.InnerException?.InnerException?.Message
+                ?? innerTerminologyDetailOrchestrationServiceException?.InnerException?.Message
+                ?? innerTerminologyDetailOrchestrationServiceException?.Message;
+
+            this.terminologyArtifactProcessingServiceMock.Setup(service =>
+                service.ModifyOrAddTerminologyArtifactAsync(erroredTerminologyArtifact));
+
+            var aggregateException =
+                new AggregateException(
+                    message: $"Unable to retrieve terminology artifact details for {exceptions.Count} message IDs",
+                    exceptions);
+
+            var failedTerminologyDetailOrchestrationServiceException =
+                new FailedTerminologyDetailOrchestrationServiceException(
+                    message: "Failed terminology detail aggregate orchestration service error occurred, " +
+                        "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedOptOutOrchestrationServiceException =
+                new TerminologyDetailOrchestrationServiceException(
+                    message: "Terminology detail orchestration service error occurred, please contact support.",
+                    innerException: failedTerminologyDetailOrchestrationServiceException);
+
+            // When
+            ValueTask retrieveTask =
+                this.terminologyDetailOrchestrationService.RetrieveArtifactDetailsAsync();
+
+            TerminologyDetailOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<TerminologyDetailOrchestrationServiceException>(retrieveTask.AsTask);
+
+            // Then
+            actualException.Should()
+                .BeEquivalentTo(expectedOptOutOrchestrationServiceException);
+
+            this.terminologyArtifactProcessingServiceMock.Verify(service =>
+                service.GetNonDownloadedArtifactAsync(),
+                    Times.Exactly(2));
+
+            this.ontologyProcessingServiceMock.Verify(service =>
+                service.RetrieveArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl),
+                    Times.Once);
+
+            this.terminologyArtifactProcessingServiceMock.Verify(service =>
+                service.ModifyOrAddTerminologyArtifactAsync(It.Is(SameTerminologyArtifactAs(
+                    erroredTerminologyArtifact))),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    innerTerminologyDetailOrchestrationServiceException))),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

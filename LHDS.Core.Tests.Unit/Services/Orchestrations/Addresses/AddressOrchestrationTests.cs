@@ -198,19 +198,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     message: "Address parser validation error occured, please try again",
                     innerException),
 
-                //new AddressDependencyValidationException(
-                //    message: "Address parser dependency validation error occurred, please try again.",
-                //    innerException),
+                new AddressDependencyValidationException(
+                    message: "Address parser dependency validation error occurred, please try again.",
+                    innerException),
 
-                //new AssignValidationException(
-                //    message: "Assign validation error occured, please try again",
-                //    innerException),
+                new AssignValidationException(
+                    message: "Assign validation error occured, please try again",
+                    innerException),
 
-                //new AssignDependencyValidationException(
-                //    message: "Assign dependency validation error occurred, please try again.",
-                //    innerException),
+                new AssignDependencyValidationException(
+                    message: "Assign dependency validation error occurred, please try again.",
+                    innerException),
 
-                //new CsvHelperClientValidationException(innerException),
+                new CsvHelperClientValidationException(innerException),
             };
         }
 

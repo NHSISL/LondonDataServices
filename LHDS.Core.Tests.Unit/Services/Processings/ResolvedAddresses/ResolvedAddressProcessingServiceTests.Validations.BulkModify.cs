@@ -28,10 +28,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                 key: "resolvedAddresses",
                 values: "Resolved addresses is required");
 
-            invalidArgumentResolvedAddressProcessingException.AddData(
-                key: "fileName",
-                values: "Text is required");
-
             var expectedResolvedAddressProcessingValidationException =
                 new ResolvedAddressProcessingValidationException(
                     message: "Resolved address processing validation error occurred, please try again.",

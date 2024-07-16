@@ -88,12 +88,12 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                 return await resolvedAddressService.ModifyResolvedAddressAsync(resolvedAddress);
             });
 
-        public ValueTask BulkModifyResolvedAddressAsync(List<ResolvedAddress> resolvedAddresses) =>
+        public ValueTask BulkModifyResolvedAddressesAsync(List<ResolvedAddress> resolvedAddresses) =>
             TryCatch(async () =>
             {
                 ValidateResolvedAddressesOnModify(resolvedAddresses);
 
-                await resolvedAddressService.BulkModifyResolvedAddressAsync(resolvedAddresses);
+                await resolvedAddressService.BulkModifyResolvedAddressesAsync(resolvedAddresses);
             });
 
 

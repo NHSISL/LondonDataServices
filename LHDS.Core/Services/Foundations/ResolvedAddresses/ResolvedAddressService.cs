@@ -85,7 +85,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             });
 
         public ValueTask BulkModifyResolvedAddressAsync(List<ResolvedAddress> resolvedAddresses) =>
-            throw new NotImplementedException();
+            TryCatch(async () =>
+            {
+                throw new NotImplementedException();
+            });
 
         public ValueTask<ResolvedAddress> RemoveResolvedAddressByIdAsync(Guid resolvedAddressId) =>
             TryCatch(async () =>

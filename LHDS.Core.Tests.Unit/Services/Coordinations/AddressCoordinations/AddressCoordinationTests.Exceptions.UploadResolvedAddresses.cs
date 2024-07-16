@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
@@ -30,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask<Guid?> uploadAddressesTask =
+            ValueTask<List<Guid>> uploadAddressesTask =
                 this.addressCoordinationService.ExportResolvedAddressesAsync();
 
             AddressCoordinationDependencyValidationException actualException =
@@ -70,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<Guid?> uploadAddressesTask =
+            ValueTask<List<Guid>> uploadAddressesTask =
                 this.addressCoordinationService.ExportResolvedAddressesAsync();
 
             AddressCoordinationDependencyException actualException =
@@ -115,7 +116,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<Guid?> uploadAddressesTask =
+            ValueTask<List<Guid>> uploadAddressesTask =
                 this.addressCoordinationService.ExportResolvedAddressesAsync();
 
             AddressCoordinationServiceException actualException =

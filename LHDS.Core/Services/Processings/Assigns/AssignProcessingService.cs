@@ -9,7 +9,7 @@ using LHDS.Core.Services.Foundations.Assigns;
 
 namespace LHDS.Core.Services.Processings.Assigns
 {
-    public class AssignProcessingService : IAssignProcessingService
+    public partial class AssignProcessingService : IAssignProcessingService
     {
         private readonly IAssignService assignService;
         private readonly ILoggingBroker loggingBroker;
@@ -22,7 +22,12 @@ namespace LHDS.Core.Services.Processings.Assigns
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<AssignAddress> MatchAddressAsync(string address) =>
-            await this.assignService.MatchAddressAsync(address);
+        public ValueTask<AssignAddress> MatchAddressAsync(string address) =>
+            TryCatch(async () =>
+            {
+                ValidateOnMatchAddress(address);
+
+                return await this.assignService.MatchAddressAsync(address);
+            });
     }
 }

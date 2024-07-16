@@ -6,10 +6,10 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Processings.Assigns.Exceptions
 {
-    public class AssignProcessingServiceException : Xeption
+    public class AssignProcessingDependencyException : Xeption
     {
-        public AssignProcessingServiceException(string message, Xeption? innerException)
-          : base(message, innerException)
+        public AssignProcessingDependencyException(string message, Xeption? innerException) :
+            base(message, innerException)
         { }
     }
 }

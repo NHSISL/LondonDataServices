@@ -6,11 +6,13 @@ using System;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AssignAddresses;
+using LHDS.Core.Models.Foundations.Assigns.Exceptions;
 using LHDS.Core.Services.Foundations.Assigns;
 using LHDS.Core.Services.Processings.Assigns;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.Assigns
 {
@@ -28,6 +30,38 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Assigns
             this.assignProcessingService = new AssignProcessingService(
                 assignService: this.assignServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
+        }
+
+        public static TheoryData<Xeption> DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AssignValidationException(
+                    message: "Assign address validation errors occurred, please try again.", innerException),
+
+                new AssignDependencyValidationException(
+                    message: "Assign address dependency validation occurred, please try again.", innerException)
+            };
+        }
+
+        public static TheoryData<Xeption> DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AssignDependencyException(
+                    message: "Assign address validation errors occurred, please try again.", innerException),
+
+                new AssignServiceException(
+                    message : "Assign address service error occurred, please contact support.", innerException)
+            };
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

@@ -14,15 +14,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 {
     public partial class ResolvedAddressProcessingServiceTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionsOnBulkAddIfResolvedAddressProcessingIsNullAndLogItAsync(
-                    string invalidText)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionsOnBulkModifyIfResolvedAddressProcessingIsNullAndLogItAsync()
         {
             // given
-            string invalidFileName = invalidText;
             List<ResolvedAddress> nullResolvedAddresses = null;
 
             var invalidArgumentResolvedAddressProcessingException =
@@ -33,22 +28,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                 key: "resolvedAddresses",
                 values: "Resolved addresses is required");
 
-            invalidArgumentResolvedAddressProcessingException.AddData(
-                key: "fileName",
-                values: "Text is required");
-
             var expectedResolvedAddressProcessingValidationException =
                 new ResolvedAddressProcessingValidationException(
                     message: "Resolved address processing validation error occurred, please try again.",
                     innerException: invalidArgumentResolvedAddressProcessingException);
 
             // when
-            ValueTask bulkAddResolvedAddressTask = this.resolvedAddressProcessingService
-                .BulkAddResolvedAddressesAsync(resolvedAddresses: nullResolvedAddresses, fileName: invalidFileName);
+            ValueTask bulkModifyResolvedAddressTask = this.resolvedAddressProcessingService
+                .BulkModifyResolvedAddressesAsync(resolvedAddresses: nullResolvedAddresses);
 
             ResolvedAddressProcessingValidationException actualResolvedAddressProcessingValidationException =
                 await Assert.ThrowsAsync<ResolvedAddressProcessingValidationException>(
-                    bulkAddResolvedAddressTask.AsTask);
+                    bulkModifyResolvedAddressTask.AsTask);
 
             //then
             actualResolvedAddressProcessingValidationException.Should()

@@ -28,19 +28,18 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
                 throw CreateAndLogValidationException(invalidArgumentResolvedAddressOrchestrationException);
             }
-            catch (NullUPRNResolvedAddressOrchestrationException
-                nullUPRNResolvedAddressOrchestrationException)
+            catch (NullUPRNResolvedAddressOrchestrationException nullUPRNResolvedAddressOrchestrationException)
             {
                 throw CreateAndLogValidationException(nullUPRNResolvedAddressOrchestrationException);
             }
-            //catch (DocumentProcessingValidationException documentProcessingValidationException)
-            //{
-            //    throw CreateAndLogDependencyValidationException(documentProcessingValidationException);
-            //}
-            //catch (DocumentProcessingDependencyValidationException documentProcessingDependencyValidationException)
-            //{
-            //    throw CreateAndLogDependencyValidationException(documentProcessingDependencyValidationException);
-            //}
+            catch (DocumentProcessingValidationException documentProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(documentProcessingValidationException);
+            }
+            catch (DocumentProcessingDependencyValidationException documentProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(documentProcessingDependencyValidationException);
+            }
             catch (ResolvedAddressProcessingValidationException resolvedAddressProcessingValidationException)
             {
                 throw CreateAndLogDependencyValidationException(resolvedAddressProcessingValidationException);

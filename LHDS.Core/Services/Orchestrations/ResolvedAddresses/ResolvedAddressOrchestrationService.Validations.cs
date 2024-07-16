@@ -30,8 +30,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         private static void ValidateUPRNHasValue(long uprn)
         {
             Validate<NullUPRNResolvedAddressOrchestrationException>(
-               message: "Null UPRN Resolved Address orchestration exception please correct the errors and try again",
-               (Rule: IsInvalid(uprn), Parameter: "uprn"));
+               message: "Null UPRN Resolved Address orchestration exception, please correct the errors and try again.",
+               (Rule: IsInvalid(uprn), Parameter: "UPRN"));
         }
 
         private static dynamic IsInvalid(string? text) => new
@@ -49,7 +49,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         private static dynamic IsInvalid(long value) => new
         {
             Condition = value == 0,
-            Message = "Uprn is required"
+            Message = "UPRN is required"
         };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)

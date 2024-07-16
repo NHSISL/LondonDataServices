@@ -209,8 +209,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             return filler;
         }
 
-        private static ValueTask<AssignAddress> CreateRandomAssignAddress(DateTimeOffset dateTimeOffset) =>
-            new ValueTask<AssignAddress>(CreateAssignAddressFiller(dateTimeOffset).Create());
+        private static AssignAddress CreateRandomAssignAddress(DateTimeOffset dateTimeOffset) =>
+            CreateAssignAddressFiller(dateTimeOffset).Create();
 
         private static Filler<AssignAddress> CreateAssignAddressFiller(DateTimeOffset dateTimeOffset)
         {

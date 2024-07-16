@@ -6,8 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
-using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using LHDS.Core.Models.Orchestrations.TerminologyDetails.Exceptions;
 using Moq;
 using Xeptions;
@@ -42,11 +42,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
 
             var terminologyDetailOrchestrationDependencyValidationException =
                 new TerminologyDetailOrchestrationDependencyValidationException(
-                    message: "Terminology detail orchestration dependency validation errors occurred, " +
+                    message: "Terminology detail orchestration dependency validation error occurred, " +
                         "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             exceptions.Add(terminologyDetailOrchestrationDependencyValidationException);
+            TerminologyArtifact erroredTerminologyArtifact = undownloadedTerminologyArtifact.DeepClone();
+            erroredTerminologyArtifact.IsError = true;
+
+            erroredTerminologyArtifact.ErrorMessage = 
+                terminologyDetailOrchestrationDependencyValidationException?.InnerException?.InnerException?.Message
+                ?? terminologyDetailOrchestrationDependencyValidationException?.InnerException?.Message
+                ?? terminologyDetailOrchestrationDependencyValidationException?.Message;
+
+            this.terminologyArtifactProcessingServiceMock.Setup(service =>
+                service.ModifyOrAddTerminologyArtifactAsync(erroredTerminologyArtifact));
 
             var aggregateException =
                 new AggregateException(
@@ -83,15 +93,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 service.RetrieveArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl),
                     Times.Once);
 
-            var optOutOrchestrationDependencyValidationLoggingException =
-                new OptOutOrchestrationDependencyValidationException(
-                    message: "Opt Out orchestration dependency validation errors occurred, " +
+            this.terminologyArtifactProcessingServiceMock.Verify(service =>
+                service.ModifyOrAddTerminologyArtifactAsync(It.Is(SameTerminologyArtifactAs(
+                    erroredTerminologyArtifact))),
+                        Times.Once);
+
+            var terminologyDetailOrchestrationDependencyValidationLoggingException =
+                new TerminologyDetailOrchestrationDependencyValidationException(
+                    message: "Terminology detail orchestration dependency validation error occurred, " +
                         "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    optOutOrchestrationDependencyValidationLoggingException))),
+                    terminologyDetailOrchestrationDependencyValidationLoggingException))),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -114,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             // given
             var expectedDependencyException =
                 new TerminologyDetailOrchestrationDependencyValidationException(
-                    message:"Terminology detail orchestration dependency validation error occurred, " +
+                    message: "Terminology detail orchestration dependency validation error occurred, " +
                         "fix the errors and try again.",
                     dependancyValidationException.InnerException as Xeption);
 
@@ -152,7 +167,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
         [MemberData(nameof(TerminologyDetailOrchestrationDependencyExceptions))]
         public async Task
             ShouldThrowDependencyExceptionOnRetrieveArtifactDetailsIfDependencyExceptionOccursAndLogItAsync(
-           Xeption dependancyException)
+            Xeption dependancyException)
         {
             // given
             var expectedDependencyException =

@@ -26,10 +26,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             List<ResolvedAddress> unmatchedResolvedAddresses = randomResolvedAddresses;
             string inputResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().UnstructuredPostalAddress;
 
-            ValueTask<AssignAddress> randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
-            ValueTask<AssignAddress> storageAssignAddress = randomAssignAddress;
-            AssignAddress assignAddress = await randomAssignAddress;
-            string matchedUprn = assignAddress.UPRN.ToString();
+            AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
+            AssignAddress storageAssignAddress = randomAssignAddress;
+
+            //AssignAddress assignAddress = await randomAssignAddress;
+            string matchedUprn = storageAssignAddress.UPRN.ToString();
 
             ValueTask<Address?> randomAddress = CreateRandomAddress(randomDateTimeOffset);
             ValueTask<Address?> storageAddress = randomAddress;
@@ -55,14 +56,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.assignProcessingServiceMock.Setup(processing =>
                 processing.MatchAddressAsync(inputResolvedAddress))
-                    .Returns(storageAssignAddress);
+                    .ReturnsAsync(storageAssignAddress);
 
             this.addressProcessingServiceMock.Setup(processing =>
                 processing.RetrieveAddressByUPRNAsync(matchedUprn))
                     .Returns(storageAddress);
 
             ResolvedAddress newResolvedAddress =
-                MapOrdananceWithAssign(assignAddress, ordananceAddress, processingResolvedAddress);
+                MapOrdananceWithAssign(storageAssignAddress, ordananceAddress, processingResolvedAddress);
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
                processing.ModifyResolvedAddressAsync(newResolvedAddress))

@@ -4,12 +4,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using Moq;
@@ -27,121 +25,48 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             Xeption dependencyValidationException)
         {
             // Given
-            DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
-            List<Exception> exceptions = new List<Exception>();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses();
-            List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
-            string ouputCsv = GetRandomString();
-            byte[] inputData = Encoding.UTF8.GetBytes(ouputCsv);
-            Guid batchReference = Guid.NewGuid();
-            string fileName = $"{batchReference}.csv";
-            string container = blobContainers.Addresses;
-
-            Document inputDocument = new Document
-            {
-                DocumentData = inputData,
-                FileName = fileName
-            };
-
-            this.resolvedAddressProcessingServiceMock.Setup(service =>
-                service.RetrieveAllResolvedAddresses()).
-                    Returns(storageResolvedAddresses.AsQueryable());
-
-            this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(batchReference);
+            string randomFileName = GetRandomString();
+            string someFileName = randomFileName;
+            string inputContent = GetRandomString();
+            byte[] inputBytes = Encoding.UTF8.GetBytes(inputContent);
+            Stream someStream = new MemoryStream(inputBytes);
 
             this.csvHelperBrokerMock.Setup(service =>
-                service.MapObjectToCsvAsync(
-                    It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()))
-                        .ReturnsAsync(ouputCsv);
-
-            foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
-            {
-                this.dateTimeBrokerMock.Setup(broker =>
-                    broker.GetCurrentDateTimeOffset()).Returns(dateTimeOffset);
-
-                this.resolvedAddressProcessingServiceMock.Setup(service =>
-                    service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
+                service.MapCsvToObjectAsync<ResolvedAddress>(
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<Dictionary<string, int>>()))
                         .ThrowsAsync(dependencyValidationException);
 
-                var resolvedAddressOrchestrationDependencyValidationException =
-                    new ResolvedAddressOrchestrationDependencyValidationException(
-                        message: "Resolved address orchestration dependency validation error occurred, " +
-                            "please try again.",
-                        innerException: dependencyValidationException.InnerException as Xeption);
-
-                exceptions.Add(resolvedAddressOrchestrationDependencyValidationException);
-            }
-
-            var aggregateException =
-                new AggregateException(
-                    message: $"Unable to modify resolved address for {exceptions.Count} resolved addresses " +
-                        $"in batch: {batchReference}",
-                    exceptions);
-
-            var failedResolvedAddressOrchestrationServiceException =
-                new FailedResolvedAddressOrchestrationServiceException(
-                    message: "Failed resolved address aggregate orchestration service error occurred, " +
-                        "please contact support.",
-                    innerException: aggregateException);
-
-            var expectedResolvedAddressOrchestrationServiceException =
-                new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, please contact support.",
-                    innerException: failedResolvedAddressOrchestrationServiceException);
+            var expectedResolvedAddressOrchestrationDependencyValidationException =
+                new ResolvedAddressOrchestrationDependencyValidationException(
+                    message: "Resolved address orchestration dependency validation error occurred, " +
+                        "please try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
 
             // When
-            ValueTask<Guid?> uploadResolvedAddressTask =
-                this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
+            ValueTask uploadResolvedAddressTask = this.resolvedAddressOrchestrationService
+                .UploadAddressesToReslveAsync(input: someStream, fileName: someFileName);
 
-            ResolvedAddressOrchestrationServiceException
-                actualResolvedAddressOrchestrationServiceException =
-                    await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
+            ResolvedAddressOrchestrationDependencyValidationException
+                actualResolvedAddressOrchestrationDependencyValidationException =
+                    await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyValidationException>(async () =>
                         await uploadResolvedAddressTask);
 
             // Then
-            actualResolvedAddressOrchestrationServiceException.Should()
-                .BeEquivalentTo(expectedResolvedAddressOrchestrationServiceException);
-
-            this.resolvedAddressProcessingServiceMock.Verify(service =>
-                service.RetrieveAllResolvedAddresses(),
-                    Times.Once);
-
-            this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
-                    Times.Once);
+            actualResolvedAddressOrchestrationDependencyValidationException.Should()
+                .BeEquivalentTo(expectedResolvedAddressOrchestrationDependencyValidationException);
 
             this.csvHelperBrokerMock.Verify(service =>
-                service.MapObjectToCsvAsync(
-                    It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()),
-                    Times.Once);
-
-            this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
-                    Times.Once);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Exactly(storageResolvedAddresses.Count));
-
-            this.resolvedAddressProcessingServiceMock.Verify(service =>
-                service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
-                    Times.Exactly(storageResolvedAddresses.Count));
-
-            var resolvedAddressOrchestrationDependencyValidationLoggingException =
-                new ResolvedAddressOrchestrationDependencyValidationException(
-                    message: "Resolved address orchestration dependency validation error occurred, please try again.",
-                    innerException: dependencyValidationException.InnerException as Xeption);
+                service.MapCsvToObjectAsync<ResolvedAddress>(
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<Dictionary<string, int>>()),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    resolvedAddressOrchestrationDependencyValidationLoggingException))),
-                        Times.Exactly(randomResolvedAddresses.Count));
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    actualResolvedAddressOrchestrationServiceException))),
+                    expectedResolvedAddressOrchestrationDependencyValidationException))),
                         Times.Once);
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
@@ -159,121 +84,50 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             Xeption dependencyException)
         {
             // Given
-            DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
-            List<Exception> exceptions = new List<Exception>();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses();
-            List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
-            string ouputCsv = GetRandomString();
-            byte[] inputData = Encoding.UTF8.GetBytes(ouputCsv);
-            Guid batchReference = Guid.NewGuid();
-            string fileName = $"{batchReference}.csv";
-            string container = blobContainers.Addresses;
-
-            Document inputDocument = new Document
-            {
-                DocumentData = inputData,
-                FileName = fileName
-            };
-
-            this.resolvedAddressProcessingServiceMock.Setup(service =>
-                service.RetrieveAllResolvedAddresses())
-                    .Returns(storageResolvedAddresses.AsQueryable());
-
-            this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(batchReference);
+            string randomFileName = GetRandomString();
+            string someFileName = randomFileName;
+            string inputContent = GetRandomString();
+            byte[] inputBytes = Encoding.UTF8.GetBytes(inputContent);
+            Stream someStream = new MemoryStream(inputBytes);
 
             this.csvHelperBrokerMock.Setup(service =>
-                service.MapObjectToCsvAsync(
-                    It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()))
-                        .ReturnsAsync(ouputCsv);
-
-            foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
-            {
-                this.dateTimeBrokerMock.Setup(broker =>
-                    broker.GetCurrentDateTimeOffset())
-                        .Returns(dateTimeOffset);
-
-                this.resolvedAddressProcessingServiceMock.Setup(service =>
-                    service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
+                service.MapCsvToObjectAsync<ResolvedAddress>(
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<Dictionary<string, int>>()))
                         .ThrowsAsync(dependencyException);
 
-                var resolvedAddressOrchestrationDependencyException =
-                    new ResolvedAddressOrchestrationDependencyException(
-                        message: "Resolved address orchestration dependency error occurred, please try again.",
-                        innerException: dependencyException.InnerException as Xeption);
-
-                exceptions.Add(resolvedAddressOrchestrationDependencyException);
-            }
-
-            var aggregateException =
-                new AggregateException(
-                    message: $"Unable to modify resolved address for {exceptions.Count} resolved addresses " +
-                        $"in batch: {batchReference}",
-                    exceptions);
-
-            var failedResolvedAddressOrchestrationServiceException =
-                new FailedResolvedAddressOrchestrationServiceException(
-                    message: "Failed resolved address aggregate orchestration service error occurred, " +
-                        "please contact support.",
-                    innerException: aggregateException);
-
-            var expectedResolvedAddressOrchestrationServiceException =
-                new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, please contact support.",
-                    innerException: failedResolvedAddressOrchestrationServiceException);
-
-            // When
-            ValueTask<Guid?> uploadResolvedAddressTask =
-                 this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
-
-            ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
-                    await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                        await uploadResolvedAddressTask);
-
-            // Then
-            actualResolvedAddressOrchestrationServiceException.Should()
-                .BeEquivalentTo(expectedResolvedAddressOrchestrationServiceException);
-
-            this.resolvedAddressProcessingServiceMock.Verify(service =>
-                service.RetrieveAllResolvedAddresses(),
-                    Times.Once);
-
-            this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
-                    Times.Once);
-
-            this.csvHelperBrokerMock.Verify(service =>
-                service.MapObjectToCsvAsync(
-                    It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()),
-                        Times.Once);
-
-            this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
-                    Times.Once);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Exactly(storageResolvedAddresses.Count));
-
-            this.resolvedAddressProcessingServiceMock.Verify(service =>
-                service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
-                    Times.Exactly(storageResolvedAddresses.Count));
-
-            var resolvedAddressOrchestrationDependencyLoggingException =
+            var expectedResolvedAddressOrchestrationDependencyException =
                 new ResolvedAddressOrchestrationDependencyException(
                     message: "Resolved address orchestration dependency error occurred, " +
                         "please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    resolvedAddressOrchestrationDependencyLoggingException))),
-                        Times.Exactly(randomResolvedAddresses.Count));
+
+
+            // When
+            ValueTask uploadResolvedAddressTask = this.resolvedAddressOrchestrationService
+                .UploadAddressesToReslveAsync(input: someStream, fileName: someFileName);
+
+            ResolvedAddressOrchestrationDependencyException
+                actualResolvedAddressOrchestrationDependencyException =
+                    await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyException>(async () =>
+                        await uploadResolvedAddressTask);
+
+            // Then
+            actualResolvedAddressOrchestrationDependencyException.Should()
+                .BeEquivalentTo(expectedResolvedAddressOrchestrationDependencyException);
+
+            this.csvHelperBrokerMock.Verify(service =>
+                service.MapCsvToObjectAsync<ResolvedAddress>(
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<Dictionary<string, int>>()),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    actualResolvedAddressOrchestrationServiceException))),
+                    expectedResolvedAddressOrchestrationDependencyException))),
                         Times.Once);
 
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
@@ -285,73 +139,27 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         }
 
         [Fact]
-        public async Task ShouldThrowAggregateServiceExceptionOnProcessResolvedAddressesIfErrorsInLoopAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnUploadIfServiceErrorOccursAsync()
         {
-            // Given
-            DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
-            List<Exception> exceptions = new List<Exception>();
+            // given
             var serviceException = new Exception();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomResolvedAddresses();
-            List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
-            string ouputCsv = GetRandomString();
-            byte[] inputData = Encoding.UTF8.GetBytes(ouputCsv);
-            Guid batchReference = Guid.NewGuid();
-            string fileName = $"{batchReference}.csv";
-            string container = blobContainers.Addresses;
-
-            Document inputDocument = new Document
-            {
-                DocumentData = inputData,
-                FileName = fileName
-            };
-
-            this.resolvedAddressProcessingServiceMock.Setup(service =>
-                service.RetrieveAllResolvedAddresses()).
-                    Returns(storageResolvedAddresses.AsQueryable());
-
-            this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(batchReference);
+            string randomFileName = GetRandomString();
+            string someFileName = randomFileName;
+            string inputContent = GetRandomString();
+            byte[] inputBytes = Encoding.UTF8.GetBytes(inputContent);
+            Stream someStream = new MemoryStream(inputBytes);
 
             this.csvHelperBrokerMock.Setup(service =>
-                service.MapObjectToCsvAsync(
-                    It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()))
-                        .ReturnsAsync(ouputCsv);
-
-            var innerFailedResolvedAddressOrchestrationServiceException =
-                new FailedResolvedAddressOrchestrationServiceException(
-                    message: "Failed resolved address orchestration service error occurred, please contact support.",
-                    innerException: serviceException);
-
-            var innerResolvedAddressOrchestrationServiceException =
-                new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, please contact support.",
-                    innerException: innerFailedResolvedAddressOrchestrationServiceException);
-
-            foreach (ResolvedAddress resolvedAddress in storageResolvedAddresses)
-            {
-                this.dateTimeBrokerMock.Setup(broker =>
-                    broker.GetCurrentDateTimeOffset())
-                        .Returns(dateTimeOffset);
-
-                this.resolvedAddressProcessingServiceMock.Setup(service =>
-                    service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
+                service.MapCsvToObjectAsync<ResolvedAddress>(
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<Dictionary<string, int>>()))
                         .ThrowsAsync(serviceException);
-
-                exceptions.Add(innerResolvedAddressOrchestrationServiceException);
-            }
-
-            var aggregateException =
-                new AggregateException(
-                    message: $"Unable to modify resolved address for {exceptions.Count} resolved addresses " +
-                        $"in batch: {batchReference}",
-                    exceptions);
 
             var failedResolvedAddressOrchestrationServiceException =
                 new FailedResolvedAddressOrchestrationServiceException(
-                    message: "Failed resolved address aggregate orchestration service error occurred, " +
-                        "please contact support.",
-                    innerException: aggregateException);
+                    message: "Failed resolved address orchestration service error occurred, please contact support.",
+                    innerException: serviceException);
 
             var expectedResolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
@@ -359,46 +167,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask<Guid?> uploadResolvedAddressTask =
-                  this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
+            ValueTask uploadResolvedAddressTask = this.resolvedAddressOrchestrationService
+                .UploadAddressesToReslveAsync(input: someStream, fileName: someFileName);
 
-            ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
-                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                    await uploadResolvedAddressTask);
+            ResolvedAddressOrchestrationServiceException
+                actualResolvedAddressOrchestrationServiceException =
+                    await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
+                        await uploadResolvedAddressTask);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()
                 .BeEquivalentTo(expectedResolvedAddressOrchestrationServiceException);
 
-            this.resolvedAddressProcessingServiceMock.Verify(service =>
-               service.RetrieveAllResolvedAddresses(),
-                   Times.Once);
-
-            this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
-                    Times.Once);
-
             this.csvHelperBrokerMock.Verify(service =>
-                service.MapObjectToCsvAsync(
-                    It.IsAny<List<ResolvedAddressReturn>>(), It.IsAny<bool>(), null, It.IsAny<bool>()),
+                service.MapCsvToObjectAsync<ResolvedAddress>(
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<Dictionary<string, int>>()),
                         Times.Once);
-
-            this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
-                    Times.Once);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Exactly(storageResolvedAddresses.Count));
-
-            this.resolvedAddressProcessingServiceMock.Verify(service =>
-                service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
-                    Times.Exactly(storageResolvedAddresses.Count));
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    innerResolvedAddressOrchestrationServiceException))),
-                        Times.Exactly(randomResolvedAddresses.Count));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -411,140 +197,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Theory]
-        [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task
-            ShouldThrowDependencyValidationExceptionOnUploadIfDependencyValidationErrorOccursAndLogItAsync(
-            Xeption dependencyValidationException)
-        {
-            // given
-            var expectedResolvedAddressOrchestrationDependencyValidationException =
-                new ResolvedAddressOrchestrationDependencyValidationException(
-                    message: "Resolved address orchestration dependency validation error occurred, please try again.",
-                    innerException: dependencyValidationException.InnerException as Xeption);
-
-            this.resolvedAddressProcessingServiceMock.Setup(service =>
-                service.RetrieveAllResolvedAddresses())
-                    .Throws(dependencyValidationException);
-
-            // when
-            ValueTask<Guid?> documentAddTask =
-                this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
-
-            ResolvedAddressOrchestrationDependencyValidationException actualException =
-                await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyValidationException>(
-                    documentAddTask.AsTask);
-
-            // then
-            actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationDependencyValidationException);
-
-            this.resolvedAddressProcessingServiceMock.Verify(service =>
-                service.RetrieveAllResolvedAddresses(),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
-                     expectedResolvedAddressOrchestrationDependencyValidationException))),
-                         Times.Once);
-
-            this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Theory]
-        [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyOnUploadIfDependencyErrorOccursAndLogItAsync(
-            Xeption dependencyException)
-        {
-            // given
-            var expectedResolvedAddressOrchestrationDependencyException =
-                new ResolvedAddressOrchestrationDependencyException(
-                    message: "Resolved address orchestration dependency error occurred, please try again.",
-                    innerException: dependencyException.InnerException as Xeption);
-
-            this.resolvedAddressProcessingServiceMock.Setup(service =>
-                service.RetrieveAllResolvedAddresses())
-                    .Throws(dependencyException);
-
-            // when
-            ValueTask<Guid?> documentAddTask =
-                this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
-
-            ResolvedAddressOrchestrationDependencyException actualException =
-                await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyException>(documentAddTask.AsTask);
-
-            // then
-            actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationDependencyException);
-
-            this.resolvedAddressProcessingServiceMock.Verify(service =>
-                service.RetrieveAllResolvedAddresses(),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
-                     expectedResolvedAddressOrchestrationDependencyException))),
-                         Times.Once);
-
-            this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowServiceExceptionOnUploadIfServiceErrorOccursAsync()
-        {
-            // given
-            var serviceException = new Exception();
-
-            var failedResolvedAddressOrchestrationServiceException =
-                new FailedResolvedAddressOrchestrationServiceException(
-                    message: "Failed resolved address orchestration service error occurred, please contact support.",
-                    innerException: serviceException);
-
-            var expectedResolvedAddressOrchestrationServiveException =
-                new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service error occurred, please contact support.",
-                    innerException: failedResolvedAddressOrchestrationServiceException);
-
-            this.resolvedAddressProcessingServiceMock.Setup(service =>
-                service.RetrieveAllResolvedAddresses())
-                    .Throws(serviceException);
-
-            // when
-            ValueTask<Guid?> uploadResolvedAddressTask =
-                 this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
-
-            ResolvedAddressOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(
-                    uploadResolvedAddressTask.AsTask);
-
-            // then
-            actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationServiveException);
-
-            this.resolvedAddressProcessingServiceMock.Verify(service =>
-                service.RetrieveAllResolvedAddresses(),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
-                     expectedResolvedAddressOrchestrationServiveException))),
-                         Times.Once);
-
-            this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

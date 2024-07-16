@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -24,12 +25,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             // given
             var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(randomString);
+            var randomBytes = Encoding.UTF8.GetBytes(randomString);
+            Stream randomStream = new MemoryStream(randomBytes);
             var randomRecieveName = GetRandomString();
 
             var expectedDependencyException =
                 new OptOutOrchestrationDependencyValidationException(
-                    message: "Opt Out orchestration dependency error occurred, fix the errors and try again.",
+                    message: "Opt Out orchestration dependency validation errors occurred, " +
+                        "fix the errors and try again.",
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.csvHelperBrokerMock.Setup(processing =>
@@ -38,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // when
             ValueTask<string> retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, randomRecieveName);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomStream, randomRecieveName);
 
             OptOutOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyValidationException>(
@@ -73,7 +76,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             // given
             var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(randomString);
+            var randomBytes = Encoding.UTF8.GetBytes(randomString);
+            Stream randomStream = new MemoryStream(randomBytes);
             var randomRecieveName = GetRandomString();
 
             var expectedDependencyException =
@@ -90,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // when
             ValueTask<string> retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, randomRecieveName);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomStream, randomRecieveName);
 
             OptOutOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(retrieveOptOutStatusTask.AsTask);
@@ -125,8 +129,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             // given
             string randomString = GetRandomString();
-            byte[] randomBytes = Encoding.ASCII.GetBytes(randomString);
-            byte[] inputBytes = randomBytes;
+            byte[] randomBytes = Encoding.UTF8.GetBytes(randomString);
+            Stream randomStream = new MemoryStream(randomBytes);
             var randomRecieveName = GetRandomString();
             var serviceException = new Exception();
 
@@ -149,7 +153,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // when
             ValueTask<string> retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputBytes, randomRecieveName);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomStream, randomRecieveName);
 
             OptOutOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(retrieveOptOutStatusTask.AsTask);

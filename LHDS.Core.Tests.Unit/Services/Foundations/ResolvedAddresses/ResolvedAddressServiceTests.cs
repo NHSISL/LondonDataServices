@@ -3,10 +3,14 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
@@ -22,24 +26,40 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
     public partial class ResolvedAddressServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly IResolvedAddressService resolvedAddressService;
+        private readonly CompareLogic compareLogic;
 
         public ResolvedAddressServiceTests()
         {
+            this.compareLogic = new CompareLogic();
             this.storageBrokerMock = new Mock<IStorageBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.auditBrokerMock = new Mock<IAuditBroker>();
 
             this.resolvedAddressService = new ResolvedAddressService(
                 storageBroker: this.storageBrokerMock.Object,
+                identifierBroker: this.identifierBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
-                loggingBroker: this.loggingBrokerMock.Object);
+                loggingBroker: this.loggingBrokerMock.Object,
+                auditBroker: this.auditBrokerMock.Object);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
+
+        private Expression<Func<List<ResolvedAddress>, bool>> SameResolvedAddressesAs(
+            List<ResolvedAddress> expectedResolvedAddresses)
+        {
+            return actualResolvedAddresses =>
+                this.compareLogic.Compare(expectedResolvedAddresses, actualResolvedAddresses)
+                    .AreEqual;
+        }
 
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();

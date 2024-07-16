@@ -1,27 +1,41 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 {
     public partial class ResolvedAddressService : IResolvedAddressService
     {
         private readonly IStorageBroker storageBroker;
+        private readonly IIdentifierBroker identifierBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IAuditBroker auditBroker;
 
         public ResolvedAddressService(
             IStorageBroker storageBroker,
+            IIdentifierBroker identifierBroker,
             IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            IAuditBroker auditBroker)
         {
             this.storageBroker = storageBroker;
+            this.identifierBroker = identifierBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
+            this.auditBroker = auditBroker;
         }
 
         public ValueTask<ResolvedAddress> AddResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
@@ -30,6 +44,14 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 ValidateResolvedAddressOnAdd(resolvedAddress);
 
                 return await this.storageBroker.InsertResolvedAddressAsync(resolvedAddress);
+            });
+
+        public ValueTask BulkAddResolvedAddressesAsync(List<ResolvedAddress> resolvedAddresses, string fileName) =>
+            TryCatch(async () =>
+            {
+                ValidateOnBulkAddResolvedAddresses(resolvedAddresses, fileName);
+                int batchSize = 10000;
+                await BulkInsertBatch(resolvedAddresses, batchSize, fileName);
             });
 
         public IQueryable<ResolvedAddress> RetrieveAllResolvedAddresses() =>
@@ -62,6 +84,12 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 return await this.storageBroker.UpdateResolvedAddressAsync(resolvedAddress);
             });
 
+        public ValueTask BulkModifyResolvedAddressAsync(List<ResolvedAddress> resolvedAddresses) =>
+            TryCatch(async () =>
+            {
+                throw new NotImplementedException();
+            });
+
         public ValueTask<ResolvedAddress> RemoveResolvedAddressByIdAsync(Guid resolvedAddressId) =>
             TryCatch(async () =>
             {
@@ -74,5 +102,98 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
                 return await this.storageBroker.DeleteResolvedAddressAsync(maybeResolvedAddress);
             });
+
+        virtual internal async ValueTask BulkInsertBatch(List<ResolvedAddress> resolvedAddresses, int batchSize, string fileName)
+        {
+            int totalRecords = resolvedAddresses.Count;
+            var exceptions = new List<Exception>();
+
+            for (int i = 0; i < totalRecords; i += batchSize)
+            {
+                try
+                {
+                    await TryCatch(async () =>
+                    {
+                        var batch = resolvedAddresses.Skip(i).Take(batchSize).ToList();
+
+                        List<ResolvedAddress> validatedResolvedAddresses =
+                            await ExtractValidResolvedAddressesAndAssignIdAndAudit(batch, fileName);
+
+                        var referencesFromValidatedResolvedAddresses = batch.Select(validatedResolvedAddress => validatedResolvedAddress.UniqueReference).ToList();
+
+                        var existingUniqueReferencesToExclude = this.storageBroker.SelectAllResolvedAddresses()
+                            .Where(resolvedAddress => referencesFromValidatedResolvedAddresses
+                                .Contains(resolvedAddress.UniqueReference))
+
+                            .Select(resolvedAddress => resolvedAddress.UPRN)
+                            .ToList();
+
+                        var newResolvedAddresses = batch.Where(address =>
+                            !existingUniqueReferencesToExclude.Contains(address.UPRN)).ToList();
+
+                        if (newResolvedAddresses.Count != 0)
+                        {
+                            await this.storageBroker.BulkInsertResolvedAddressesAsync(newResolvedAddresses);
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Unable to process resolved addresses in {exceptions.Count} of the batch(es) from {fileName}",
+                    exceptions);
+            }
+        }
+
+        virtual internal async ValueTask<List<ResolvedAddress>> ExtractValidResolvedAddressesAndAssignIdAndAudit(
+            List<ResolvedAddress> resolvedAddresses,
+            string fileName)
+        {
+            List<ResolvedAddress> validatedResolvedAddresses = new List<ResolvedAddress>();
+
+            foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
+            {
+                try
+                {
+                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                    resolvedAddress.Id = this.identifierBroker.GetIdentifier();
+                    resolvedAddress.CreatedDate = currentDateTime;
+                    resolvedAddress.CreatedBy = "System";
+                    resolvedAddress.UpdatedDate = resolvedAddress.CreatedDate;
+                    resolvedAddress.UpdatedBy = resolvedAddress.CreatedBy;
+                    ValidateResolvedAddressOnAdd(resolvedAddress);
+                    validatedResolvedAddresses.Add(resolvedAddress);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is NullResolvedAddressException || ex is InvalidResolvedAddressException)
+                    {
+                        int indexOfInvalidItem = resolvedAddresses.IndexOf(resolvedAddress);
+
+                        if (indexOfInvalidItem != -1)
+                        {
+                            await this.auditBroker.LogWarning(
+                                auditType: "ResolvedAddress",
+                                title: "Invalid resolved address parts found",
+                                message: $"Invalid address parts found in line item: {indexOfInvalidItem + 1} " +
+                                         $"from file: {fileName}",
+                                fileName,
+                                null);
+                        }
+                    }
+
+                    throw;
+                }
+            }
+
+            return await ValueTask.FromResult(validatedResolvedAddresses);
+        }
     }
 }

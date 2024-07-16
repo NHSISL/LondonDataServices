@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
@@ -64,6 +65,34 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 blobContainers: blobContainers);
         }
 
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
+        {
+            return actualStream =>
+                IsSameStream(expectedStream, actualStream);
+        }
+
+        private static bool IsSameStream(Stream expectedStream, Stream actualStream)
+        {
+            byte[] expectedBytes = ReadAllBytesFromStream(expectedStream);
+            byte[] actualBytes = ReadAllBytesFromStream(actualStream);
+
+            return new CompareLogic().Compare(expectedBytes, actualBytes).AreEqual;
+        }
+
+        private static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
@@ -111,8 +140,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(resolvedAddress => resolvedAddress.IsMatched).Use(true)
-                .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 
@@ -125,19 +152,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     new ResolvedAddressReturn
                     {
                         UniqueReference = resolvedAddress.UniqueReference,
-                        UPRN = resolvedAddress.MatchedUPRN,
-                        UPSN = resolvedAddress.MatchedUPSN,
-                        OrganisationName = resolvedAddress.MatchedOrganisationName,
-                        DepartmentName = resolvedAddress.MatchedDepartmentName,
-                        SubBuildingName = resolvedAddress.MatchedSubBuildingName,
-                        BuildingName = resolvedAddress.MatchedBuildingName,
-                        BuildingNumber = resolvedAddress.MatchedBuildingNumber,
-                        DependentThoroughfare = resolvedAddress.MatchedDependentThoroughfare,
-                        Thoroughfare = resolvedAddress.MatchedThoroughfare,
-                        DoubleDependentLocality = resolvedAddress.MatchedDoubleDependentLocality,
-                        DependentLocality = resolvedAddress.MatchedDependentLocality,
-                        PostTown = resolvedAddress.MatchedPostTown,
-                        PostCode = resolvedAddress.MatchedPostCode,
+                        UPRN = resolvedAddress.UPRN,
+                        UPSN = resolvedAddress.UPSN,
+                        OrganisationName = resolvedAddress.OrganisationName,
+                        DepartmentName = resolvedAddress.DepartmentName,
+                        SubBuildingName = resolvedAddress.SubBuildingName,
+                        BuildingName = resolvedAddress.BuildingName,
+                        BuildingNumber = resolvedAddress.BuildingNumber,
+                        DependentThoroughfare = resolvedAddress.DependentThoroughfare,
+                        Thoroughfare = resolvedAddress.Thoroughfare,
+                        DoubleDependentLocality = resolvedAddress.DoubleDependentLocality,
+                        DependentLocality = resolvedAddress.DependentLocality,
+                        PostTown = resolvedAddress.PostTown,
+                        PostCode = resolvedAddress.PostCode,
                     }).ToList();
 
             return returnAddresses;

@@ -3,17 +3,26 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Processings.ResolvedAddresses
 {
-    public partial class ResolvedAddressProcessingService : IResolvedAddressProcessingService
+    public partial class ResolvedAddressProcessingService
     {
         private void ValidateResolvedAddress(ResolvedAddress resolvedAddress)
         {
             ValidateResolvedAddressIsNotNull(resolvedAddress);
+        }
+
+        private void ValidateArguments(List<ResolvedAddress> resolvedAddresses, string fileName)
+        {
+            Validate<InvalidArgumentResolvedAddressProcessingException>(
+                message: "Invalid argument(s). Please correct the errors and try again.",
+                (Rule: IsInvalid(resolvedAddresses), Parameter: nameof(resolvedAddresses)),
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
         private void ValidateAddress(string address)
@@ -46,6 +55,12 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(List<ResolvedAddress>? resolvedAddresses) => new
+        {
+            Condition = resolvedAddresses is null,
+            Message = "Resolved addresses is required"
         };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)

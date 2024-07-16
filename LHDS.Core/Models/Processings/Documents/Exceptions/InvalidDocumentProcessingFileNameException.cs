@@ -1,14 +1,14 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using Xeptions;
 
 namespace LHDS.Core.Models.Processings.Documents.Exceptions
 {
-    public class InvalidDocumentProcessingFileNameException : Xeption
+    public class InvalidArgumentsDocumentProcessingException : Xeption
     {
-        public InvalidDocumentProcessingFileNameException(string message)
+        public InvalidArgumentsDocumentProcessingException(string message)
             : base(message)
         { }
     }

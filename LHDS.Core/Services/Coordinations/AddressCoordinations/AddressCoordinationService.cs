@@ -4,114 +4,68 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Coordinations.AddressCoordinations;
-using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Services.Orchestrations.AddressExtractions;
-using LHDS.Core.Services.Orchestrations.AddressPersistances;
+using LHDS.Core.Services.Orchestrations.Addresses;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 
 namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 {
     public partial class AddressCoordinationService : IAddressCoordinationService
     {
-        private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
-        private readonly IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService;
+        private readonly IAddressOrchestrationService addressOrchestrationService;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
         private readonly ILoggingBroker loggingBroker;
         private readonly AddressConfiguration addressConfiguration;
         private readonly BlobContainers blobContainers;
 
         public AddressCoordinationService(
-            IAddressExtractionOrchestrationService addressExtractionOrchestrationService,
-            IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService,
+            IAddressOrchestrationService addressOrchestrationService,
             IResolvedAddressOrchestrationService resolvedAddressOrchestrationService,
             ILoggingBroker loggingBroker,
             AddressConfiguration addressConfiguration,
             BlobContainers blobContainers)
         {
-            this.addressExtractionOrchestrationService = addressExtractionOrchestrationService;
-            this.addressPersistanceOrchestrationService = addressPersistanceOrchestrationService;
+            this.addressOrchestrationService = addressOrchestrationService;
             this.resolvedAddressOrchestrationService = resolvedAddressOrchestrationService;
             this.loggingBroker = loggingBroker;
             this.addressConfiguration = addressConfiguration;
             this.blobContainers = blobContainers;
         }
 
-        public ValueTask<List<Address>> LoadAddressDataAsync(byte[] data, string filename) =>
+        public ValueTask LoadAddressDataAsync(Stream input, string filename) =>
+            TryCatch(async () =>
+            {
+                ValidateDataOnProcessData(input, filename);
+                await this.addressOrchestrationService.BulkAddAddressesAsync(input: input, filename);
+            });
+
+        public ValueTask SyncAddressesWithAssignAsync() =>
+            TryCatch(async () =>
+            {
+                await this.addressOrchestrationService.SyncAddressesWithAssignAsync();
+            });
+
+        public ValueTask LoadAddressesToResolveAsync(Stream data, string filename) =>
             TryCatch(async () =>
             {
                 ValidateDataOnProcessData(data, filename);
-
-                List<Address> extractedAddresses =
-                    await this.addressExtractionOrchestrationService.ProcessAddressesAsync(data, filename);
-
-                return extractedAddresses;
+                await this.resolvedAddressOrchestrationService.UploadAddressesToReslveAsync(data, filename);
             });
 
-        public ValueTask NormaliseAddressesAsync() =>
+        public ValueTask MatchAddressDataAsync() =>
             TryCatch(async () =>
             {
-                await this.addressExtractionOrchestrationService.NormaliseAddressesAsync();
+                await this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
             });
 
-        public ValueTask MatchAddressDataAsync(byte[] data, string filename) =>
+        public ValueTask<List<Guid>> ExportResolvedAddressesAsync() =>
             TryCatch(async () =>
             {
-                ValidateDataOnProcessData(data, filename);
-
-                List<ResolvedAddress> extractedResolvedAddresses =
-                    await this.addressExtractionOrchestrationService.ProcessResolvedAddressesAsync(data, filename);
-
-                var exceptions = new List<Exception>();
-
-                foreach (var resolvedAddress in extractedResolvedAddresses)
-                {
-                    try
-                    {
-                        ResolvedAddress matchedResolvedAddress = await TryCatch(async () =>
-                        {
-                            ResolvedAddress matchedAddress =
-                                await this.addressPersistanceOrchestrationService.
-                                    MatchAndPersistResolvedAddressAsync(resolvedAddress);
-
-                            return matchedAddress;
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        exceptions.Add(ex);
-                    }
-                }
-
-                if (exceptions.Any())
-                {
-                    string[] splitFilePath = filename.Split("/");
-                    splitFilePath[2] = this.addressConfiguration.ErrorFolder;
-                    string errorPath = String.Join("/", splitFilePath);
-                    string addressContainer = this.blobContainers.Addresses;
-
-                    await this.resolvedAddressOrchestrationService.
-                        AddDocumentAsync(data, fileName: errorPath, container: addressContainer);
-
-                    await this.resolvedAddressOrchestrationService.
-                        RemoveDocumentByFileNameAsync(filename, container: addressContainer);
-
-                    throw new AggregateException(
-                        $"Unable to match {exceptions.Count} address in file {filename}. " +
-                        $"File has been moved to the error folder.",
-                        exceptions);
-                }
-            });
-
-        public ValueTask<Guid?> UploadResolvedAddressesAsync() =>
-            TryCatch(async () =>
-            {
-                return await this.resolvedAddressOrchestrationService.UploadResolvedAddressesAsync();
+                return await this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
             });
     }
 }

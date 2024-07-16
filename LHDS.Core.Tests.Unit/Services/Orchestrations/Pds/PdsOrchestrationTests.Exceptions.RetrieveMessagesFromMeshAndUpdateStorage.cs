@@ -346,12 +346,287 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
         [Theory]
         [MemberData(nameof(PdsDependencyValidationExceptions))]
+        public async Task
+            ShouldThrowAggregateDependencyValidationExceptionOnRetrieveAndUpdateIfErrorsInLoopAndLogItAsync(
+            Xeption dependencyValidationException)
+        {
+            // Given
+            List<string> randomMessageIds = GetRandomStrings(1);
+            List<Exception> exceptions = new List<Exception>();
+
+            this.meshServiceMock.SetupSequence(service =>
+                service.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(randomMessageIds)
+                    .ReturnsAsync(new List<string>());
+
+            foreach (var id in randomMessageIds)
+            {
+                this.meshServiceMock.Setup(service =>
+                    service.RetrieveMessageByIdAsync(id))
+                        .ThrowsAsync(dependencyValidationException);
+
+                var pdsOrchestrationDependencyValidationException =
+                    new PdsOrchestrationDependencyValidationException(
+                        message: "PDS orchestration dependency validation errors occurred, " +
+                            "fix the errors and try again.",
+                        innerException: dependencyValidationException.InnerException as Xeption);
+
+                exceptions.Add(pdsOrchestrationDependencyValidationException);
+            }
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to retrieve message for {exceptions.Count} message IDs",
+                    exceptions);
+
+            var failedPdsOrchestrationServiceException =
+                new FailedPdsOrchestrationServiceException(
+                    message: "Failed PDS aggregate orchestration service error occurred, " +
+                        "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedPdsOrchestrationServiceException =
+                new PdsOrchestrationServiceException(
+                    message: "PDS orchestration service error occurred, please contact support.",
+                    innerException: failedPdsOrchestrationServiceException);
+
+            // When
+            ValueTask<List<PdsAudit>> actualPdsAudits =
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+
+            PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(async () =>
+                    await actualPdsAudits);
+
+            // Then
+            actualPdsOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedPdsOrchestrationServiceException);
+
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
+
+            foreach (var id in randomMessageIds)
+            {
+                this.meshServiceMock.Verify(service =>
+                    service.RetrieveMessageByIdAsync(id),
+                        Times.Once);
+            }
+
+            var pdsOrchestrationDependencyValidationLoggingException =
+                new PdsOrchestrationDependencyValidationException(
+                    message: "PDS orchestration dependency validation errors occurred, " +
+                        "fix the errors and try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    pdsOrchestrationDependencyValidationLoggingException))),
+                        Times.Exactly(randomMessageIds.Count));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    actualPdsOrchestrationServiceException))),
+                        Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(PdsDependencyExceptions))]
+        public async Task
+            ShouldThrowAggregateDependencyExceptionOnRetrieveAndUpdateIfErrorsInLoopAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // Given
+            List<string> randomMessageIds = GetRandomStrings(GetRandomNumber());
+            List<Exception> exceptions = new List<Exception>();
+
+            this.meshServiceMock.SetupSequence(service =>
+                service.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(randomMessageIds)
+                    .ReturnsAsync(new List<string>());
+
+            foreach (var id in randomMessageIds)
+            {
+                this.meshServiceMock.Setup(service =>
+                    service.RetrieveMessageByIdAsync(id))
+                        .ThrowsAsync(dependencyException);
+
+                var pdsOrchestrationDependencyException =
+                    new PdsOrchestrationDependencyException(
+                        message: "PDS orchestration dependency error occurred, " +
+                        "fix the errors and try again.",
+                        innerException: dependencyException.InnerException as Xeption);
+
+                exceptions.Add(pdsOrchestrationDependencyException);
+            }
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to retrieve message for {exceptions.Count} message IDs",
+                    exceptions);
+
+            var failedPdsOrchestrationServiceException =
+                new FailedPdsOrchestrationServiceException(
+                    message: "Failed PDS aggregate orchestration service error occurred, " +
+                    "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedPdsOrchestrationServiceException =
+                new PdsOrchestrationServiceException(
+                    message: "PDS orchestration service error occurred, please contact support.",
+                    innerException: failedPdsOrchestrationServiceException);
+
+            // When
+            ValueTask<List<PdsAudit>> actualPdsAudits =
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+
+            PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(async () =>
+                    await actualPdsAudits);
+
+            // Then
+            actualPdsOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedPdsOrchestrationServiceException);
+
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
+
+            foreach (var id in randomMessageIds)
+            {
+                this.meshServiceMock.Verify(service =>
+                    service.RetrieveMessageByIdAsync(id),
+                        Times.Once);
+            }
+
+            var pdsOrchestrationDependencyLoggingException =
+                new PdsOrchestrationDependencyException(
+                    message: "PDS orchestration dependency error occurred, " +
+                    "fix the errors and try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    pdsOrchestrationDependencyLoggingException))),
+                        Times.Exactly(randomMessageIds.Count));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    actualPdsOrchestrationServiceException))),
+                        Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowAggregateServiceExceptionOnRetrieveAndUpdateIfErrorsInLoopAndLogItAsync()
+        {
+            // Given
+            List<string> randomMessageIds = GetRandomStrings(GetRandomNumber());
+            List<Exception> exceptions = new List<Exception>();
+            var serviceException = new Exception();
+
+            this.meshServiceMock.SetupSequence(service =>
+                service.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(randomMessageIds)
+                    .ReturnsAsync(new List<string>());
+
+            var innerFailedPdsOrchestrationServiceException =
+                new FailedPdsOrchestrationServiceException(
+                    message: "Failed PDS orchestration service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var innerPdsOrchestrationServiceException =
+                new PdsOrchestrationServiceException(
+                    message: "PDS orchestration service error occurred, please contact support.",
+                    innerException: innerFailedPdsOrchestrationServiceException);
+
+            foreach (var id in randomMessageIds)
+            {
+                this.meshServiceMock.Setup(service =>
+                    service.RetrieveMessageByIdAsync(id))
+                        .ThrowsAsync(serviceException);
+
+                exceptions.Add(innerPdsOrchestrationServiceException);
+            }
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to retrieve message for {exceptions.Count} message IDs",
+                    exceptions);
+
+            var failedPdsOrchestrationServiceException =
+                new FailedPdsOrchestrationServiceException(
+                    message: "Failed PDS aggregate orchestration service error occurred, " +
+                        "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedPdsOrchestrationServiceException =
+                new PdsOrchestrationServiceException(
+                    message: "PDS orchestration service error occurred, please contact support.",
+                    innerException: failedPdsOrchestrationServiceException);
+
+            // When
+            ValueTask<List<PdsAudit>> actualPdsAudits =
+                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+
+            PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(async () =>
+                    await actualPdsAudits);
+
+            // Then
+            actualPdsOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedPdsOrchestrationServiceException);
+
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
+
+            foreach (var id in randomMessageIds)
+            {
+                this.meshServiceMock.Verify(service =>
+                    service.RetrieveMessageByIdAsync(id),
+                        Times.Once);
+            }
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    innerPdsOrchestrationServiceException))),
+                        Times.Exactly(randomMessageIds.Count));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedPdsOrchestrationServiceException))),
+                        Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(PdsDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationOnRetrieveAndUpdateIfDependencyValidationOccursAndLogItAsync(
            Xeption dependancyValidationException)
         {
             var expectedDependencyException =
                 new PdsOrchestrationDependencyValidationException(
-                    message: "PDS orchestration validation errors occurred, please try again.",
+                    message: "PDS orchestration dependency validation errors occurred, fix the errors and try again.",
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>

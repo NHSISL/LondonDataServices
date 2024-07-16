@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                     innerException: nullDownloadProcessingException);
 
             // when
-            ValueTask<Download> retrieveDownloadByFileNameTask =
+            ValueTask retrieveDownloadByFileNameTask =
                 this.downloadProcessingService.RetrieveDownloadByFileNameAsync(invalidDownload);
 
             DownloadProcessingValidationException actualDownloadProcessingValidationException =

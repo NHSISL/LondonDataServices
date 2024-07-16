@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using Xeptions;
 
@@ -13,19 +14,36 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         public void ValidateResolvedAddressArgsOnAdd(byte[] data, string fileName, string container)
         {
             Validate<InvalidArgumentResolvedAddressOrchestrationException>(
-                message: "Invalid resolved address orchestration argument.  Please correct the errors and try again.",
+                message: "Invalid argument resolved address orchestration exception, " +
+                    "please correct the errors and try again.",
                 (Rule: IsInvalid(data), Parameter: "data"),
-                (Rule: IsInvalid(fileName), Parameter: "fileName"),
-                (Rule: IsInvalid(container), Parameter: "container"));
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)),
+                (Rule: IsInvalid(container), Parameter: nameof(container)));
         }
 
         public void ValidateResolvedAddressArgsOnRemove(string fileName, string container)
         {
             Validate<InvalidArgumentResolvedAddressOrchestrationException>(
-                message: "Invalid resolved address orchestration argument.  Please correct the errors and try again.",
-                (Rule: IsInvalid(fileName), Parameter: "fileName"),
-                (Rule: IsInvalid(container), Parameter: "container"));
+                message: "Invalid argument resolved address orchestration exception, " +
+                    "please correct the errors and try again.",
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)),
+                (Rule: IsInvalid(container), Parameter: nameof(container)));
         }
+
+        public void ValidateOnUploadAddressesToResolve(Stream input, string fileName)
+        {
+            Validate<InvalidArgumentResolvedAddressOrchestrationException>(
+                message: "Invalid argument resolved address orchestration exception, " +
+                    "please correct the errors and try again.",
+                (Rule: IsInvalidInputStream(input), Parameter: nameof(input)),
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+        }
+
+        private static dynamic IsInvalidInputStream(Stream? stream) => new
+        {
+            Condition = stream is null || stream.Length == 0,
+            Message = "Stream is required"
+        };
 
         private static dynamic IsInvalid(string? text) => new
         {

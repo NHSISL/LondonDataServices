@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -16,26 +17,25 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
         public async Task ShouldUploadResolvedAddressesAsync()
         {
             // Given
-            Guid expectedBatchReference = Guid.NewGuid();
+            List<Guid> expectedBatchReference = new List<Guid> { Guid.NewGuid() };
 
             this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.UploadResolvedAddressesAsync())
+                service.ExportResolvedAddressesAsync())
                     .ReturnsAsync(expectedBatchReference);
 
             // When
-            Guid? actualBatchReference =
-                await this.addressCoordinationService.UploadResolvedAddressesAsync();
+            List<Guid> actualBatchReference =
+                await this.addressCoordinationService.ExportResolvedAddressesAsync();
 
             // Then
-            actualBatchReference.Should().Be(expectedBatchReference);
+            actualBatchReference.Should().BeEquivalentTo(expectedBatchReference);
 
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.UploadResolvedAddressesAsync(),
+                service.ExportResolvedAddressesAsync(),
                     Times.Once());
 
             this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.addressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

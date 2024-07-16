@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
-using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
+using LHDS.Core.Models.Orchestrations.Addresses.Exceptions;
+using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Coordinations.AddressCoordinations
@@ -19,7 +19,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<ResolvedAddress> ReturningResolvedAddressFunction();
-        private delegate ValueTask<Guid?> ReturningGuidFunction();
+        private delegate ValueTask<List<Guid>> ReturningGuidListFunction();
 
         private async ValueTask<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
         {
@@ -31,44 +31,44 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressCoordinationException);
             }
-            catch (AddressExtractionValidationOrchestrationException addressExtractionValidationOrchestrationException)
+            catch (AddressValidationOrchestrationException addressValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(addressExtractionValidationOrchestrationException);
+                throw CreateAndLogDependencyValidationException(addressValidationOrchestrationException);
             }
-            catch (AddressExtractionOrchestrationDependencyValidationException
-                addressExtractionOrchestrationDependencyValidationException)
+            catch (AddressOrchestrationDependencyValidationException
+                addressOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
-                    addressExtractionOrchestrationDependencyValidationException);
+                    addressOrchestrationDependencyValidationException);
             }
-            catch (AddressPersistenceOrchestrationValidationException
-                addressPersistanceOrchestrationValidationException)
+            catch (ResolvedAddressOrchestrationValidationException
+                resolvedAddressOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
+                throw CreateAndLogDependencyValidationException(resolvedAddressOrchestrationValidationException);
             }
-            catch (AddressPersistenceOrchestrationDependencyValidationException
-                addressPersistanceOrchestrationDependencyValidationException)
+            catch (ResolvedAddressOrchestrationDependencyValidationException
+                resolvedAddressOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
-                    addressPersistanceOrchestrationDependencyValidationException);
+                    resolvedAddressOrchestrationDependencyValidationException);
             }
-            catch (AddressExtractionOrchestrationServiceException addressExtractionOrchestrationServiceException)
+            catch (AddressOrchestrationServiceException addressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(addressExtractionOrchestrationServiceException);
+                throw CreateAndLogDependencyException(addressOrchestrationServiceException);
             }
-            catch (AddressExtractionOrchestrationDependencyException
-                addressExtractionOrchestrationDependencyException)
+            catch (AddressOrchestrationDependencyException
+                addressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
+                throw CreateAndLogDependencyException(addressOrchestrationDependencyException);
             }
-            catch (AddressPersistenceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            catch (ResolvedAddressOrchestrationServiceException resolvedAddressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
+                throw CreateAndLogDependencyException(resolvedAddressOrchestrationServiceException);
             }
-            catch (AddressPersistenceOrchestrationDependencyException
-                addressPersistanceOrchestrationDependencyException)
+            catch (ResolvedAddressOrchestrationDependencyException
+                resolvedAddressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
+                throw CreateAndLogDependencyException(resolvedAddressOrchestrationDependencyException);
             }
             catch (Exception exception)
             {
@@ -92,44 +92,44 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressCoordinationException);
             }
-            catch (AddressExtractionValidationOrchestrationException addressExtractionValidationOrchestrationException)
+            catch (AddressValidationOrchestrationException addressValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(addressExtractionValidationOrchestrationException);
+                throw CreateAndLogDependencyValidationException(addressValidationOrchestrationException);
             }
-            catch (AddressExtractionOrchestrationDependencyValidationException
-                addressExtractionOrchestrationDependencyValidationException)
+            catch (AddressOrchestrationDependencyValidationException
+                addressOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
-                    addressExtractionOrchestrationDependencyValidationException);
+                    addressOrchestrationDependencyValidationException);
             }
-            catch (AddressPersistenceOrchestrationValidationException
-                addressPersistanceOrchestrationValidationException)
+            catch (ResolvedAddressOrchestrationValidationException
+                resolvedAddressOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
+                throw CreateAndLogDependencyValidationException(resolvedAddressOrchestrationValidationException);
             }
-            catch (AddressPersistenceOrchestrationDependencyValidationException
-                addressPersistanceOrchestrationDependencyValidationException)
+            catch (ResolvedAddressOrchestrationDependencyValidationException
+                resolvedAddressOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
-                    addressPersistanceOrchestrationDependencyValidationException);
+                    resolvedAddressOrchestrationDependencyValidationException);
             }
-            catch (AddressExtractionOrchestrationServiceException addressExtractionOrchestrationServiceException)
+            catch (AddressOrchestrationServiceException addressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(addressExtractionOrchestrationServiceException);
+                throw CreateAndLogDependencyException(addressOrchestrationServiceException);
             }
-            catch (AddressExtractionOrchestrationDependencyException
-                addressExtractionOrchestrationDependencyException)
+            catch (AddressOrchestrationDependencyException
+                addressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
+                throw CreateAndLogDependencyException(addressOrchestrationDependencyException);
             }
-            catch (AddressPersistenceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            catch (ResolvedAddressOrchestrationServiceException resolvedAddressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
+                throw CreateAndLogDependencyException(resolvedAddressOrchestrationServiceException);
             }
-            catch (AddressPersistenceOrchestrationDependencyException
-                addressPersistanceOrchestrationDependencyException)
+            catch (ResolvedAddressOrchestrationDependencyException
+                resolvedAddressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
+                throw CreateAndLogDependencyException(resolvedAddressOrchestrationDependencyException);
             }
             catch (AggregateException aggregateException)
             {
@@ -163,44 +163,44 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressCoordinationException);
             }
-            catch (AddressExtractionValidationOrchestrationException addressExtractionValidationOrchestrationException)
+            catch (AddressValidationOrchestrationException addressValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(addressExtractionValidationOrchestrationException);
+                throw CreateAndLogDependencyValidationException(addressValidationOrchestrationException);
             }
-            catch (AddressExtractionOrchestrationDependencyValidationException
-                addressExtractionOrchestrationDependencyValidationException)
+            catch (AddressOrchestrationDependencyValidationException
+                addressOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
-                    addressExtractionOrchestrationDependencyValidationException);
+                    addressOrchestrationDependencyValidationException);
             }
-            catch (AddressPersistenceOrchestrationValidationException
-                addressPersistanceOrchestrationValidationException)
+            catch (ResolvedAddressOrchestrationValidationException
+                resolvedAddressOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
+                throw CreateAndLogDependencyValidationException(resolvedAddressOrchestrationValidationException);
             }
-            catch (AddressPersistenceOrchestrationDependencyValidationException
-                addressPersistanceOrchestrationDependencyValidationException)
+            catch (ResolvedAddressOrchestrationDependencyValidationException
+                resolvedAddressOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
-                    addressPersistanceOrchestrationDependencyValidationException);
+                    resolvedAddressOrchestrationDependencyValidationException);
             }
-            catch (AddressExtractionOrchestrationServiceException addressExtractionOrchestrationServiceException)
+            catch (AddressOrchestrationServiceException addressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(addressExtractionOrchestrationServiceException);
+                throw CreateAndLogDependencyException(addressOrchestrationServiceException);
             }
-            catch (AddressExtractionOrchestrationDependencyException
-                addressExtractionOrchestrationDependencyException)
+            catch (AddressOrchestrationDependencyException
+                addressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
+                throw CreateAndLogDependencyException(addressOrchestrationDependencyException);
             }
-            catch (AddressPersistenceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            catch (ResolvedAddressOrchestrationServiceException resolvedAddressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
+                throw CreateAndLogDependencyException(resolvedAddressOrchestrationServiceException);
             }
-            catch (AddressPersistenceOrchestrationDependencyException
-                addressPersistanceOrchestrationDependencyException)
+            catch (ResolvedAddressOrchestrationDependencyException
+                resolvedAddressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
+                throw CreateAndLogDependencyException(resolvedAddressOrchestrationDependencyException);
             }
             catch (AggregateException aggregateException)
             {
@@ -223,54 +223,54 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             }
         }
 
-        private async ValueTask<Guid?> TryCatch(ReturningGuidFunction returningGuidFunction)
+        private async ValueTask<List<Guid>> TryCatch(ReturningGuidListFunction returningGuidListFunction)
         {
             try
             {
-                return await returningGuidFunction();
+                return await returningGuidListFunction();
             }
             catch (InvalidArgumentAddressCoordinationException invalidArgumentAddressCoordinationException)
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressCoordinationException);
             }
-            catch (AddressExtractionValidationOrchestrationException addressExtractionValidationOrchestrationException)
+            catch (AddressValidationOrchestrationException addressValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(addressExtractionValidationOrchestrationException);
+                throw CreateAndLogDependencyValidationException(addressValidationOrchestrationException);
             }
-            catch (AddressExtractionOrchestrationDependencyValidationException
-                addressExtractionOrchestrationDependencyValidationException)
+            catch (AddressOrchestrationDependencyValidationException
+                addressOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
-                    addressExtractionOrchestrationDependencyValidationException);
+                    addressOrchestrationDependencyValidationException);
             }
-            catch (AddressPersistenceOrchestrationValidationException
-                addressPersistanceOrchestrationValidationException)
+            catch (ResolvedAddressOrchestrationValidationException
+                resolvedAddressOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
+                throw CreateAndLogDependencyValidationException(resolvedAddressOrchestrationValidationException);
             }
-            catch (AddressPersistenceOrchestrationDependencyValidationException
-                addressPersistanceOrchestrationDependencyValidationException)
+            catch (ResolvedAddressOrchestrationDependencyValidationException
+                resolvedAddressOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
-                    addressPersistanceOrchestrationDependencyValidationException);
+                    resolvedAddressOrchestrationDependencyValidationException);
             }
-            catch (AddressExtractionOrchestrationServiceException addressExtractionOrchestrationServiceException)
+            catch (AddressOrchestrationServiceException addressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(addressExtractionOrchestrationServiceException);
+                throw CreateAndLogDependencyException(addressOrchestrationServiceException);
             }
-            catch (AddressExtractionOrchestrationDependencyException
-                addressExtractionOrchestrationDependencyException)
+            catch (AddressOrchestrationDependencyException
+                addressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
+                throw CreateAndLogDependencyException(addressOrchestrationDependencyException);
             }
-            catch (AddressPersistenceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            catch (ResolvedAddressOrchestrationServiceException resolvedAddressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
+                throw CreateAndLogDependencyException(resolvedAddressOrchestrationServiceException);
             }
-            catch (AddressPersistenceOrchestrationDependencyException
-                addressPersistanceOrchestrationDependencyException)
+            catch (ResolvedAddressOrchestrationDependencyException
+                resolvedAddressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
+                throw CreateAndLogDependencyException(resolvedAddressOrchestrationDependencyException);
             }
             catch (Exception exception)
             {

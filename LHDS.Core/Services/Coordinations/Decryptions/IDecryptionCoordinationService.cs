@@ -9,5 +9,6 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
     public interface IDecryptionCoordinationService
     {
         ValueTask<string> DecryptAsync(string encryptedFileName);
+        ValueTask RetryDecryptOnAllAsync();
     }
 }

@@ -2,10 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
-using LHDS.Core.Models.Foundations.Documents;
 using Moq;
 using Xunit;
 
@@ -21,17 +21,23 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             ShouldThrowValidationExceptionOnRetrieveDownloadByFileNameIfFileNameIsNullAndLogItAsync(string invalidData)
         {
             // given
+            Stream invalidStream = null;
+
             var invalidArgumentEmisLandingCoordinationException =
                 new InvalidArgumentEmisLandingCoordinationException(
                     message: "Invalid Emis Landing coordination argument, please correct the errors and try again.");
 
             invalidArgumentEmisLandingCoordinationException.AddData(
+                key: "Output",
+                values: "Stream is required");
+
+            invalidArgumentEmisLandingCoordinationException.AddData(
                 key: "FileName",
                 values:
-                new[] {
+                [
                     "Text is required",
                     "File name is not valid"
-                });
+                ]);
 
             var expectedEmisLandingCoordinationValidationException =
                 new EmisLandingCoordinationValidationException(
@@ -39,8 +45,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: invalidArgumentEmisLandingCoordinationException);
 
             // when
-            ValueTask<Document> retrieveDownloadByFilenameTask =
-                this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(invalidData);
+            ValueTask retrieveDownloadByFilenameTask =
+                this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(
+                    output: invalidStream,
+                    fileName: invalidData);
 
             EmisLandingCoordinationValidationException actualEmisLandingCoordinationValidationException =
                 await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(async () =>

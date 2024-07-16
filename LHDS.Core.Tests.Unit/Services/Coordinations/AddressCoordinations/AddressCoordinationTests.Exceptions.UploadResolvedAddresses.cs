@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
@@ -26,12 +27,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.UploadResolvedAddressesAsync())
+                service.ExportResolvedAddressesAsync())
                     .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask<Guid?> uploadAddressesTask =
-                this.addressCoordinationService.UploadResolvedAddressesAsync();
+            ValueTask<List<Guid>> uploadAddressesTask =
+                this.addressCoordinationService.ExportResolvedAddressesAsync();
 
             AddressCoordinationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationDependencyValidationException>(uploadAddressesTask.AsTask);
@@ -41,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                  .BeEquivalentTo(expectedDependencyException);
 
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.UploadResolvedAddressesAsync(),
+                service.ExportResolvedAddressesAsync(),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -51,8 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.addressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -67,12 +67,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: dependencyException.InnerException as Xeption);
 
             this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.UploadResolvedAddressesAsync())
+                service.ExportResolvedAddressesAsync())
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<Guid?> uploadAddressesTask =
-                this.addressCoordinationService.UploadResolvedAddressesAsync();
+            ValueTask<List<Guid>> uploadAddressesTask =
+                this.addressCoordinationService.ExportResolvedAddressesAsync();
 
             AddressCoordinationDependencyException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationDependencyException>(uploadAddressesTask.AsTask);
@@ -82,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                  .BeEquivalentTo(expectedDependencyException);
 
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.UploadResolvedAddressesAsync(),
+                service.ExportResolvedAddressesAsync(),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -92,8 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.addressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -113,12 +112,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: failedAddressCoordinationServiceException);
 
             this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.UploadResolvedAddressesAsync())
+                service.ExportResolvedAddressesAsync())
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<Guid?> uploadAddressesTask =
-                this.addressCoordinationService.UploadResolvedAddressesAsync();
+            ValueTask<List<Guid>> uploadAddressesTask =
+                this.addressCoordinationService.ExportResolvedAddressesAsync();
 
             AddressCoordinationServiceException actualException =
                 await Assert.ThrowsAsync<AddressCoordinationServiceException>(uploadAddressesTask.AsTask);
@@ -127,7 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             actualException.Should().BeEquivalentTo(expectedAddressCoordinationServiceException);
 
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.UploadResolvedAddressesAsync(),
+                service.ExportResolvedAddressesAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -137,8 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             this.resolvedAddressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.addressOrchestrationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

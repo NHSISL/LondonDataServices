@@ -11,15 +11,15 @@ namespace LHDS.Core.Services.Foundations.Cryptographies
 {
     public partial class CryptographyService
     {
-        private delegate Task<byte[]> ReturningCryptographyFunction();
+        private delegate ValueTask ReturningNothingFunction();
 
-        private async Task<byte[]> TryCatch(ReturningCryptographyFunction returningCryptographyFunction)
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
             try
             {
-                return await returningCryptographyFunction();
+                await returningNothingFunction();
             }
-            catch (NullDataCryptographyException nullCryptographyException)
+            catch (InvalidArgumentCryptographyException nullCryptographyException)
             {
                 throw CreateAndLogValidationException(nullCryptographyException);
             }

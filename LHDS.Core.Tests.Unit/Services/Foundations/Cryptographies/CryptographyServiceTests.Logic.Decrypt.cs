@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -19,26 +20,44 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
             // given
             byte[] randomEncryptedData = CreateRandomData();
             byte[] inputEncryptedData = randomEncryptedData;
+            Stream inputEncryptedStream = new MemoryStream(inputEncryptedData);
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
             byte[] randomDecryptedData = CreateRandomData();
             byte[] outputDecryptedData = randomDecryptedData;
+            Stream returnedDecryptedStream = new MemoryStream(outputDecryptedData);
+            Stream outputDecryptedStream = new MemoryStream();
+            Stream initialOutputDecryptedStream = outputDecryptedStream.DeepClone();
             byte[] expectedDecryptedData = outputDecryptedData.DeepClone();
 
-            this.cryptographyBroker.Setup(broker =>
-                broker.DecryptAsync(inputEncryptedData, inputSubscriberCredential))
-                    .ReturnsAsync(outputDecryptedData);
+            this.cryptographyBroker
+                .Setup(broker => broker.DecryptAsync(
+                    inputEncryptedStream,
+                    outputDecryptedStream,
+                    inputSubscriberCredential))
+                .Callback<Stream, Stream, SubscriberCredential>((inputStream, outputStream, subscriberCredential) =>
+                    {
+                        returnedDecryptedStream.Position = 0;
+                        returnedDecryptedStream.CopyTo(outputStream);
+                    })
+                .Returns(ValueTask.CompletedTask);
 
             // When
-            byte[] actualDecryptedData = await this.cryptographyService.DecryptAsync(
-                data: inputEncryptedData, subscriberCredential: inputSubscriberCredential);
+            await this.cryptographyService.DecryptAsync(
+                input: inputEncryptedStream,
+                output: outputDecryptedStream,
+                subscriberCredential: inputSubscriberCredential);
 
             // Then
+            byte[] actualDecryptedData = ReadAllBytesFromStream(outputDecryptedStream);
             actualDecryptedData.Should().BeEquivalentTo(expectedDecryptedData);
 
             this.cryptographyBroker.Verify(broker =>
-                broker.DecryptAsync(inputEncryptedData, inputSubscriberCredential),
-                Times.Once);
+                broker.DecryptAsync(
+                    inputEncryptedStream,
+                    It.IsAny<Stream>(),
+                    inputSubscriberCredential),
+                        Times.Once);
 
             this.cryptographyBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

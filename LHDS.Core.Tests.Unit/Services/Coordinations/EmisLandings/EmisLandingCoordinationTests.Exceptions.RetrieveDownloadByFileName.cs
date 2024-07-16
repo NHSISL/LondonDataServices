@@ -3,10 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
-using LHDS.Core.Models.Foundations.Documents;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -21,6 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             Xeption dependencyValidationException)
         {
             // Given
+            Stream outputStream = new MemoryStream();
             Guid subscriberCredentialId = Guid.NewGuid();
             string fileName = CreateRandomSubscriberCredentialIdFileName(subscriberCredentialId);
 
@@ -34,8 +35,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .ThrowsAsync(dependencyValidationException);
 
             // When
-            ValueTask<Document> retrieveDownloadTask =
-                this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(fileName);
+            ValueTask retrieveDownloadTask = this.emisLandingCoordinationService
+                .RetrieveDownloadByFileNameAsync(output: outputStream, fileName);
 
             EmisLandingCoordinationDependencyValidationException
                 actualEmisLandingCoordinationDependencyValidationException =
@@ -66,6 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             Xeption dependencyException)
         {
             // Given
+            Stream outputStream = new MemoryStream();
             Guid subscriberCredentialId = Guid.NewGuid();
             string fileName = CreateRandomSubscriberCredentialIdFileName(subscriberCredentialId);
 
@@ -79,8 +81,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .ThrowsAsync(dependencyException);
 
             // When
-            ValueTask<Document> retrieveDownloadTask =
-                this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(fileName);
+            ValueTask retrieveDownloadTask = this.emisLandingCoordinationService
+                .RetrieveDownloadByFileNameAsync(output: outputStream, fileName);
 
             EmisLandingCoordinationDependencyException
                 actualEmisLandingCoordinationDependencyException =
@@ -109,6 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
         public async Task ShouldThrowServiceExceptionOnRetrieveIfErrorsInLoopAndLogItAsync()
         {
             // Given
+            Stream outputStream = new MemoryStream();
             Guid subscriberCredentialId = Guid.NewGuid();
             string fileName = CreateRandomSubscriberCredentialIdFileName(subscriberCredentialId);
             var serviceException = new Exception();
@@ -128,8 +131,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: failedEmisLandingCoordinationServiceException);
 
             // When
-            ValueTask<Document> retrieveDownloadTask =
-                this.emisLandingCoordinationService.RetrieveDownloadByFileNameAsync(fileName);
+            ValueTask retrieveDownloadTask = this.emisLandingCoordinationService
+                .RetrieveDownloadByFileNameAsync(output: outputStream, fileName);
 
             EmisLandingCoordinationServiceException
                 actualEmisLandingCoordinationServiceException =

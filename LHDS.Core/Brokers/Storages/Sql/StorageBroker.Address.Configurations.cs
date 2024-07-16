@@ -12,7 +12,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddAddressConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Address>()
-                .ToTable("Address", "UPRN");
+                .ToTable("Address", "Addresses");
 
             modelBuilder.Entity<Address>()
                 .Property(address => address.UPRN)
@@ -20,7 +20,8 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired(false);
 
             modelBuilder.Entity<Address>()
-                .HasIndex(address => address.UPRN);
+                .HasIndex(address => address.UPRN)
+                .IsUnique();
 
             modelBuilder.Entity<Address>()
                 .Property(address => address.UPSN)
@@ -86,21 +87,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .HasIndex(address => address.PostCode);
 
             modelBuilder.Entity<Address>()
-                .HasIndex(address => address.IsErrored);
+                .HasIndex(address => address.IsSynced);
 
             modelBuilder.Entity<Address>()
-                .HasIndex(address => address.IsNormalised);
-
-            modelBuilder.Entity<Address>()
-                .HasIndex(address => address.Processing);
-
-            modelBuilder.Entity<Address>()
-                .Property(address => address.PostalAddress)
-                .IsRequired(false);
-
-            modelBuilder.Entity<Address>()
-                .Property(address => address.JsonPostalAddress)
-                .IsRequired(false);
+                .HasIndex(address => address.IsProcessing);
 
             modelBuilder.Entity<Address>()
                 .Property(address => address.CreatedBy)

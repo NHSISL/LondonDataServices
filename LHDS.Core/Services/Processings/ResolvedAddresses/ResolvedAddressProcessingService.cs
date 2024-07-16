@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -32,6 +33,14 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                 return await resolvedAddressService.AddResolvedAddressAsync(resolvedAddress);
             });
 
+        public ValueTask BulkAddResolvedAddressesAsync(List<ResolvedAddress> resolvedAddresses, string fileName) =>
+            TryCatch(async () =>
+            {
+                ValidateArguments(resolvedAddresses, fileName);
+
+                await this.resolvedAddressService.BulkAddResolvedAddressesAsync(resolvedAddresses, fileName);
+            });
+
         public IQueryable<ResolvedAddress> RetrieveAllResolvedAddresses() =>
             TryCatch(() => resolvedAddressService.RetrieveAllResolvedAddresses());
 
@@ -59,7 +68,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                 ValidateResolvedAddressId(resolvedAddress.Id);
 
                 var maybeResolvedAddress = resolvedAddressService.RetrieveAllResolvedAddresses()
-                    .FirstOrDefault(address => address.UnstructuredPostalAddress == resolvedAddress.UnstructuredPostalAddress);
+                    .FirstOrDefault(address => address.UniqueReference == resolvedAddress.UniqueReference);
 
                 if (maybeResolvedAddress != null)
                 {
@@ -85,18 +94,6 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                 ValidateResolvedAddressId(resolvedAddressId);
 
                 return await resolvedAddressService.RemoveResolvedAddressByIdAsync(resolvedAddressId);
-            });
-
-        public ValueTask<bool> IsExactMatchForResolvedAddressAsync(string address) =>
-            TryCatch(async () =>
-            {
-                ValidateAddress(address);
-
-                bool result = this.resolvedAddressService.RetrieveAllResolvedAddresses()
-                    .Any(resolvedAddress => resolvedAddress.PostalAddress
-                        .Equals(address, StringComparison.InvariantCultureIgnoreCase));
-
-                return await ValueTask.FromResult(result);
             });
     }
 }

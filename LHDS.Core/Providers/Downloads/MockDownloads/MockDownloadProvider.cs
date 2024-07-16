@@ -28,15 +28,15 @@ namespace LHDS.Core.Providers.Downloads.MockDownloads
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        public async ValueTask<Download> GetDocumentByFileNameAsync(Download download)
+        public async ValueTask GetDocumentByFileNameAsync(Download download)
         {
             string randomString = GetRandomString();
-            byte[] data = Encoding.ASCII.GetBytes(randomString);
+            byte[] data = Encoding.UTF8.GetBytes(randomString);
 
             var document = new Document()
             {
                 FileName = download?.Document?.FileName ?? "",
-                DocumentData = data
+                DocumentData = download?.Document?.DocumentData
             };
 
             var downloadedItem = new Download
@@ -45,7 +45,7 @@ namespace LHDS.Core.Providers.Downloads.MockDownloads
                 SubscriberCredential = download?.SubscriberCredential
             };
 
-            return await ValueTask.FromResult(downloadedItem);
+            await ValueTask.FromResult(true);
         }
 
         public async ValueTask<List<string>> GetListOfDocumentsToProcessAsync(Download download)

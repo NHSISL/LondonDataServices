@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 
@@ -34,6 +35,13 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 Parameter: nameof(Address.UpdatedBy)),
 
                 (Rule: IsNotRecent(address.CreatedDate), Parameter: nameof(Address.CreatedDate)));
+        }
+
+        private void ValidateOnBulkAddAddresses(List<Address> addresses, string fileName)
+        {
+            Validate(
+                (Rule: IsInvalid(addresses), Parameter: nameof(addresses)),
+                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
         private void ValidateAddressOnModify(Address address)
@@ -104,6 +112,12 @@ namespace LHDS.Core.Services.Foundations.Addresses
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(List<Address> addresses) => new
+        {
+            Condition = addresses == null,
+            Message = "Addresses is required"
         };
 
         private static dynamic IsInvalid(string? text) => new

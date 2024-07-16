@@ -18,11 +18,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnBulkAddIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnBulkModifyIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
-            string someFileName = GetRandomString();
             List<ResolvedAddress> someResolvedAddresses = new List<ResolvedAddress> { CreateRandomResolvedAddress() };
             List<ResolvedAddress> inputResolvedAddresses = someResolvedAddresses;
 
@@ -32,22 +31,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.resolvedAddressServiceMock.Setup(service =>
-                service.BulkAddResolvedAddressesAsync(inputResolvedAddresses, someFileName))
+                service.BulkModifyResolvedAddressesAsync(inputResolvedAddresses))
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask bulkAddTask = this.resolvedAddressProcessingService
-                .BulkAddResolvedAddressesAsync(resolvedAddresses: inputResolvedAddresses, fileName: someFileName);
+            ValueTask bulkModifyTask = this.resolvedAddressProcessingService
+                .BulkModifyResolvedAddressesAsync(resolvedAddresses: inputResolvedAddresses);
 
             ResolvedAddressProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<ResolvedAddressProcessingDependencyValidationException>(
-                    bulkAddTask.AsTask);
+                    bulkModifyTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressProcessingDependencyValidationException);
 
             this.resolvedAddressServiceMock.Verify(service =>
-                service.BulkAddResolvedAddressesAsync(inputResolvedAddresses, someFileName),
+                service.BulkModifyResolvedAddressesAsync(inputResolvedAddresses),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -61,11 +60,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnBulkAddIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnBulkModifyIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
-            string someFileName = GetRandomString();
             List<ResolvedAddress> someResolvedAddresses = new List<ResolvedAddress> { CreateRandomResolvedAddress() };
             List<ResolvedAddress> inputResolvedAddresses = someResolvedAddresses;
 
@@ -75,21 +73,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     innerException: dependencyException.InnerException as Xeption);
 
             this.resolvedAddressServiceMock.Setup(service =>
-                service.BulkAddResolvedAddressesAsync(inputResolvedAddresses, someFileName))
+                service.BulkModifyResolvedAddressesAsync(inputResolvedAddresses))
                     .Throws(dependencyException);
 
             // when
-            ValueTask bulkAddTask = this.resolvedAddressProcessingService
-                .BulkAddResolvedAddressesAsync(resolvedAddresses: inputResolvedAddresses, fileName: someFileName);
+            ValueTask bulkModifyTask = this.resolvedAddressProcessingService
+                .BulkModifyResolvedAddressesAsync(resolvedAddresses: inputResolvedAddresses);
 
             ResolvedAddressProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<ResolvedAddressProcessingDependencyException>(bulkAddTask.AsTask);
+                await Assert.ThrowsAsync<ResolvedAddressProcessingDependencyException>(bulkModifyTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressProcessingDependencyException);
 
             this.resolvedAddressServiceMock.Verify(service =>
-                service.BulkAddResolvedAddressesAsync(inputResolvedAddresses, someFileName),
+                service.BulkModifyResolvedAddressesAsync(inputResolvedAddresses),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -102,10 +100,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnBulkAddIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnBulkModifyIfServiceErrorOccursAsync()
         {
             // given
-            string someFileName = GetRandomString();
             List<ResolvedAddress> someResolvedAddresses = new List<ResolvedAddress> { CreateRandomResolvedAddress() };
             List<ResolvedAddress> inputResolvedAddresses = someResolvedAddresses;
 
@@ -122,21 +119,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     innerException: failedResolvedAddressProcessingServiceException);
 
             this.resolvedAddressServiceMock.Setup(service =>
-                service.BulkAddResolvedAddressesAsync(inputResolvedAddresses, someFileName))
+                service.BulkModifyResolvedAddressesAsync(inputResolvedAddresses))
                     .Throws(serviceException);
 
             // when
-            ValueTask bulkAddTask = this.resolvedAddressProcessingService
-                .BulkAddResolvedAddressesAsync(resolvedAddresses: inputResolvedAddresses, fileName: someFileName);
+            ValueTask bulkModifyTask = this.resolvedAddressProcessingService
+                .BulkModifyResolvedAddressesAsync(resolvedAddresses: inputResolvedAddresses);
 
             ResolvedAddressProcessingServiceException actualException =
-                await Assert.ThrowsAsync<ResolvedAddressProcessingServiceException>(bulkAddTask.AsTask);
+                await Assert.ThrowsAsync<ResolvedAddressProcessingServiceException>(bulkModifyTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressProcessingServiveException);
 
             this.resolvedAddressServiceMock.Verify(service =>
-                service.BulkAddResolvedAddressesAsync(inputResolvedAddresses, someFileName),
+                service.BulkModifyResolvedAddressesAsync(inputResolvedAddresses),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

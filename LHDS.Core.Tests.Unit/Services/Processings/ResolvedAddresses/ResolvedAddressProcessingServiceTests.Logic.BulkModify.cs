@@ -24,7 +24,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                 .BulkModifyResolvedAddressesAsync(resolvedAddresses: inputResolvedAddresses);
 
             // Then
-
             this.resolvedAddressServiceMock.Verify(service =>
                 service.BulkModifyResolvedAddressesAsync(inputResolvedAddresses),
                     Times.Once);

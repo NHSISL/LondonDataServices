@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Assigns
 
             var expectedAssignValidationException =
                 new AssignValidationException(
-                    message: "Assign processing validation errors occurred, please try again.",
+                    message: "Assign validation errors occurred, please try again.",
                     innerException: invalidAssignAddressException);
 
             // when

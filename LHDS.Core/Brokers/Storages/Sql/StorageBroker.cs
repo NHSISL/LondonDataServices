@@ -60,14 +60,14 @@ namespace LHDS.Core.Brokers.Storages.Sql
             objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Added);
             this.AddRange(objects);
             await this.SaveChangesAsync();
-            DetachSavedEntities(objects);
+            objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Detached);
         }
 
         private async ValueTask<T> InsertAsync<T>(T @object)
         {
             this.Entry(@object).State = EntityState.Added;
             await this.SaveChangesAsync();
-            DetachSavedEntity(@object);
+            this.Entry(@object).State = EntityState.Detached;
 
             return @object;
         }
@@ -81,7 +81,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
         {
             this.Entry(@object).State = EntityState.Modified;
             await this.SaveChangesAsync();
-            DetachSavedEntity(@object);
+            this.Entry(@object).State = EntityState.Detached;
 
             return @object;
         }
@@ -91,25 +91,16 @@ namespace LHDS.Core.Brokers.Storages.Sql
             objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Modified);
             this.AddRange(objects);
             await this.SaveChangesAsync();
-            DetachSavedEntities(objects);
+            objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Detached);
         }
 
         private async ValueTask<T> DeleteAsync<T>(T @object)
         {
             this.Entry(@object).State = EntityState.Deleted;
             await this.SaveChangesAsync();
+            this.Entry(@object).State = EntityState.Detached;
 
             return @object;
-        }
-
-        private void DetachSavedEntities<T>(IEnumerable<T> @objects)
-        {
-            objects.ToList().ForEach(DetachSavedEntity);
-        }
-
-        private void DetachSavedEntity<T>(T @object)
-        {
-            this.Entry(@object).State = EntityState.Detached;
         }
     }
 }

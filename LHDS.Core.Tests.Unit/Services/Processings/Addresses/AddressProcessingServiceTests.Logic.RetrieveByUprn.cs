@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
 using Moq;
 using Xunit;
@@ -18,22 +17,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
         [Fact]
         public async Task ShouldRetrieveAddressByUprnAsync()
         {
-            //given
-            string randomString = GetRandomString();
-            string inputUPRN = randomString;
+            // given
+            string inputUPRN = "testUPRN";
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
-            List<Address> expectedAddresses = randomAddresses.DeepClone();
+            Address expectedAddress = randomAddresses.First();
+            expectedAddress.UPRN = inputUPRN;
 
             this.addressServiceMock.Setup(service =>
                 service.RetrieveAllAddresses())
-                    .Returns(expectedAddresses.AsQueryable());
+                    .Returns(randomAddresses.AsQueryable());
 
             // when
-            Address actualAddresses =
+            Address? actualAddress =
                 await this.addressProcessingService.RetrieveAddressByUPRNAsync(inputUPRN);
 
             // then
-            actualAddresses.Should().BeEquivalentTo(expectedAddresses);
+            actualAddress.Should().BeEquivalentTo(expectedAddress);
 
             this.addressServiceMock.Verify(service =>
                 service.RetrieveAllAddresses(),

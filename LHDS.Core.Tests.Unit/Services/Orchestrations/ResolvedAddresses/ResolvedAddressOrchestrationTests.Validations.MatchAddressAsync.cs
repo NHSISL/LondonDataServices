@@ -24,6 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: GetRandomNumber());
             List<ResolvedAddress> unmatchedResolvedAddresses = randomResolvedAddresses;
+            List<Exception> exceptions = new List<Exception>();
 
             string inputResolvedAddress = unmatchedResolvedAddresses
                 .FirstOrDefault().UnstructuredPostalAddress;
@@ -65,25 +66,47 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 key: "UPRN",
                 values: "UPRN is required");
 
-            var expectedResolvedAddressOrchestrationValidationException =
+            var resolvedAddressOrchestrationValidationException =
                 new ResolvedAddressOrchestrationValidationException(
                     message: "Resolved address validation errors occured, please try again.",
                     innerException: nullUPRNResolvedAddressOrchestrationException);
 
+            foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
+            {
+                exceptions.Add(resolvedAddressOrchestrationValidationException);
+            }
+
+            var aggregateException =
+               new AggregateException(
+                   $"Unable to retrieve {exceptions.Count} resolved addresses.",
+                   exceptions);
+
+            var failedResolvedAddressOrchestrationServiceException =
+                new FailedResolvedAddressOrchestrationServiceException(
+                    message: "Failed resolved address aggregate orchestration service errors occurred" +
+                        ", please contact support.",
+                    innerException: aggregateException);
+
+            var expectedResolvedAddressOrchestrationServiceException =
+                new ResolvedAddressOrchestrationServiceException(
+                    message:
+                        "Resolved address orchestration service error occurred, please contact support.",
+                    failedResolvedAddressOrchestrationServiceException);
+
             // when
             ValueTask matchAddressesTask = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
-            ResolvedAddressOrchestrationValidationException actualResolvedAddressOrchestrationValidationException =
-                await Assert.ThrowsAsync<ResolvedAddressOrchestrationValidationException>(
+            ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationValidationException =
+                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(
                     matchAddressesTask.AsTask);
 
             // then
             actualResolvedAddressOrchestrationValidationException.Should()
-                .BeEquivalentTo(expectedResolvedAddressOrchestrationValidationException);
+                .BeEquivalentTo(expectedResolvedAddressOrchestrationServiceException);
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>
               service.RetrieveAllResolvedAddresses(),
-                  Times.Once());
+                  Times.Exactly(2));
 
             this.dateTimeBrokerMock.Verify(broker =>
               broker.GetCurrentDateTimeOffset(),
@@ -98,9 +121,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedResolvedAddressOrchestrationValidationException))),
-                       Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    resolvedAddressOrchestrationValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedResolvedAddressOrchestrationServiceException))),
+                        Times.Once);
 
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();

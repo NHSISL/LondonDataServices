@@ -18,6 +18,7 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
@@ -271,13 +272,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             return new TheoryData<Xeption>
             {
-            //    new DocumentProcessingValidationException(
-            //        message: "Document processing validation error occured, please try again",
-            //        innerException),
+                new DocumentProcessingValidationException(
+                    message: "Document processing validation error occured, please try again",
+                    innerException),
 
-            //    new DocumentProcessingDependencyValidationException(
-            //        message: "Document processing dependency validation error occurred, please try again.",
-            //        innerException),
+                new DocumentProcessingDependencyValidationException(
+                    message: "Document processing dependency validation error occurred, please try again.",
+                    innerException),
 
                 new ResolvedAddressProcessingValidationException(
                     message: "Resolved address processing validation error occured, please try again",
@@ -299,13 +300,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             return new TheoryData<Xeption>
             {
-                //new DocumentProcessingDependencyException(
-                //    message: "Document processing dependency error occurred, please contact support.",
-                //    innerException),
+                new DocumentProcessingDependencyException(
+                    message: "Document processing dependency error occurred, please contact support.",
+                    innerException),
 
-                //new DocumentProcessingServiceException(
-                //    message: "Document processing service error occurred, please contact support.",
-                //    innerException),
+                new DocumentProcessingServiceException(
+                    message: "Document processing service error occurred, please contact support.",
+                    innerException),
 
                 new ResolvedAddressProcessingDependencyException(
                     message: "Resolved address processing dependency error occurred, please contact support.",

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
@@ -21,20 +22,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         {
             //Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses();
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: GetRandomNumber());
             List<ResolvedAddress> unmatchedResolvedAddresses = randomResolvedAddresses;
-            string inputResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().UnstructuredPostalAddress;
+
+            string inputResolvedAddress = unmatchedResolvedAddresses
+                .FirstOrDefault().UnstructuredPostalAddress;
 
             AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
             AssignAddress storageAssignAddress = randomAssignAddress;
-
-            //AssignAddress assignAddress = await randomAssignAddress;
             string matchedUprn = storageAssignAddress.UPRN.ToString();
 
-            ValueTask<Address?> randomAddress = CreateRandomAddress(randomDateTimeOffset);
-            ValueTask<Address?> storageAddress = randomAddress;
-            Address? ordananceAddress = await storageAddress;
+            Address? randomAddress = CreateRandomAddress(randomDateTimeOffset);
+            Address? storageAddress = randomAddress;
+            Address? ordananceAddress = storageAddress;
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
                service.RetrieveAllResolvedAddresses())
@@ -45,14 +45,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTimeOffset);
 
-            ResolvedAddress processingResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault();
-            processingResolvedAddress.IsProcessing = true;
-            processingResolvedAddress.RetryCount += 1;
-            processingResolvedAddress.UpdatedDate = randomDateTimeOffset;
+            ResolvedAddress processingResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().DeepClone();
+            ResolvedAddress lockedResolvedAddress = processingResolvedAddress;
+            lockedResolvedAddress.IsProcessing = true;
+            lockedResolvedAddress.RetryCount += 1;
+            lockedResolvedAddress.UpdatedDate = randomDateTimeOffset;
+            ResolvedAddress foundAddress = lockedResolvedAddress.DeepClone();
+            ResolvedAddress foundAddressLocked = foundAddress.DeepClone();
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
-                processing.ModifyResolvedAddressAsync(processingResolvedAddress))
-                    .ReturnsAsync(processingResolvedAddress);
+                processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(lockedResolvedAddress))))
+                    .ReturnsAsync(foundAddress);
 
             this.assignProcessingServiceMock.Setup(processing =>
                 processing.MatchAddressAsync(inputResolvedAddress))
@@ -60,10 +63,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.addressProcessingServiceMock.Setup(processing =>
                 processing.RetrieveAddressByUPRNAsync(matchedUprn))
-                    .Returns(storageAddress);
+                    .ReturnsAsync(storageAddress);
 
             ResolvedAddress newResolvedAddress =
-                MapOrdananceWithAssign(storageAssignAddress, ordananceAddress, processingResolvedAddress);
+                MapOrdananceWithAssign(
+                    foundAddressLocked,
+                    storageAssignAddress,
+                    ordananceAddress);
+
+            newResolvedAddress.UpdatedDate = randomDateTimeOffset;
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
                processing.ModifyResolvedAddressAsync(newResolvedAddress))
@@ -82,16 +90,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    Times.Exactly(2));
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
-                processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(processingResolvedAddress))),
-                    Times.Exactly(2));
+                 processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(lockedResolvedAddress))),
+                     Times.Once());
+
+            //It.Is(SameResolvedAddressAs(
+
+            this.resolvedAddressProcessingServiceMock.Verify(processing =>
+               processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(newResolvedAddress))),
+                   Times.Once());
 
             this.assignProcessingServiceMock.Verify(processing =>
                 processing.MatchAddressAsync(inputResolvedAddress),
-                    Times.Once);
+                    Times.Once());
 
             this.addressProcessingServiceMock.Verify(processing =>
                 processing.RetrieveAddressByUPRNAsync(matchedUprn),
-                    Times.Once);
+                    Times.Once());
 
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
@@ -104,12 +118,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         }
 
         private static ResolvedAddress MapOrdananceWithAssign(
+            ResolvedAddress processingResolvedAddress,
             AssignAddress assignAddress,
-            Address? ordananceAddress,
-            ResolvedAddress processingResolvedAddress)
+            Address? ordananceAddress)
         {
-            DateTimeOffset randomUpdateDateTimeOffset = GetRandomDateTimeOffset();
-
             ResolvedAddress newResolvedAddress = processingResolvedAddress;
             newResolvedAddress.UPSN = ordananceAddress.UPSN ?? null;
             newResolvedAddress.OrganisationName = ordananceAddress.OrganisationName;
@@ -132,7 +144,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             newResolvedAddress.MatchPattern = assignAddress.MatchPattern.ToString();
             newResolvedAddress.IsProcessing = false;
             newResolvedAddress.IsExported = false;
-            newResolvedAddress.UpdatedDate = randomUpdateDateTimeOffset;
+            newResolvedAddress.RetryCount = 0;
+
             return newResolvedAddress;
         }
     }

@@ -78,6 +78,16 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
                 throw CreateAndLogDependencyException(csvHelperClientServiceException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedResolvedAddressOrchestrationServiceException =
+                    new FailedResolvedAddressOrchestrationServiceException(
+                        message: "Failed resolved address aggregate orchestration service errors occurred, " +
+                            "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedResolvedAddressOrchestrationServiceException);
+            }
             catch (Exception exception)
             {
                 var failedResolvedAddressOrchestrationServiceException =
@@ -150,7 +160,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
                 var failedFailedResolvedAddressOrchestrationServiceException =
                     new FailedResolvedAddressOrchestrationServiceException(
-                        message: "Failed resolved address aggregate orchestration service error occurred, " +
+                        message: "Failed resolved address aggregate orchestration service errors occurred, " +
                             "please contact support.",
                         innerException: aggregateException);
 
@@ -185,7 +195,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             var resolvedAddressOrchestrationDependencyValidationException =
                 new ResolvedAddressOrchestrationDependencyValidationException(
-                    message: "Resolved address orchestration dependency validation error occurred, please try again.",
+                    message: "Resolved address orchestration dependency validation errors occurred, please try again.",
                     exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(resolvedAddressOrchestrationDependencyValidationException);

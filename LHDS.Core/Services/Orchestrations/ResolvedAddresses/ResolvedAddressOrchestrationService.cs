@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -55,8 +56,30 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             this.blobContainers = blobContainers;
         }
 
-        public ValueTask UploadAddressesToReslveAsync(Stream input, string fileName)
+        public ValueTask UploadAddressesToReslveAsync(Stream input, string fileName) =>
+        TryCatch(async () =>
         {
+            ValidateOnUploadAddressesToResolve(input, fileName);
+
+            using (StreamReader streamReader = new StreamReader(input))
+            {
+                input.Position = 0;
+                string content = streamReader.ReadToEnd();
+
+                Dictionary<string, int> fieldMappings =
+                    new Dictionary<string, int>
+                    {
+                        { nameof(ResolvedAddress.UniqueReference), 0 },
+                        { nameof(ResolvedAddress.UnstructuredPostalAddress), 2 }
+                    };
+
+                List<ResolvedAddress> resolvedAddresses = await this.csvHelperBroker
+                    .MapCsvToObjectAsync<ResolvedAddress>(data: content, hasHeaderRecord: true, fieldMappings);
+
+                await this.resolvedAddressProcessingService
+                    .BulkAddResolvedAddressesAsync(resolvedAddresses, fileName);
+            }
+        });
             throw new NotImplementedException();
         }
 
@@ -133,86 +156,26 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             return UpdatedResolovedAddress;
         }
 
-        public ValueTask<Guid?> ExportResolvedAddressesAsync() =>
+        public ValueTask<List<Guid>> ExportResolvedAddressesAsync() =>
             TryCatch(async () =>
             {
                 throw new NotImplementedException();
 
-                return await ValueTask.FromResult<Guid?>(null);
+                List<Guid> batchReferenceIds = new List<Guid>();
 
-                //List<ResolvedAddress> resolvedAddresses =
-                //    this.resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
-                //        .Where(resolvedAddresses => resolvedAddresses.IsMatched == true
-                //            && resolvedAddresses.IsProcessed == false).ToList();
+                // 1) Create a while loop to fetch the top 10,000 items where
+                //    Matched = true, IsProcessing = false, IsExported = false and retry count <= 3
+                // 2) Bulk update the items to set IsProcessing = true,
+                //    BatchReference = batchReferenceId, retrycount += 1
+                // 3) Create a CSV file with the data
+                // 4) Upload the CSV file to the blob storage
+                // 5) Bulk update the batch of items to set IsProcessing = false
+                // 6) Add aggregate exception handling to catch excetions in the while loop.
+                //    If any exceptions are caught, log them and continue reset all items in that bacth to
+                //    IsProcessing = false, IsExported = false and increment the retry count by 1.
+                // 7) Return the batchReferenceIds
 
-                //if (resolvedAddresses.Count > 0)
-                //{
-                //    List<ResolvedAddressReturn> returnAddresses = resolvedAddresses.Select(resolvedAddress =>
-                //        new ResolvedAddressReturn
-                //        {
-                //            UniqueReference = resolvedAddress.UniqueReference,
-                //            UPRN = resolvedAddress.MatchedUPRN,
-                //            UPSN = resolvedAddress.MatchedUPSN,
-                //            OrganisationName = resolvedAddress.MatchedOrganisationName,
-                //            DepartmentName = resolvedAddress.MatchedDepartmentName,
-                //            SubBuildingName = resolvedAddress.MatchedSubBuildingName,
-                //            BuildingName = resolvedAddress.MatchedBuildingName,
-                //            BuildingNumber = resolvedAddress.MatchedBuildingNumber,
-                //            DependentThoroughfare = resolvedAddress.MatchedDependentThoroughfare,
-                //            Thoroughfare = resolvedAddress.MatchedThoroughfare,
-                //            DoubleDependentLocality = resolvedAddress.MatchedDoubleDependentLocality,
-                //            DependentLocality = resolvedAddress.MatchedDependentLocality,
-                //            PostTown = resolvedAddress.MatchedPostTown,
-                //            PostCode = resolvedAddress.MatchedPostCode,
-                //        }).ToList();
-
-                //    string resolvedAddressesCsv =
-                //        await this.csvHelperBroker.MapObjectToCsvAsync(returnAddresses, false, null, true);
-
-                //    Guid batchReferenceId = identifierBroker.GetIdentifier();
-                //    string fileName = $"{batchReferenceId}.csv";
-                //    byte[] documentData = Encoding.UTF8.GetBytes(resolvedAddressesCsv);
-                //    string container = blobContainers.Addresses;
-                //    var exceptions = new List<Exception>();
-
-                //    using (Stream input = new MemoryStream(documentData))
-                //    {
-                //        await this.documentProcessingService.AddDocumentAsync(input, fileName, container);
-                //    }
-
-                //    foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
-                //    {
-                //        try
-                //        {
-                //            await TryCatch(async () =>
-                //            {
-                //                resolvedAddress.IsProcessed = true;
-                //                resolvedAddress.BatchReference = batchReferenceId;
-                //                resolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
-                //                await this.resolvedAddressProcessingService.ModifyResolvedAddressAsync(resolvedAddress);
-                //            });
-                //        }
-                //        catch (Exception ex)
-                //        {
-                //            exceptions.Add(ex);
-                //        }
-                //    }
-
-                //    if (exceptions.Any())
-                //    {
-                //        throw new AggregateException(
-                //            message: $"Unable to modify resolved address for {exceptions.Count} resolved addresses " +
-                //                $"in batch: {batchReferenceId}",
-                //            exceptions);
-                //    }
-
-                //    return batchReferenceId;
-                //}
-                //else
-                //{
-                //    return null;
-                //}
-
+                return await ValueTask.FromResult(batchReferenceIds);
             });
     }
 }

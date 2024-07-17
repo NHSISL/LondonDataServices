@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             var expectedDependencyException =
                 new PdsOrchestrationDependencyValidationException(
-                    message: "PDS orchestration validation errors occurred, please try again.",
+                    message: "PDS orchestration dependency validation errors occurred, fix the errors and try again.",
                     dependancyValidationException.InnerException as Xeption);
 
             this.dateTimeBrokerMock.Setup(broker =>

@@ -39,7 +39,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Assigns
 
             this.assignBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-
         }
     }
 }

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
@@ -104,5 +105,52 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnMatchIfServiceErrorOccursAsync()
+        {
+            // given
+            var serviceException = new Exception();
+
+            var failedResolvedAddressOrchestrationServiceException =
+                new FailedResolvedAddressOrchestrationServiceException(
+                    message: "Failed resolved address orchestration service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var expectedResolvedAddressOrchestrationServiveException =
+                new ResolvedAddressOrchestrationServiceException(
+                    message: "Resolved address orchestration service error occurred, please contact support.",
+                    innerException: failedResolvedAddressOrchestrationServiceException);
+
+            this.resolvedAddressProcessingServiceMock.Setup(service =>
+                service.RetrieveAllResolvedAddresses())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+
+            ResolvedAddressOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(action.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationServiveException);
+
+            this.resolvedAddressProcessingServiceMock.Verify(service =>
+                service.RetrieveAllResolvedAddresses(),
+                    Times.Once);
+
+            loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedResolvedAddressOrchestrationServiveException))),
+                         Times.Once);
+
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
+            this.assignProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

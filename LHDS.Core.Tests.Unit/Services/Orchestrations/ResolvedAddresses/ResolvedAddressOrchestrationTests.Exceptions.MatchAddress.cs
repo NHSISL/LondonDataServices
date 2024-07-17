@@ -345,5 +345,96 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowAggregateServiceExceptionOnMatchErrorsInLoopAndLogItAsync()
+        {
+            // Given
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 1);
+            List<Exception> exceptions = new List<Exception>();
+            var serviceException = new Exception();
+
+            this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
+               service.RetrieveAllResolvedAddresses())
+                   .Returns(randomResolvedAddresses.AsQueryable())
+                   .Returns(new List<ResolvedAddress>().AsQueryable());
+
+            var innerFailedResolvedAddressOrchestrationServiceException =
+                new FailedResolvedAddressOrchestrationServiceException(
+                    message: "Failed resolved address orchestration service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var innerResolvedAddressOrchestrationServiceException =
+                new ResolvedAddressOrchestrationServiceException(
+                    message: "Resolved address orchestration service error occurred, please contact support.",
+                    innerException: innerFailedResolvedAddressOrchestrationServiceException);
+
+            foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
+            {
+                this.resolvedAddressProcessingServiceMock.Setup(processing =>
+                    processing.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
+                        .ThrowsAsync(serviceException);
+
+                exceptions.Add(innerResolvedAddressOrchestrationServiceException);
+            }
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to retrieve message for {exceptions.Count} message IDs",
+                    exceptions);
+
+            var failedResolvedAddressOrchestrationServiceException =
+                new FailedResolvedAddressOrchestrationServiceException(
+                    message: "Failed resolved address aggregate orchestration service errors occurred, " +
+                        "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedResolvedAddressOrchestrationServiceException =
+                new ResolvedAddressOrchestrationServiceException(
+                    message: "Resolved address orchestration service error occurred, please contact support.",
+                    innerException: failedResolvedAddressOrchestrationServiceException);
+
+            // When
+            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+
+            ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
+               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
+                   await action);
+
+            // Then
+            actualResolvedAddressOrchestrationServiceException.Should()
+               .BeEquivalentTo(expectedResolvedAddressOrchestrationServiceException);
+
+            this.resolvedAddressProcessingServiceMock.Verify(processing =>
+               processing.RetrieveAllResolvedAddresses(),
+                   Times.Exactly(randomResolvedAddresses.Count + 1));
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.resolvedAddressProcessingServiceMock.Verify(processing =>
+                processing.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                    Times.Exactly(randomResolvedAddresses.Count));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    innerResolvedAddressOrchestrationServiceException))),
+                        Times.Exactly(randomResolvedAddresses.Count));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    actualResolvedAddressOrchestrationServiceException))),
+                        Times.Once);
+
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
+            this.assignProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

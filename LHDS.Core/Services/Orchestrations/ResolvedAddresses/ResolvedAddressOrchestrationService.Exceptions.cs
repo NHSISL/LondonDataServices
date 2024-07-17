@@ -208,7 +208,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             var resolvedAddressOrchestrationDependencyException =
                 new ResolvedAddressOrchestrationDependencyException(
-                    message: "Resolved address orchestration dependency error occurred, please try again.",
+                    message: "Resolved address orchestration dependency errors occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(resolvedAddressOrchestrationDependencyException);

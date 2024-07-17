@@ -66,7 +66,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 ResolvedAddress? unMatchedResolvedAddress;
 
                 while ((unMatchedResolvedAddress = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
-                    .FirstOrDefault(x => !x.Matched && !x.IsProcessing && x.RetryCount < 4)) != null)
+                    .FirstOrDefault(x => x.Matched == false && x.IsProcessing == false && x.RetryCount < 4)) != null)
                 {
                     if (unMatchedResolvedAddress != null)
                     {
@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         unMatchedResolvedAddress.RetryCount += 1;
                         unMatchedResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
 
-                        await resolvedAddressProcessingService.
+                        ResolvedAddress updatedAddress = await resolvedAddressProcessingService.
                             ModifyResolvedAddressAsync(unMatchedResolvedAddress);
 
                         AssignAddress foundAssignAddress =
@@ -89,14 +89,14 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                         ResolvedAddress newResolvedAddress =
                             MapOrdananceWithAssign(
-                                unMatchedResolvedAddress,
-                            foundAssignAddress,
-                            foundOrdananceAddress);
+                                updatedAddress,
+                                foundAssignAddress,
+                                foundOrdananceAddress);
 
                         newResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
 
                         await resolvedAddressProcessingService
-                            .ModifyResolvedAddressAsync(unMatchedResolvedAddress);
+                            .ModifyResolvedAddressAsync(newResolvedAddress);
                     }
                 }
             });
@@ -107,7 +107,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             Address? foundOrdananceAddress)
         {
             ResolvedAddress UpdatedResolovedAddress = unMatchedResolvedAddress;
-            UpdatedResolovedAddress.IsProcessing = false;
             UpdatedResolovedAddress.UPSN = foundOrdananceAddress.UPSN ?? null;
             UpdatedResolovedAddress.OrganisationName = foundOrdananceAddress.OrganisationName;
             UpdatedResolovedAddress.DepartmentName = foundOrdananceAddress.DepartmentName;
@@ -129,6 +128,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             UpdatedResolovedAddress.MatchPattern = foundAssignAddress.MatchPattern.ToString();
             UpdatedResolovedAddress.IsProcessing = false;
             UpdatedResolovedAddress.IsExported = false;
+            UpdatedResolovedAddress.RetryCount = 0;
 
             return UpdatedResolovedAddress;
         }

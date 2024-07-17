@@ -56,7 +56,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             this.blobContainers = blobContainers;
         }
 
-        public ValueTask UploadAddressesToReslveAsync(Stream input, string fileName) =>
+        public ValueTask UploadAddressesToResolveAsync(Stream input, string fileName) =>
         TryCatch(async () =>
         {
             ValidateOnUploadAddressesToResolve(input, fileName);

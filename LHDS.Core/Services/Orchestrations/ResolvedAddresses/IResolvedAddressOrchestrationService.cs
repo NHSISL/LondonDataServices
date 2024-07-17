@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 {
     public interface IResolvedAddressOrchestrationService
     {
-        ValueTask UploadAddressesToReslveAsync(Stream input, string fileName);
+        ValueTask UploadAddressesToResolveAsync(Stream input, string fileName);
         ValueTask MatchAddressDataAsync();
         ValueTask<List<Guid>> ExportResolvedAddressesAsync();
     }

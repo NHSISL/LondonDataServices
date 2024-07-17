@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -61,7 +62,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 await this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
             });
 
-        public ValueTask<Guid?> ExportResolvedAddressesAsync() =>
+        public ValueTask<List<Guid>> ExportResolvedAddressesAsync() =>
             TryCatch(async () =>
             {
                 return await this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();

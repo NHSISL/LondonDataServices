@@ -19,7 +19,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<ResolvedAddress> ReturningResolvedAddressFunction();
-        private delegate ValueTask<Guid?> ReturningGuidFunction();
+        private delegate ValueTask<List<Guid>> ReturningGuidListFunction();
 
         private async ValueTask<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
         {
@@ -223,11 +223,11 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             }
         }
 
-        private async ValueTask<Guid?> TryCatch(ReturningGuidFunction returningGuidFunction)
+        private async ValueTask<List<Guid>> TryCatch(ReturningGuidListFunction returningGuidListFunction)
         {
             try
             {
-                return await returningGuidFunction();
+                return await returningGuidListFunction();
             }
             catch (InvalidArgumentAddressCoordinationException invalidArgumentAddressCoordinationException)
             {

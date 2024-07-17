@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -12,6 +13,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
     {
         ValueTask UploadAddressesToReslveAsync(Stream input, string fileName);
         ValueTask MatchAddressDataAsync();
-        ValueTask<Guid?> ExportResolvedAddressesAsync();
+        ValueTask<List<Guid>> ExportResolvedAddressesAsync();
     }
 }

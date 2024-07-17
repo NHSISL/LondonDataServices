@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var expectedResolvedAddressOrchestrationDependencyValidationException =
                 new ResolvedAddressOrchestrationDependencyValidationException(
-                    message: "Resolved address orchestration dependency validation error occurred, " +
+                    message: "Resolved address orchestration dependency validation errors occurred, " +
                         "please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
@@ -99,7 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var expectedResolvedAddressOrchestrationDependencyException =
                 new ResolvedAddressOrchestrationDependencyException(
-                    message: "Resolved address orchestration dependency error occurred, " +
+                    message: "Resolved address orchestration dependency errors occurred, " +
                         "please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 

@@ -49,6 +49,12 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
+        private void ValidateOnBulkModifyResolvedAddresses(List<ResolvedAddress> resolvedAddresses)
+        {
+            Validate(
+                (Rule: IsInvalid(resolvedAddresses), Parameter: nameof(resolvedAddresses)));
+        }
+
         private void ValidateResolvedAddressOnModify(ResolvedAddress resolvedAddress)
         {
             ValidateResolvedAddressIsNotNull(resolvedAddress);

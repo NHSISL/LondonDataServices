@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
@@ -97,20 +96,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
            ResolvedAddress expectedResolvedAddress)
         {
             return actualResolvedAddress =>
-               IsSameResolvedAddress(expectedResolvedAddress, actualResolvedAddress);
-        }
-
-        private bool IsSameResolvedAddress(ResolvedAddress expectedResolvedAddress, ResolvedAddress actualResolvedAddress)
-        {
-            try
-            {
-                actualResolvedAddress.Should().BeEquivalentTo(expectedResolvedAddress);
-            }
-            catch (Exception ex)
-            {
-                output.WriteLine(ex.Message);
-            }
-            return this.compareLogic.Compare(expectedResolvedAddress, actualResolvedAddress)
+                this.compareLogic.Compare(expectedResolvedAddress, actualResolvedAddress)
                     .AreEqual;
         }
 

@@ -85,40 +85,59 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         TryCatch(async () =>
         {
             ResolvedAddress? unMatchedResolvedAddress;
+            var resolvedAddressAudits = new List<ResolvedAddress>();
+            var exceptions = new List<Exception>();
 
             while ((unMatchedResolvedAddress = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
                 .FirstOrDefault(x => x.Matched == false && x.IsProcessing == false && x.RetryCount < 4)) != null)
             {
                 if (unMatchedResolvedAddress != null)
                 {
-                    unMatchedResolvedAddress.IsProcessing = true;
-                    unMatchedResolvedAddress.RetryCount += 1;
-                    unMatchedResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                    try
+                    {
+                        await TryCatch(async () =>
+                        {
+                            unMatchedResolvedAddress.IsProcessing = true;
+                            unMatchedResolvedAddress.RetryCount += 1;
+                            unMatchedResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
 
-                    ResolvedAddress updatedAddress = await resolvedAddressProcessingService.
-                        ModifyResolvedAddressAsync(unMatchedResolvedAddress);
+                            ResolvedAddress updatedAddress = await resolvedAddressProcessingService.
+                                ModifyResolvedAddressAsync(unMatchedResolvedAddress);
 
-                    AssignAddress foundAssignAddress =
-                        await assignProcessingService.MatchAddressAsync(
-                            unMatchedResolvedAddress.UnstructuredPostalAddress);
+                            AssignAddress foundAssignAddress =
+                                await assignProcessingService.MatchAddressAsync(
+                                    unMatchedResolvedAddress.UnstructuredPostalAddress);
 
-                    ValidateUPRNHasValue(foundAssignAddress.UPRN);
+                            ValidateUPRNHasValue(foundAssignAddress.UPRN);
 
-                    Address? foundOrdananceAddress =
-                        await addressProcessingService
-                            .RetrieveAddressByUPRNAsync(foundAssignAddress.UPRN.ToString());
+                            Address? foundOrdananceAddress =
+                                await addressProcessingService
+                                    .RetrieveAddressByUPRNAsync(foundAssignAddress.UPRN.ToString());
 
-                    ResolvedAddress newResolvedAddress =
-                        MapOrdananceWithAssign(
-                            updatedAddress,
-                            foundAssignAddress,
-                            foundOrdananceAddress);
+                            ResolvedAddress newResolvedAddress =
+                                MapOrdananceWithAssign(
+                                    updatedAddress,
+                                    foundAssignAddress,
+                                    foundOrdananceAddress);
 
-                    newResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                            newResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
 
-                    await resolvedAddressProcessingService
-                        .ModifyResolvedAddressAsync(newResolvedAddress);
+                            await resolvedAddressProcessingService
+                                .ModifyResolvedAddressAsync(newResolvedAddress);
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
                 }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Unable to retrieve message for {exceptions.Count} ResolvedAddresses",
+                    exceptions);
             }
         });
 

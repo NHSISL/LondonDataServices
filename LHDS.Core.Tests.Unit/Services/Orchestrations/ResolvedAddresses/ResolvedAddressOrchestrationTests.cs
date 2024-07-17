@@ -235,9 +235,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             var filler = new Filler<AssignAddress>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(assignAddress => assignAddress.CreatedBy).Use(user)
-                .OnProperty(assignAddress => assignAddress.UpdatedBy).Use(user);
+                .OnType<DateTimeOffset>().Use(dateTimeOffset);
 
             return filler;
         }

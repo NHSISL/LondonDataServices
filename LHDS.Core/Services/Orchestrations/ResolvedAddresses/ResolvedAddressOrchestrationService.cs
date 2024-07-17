@@ -80,8 +80,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     .BulkAddResolvedAddressesAsync(resolvedAddresses, fileName);
             }
         });
-            throw new NotImplementedException();
-        }
 
         public ValueTask MatchAddressDataAsync() =>
             TryCatch(async () =>

@@ -2,30 +2,27 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Threading.Tasks;
 using LHDS.Core.Brokers.Assigns;
-using LHDS.Core.Brokers.Audits;
-using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.AssignAddresses;
 
 namespace LHDS.Core.Services.Foundations.Assigns
 {
     internal class AssignService : IAssignService
     {
         private readonly IAssignBroker assignBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
-        private readonly IAuditBroker auditBroker;
 
         public AssignService(
             IAssignBroker assignBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker,
-            IAuditBroker auditBroker)
+            ILoggingBroker loggingBroker)
         {
             this.assignBroker = assignBroker;
-            this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
-            this.auditBroker = auditBroker;
         }
+
+        public ValueTask<AssignAddress> MatchAddressAsync(string address) =>
+            throw new System.NotImplementedException();
     }
 }

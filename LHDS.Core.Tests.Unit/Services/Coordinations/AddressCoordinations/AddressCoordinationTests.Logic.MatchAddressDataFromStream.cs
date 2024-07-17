@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             // Then
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.UploadAddressesToReslveAsync(inputStream, someFilename),
+                service.UploadAddressesToResolveAsync(inputStream, someFilename),
                     Times.Once());
 
             this.addressOrchestrationServiceMock.VerifyNoOtherCalls();

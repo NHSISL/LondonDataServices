@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             // When
             ValueTask uploadResolvedAddressTask = this.resolvedAddressOrchestrationService
-                .UploadAddressesToReslveAsync(input: someStream, fileName: someFileName);
+                .UploadAddressesToResolveAsync(input: someStream, fileName: someFileName);
 
             ResolvedAddressOrchestrationDependencyValidationException
                 actualResolvedAddressOrchestrationDependencyValidationException =
@@ -107,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             // When
             ValueTask uploadResolvedAddressTask = this.resolvedAddressOrchestrationService
-                .UploadAddressesToReslveAsync(input: someStream, fileName: someFileName);
+                .UploadAddressesToResolveAsync(input: someStream, fileName: someFileName);
 
             ResolvedAddressOrchestrationDependencyException
                 actualResolvedAddressOrchestrationDependencyException =
@@ -168,7 +168,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             // When
             ValueTask uploadResolvedAddressTask = this.resolvedAddressOrchestrationService
-                .UploadAddressesToReslveAsync(input: someStream, fileName: someFileName);
+                .UploadAddressesToResolveAsync(input: someStream, fileName: someFileName);
 
             ResolvedAddressOrchestrationServiceException
                 actualResolvedAddressOrchestrationServiceException =

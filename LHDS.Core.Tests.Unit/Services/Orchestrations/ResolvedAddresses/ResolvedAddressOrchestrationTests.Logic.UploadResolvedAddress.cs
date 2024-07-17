@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             // When
             await this.resolvedAddressOrchestrationService
-                .UploadAddressesToReslveAsync(input: inputStream, fileName: inputFileName);
+                .UploadAddressesToResolveAsync(input: inputStream, fileName: inputFileName);
 
             // Then
 

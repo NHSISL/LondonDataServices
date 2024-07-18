@@ -146,6 +146,36 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             return filler;
         }
 
+        private static List<ResolvedAddress> CreateRandomUnmatchedAddresses(int count)
+        {
+            var fillers = Enumerable.Range(1, count)
+                                    .Select(_ => CreateUnmatchedAddressFiller())
+                                    .ToList();
+
+            var result = fillers.Select(filler => filler.Create()).ToList();
+
+            return result.ToList();
+        }
+
+        private static Filler<ResolvedAddress> CreateUnmatchedAddressFiller()
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTimeOffset dateTimeOffset = DateTimeOffset.Now;
+
+            var filler = new Filler<ResolvedAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(resolvedAddress => resolvedAddress.Matched).Use(false)
+                .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(false)
+                .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(1)
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
         private static List<ResolvedAddressReturn> MapToResolvedAddressReturn(List<ResolvedAddress> resolvedAddresses)
         {
             List<ResolvedAddressReturn> returnAddresses = resolvedAddresses.Select(resolvedAddress =>

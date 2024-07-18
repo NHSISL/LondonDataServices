@@ -88,7 +88,9 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 //    BatchReference = batchReferenceId, retrycount += 1
                 // 3) Create a CSV file with the data
                 // 4) Upload the CSV file to the blob storage
+
                 // 5) Bulk update the batch of items to set IsProcessing = false
+
                 // 6) Add aggregate exception handling to catch excetions in the while loop.
                 //    If any exceptions are caught, log them and continue reset all items in that bacth to
                 //    IsProcessing = false, IsExported = false and increment the retry count by 1.

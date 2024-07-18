@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: failedAddressCoordinationServiceException);
 
             this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.UploadAddressesToResolveAsync(someStream, someFilename))
+                service.UploadAddressesToResolveAsync(It.IsAny<Stream>(), It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
             // when

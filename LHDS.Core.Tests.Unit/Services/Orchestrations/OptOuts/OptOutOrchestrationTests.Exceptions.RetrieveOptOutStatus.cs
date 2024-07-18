@@ -20,6 +20,116 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
     {
         [Theory]
         [MemberData(nameof(OptOutDependencyValidationExceptions))]
+        public async Task
+            ShouldThrowAggregateDependencyValidationExceptionOnRetrieveStatusIfErrorsInLoopAndLogItAsync(
+            Xeption dependencyValidationException)
+        {
+            // Given
+            List<Exception> exceptions = new List<Exception>();
+            bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+            Dictionary<string, int> fieldMappings = null;
+            Guid identifier = Guid.NewGuid();
+            bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
+            var randomString = GetRandomString();
+            var inputString = randomString;
+            var inputBytes = Encoding.UTF8.GetBytes(inputString);
+            Stream inputStream = new MemoryStream(inputBytes);
+            var randomRecieveName = $"{GetRandomString()}.csv";
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset expireDate = randomDateTimeOffset.AddDays(-optOutConfiguration.ExpiredAfterDays);
+            List<OptOutIdentifier> randomOptOuts = CreateRandomOptOutIdentifiersList();
+            List<OptOutIdentifier> outputOptOuts = randomOptOuts;
+            string inputContainer = "optout";
+
+            this.csvHelperBrokerMock.Setup(processing =>
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))
+                    .ReturnsAsync(outputOptOuts);
+
+            this.identifierBrokerMock.Setup(processing =>
+                processing.GetIdentifier())
+                    .Returns(identifier);
+
+            foreach (var optOut in outputOptOuts)
+            {
+                this.dateTimeBrokerMock.Setup(broker =>
+                    broker.GetCurrentDateTimeOffset())
+                        .Throws(dependencyValidationException);
+
+                var optOutOrchestrationDependencyValidationException =
+                    new OptOutOrchestrationDependencyValidationException(
+                        message: "Opt Out orchestration dependency validation errors occurred, " +
+                            "fix the errors and try again.",
+                        innerException: dependencyValidationException.InnerException as Xeption);
+
+                exceptions.Add(optOutOrchestrationDependencyValidationException);
+            }
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to retrieve message for {exceptions.Count} message IDs",
+                    exceptions);
+
+            var failedOptOutOrchestrationServiceException =
+                new FailedOptOutOrchestrationServiceException(
+                    message: "Failed opt out aggregate orchestration service error occurred, " +
+                        "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedOptOutOrchestrationServiceException =
+                new OptOutOrchestrationServiceException(
+                    message: "Opt Out orchestration service error occurred, please contact support.",
+                    innerException: failedOptOutOrchestrationServiceException);
+
+            // When
+            ValueTask<string> actualOptOutStatus =
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputStream, randomRecieveName);
+
+            OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
+                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(async () =>
+                    await actualOptOutStatus);
+
+            // Then
+            actualOptOutOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedOptOutOrchestrationServiceException);
+
+            this.meshProcessingServiceMock.Verify(service =>
+                service.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
+
+            foreach (var optOut in outputOptOuts)
+            {
+                this.dateTimeBrokerMock.Verify(broker =>
+                    broker.GetCurrentDateTimeOffset(),
+                        Times.Once);
+            }
+
+            var optOutOrchestrationDependencyValidationLoggingException =
+                new OptOutOrchestrationDependencyValidationException(
+                    message: "Opt Out orchestration dependency validation errors occurred, " +
+                        "fix the errors and try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    optOutOrchestrationDependencyValidationLoggingException))),
+                        Times.Exactly(outputOptOuts.Count));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    actualOptOutOrchestrationServiceException))),
+                        Times.Once);
+
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(OptOutDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationOnRetrieveOptOutStatusIfDependencyValidationOccursAndLogItAsync(
             Xeption dependancyValidationException)
         {

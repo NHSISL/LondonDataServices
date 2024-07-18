@@ -72,6 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     ordananceAddress);
 
             newResolvedAddress.UpdatedDate = randomDateTimeOffset;
+            newResolvedAddress.IsProcessed = true;
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
                processing.ModifyResolvedAddressAsync(newResolvedAddress))
@@ -92,8 +93,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                  processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(lockedResolvedAddress))),
                      Times.Once());
-
-            //It.Is(SameResolvedAddressAs(
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(newResolvedAddress))),
@@ -117,31 +116,121 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
+
+        [Fact]
+        public async Task NullAssignMatchAddressAsync()
+        {
+            //Given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: GetRandomNumber());
+            List<ResolvedAddress> unmatchedResolvedAddresses = randomResolvedAddresses;
+
+            string inputResolvedAddress = unmatchedResolvedAddresses
+                .FirstOrDefault().UnstructuredPostalAddress;
+
+            AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
+            AssignAddress storageAssignAddress = randomAssignAddress;
+            AssignAddress nullStorageAssignAddress = null;
+
+            Address? ordananceAddress = null;
+
+            this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
+               service.RetrieveAllResolvedAddresses())
+                   .Returns(unmatchedResolvedAddresses.AsQueryable())
+                   .Returns(new List<ResolvedAddress>().AsQueryable());
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            ResolvedAddress processingResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().DeepClone();
+            ResolvedAddress lockedResolvedAddress = processingResolvedAddress;
+            lockedResolvedAddress.IsProcessing = true;
+            lockedResolvedAddress.RetryCount += 1;
+            lockedResolvedAddress.UpdatedDate = randomDateTimeOffset;
+            ResolvedAddress foundAddress = lockedResolvedAddress.DeepClone();
+            ResolvedAddress foundAddressLocked = foundAddress.DeepClone();
+
+            this.resolvedAddressProcessingServiceMock.Setup(processing =>
+                processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(lockedResolvedAddress))))
+                    .ReturnsAsync(foundAddress);
+
+            this.assignProcessingServiceMock.Setup(processing =>
+                processing.MatchAddressAsync(inputResolvedAddress))
+                    .ReturnsAsync(nullStorageAssignAddress);
+
+            ResolvedAddress resolvedAddress =
+                MapOrdananceWithAssign(
+                    foundAddressLocked,
+                    nullStorageAssignAddress,
+                    ordananceAddress);
+
+            resolvedAddress.UpdatedDate = randomDateTimeOffset;
+            resolvedAddress.IsProcessed = true;
+
+            this.resolvedAddressProcessingServiceMock.Setup(processing =>
+               processing.ModifyResolvedAddressAsync(resolvedAddress))
+                   .ReturnsAsync(resolvedAddress);
+
+            //When
+            await this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+
+            //Then
+            this.resolvedAddressProcessingServiceMock.Verify(service =>
+               service.RetrieveAllResolvedAddresses(),
+                   Times.Exactly(2));
+
+            this.dateTimeBrokerMock.Verify(broker =>
+               broker.GetCurrentDateTimeOffset(),
+                   Times.Exactly(2));
+
+            this.resolvedAddressProcessingServiceMock.Verify(processing =>
+                 processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(lockedResolvedAddress))),
+                     Times.Once());
+
+            this.assignProcessingServiceMock.Verify(processing =>
+                processing.MatchAddressAsync(inputResolvedAddress),
+                    Times.Once());
+
+            this.resolvedAddressProcessingServiceMock.Verify(processing =>
+               processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(resolvedAddress))),
+                   Times.Once());
+
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
+            this.assignProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
+
         private static ResolvedAddress MapOrdananceWithAssign(
             ResolvedAddress processingResolvedAddress,
-            AssignAddress assignAddress,
+            AssignAddress? assignAddress,
             Address? ordananceAddress)
         {
             ResolvedAddress newResolvedAddress = processingResolvedAddress;
-            newResolvedAddress.UPSN = ordananceAddress.UPSN ?? null;
-            newResolvedAddress.OrganisationName = ordananceAddress.OrganisationName;
-            newResolvedAddress.DepartmentName = ordananceAddress.DepartmentName;
-            newResolvedAddress.SubBuildingName = ordananceAddress.SubBuildingName;
-            newResolvedAddress.BuildingName = ordananceAddress.BuildingName;
-            newResolvedAddress.BuildingNumber = ordananceAddress.BuildingNumber;
-            newResolvedAddress.DependentThoroughfare = ordananceAddress.DependentThoroughfare;
-            newResolvedAddress.Thoroughfare = ordananceAddress.Thoroughfare;
-            newResolvedAddress.DoubleDependentLocality = ordananceAddress.DoubleDependentLocality;
-            newResolvedAddress.DependentLocality = ordananceAddress.DependentLocality;
-            newResolvedAddress.PostTown = ordananceAddress.PostTown;
-            newResolvedAddress.PostCode = ordananceAddress.PostCode;
-            newResolvedAddress.AddressFormatQuality = assignAddress.AddressFormat;
-            newResolvedAddress.PostCodeQuality = assignAddress.PostcodeQuality;
-            newResolvedAddress.Matched = assignAddress.Matched;
-            newResolvedAddress.Qualifier = assignAddress.Qualifier;
-            newResolvedAddress.Classification = assignAddress.Classification;
-            newResolvedAddress.Algorithm = assignAddress.Algorithm;
-            newResolvedAddress.MatchPattern = assignAddress.MatchPattern.ToString();
+            newResolvedAddress.UPSN = ordananceAddress?.UPSN ?? null;
+            newResolvedAddress.OrganisationName = ordananceAddress?.OrganisationName;
+            newResolvedAddress.DepartmentName = ordananceAddress?.DepartmentName;
+            newResolvedAddress.SubBuildingName = ordananceAddress?.SubBuildingName;
+            newResolvedAddress.BuildingName = ordananceAddress?.BuildingName;
+            newResolvedAddress.BuildingNumber = ordananceAddress?.BuildingNumber;
+            newResolvedAddress.DependentThoroughfare = ordananceAddress?.DependentThoroughfare;
+            newResolvedAddress.Thoroughfare = ordananceAddress?.Thoroughfare;
+            newResolvedAddress.DoubleDependentLocality = ordananceAddress?.DoubleDependentLocality;
+            newResolvedAddress.DependentLocality = ordananceAddress?.DependentLocality;
+            newResolvedAddress.PostTown = ordananceAddress?.PostTown;
+            newResolvedAddress.PostCode = ordananceAddress?.PostCode;
+            newResolvedAddress.AddressFormatQuality = assignAddress?.AddressFormat;
+            newResolvedAddress.PostCodeQuality = assignAddress?.PostcodeQuality;
+            newResolvedAddress.MatchedWithAssign = assignAddress?.Matched ?? false;
+            newResolvedAddress.Qualifier = assignAddress?.Qualifier;
+            newResolvedAddress.Classification = assignAddress?.Classification;
+            newResolvedAddress.Algorithm = assignAddress?.Algorithm;
+            newResolvedAddress.MatchPattern = assignAddress?.Pattern;
             newResolvedAddress.IsProcessing = false;
             newResolvedAddress.IsExported = false;
             newResolvedAddress.RetryCount = 0;

@@ -187,7 +187,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(resolvedAddress => resolvedAddress.Matched).Use(false)
+                .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(1)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)

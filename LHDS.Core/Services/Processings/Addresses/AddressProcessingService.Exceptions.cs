@@ -15,7 +15,7 @@ namespace LHDS.Core.Services.Processings.Addresses
     public partial class AddressProcessingService
     {
         private delegate ValueTask ReturningNothingFunction();
-        private delegate ValueTask<T> ReturningFunction<T>();
+        private delegate ValueTask<T?> ReturningFunction<T>();
         private delegate IQueryable<Address> ReturningAddressesFunction();
 
         private async ValueTask TryCatch(
@@ -60,7 +60,7 @@ namespace LHDS.Core.Services.Processings.Addresses
             }
         }
 
-        private async ValueTask<T> TryCatch<T>(
+        private async ValueTask<T?> TryCatch<T>(
             ReturningFunction<T> returningFunction)
         {
             try

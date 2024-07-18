@@ -89,7 +89,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             var exceptions = new List<Exception>();
 
             while ((unMatchedResolvedAddress = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
-                .FirstOrDefault(x => x.Matched == false && x.IsProcessing == false && x.RetryCount < 4)) != null)
+                .FirstOrDefault(x => x.IsProcessed == false && x.IsProcessing == false && x.RetryCount < 4)) != null)
             {
                 try
                 {
@@ -106,11 +106,14 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             await assignProcessingService.MatchAddressAsync(
                                 unMatchedResolvedAddress.UnstructuredPostalAddress);
 
-                        ValidateUPRNHasValue(foundAssignAddress.UPRN);
+                        Address? foundOrdananceAddress = null;
 
-                        Address? foundOrdananceAddress =
-                            await addressProcessingService
-                                .RetrieveAddressByUPRNAsync(foundAssignAddress.UPRN.ToString());
+                        if (foundAssignAddress != null && !string.IsNullOrWhiteSpace(foundAssignAddress.UPRN))
+                        {
+                            foundOrdananceAddress =
+                                await addressProcessingService
+                                    .RetrieveAddressByUPRNAsync(foundAssignAddress.UPRN);
+                        }
 
                         ResolvedAddress newResolvedAddress =
                             MapOrdananceWithAssign(
@@ -119,6 +122,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                                 foundOrdananceAddress);
 
                         newResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                        newResolvedAddress.IsProcessed = true;
 
                         await resolvedAddressProcessingService
                             .ModifyResolvedAddressAsync(newResolvedAddress);
@@ -140,29 +144,29 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
         public static ResolvedAddress MapOrdananceWithAssign(
             ResolvedAddress unMatchedResolvedAddress,
-            AssignAddress foundAssignAddress,
+            AssignAddress? foundAssignAddress,
             Address? foundOrdananceAddress)
         {
             ResolvedAddress UpdatedResolovedAddress = unMatchedResolvedAddress;
-            UpdatedResolovedAddress.UPSN = foundOrdananceAddress.UPSN ?? null;
-            UpdatedResolovedAddress.OrganisationName = foundOrdananceAddress.OrganisationName;
-            UpdatedResolovedAddress.DepartmentName = foundOrdananceAddress.DepartmentName;
-            UpdatedResolovedAddress.SubBuildingName = foundOrdananceAddress.SubBuildingName;
-            UpdatedResolovedAddress.BuildingName = foundOrdananceAddress.BuildingName;
-            UpdatedResolovedAddress.BuildingNumber = foundOrdananceAddress.BuildingNumber;
-            UpdatedResolovedAddress.DependentThoroughfare = foundOrdananceAddress.DependentThoroughfare;
-            UpdatedResolovedAddress.Thoroughfare = foundOrdananceAddress.Thoroughfare;
-            UpdatedResolovedAddress.DoubleDependentLocality = foundOrdananceAddress.DoubleDependentLocality;
-            UpdatedResolovedAddress.DependentLocality = foundOrdananceAddress.DependentLocality;
-            UpdatedResolovedAddress.PostTown = foundOrdananceAddress.PostTown;
-            UpdatedResolovedAddress.PostCode = foundOrdananceAddress.PostCode;
-            UpdatedResolovedAddress.AddressFormatQuality = foundAssignAddress.AddressFormat;
-            UpdatedResolovedAddress.PostCodeQuality = foundAssignAddress.PostcodeQuality;
-            UpdatedResolovedAddress.Matched = foundAssignAddress.Matched;
-            UpdatedResolovedAddress.Qualifier = foundAssignAddress.Qualifier;
-            UpdatedResolovedAddress.Classification = foundAssignAddress.Classification;
-            UpdatedResolovedAddress.Algorithm = foundAssignAddress.Algorithm;
-            UpdatedResolovedAddress.MatchPattern = foundAssignAddress.MatchPattern.ToString();
+            UpdatedResolovedAddress.UPSN = foundOrdananceAddress?.UPSN ?? null;
+            UpdatedResolovedAddress.OrganisationName = foundOrdananceAddress?.OrganisationName;
+            UpdatedResolovedAddress.DepartmentName = foundOrdananceAddress?.DepartmentName;
+            UpdatedResolovedAddress.SubBuildingName = foundOrdananceAddress?.SubBuildingName;
+            UpdatedResolovedAddress.BuildingName = foundOrdananceAddress?.BuildingName;
+            UpdatedResolovedAddress.BuildingNumber = foundOrdananceAddress?.BuildingNumber;
+            UpdatedResolovedAddress.DependentThoroughfare = foundOrdananceAddress?.DependentThoroughfare;
+            UpdatedResolovedAddress.Thoroughfare = foundOrdananceAddress?.Thoroughfare;
+            UpdatedResolovedAddress.DoubleDependentLocality = foundOrdananceAddress?.DoubleDependentLocality;
+            UpdatedResolovedAddress.DependentLocality = foundOrdananceAddress?.DependentLocality;
+            UpdatedResolovedAddress.PostTown = foundOrdananceAddress?.PostTown;
+            UpdatedResolovedAddress.PostCode = foundOrdananceAddress?.PostCode;
+            UpdatedResolovedAddress.AddressFormatQuality = foundAssignAddress?.AddressFormat;
+            UpdatedResolovedAddress.PostCodeQuality = foundAssignAddress?.PostcodeQuality;
+            UpdatedResolovedAddress.MatchedWithAssign = foundAssignAddress?.Matched ?? false;
+            UpdatedResolovedAddress.Qualifier = foundAssignAddress?.Qualifier;
+            UpdatedResolovedAddress.Classification = foundAssignAddress?.Classification;
+            UpdatedResolovedAddress.Algorithm = foundAssignAddress?.Algorithm;
+            UpdatedResolovedAddress.MatchPattern = foundAssignAddress?.Pattern;
             UpdatedResolovedAddress.IsProcessing = false;
             UpdatedResolovedAddress.IsExported = false;
             UpdatedResolovedAddress.RetryCount = 0;

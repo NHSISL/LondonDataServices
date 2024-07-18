@@ -98,9 +98,14 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired(false);
 
             modelBuilder.Entity<ResolvedAddress>()
-                .Property(address => address.Matched)
+                .Property(address => address.MatchedWithAssign)
                 .HasDefaultValue(false)
                 .IsRequired();
+
+            modelBuilder.Entity<ResolvedAddress>()
+                 .Property(address => address.IsProcessed)
+                 .HasDefaultValue(false)
+                 .IsRequired();
 
             modelBuilder.Entity<ResolvedAddress>()
                 .Property(address => address.Qualifier)

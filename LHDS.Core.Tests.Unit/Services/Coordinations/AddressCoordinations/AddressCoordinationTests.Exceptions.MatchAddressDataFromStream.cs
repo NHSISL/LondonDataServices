@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             actualException.Should().BeEquivalentTo(expectedAddressCoordinationServiceException);
 
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.UploadAddressesToResolveAsync(someStream, someFilename),
+                service.UploadAddressesToResolveAsync(It.IsAny<Stream>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

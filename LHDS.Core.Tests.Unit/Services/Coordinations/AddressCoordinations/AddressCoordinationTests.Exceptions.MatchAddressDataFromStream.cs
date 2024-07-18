@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.UploadAddressesToResolveAsync(someStream, someFilename))
+                service.UploadAddressesToResolveAsync(It.IsAny<Stream>(), It.IsAny<string>()))
                     .ThrowsAsync(dependancyValidationException);
 
             // when

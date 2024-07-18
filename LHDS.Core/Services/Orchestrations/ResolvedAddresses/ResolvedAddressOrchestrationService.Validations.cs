@@ -48,8 +48,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         private static void ValidateUPRNHasValue(long uprn)
         {
             Validate<NullUPRNResolvedAddressOrchestrationException>(
-               message: "Null UPRN Resolved Address orchestration exception, please correct the errors and try again.",
-               (Rule: IsInvalid(uprn), Parameter: "UPRN"));
+                message: "Null UPRN Resolved Address orchestration exception, please correct the errors and try again.",
+                (Rule: IsInvalid(uprn), Parameter: "UPRN"));
         }
 
         private static dynamic IsInvalid(string? text) => new

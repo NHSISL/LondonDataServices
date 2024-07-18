@@ -28,7 +28,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<Exception> exceptions = new List<Exception>();
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
             Dictionary<string, int> fieldMappings = null;
-            Guid identifier = Guid.NewGuid();
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             var randomString = GetRandomString();
             var inputString = randomString;
@@ -44,10 +43,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))
                     .ReturnsAsync(outputOptOuts);
-
-            this.identifierBrokerMock.Setup(processing =>
-                processing.GetIdentifier())
-                    .Returns(identifier);
 
             foreach (var optOut in outputOptOuts)
             {
@@ -66,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to retrieve message for {exceptions.Count} message IDs",
+                    $"Unable to retrieve or add opt out for {exceptions.Count} mapped opt outs",
                     exceptions);
 
             var failedOptOutOrchestrationServiceException =
@@ -92,9 +87,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             actualOptOutOrchestrationServiceException.Should()
                 .BeEquivalentTo(expectedOptOutOrchestrationServiceException);
 
-            this.meshProcessingServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(),
-                    Times.Once);
+            this.csvHelperBrokerMock.Verify(processing =>
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings),
+                        Times.Once);
 
             foreach (var optOut in outputOptOuts)
             {

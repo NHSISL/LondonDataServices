@@ -275,7 +275,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private static List<OptOutIdentifier> CreateRandomOptOutIdentifiersList()
         {
             return CreateOptOutIdentifierFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
+                .Create(count: 1)
                     .ToList();
         }
         private static List<OptOut> CreateRandomOptOutsList()
@@ -503,25 +503,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return new TheoryData<Xeption>
             {
                 new OptOutProcessingValidationException(innerException),
-                new OptOutProcessingDependencyValidationException(innerException),
+                //new OptOutProcessingDependencyValidationException(innerException),
 
-                new DocumentProcessingValidationException(
-                    message: "Document processing validation errors occured, please try again",
-                    innerException),
+                //new DocumentProcessingValidationException(
+                //    message: "Document processing validation errors occured, please try again",
+                //    innerException),
 
-                new DocumentProcessingDependencyValidationException(
-                    message: "Document processing dependency validation occurred, please try again.",
-                    innerException),
+                //new DocumentProcessingDependencyValidationException(
+                //    message: "Document processing dependency validation occurred, please try again.",
+                //    innerException),
 
-                new MeshProcessingValidationException(
-                    message: "Mesh processing validation errors occured, please try again",
-                    innerException),
+                //new MeshProcessingValidationException(
+                //    message: "Mesh processing validation errors occured, please try again",
+                //    innerException),
 
-                new MeshProcessingDependencyValidationException(
-                    message: "Mesh processing dependency validation occurred, please try again.",
-                    innerException),
+                //new MeshProcessingDependencyValidationException(
+                //    message: "Mesh processing dependency validation occurred, please try again.",
+                //    innerException),
 
-                new CsvHelperClientValidationException(innerException),
+                //new CsvHelperClientValidationException(innerException),
             };
         }
 

@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -72,11 +72,22 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
             {
                 throw CreateAndLogDependencyException(ontologyProcessingServiceException);
             }
+            catch (AggregateException aggregateException)
+            {
+                var failedTerminologyDetailOrchestrationServiceException =
+                    new FailedTerminologyDetailOrchestrationServiceException(
+                        message: "Failed terminology detail aggregate orchestration service error occurred, " +
+                            "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedTerminologyDetailOrchestrationServiceException);
+            }
             catch (Exception exception)
             {
                 var FailedTerminologyDetailOrchestrationServiceException =
                     new FailedTerminologyDetailOrchestrationServiceException(
-                        message: "Failed terminology detail orchestration service error occurred, please contact support.",
+                        message: "Failed terminology detail orchestration service error occurred, " +
+                            "please contact support.",
                         exception);
 
                 throw CreateAndLogServiceException(FailedTerminologyDetailOrchestrationServiceException);
@@ -88,8 +99,8 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
         {
             var terminologyDetailOrchestrationDependencyValidationException =
                 new TerminologyDetailOrchestrationDependencyValidationException(
-                    message:
-                        "Terminology detail orchestration dependency validation error occurred, fix the errors and try again.",
+                    message: "Terminology detail orchestration dependency validation error occurred, " +
+                        "fix the errors and try again.",
                     exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(terminologyDetailOrchestrationDependencyValidationException);
@@ -102,7 +113,8 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
         {
             var terminologyDetailOrchestrationDependencyException =
                 new TerminologyDetailOrchestrationDependencyException(
-                    message: "Terminology detail orchestration dependency error occurred, fix the errors and try again.",
+                    message: "Terminology detail orchestration dependency error occurred, " +
+                        "fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(terminologyDetailOrchestrationDependencyException);

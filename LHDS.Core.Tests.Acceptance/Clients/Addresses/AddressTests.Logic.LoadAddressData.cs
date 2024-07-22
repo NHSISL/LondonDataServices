@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 {
     public partial class AddressTests
     {
-        [Fact(Skip = "Hassan to fix as part of his appcetance tests for UPRN")]
+        [Fact]
         public async Task ShouldLoadAddressDataAsync()
         {
             // Given
@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             string inputFilePath = Path.Combine(
                 projectRoot,
-                @"Resource/Clients/Address/Test.zip");
+                @"Resource/Clients/Address/ShouldProcessCsvAddressesZippedSetup.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);
@@ -70,8 +70,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             await this.addressClient.LoadAddressDataAsync(inputStream, inputFilename);
 
             // Then
-
-            // TODO: Add cleanup code here
+            
         }
     }
 }

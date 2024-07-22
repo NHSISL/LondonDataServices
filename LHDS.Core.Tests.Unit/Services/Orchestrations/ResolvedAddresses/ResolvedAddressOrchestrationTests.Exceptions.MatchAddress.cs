@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using Moq;
+using Valid8R;
 using Xeptions;
 using Xunit;
 
@@ -163,6 +165,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
            Xeption dependencyValidationException)
         {
             // Given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 1);
             List<Exception> exceptions = new List<Exception>();
 
@@ -171,11 +174,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    .Returns(randomResolvedAddresses.AsQueryable())
                    .Returns(new List<ResolvedAddress>().AsQueryable());
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
             {
+                ResolvedAddress processesingUnMatchedResolvedAddress = unMatchedResolvedAddress.DeepClone();
+                processesingUnMatchedResolvedAddress.IsProcessing = true;
+                processesingUnMatchedResolvedAddress.RetryCount += 1;
+                processesingUnMatchedResolvedAddress.UpdatedDate = randomDateTimeOffset;
+
                 this.resolvedAddressProcessingServiceMock.Setup(processing =>
-                    processing.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
-                        .ThrowsAsync(dependencyValidationException);
+                    processing.ModifyResolvedAddressAsync(
+                      It.Is(Valid8.SameObjectAs<ResolvedAddress>(
+                        processesingUnMatchedResolvedAddress, output, "First Setup:"))))
+                            .ThrowsAsync(dependencyValidationException);
 
                 var innerResolvedAddressOrchestrationDependencyValidationException =
                     new ResolvedAddressOrchestrationDependencyValidationException(
@@ -188,7 +202,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to retrieve message for {exceptions.Count} message IDs",
+                    $"Unable to retrieve message for {exceptions.Count} ResolvedAddresses",
                     exceptions);
 
             var failedResolvedAddressOrchestrationServiceException =
@@ -219,11 +233,33 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.Once());
+                    Times.Exactly(1 + randomResolvedAddresses.Count));
 
-            this.resolvedAddressProcessingServiceMock.Verify(processing =>
-                processing.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
-                    Times.Exactly(randomResolvedAddresses.Count));
+
+            foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
+            {
+                ResolvedAddress processesingVUnMatchedResolvedAddress = unMatchedResolvedAddress.DeepClone();
+                processesingVUnMatchedResolvedAddress.IsProcessing = true;
+                processesingVUnMatchedResolvedAddress.IsProcessed = false;
+                processesingVUnMatchedResolvedAddress.UpdatedDate = randomDateTimeOffset;
+
+                this.resolvedAddressProcessingServiceMock.Verify(processing =>
+                    processing.ModifyResolvedAddressAsync(
+                        It.Is(Valid8.SameObjectAs<ResolvedAddress>(
+                            processesingVUnMatchedResolvedAddress, output, "First Modify:"))),
+                            Times.Once);
+
+                ResolvedAddress cleanedUnMatchedResolvedAddress = processesingVUnMatchedResolvedAddress.DeepClone();
+                cleanedUnMatchedResolvedAddress.IsProcessed = false;
+                cleanedUnMatchedResolvedAddress.IsProcessing = false;
+                cleanedUnMatchedResolvedAddress.UpdatedDate = randomDateTimeOffset;
+
+                this.resolvedAddressProcessingServiceMock.Verify(processing =>
+                    processing.ModifyResolvedAddressAsync(
+                         It.Is(Valid8.SameObjectAs<ResolvedAddress>(
+                            cleanedUnMatchedResolvedAddress, output, "Second Modify:"))),
+                            Times.Once);
+            }
 
             var resolvedAddressOrchestrationDependencyValidationLoggingException =
                new ResolvedAddressOrchestrationDependencyValidationException(

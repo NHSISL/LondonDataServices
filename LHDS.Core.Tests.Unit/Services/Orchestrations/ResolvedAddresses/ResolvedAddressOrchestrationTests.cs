@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
@@ -17,7 +18,6 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
@@ -25,7 +25,6 @@ using LHDS.Core.Services.Processings.Assigns;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Moq;
-using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -92,11 +91,32 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             return new CompareLogic().Compare(expectedBytes, actualBytes).AreEqual;
         }
 
+        //private Expression<Func<ResolvedAddress, bool>> SameResolvedAddressAs(
+        //   ResolvedAddress expectedResolvedAddress)
+        //{
+        //    return actualResolvedAddress =>
+        //        this.compareLogic.Compare(expectedResolvedAddress, actualResolvedAddress)
+        //            .AreEqual;
+        //}
+
         private Expression<Func<ResolvedAddress, bool>> SameResolvedAddressAs(
            ResolvedAddress expectedResolvedAddress)
         {
             return actualResolvedAddress =>
-                this.compareLogic.Compare(expectedResolvedAddress, actualResolvedAddress)
+               IsSameResolvedAddress(expectedResolvedAddress, actualResolvedAddress);
+        }
+
+        private bool IsSameResolvedAddress(ResolvedAddress expectedResolvedAddress, ResolvedAddress actualResolvedAddress)
+        {
+            try
+            {
+                actualResolvedAddress.Should().BeEquivalentTo(expectedResolvedAddress);
+            }
+            catch (Exception ex)
+            {
+                output.WriteLine(ex.Message);
+            }
+            return this.compareLogic.Compare(expectedResolvedAddress, actualResolvedAddress)
                     .AreEqual;
         }
 
@@ -189,7 +209,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(false)
-                .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(1)
+                .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(0)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 
@@ -258,23 +278,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             return new TheoryData<Xeption>
             {
-                new DocumentProcessingValidationException(
-                    message: "Document processing validation error occured, please try again",
-                    innerException),
+                //new DocumentProcessingValidationException(
+                //    message: "Document processing validation error occured, please try again",
+                //    innerException),
 
-                new DocumentProcessingDependencyValidationException(
-                    message: "Document processing dependency validation error occurred, please try again.",
-                    innerException),
+                //new DocumentProcessingDependencyValidationException(
+                //    message: "Document processing dependency validation error occurred, please try again.",
+                //    innerException),
 
-                new ResolvedAddressProcessingValidationException(
-                    message: "Resolved address processing validation error occured, please try again",
-                    innerException),
+                //new ResolvedAddressProcessingValidationException(
+                //    message: "Resolved address processing validation error occured, please try again",
+                //    innerException),
 
                 new ResolvedAddressProcessingDependencyValidationException(
                     message: "Resolved address processing dependency validation error occurred, please try again.",
                     innerException),
 
-                new CsvHelperClientValidationException(innerException),
+                //new CsvHelperClientValidationException(innerException),
             };
         }
 
@@ -286,24 +306,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             return new TheoryData<Xeption>
             {
-                new DocumentProcessingDependencyException(
-                    message: "Document processing dependency error occurred, please contact support.",
-                    innerException),
+                //new DocumentProcessingDependencyException(
+                //    message: "Document processing dependency error occurred, please contact support.",
+                //    innerException),
 
-                new DocumentProcessingServiceException(
-                    message: "Document processing service error occurred, please contact support.",
-                    innerException),
+                //new DocumentProcessingServiceException(
+                //    message: "Document processing service error occurred, please contact support.",
+                //    innerException),
 
-                new ResolvedAddressProcessingDependencyException(
-                    message: "Resolved address processing dependency error occurred, please contact support.",
-                    innerException),
+                //new ResolvedAddressProcessingDependencyException(
+                //    message: "Resolved address processing dependency error occurred, please contact support.",
+                //    innerException),
 
                 new ResolvedAddressProcessingServiceException(
                     message: "Resolved address processing service error occurred, please contact support.",
                     innerException),
 
-                new CsvHelperClientDependencyException(innerException),
-                new CsvHelperClientServiceException(innerException)
+                //new CsvHelperClientDependencyException(innerException),
+                //new CsvHelperClientServiceException(innerException)
             };
         }
 

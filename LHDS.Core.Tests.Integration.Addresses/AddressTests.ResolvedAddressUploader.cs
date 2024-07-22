@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Integration.Addresses
 
             string inputFilePath = Path.Combine(
                 projectRoot,
-                @"Resource/Clients/Address/ShouldUploadAddressesSetup.csv");
+                @"Resources/Clients/Address/ShouldUploadAddressesSetup.csv");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);

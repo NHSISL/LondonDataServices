@@ -10,9 +10,11 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using LHDS.Core.Brokers.Assigns;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Files;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -22,12 +24,14 @@ using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Coordinations.AddressCoordinations;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
 using LHDS.Core.Services.Foundations.Addresses;
+using LHDS.Core.Services.Foundations.Assigns;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.Addresses;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
+using LHDS.Core.Services.Processings.Assigns;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Microsoft.Extensions.Configuration;
@@ -94,6 +98,8 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddBrokers(IServiceCollection services)
         {
+            services.AddTransient<IFileBroker, FileBroker>();
+            services.AddTransient<IAssignBroker, AssignBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
@@ -105,6 +111,7 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddServices(IServiceCollection services)
         {
+            services.AddTransient<IAssignService, AssignService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IResolvedAddressService, ResolvedAddressService>();
             services.AddTransient<IAuditService, AuditService>();
@@ -113,6 +120,7 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddProcessings(IServiceCollection services)
         {
+            services.AddTransient<IAssignProcessingService, AssignProcessingService>();
             services.AddTransient<IAddressProcessingService, AddressProcessingService>();
             services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();
             services.AddTransient<IResolvedAddressProcessingService, ResolvedAddressProcessingService>();

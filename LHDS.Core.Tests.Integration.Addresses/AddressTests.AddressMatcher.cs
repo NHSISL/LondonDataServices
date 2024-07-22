@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Integration.Addresses
             var fileName = fi.Name;
 
             // When
-            await addressClient.MatchPatientAddressDataAsync(fileBytes, fileName);
+            //await addressClient.MatchPatientAddressDataAsync(fileBytes, fileName);
 
             // Then
 

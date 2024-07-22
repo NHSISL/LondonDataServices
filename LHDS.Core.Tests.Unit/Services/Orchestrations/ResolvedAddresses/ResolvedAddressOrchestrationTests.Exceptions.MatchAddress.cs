@@ -188,7 +188,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 this.resolvedAddressProcessingServiceMock.Setup(processing =>
                     processing.ModifyResolvedAddressAsync(
                       It.Is(Valid8.SameObjectAs<ResolvedAddress>(
-                        processesingUnMatchedResolvedAddress, output, "First Setup:"))))
+                        processesingUnMatchedResolvedAddress, output, "First Setup"))))
                             .ThrowsAsync(dependencyValidationException);
 
                 var innerResolvedAddressOrchestrationDependencyValidationException =
@@ -246,18 +246,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 this.resolvedAddressProcessingServiceMock.Verify(processing =>
                     processing.ModifyResolvedAddressAsync(
                         It.Is(Valid8.SameObjectAs<ResolvedAddress>(
-                            processesingVUnMatchedResolvedAddress, output, "First Modify:"))),
+                            processesingVUnMatchedResolvedAddress, output, "First Modify"))),
                             Times.Once);
 
                 ResolvedAddress cleanedUnMatchedResolvedAddress = processesingVUnMatchedResolvedAddress.DeepClone();
-                cleanedUnMatchedResolvedAddress.IsProcessed = false;
                 cleanedUnMatchedResolvedAddress.IsProcessing = false;
                 cleanedUnMatchedResolvedAddress.UpdatedDate = randomDateTimeOffset;
 
                 this.resolvedAddressProcessingServiceMock.Verify(processing =>
                     processing.ModifyResolvedAddressAsync(
                          It.Is(Valid8.SameObjectAs<ResolvedAddress>(
-                            cleanedUnMatchedResolvedAddress, output, "Second Modify:"))),
+                            cleanedUnMatchedResolvedAddress, output, "Second Modify"))),
                             Times.Once);
             }
 

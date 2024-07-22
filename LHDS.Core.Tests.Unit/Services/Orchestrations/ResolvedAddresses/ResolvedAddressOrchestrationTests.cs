@@ -209,6 +209,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(false)
+                .OnProperty(resolvedAddress => resolvedAddress.IsExported).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(0)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);

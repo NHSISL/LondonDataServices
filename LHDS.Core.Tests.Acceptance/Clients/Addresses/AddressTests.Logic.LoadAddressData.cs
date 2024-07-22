@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -70,8 +71,17 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             await this.addressClient.LoadAddressDataAsync(inputStream, inputFilename);
 
             // Then
-            
+            IQueryable<Address> retrievedListAddresses = this.addressService.RetrieveAllAddresses();
+
+            foreach (Address expectedAddress in expectedListAddresses)
+            {
+                Address retrievedAddress = 
+                    retrievedListAddresses.Where(address => address.UPRN == expectedAddress.UPRN).FirstOrDefault();
+
+                await this.addressService.RemoveAddressByIdAsync(retrievedAddress.Id);
+            }
         }
     }
 }
+
 

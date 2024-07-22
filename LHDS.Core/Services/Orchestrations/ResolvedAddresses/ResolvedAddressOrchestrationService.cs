@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Force.DeepCloner;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -134,7 +133,9 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 }
                 catch (Exception ex)
                 {
-                    ResolvedAddress failedToProcess = unMatchedResolvedAddress.DeepClone();
+                    ResolvedAddress failedToProcess = await this.resolvedAddressProcessingService
+                        .RetrieveResolvedAddressByIdAsync(unMatchedResolvedAddress.Id);
+
                     failedToProcess.IsProcessing = false;
                     failedToProcess.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
 

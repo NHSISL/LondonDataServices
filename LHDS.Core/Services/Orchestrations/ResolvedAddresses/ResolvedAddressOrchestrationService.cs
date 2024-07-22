@@ -99,17 +99,16 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 {
                     await TryCatch(async () =>
                     {
-                        ResolvedAddress toProcess = unMatchedResolvedAddress.DeepClone();
-                        toProcess.IsProcessing = true;
-                        toProcess.RetryCount += 1;
-                        toProcess.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                        unMatchedResolvedAddress.IsProcessing = true;
+                        unMatchedResolvedAddress.RetryCount += 1;
+                        unMatchedResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
 
                         ResolvedAddress updatedAddress = await resolvedAddressProcessingService.
-                            ModifyResolvedAddressAsync(toProcess);
+                            ModifyResolvedAddressAsync(unMatchedResolvedAddress);
 
                         AssignAddress foundAssignAddress =
                             await assignProcessingService.MatchAddressAsync(
-                                toProcess.UnstructuredPostalAddress);
+                                unMatchedResolvedAddress.UnstructuredPostalAddress);
 
                         Address? foundOrdananceAddress = null;
 
@@ -135,12 +134,12 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 }
                 catch (Exception ex)
                 {
-                    unMatchedResolvedAddress.IsProcessing = false;
-                    unMatchedResolvedAddress.IsProcessed = false;
-                    unMatchedResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                    ResolvedAddress failedToProcess = unMatchedResolvedAddress.DeepClone();
+                    failedToProcess.IsProcessing = false;
+                    failedToProcess.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
 
                     await resolvedAddressProcessingService
-                        .ModifyResolvedAddressAsync(unMatchedResolvedAddress);
+                        .ModifyResolvedAddressAsync(failedToProcess);
 
                     exceptions.Add(ex);
                 }

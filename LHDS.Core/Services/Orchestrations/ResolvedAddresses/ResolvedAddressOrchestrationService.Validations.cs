@@ -45,13 +45,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             Message = "Stream is required"
         };
 
-        private static void ValidateUPRNHasValue(long uprn)
-        {
-            Validate<NullUPRNResolvedAddressOrchestrationException>(
-                message: "Null UPRN Resolved Address orchestration exception, please correct the errors and try again.",
-                (Rule: IsInvalid(uprn), Parameter: "UPRN"));
-        }
-
         private static dynamic IsInvalid(string? text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
@@ -62,12 +55,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             Condition = data == null || data.Length == 0,
             Message = "Data is required"
-        };
-
-        private static dynamic IsInvalid(long value) => new
-        {
-            Condition = value == 0,
-            Message = "UPRN is required"
         };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)

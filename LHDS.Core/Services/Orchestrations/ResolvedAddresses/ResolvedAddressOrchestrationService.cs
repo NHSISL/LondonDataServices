@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Force.DeepCloner;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -89,22 +90,26 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             var exceptions = new List<Exception>();
 
             while ((unMatchedResolvedAddress = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
-                .FirstOrDefault(x => x.IsProcessed == false && x.IsProcessing == false && x.RetryCount < 4)) != null)
+                .FirstOrDefault(x =>
+                x.IsProcessed == false &&
+                x.IsProcessing == false &&
+                x.RetryCount < 4)) != null)
             {
                 try
                 {
                     await TryCatch(async () =>
                     {
-                        unMatchedResolvedAddress.IsProcessing = true;
-                        unMatchedResolvedAddress.RetryCount += 1;
-                        unMatchedResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                        ResolvedAddress toProcess = unMatchedResolvedAddress.DeepClone();
+                        toProcess.IsProcessing = true;
+                        toProcess.RetryCount += 1;
+                        toProcess.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
 
                         ResolvedAddress updatedAddress = await resolvedAddressProcessingService.
-                            ModifyResolvedAddressAsync(unMatchedResolvedAddress);
+                            ModifyResolvedAddressAsync(toProcess);
 
                         AssignAddress foundAssignAddress =
                             await assignProcessingService.MatchAddressAsync(
-                                unMatchedResolvedAddress.UnstructuredPostalAddress);
+                                toProcess.UnstructuredPostalAddress);
 
                         Address? foundOrdananceAddress = null;
 
@@ -130,6 +135,13 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 }
                 catch (Exception ex)
                 {
+                    unMatchedResolvedAddress.IsProcessing = false;
+                    unMatchedResolvedAddress.IsProcessed = false;
+                    unMatchedResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+
+                    await resolvedAddressProcessingService
+                        .ModifyResolvedAddressAsync(unMatchedResolvedAddress);
+
                     exceptions.Add(ex);
                 }
             }

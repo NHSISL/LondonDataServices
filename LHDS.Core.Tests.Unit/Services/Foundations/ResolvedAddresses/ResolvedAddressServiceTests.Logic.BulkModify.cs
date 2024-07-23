@@ -26,7 +26,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             DateTimeOffset createdDate = randomDateTimeOffset;
             DateTimeOffset updatedDate = randomDateTimeOffset;
             string randomFileName = GetRandomString();
-            string inputFileName = randomFileName;
 
             List<ResolvedAddress> randomResolvedAddresses = new List<ResolvedAddress>
                 {

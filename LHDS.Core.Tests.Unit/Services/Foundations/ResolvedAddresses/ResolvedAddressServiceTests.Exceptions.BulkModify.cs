@@ -245,7 +245,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             resolvedAddressServiceMock
                 .Setup(service =>
-                    service.BulkInsertBatch(It.IsAny<List<ResolvedAddress>>(), It.IsAny<int>(), It.IsAny<string>()))
+                    service.BulkUpdateBatch(It.IsAny<List<ResolvedAddress>>(), It.IsAny<int>()))
                 .Throws(serviceException);
 
             ResolvedAddressService addressService = resolvedAddressServiceMock.Object;
@@ -255,17 +255,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var failedResolvedAddressServiceException =
                 new FailedResolvedAddressServiceException(
-                    message: "Failed aggregate resolved address service error occurred, please contact support.",
+                    message: "Failed resolved address service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedResolvedAddressServiceException =
                 new ResolvedAddressServiceException(
                     message: "Resolved address service error occurred, please contact support.",
                     innerException: failedResolvedAddressServiceException);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(serviceException);
 
             // when
             ValueTask updateResolvedAddressTask = resolvedAddressServiceMock.Object

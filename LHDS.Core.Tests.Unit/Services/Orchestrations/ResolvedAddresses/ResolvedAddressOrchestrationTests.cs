@@ -13,11 +13,15 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Orchestrations.ResolvedAddresses;
+using LHDS.Core.Services.Processings.Addresses;
+using LHDS.Core.Services.Processings.Assigns;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Moq;
@@ -25,6 +29,7 @@ using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 {
@@ -32,6 +37,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
     {
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
         private readonly Mock<IResolvedAddressProcessingService> resolvedAddressProcessingServiceMock;
+        private readonly Mock<IAssignProcessingService> assignProcessingServiceMock;
+        private readonly Mock<IAddressProcessingService> addressProcessingServiceMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
@@ -39,16 +46,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         private readonly ICompareLogic compareLogic;
         private readonly BlobContainers blobContainers;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
+        private readonly ITestOutputHelper output;
 
-        public ResolvedAddressOrchestrationTests()
+        public ResolvedAddressOrchestrationTests(ITestOutputHelper output)
         {
             this.documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
             this.resolvedAddressProcessingServiceMock = new Mock<IResolvedAddressProcessingService>();
+            this.assignProcessingServiceMock = new Mock<IAssignProcessingService>();
+            this.addressProcessingServiceMock = new Mock<IAddressProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.compareLogic = new CompareLogic();
+            this.output = output;
 
             this.blobContainers = new BlobContainers
             {
@@ -58,6 +69,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.resolvedAddressOrchestrationService = new ResolvedAddressOrchestrationService(
                 documentProcessingService: this.documentProcessingServiceMock.Object,
                 resolvedAddressProcessingService: this.resolvedAddressProcessingServiceMock.Object,
+                assignProcessingService: this.assignProcessingServiceMock.Object,
+                addressProcessingService: this.addressProcessingServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 csvHelperBroker: this.csvHelperBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
@@ -77,6 +90,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             byte[] actualBytes = ReadAllBytesFromStream(actualStream);
 
             return new CompareLogic().Compare(expectedBytes, actualBytes).AreEqual;
+        }
+
+        private Expression<Func<ResolvedAddress, bool>> SameResolvedAddressAs(
+           ResolvedAddress expectedResolvedAddress)
+        {
+            return actualResolvedAddress =>
+                this.compareLogic.Compare(expectedResolvedAddress, actualResolvedAddress)
+                    .AreEqual;
         }
 
         private static byte[] ReadAllBytesFromStream(Stream stream)
@@ -111,7 +132,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
-
         private Expression<Func<List<ResolvedAddressReturn>, bool>> SameResolvedAddressReturnsAs(
             List<ResolvedAddressReturn> expectedResolvedAddressReturns)
         {
@@ -142,6 +162,67 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static List<ResolvedAddress> CreateRandomUnmatchedAddresses(int count)
+        {
+            var fillers = Enumerable.Range(1, count)
+                                    .Select(_ => CreateUnmatchedAddressFiller())
+                                    .ToList();
+
+            var result = fillers.Select(filler => filler.Create()).ToList();
+
+            return result.ToList();
+        }
+
+        private static Filler<ResolvedAddress> CreateUnmatchedAddressFiller()
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTimeOffset dateTimeOffset = DateTimeOffset.Now;
+
+            var filler = new Filler<ResolvedAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
+                .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(false)
+                .OnProperty(resolvedAddress => resolvedAddress.IsExported).Use(false)
+                .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(0)
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Address? CreateRandomAddress(DateTimeOffset dateTimeOffset) =>
+             CreateAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<Address?> CreateAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<Address?>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(address => address.CreatedBy).Use(user)
+                .OnProperty(address => address.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static AssignAddress CreateRandomAssignAddress(DateTimeOffset dateTimeOffset) =>
+            CreateAssignAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<AssignAddress> CreateAssignAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<AssignAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset);
 
             return filler;
         }

@@ -95,7 +95,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             if (resolvedAddress is null)
             {
-                throw new NullResolvedAddressException(message: "ResolvedAddress is null.");
+                throw new NullResolvedAddressException(message: "Resolved address is null.");
             }
         }
 

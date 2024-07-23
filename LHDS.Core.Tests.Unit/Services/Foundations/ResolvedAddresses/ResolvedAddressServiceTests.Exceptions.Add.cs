@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var invalidResolvedAddressReferenceException =
                 new InvalidResolvedAddressReferenceException(
-                    message: "Invalid resolvedAddress reference error occurred.",
+                    message: "Invalid resolved address reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
             var expectedResolvedAddressValidationException =

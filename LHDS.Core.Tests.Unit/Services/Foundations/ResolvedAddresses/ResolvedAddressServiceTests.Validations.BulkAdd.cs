@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             invalidResolvedAddressException.AddData(
                 key: "resolvedAddresses",
-                values: "ResolvedAddresses is required");
+                values: "Resolved addresses is required");
 
             invalidResolvedAddressException.AddData(
                 key: "fileName",

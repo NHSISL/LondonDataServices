@@ -54,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             // When
             ValueTask uploadTask = this.resolvedAddressOrchestrationService
-                .UploadAddressesToReslveAsync(input: invalidStream, fileName: invalidFileName);
+                .UploadAddressesToResolveAsync(input: invalidStream, fileName: invalidFileName);
 
             ResolvedAddressOrchestrationValidationException actualResolvedAddressOrchestrationValidationException =
                 await Assert.ThrowsAsync<ResolvedAddressOrchestrationValidationException>(

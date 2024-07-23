@@ -29,6 +29,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
                 throw CreateAndLogValidationException(invalidArgumentResolvedAddressOrchestrationException);
             }
+            catch (NullUPRNResolvedAddressOrchestrationException nullUPRNResolvedAddressOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullUPRNResolvedAddressOrchestrationException);
+            }
             catch (DocumentProcessingValidationException documentProcessingValidationException)
             {
                 throw CreateAndLogDependencyValidationException(documentProcessingValidationException);
@@ -73,6 +77,16 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             catch (CsvHelperClientServiceException csvHelperClientServiceException)
             {
                 throw CreateAndLogDependencyException(csvHelperClientServiceException);
+            }
+            catch (AggregateException aggregateException)
+            {
+                var failedResolvedAddressOrchestrationServiceException =
+                    new FailedResolvedAddressOrchestrationServiceException(
+                        message: "Failed resolved address aggregate orchestration service errors occurred, " +
+                            "please contact support.",
+                        innerException: aggregateException);
+
+                throw CreateAndLogServiceException(failedResolvedAddressOrchestrationServiceException);
             }
             catch (Exception exception)
             {
@@ -146,7 +160,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
                 var failedFailedResolvedAddressOrchestrationServiceException =
                     new FailedResolvedAddressOrchestrationServiceException(
-                        message: "Failed resolved address aggregate orchestration service error occurred, " +
+                        message: "Failed resolved address aggregate orchestration service errors occurred, " +
                             "please contact support.",
                         innerException: aggregateException);
 
@@ -181,7 +195,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             var resolvedAddressOrchestrationDependencyValidationException =
                 new ResolvedAddressOrchestrationDependencyValidationException(
-                    message: "Resolved address orchestration dependency validation error occurred, please try again.",
+                    message: "Resolved address orchestration dependency validation errors occurred, please try again.",
                     exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(resolvedAddressOrchestrationDependencyValidationException);
@@ -194,7 +208,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             var resolvedAddressOrchestrationDependencyException =
                 new ResolvedAddressOrchestrationDependencyException(
-                    message: "Resolved address orchestration dependency error occurred, please try again.",
+                    message: "Resolved address orchestration dependency errors occurred, please contact support.",
                     innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(resolvedAddressOrchestrationDependencyException);

@@ -26,12 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var failedResolvedAddressStorageException =
                 new FailedResolvedAddressStorageException(
-                    message: "Failed resolvedAddress storage error occurred, please contact support.",
+                    message: "Failed resolved address storage error occurred, please contact support.",
                     innerException: sqlException);
 
             var expectedResolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
-                    message: "ResolvedAddress dependency error occurred, please contact support.",
+                    message: "Resolved address dependency error occurred, please contact support.",
                     innerException: failedResolvedAddressStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>

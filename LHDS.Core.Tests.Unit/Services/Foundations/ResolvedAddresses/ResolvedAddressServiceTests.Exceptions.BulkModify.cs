@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
     public partial class ResolvedAddressServiceTests
     {
         [Fact]
-        public async Task ShouldThrowCriticalDependencyExceptionOnBulkAddIfSqlErrorOccursAndLogItAsync()
+        public async Task ShouldThrowCriticalDependencyExceptionOnBulkModifyIfSqlErrorOccursAndLogItAsync()
         {
             // given
             string someFileName = GetRandomString();
@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to process resolved addresses in 1 of the batch(es) from {someFileName}",
+                    $"Unable to process resolvedAddresses in 1 of the batch(es) from {someFileName}",
                     addressDependencyException);
 
             var failedResolvedAddressServiceException =
@@ -55,12 +55,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     .Throws(sqlException);
 
             // when
-            ValueTask addResolvedAddressTask = this.resolvedAddressService
-                .BulkAddResolvedAddressesAsync(resolvedAddresses: someResolvedAddresses, fileName: someFileName);
+            ValueTask updateResolvedAddressTask = this.resolvedAddressService
+                .BulkModifyResolvedAddressesAsync(resolvedAddresses: someResolvedAddresses);
 
             ResolvedAddressServiceException actualResolvedAddressDependencyException =
                 await Assert.ThrowsAsync<ResolvedAddressServiceException>(
-                    addResolvedAddressTask.AsTask);
+                    updateResolvedAddressTask.AsTask);
 
             // then
             actualResolvedAddressDependencyException.Should()
@@ -87,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnBulkAddIfReferenceErrorOccursAndLogItAsync()
+        public async void ShouldThrowValidationExceptionOnBulkModifyIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             string someFileName = GetRandomString();
@@ -127,13 +127,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     .Throws(foreignKeyConstraintConflictException);
 
             // when
-            ValueTask addResolvedAddressTask = this.resolvedAddressService
-                .BulkAddResolvedAddressesAsync(resolvedAddresses: someResolvedAddresses, fileName: someFileName);
+            ValueTask updateResolvedAddressTask = this.resolvedAddressService
+                .BulkModifyResolvedAddressesAsync(resolvedAddresses: someResolvedAddresses);
 
             // then
             ResolvedAddressServiceException actualResolvedAddressServiceException =
                 await Assert.ThrowsAsync<ResolvedAddressServiceException>(
-                    addResolvedAddressTask.AsTask);
+                    updateResolvedAddressTask.AsTask);
 
             actualResolvedAddressServiceException.Should()
                 .BeEquivalentTo(expectedResolvedAddressServiceException);
@@ -159,7 +159,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         }
 
         [Fact]
-        public async Task ShouldThrowDependencyExceptionOnBulkAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        public async Task ShouldThrowDependencyExceptionOnBulkModifyIfDatabaseUpdateErrorOccursAndLogItAsync()
         {
             // given
             string someFileName = GetRandomString();
@@ -197,12 +197,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     .Throws(databaseUpdateException);
 
             // when
-            ValueTask addResolvedAddressTask = this.resolvedAddressService
-                .BulkAddResolvedAddressesAsync(resolvedAddresses: someResolvedAddresses, fileName: someFileName);
+            ValueTask updateResolvedAddressTask = this.resolvedAddressService
+                .BulkModifyResolvedAddressesAsync(resolvedAddresses: someResolvedAddresses);
 
             ResolvedAddressServiceException actualResolvedAddressServiceException =
                 await Assert.ThrowsAsync<ResolvedAddressServiceException>(
-                    addResolvedAddressTask.AsTask);
+                    updateResolvedAddressTask.AsTask);
 
             // then
             actualResolvedAddressServiceException.Should()
@@ -229,7 +229,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnBulkAddIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnBulkModifyIfServiceErrorOccursAndLogItAsync()
         {
             // given
             var serviceException = new Exception();
@@ -268,12 +268,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     .Throws(serviceException);
 
             // when
-            ValueTask addResolvedAddressTask = resolvedAddressServiceMock.Object
-                .BulkAddResolvedAddressesAsync(resolvedAddresses: someResolvedAddresses, fileName: someFileName);
+            ValueTask updateResolvedAddressTask = resolvedAddressServiceMock.Object
+                .BulkModifyResolvedAddressesAsync(resolvedAddresses: someResolvedAddresses);
 
             ResolvedAddressServiceException actualResolvedAddressServiceException =
                 await Assert.ThrowsAsync<ResolvedAddressServiceException>(
-                    addResolvedAddressTask.AsTask);
+                    updateResolvedAddressTask.AsTask);
 
             // then
             actualResolvedAddressServiceException.Should()

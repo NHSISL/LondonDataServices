@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             var expectedResolvedAddressOrchestrationDependencyException =
                 new ResolvedAddressOrchestrationDependencyException(
                     message: "Resolved address orchestration dependency errors occurred, " +
-                        "please try again.",
+                        "please contact support.",
                     innerException: dependencyException.InnerException as Xeption);
 
 

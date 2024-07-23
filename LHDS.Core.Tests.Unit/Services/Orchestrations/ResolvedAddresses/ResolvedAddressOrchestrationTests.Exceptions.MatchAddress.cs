@@ -11,7 +11,6 @@ using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using Moq;
-using Valid8R;
 using Xeptions;
 using Xunit;
 
@@ -74,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // given
             var expectedResolvedAddressOrchestrationDependencyException =
                 new ResolvedAddressOrchestrationDependencyException(
-                    message: "Resolved address orchestration dependency errors occurred, please try again.",
+                    message: "Resolved address orchestration dependency errors occurred, please contact support.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.resolvedAddressProcessingServiceMock.Setup(service =>
@@ -186,10 +185,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 processesingUnMatchedResolvedAddress.UpdatedDate = randomDateTimeOffset;
 
                 this.resolvedAddressProcessingServiceMock.Setup(processing =>
-                    processing.ModifyResolvedAddressAsync(
-                      It.Is(Valid8.SameObjectAs<ResolvedAddress>(
-                        processesingUnMatchedResolvedAddress, output, "First Setup"))))
-                            .ThrowsAsync(dependencyValidationException);
+                 processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(processesingUnMatchedResolvedAddress))))
+                     .ThrowsAsync(dependencyValidationException);
+
+                ResolvedAddress UnMatchedResolvedAddressById = processesingUnMatchedResolvedAddress.DeepClone();
+
+                this.resolvedAddressProcessingServiceMock.Setup(processing =>
+                    processing.RetrieveResolvedAddressByIdAsync(processesingUnMatchedResolvedAddress.Id))
+                            .ReturnsAsync(UnMatchedResolvedAddressById);
 
                 var innerResolvedAddressOrchestrationDependencyValidationException =
                     new ResolvedAddressOrchestrationDependencyValidationException(
@@ -235,7 +238,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetCurrentDateTimeOffset(),
                     Times.Exactly(1 + randomResolvedAddresses.Count));
 
-
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
             {
                 ResolvedAddress processesingVUnMatchedResolvedAddress = unMatchedResolvedAddress.DeepClone();
@@ -244,19 +246,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 processesingVUnMatchedResolvedAddress.UpdatedDate = randomDateTimeOffset;
 
                 this.resolvedAddressProcessingServiceMock.Verify(processing =>
-                    processing.ModifyResolvedAddressAsync(
-                        It.Is(Valid8.SameObjectAs<ResolvedAddress>(
-                            processesingVUnMatchedResolvedAddress, output, "First Modify"))),
+                    processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(processesingVUnMatchedResolvedAddress))),
                             Times.Once);
 
                 ResolvedAddress cleanedUnMatchedResolvedAddress = processesingVUnMatchedResolvedAddress.DeepClone();
+
+                this.resolvedAddressProcessingServiceMock.Verify(processing =>
+                    processing.RetrieveResolvedAddressByIdAsync(cleanedUnMatchedResolvedAddress.Id),
+                            Times.Once);
+
                 cleanedUnMatchedResolvedAddress.IsProcessing = false;
                 cleanedUnMatchedResolvedAddress.UpdatedDate = randomDateTimeOffset;
 
                 this.resolvedAddressProcessingServiceMock.Verify(processing =>
-                    processing.ModifyResolvedAddressAsync(
-                         It.Is(Valid8.SameObjectAs<ResolvedAddress>(
-                            cleanedUnMatchedResolvedAddress, output, "Second Modify"))),
+                    processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(cleanedUnMatchedResolvedAddress))),
                             Times.Once);
             }
 
@@ -310,7 +313,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 var innerResolvedAddressOrchestrationDependencyException =
                     new ResolvedAddressOrchestrationDependencyException(
                         message: "Resolved address orchestration dependency errors occurred, " +
-                            "please try again.",
+                            "please contact support.",
                         innerException: dependencyException.InnerException as Xeption);
 
                 exceptions.Add(innerResolvedAddressOrchestrationDependencyException);
@@ -323,7 +326,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var failedResolvedAddressOrchestrationServiceException =
                 new FailedResolvedAddressOrchestrationServiceException(
-                    message: "Failed resolved address aggregate orchestration service errors occurred, " +
+                    message: "Failed resolved address aggregate orchestration service error occurred, " +
                         "please contact support.",
                     innerException: aggregateException);
 

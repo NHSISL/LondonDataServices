@@ -100,27 +100,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .AreEqual;
         }
 
-        //private Expression<Func<ResolvedAddress, bool>> SameResolvedAddressAs(
-        //   ResolvedAddress expectedResolvedAddress)
-        //{
-        //    return actualResolvedAddress =>
-        //       IsSameResolvedAddress(expectedResolvedAddress, actualResolvedAddress);
-        //}
-
-        //private bool IsSameResolvedAddress(ResolvedAddress expectedResolvedAddress, ResolvedAddress actualResolvedAddress)
-        //{
-        //    try
-        //    {
-        //        actualResolvedAddress.Should().BeEquivalentTo(expectedResolvedAddress);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        output.WriteLine(ex.Message);
-        //    }
-        //    return this.compareLogic.Compare(expectedResolvedAddress, actualResolvedAddress)
-        //            .AreEqual;
-        //}
-
         private static byte[] ReadAllBytesFromStream(Stream stream)
         {
             if (stream.CanSeek)

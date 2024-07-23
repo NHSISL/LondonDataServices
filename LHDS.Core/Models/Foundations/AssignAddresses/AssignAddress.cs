@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using LHDS.Core.Models.Foundations.AssignABPAddresses;
 using LHDS.Core.Models.Foundations.AssignAddresses.AssignMatchPatterns;
 
@@ -26,11 +27,25 @@ namespace LHDS.Core.Models.Foundations.AssignAddresses
                 if (MatchPattern != null)
                 {
                     return
-                        $"Flat: {MatchPattern.Flat}, " +
-                        $"Building: {MatchPattern.Building}, " +
-                        $"Number: {MatchPattern.Number}, " +
-                        $"Street: {MatchPattern.Street}, " +
-                        $"Postcode: {MatchPattern.Postcode}";
+                        (!String.IsNullOrWhiteSpace(MatchPattern.Flat)
+                            ? $"Flat: {MatchPattern.Flat}, "
+                            : "") +
+
+                        (!String.IsNullOrWhiteSpace(MatchPattern.Building)
+                            ? $"Building: {MatchPattern.Building}, "
+                            : "") +
+
+                        (!String.IsNullOrWhiteSpace(MatchPattern.Number)
+                            ? $"Number: {MatchPattern.Number}, "
+                            : "") +
+
+                        (!String.IsNullOrWhiteSpace(MatchPattern.Street)
+                            ? $"Street: {MatchPattern.Street}, "
+                            : "") +
+
+                        (!String.IsNullOrWhiteSpace(MatchPattern.Postcode)
+                            ? $"Postcode: {MatchPattern.Postcode}"
+                            : "");
                 };
 
                 return string.Empty;

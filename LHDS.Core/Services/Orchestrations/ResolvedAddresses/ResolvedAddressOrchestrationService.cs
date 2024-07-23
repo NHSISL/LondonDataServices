@@ -90,10 +90,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             var exceptions = new List<Exception>();
 
             while ((unMatchedResolvedAddress = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
-                .FirstOrDefault(x =>
-                x.IsProcessed == false &&
-                x.IsProcessing == false &&
-                x.RetryCount < 4)) != null)
+                .FirstOrDefault(address =>
+                address.IsProcessed == false &&
+                address.IsProcessing == false &&
+                address.RetryCount < 4)) != null)
             {
                 try
                 {
@@ -134,10 +134,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 }
                 catch (Exception ex)
                 {
-                    ResolvedAddress failedToProcessA = unMatchedResolvedAddress.DeepClone();
+                    ResolvedAddress failedToProcessClean = unMatchedResolvedAddress.DeepClone();
 
                     ResolvedAddress failedToProcess = await this.resolvedAddressProcessingService
-                        .RetrieveResolvedAddressByIdAsync(failedToProcessA.Id);
+                        .RetrieveResolvedAddressByIdAsync(failedToProcessClean.Id);
 
                     failedToProcess.IsProcessing = false;
                     failedToProcess.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
@@ -162,31 +162,31 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             AssignAddress? foundAssignAddress,
             Address? foundOrdananceAddress)
         {
-            ResolvedAddress UpdatedResolovedAddress = unMatchedResolvedAddress;
-            UpdatedResolovedAddress.UPSN = foundOrdananceAddress?.UPSN ?? null;
-            UpdatedResolovedAddress.OrganisationName = foundOrdananceAddress?.OrganisationName;
-            UpdatedResolovedAddress.DepartmentName = foundOrdananceAddress?.DepartmentName;
-            UpdatedResolovedAddress.SubBuildingName = foundOrdananceAddress?.SubBuildingName;
-            UpdatedResolovedAddress.BuildingName = foundOrdananceAddress?.BuildingName;
-            UpdatedResolovedAddress.BuildingNumber = foundOrdananceAddress?.BuildingNumber;
-            UpdatedResolovedAddress.DependentThoroughfare = foundOrdananceAddress?.DependentThoroughfare;
-            UpdatedResolovedAddress.Thoroughfare = foundOrdananceAddress?.Thoroughfare;
-            UpdatedResolovedAddress.DoubleDependentLocality = foundOrdananceAddress?.DoubleDependentLocality;
-            UpdatedResolovedAddress.DependentLocality = foundOrdananceAddress?.DependentLocality;
-            UpdatedResolovedAddress.PostTown = foundOrdananceAddress?.PostTown;
-            UpdatedResolovedAddress.PostCode = foundOrdananceAddress?.PostCode;
-            UpdatedResolovedAddress.AddressFormatQuality = foundAssignAddress?.AddressFormat;
-            UpdatedResolovedAddress.PostCodeQuality = foundAssignAddress?.PostcodeQuality;
-            UpdatedResolovedAddress.MatchedWithAssign = foundAssignAddress?.Matched ?? false;
-            UpdatedResolovedAddress.Qualifier = foundAssignAddress?.Qualifier;
-            UpdatedResolovedAddress.Classification = foundAssignAddress?.Classification;
-            UpdatedResolovedAddress.Algorithm = foundAssignAddress?.Algorithm;
-            UpdatedResolovedAddress.MatchPattern = foundAssignAddress?.Pattern;
-            UpdatedResolovedAddress.IsProcessing = false;
-            UpdatedResolovedAddress.IsExported = false;
-            UpdatedResolovedAddress.RetryCount = 0;
+            ResolvedAddress updatedResolovedAddress = unMatchedResolvedAddress;
+            updatedResolovedAddress.UPSN = foundOrdananceAddress?.UPSN ?? null;
+            updatedResolovedAddress.OrganisationName = foundOrdananceAddress?.OrganisationName;
+            updatedResolovedAddress.DepartmentName = foundOrdananceAddress?.DepartmentName;
+            updatedResolovedAddress.SubBuildingName = foundOrdananceAddress?.SubBuildingName;
+            updatedResolovedAddress.BuildingName = foundOrdananceAddress?.BuildingName;
+            updatedResolovedAddress.BuildingNumber = foundOrdananceAddress?.BuildingNumber;
+            updatedResolovedAddress.DependentThoroughfare = foundOrdananceAddress?.DependentThoroughfare;
+            updatedResolovedAddress.Thoroughfare = foundOrdananceAddress?.Thoroughfare;
+            updatedResolovedAddress.DoubleDependentLocality = foundOrdananceAddress?.DoubleDependentLocality;
+            updatedResolovedAddress.DependentLocality = foundOrdananceAddress?.DependentLocality;
+            updatedResolovedAddress.PostTown = foundOrdananceAddress?.PostTown;
+            updatedResolovedAddress.PostCode = foundOrdananceAddress?.PostCode;
+            updatedResolovedAddress.AddressFormatQuality = foundAssignAddress?.AddressFormat;
+            updatedResolovedAddress.PostCodeQuality = foundAssignAddress?.PostcodeQuality;
+            updatedResolovedAddress.MatchedWithAssign = foundAssignAddress?.Matched ?? false;
+            updatedResolovedAddress.Qualifier = foundAssignAddress?.Qualifier;
+            updatedResolovedAddress.Classification = foundAssignAddress?.Classification;
+            updatedResolovedAddress.Algorithm = foundAssignAddress?.Algorithm;
+            updatedResolovedAddress.MatchPattern = foundAssignAddress?.Pattern;
+            updatedResolovedAddress.IsProcessing = false;
+            updatedResolovedAddress.IsExported = false;
+            updatedResolovedAddress.RetryCount = 0;
 
-            return UpdatedResolovedAddress;
+            return updatedResolovedAddress;
         }
 
         public ValueTask<List<Guid>> ExportResolvedAddressesAsync() =>

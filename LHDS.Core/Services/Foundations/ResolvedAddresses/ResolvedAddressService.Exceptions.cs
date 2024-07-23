@@ -38,7 +38,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressStorageException =
                     new FailedResolvedAddressStorageException(
-                        message: "Failed resolvedAddress storage error occurred, please contact support.",
+                        message: "Failed resolved address storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedResolvedAddressStorageException);
@@ -51,7 +51,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var alreadyExistsResolvedAddressException =
                     new AlreadyExistsResolvedAddressException(
-                        message: "ResolvedAddress with the same Id already exists.",
+                        message: "Resolved address with the same Id already exists.",
                         innerException: duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsResolvedAddressException);
@@ -60,7 +60,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var invalidResolvedAddressReferenceException =
                     new InvalidResolvedAddressReferenceException(
-                        message: "Invalid resolvedAddress reference error occurred.",
+                        message: "Invalid resolved address reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidResolvedAddressReferenceException);
@@ -69,7 +69,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var lockedResolvedAddressException =
                     new LockedResolvedAddressException(
-                        message: "Locked resolvedAddress record exception, please try again later",
+                        message: "Locked resolved address record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
                 throw CreateAndLogDependencyValidationException(lockedResolvedAddressException);
@@ -78,7 +78,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressStorageException =
                     new FailedResolvedAddressStorageException(
-                        message: "Failed resolvedAddress storage error occurred, please contact support.",
+                        message: "Failed resolved address storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedResolvedAddressStorageException);
@@ -87,7 +87,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressServiceException =
                     new FailedResolvedAddressServiceException(
-                        message: "Failed resolvedAddress service error occurred, please contact support.",
+                        message: "Failed resolved address service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedResolvedAddressServiceException);
@@ -112,7 +112,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressStorageException =
                     new FailedResolvedAddressStorageException(
-                        message: "Failed resolvedAddress storage error occurred, please contact support.",
+                        message: "Failed resolved address storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedResolvedAddressStorageException);
@@ -125,7 +125,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var alreadyExistsResolvedAddressException =
                     new AlreadyExistsResolvedAddressException(
-                        message: "ResolvedAddress with the same Id already exists.",
+                        message: "Resolved address with the same Id already exists.",
                         innerException: duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsResolvedAddressException);
@@ -134,7 +134,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var invalidResolvedAddressReferenceException =
                     new InvalidResolvedAddressReferenceException(
-                        message: "Invalid resolvedAddress reference error occurred.",
+                        message: "Invalid resolved address reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidResolvedAddressReferenceException);
@@ -143,7 +143,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var lockedResolvedAddressException =
                     new LockedResolvedAddressException(
-                        message: "Locked resolvedAddress record exception, please try again later",
+                        message: "Locked resolved address record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
                 throw CreateAndLogDependencyValidationException(lockedResolvedAddressException);
@@ -152,7 +152,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressStorageException =
                     new FailedResolvedAddressStorageException(
-                        message: "Failed resolvedAddress storage error occurred, please contact support.",
+                        message: "Failed resolved address storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedResolvedAddressStorageException);
@@ -161,7 +161,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressServiceException =
                     new FailedResolvedAddressServiceException(
-                        message: "Failed aggregate resolvedAddress service error occurred, please contact support.",
+                        message: "Failed aggregate resolved address service error occurred, please contact support.",
                         innerException: aggregateException);
 
                 throw CreateAndLogServiceException(failedResolvedAddressServiceException);
@@ -170,7 +170,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressServiceException =
                     new FailedResolvedAddressServiceException(
-                        message: "Failed resolvedAddress service error occurred, please contact support.",
+                        message: "Failed resolved address service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedResolvedAddressServiceException);
@@ -187,7 +187,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressStorageException =
                     new FailedResolvedAddressStorageException(
-                        message: "Failed resolvedAddress storage error occurred, please contact support.",
+                        message: "Failed resolved address storage error occurred, please contact support.",
                         innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedResolvedAddressStorageException);
@@ -196,7 +196,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressServiceException =
                     new FailedResolvedAddressServiceException(
-                        message: "Failed resolvedAddress service error occurred, please contact support.",
+                        message: "Failed resolved address service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedResolvedAddressServiceException);
@@ -207,7 +207,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             var resolvedAddressValidationException =
                 new ResolvedAddressValidationException(
-                    message: "ResolvedAddress validation errors occurred, please try again.",
+                    message: "Resolved address validation errors occurred, please try again.",
                     innerException: exception);
 
             this.loggingBroker.LogError(resolvedAddressValidationException);
@@ -219,7 +219,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             var resolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
-                    message: "ResolvedAddress dependency error occurred, please contact support.",
+                    message: "Resolved address dependency error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogCritical(resolvedAddressDependencyException);
@@ -231,7 +231,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             var resolvedAddressDependencyValidationException =
                 new ResolvedAddressDependencyValidationException(
-                    message: "ResolvedAddress dependency validation occurred, please try again.",
+                    message: "Resolved address dependency validation occurred, please try again.",
                     innerException: exception);
 
             this.loggingBroker.LogError(resolvedAddressDependencyValidationException);
@@ -244,7 +244,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             var resolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
-                    message: "ResolvedAddress dependency error occurred, please contact support.",
+                    message: "Resolved address dependency error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(resolvedAddressDependencyException);
@@ -257,7 +257,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             var resolvedAddressServiceException =
                 new ResolvedAddressServiceException(
-                    message: "ResolvedAddress service error occurred, please contact support.",
+                    message: "Resolved address service error occurred, please contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(resolvedAddressServiceException);

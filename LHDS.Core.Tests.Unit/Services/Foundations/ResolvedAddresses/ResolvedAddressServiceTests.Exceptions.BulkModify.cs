@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var invalidResolvedAddressReferenceException =
                 new InvalidResolvedAddressReferenceException(
-                    message: "Invalid resolvedAddress reference error occurred.",
+                    message: "Invalid resolved address reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
             var addressDependencyValidationException = new ResolvedAddressDependencyValidationException(
@@ -130,11 +130,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             ValueTask updateResolvedAddressTask = this.resolvedAddressService
                 .BulkModifyResolvedAddressesAsync(resolvedAddresses: someResolvedAddresses);
 
-            // then
             ResolvedAddressServiceException actualResolvedAddressServiceException =
                 await Assert.ThrowsAsync<ResolvedAddressServiceException>(
                     updateResolvedAddressTask.AsTask);
 
+            // then
             actualResolvedAddressServiceException.Should()
                 .BeEquivalentTo(expectedResolvedAddressServiceException);
 

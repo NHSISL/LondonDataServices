@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var expectedResolvedAddressValidationException =
                 new ResolvedAddressValidationException(
-                    message: "ResolvedAddress validation errors occurred, please try again.",
+                    message: "Resolved address validation errors occurred, please try again.",
                     innerException: invalidResolvedAddressException);
 
             // when

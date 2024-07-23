@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var expectedResolvedAddressValidationException =
                 new ResolvedAddressValidationException(
-                    message: "ResolvedAddress validation errors occurred, please try again.",
+                    message: "Resolved address validation errors occurred, please try again.",
                     innerException: nullResolvedAddressException);
 
             // when
@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
-                    message: "Invalid resolvedAddress. Please correct the errors and try again.");
+                    message: "Invalid resolved address. Please correct the errors and try again.");
 
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.Id),
@@ -92,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var expectedResolvedAddressValidationException =
                 new ResolvedAddressValidationException(
-                    message: "ResolvedAddress validation errors occurred, please try again.",
+                    message: "Resolved address validation errors occurred, please try again.",
                     innerException: invalidResolvedAddressException);
 
             // when
@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
-                    message: "Invalid resolvedAddress. Please correct the errors and try again.");
+                    message: "Invalid resolved address. Please correct the errors and try again.");
 
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.UpdatedDate),
@@ -146,7 +146,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var expectedResolvedAddressValidationException =
                 new ResolvedAddressValidationException(
-                    message: "ResolvedAddress validation errors occurred, please try again.",
+                    message: "Resolved address validation errors occurred, please try again.",
                     innerException: invalidResolvedAddressException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -193,7 +193,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
-                    message: "Invalid resolvedAddress. Please correct the errors and try again.");
+                    message: "Invalid resolved address. Please correct the errors and try again.");
 
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.UpdatedBy),
@@ -201,7 +201,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var expectedResolvedAddressValidationException =
                 new ResolvedAddressValidationException(
-                    message: "ResolvedAddress validation errors occurred, please try again.",
+                    message: "Resolved address validation errors occurred, please try again.",
                     innerException: invalidResolvedAddressException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -253,7 +253,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
-                    message: "Invalid resolvedAddress. Please correct the errors and try again.");
+                    message: "Invalid resolved address. Please correct the errors and try again.");
 
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.CreatedDate),
@@ -261,7 +261,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var expectedResolvedAddressValidationException =
                 new ResolvedAddressValidationException(
-                    message: "ResolvedAddress validation errors occurred, please try again.",
+                    message: "Resolved address validation errors occurred, please try again.",
                     innerException: invalidResolvedAddressException);
 
             this.dateTimeBrokerMock.Setup(broker =>

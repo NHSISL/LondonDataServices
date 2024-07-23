@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             var failedResolvedAddressServiceException =
                 new FailedResolvedAddressServiceException(
                     message: "Failed aggregate resolved address service error occurred, please contact support.",
-                    innerException: sqlException);
+                    innerException: aggregateException);
 
             var expectedResolvedAddressServiceException =
                 new ResolvedAddressServiceException(
@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var invalidResolvedAddressReferenceException =
                 new InvalidResolvedAddressReferenceException(
-                    message: "Invalid resolvedAddress reference error occurred.",
+                    message: "Invalid resolved address reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
             var addressDependencyValidationException = new ResolvedAddressDependencyValidationException(
@@ -109,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to process resolvedAddresses in 1 of the batch(es) from {someFileName}",
+                    $"Unable to process resolved addresses in 1 of the batch(es) from {someFileName}",
                     addressDependencyValidationException);
 
             var failedResolvedAddressServiceException =
@@ -179,7 +179,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to process resolvedAddresses in 1 of the batch(es) from {someFileName}",
+                    $"Unable to process resolved addresses in 1 of the batch(es) from {someFileName}",
                     addressDependencyException);
 
             var failedResolvedAddressServiceException =

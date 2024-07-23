@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         {
             // given
             ResolvedAddress nullResolvedAddress = null;
-            var nullResolvedAddressException = new NullResolvedAddressException(message: "ResolvedAddress is null.");
+            var nullResolvedAddressException = new NullResolvedAddressException(message: "Resolved address is null.");
 
             var expectedResolvedAddressValidationException =
                 new ResolvedAddressValidationException(

@@ -81,12 +81,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var alreadyExistsResolvedAddressException =
                 new AlreadyExistsResolvedAddressException(
-                    message: "ResolvedAddress with the same Id already exists.",
+                    message: "Resolved address with the same Id already exists.",
                     innerException: duplicateKeyException);
 
             var expectedResolvedAddressDependencyValidationException =
                 new ResolvedAddressDependencyValidationException(
-                    message: "ResolvedAddress dependency validation occurred, please try again.",
+                    message: "Resolved address dependency validation occurred, please try again.",
                     innerException: alreadyExistsResolvedAddressException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -141,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var expectedResolvedAddressValidationException =
                 new ResolvedAddressDependencyValidationException(
-                    message: "ResolvedAddress dependency validation occurred, please try again.",
+                    message: "Resolved address dependency validation occurred, please try again.",
                     innerException: invalidResolvedAddressReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -189,12 +189,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var failedResolvedAddressStorageException =
                 new FailedResolvedAddressStorageException(
-                    message: "Failed resolvedAddress storage error occurred, please contact support.",
+                    message: "Failed resolved address storage error occurred, please contact support.",
                     innerException: databaseUpdateException);
 
             var expectedResolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
-                    message: "ResolvedAddress dependency error occurred, please contact support.",
+                    message: "Resolved address dependency error occurred, please contact support.",
                     innerException: failedResolvedAddressStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -240,12 +240,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var failedResolvedAddressServiceException =
                 new FailedResolvedAddressServiceException(
-                    message: "Failed resolvedAddress service error occurred, please contact support.",
+                    message: "Failed resolved address service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedResolvedAddressServiceException =
                 new ResolvedAddressServiceException(
-                    message: "ResolvedAddress service error occurred, please contact support.",
+                    message: "Resolved address service error occurred, please contact support.",
                     innerException: failedResolvedAddressServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>

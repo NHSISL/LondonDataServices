@@ -142,7 +142,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     failedToProcess.IsProcessing = false;
                     failedToProcess.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
 
-                    var x = await resolvedAddressProcessingService
+                    await resolvedAddressProcessingService
                         .ModifyResolvedAddressAsync(failedToProcess);
 
                     exceptions.Add(ex);

@@ -43,7 +43,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         {
             if (resolvedAddress is null)
             {
-                throw new NullResolvedAddressProcessingException(message: "ResolvedAddress is null.");
+                throw new NullResolvedAddressProcessingException(message: "Resolved address is null.");
             }
         }
 

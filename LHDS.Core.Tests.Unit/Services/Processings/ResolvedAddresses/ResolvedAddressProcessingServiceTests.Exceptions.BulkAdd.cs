@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             var expectedResolvedAddressProcessingDependencyException =
                 new ResolvedAddressProcessingDependencyException(
-                    message: "Resolved address processing dependency error occurred, please try again.",
+                    message: "Resolved address processing dependency error occurred, please contact support.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.resolvedAddressServiceMock.Setup(service =>

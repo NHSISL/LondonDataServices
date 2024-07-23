@@ -18,12 +18,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnBulkAddIfResolvedAddressIsInvalidAndLogItAsync(
+        public async Task ShouldThrowValidationExceptionOnBulkModifyIfResolvedAddressIsInvalidAndLogItAsync(
             string invalidText)
         {
             // given
             List<ResolvedAddress> invalidResolvedAddresses = null;
-            string invalidFileName = invalidText;
 
             var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
@@ -33,23 +32,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 key: "resolvedAddresses",
                 values: "List of resolved addresses is required");
 
-            invalidResolvedAddressException.AddData(
-                key: "fileName",
-                values: "Text is required");
-
             var expectedResolvedAddressValidationException =
                 new ResolvedAddressValidationException(
                     message: "Resolved address validation errors occurred, please try again.",
                     innerException: invalidResolvedAddressException);
 
             // when
-            ValueTask bulkAddResolvedAddressTask =
-                this.resolvedAddressService.BulkAddResolvedAddressesAsync(
-                    resolvedAddresses: invalidResolvedAddresses,
-                    fileName: invalidFileName);
+            ValueTask bulkUpdateResolvedAddressTask =
+                this.resolvedAddressService.BulkModifyResolvedAddressesAsync(
+                    resolvedAddresses: invalidResolvedAddresses);
 
             ResolvedAddressValidationException actualResolvedAddressValidationException =
-                await Assert.ThrowsAsync<ResolvedAddressValidationException>(bulkAddResolvedAddressTask.AsTask);
+                await Assert.ThrowsAsync<ResolvedAddressValidationException>(bulkUpdateResolvedAddressTask.AsTask);
 
             // then
             actualResolvedAddressValidationException.Should()

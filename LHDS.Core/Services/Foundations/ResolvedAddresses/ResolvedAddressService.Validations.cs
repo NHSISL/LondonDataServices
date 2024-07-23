@@ -142,7 +142,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         private static dynamic IsInvalid(List<ResolvedAddress> resolvedAddresses) => new
         {
             Condition = resolvedAddresses == null,
-            Message = "Resolved addresses is required"
+            Message = "List of resolved addresses is required"
         };
 
         private static dynamic IsSame(

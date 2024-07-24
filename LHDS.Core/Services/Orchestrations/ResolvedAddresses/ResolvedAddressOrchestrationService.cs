@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Force.DeepCloner;
 using LHDS.Core.Brokers.CsvHelpers;
@@ -189,28 +190,63 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             return updatedResolovedAddress;
         }
 
-        public ValueTask<List<Guid>> ExportResolvedAddressesAsync() =>
-            TryCatch(async () =>
+        public async ValueTask<List<Guid>> ExportResolvedAddressesAsync()
+        {
+
+            List<ResolvedAddress> unMatchedResolvedAddresses;
+            int batchCount = 10000;
+            List<Guid> batchReferenceIds = new List<Guid>();
+
+            while ((unMatchedResolvedAddresses = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
+                .Where(address =>
+                    address.IsProcessed == false &&
+                    address.IsProcessing == false &&
+                    address.RetryCount < 4)
+                .Take(batchCount)
+                .ToList()).Count > 0)
             {
-                throw new NotImplementedException();
+                Guid batchReference = this.identifierBroker.GetIdentifier();
 
-                List<Guid> batchReferenceIds = new List<Guid>();
+                unMatchedResolvedAddresses.ForEach(setProcessing =>
+                {
+                    setProcessing.IsProcessing = true;
+                    setProcessing.RetryCount += 1;
+                });
 
-                // 1) Create a while loop to fetch the top 10,000 items where
-                //    Matched = true, IsProcessing = false, IsExported = false and retry count <= 3
-                // 2) Bulk update the items to set IsProcessing = true,
-                //    BatchReference = batchReferenceId, retrycount += 1
-                // 3) Create a CSV file with the data
-                // 4) Upload the CSV file to the blob storage
+                await resolvedAddressProcessingService.BulkModifyResolvedAddressesAsync(unMatchedResolvedAddresses);
 
-                // 5) Bulk update the batch of items to set IsProcessing = false
+                string processedData = await this.csvHelperBroker
+                   .MapObjectToCsvAsync(unMatchedResolvedAddresses, false, null, true);
 
-                // 6) Add aggregate exception handling to catch excetions in the while loop.
-                //    If any exceptions are caught, log them and continue reset all items in that bacth to
-                //    IsProcessing = false, IsExported = false and increment the retry count by 1.
-                // 7) Return the batchReferenceIds
+                byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
+                batchReferenceIds.Add(batchReference);
+                string csvFileName = $"out/{batchReference}.csv";
+
+                using (Stream processed = new MemoryStream(processedBytes))
+                {
+                    await this.documentProcessingService.AddDocumentAsync(
+                        input: processed,
+                        csvFileName,
+                        container: blobContainers.Addresses);
+                }
+
+                List<ResolvedAddress> doneProcessingResolvedAddresses = unMatchedResolvedAddresses.DeepClone();
+
+                doneProcessingResolvedAddresses.ForEach(setFinishedProcessing =>
+                {
+                    setFinishedProcessing.BatchReference = batchReference;
+                    setFinishedProcessing.IsProcessing = false;
+                    setFinishedProcessing.RetryCount = 0;
+                    setFinishedProcessing.IsExported = true;
+                    setFinishedProcessing.IsProcessed = true;
+                });
+
+                await resolvedAddressProcessingService.BulkModifyResolvedAddressesAsync(doneProcessingResolvedAddresses);
 
                 return await ValueTask.FromResult(batchReferenceIds);
-            });
+            }
+
+            return await ValueTask.FromResult(batchReferenceIds);
+        }
     }
 }

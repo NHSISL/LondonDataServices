@@ -419,7 +419,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact(Skip = "come back to fix")]
+        [Fact]
         public async Task ShouldThrowAggregateServiceExceptionOnMatchErrorsInLoopAndLogItAsync()
         {
             // Given

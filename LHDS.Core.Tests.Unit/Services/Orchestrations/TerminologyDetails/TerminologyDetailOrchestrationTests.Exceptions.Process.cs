@@ -251,6 +251,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     message: "Terminology detail orchestration service error occurred, please contact support.",
                     innerException: innerFailedTerminologyDetailOrchestrationServiceException);
 
+            exceptions.Add(innerTerminologyDetailOrchestrationServiceException);
+
             this.ontologyProcessingServiceMock.Setup(service =>
                 service.RetrieveArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl))
                     .ThrowsAsync(serviceException);

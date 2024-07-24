@@ -134,7 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
                 var subscriberCredentialProcessingDependencyException =
                     new SubscriberCredentialProcessingDependencyException(
-                        message: "Subscriber credential processing dependency validation error occurred, " +
+                        message: "Subscriber credential processing dependency error occurred, " +
                             "please try again.",
                      innerException: dependencyException.InnerException as Xeption);
 

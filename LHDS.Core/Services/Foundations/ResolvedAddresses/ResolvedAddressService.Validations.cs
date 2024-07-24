@@ -95,7 +95,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             if (resolvedAddress is null)
             {
-                throw new NullResolvedAddressException(message: "ResolvedAddress is null.");
+                throw new NullResolvedAddressException(message: "Resolved address is null.");
             }
         }
 
@@ -142,7 +142,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         private static dynamic IsInvalid(List<ResolvedAddress> resolvedAddresses) => new
         {
             Condition = resolvedAddresses == null,
-            Message = "ResolvedAddresses is required"
+            Message = "List of resolved addresses is required"
         };
 
         private static dynamic IsSame(
@@ -202,7 +202,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         {
             var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
-                    message: "Invalid resolvedAddress. Please correct the errors and try again.");
+                    message: "Invalid resolved address. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

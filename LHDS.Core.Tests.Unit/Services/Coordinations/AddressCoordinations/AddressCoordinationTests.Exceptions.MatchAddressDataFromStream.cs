@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.UploadAddressesToReslveAsync(someStream, someFilename))
+                service.UploadAddressesToResolveAsync(It.IsAny<Stream>(), It.IsAny<string>()))
                     .ThrowsAsync(dependancyValidationException);
 
             // when
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                  .BeEquivalentTo(expectedDependencyException);
 
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-             service.UploadAddressesToReslveAsync(someStream, someFilename),
+             service.UploadAddressesToResolveAsync(It.IsAny<Stream>(), It.IsAny<string>()),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: dependencyException.InnerException as Xeption);
 
             this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.UploadAddressesToReslveAsync(someStream, someFilename))
+                service.UploadAddressesToResolveAsync(It.IsAny<Stream>(), It.IsAny<string>()))
                     .ThrowsAsync(dependencyException);
 
             // when
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                  .BeEquivalentTo(expectedDependencyException);
 
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-             service.UploadAddressesToReslveAsync(someStream, someFilename),
+             service.UploadAddressesToResolveAsync(It.IsAny<Stream>(), It.IsAny<string>()),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: failedAddressCoordinationServiceException);
 
             this.resolvedAddressOrchestrationServiceMock.Setup(service =>
-                service.UploadAddressesToReslveAsync(someStream, someFilename))
+                service.UploadAddressesToResolveAsync(It.IsAny<Stream>(), It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             actualException.Should().BeEquivalentTo(expectedAddressCoordinationServiceException);
 
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.UploadAddressesToReslveAsync(someStream, someFilename),
+                service.UploadAddressesToResolveAsync(It.IsAny<Stream>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

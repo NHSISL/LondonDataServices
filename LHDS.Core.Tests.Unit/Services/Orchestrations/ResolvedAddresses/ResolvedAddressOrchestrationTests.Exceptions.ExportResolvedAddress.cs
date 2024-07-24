@@ -58,5 +58,49 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnnExportResolvedAddressIfDependencyErrorOccursAndLogItAsync(
+          Xeption dependencyException)
+        {
+            // given
+            var expectedResolvedAddressOrchestrationDependencyException =
+                new ResolvedAddressOrchestrationDependencyException(
+                    message: "Resolved address orchestration dependency errors occurred, please contact support.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.resolvedAddressProcessingServiceMock.Setup(service =>
+                service.RetrieveAllResolvedAddresses())
+                    .Throws(dependencyException);
+
+            // when
+            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+
+            ResolvedAddressOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyException>(
+                    action.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationDependencyException);
+
+            this.resolvedAddressProcessingServiceMock.Verify(service =>
+                service.RetrieveAllResolvedAddresses(),
+                    Times.Once);
+
+            loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedResolvedAddressOrchestrationDependencyException))),
+                         Times.Once);
+
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
+            this.assignProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

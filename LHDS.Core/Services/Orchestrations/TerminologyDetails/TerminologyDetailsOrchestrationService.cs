@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Ontologies;
@@ -75,7 +74,9 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
 
                             artifact.IsDownloaded = true;
                             artifact.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
-                            await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);
+
+                            await this.terminologyArtifactProcessingService
+                                .ModifyOrAddTerminologyArtifactAsync(artifact);
                         });
                     }
                     catch (Exception ex)

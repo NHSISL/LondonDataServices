@@ -40,13 +40,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var expectedResolvedAddressOrchestrationDependencyValidationException =
                 new ResolvedAddressOrchestrationDependencyValidationException(
-                    message: "Resolved address orchestration dependency validation error occurred, " +
+                    message: "Resolved address orchestration dependency validation errors occurred, " +
                         "please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             // When
             ValueTask uploadResolvedAddressTask = this.resolvedAddressOrchestrationService
-                .UploadAddressesToReslveAsync(input: someStream, fileName: someFileName);
+                .UploadAddressesToResolveAsync(input: someStream, fileName: someFileName);
 
             ResolvedAddressOrchestrationDependencyValidationException
                 actualResolvedAddressOrchestrationDependencyValidationException =
@@ -99,15 +99,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var expectedResolvedAddressOrchestrationDependencyException =
                 new ResolvedAddressOrchestrationDependencyException(
-                    message: "Resolved address orchestration dependency error occurred, " +
-                        "please try again.",
+                    message: "Resolved address orchestration dependency errors occurred, " +
+                        "please contact support.",
                     innerException: dependencyException.InnerException as Xeption);
 
 
 
             // When
             ValueTask uploadResolvedAddressTask = this.resolvedAddressOrchestrationService
-                .UploadAddressesToReslveAsync(input: someStream, fileName: someFileName);
+                .UploadAddressesToResolveAsync(input: someStream, fileName: someFileName);
 
             ResolvedAddressOrchestrationDependencyException
                 actualResolvedAddressOrchestrationDependencyException =
@@ -168,7 +168,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             // When
             ValueTask uploadResolvedAddressTask = this.resolvedAddressOrchestrationService
-                .UploadAddressesToReslveAsync(input: someStream, fileName: someFileName);
+                .UploadAddressesToResolveAsync(input: someStream, fileName: someFileName);
 
             ResolvedAddressOrchestrationServiceException
                 actualResolvedAddressOrchestrationServiceException =

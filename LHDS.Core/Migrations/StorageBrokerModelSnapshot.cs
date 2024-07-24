@@ -886,6 +886,11 @@ namespace LHDS.Core.Migrations
                     b.Property<bool>("IsExported")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsProcessed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsProcessing")
                         .HasColumnType("bit");
 
@@ -893,7 +898,7 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<bool>("Matched")
+                    b.Property<bool>("MatchedWithAssign")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);

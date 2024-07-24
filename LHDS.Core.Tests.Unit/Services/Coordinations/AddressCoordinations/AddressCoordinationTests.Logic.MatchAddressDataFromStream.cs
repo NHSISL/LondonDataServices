@@ -16,17 +16,17 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
         public async Task ShouldMatchAddressDataFromFileAsync()
         {
             // Given
-            string someFilename = GetRandomString();
+            string randomFilename = GetRandomString();
             byte[] inputData = Encoding.UTF8.GetBytes(GetRandomString());
             Stream inputStream = new MemoryStream(inputData);
 
             // When
             await this.addressCoordinationService
-                .LoadAddressesToResolveAsync(inputStream, someFilename);
+                .LoadAddressesToResolveAsync(inputStream, randomFilename);
 
             // Then
             this.resolvedAddressOrchestrationServiceMock.Verify(service =>
-                service.UploadAddressesToReslveAsync(inputStream, someFilename),
+                service.UploadAddressesToResolveAsync(inputStream, randomFilename),
                     Times.Once());
 
             this.addressOrchestrationServiceMock.VerifyNoOtherCalls();

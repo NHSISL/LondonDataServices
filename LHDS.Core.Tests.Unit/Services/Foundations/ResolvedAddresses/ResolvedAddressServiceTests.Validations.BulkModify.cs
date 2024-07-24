@@ -1,0 +1,66 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
+using Moq;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
+{
+    public partial class ResolvedAddressServiceTests
+    {
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnBulkModifyIfResolvedAddressIsInvalidAndLogItAsync(
+            string invalidText)
+        {
+            // given
+            List<ResolvedAddress> invalidResolvedAddresses = null;
+
+            var invalidResolvedAddressException =
+                new InvalidResolvedAddressException(
+                    message: "Invalid resolved address. Please correct the errors and try again.");
+
+            invalidResolvedAddressException.AddData(
+                key: "resolvedAddresses",
+                values: "List of resolved addresses is required");
+
+            var expectedResolvedAddressValidationException =
+                new ResolvedAddressValidationException(
+                    message: "Resolved address validation errors occurred, please try again.",
+                    innerException: invalidResolvedAddressException);
+
+            // when
+            ValueTask bulkUpdateResolvedAddressTask =
+                this.resolvedAddressService.BulkModifyResolvedAddressesAsync(
+                    resolvedAddresses: invalidResolvedAddresses);
+
+            ResolvedAddressValidationException actualResolvedAddressValidationException =
+                await Assert.ThrowsAsync<ResolvedAddressValidationException>(bulkUpdateResolvedAddressTask.AsTask);
+
+            // then
+            actualResolvedAddressValidationException.Should()
+                .BeEquivalentTo(expectedResolvedAddressValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedResolvedAddressValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

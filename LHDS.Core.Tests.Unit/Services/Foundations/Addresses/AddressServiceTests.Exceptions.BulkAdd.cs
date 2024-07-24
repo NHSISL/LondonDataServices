@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             var failedAddressServiceException =
                 new FailedAddressServiceException(
                     message: "Failed aggregate address service error occurred, please contact support.",
-                    innerException: sqlException);
+                    innerException: aggregateException);
 
             var expectedAddressServiceException =
                 new AddressServiceException(

@@ -4,8 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using Moq;
 using Xeptions;
@@ -156,6 +159,96 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Theory]
+        [MemberData(nameof(DependencyValidationExceptions))]
+        public async Task
+           ShouldThrowAggregateDependencyValidationExceptionOnExportResolvedAddresErrorsInLoopAndLogItAsync(
+           Xeption dependencyValidationException)
+        {
+            // Given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 1);
+            List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
+            List<Exception> exceptions = new List<Exception>();
 
+            this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
+                 service.RetrieveAllResolvedAddresses())
+                     .Returns(storageResolvedAddresses.AsQueryable())
+                     .Returns(storageResolvedAddresses.AsQueryable())
+                     .Returns(new List<ResolvedAddress>().AsQueryable());
+
+            this.identifierBrokerMock.Setup(broker =>
+                 broker.GetIdentifier())
+                     .Throws(dependencyValidationException);
+
+            var innerResolvedAddressOrchestrationDependencyValidationException =
+                new ResolvedAddressOrchestrationDependencyValidationException(
+                    message: "Resolved address orchestration dependency validation errors occurred, " +
+                        "please try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
+
+            exceptions.Add(innerResolvedAddressOrchestrationDependencyValidationException);
+
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to retrieve message for {exceptions.Count} ResolvedAddresses",
+                    exceptions);
+
+            var failedResolvedAddressOrchestrationServiceException =
+                new FailedResolvedAddressOrchestrationServiceException(
+                    message: "Failed resolved address aggregate orchestration service errors occurred, " +
+                        "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedResolvedAddressOrchestrationServiceException =
+                new ResolvedAddressOrchestrationServiceException(
+                    message: "Resolved address orchestration service error occurred, please contact support.",
+                    innerException: failedResolvedAddressOrchestrationServiceException);
+
+            // When
+            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+
+            ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
+               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
+                   await action);
+
+            // Then
+            actualResolvedAddressOrchestrationServiceException.Should()
+               .BeEquivalentTo(expectedResolvedAddressOrchestrationServiceException);
+
+            this.resolvedAddressProcessingServiceMock.Verify(service =>
+               service.RetrieveAllResolvedAddresses(),
+                   Times.Once);
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Once());
+
+            var resolvedAddressOrchestrationDependencyValidationLoggingException =
+               new ResolvedAddressOrchestrationDependencyValidationException(
+                   message: "Resolved address orchestration dependency validation errors occurred, " +
+                       "please try again.",
+                   innerException: dependencyValidationException.InnerException as Xeption);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    resolvedAddressOrchestrationDependencyValidationLoggingException))),
+                        Times.Exactly(randomResolvedAddresses.Count));
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    actualResolvedAddressOrchestrationServiceException))),
+                        Times.Once);
+
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
+            this.assignProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

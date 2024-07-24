@@ -190,9 +190,9 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             return updatedResolovedAddress;
         }
 
-        public async ValueTask<List<Guid>> ExportResolvedAddressesAsync()
+        public ValueTask<List<Guid>> ExportResolvedAddressesAsync() =>
+        TryCatch(async () =>
         {
-
             List<ResolvedAddress> unMatchedResolvedAddresses;
             int batchCount = 10000;
             List<Guid> batchReferenceIds = new List<Guid>();
@@ -247,6 +247,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             }
 
             return await ValueTask.FromResult(batchReferenceIds);
-        }
+        });
     }
 }

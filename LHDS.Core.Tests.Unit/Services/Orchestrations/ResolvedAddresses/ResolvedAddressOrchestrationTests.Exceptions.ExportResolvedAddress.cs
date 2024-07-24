@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
@@ -31,7 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask<List<Guid>> action =
+                this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyValidationException>(
@@ -76,7 +78,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Throws(dependencyException);
 
             // when
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask<List<Guid>> action =
+               this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyException>(
@@ -125,7 +128,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Throws(serviceException);
 
             // when
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask<List<Guid>> action =
+               this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(action.AsTask);

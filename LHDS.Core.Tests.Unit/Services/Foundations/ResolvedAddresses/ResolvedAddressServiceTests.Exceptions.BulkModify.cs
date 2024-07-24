@@ -23,7 +23,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         public async Task ShouldThrowCriticalDependencyExceptionOnBulkModifyIfSqlErrorOccursAndLogItAsync()
         {
             // given
-            string someFileName = GetRandomString();
             List<ResolvedAddress> someResolvedAddresses = new List<ResolvedAddress> { CreateRandomResolvedAddress() };
             SqlException sqlException = GetSqlException();
 
@@ -37,13 +36,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to process resolvedAddresses in 1 of the batch(es) from {someFileName}",
+                    $"Unable to process resolved addresses in 1 of the batch(es)",
                     addressDependencyException);
 
             var failedResolvedAddressServiceException =
                 new FailedResolvedAddressServiceException(
                     message: "Failed aggregate resolved address service error occurred, please contact support.",
-                    innerException: sqlException);
+                    innerException: aggregateException);
 
             var expectedResolvedAddressServiceException =
                 new ResolvedAddressServiceException(
@@ -90,7 +89,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         public async void ShouldThrowValidationExceptionOnBulkModifyIfReferenceErrorOccursAndLogItAsync()
         {
             // given
-            string someFileName = GetRandomString();
             List<ResolvedAddress> someResolvedAddresses = new List<ResolvedAddress> { CreateRandomResolvedAddress() };
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -109,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to process resolvedAddresses in 1 of the batch(es) from {someFileName}",
+                    $"Unable to process resolved addresses in 1 of the batch(es)",
                     addressDependencyValidationException);
 
             var failedResolvedAddressServiceException =
@@ -162,7 +160,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         public async Task ShouldThrowDependencyExceptionOnBulkModifyIfDatabaseUpdateErrorOccursAndLogItAsync()
         {
             // given
-            string someFileName = GetRandomString();
             List<ResolvedAddress> someResolvedAddresses = new List<ResolvedAddress> { CreateRandomResolvedAddress() };
 
             var databaseUpdateException =
@@ -179,7 +176,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to process resolvedAddresses in 1 of the batch(es) from {someFileName}",
+                    $"Unable to process resolved addresses in 1 of the batch(es)",
                     addressDependencyException);
 
             var failedResolvedAddressServiceException =
@@ -250,7 +247,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             ResolvedAddressService addressService = resolvedAddressServiceMock.Object;
 
-            string someFileName = GetRandomString();
             List<ResolvedAddress> someResolvedAddresses = new List<ResolvedAddress> { CreateRandomResolvedAddress() };
 
             var failedResolvedAddressServiceException =

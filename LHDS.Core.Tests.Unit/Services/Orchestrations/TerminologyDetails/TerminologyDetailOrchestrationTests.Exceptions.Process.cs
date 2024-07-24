@@ -7,9 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
-using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using LHDS.Core.Models.Orchestrations.TerminologyDetails.Exceptions;
 using Moq;
 using Xeptions;
@@ -52,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             TerminologyArtifact erroredTerminologyArtifact = undownloadedTerminologyArtifact.DeepClone();
             erroredTerminologyArtifact.IsError = true;
 
-            erroredTerminologyArtifact.ErrorMessage = 
+            erroredTerminologyArtifact.ErrorMessage =
                 terminologyDetailOrchestrationDependencyValidationException?.InnerException?.InnerException?.Message
                 ?? terminologyDetailOrchestrationDependencyValidationException?.InnerException?.Message
                 ?? terminologyDetailOrchestrationDependencyValidationException?.Message;
@@ -147,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
 
             var terminologyDetailOrchestrationDependencyException =
                 new TerminologyDetailOrchestrationDependencyException(
-                    message: "Terminology detail orchestration dependency validation error occurred, " +
+                    message: "Terminology detail orchestration dependency error occurred, " +
                         "fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 

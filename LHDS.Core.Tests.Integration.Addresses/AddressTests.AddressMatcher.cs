@@ -10,7 +10,7 @@ namespace LHDS.Core.Tests.Integration.Addresses
 {
     public partial class AddressTests
     {
-        [Fact(skip = 'Will fix in another PR')]
+        [Fact(Skip = 'Will fix in another PR')]
         public async Task AddressMatcherDataAsync()
         {
             //var filePath = @"Resources\DataEngineering\IncomingFileToMatch.csv";

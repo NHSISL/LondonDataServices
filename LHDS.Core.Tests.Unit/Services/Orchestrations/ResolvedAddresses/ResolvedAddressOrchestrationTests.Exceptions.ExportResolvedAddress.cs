@@ -290,7 +290,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
         public async Task
@@ -409,6 +408,145 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     innerResolvedAddressOrchestrationDependencyException))),
+                        Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    actualResolvedAddressOrchestrationServiceException))),
+                        Times.Once);
+
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.resolvedAddressProcessingServiceMock.VerifyNoOtherCalls();
+            this.assignProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
+
+
+        [Fact]
+        public async Task ShouldThrowAggregateServiceExceptionOnExportResolvedAddressErrorsInLoopAndLogItAsync()
+        {
+            // Given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 2);
+            List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
+            List<ResolvedAddress> storageBatchResolvedAddresses = randomResolvedAddresses.DeepClone();
+            Guid batchReference = Guid.NewGuid();
+
+            storageBatchResolvedAddresses.ForEach(pra =>
+            {
+                pra.BatchReference = batchReference;
+            });
+
+            List<ResolvedAddress> processingResolvedAddresses = storageResolvedAddresses.DeepClone();
+            List<ResolvedAddress> failedProcessingResolvedAddresses = storageResolvedAddresses.DeepClone();
+            List<Exception> exceptions = new List<Exception>();
+            var serviceException = new Exception();
+
+            this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
+                 service.RetrieveAllResolvedAddresses())
+                     .Returns(storageResolvedAddresses.AsQueryable())
+                     .Returns(storageBatchResolvedAddresses.AsQueryable())
+                     .Returns(new List<ResolvedAddress>().AsQueryable());
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(batchReference);
+
+            processingResolvedAddresses.ForEach(pra =>
+            {
+                pra.IsProcessing = true;
+                pra.RetryCount += 1;
+                pra.BatchReference = batchReference;
+            });
+
+            this.resolvedAddressProcessingServiceMock.Setup(processing =>
+               processing.BulkModifyResolvedAddressesAsync(
+                   It.Is(SameResolvedAddressListAs(processingResolvedAddresses))))
+                    .Throws(serviceException);
+
+            failedProcessingResolvedAddresses.ForEach(fpra =>
+            {
+                fpra.IsProcessing = false;
+                fpra.IsExported = false;
+                fpra.IsProcessed = false;
+            });
+
+            this.resolvedAddressProcessingServiceMock.Setup(processing =>
+              processing.BulkModifyResolvedAddressesAsync(
+                  It.Is(SameResolvedAddressListAs(failedProcessingResolvedAddresses))))
+                    .Returns(ValueTask.CompletedTask);
+
+            var innerFailedResolvedAddressOrchestrationServiceException =
+                new FailedResolvedAddressOrchestrationServiceException(
+                    message: "Failed resolved address orchestration service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var innerResolvedAddressOrchestrationServiceException =
+                new ResolvedAddressOrchestrationServiceException(
+                    message: "Resolved address orchestration service error occurred, please contact support.",
+                    innerException: innerFailedResolvedAddressOrchestrationServiceException);
+
+            exceptions.Add(innerResolvedAddressOrchestrationServiceException);
+
+            var aggregateException =
+                new AggregateException(
+                    $"Unable to export addresses for {exceptions.Count} ResolvedAddresses",
+                    exceptions);
+
+            var failedResolvedAddressOrchestrationServiceException =
+                new FailedResolvedAddressOrchestrationServiceException(
+                    message: "Failed resolved address aggregate orchestration service errors occurred, " +
+                        "please contact support.",
+                    innerException: aggregateException);
+
+            var expectedResolvedAddressOrchestrationServiceException =
+                new ResolvedAddressOrchestrationServiceException(
+                    message: "Resolved address orchestration service error occurred, please contact support.",
+                    innerException: failedResolvedAddressOrchestrationServiceException);
+
+            // When
+            ValueTask<List<Guid>> action =
+                this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
+
+            ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
+               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
+                   await action);
+
+            // Then
+            actualResolvedAddressOrchestrationServiceException.Should()
+               .BeEquivalentTo(expectedResolvedAddressOrchestrationServiceException);
+
+            this.resolvedAddressProcessingServiceMock.Verify(service =>
+                service.RetrieveAllResolvedAddresses(),
+                    Times.Exactly(3));
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Once());
+
+            this.resolvedAddressProcessingServiceMock.Verify(processing =>
+                processing.BulkModifyResolvedAddressesAsync(
+                    It.Is(Valid8.SameObjectAs<List<ResolvedAddress>>(
+                        processingResolvedAddresses,
+                        output,
+                        "First bulk modify:"))),
+                        Times.Once);
+
+            this.resolvedAddressProcessingServiceMock.Verify(processing =>
+                processing.BulkModifyResolvedAddressesAsync(
+                    It.Is(Valid8.SameObjectAs<List<ResolvedAddress>>(
+                        storageBatchResolvedAddresses,
+                        output,
+                        "Second bulk modify:"))),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    innerResolvedAddressOrchestrationServiceException))),
                         Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

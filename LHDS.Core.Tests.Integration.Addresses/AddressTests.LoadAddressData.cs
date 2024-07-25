@@ -9,7 +9,7 @@ namespace LHDS.Core.Tests.Integration.Addresses
 {
     public partial class AddressTests
     {
-        [Fact(Skip ="")]
+        [Fact(Skip ="  Will fix in another PR")]
         public async Task LoadAddressDataAsync()
         {
         }

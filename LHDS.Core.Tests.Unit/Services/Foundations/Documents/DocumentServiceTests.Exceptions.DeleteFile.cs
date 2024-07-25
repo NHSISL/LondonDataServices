@@ -97,7 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.Setup(broker =>
                  broker.DeleteFileAsync(It.IsAny<string>(), It.IsAny<string>()))
-                     .Throws(failedDocumentServiceException);
+                     .Throws(serviceException);
 
             // when
             ValueTask getDocumentTask =

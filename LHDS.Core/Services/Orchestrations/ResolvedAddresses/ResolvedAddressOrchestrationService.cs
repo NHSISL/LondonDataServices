@@ -196,6 +196,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             List<ResolvedAddress> unMatchedResolvedAddresses;
             int batchCount = 10000;
             List<Guid> batchReferenceIds = new List<Guid>();
+            var exceptions = new List<Exception>();
 
             while ((unMatchedResolvedAddresses = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
                 .Where(address =>
@@ -205,45 +206,79 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 .Take(batchCount)
                 .ToList()).Count > 0)
             {
+
                 Guid batchReference = this.identifierBroker.GetIdentifier();
 
-                unMatchedResolvedAddresses.ForEach(setProcessing =>
+                try
                 {
-                    setProcessing.IsProcessing = true;
-                    setProcessing.RetryCount += 1;
-                });
+                    await TryCatch(async () =>
+                    {
 
-                await resolvedAddressProcessingService.BulkModifyResolvedAddressesAsync(unMatchedResolvedAddresses);
+                        unMatchedResolvedAddresses.ForEach(setProcessing =>
+                        {
+                            setProcessing.IsProcessing = true;
+                            setProcessing.RetryCount += 1;
+                        });
 
-                string processedData = await this.csvHelperBroker
-                   .MapObjectToCsvAsync(unMatchedResolvedAddresses, false, null, true);
+                        await resolvedAddressProcessingService
+                            .BulkModifyResolvedAddressesAsync(unMatchedResolvedAddresses);
 
-                byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
-                batchReferenceIds.Add(batchReference);
-                string csvFileName = $"out/{batchReference}.csv";
+                        string processedData = await this.csvHelperBroker
+                           .MapObjectToCsvAsync(unMatchedResolvedAddresses, false, null, true);
 
-                using (Stream processed = new MemoryStream(processedBytes))
-                {
-                    await this.documentProcessingService.AddDocumentAsync(
-                        input: processed,
-                        csvFileName,
-                        container: blobContainers.Addresses);
+                        byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
+                        batchReferenceIds.Add(batchReference);
+                        string csvFileName = $"out/{batchReference}.csv";
+
+                        using (Stream processed = new MemoryStream(processedBytes))
+                        {
+                            await this.documentProcessingService.AddDocumentAsync(
+                                input: processed,
+                                csvFileName,
+                                container: blobContainers.Addresses);
+                        }
+
+                        List<ResolvedAddress> doneProcessingResolvedAddresses = unMatchedResolvedAddresses.DeepClone();
+
+                        doneProcessingResolvedAddresses.ForEach(setFinishedProcessing =>
+                        {
+                            setFinishedProcessing.BatchReference = batchReference;
+                            setFinishedProcessing.IsProcessing = false;
+                            setFinishedProcessing.RetryCount = 0;
+                            setFinishedProcessing.IsExported = true;
+                            setFinishedProcessing.IsProcessed = true;
+                        });
+
+                        await resolvedAddressProcessingService
+                            .BulkModifyResolvedAddressesAsync(doneProcessingResolvedAddresses);
+
+                        return await ValueTask.FromResult(batchReferenceIds);
+                    });
                 }
-
-                List<ResolvedAddress> doneProcessingResolvedAddresses = unMatchedResolvedAddresses.DeepClone();
-
-                doneProcessingResolvedAddresses.ForEach(setFinishedProcessing =>
+                catch (Exception ex)
                 {
-                    setFinishedProcessing.BatchReference = batchReference;
-                    setFinishedProcessing.IsProcessing = false;
-                    setFinishedProcessing.RetryCount = 0;
-                    setFinishedProcessing.IsExported = true;
-                    setFinishedProcessing.IsProcessed = true;
-                });
+                    List<ResolvedAddress> failedToExport = this.resolvedAddressProcessingService
+                        .RetrieveAllResolvedAddresses()
+                        .Where(address => address.BatchReference == batchReference)
+                        .ToList();
 
-                await resolvedAddressProcessingService.BulkModifyResolvedAddressesAsync(doneProcessingResolvedAddresses);
+                    failedToExport.ForEach(setFinishedExporting =>
+                    {
+                        setFinishedExporting.IsProcessing = false;
+                        setFinishedExporting.IsExported = false;
+                        setFinishedExporting.IsProcessed = false;
+                    });
 
-                return await ValueTask.FromResult(batchReferenceIds);
+                    await resolvedAddressProcessingService.BulkModifyResolvedAddressesAsync(failedToExport);
+
+                    exceptions.Add(ex);
+                }
+            }
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Unable to export addresses for {exceptions.Count} ResolvedAddresses",
+                    exceptions);
             }
 
             return await ValueTask.FromResult(batchReferenceIds);

@@ -98,8 +98,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Once());
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>
-               service.RetrieveAllResolvedAddresses(),
-                   Times.Exactly(2));
+                service.RetrieveAllResolvedAddresses(),
+                    Times.Exactly(2));
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                 processing.BulkModifyResolvedAddressesAsync(

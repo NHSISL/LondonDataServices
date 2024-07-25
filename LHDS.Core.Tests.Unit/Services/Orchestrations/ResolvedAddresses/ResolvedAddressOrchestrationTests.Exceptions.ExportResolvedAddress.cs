@@ -167,19 +167,44 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 1);
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 2);
             List<ResolvedAddress> storageResolvedAddresses = randomResolvedAddresses.DeepClone();
+            List<ResolvedAddress> processingResolvedAddresses = storageResolvedAddresses.DeepClone();
+            List<ResolvedAddress> failedProcessingResolvedAddresses = storageResolvedAddresses.DeepClone();
             List<Exception> exceptions = new List<Exception>();
+            Guid batchReference = Guid.NewGuid();
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
                  service.RetrieveAllResolvedAddresses())
                      .Returns(storageResolvedAddresses.AsQueryable())
-                     .Returns(storageResolvedAddresses.AsQueryable())
+                     .Returns(failedProcessingResolvedAddresses.AsQueryable())
                      .Returns(new List<ResolvedAddress>().AsQueryable());
 
             this.identifierBrokerMock.Setup(broker =>
-                 broker.GetIdentifier())
-                     .Throws(dependencyValidationException);
+                broker.GetIdentifier())
+                    .Returns(batchReference);
+
+            processingResolvedAddresses.ForEach(pra =>
+            {
+                pra.IsProcessing = true;
+                pra.RetryCount += 1;
+                pra.BatchReference = batchReference;
+            });
+
+            this.resolvedAddressProcessingServiceMock.Setup(processing =>
+               processing.BulkModifyResolvedAddressesAsync(processingResolvedAddresses))
+                   .Throws(dependencyValidationException);
+
+            failedProcessingResolvedAddresses.ForEach(fpra =>
+            {
+                fpra.IsProcessing = false;
+                fpra.IsExported = false;
+                fpra.IsProcessed = false;
+            });
+
+            this.resolvedAddressProcessingServiceMock.Setup(processing =>
+              processing.BulkModifyResolvedAddressesAsync(failedProcessingResolvedAddresses))
+                  .Returns(ValueTask.CompletedTask);
 
             var innerResolvedAddressOrchestrationDependencyValidationException =
                 new ResolvedAddressOrchestrationDependencyValidationException(
@@ -192,7 +217,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to retrieve message for {exceptions.Count} ResolvedAddresses",
+                    $"Unable to export addresses for {exceptions.Count} ResolvedAddresses",
                     exceptions);
 
             var failedResolvedAddressOrchestrationServiceException =
@@ -207,7 +232,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask<List<Guid>> action =
+                this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
@@ -219,7 +245,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>
                service.RetrieveAllResolvedAddresses(),
-                   Times.Once);
+                   Times.Exactly(3));
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifier(),

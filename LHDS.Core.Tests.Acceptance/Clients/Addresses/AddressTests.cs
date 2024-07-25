@@ -220,6 +220,36 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             return address;
         }
 
+        private static List<ResolvedAddress> CreateRandomUnmatchedAddresses(int count)
+        {
+            var fillers = Enumerable.Range(1, count)
+                                    .Select(_ => CreateUnmatchedAddressFiller())
+                                    .ToList();
+
+            var result = fillers.Select(filler => filler.Create()).ToList();
+
+            return result.ToList();
+        }
+
+        private static Filler<ResolvedAddress> CreateUnmatchedAddressFiller()
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTimeOffset dateTimeOffset = DateTimeOffset.Now;
+
+            var filler = new Filler<ResolvedAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
+                .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(false)
+                .OnProperty(resolvedAddress => resolvedAddress.IsExported).Use(false)
+                .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(0)
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
+
+            return filler;
+        }
 
         private static IQueryable<Address> CreateRandomAddresses(int randomCount, DateTimeOffset dateTimeOffset)
         {

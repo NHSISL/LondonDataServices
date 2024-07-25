@@ -18,6 +18,7 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
+using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.Addresses
 {
@@ -173,7 +174,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 }
                 catch (Exception ex)
                 {
-                    //ex.Data.Add("ExtractionError", csvFile);
+                    ((Xeption) ex).AddData("ExtractionError", csvFile);
                     exceptions.Add(ex);
                 }
             }

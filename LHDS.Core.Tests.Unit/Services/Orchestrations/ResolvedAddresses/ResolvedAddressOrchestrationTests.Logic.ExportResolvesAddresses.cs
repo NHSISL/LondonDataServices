@@ -30,9 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             Stream inputStream = new MemoryStream(inputData);
             Stream expectedStream = inputStream;
             Stream actualStream = new MemoryStream();
-
             Guid batchReference = Guid.NewGuid();
-
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
                 service.RetrieveAllResolvedAddresses())
@@ -44,6 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             {
                 pra.IsProcessing = true;
                 pra.RetryCount += 1;
+                pra.BatchReference = batchReference;
             });
 
             this.identifierBrokerMock.Setup(broker =>
@@ -100,7 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>
                service.RetrieveAllResolvedAddresses(),
-                   Times.Once);
+                   Times.Exactly(2));
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                 processing.BulkModifyResolvedAddressesAsync(

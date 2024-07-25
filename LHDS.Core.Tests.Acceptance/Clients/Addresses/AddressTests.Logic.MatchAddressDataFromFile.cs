@@ -23,42 +23,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             string fileName = GetRandomString();
             int count = GetRandomNumber();
             List<dynamic> dynamicAddresses = GetDynamicRandomAddresses();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: GetRandomNumber());
-            List<Address> listAddresses = new List<Address>();
-            StringBuilder addressesToResolve = new StringBuilder();
-            addressesToResolve.AppendLine("UniqueReference, Postcode, Address");
-
-            foreach (dynamic dynamicAddress in dynamicAddresses)
-            {
-                string user = GetRandomString();
-
-                Address inputAddress = new Address
-                {
-                    Id = Guid.NewGuid(),
-                    UPSN = dynamicAddress.UPSN,
-                    UPRN = dynamicAddress.UPRN,
-                    OrganisationName = dynamicAddress.OrganisationName,
-                    DepartmentName = dynamicAddress.DepartmentName,
-                    SubBuildingName = dynamicAddress.SubBuildingName,
-                    BuildingName = dynamicAddress.BuildingName,
-                    BuildingNumber = dynamicAddress.BuildingNumber,
-                    DependentThoroughfare = dynamicAddress.DependentThoroughfare,
-                    Thoroughfare = dynamicAddress.Thoroughfare,
-                    DoubleDependentLocality = dynamicAddress.DoubleDependentLocality,
-                    DependentLocality = dynamicAddress.DependentLocality,
-                    PostTown = dynamicAddress.PostTown,
-                    PostCode = dynamicAddress.PostCode,
-                    CreatedBy = user,
-                    UpdatedBy = user,
-                    CreatedDate = randomDateTime,
-                    UpdatedDate = randomDateTime
-                };
-
-                Address savedAddress = await this.addressService.AddAddressAsync(inputAddress);
-                listAddresses.Add(savedAddress);
-                addressesToResolve
-                    .AppendLine($"{Guid.NewGuid()},{dynamicAddress.PostCode},\"{dynamicAddress.PostalAddress}\"");
-            }
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 1);
+            
 
             string inputAddresses = addressesToResolve.ToString();
             byte[] inputData = Encoding.UTF8.GetBytes(inputAddresses);

@@ -1,24 +1,24 @@
-﻿//// ---------------------------------------------------------
-//// Copyright (c) North East London ICB. All rights reserved.
-//// ---------------------------------------------------------
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
 
-//using System.Threading.Tasks;
-//using Xunit;
+using System.Threading.Tasks;
+using Xunit;
 
-//namespace LHDS.Core.Tests.Integration.Addresses
-//{
-//    public partial class AddressTests
-//    {
-//        [Fact]
-//        public async Task NormaliseAddressesAsync()
-//        {
-//            //Given
+namespace LHDS.Core.Tests.Integration.Addresses
+{
+    public partial class AddressTests
+    {
+        [Fact(Skip = "Will fix in another PR.")]
+        public async Task NormaliseAddressesAsync()
+        {
+            //Given
 
-//            // When
-//            await addressClient.NormaliseAddressesAsync();
+            // When
+            //await addressClient.NormaliseAddressesAsync();
 
-//            // Then
+            // Then
 
-//        }
-//    }
-//}
+        }
+    }
+}

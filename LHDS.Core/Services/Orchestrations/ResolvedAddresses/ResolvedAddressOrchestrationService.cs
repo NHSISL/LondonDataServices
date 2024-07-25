@@ -208,16 +208,17 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
 
                 Guid batchReference = this.identifierBroker.GetIdentifier();
+                batchReferenceIds.Add(batchReference);
 
                 try
                 {
                     await TryCatch(async () =>
                     {
-
                         unMatchedResolvedAddresses.ForEach(setProcessing =>
                         {
                             setProcessing.IsProcessing = true;
                             setProcessing.RetryCount += 1;
+                            setProcessing.BatchReference = batchReference;
                         });
 
                         await resolvedAddressProcessingService
@@ -238,7 +239,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                                 container: blobContainers.Addresses);
                         }
 
-                        List<ResolvedAddress> doneProcessingResolvedAddresses = unMatchedResolvedAddresses.DeepClone();
+                        List<ResolvedAddress> doneProcessingResolvedAddresses =
+                            unMatchedResolvedAddresses.DeepClone();
 
                         doneProcessingResolvedAddresses.ForEach(setFinishedProcessing =>
                         {
@@ -251,8 +253,6 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                         await resolvedAddressProcessingService
                             .BulkModifyResolvedAddressesAsync(doneProcessingResolvedAddresses);
-
-                        return await ValueTask.FromResult(batchReferenceIds);
                     });
                 }
                 catch (Exception ex)
@@ -269,9 +269,11 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         setFinishedExporting.IsProcessed = false;
                     });
 
-                    await resolvedAddressProcessingService.BulkModifyResolvedAddressesAsync(failedToExport);
+                    await resolvedAddressProcessingService
+                        .BulkModifyResolvedAddressesAsync(failedToExport);
 
                     exceptions.Add(ex);
+                    batchReferenceIds.Remove(batchReference);
                 }
             }
             if (exceptions.Any())

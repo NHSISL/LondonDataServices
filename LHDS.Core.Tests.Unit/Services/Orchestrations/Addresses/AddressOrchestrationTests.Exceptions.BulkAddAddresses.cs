@@ -13,7 +13,6 @@ using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.Addresses.Exceptions;
-using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -107,14 +106,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                             "fix the errors and try again.",
                         innerException: dependencyValidationException.InnerException as Xeption);
 
-                //addressOrchestrationDependencyValidationException.Data.Add("ExtractionError", csvFile);
+                addressOrchestrationDependencyValidationException.AddData("ExtractionError", csvFile);
                 exceptions.Add(addressOrchestrationDependencyValidationException);
             }
 
             var aggregateException =
                 new AggregateException(
                     message: $"Unable to extract {exceptions.Count} address files. " +
-                        "File has been moved to the error folder.", 
+                        "File has been moved to the error folder.",
                     exceptions);
 
             var failedAddressOrchestrationServiceException =
@@ -168,7 +167,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                             "fix the errors and try again.",
                         innerException: dependencyValidationException.InnerException as Xeption);
 
-                //addressOrchestrationDependencyValidationLoggingException.Data.Add("ExtractionError", csvFile);
+                addressOrchestrationDependencyValidationLoggingException.AddData("ExtractionError", csvFile);
 
                 this.loggingBrokerMock.Verify(broker =>
                     broker.LogError(It.Is(SameExceptionAs(
@@ -276,7 +275,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                             "fix the errors and try again.",
                         innerException: dependencyException.InnerException as Xeption);
 
-                //addressOrchestrationDependencyValidationException.Data.Add("ExtractionError", csvFile);
+                addressOrchestrationDependencyException.AddData("ExtractionError", csvFile);
                 exceptions.Add(addressOrchestrationDependencyException);
             }
 
@@ -337,7 +336,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                             "fix the errors and try again.",
                         innerException: dependencyException.InnerException as Xeption);
 
-                //addressOrchestrationDependencyValidationLoggingException.Data.Add("ExtractionError", csvFile);
+                addressOrchestrationDependencyLoggingException.AddData("ExtractionError", csvFile);
 
                 this.loggingBrokerMock.Verify(broker =>
                     broker.LogError(It.Is(SameExceptionAs(
@@ -448,6 +447,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     service.ReadFileAsync(csvFile))
                         .ThrowsAsync(serviceException);
 
+                innerAddressOrchestrationServiceException.AddData("ExtractionError", csvFile);
+
                 exceptions.Add(innerAddressOrchestrationServiceException);
             }
 
@@ -501,8 +502,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 this.fileBrokerMock.Verify(service =>
                     service.ReadFileAsync(csvFile),
                         Times.Once());
-
-                //addressOrchestrationDependencyValidationLoggingException.Data.Add("ExtractionError", csvFile);
 
                 this.loggingBrokerMock.Verify(broker =>
                     broker.LogError(It.Is(SameExceptionAs(

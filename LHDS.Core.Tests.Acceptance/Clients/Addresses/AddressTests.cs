@@ -25,6 +25,7 @@ using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tynamix.ObjectFiller;
+using WireMock.Server;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
@@ -45,9 +46,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly AddressConfiguration addressConfiguration;
         private readonly BlobContainers blobContainers;
+        private readonly WireMockServer wireMockServer;
 
         public AddressTests(DependencyBroker dependencyBroker)
         {
+            this.wireMockServer = WireMockServer.Start();
             this.dependencyBroker = dependencyBroker;
             this.compareLogic = new CompareLogic();
             var serviceCollection = new ServiceCollection();
@@ -244,7 +247,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessed).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsProcessing).Use(false)
                 .OnProperty(resolvedAddress => resolvedAddress.IsExported).Use(false)
-                .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(0)
+                .OnProperty(resolvedAddress => resolvedAddress.RetryCount).Use(3)
                 .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 

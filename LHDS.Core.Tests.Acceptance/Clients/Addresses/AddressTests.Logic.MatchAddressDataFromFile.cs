@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -24,20 +25,27 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             int count = GetRandomNumber();
             List<dynamic> dynamicAddresses = GetDynamicRandomAddresses();
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 1);
+            AssignAddress assignAddress = new AssignAddress
+            {
+                UPRN = GetRandomString(),
+            };
+
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
                 await this.resolvedAddressService.AddResolvedAddressAsync(resolvedAddress);
-            }
 
-            this.wireMockServer.Given(
-                Request.Create()
-                        .UsingGet()
-                        .WithPath($"/test"))
-                    .RespondWith(
-                        Response.Create()
-                            .WithStatusCode(HttpStatusCode.OK)
-                            .WithBody("test"));
+                this.wireMockServer.Given(
+                    Request.Create()
+                            .UsingGet()
+                            //.WithPath("*"))
+                            .WithPath("/api/getinfo")
+                            .WithParam("address", resolvedAddress.UnstructuredPostalAddress))
+                        .RespondWith(
+                            Response.Create()
+                                .WithStatusCode(HttpStatusCode.OK)
+                                .WithBodyAsJson(assignAddress));
+            }
 
             //string inputAddresses = addressesToResolve.ToString();
             //byte[] inputData = Encoding.UTF8.GetBytes(inputAddresses);

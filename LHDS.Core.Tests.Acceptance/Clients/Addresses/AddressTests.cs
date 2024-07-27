@@ -69,6 +69,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 builder.AddConsole();
             });
 
+            this.dependencyBroker.Configuration["assignConfiguration:apiUrl"] = this.wireMockServer.Url;
             serviceCollection.AddAddressClient(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
 

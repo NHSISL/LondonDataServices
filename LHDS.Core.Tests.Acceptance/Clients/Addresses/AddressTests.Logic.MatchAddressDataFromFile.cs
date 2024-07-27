@@ -4,8 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using WireMock.RequestBuilders;
@@ -20,68 +23,78 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         public async Task ShouldMatchAddressDataFromFileAsync()
         {
             //Given
-            DateTimeOffset randomDateTime = dateTimeBroker.GetCurrentDateTimeOffset();
+            DateTimeOffset randomDateTimeOffset = dateTimeBroker.GetCurrentDateTimeOffset();
             string fileName = GetRandomString();
             int count = GetRandomNumber();
             List<dynamic> dynamicAddresses = GetDynamicRandomAddresses();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 1);
-            AssignAddress assignAddress = new AssignAddress
-            {
-                UPRN = GetRandomString(),
-            };
-
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: GetRandomNumber());
+            List<ResolvedAddress> expectedResolvedAddresses = new List<ResolvedAddress>();
+            List<Address> addedAddresses = new List<Address>();
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
                 await this.resolvedAddressService.AddResolvedAddressAsync(resolvedAddress);
+                AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
 
                 this.wireMockServer.Given(
                     Request.Create()
                             .UsingGet()
-                            //.WithPath("*"))
                             .WithPath("/api/getinfo")
                             .WithParam("address", resolvedAddress.UnstructuredPostalAddress))
                         .RespondWith(
                             Response.Create()
                                 .WithStatusCode(HttpStatusCode.OK)
-                                .WithBodyAsJson(assignAddress));
-            }
+                                .WithBodyAsJson(randomAssignAddress));
 
-            //string inputAddresses = addressesToResolve.ToString();
-            //byte[] inputData = Encoding.UTF8.GetBytes(inputAddresses);
+                Address randomAddress = CreateRandomAddress(randomDateTimeOffset, randomAssignAddress.UPRN);
+                await this.addressService.AddAddressAsync(randomAddress);
+                addedAddresses.Add(randomAddress);
+
+                ResolvedAddress expectedResolvedAddress = MapOrdananceWithAssign(
+                    resolvedAddress,
+                    randomAssignAddress,
+                    randomAddress);
+
+                expectedResolvedAddresses.Add(expectedResolvedAddress);
+            }
 
             //When
             await this.addressClient.MatchAddressDataAsync();
 
             //Then
-            //foreach (Address address in listAddresses)
-            //{
-            //    ResolvedAddress? matchedResolvedAddress =
-            //        this.resolvedAddressService.RetrieveAllResolvedAddresses()
-            //            .FirstOrDefault(resolvedAddress => resolvedAddress.PostalAddress == address.PostalAddress);
-
-            //    matchedResolvedAddress.MatchedUPRN = address.UPRN;
-            //    matchedResolvedAddress.MatchedUPSN = address.UPSN;
-            //    matchedResolvedAddress.MatchedOrganisationName = address.OrganisationName;
-            //    matchedResolvedAddress.MatchedDepartmentName = address.DepartmentName;
-            //    matchedResolvedAddress.MatchedSubBuildingName = address.SubBuildingName;
-            //    matchedResolvedAddress.MatchedBuildingName = address.BuildingName;
-            //    matchedResolvedAddress.MatchedBuildingNumber = address.BuildingNumber;
-            //    matchedResolvedAddress.MatchedDependentThoroughfare = address.DependentThoroughfare;
-            //    matchedResolvedAddress.MatchedThoroughfare = address.Thoroughfare;
-            //    matchedResolvedAddress.MatchedDoubleDependentLocality = address.DoubleDependentLocality;
-            //    matchedResolvedAddress.MatchedDependentLocality = address.DependentLocality;
-            //    matchedResolvedAddress.MatchedPostTown = address.PostTown;
-            //    matchedResolvedAddress.MatchedPostCode = address.PostCode;
-
-            //    if (matchedResolvedAddress != null)
-            //    {
-            //        await this.resolvedAddressService.RemoveResolvedAddressByIdAsync(matchedResolvedAddress.Id);
-            //    }
-
-            foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
+            foreach (ResolvedAddress expectedResolvedAddress in expectedResolvedAddresses)
             {
-                await this.resolvedAddressService.RemoveResolvedAddressByIdAsync(resolvedAddress.Id);
+                ResolvedAddress retrievedResolvedAddress =
+                    this.resolvedAddressService.RetrieveAllResolvedAddresses()
+                        .FirstOrDefault(resolvedAddress => resolvedAddress.Id == expectedResolvedAddress.Id);
+
+                retrievedResolvedAddress.UPRN.Should().Be(expectedResolvedAddress.UPRN);
+                retrievedResolvedAddress.UPSN.Should().Be(expectedResolvedAddress.UPSN);
+                retrievedResolvedAddress.OrganisationName.Should().Be(expectedResolvedAddress.OrganisationName);
+                retrievedResolvedAddress.DepartmentName.Should().Be(expectedResolvedAddress.DepartmentName);
+                retrievedResolvedAddress.SubBuildingName.Should().Be(expectedResolvedAddress.SubBuildingName);
+                retrievedResolvedAddress.BuildingName.Should().Be(expectedResolvedAddress.BuildingName);
+                retrievedResolvedAddress.BuildingNumber.Should().Be(expectedResolvedAddress.BuildingNumber);
+
+                retrievedResolvedAddress.DependentThoroughfare.Should().Be(
+                    expectedResolvedAddress.DependentThoroughfare);
+
+                retrievedResolvedAddress.Thoroughfare.Should().Be(expectedResolvedAddress.Thoroughfare);
+
+                retrievedResolvedAddress.DoubleDependentLocality.Should().Be(
+                    expectedResolvedAddress.DoubleDependentLocality);
+
+                retrievedResolvedAddress.DependentLocality.Should().Be(expectedResolvedAddress.DependentLocality);
+                retrievedResolvedAddress.PostTown.Should().Be(expectedResolvedAddress.PostTown);
+                retrievedResolvedAddress.PostCode.Should().Be(expectedResolvedAddress.PostCode);
+                retrievedResolvedAddress.UpdatedDate.Should().BeAfter(DateTimeOffset.Now.AddMinutes(-3));
+                retrievedResolvedAddress.IsProcessed.Should().Be(true);
+                await this.resolvedAddressService.RemoveResolvedAddressByIdAsync(expectedResolvedAddress.Id);
+            }
+
+            foreach (Address addedAddress in addedAddresses)
+            {
+                await this.addressService.RemoveAddressByIdAsync(addedAddress.Id);
             }
         }
     }

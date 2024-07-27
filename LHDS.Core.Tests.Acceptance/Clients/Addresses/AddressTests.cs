@@ -14,6 +14,7 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Coordinations.AddressCoordinations;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AssignAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.Documents;
@@ -255,6 +256,37 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             return filler;
         }
 
+        private static AssignAddress CreateRandomAssignAddress(DateTimeOffset dateTimeOffset) =>
+            CreateAssignAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<AssignAddress> CreateAssignAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<AssignAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset);
+
+            return filler;
+        }
+
+        private static Address? CreateRandomAddress(DateTimeOffset dateTimeOffset, string UPRN) =>
+             CreateAddressFiller(dateTimeOffset, UPRN).Create();
+
+        private static Filler<Address?> CreateAddressFiller(DateTimeOffset dateTimeOffset, string UPRN)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<Address?>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(address => address.UPRN).Use(UPRN)
+                .OnProperty(address => address.CreatedBy).Use(user)
+                .OnProperty(address => address.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
         private static IQueryable<Address> CreateRandomAddresses(int randomCount, DateTimeOffset dateTimeOffset)
         {
             //var postcodes = new List<string> { "B12 9XY", "CR2 9PA", "CR2 0HG", };
@@ -276,6 +308,38 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .OnProperty(address => address.PostCode).Use(() => GetRandomPostcode(postcodes));
 
             return filler;
+        }
+
+        public static ResolvedAddress MapOrdananceWithAssign(
+            ResolvedAddress unMatchedResolvedAddress,
+            AssignAddress foundAssignAddress,
+            Address foundOrdananceAddress)
+        {
+            ResolvedAddress updatedResolovedAddress = unMatchedResolvedAddress;
+            updatedResolovedAddress.UPSN = foundOrdananceAddress.UPSN;
+            updatedResolovedAddress.OrganisationName = foundOrdananceAddress.OrganisationName;
+            updatedResolovedAddress.DepartmentName = foundOrdananceAddress.DepartmentName;
+            updatedResolovedAddress.SubBuildingName = foundOrdananceAddress.SubBuildingName;
+            updatedResolovedAddress.BuildingName = foundOrdananceAddress.BuildingName;
+            updatedResolovedAddress.BuildingNumber = foundOrdananceAddress.BuildingNumber;
+            updatedResolovedAddress.DependentThoroughfare = foundOrdananceAddress.DependentThoroughfare;
+            updatedResolovedAddress.Thoroughfare = foundOrdananceAddress.Thoroughfare;
+            updatedResolovedAddress.DoubleDependentLocality = foundOrdananceAddress.DoubleDependentLocality;
+            updatedResolovedAddress.DependentLocality = foundOrdananceAddress.DependentLocality;
+            updatedResolovedAddress.PostTown = foundOrdananceAddress.PostTown;
+            updatedResolovedAddress.PostCode = foundOrdananceAddress.PostCode;
+            updatedResolovedAddress.AddressFormatQuality = foundAssignAddress.AddressFormat;
+            updatedResolovedAddress.PostCodeQuality = foundAssignAddress.PostcodeQuality;
+            updatedResolovedAddress.MatchedWithAssign = foundAssignAddress.Matched;
+            updatedResolovedAddress.Qualifier = foundAssignAddress.Qualifier;
+            updatedResolovedAddress.Classification = foundAssignAddress.Classification;
+            updatedResolovedAddress.Algorithm = foundAssignAddress.Algorithm;
+            updatedResolovedAddress.MatchPattern = foundAssignAddress.Pattern;
+            updatedResolovedAddress.IsProcessing = true;
+            updatedResolovedAddress.IsExported = false;
+            updatedResolovedAddress.RetryCount = 0;
+
+            return updatedResolovedAddress;
         }
 
         private static string GetRandomPostcode(List<string> postcodes)

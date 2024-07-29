@@ -276,11 +276,11 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     batchReferenceIds.Remove(batchReference);
                 }
             }
+
             if (exceptions.Any())
             {
                 throw new AggregateException(
-                    $"Unable to export addresses for {exceptions.Count} ResolvedAddresses",
-                    exceptions);
+                    $"Unable to export addresses for {exceptions.Count} ResolvedAddresses", exceptions);
             }
 
             return await ValueTask.FromResult(batchReferenceIds);

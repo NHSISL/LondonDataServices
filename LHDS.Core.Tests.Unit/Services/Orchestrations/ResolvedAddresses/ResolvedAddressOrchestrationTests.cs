@@ -104,8 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
            List<ResolvedAddress> expectedResolvedAddressList)
         {
             return actualResolvedAddressList =>
-                this.compareLogic.Compare(expectedResolvedAddressList, actualResolvedAddressList)
-                .AreEqual;
+                this.compareLogic.Compare(expectedResolvedAddressList, actualResolvedAddressList).AreEqual;
         }
 
         private static byte[] ReadAllBytesFromStream(Stream stream)

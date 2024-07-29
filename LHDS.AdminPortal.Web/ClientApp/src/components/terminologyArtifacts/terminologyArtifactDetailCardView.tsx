@@ -12,21 +12,35 @@ import SummaryListBaseKey from "../bases/components/SummaryList/SummaryListBase.
 import SummaryListBase from "../bases/components/SummaryList/SummaryListBase";
 import GridBase from "../bases/layouts/Grid/GridBase";
 import { TerminologyArtifactView } from "../../models/views/components/terminologyArtifacts/terminologyArtifactsView";
+import ButtonBase from "../bases/buttons/ButtonBase";
+import SummaryListBaseAction from "../bases/components/SummaryList/SummaryListBase.Action";
 
 interface TerminologyArtifactDetailCardViewProps {
     terminologyArtifact: TerminologyArtifactView;
     onRefresh: (terminologyArtifact: TerminologyArtifactView) => void;
+    onUpdate: (terminologyArtifact: TerminologyArtifactView) => void;
 }
 
 const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDetailCardViewProps> = (props) => {
     const {
         terminologyArtifact,
+        onUpdate
     } = props;
+
+
+    const handleIsCoreUpdate = () => {
+        terminologyArtifact.isCore = true;
+        onUpdate(terminologyArtifact);
+    }
+
+    const handleIsNotCoreUpdate = () => {
+        terminologyArtifact.isCore = false;
+    }
 
     return (
         <>
             <div className="row">
-                <GridBase size="Two-Third">
+                <GridBase>
                     <CardBase>
                         <CardBaseBody>
                             <CardBaseTitle>
@@ -71,6 +85,18 @@ const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDe
                                             <FontAwesomeIcon icon={faCheck} className="text-success" /> :
                                             <FontAwesomeIcon icon={faTimes} className="text-danger" />}
                                         </SummaryListBaseValue>
+                                        <SummaryListBaseAction>
+                                            <span style={{ float: "right" }}>
+                                                {terminologyArtifact.isCore ?
+                                                    <ButtonBase onClick={handleIsNotCoreUpdate} remove>
+                                                        Mark Not Core
+                                                    </ButtonBase> :
+                                                    <span>
+                                                        <ButtonBase onClick={handleIsCoreUpdate} add>Mark Core</ButtonBase>
+                                                    </span>}
+                                            </span>
+                                        </SummaryListBaseAction>
+                                        
                                     </SummaryListBaseRow>
 
                                     <SummaryListBaseRow>

@@ -12,7 +12,7 @@ using Xeptions;
 
 namespace LHDS.Core.Services.Processings.ResolvedAddresses
 {
-    public partial class ResolvedAddressProcessingService : IResolvedAddressProcessingService
+    public partial class ResolvedAddressProcessingService
     {
         private delegate ValueTask ReturningNothingProcessingFunction();
         private delegate ValueTask<ResolvedAddress> ReturningResolvedAddressProcessingFunction();
@@ -205,7 +205,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         {
             var resolvedAddressProcessingDependencyException =
                 new ResolvedAddressProcessingDependencyException(
-                    message: "Resolved address processing dependency error occurred, please try again.",
+                    message: "Resolved address processing dependency error occurred, please contact support.",
                     innerException: exception?.InnerException as Xeption);
 
             this.loggingBroker.LogError(resolvedAddressProcessingDependencyException);

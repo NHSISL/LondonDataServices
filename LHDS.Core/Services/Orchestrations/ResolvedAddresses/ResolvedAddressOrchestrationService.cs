@@ -3,13 +3,22 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Force.DeepCloner;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AssignAddresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Services.Processings.Addresses;
+using LHDS.Core.Services.Processings.Assigns;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
 
@@ -19,6 +28,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
     {
         private readonly IDocumentProcessingService documentProcessingService;
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
+        private readonly IAssignProcessingService assignProcessingService;
+        private readonly IAddressProcessingService addressProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly ICsvHelperBroker csvHelperBroker;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -28,6 +39,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         public ResolvedAddressOrchestrationService(
             IDocumentProcessingService documentProcessingService,
             IResolvedAddressProcessingService resolvedAddressProcessingService,
+            IAssignProcessingService assignProcessingService,
+            IAddressProcessingService addressProcessingService,
             ILoggingBroker loggingBroker,
             ICsvHelperBroker csvHelperBroker,
             IDateTimeBroker dateTimeBroker,
@@ -36,6 +49,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
         {
             this.documentProcessingService = documentProcessingService;
             this.resolvedAddressProcessingService = resolvedAddressProcessingService;
+            this.assignProcessingService = assignProcessingService;
+            this.addressProcessingService = addressProcessingService;
             this.loggingBroker = loggingBroker;
             this.csvHelperBroker = csvHelperBroker;
             this.dateTimeBroker = dateTimeBroker;
@@ -43,96 +58,232 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             this.blobContainers = blobContainers;
         }
 
-        public ValueTask UploadAddressesToReslveAsync(Stream input, string fileName)
+        public ValueTask UploadAddressesToResolveAsync(Stream input, string fileName) =>
+        TryCatch(async () =>
         {
-            throw new NotImplementedException();
-        }
+            ValidateOnUploadAddressesToResolve(input, fileName);
 
-        public ValueTask MatchAddressDataAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public ValueTask<Guid?> ExportResolvedAddressesAsync() =>
-            TryCatch(async () =>
+            using (StreamReader streamReader = new StreamReader(input))
             {
-                throw new NotImplementedException();
+                input.Position = 0;
+                string content = streamReader.ReadToEnd();
 
-                return await ValueTask.FromResult<Guid?>(null);
+                Dictionary<string, int> fieldMappings =
+                    new Dictionary<string, int>
+                    {
+                        { nameof(ResolvedAddress.UniqueReference), 0 },
+                        { nameof(ResolvedAddress.UnstructuredPostalAddress), 2 }
+                    };
 
-                //List<ResolvedAddress> resolvedAddresses =
-                //    this.resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
-                //        .Where(resolvedAddresses => resolvedAddresses.IsMatched == true
-                //            && resolvedAddresses.IsProcessed == false).ToList();
+                List<ResolvedAddress> resolvedAddresses = await this.csvHelperBroker
+                    .MapCsvToObjectAsync<ResolvedAddress>(data: content, hasHeaderRecord: true, fieldMappings);
 
-                //if (resolvedAddresses.Count > 0)
-                //{
-                //    List<ResolvedAddressReturn> returnAddresses = resolvedAddresses.Select(resolvedAddress =>
-                //        new ResolvedAddressReturn
-                //        {
-                //            UniqueReference = resolvedAddress.UniqueReference,
-                //            UPRN = resolvedAddress.MatchedUPRN,
-                //            UPSN = resolvedAddress.MatchedUPSN,
-                //            OrganisationName = resolvedAddress.MatchedOrganisationName,
-                //            DepartmentName = resolvedAddress.MatchedDepartmentName,
-                //            SubBuildingName = resolvedAddress.MatchedSubBuildingName,
-                //            BuildingName = resolvedAddress.MatchedBuildingName,
-                //            BuildingNumber = resolvedAddress.MatchedBuildingNumber,
-                //            DependentThoroughfare = resolvedAddress.MatchedDependentThoroughfare,
-                //            Thoroughfare = resolvedAddress.MatchedThoroughfare,
-                //            DoubleDependentLocality = resolvedAddress.MatchedDoubleDependentLocality,
-                //            DependentLocality = resolvedAddress.MatchedDependentLocality,
-                //            PostTown = resolvedAddress.MatchedPostTown,
-                //            PostCode = resolvedAddress.MatchedPostCode,
-                //        }).ToList();
+                await this.resolvedAddressProcessingService
+                    .BulkAddResolvedAddressesAsync(resolvedAddresses, fileName);
+            }
+        });
 
-                //    string resolvedAddressesCsv =
-                //        await this.csvHelperBroker.MapObjectToCsvAsync(returnAddresses, false, null, true);
+        public ValueTask MatchAddressDataAsync() =>
+        TryCatch(async () =>
+        {
+            ResolvedAddress? unMatchedResolvedAddress;
+            var resolvedAddressAudits = new List<ResolvedAddress>();
+            var exceptions = new List<Exception>();
 
-                //    Guid batchReferenceId = identifierBroker.GetIdentifier();
-                //    string fileName = $"{batchReferenceId}.csv";
-                //    byte[] documentData = Encoding.UTF8.GetBytes(resolvedAddressesCsv);
-                //    string container = blobContainers.Addresses;
-                //    var exceptions = new List<Exception>();
+            while ((unMatchedResolvedAddress = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
+                .FirstOrDefault(address =>
+                address.IsProcessed == false &&
+                address.IsProcessing == false &&
+                address.RetryCount < 4)) != null)
+            {
+                try
+                {
+                    await TryCatch(async () =>
+                    {
+                        unMatchedResolvedAddress.IsProcessing = true;
+                        unMatchedResolvedAddress.RetryCount += 1;
+                        unMatchedResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
 
-                //    using (Stream input = new MemoryStream(documentData))
-                //    {
-                //        await this.documentProcessingService.AddDocumentAsync(input, fileName, container);
-                //    }
+                        ResolvedAddress updatedAddress = await resolvedAddressProcessingService.
+                            ModifyResolvedAddressAsync(unMatchedResolvedAddress);
 
-                //    foreach (ResolvedAddress resolvedAddress in resolvedAddresses)
-                //    {
-                //        try
-                //        {
-                //            await TryCatch(async () =>
-                //            {
-                //                resolvedAddress.IsProcessed = true;
-                //                resolvedAddress.BatchReference = batchReferenceId;
-                //                resolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
-                //                await this.resolvedAddressProcessingService.ModifyResolvedAddressAsync(resolvedAddress);
-                //            });
-                //        }
-                //        catch (Exception ex)
-                //        {
-                //            exceptions.Add(ex);
-                //        }
-                //    }
+                        AssignAddress foundAssignAddress =
+                            await assignProcessingService.MatchAddressAsync(
+                                unMatchedResolvedAddress.UnstructuredPostalAddress);
 
-                //    if (exceptions.Any())
-                //    {
-                //        throw new AggregateException(
-                //            message: $"Unable to modify resolved address for {exceptions.Count} resolved addresses " +
-                //                $"in batch: {batchReferenceId}",
-                //            exceptions);
-                //    }
+                        Address? foundOrdananceAddress = null;
 
-                //    return batchReferenceId;
-                //}
-                //else
-                //{
-                //    return null;
-                //}
+                        if (foundAssignAddress != null && !string.IsNullOrWhiteSpace(foundAssignAddress.UPRN))
+                        {
+                            foundOrdananceAddress =
+                                await addressProcessingService
+                                    .RetrieveAddressByUPRNAsync(foundAssignAddress.UPRN);
+                        }
 
-            });
+                        ResolvedAddress newResolvedAddress =
+                            MapOrdananceWithAssign(
+                                updatedAddress,
+                                foundAssignAddress,
+                                foundOrdananceAddress);
+
+                        newResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                        newResolvedAddress.IsProcessed = true;
+
+                        await resolvedAddressProcessingService
+                            .ModifyResolvedAddressAsync(newResolvedAddress);
+                    });
+                }
+                catch (Exception ex)
+                {
+                    ResolvedAddress failedToProcessClean = unMatchedResolvedAddress.DeepClone();
+
+                    ResolvedAddress failedToProcess = await this.resolvedAddressProcessingService
+                        .RetrieveResolvedAddressByIdAsync(failedToProcessClean.Id);
+
+                    failedToProcess.IsProcessing = false;
+                    failedToProcess.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+
+                    await resolvedAddressProcessingService
+                        .ModifyResolvedAddressAsync(failedToProcess);
+
+                    exceptions.Add(ex);
+                }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Unable to retrieve message for {exceptions.Count} ResolvedAddresses",
+                    exceptions);
+            }
+        });
+
+        public static ResolvedAddress MapOrdananceWithAssign(
+            ResolvedAddress unMatchedResolvedAddress,
+            AssignAddress? foundAssignAddress,
+            Address? foundOrdananceAddress)
+        {
+            ResolvedAddress updatedResolovedAddress = unMatchedResolvedAddress;
+            updatedResolovedAddress.UPSN = foundOrdananceAddress?.UPSN ?? null;
+            updatedResolovedAddress.OrganisationName = foundOrdananceAddress?.OrganisationName;
+            updatedResolovedAddress.DepartmentName = foundOrdananceAddress?.DepartmentName;
+            updatedResolovedAddress.SubBuildingName = foundOrdananceAddress?.SubBuildingName;
+            updatedResolovedAddress.BuildingName = foundOrdananceAddress?.BuildingName;
+            updatedResolovedAddress.BuildingNumber = foundOrdananceAddress?.BuildingNumber;
+            updatedResolovedAddress.DependentThoroughfare = foundOrdananceAddress?.DependentThoroughfare;
+            updatedResolovedAddress.Thoroughfare = foundOrdananceAddress?.Thoroughfare;
+            updatedResolovedAddress.DoubleDependentLocality = foundOrdananceAddress?.DoubleDependentLocality;
+            updatedResolovedAddress.DependentLocality = foundOrdananceAddress?.DependentLocality;
+            updatedResolovedAddress.PostTown = foundOrdananceAddress?.PostTown;
+            updatedResolovedAddress.PostCode = foundOrdananceAddress?.PostCode;
+            updatedResolovedAddress.AddressFormatQuality = foundAssignAddress?.AddressFormat;
+            updatedResolovedAddress.PostCodeQuality = foundAssignAddress?.PostcodeQuality;
+            updatedResolovedAddress.MatchedWithAssign = foundAssignAddress?.Matched ?? false;
+            updatedResolovedAddress.Qualifier = foundAssignAddress?.Qualifier;
+            updatedResolovedAddress.Classification = foundAssignAddress?.Classification;
+            updatedResolovedAddress.Algorithm = foundAssignAddress?.Algorithm;
+            updatedResolovedAddress.MatchPattern = foundAssignAddress?.Pattern;
+            updatedResolovedAddress.IsProcessing = false;
+            updatedResolovedAddress.IsExported = false;
+            updatedResolovedAddress.RetryCount = 0;
+
+            return updatedResolovedAddress;
+        }
+
+        public ValueTask<List<Guid>> ExportResolvedAddressesAsync() =>
+        TryCatch(async () =>
+        {
+            List<ResolvedAddress> unMatchedResolvedAddresses;
+            int batchCount = 10000;
+            List<Guid> batchReferenceIds = new List<Guid>();
+            var exceptions = new List<Exception>();
+
+            while ((unMatchedResolvedAddresses = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
+                .Where(address =>
+                    address.IsProcessed == false &&
+                    address.IsProcessing == false &&
+                    address.RetryCount < 4)
+                .Take(batchCount)
+                .ToList()).Count > 0)
+            {
+
+                Guid batchReference = this.identifierBroker.GetIdentifier();
+                batchReferenceIds.Add(batchReference);
+
+                try
+                {
+                    await TryCatch(async () =>
+                    {
+                        unMatchedResolvedAddresses.ForEach(setProcessing =>
+                        {
+                            setProcessing.IsProcessing = true;
+                            setProcessing.RetryCount += 1;
+                            setProcessing.BatchReference = batchReference;
+                        });
+
+                        await resolvedAddressProcessingService
+                            .BulkModifyResolvedAddressesAsync(unMatchedResolvedAddresses);
+
+                        string processedData = await this.csvHelperBroker
+                           .MapObjectToCsvAsync(unMatchedResolvedAddresses, false, null, true);
+
+                        byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
+                        batchReferenceIds.Add(batchReference);
+                        string csvFileName = $"out/{batchReference}.csv";
+
+                        using (Stream processed = new MemoryStream(processedBytes))
+                        {
+                            await this.documentProcessingService.AddDocumentAsync(
+                                input: processed,
+                                csvFileName,
+                                container: blobContainers.Addresses);
+                        }
+
+                        List<ResolvedAddress> doneProcessingResolvedAddresses =
+                            unMatchedResolvedAddresses.DeepClone();
+
+                        doneProcessingResolvedAddresses.ForEach(setFinishedProcessing =>
+                        {
+                            setFinishedProcessing.BatchReference = batchReference;
+                            setFinishedProcessing.IsProcessing = false;
+                            setFinishedProcessing.RetryCount = 0;
+                            setFinishedProcessing.IsExported = true;
+                            setFinishedProcessing.IsProcessed = true;
+                        });
+
+                        await resolvedAddressProcessingService
+                            .BulkModifyResolvedAddressesAsync(doneProcessingResolvedAddresses);
+                    });
+                }
+                catch (Exception ex)
+                {
+                    List<ResolvedAddress> failedToExport = this.resolvedAddressProcessingService
+                        .RetrieveAllResolvedAddresses()
+                        .Where(address => address.BatchReference == batchReference)
+                        .ToList();
+
+                    failedToExport.ForEach(setFinishedExporting =>
+                    {
+                        setFinishedExporting.IsProcessing = false;
+                        setFinishedExporting.IsExported = false;
+                        setFinishedExporting.IsProcessed = false;
+                    });
+
+                    await resolvedAddressProcessingService
+                        .BulkModifyResolvedAddressesAsync(failedToExport);
+
+                    exceptions.Add(ex);
+                    batchReferenceIds.Remove(batchReference);
+                }
+            }
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(
+                    $"Unable to export addresses for {exceptions.Count} ResolvedAddresses", exceptions);
+            }
+
+            return await ValueTask.FromResult(batchReferenceIds);
+        });
     }
 }

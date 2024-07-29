@@ -97,7 +97,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                 if (exceptions.Any())
                 {
                     throw new AggregateException(
-                        $"Unable to retrieve metadata for {exceptions.Count} artifacts",
+                        $"Unable to retrieve metadata for {exceptions.Count} artifacts.",
                         exceptions);
                 }
             });

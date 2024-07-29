@@ -43,12 +43,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     innerException: invalidArgumentResolvedAddressProcessingException);
 
             // when
-            ValueTask BulkAddResolvedAddressTask = this.resolvedAddressProcessingService
+            ValueTask bulkAddResolvedAddressTask = this.resolvedAddressProcessingService
                 .BulkAddResolvedAddressesAsync(resolvedAddresses: nullResolvedAddresses, fileName: invalidFileName);
 
             ResolvedAddressProcessingValidationException actualResolvedAddressProcessingValidationException =
                 await Assert.ThrowsAsync<ResolvedAddressProcessingValidationException>(
-                    BulkAddResolvedAddressTask.AsTask);
+                    bulkAddResolvedAddressTask.AsTask);
 
             //then
             actualResolvedAddressProcessingValidationException.Should()

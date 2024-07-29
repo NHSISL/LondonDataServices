@@ -28,26 +28,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             SqlException sqlException = GetSqlException();
 
             var failedResolvedAddressStorageException = new FailedResolvedAddressStorageException(
-                message: "Failed resolvedAddress storage error occurred, please contact support.",
+                message: "Failed resolved address storage error occurred, please contact support.",
                 innerException: sqlException);
 
             var addressDependencyException = new ResolvedAddressDependencyException(
-                message: "ResolvedAddress dependency error occurred, please contact support.",
+                message: "Resolved address dependency error occurred, please contact support.",
                 innerException: failedResolvedAddressStorageException);
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to process resolvedAddresses in 1 of the batch(es) from {someFileName}",
+                    $"Unable to process resolved addresses in 1 of the batch(es) from {someFileName}",
                     addressDependencyException);
 
             var failedResolvedAddressServiceException =
                 new FailedResolvedAddressServiceException(
-                    message: "Failed aggregate resolvedAddress service error occurred, please contact support.",
-                    innerException: sqlException);
+                    message: "Failed aggregate resolved address service error occurred, please contact support.",
+                    innerException: aggregateException);
 
             var expectedResolvedAddressServiceException =
                 new ResolvedAddressServiceException(
-                    message: "ResolvedAddress service error occurred, please contact support.",
+                    message: "Resolved address service error occurred, please contact support.",
                     innerException: failedResolvedAddressServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -100,26 +100,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var invalidResolvedAddressReferenceException =
                 new InvalidResolvedAddressReferenceException(
-                    message: "Invalid resolvedAddress reference error occurred.",
+                    message: "Invalid resolved address reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
             var addressDependencyValidationException = new ResolvedAddressDependencyValidationException(
-                    message: "ResolvedAddress dependency validation occurred, please try again.",
+                    message: "Resolved address dependency validation occurred, please try again.",
                     innerException: invalidResolvedAddressReferenceException);
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to process resolvedAddresses in 1 of the batch(es) from {someFileName}",
+                    $"Unable to process resolved addresses in 1 of the batch(es) from {someFileName}",
                     addressDependencyValidationException);
 
             var failedResolvedAddressServiceException =
                 new FailedResolvedAddressServiceException(
-                    message: "Failed aggregate resolvedAddress service error occurred, please contact support.",
+                    message: "Failed aggregate resolved address service error occurred, please contact support.",
                     innerException: aggregateException);
 
             var expectedResolvedAddressServiceException =
                 new ResolvedAddressServiceException(
-                    message: "ResolvedAddress service error occurred, please contact support.",
+                    message: "Resolved address service error occurred, please contact support.",
                     innerException: failedResolvedAddressServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -170,26 +170,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var failedResolvedAddressStorageException =
                 new FailedResolvedAddressStorageException(
-                    message: "Failed resolvedAddress storage error occurred, please contact support.",
+                    message: "Failed resolved address storage error occurred, please contact support.",
                     innerException: databaseUpdateException);
 
             var addressDependencyException = new ResolvedAddressDependencyException(
-                    message: "ResolvedAddress dependency error occurred, please contact support.",
+                    message: "Resolved address dependency error occurred, please contact support.",
                     innerException: failedResolvedAddressStorageException);
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to process resolvedAddresses in 1 of the batch(es) from {someFileName}",
+                    $"Unable to process resolved addresses in 1 of the batch(es) from {someFileName}",
                     addressDependencyException);
 
             var failedResolvedAddressServiceException =
                 new FailedResolvedAddressServiceException(
-                    message: "Failed aggregate resolvedAddress service error occurred, please contact support.",
+                    message: "Failed aggregate resolved address service error occurred, please contact support.",
                     innerException: aggregateException);
 
             var expectedResolvedAddressServiceException =
                 new ResolvedAddressServiceException(
-                    message: "ResolvedAddress service error occurred, please contact support.",
+                    message: "Resolved address service error occurred, please contact support.",
                     innerException: failedResolvedAddressServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -255,12 +255,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var failedResolvedAddressServiceException =
                 new FailedResolvedAddressServiceException(
-                    message: "Failed resolvedAddress service error occurred, please contact support.",
+                    message: "Failed resolved address service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedResolvedAddressServiceException =
                 new ResolvedAddressServiceException(
-                    message: "ResolvedAddress service error occurred, please contact support.",
+                    message: "Resolved address service error occurred, please contact support.",
                     innerException: failedResolvedAddressServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>

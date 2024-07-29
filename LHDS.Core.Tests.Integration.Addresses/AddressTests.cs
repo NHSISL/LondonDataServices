@@ -6,11 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Services.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using Microsoft.Extensions.Configuration;
@@ -23,9 +25,11 @@ namespace LHDS.Core.Tests.Integration.Addresses
     public partial class AddressTests
     {
         private readonly IResolvedAddressService resolvedAddressService;
+        private readonly IAddressService addressService;
         private readonly IAddressClient addressClient;
         private readonly BlobContainers blobContainers;
         private readonly IDocumentService documentService;
+        private readonly ICsvHelperBroker csvHelperBroker;
         private readonly ITestOutputHelper output;
 
         public AddressTests(ITestOutputHelper output)
@@ -52,6 +56,8 @@ namespace LHDS.Core.Tests.Integration.Addresses
                 .BuildServiceProvider();
 
             this.resolvedAddressService = serviceProvider.GetService<IResolvedAddressService>();
+            this.addressService = serviceProvider.GetService<IAddressService>();
+            this.csvHelperBroker = serviceProvider.GetService<ICsvHelperBroker>();
             this.blobContainers = serviceProvider.GetService<BlobContainers>();
             this.documentService = serviceProvider.GetService<IDocumentService>();
             addressClient = serviceProvider.GetService<IAddressClient>();

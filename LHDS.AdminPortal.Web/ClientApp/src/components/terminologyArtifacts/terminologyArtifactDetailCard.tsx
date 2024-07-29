@@ -10,18 +10,24 @@ interface TerminologyArtifactDetailCardProps {
     terminologyArtifact: TerminologyArtifactView;
     children?: React.ReactNode;
     onRefresh: (terminologyArtifact: TerminologyArtifactView) => void;
+    onUpdate: (terminologyArtifact: TerminologyArtifactView,) => void;
 }
 
 const TerminologyArtifactDetailCard: FunctionComponent<TerminologyArtifactDetailCardProps> = (props) => {
     const {
         terminologyArtifact,
         children,
-        onRefresh
+        onRefresh,
+        onUpdate
     } = props;
 
     const handlRefresh = async (terminologyArtifact: TerminologyArtifactView) => {
         await onRefresh(terminologyArtifact);
     }
+
+    const handleUpdate = async (terminologyArtifact: TerminologyArtifactView) => {
+        await onUpdate(terminologyArtifact);
+    };
 
     return (
         <div>
@@ -34,6 +40,7 @@ const TerminologyArtifactDetailCard: FunctionComponent<TerminologyArtifactDetail
                         <TerminologyArtifactDetailCardView
                             terminologyArtifact={terminologyArtifact}
                             onRefresh={handlRefresh}
+                            onUpdate={handleUpdate}
                         />
 
                         {children !== undefined && (

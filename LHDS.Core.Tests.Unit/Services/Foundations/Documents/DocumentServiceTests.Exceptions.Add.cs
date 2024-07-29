@@ -163,7 +163,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.Setup(broker =>
                  broker.InsertFileAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
-                     .Throws(failedDocumentServiceException);
+                     .Throws(serviceException);
 
             // when
             ValueTask uploadFileTask = this.documentService

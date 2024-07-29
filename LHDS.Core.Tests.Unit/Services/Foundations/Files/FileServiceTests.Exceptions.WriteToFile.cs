@@ -62,15 +62,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Files
             string somePath = GetRandomString();
             string someContent = GetRandomString();
 
-            var invalidFileServiceDependencyException =
-                new InvalidFileServiceDependencyException(
-                    message: "Invalid file dependency validation error occurred.",
-                    innerException: dependencyException);
-
             var failedFileDependencyException =
                 new FailedFileDependencyException(
                     message: "Failed file dependency error occurred, please contact support.",
-                    innerException: invalidFileServiceDependencyException);
+                    innerException: dependencyException);
 
             var expectedFileDependencyException =
                 new FileDependencyException(

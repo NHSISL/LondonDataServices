@@ -79,110 +79,50 @@
 //            DateTimeOffset now = DateTimeOffset.UtcNow;
 //            List<ResolvedAddress> resolvedAddresses = new List<ResolvedAddress>();
 
-//            // First resolved address
-//            ResolvedAddress resolvedAddress1 = new ResolvedAddress
-//            {
-//                Id = Guid.NewGuid(),
-//                UniqueReference = Guid.NewGuid(),
-//                BatchReference = Guid.NewGuid(),
-//                UnstructuredPostalAddress = "",
-//                PostCode = "",
-//                PostalAddress = "",
-//                JsonPostalAddress = "",
-//                MatchAlgorithmEnum = MatchAlgorithmEnum.BestMatch,
-//                IsMatched = true,
-//                MatchedPostalAddress = "Test Matched Postal Address 1",
-//                MatchedJsonPostalAddress = "Test Matched json 1",
-//                MatchedUPRN = "Test Matched UPSN 1",
-//                MatchedUPSN = "Test Matched UPRN 1",
-//                MatchedOrganisationName = "Test Matched Org Name 1",
-//                MatchedDepartmentName = "Test Matched Department Name 1",
-//                MatchedSubBuildingName = "Test Matched Building Name 1",
-//                MatchedBuildingName = "",
-//                MatchedBuildingNumber = "",
-//                MatchedDependentThoroughfare = "",
-//                MatchedThoroughfare = "",
-//                MatchedDoubleDependentLocality = "",
-//                MatchedDependentLocality = "",
-//                MatchedPostTown = "Test Matched Croydon 1",
-//                MatchedPostCode = "CR2 0HG",
-//                IsProcessed = false,
-//                CreatedBy = "Test User",
-//                UpdatedBy = "Test User",
-//                UpdatedDate = now,
-//                CreatedDate = now
-//            };
-//            resolvedAddresses.Add(resolvedAddress1);
+            // First resolved address
+            ResolvedAddress resolvedAddress1 = new ResolvedAddress
+            {
+                Id = Guid.NewGuid(),
+                UniqueReference = Guid.NewGuid(),
+                BatchReference = Guid.NewGuid(),
+                UnstructuredPostalAddress = "",
+                PostCode = "",
+                CreatedBy = "Test User",
+                UpdatedBy = "Test User",
+                UpdatedDate = now,
+                CreatedDate = now
+            };
+            resolvedAddresses.Add(resolvedAddress1);
 
-//            // Second resolved address
-//            ResolvedAddress resolvedAddress2 = new ResolvedAddress
-//            {
-//                Id = Guid.NewGuid(),
-//                UniqueReference = Guid.NewGuid(),
-//                BatchReference = Guid.NewGuid(),
-//                UnstructuredPostalAddress = "",
-//                PostCode = "",
-//                PostalAddress = "",
-//                JsonPostalAddress = "",
-//                MatchAlgorithmEnum = MatchAlgorithmEnum.BestMatch,
-//                IsMatched = true,
-//                MatchedPostalAddress = "Test Matched Postal Address 2",
-//                MatchedJsonPostalAddress = "Test Matched json 2",
-//                MatchedUPRN = "Test Matched UPSN 2",
-//                MatchedUPSN = "Test Matched UPRN 2",
-//                MatchedOrganisationName = "Test Matched Org Name 2",
-//                MatchedDepartmentName = "Test Matched Department Name 2",
-//                MatchedSubBuildingName = "Test Matched Building Name 2",
-//                MatchedBuildingName = "",
-//                MatchedBuildingNumber = "",
-//                MatchedDependentThoroughfare = "",
-//                MatchedThoroughfare = "",
-//                MatchedDoubleDependentLocality = "",
-//                MatchedDependentLocality = "",
-//                MatchedPostTown = "Test Matched Croydon 2",
-//                MatchedPostCode = "CR2 0HG",
-//                IsProcessed = false,
-//                CreatedBy = "Test User",
-//                UpdatedBy = "Test User",
-//                UpdatedDate = now,
-//                CreatedDate = now
-//            };
-//            resolvedAddresses.Add(resolvedAddress2);
+            // Second resolved address
+            ResolvedAddress resolvedAddress2 = new ResolvedAddress
+            {
+                Id = Guid.NewGuid(),
+                UniqueReference = Guid.NewGuid(),
+                BatchReference = Guid.NewGuid(),
+                UnstructuredPostalAddress = "",
+                PostCode = "",
+                CreatedBy = "Test User",
+                UpdatedBy = "Test User",
+                UpdatedDate = now,
+                CreatedDate = now
+            };
+            resolvedAddresses.Add(resolvedAddress2);
 
-//            // Third resolved address
-//            ResolvedAddress resolvedAddress3 = new ResolvedAddress
-//            {
-//                Id = Guid.NewGuid(),
-//                UniqueReference = Guid.NewGuid(),
-//                BatchReference = Guid.NewGuid(),
-//                UnstructuredPostalAddress = "",
-//                PostCode = "",
-//                PostalAddress = "",
-//                JsonPostalAddress = "",
-//                MatchAlgorithmEnum = MatchAlgorithmEnum.BestMatch,
-//                IsMatched = true,
-//                MatchedPostalAddress = "Test Matched Postal Address 3",
-//                MatchedJsonPostalAddress = "Test Matched json 3",
-//                MatchedUPRN = "Test Matched UPSN 3",
-//                MatchedUPSN = "Test Matched UPRN 3",
-//                MatchedOrganisationName = "Test Matched Org Name 3",
-//                MatchedDepartmentName = "Test Matched Department Name 3",
-//                MatchedSubBuildingName = "Test Matched Building Name 3",
-//                MatchedBuildingName = "",
-//                MatchedBuildingNumber = "",
-//                MatchedDependentThoroughfare = "",
-//                MatchedThoroughfare = "",
-//                MatchedDoubleDependentLocality = "",
-//                MatchedDependentLocality = "",
-//                MatchedPostTown = "Test Matched Croydon 3",
-//                MatchedPostCode = "CR2 0HG",
-//                IsProcessed = false,
-//                CreatedBy = "Test User",
-//                UpdatedBy = "Test User",
-//                UpdatedDate = now,
-//                CreatedDate = now
-//            };
-//            resolvedAddresses.Add(resolvedAddress3);
+            // Third resolved address
+            ResolvedAddress resolvedAddress3 = new ResolvedAddress
+            {
+                Id = Guid.NewGuid(),
+                UniqueReference = Guid.NewGuid(),
+                BatchReference = Guid.NewGuid(),
+                UnstructuredPostalAddress = "",
+                PostCode = "",
+                CreatedBy = "Test User",
+                UpdatedBy = "Test User",
+                UpdatedDate = now,
+                CreatedDate = now
+            };
+            resolvedAddresses.Add(resolvedAddress3);
 
 //            // Add all resolved addresses to the database
 //            List<ResolvedAddress> addedResolvedAddresses = new List<ResolvedAddress>();

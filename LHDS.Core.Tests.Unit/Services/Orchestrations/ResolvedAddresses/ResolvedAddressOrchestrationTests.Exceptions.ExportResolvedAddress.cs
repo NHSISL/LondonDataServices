@@ -36,12 +36,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<List<Guid>> action =
+            ValueTask<List<Guid>> exportAction =
                 this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyValidationException>(
-                    action.AsTask);
+                    exportAction.AsTask);
 
             // then
             actualException.Should().
@@ -82,12 +82,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Throws(dependencyException);
 
             // when
-            ValueTask<List<Guid>> action =
+            ValueTask<List<Guid>> exportAction =
                this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyException>(
-                    action.AsTask);
+                    exportAction.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationDependencyException);
@@ -132,11 +132,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Throws(serviceException);
 
             // when
-            ValueTask<List<Guid>> action =
+            ValueTask<List<Guid>> exportAction =
                 this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(action.AsTask);
+                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(exportAction.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationServiveException);
@@ -192,11 +192,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier())
                     .Returns(batchReference);
 
-            processingResolvedAddresses.ForEach(pra =>
+            processingResolvedAddresses.ForEach(processingResolvedAddress =>
             {
-                pra.IsProcessing = true;
-                pra.RetryCount += 1;
-                pra.BatchReference = batchReference;
+                processingResolvedAddress.IsProcessing = true;
+                processingResolvedAddress.RetryCount += 1;
+                processingResolvedAddress.BatchReference = batchReference;
             });
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
@@ -204,11 +204,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    It.Is(SameResolvedAddressListAs(processingResolvedAddresses))))
                     .Throws(dependencyValidationException);
 
-            failedProcessingResolvedAddresses.ForEach(fpra =>
+            failedProcessingResolvedAddresses.ForEach(failedProcessingResolvedAddress =>
             {
-                fpra.IsProcessing = false;
-                fpra.IsExported = false;
-                fpra.IsProcessed = false;
+                failedProcessingResolvedAddress.IsProcessing = false;
+                failedProcessingResolvedAddress.IsExported = false;
+                failedProcessingResolvedAddress.IsProcessed = false;
             });
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
@@ -241,12 +241,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask<List<Guid>> action =
+            ValueTask<List<Guid>> exportAction =
                 this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                   await action);
+                   await exportAction);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()
@@ -328,11 +328,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier())
                     .Returns(batchReference);
 
-            processingResolvedAddresses.ForEach(pra =>
+            processingResolvedAddresses.ForEach(processingResolvedAddress =>
             {
-                pra.IsProcessing = true;
-                pra.RetryCount += 1;
-                pra.BatchReference = batchReference;
+                processingResolvedAddress.IsProcessing = true;
+                processingResolvedAddress.RetryCount += 1;
+                processingResolvedAddress.BatchReference = batchReference;
             });
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
@@ -340,11 +340,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     It.Is(SameResolvedAddressListAs(processingResolvedAddresses))))
                         .Throws(dependencyException);
 
-            failedProcessingResolvedAddresses.ForEach(fpra =>
+            failedProcessingResolvedAddresses.ForEach(failedProcessingResolvedAddress =>
             {
-                fpra.IsProcessing = false;
-                fpra.IsExported = false;
-                fpra.IsProcessed = false;
+                failedProcessingResolvedAddress.IsProcessing = false;
+                failedProcessingResolvedAddress.IsExported = false;
+                failedProcessingResolvedAddress.IsProcessed = false;
             });
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
@@ -376,12 +376,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask<List<Guid>> action =
+            ValueTask<List<Guid>> exportAction =
                 this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
                 await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                    await action);
+                    await exportAction);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()
@@ -462,11 +462,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 broker.GetIdentifier())
                     .Returns(batchReference);
 
-            processingResolvedAddresses.ForEach(pra =>
+            processingResolvedAddresses.ForEach(processingResolvedAddress =>
             {
-                pra.IsProcessing = true;
-                pra.RetryCount += 1;
-                pra.BatchReference = batchReference;
+                processingResolvedAddress.IsProcessing = true;
+                processingResolvedAddress.RetryCount += 1;
+                processingResolvedAddress.BatchReference = batchReference;
             });
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
@@ -474,11 +474,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     It.Is(SameResolvedAddressListAs(processingResolvedAddresses))))
                         .Throws(serviceException);
 
-            failedProcessingResolvedAddresses.ForEach(fpra =>
+            failedProcessingResolvedAddresses.ForEach(failedProcessingResolvedAddress =>
             {
-                fpra.IsProcessing = false;
-                fpra.IsExported = false;
-                fpra.IsProcessed = false;
+                failedProcessingResolvedAddress.IsProcessing = false;
+                failedProcessingResolvedAddress.IsExported = false;
+                failedProcessingResolvedAddress.IsProcessed = false;
             });
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
@@ -515,12 +515,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask<List<Guid>> action =
+            ValueTask<List<Guid>> exportAction =
                 this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                   await action);
+                   await exportAction);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()

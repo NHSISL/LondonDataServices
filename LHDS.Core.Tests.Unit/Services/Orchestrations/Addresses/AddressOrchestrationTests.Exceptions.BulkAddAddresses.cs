@@ -271,7 +271,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
 
                 var addressOrchestrationDependencyException =
                     new AddressOrchestrationDependencyException(
-                        message: "Address orchestration dependency validation error occurred, " +
+                        message: "Address orchestration dependency error occurred, " +
                             "fix the errors and try again.",
                         innerException: dependencyException.InnerException as Xeption);
 

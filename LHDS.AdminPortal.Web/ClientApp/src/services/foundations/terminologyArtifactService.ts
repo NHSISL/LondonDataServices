@@ -21,6 +21,7 @@ export const terminologyArtifactService = {
             {
                 onSuccess: (variables) => {
                     queryClient.invalidateQueries("TerminologyArtifactGetAll");
+                    queryClient.invalidateQueries("TerminologyArtifactsGetAll");
                     queryClient.invalidateQueries(["TerminologyArtifactGetById", { id: variables.id }]);
                 }
             });

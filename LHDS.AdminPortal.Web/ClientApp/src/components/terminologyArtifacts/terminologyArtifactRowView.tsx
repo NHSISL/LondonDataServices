@@ -5,6 +5,8 @@ import { TerminologyArtifact } from "../../models/terminologyArtifacts/terminolo
 import { Link } from 'react-router-dom';
 import ButtonBase from "../bases/buttons/ButtonBase";
 import moment from "moment";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 type TerminologyArtifactRowProps = {
     terminologyArtifact: TerminologyArtifact;
@@ -18,16 +20,32 @@ const TerminologyArtifactRowView: FunctionComponent<TerminologyArtifactRowProps>
     return (
         <TableBaseRow>
             <TableBaseData>
-                {terminologyArtifact.resourceType}
+                <span style={{ fontSize: "12px" }}>{terminologyArtifact.resourceType}</span>
             </TableBaseData>
             <TableBaseData>
-                    {terminologyArtifact.fullUrl}
+                <span style={{ fontSize: "12px" }}>{terminologyArtifact.fullUrl}</span>
             </TableBaseData>
             <TableBaseData>
-                    {terminologyArtifact.name}
+                <span style={{ fontSize: "12px" }}>{terminologyArtifact.name}</span>
             </TableBaseData>
             <TableBaseData>
-                {moment(terminologyArtifact.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
+                <span style={{ fontSize: "12px" }}>
+                   {terminologyArtifact.isCore ?
+                        <FontAwesomeIcon icon={faCheck} className="text-success" title="isCore" /> :
+                        <FontAwesomeIcon icon={faTimes} className="text-danger" title="notCore" />}
+                </span>
+            </TableBaseData>
+            <TableBaseData>
+                <span style={{ fontSize: "12px" }}>
+                    {terminologyArtifact.isDownloaded ?
+                        <FontAwesomeIcon icon={faCheck} className="text-success" title="downloaded" /> :
+                        <FontAwesomeIcon icon={faTimes} className="text-danger" title="not downloaded" />}
+                </span>
+            </TableBaseData>
+            <TableBaseData>
+                <span style={{ fontSize: "12px" }}>
+                    {moment(terminologyArtifact.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
+                </span>
             </TableBaseData>
             <TableBaseData>
                 <Link to={`/terminologyArtifactDetail/${terminologyArtifact.id}`}>

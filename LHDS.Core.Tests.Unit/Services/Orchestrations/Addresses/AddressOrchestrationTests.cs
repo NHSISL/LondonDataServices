@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.CsvHelpers;
@@ -90,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
            new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
-          actualException => actualException.SameExceptionAs(expectedException);
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static IQueryable<Address> CreateRandomAddresses(int count = 0)
         {

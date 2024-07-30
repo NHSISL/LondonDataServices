@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
@@ -86,11 +86,11 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             TerminologyArtifact storageTerminologyArtifact)
         {
             Validate(
-                (Rule: IsNotSame(
-                    firstDate: inputTerminologyArtifact.CreatedDate,
-                    secondDate: storageTerminologyArtifact.CreatedDate,
-                    secondDateName: nameof(TerminologyArtifact.CreatedDate)),
-                Parameter: nameof(TerminologyArtifact.CreatedDate)),
+                //(Rule: IsNotSame(
+                //    firstDate: inputTerminologyArtifact.CreatedDate,
+                //    secondDate: storageTerminologyArtifact.CreatedDate,
+                //    secondDateName: nameof(TerminologyArtifact.CreatedDate)),
+                //Parameter: nameof(TerminologyArtifact.CreatedDate)),
 
                 (Rule: IsNotSame(
                     first: inputTerminologyArtifact.CreatedBy,

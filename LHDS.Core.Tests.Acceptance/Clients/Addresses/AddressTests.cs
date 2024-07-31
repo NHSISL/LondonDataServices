@@ -9,6 +9,7 @@ using System.Linq;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -25,6 +26,7 @@ using LHDS.Core.Services.Processings.ResolvedAddresses;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Moq;
 using Tynamix.ObjectFiller;
 using WireMock.Server;
 using Xunit;
@@ -35,6 +37,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
     public partial class AddressTests
     {
         private readonly DependencyBroker dependencyBroker;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly IAddressOrchestrationService addressOrchestrationService;
         private readonly IResolvedAddressOrchestrationService resolvedAddressOrchestrationService;
         private readonly IResolvedAddressProcessingService resolvedAddressProcessingService;
@@ -53,6 +56,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         {
             this.wireMockServer = WireMockServer.Start();
             this.dependencyBroker = dependencyBroker;
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.compareLogic = new CompareLogic();
             var serviceCollection = new ServiceCollection();
 
@@ -63,7 +67,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .AddTransient<IDocumentService, DocumentService>()
                 .AddTransient<ICsvHelperBroker, CsvHelperBroker>()
                 .AddTransient<IAddressService, AddressService>()
-                .AddTransient<IDocumentService, DocumentService>();
+                .AddTransient<IDocumentService, DocumentService>()
+                .AddTransient<IIdentifierBroker>(serviceProvider => identifierBrokerMock.Object);
 
             serviceCollection.AddLogging(builder =>
             {

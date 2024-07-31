@@ -19,6 +19,7 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Assigns;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Coordinations.AddressCoordinations;
@@ -68,6 +69,12 @@ namespace LHDS.Core.Clients.Extensions
                 configuration.GetSection("addressSettings").Get<AddressConfiguration>();
 
             services.AddSingleton(addressConfiguration);
+
+            AssignConfiguration assignConfiguration =
+                configuration.GetSection("assignConfiguration").Get<AssignConfiguration>();
+
+            ValidateAssingConfiguration(assignConfiguration);
+            services.AddSingleton(assignConfiguration);
 
             if (blobStorageSettings != null)
             {
@@ -151,6 +158,19 @@ namespace LHDS.Core.Clients.Extensions
 
                 (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
                     Parameter: "blobStorage__azureTenantId"));
+        }
+
+        private static void ValidateAssingConfiguration(AssignConfiguration? assignConfiguration)
+        {
+            if (assignConfiguration == null)
+            {
+                throw new InvalidConfigurationException(
+                    "Configuration section 'assignConfiguration' not defined.");
+            }
+
+            Validate(
+                (Rule: IsInvalid(assignConfiguration.ApiUrl),
+                    Parameter: "assignConfiguration__apiUrl"));
         }
 
         private static dynamic IsInvalid(string? text) => new

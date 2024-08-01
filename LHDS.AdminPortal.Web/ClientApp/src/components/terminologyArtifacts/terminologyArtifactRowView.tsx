@@ -34,7 +34,10 @@ const TerminologyArtifactRowView: FunctionComponent<TerminologyArtifactRowProps>
             <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white text-center" : "text-center"}>
                 <span>
                     {terminologyArtifact.isError ?
-                        <FontAwesomeIcon icon={faCircleExclamation} className="" title={terminologyArtifact.errorMessage} /> :
+                        <FontAwesomeIcon
+                            icon={faCircleExclamation}
+                            className=""
+                            title={terminologyArtifact.errorMessage} /> :
                         <span></span>}
                 </span>
             </TableBaseData>

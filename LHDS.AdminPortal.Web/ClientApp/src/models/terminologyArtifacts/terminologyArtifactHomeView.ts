@@ -11,6 +11,8 @@ export class TerminologyArtifactHomeView {
     public lastUpdated?: Date;
     public isCore?: boolean;
     public isDownloaded?: boolean;
+    public isError?: boolean;
+    public errorMessage?: string;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -27,6 +29,8 @@ export class TerminologyArtifactHomeView {
         lastUpdated?: Date,
         isCore?: boolean,
         isDownloaded?: boolean,
+        isError?: boolean,
+        errorMessage?: string,
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
@@ -42,6 +46,8 @@ export class TerminologyArtifactHomeView {
         this.lastUpdated = lastUpdated;
         this.isCore = isCore;
         this.isDownloaded = isDownloaded;
+        this.isError = isError;
+        this.errorMessage = errorMessage;
         this.createdBy = createdBy;
         this.createdDate = createdDate;
         this.updatedBy = updatedBy;

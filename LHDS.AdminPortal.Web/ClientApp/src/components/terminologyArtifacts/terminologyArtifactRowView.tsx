@@ -5,7 +5,7 @@ import { TerminologyArtifact } from "../../models/terminologyArtifacts/terminolo
 import { Link } from 'react-router-dom';
 import ButtonBase from "../bases/buttons/ButtonBase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCircleExclamation, faInfoCircle, faStop, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCircleExclamation,faTimes } from "@fortawesome/free-solid-svg-icons";
 
 type TerminologyArtifactRowProps = {
     terminologyArtifact: TerminologyArtifact;

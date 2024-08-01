@@ -89,7 +89,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private async ValueTask BulkUpdateAsync<T>(IEnumerable<T> objects) where T : class
         {
             objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Modified);
-            this.AddRange(objects);
+            //this.AddRange(objects);
             await this.SaveChangesAsync();
             objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Detached);
         }

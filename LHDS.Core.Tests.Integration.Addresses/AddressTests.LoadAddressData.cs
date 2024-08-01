@@ -17,9 +17,9 @@ namespace LHDS.Core.Tests.Integration.Addresses
             //var filePath = @"Resources\Ordnance\0040176014-6414006-1VERYSMALL.zip";
 
             // Given
-            byte[] fileBytes = File.ReadAllBytes(filePath);
-            FileInfo fi = new FileInfo(filePath);
-            var fileName = fi.Name;
+            //byte[] fileBytes = File.ReadAllBytes(filePath);
+            //FileInfo fi = new FileInfo(filePath);
+            //var fileName = fi.Name;
 
             // When
             //List<Address> returnedAddresses =

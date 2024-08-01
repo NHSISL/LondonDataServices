@@ -73,6 +73,7 @@ namespace LHDS.Core.Tests.Integration.Addresses
             this.resolvedAddressService = serviceProvider.GetService<IResolvedAddressService>();
             this.blobContainers = serviceProvider.GetService<BlobContainers>();
             this.documentService = serviceProvider.GetService<IDocumentService>();
+            this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             addressClient = serviceProvider.GetService<IAddressClient>();
         }
 

@@ -4,9 +4,8 @@ import TableBaseData from "../bases/components/Table/TableBase.Data";
 import { TerminologyArtifact } from "../../models/terminologyArtifacts/terminologyArtifact";
 import { Link } from 'react-router-dom';
 import ButtonBase from "../bases/buttons/ButtonBase";
-import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCircleExclamation, faInfoCircle, faStop, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 type TerminologyArtifactRowProps = {
     terminologyArtifact: TerminologyArtifact;
@@ -19,41 +18,53 @@ const TerminologyArtifactRowView: FunctionComponent<TerminologyArtifactRowProps>
 
     return (
         <TableBaseRow>
-            <TableBaseData>
-                <span style={{ fontSize: "12px" }}>{terminologyArtifact.resourceType}</span>
+            <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white" : ""}>
+                <span>{terminologyArtifact.resourceType}</span>
             </TableBaseData>
-            <TableBaseData>
-                <span style={{ fontSize: "12px" }}>{terminologyArtifact.fullUrl}</span>
+            <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white" : ""}>
+                <span>{terminologyArtifact.name}</span>
             </TableBaseData>
-            <TableBaseData>
-                <span style={{ fontSize: "12px" }}>{terminologyArtifact.name}</span>
+            <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white text-center" : "text-center"}>
+                <span>{terminologyArtifact.version}</span>
             </TableBaseData>
-            <TableBaseData>
-                <span style={{ fontSize: "12px" }}>
+            <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white text-center" : "text-center"}>
+                <span>{terminologyArtifact.status}</span>
+            </TableBaseData>
+
+            <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white text-center" : "text-center"}>
+                <span>
+                    {terminologyArtifact.isError ?
+                        <FontAwesomeIcon icon={faCircleExclamation} className="" title={terminologyArtifact.errorMessage} /> :
+                        <span></span>}
+                </span>
+            </TableBaseData>
+
+            <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white text-center" : "text-center"}>
+                <span>
                    {terminologyArtifact.isCore ?
                         <FontAwesomeIcon icon={faCheck} className="text-success" title="isCore" /> :
                         <FontAwesomeIcon icon={faTimes} className="text-danger" title="notCore" />}
                 </span>
             </TableBaseData>
-            <TableBaseData>
-                <span style={{ fontSize: "12px" }}>
+
+            <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white text-center" : "text-center"}>
+                <span>
                     {terminologyArtifact.isDownloaded ?
                         <FontAwesomeIcon icon={faCheck} className="text-success" title="downloaded" /> :
                         <FontAwesomeIcon icon={faTimes} className="text-danger" title="not downloaded" />}
                 </span>
             </TableBaseData>
-            <TableBaseData>
-                <span style={{ fontSize: "12px" }}>
-                    {moment(terminologyArtifact.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
-                </span>
-            </TableBaseData>
-            <TableBaseData>
+
+            <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white text-center" : "text-center"}>
                 <Link to={`/terminologyArtifactDetail/${terminologyArtifact.id}`}>
-                    <ButtonBase onClick={() => { }} add>
-                        Details
-                    </ButtonBase>
+                    {
+                        terminologyArtifact.isError
+                            ? <ButtonBase onClick={() => { }} remove> Details </ButtonBase>
+                            : <ButtonBase onClick={() => { }} add> Details </ButtonBase>
+                    }
                 </Link>
             </TableBaseData>
+
         </TableBaseRow>
     );
 }

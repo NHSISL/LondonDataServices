@@ -1,4 +1,4 @@
-import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCircleExclamation, faCircleStop, faStop, faStopCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { FunctionComponent } from "react";
 import moment from "moment";
@@ -134,6 +134,7 @@ const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDe
                                                 .format("Do-MMM-yyyy HH:mm")}
                                         </SummaryListBaseValue>
                                     </SummaryListBaseRow>
+
                                     <SummaryListBaseRow>
                                         <SummaryListBaseKey>Updated Date</SummaryListBaseKey>
                                         <SummaryListBaseValue>
@@ -141,8 +142,20 @@ const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDe
                                                 .format("Do-MMM-yyyy HH:mm")}
                                         </SummaryListBaseValue>
                                     </SummaryListBaseRow>
+
+                                    <SummaryListBaseRow classes={terminologyArtifact.isError ? "text-danger" : ""}>
+                                        <SummaryListBaseKey>Is Error</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{terminologyArtifact.isError ?
+                                            <FontAwesomeIcon icon={faCircleExclamation} className="text-danger" /> :
+                                            <span></span>}
+                                        </SummaryListBaseValue>
+                                    </SummaryListBaseRow>
                                 </SummaryListBase>
 
+                                <SummaryListBaseRow classes={terminologyArtifact.isError ? "text-danger" : ""}>
+                                    <SummaryListBaseKey>Error Message</SummaryListBaseKey>
+                                    <SummaryListBaseValue>{terminologyArtifact.errorMessage}</SummaryListBaseValue>
+                                </SummaryListBaseRow>
                             </CardBaseContent>
                         </CardBaseBody>
                     </CardBase>

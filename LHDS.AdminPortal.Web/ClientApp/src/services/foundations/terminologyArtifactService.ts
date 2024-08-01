@@ -77,6 +77,7 @@ export const terminologyArtifactService = {
             {
                 onSuccess: (data) => {
                     queryClient.invalidateQueries("TerminologyArtifactGetAll");
+                    queryClient.invalidateQueries("TerminologyArtifactsGetAll");
                     queryClient.invalidateQueries(["TerminologyArtifactGetById", { id: data.id }]);
                 }
             });
@@ -92,6 +93,7 @@ export const terminologyArtifactService = {
             {
                 onSuccess: (data) => {
                     queryClient.invalidateQueries("TerminologyArtifactGetAll");
+                    queryClient.invalidateQueries("TerminologyArtifactsGetAll");
                     queryClient.invalidateQueries(["TerminologyArtifactGetById", { id: data.id }]);
                 }
             });

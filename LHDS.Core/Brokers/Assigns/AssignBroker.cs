@@ -24,8 +24,13 @@ namespace LHDS.Core.Brokers.Assigns
             this.apiClient = SetupApiClient();
         }
 
-        public async ValueTask<AssignAddress> MatchAddressAsync(string address) =>
-            await this.apiClient.GetContentAsync<AssignAddress>($"/api/getinfo?address={address}");
+        public async ValueTask<AssignAddress> MatchAddressAsync(string address)
+        {
+            var returnedAddress = 
+                await this.apiClient.GetContentAsync<AssignAddress>($"/api/getinfo?address={address}");
+
+            return returnedAddress;
+        }
 
         private HttpClient SetupHttpClient()
         {

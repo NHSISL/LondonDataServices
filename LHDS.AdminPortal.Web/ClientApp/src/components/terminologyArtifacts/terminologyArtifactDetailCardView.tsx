@@ -1,4 +1,4 @@
-import { faCheck, faCircleExclamation, faCircleStop, faStop, faStopCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCircleExclamation, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { FunctionComponent } from "react";
 import moment from "moment";

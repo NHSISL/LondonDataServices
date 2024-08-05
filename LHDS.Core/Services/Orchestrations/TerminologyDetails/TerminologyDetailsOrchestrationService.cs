@@ -2,7 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -44,33 +47,39 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
             TryCatch(async () =>
             {
                 TerminologyArtifact artifact = null;
+                var exceptions = new List<Exception>();
 
                 while ((artifact =
                     await this.terminologyArtifactProcessingService.GetNonDownloadedArtifactAsync()) != null)
                 {
                     try
                     {
-                        string relativeUrl = artifact.FullUrl;
-
-                        string artifactDetail = await this.ontologyProcessingService
-                            .RetrieveArtifactDetailsAsync(relativeUrl);
-
-                        byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
-                        string fileName = $"{artifact.ResourceType}/{artifact.Name}.json";
-
-                        using (Stream input = new MemoryStream(artifactDetailData))
+                        await TryCatch(async () =>
                         {
-                            await this.documentProcessingService.AddDocumentAsync(
-                                input,
-                                fileName,
-                                container: blobContainers.Terminology);
-                        }
+                            string relativeUrl = artifact.FullUrl;
 
-                        artifact.IsDownloaded = true;
-                        artifact.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
-                        await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);
+                            string artifactDetail = await this.ontologyProcessingService
+                                .RetrieveArtifactDetailsAsync(relativeUrl);
+
+                            byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
+                            string fileName = $"{artifact.ResourceType}/{artifact.Name}.json";
+
+                            using (Stream input = new MemoryStream(artifactDetailData))
+                            {
+                                await this.documentProcessingService.AddDocumentAsync(
+                                    input,
+                                    fileName,
+                                    container: blobContainers.Terminology);
+                            }
+
+                            artifact.IsDownloaded = true;
+                            artifact.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+
+                            await this.terminologyArtifactProcessingService
+                                .ModifyOrAddTerminologyArtifactAsync(artifact);
+                        });
                     }
-                    catch (System.Exception ex)
+                    catch (Exception ex)
                     {
                         artifact.IsDownloaded = false;
                         artifact.IsError = true;
@@ -79,9 +88,15 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                             ?? ex?.InnerException?.Message
                             ?? ex?.Message;
 
+                        exceptions.Add(ex);
                         await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);
-                        this.loggingBroker.LogError(ex);
                     }
+                }
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to retrieve terminology artifact details for {exceptions.Count} message IDs",
+                        exceptions);
                 }
             });
     }

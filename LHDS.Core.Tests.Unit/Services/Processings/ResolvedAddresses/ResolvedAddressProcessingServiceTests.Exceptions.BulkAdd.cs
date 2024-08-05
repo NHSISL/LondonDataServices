@@ -36,12 +36,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask addressAddTask = this.resolvedAddressProcessingService
+            ValueTask bulkAddTask = this.resolvedAddressProcessingService
                 .BulkAddResolvedAddressesAsync(resolvedAddresses: inputResolvedAddresses, fileName: someFileName);
 
             ResolvedAddressProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<ResolvedAddressProcessingDependencyValidationException>(
-                    addressAddTask.AsTask);
+                    bulkAddTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressProcessingDependencyValidationException);
@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             var expectedResolvedAddressProcessingDependencyException =
                 new ResolvedAddressProcessingDependencyException(
-                    message: "Resolved address processing dependency error occurred, please try again.",
+                    message: "Resolved address processing dependency error occurred, please contact support.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.resolvedAddressServiceMock.Setup(service =>
@@ -79,11 +79,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     .Throws(dependencyException);
 
             // when
-            ValueTask addressAddTask = this.resolvedAddressProcessingService
+            ValueTask bulkAddTask = this.resolvedAddressProcessingService
                 .BulkAddResolvedAddressesAsync(resolvedAddresses: inputResolvedAddresses, fileName: someFileName);
 
             ResolvedAddressProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<ResolvedAddressProcessingDependencyException>(addressAddTask.AsTask);
+                await Assert.ThrowsAsync<ResolvedAddressProcessingDependencyException>(bulkAddTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressProcessingDependencyException);
@@ -126,11 +126,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     .Throws(serviceException);
 
             // when
-            ValueTask addressAddTask = this.resolvedAddressProcessingService
+            ValueTask bulkAddTask = this.resolvedAddressProcessingService
                 .BulkAddResolvedAddressesAsync(resolvedAddresses: inputResolvedAddresses, fileName: someFileName);
 
             ResolvedAddressProcessingServiceException actualException =
-                await Assert.ThrowsAsync<ResolvedAddressProcessingServiceException>(addressAddTask.AsTask);
+                await Assert.ThrowsAsync<ResolvedAddressProcessingServiceException>(bulkAddTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressProcessingServiveException);

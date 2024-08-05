@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
 {
     public partial class LandingTests
     {
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldLandFilesAsync()
         {
             try

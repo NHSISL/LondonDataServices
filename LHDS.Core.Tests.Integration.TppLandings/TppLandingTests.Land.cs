@@ -4,7 +4,10 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Xunit;
 
@@ -24,9 +27,6 @@ namespace LHDS.Core.Tests.Integration.TppLandings
 
             string encryptedFileContainer = blobContainers.TppLanding;
             Supplier supplier = await GetTppSupplier();
-            //Supplier supplier = await SetupSupplier();
-            //DataSet dataSet = await SetupDataSet(supplier.Id);
-            //DataSetSpecification dataSetSpecification = await SetupDataSetSpecification(dataSet.Id);
 
             // when
             Guid actualGuid = await this.tppLandingClient.ProcessAsync(
@@ -35,25 +35,20 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 supplierId: supplier.Id);
 
             // then
-            //actualGuid.Should().NotBe(Guid.Empty);
+            actualGuid.Should().NotBe(Guid.Empty);
 
-            //IngestionTracking actualIngestionTracking =
-            //    await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
+            IngestionTracking actualIngestionTracking =
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
-            //var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-            //    .Where(audit => audit.IngestionTrackingId == actualGuid);
+            var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                .Where(audit => audit.IngestionTrackingId == actualGuid);
 
-            //foreach (var audit in audits)
-            //{
-            //    await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
-            //}
+            foreach (var audit in audits)
+            {
+                await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+            }
 
-            //await this.dataSetSpecificationService
-            //   .RemoveDataSetSpecificationByIdAsync(dataSetSpecification.Id);
-
-            //await this.dataSetService.RemoveDataSetByIdAsync(dataSet.Id);
-            //await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(actualGuid);
-            //await this.supplierService.RemoveSupplierByIdAsync(supplier.Id);
+            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(actualGuid);
         }
     }
 }

@@ -6,10 +6,10 @@ import { supplierService } from "../../foundations/supplierService";
 export const lookupViewService = {
     useGetSupplierList: (searchTerm?: string) => {
         try {
-            let query = `?$select=id,name&$orderby=name`;
+            let query = `?$select=id,Name&$orderby=Name`;
 
             if (searchTerm) {
-                query = query + `&$filter=contains(name,'${searchTerm}')`
+                query = query + `&$filter=contains(Name,'${searchTerm}')`
             }
 
             const response = supplierService.useGetAllSuppliers(query);

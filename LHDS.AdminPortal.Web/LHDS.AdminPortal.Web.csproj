@@ -166,6 +166,7 @@
     <TypeScriptCompile Remove="ClientApp\src\hooks\validationProcessor.ts" />
     <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\models\addresses\address.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\addresses\addressHomeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataSetSpecifications\dataSetSpecification.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataSets\dataSet.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataTypes\dataType.ts" />
@@ -232,6 +233,8 @@
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\subscriberCredentialService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\terminologyArtifactService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\addresses\addressHomeViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\addresses\addressViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\auditViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\dataSetSpecification\dataSetSpecificationViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\dataSets\dataSetViewService.ts" />

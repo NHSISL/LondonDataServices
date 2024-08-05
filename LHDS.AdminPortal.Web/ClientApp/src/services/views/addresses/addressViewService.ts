@@ -1,0 +1,108 @@
+import { Guid } from "guid-typescript";
+import { useEffect, useState } from "react";
+import { addressService } from "../../foundations/addressService";
+import { Address } from "../../../models/addresses/address";
+import { AddressView } from "../../../models/views/components/addresses/addressView";
+
+export const addressViewService = {
+
+    useCreateAddress: () => {
+        return addressService.useCreateAddress();
+    },
+
+    useGetAllAddresses: (searchTerm?: string) => {
+        try {
+            let query = '?$orderby=name';
+
+            if (searchTerm) {
+                query = query + `&$filter=contains(buildingName,'${searchTerm}')`;
+            }
+
+            const response = addressService.useRetrieveAllAddresses(query);
+            const [mappedAddresses, setMappedAddresses] = useState<Array<AddressView>>([]);
+
+            useEffect(() => {
+                if (response.data) {
+                    const addresses = response.data.map((address: Address) =>
+                        new AddressView(
+                            addresses.id,
+                            addresses.isProcessing,
+                            addresses.isSynced,
+                            addresses.uprn,
+                            addresses.upsn,
+                            addresses.organisationName,
+                            addresses.departmentName,
+                            addresses.subBuildingName,
+                            addresses.buildingName,
+                            addresses.BuildingNumber,
+                            addresses.dependentThoroughfare,
+                            addresses.thoroughfare,
+                            addresses.doubleDependentLocality,
+                            addresses.dependentLocality,
+                            addresses.postTown,
+                            addresses.postCode,
+                            addresses.createdBy,
+                            addresses.createdDate,
+                            addresses.updatedBy,
+                            addresses.updatedDate,
+                        ));
+
+                    setMappedAddresses(addresses);
+                }
+            }, [response.data]);
+
+            return {
+                mappedAddresses, ...response
+            }
+        } catch (err) {
+            throw err;
+        }
+    },
+
+    useGetAddressById: (id: Guid) => {
+        try {
+            const query = `?$filter=id eq ${id}`
+            const response = addressService.useRetrieveAllAddresses(query);
+            const [mappedAddress, setMappedAddress] = useState<AddressView>();
+
+            useEffect(() => {
+                if (response.data && response.data[0]) {
+                    const address = new AddressView(
+                        response.data[0].id,
+                        response.data[0].fullUrl,
+                        response.data[0].resourceType,
+                        response.data[0].version,
+                        response.data[0].name,
+                        response.data[0].title,
+                        response.data[0].status,
+                        response.data[0].lastUpdated,
+                        response.data[0].isCore,
+                        response.data[0].isDownloaded,
+                        response.data[0].isError,
+                        response.data[0].errorMessage,
+                        response.data[0].createdBy,
+                        response.data[0].createdDate,
+                        response.data[0].updatedBy,
+                        response.data[0].updatedDate,
+                    );
+
+                    setMappedAddress(address);
+                }
+            }, [response.data]);
+
+            return {
+                mappedAddress, ...response
+            }
+        } catch (err) {
+            throw err;
+        }
+    },
+
+    useUpdateAddress: () => {
+        return addressService.useModifyAddress();
+    },
+
+    useRemoveAddress: () => {
+        return addressService.useRemoveAddress();
+    },
+}

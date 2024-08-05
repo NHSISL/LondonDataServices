@@ -25,6 +25,13 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
+        private void ValidateResolvedAddressesOnBulkModify(List<ResolvedAddress> resolvedAddresses)
+        {
+            Validate<InvalidArgumentResolvedAddressProcessingException>(
+                message: "Invalid argument(s). Please correct the errors and try again.",
+                (Rule: IsInvalid(resolvedAddresses), Parameter: nameof(resolvedAddresses)));
+        }
+
         private void ValidateAddress(string address)
         {
             Validate<InvalidArgumentResolvedAddressProcessingException>(
@@ -36,7 +43,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         {
             if (resolvedAddress is null)
             {
-                throw new NullResolvedAddressProcessingException(message: "ResolvedAddress is null.");
+                throw new NullResolvedAddressProcessingException(message: "Resolved address is null.");
             }
         }
 

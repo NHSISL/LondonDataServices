@@ -28,7 +28,8 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses
         public string? PostCode { get; set; }
         public string? AddressFormatQuality { get; set; }
         public string? PostCodeQuality { get; set; }
-        public bool Matched { get; set; }
+        public bool MatchedWithAssign { get; set; }
+        public bool IsProcessed { get; set; }
         public string? Qualifier { get; set; }
         public string? Classification { get; set; }
         public string? Algorithm { get; set; }

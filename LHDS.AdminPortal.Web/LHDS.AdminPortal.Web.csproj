@@ -4,7 +4,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>disable</Nullable>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
     <SpaRoot>ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
@@ -34,6 +33,10 @@
     <Content Remove="$(SpaRoot)**" />
     <None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ClientApp\tsconfig.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -242,6 +245,10 @@
     <TypeScriptCompile Remove="ClientApp\src\services\views\supplierViewService .ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\terminologyArtifacts\terminologyArtifactHomeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\terminologyArtifacts\terminologyArtifactViewService.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="ClientApp\tsconfig.json" />
   </ItemGroup>
 
   <ItemGroup>

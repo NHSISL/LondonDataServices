@@ -1,4 +1,4 @@
-import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCircleExclamation, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { FunctionComponent } from "react";
 import moment from "moment";
@@ -35,6 +35,12 @@ const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDe
 
     const handleIsNotCoreUpdate = () => {
         terminologyArtifact.isCore = false;
+        onUpdate(terminologyArtifact);
+    }
+
+    const handleIsNotDownloadedUpdate = () => {
+        terminologyArtifact.isDownloaded = false;
+        onUpdate(terminologyArtifact);
     }
 
     return (
@@ -75,7 +81,10 @@ const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDe
                                     <SummaryListBaseRow>
                                         <SummaryListBaseKey>Last Updated</SummaryListBaseKey>
                                         <SummaryListBaseValue>
-                                            {moment(terminologyArtifact.lastUpdated?.toString()).format("Do-MMM-yyyy HH:mm")}
+
+                                            {moment(terminologyArtifact.lastUpdated?.toString())
+                                                .format("Do-MMM-yyyy HH:mm")}
+
                                         </SummaryListBaseValue>
                                     </SummaryListBaseRow>
 
@@ -92,7 +101,9 @@ const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDe
                                                         Mark Not Core
                                                     </ButtonBase> :
                                                     <span>
-                                                        <ButtonBase onClick={handleIsCoreUpdate} add>Mark Core</ButtonBase>
+                                                        <ButtonBase onClick={handleIsCoreUpdate} add>
+                                                            Mark Core
+                                                        </ButtonBase>
                                                     </span>}
                                             </span>
                                         </SummaryListBaseAction>
@@ -105,23 +116,46 @@ const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDe
                                             <FontAwesomeIcon icon={faCheck} className="text-success" /> :
                                             <FontAwesomeIcon icon={faTimes} className="text-danger" />}
                                         </SummaryListBaseValue>
+                                        <SummaryListBaseAction>
+                                            <span style={{ float: "right" }}>
+                                                {terminologyArtifact.isDownloaded ?
+                                                    <ButtonBase onClick={handleIsNotDownloadedUpdate} remove>
+                                                        Mark Not Downloaded
+                                                    </ButtonBase> : "" }
+                                            </span>
+                                        </SummaryListBaseAction>
                                     </SummaryListBaseRow>
 
 
                                      <SummaryListBaseRow>
                                         <SummaryListBaseKey>Created Date</SummaryListBaseKey>
                                         <SummaryListBaseValue>
-                                            {moment(terminologyArtifact.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
+                                            {moment(terminologyArtifact.createdDate?.toString())
+                                                .format("Do-MMM-yyyy HH:mm")}
                                         </SummaryListBaseValue>
                                     </SummaryListBaseRow>
+
                                     <SummaryListBaseRow>
                                         <SummaryListBaseKey>Updated Date</SummaryListBaseKey>
                                         <SummaryListBaseValue>
-                                            {moment(terminologyArtifact.updatedDate?.toString()).format("Do-MMM-yyyy HH:mm")}
+                                            {moment(terminologyArtifact.updatedDate?.toString())
+                                                .format("Do-MMM-yyyy HH:mm")}
+                                        </SummaryListBaseValue>
+                                    </SummaryListBaseRow>
+
+                                    <SummaryListBaseRow classes={terminologyArtifact.isError ? "text-danger" : ""}>
+                                        <SummaryListBaseKey>Is Error</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{terminologyArtifact.isError ?
+                                            <FontAwesomeIcon icon={faCircleExclamation} className="text-danger" /> :
+                                            <span></span>}
                                         </SummaryListBaseValue>
                                     </SummaryListBaseRow>
                                 </SummaryListBase>
 
+                                <SummaryListBaseRow classes={terminologyArtifact.isError ? "text-danger" : ""}>
+                                    <SummaryListBaseKey>Error Message</SummaryListBaseKey>
+                                    <SummaryListBaseValue>{terminologyArtifact.errorMessage}</SummaryListBaseValue>
+                                </SummaryListBaseRow>
                             </CardBaseContent>
                         </CardBaseBody>
                     </CardBase>

@@ -221,6 +221,7 @@
     <TypeScriptCompile Remove="ClientApp\src\pages\subscriberAgreementPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactDetailPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\services\foundations\addressService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\documentService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\featureService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingAuditService.ts" />

@@ -49,6 +49,7 @@
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackings.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.optout.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.pds.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.resolvedAddresses.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.subscriberagreement.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.subscriberCredentials.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.suppliers.ts" />

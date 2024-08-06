@@ -102,7 +102,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
             var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
             foreach (var audit in audits)
             {

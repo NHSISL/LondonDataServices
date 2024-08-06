@@ -61,6 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.auditServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
+            this.downloadServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -107,6 +108,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
+            this.downloadServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -157,6 +159,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
+            this.downloadServiceMock.VerifyNoOtherCalls();
         }
     }
 }

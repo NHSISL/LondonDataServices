@@ -55,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to add or modify {exceptions.Count} secure data",
+                    $"Unable to add or modify {exceptions.Count} secure data item(s)",
                     exceptions);
 
             var failedSubscriberCredentialProcessingServiceException =
@@ -143,7 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to add or modify {exceptions.Count} secure data",
+                    $"Unable to add or modify {exceptions.Count} secure data item(s)",
                     exceptions);
 
             var failedSubscriberCredentialProcessingServiceException =
@@ -234,7 +234,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to add or modify {exceptions.Count} secure data",
+                    $"Unable to add or modify {exceptions.Count} secure data item(s)",
                     exceptions);
 
             var failedSubscriberCredentialProcessingServiceException =

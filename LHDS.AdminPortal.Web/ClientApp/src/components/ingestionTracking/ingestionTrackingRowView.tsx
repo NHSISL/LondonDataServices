@@ -57,30 +57,36 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                 {moment(ingestionTracking.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
             </TableBaseData>
 
-            <TableBaseData>
-                <Dropdown>
-                    <Dropdown.Toggle as={ButtonBase} variant="secondary" id="actions-dropdown" edit>
-                        Actions
-                    </Dropdown.Toggle>
 
-                    <Dropdown.Menu>
-                        <Dropdown.Item onClick={() => onRelanding(ingestionTracking)}
-                            style={{ color: "#121212" }}>
-                            <FontAwesomeIcon icon={faFileImport} title="Re-Land" /> Re-Land File
-                        </Dropdown.Item>
-                        <Dropdown.Item onClick={() => onEncryptedDownload(ingestionTracking)}
-                            style={{ color: "#121212" }}>
-                            <FontAwesomeIcon icon={faFileDownload} />  &nbsp;Download Encrypted File
-                        </Dropdown.Item>
-                        {ingestionTracking.decrypted && (
-                            <Dropdown.Item onClick={() => onDecryptedDownload(ingestionTracking)}
-                                style={{ color: "#121212" }}>
-                                <FontAwesomeIcon icon={faFileExport} />  Download Decrypted File
-                            </Dropdown.Item>
-                        )}
-                    </Dropdown.Menu>
-                </Dropdown>
-            </TableBaseData>
+            {(ingestionTracking.supplier?.canDownloadIngestionTracking
+                || ingestionTracking.supplier?.canRelandIngestionTracking) && (
+                <>
+                    <TableBaseData>
+                        <Dropdown>
+                            <Dropdown.Toggle as={ButtonBase} variant="secondary" id="actions-dropdown" edit>
+                                Actions
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu>
+                                <Dropdown.Item onClick={() => onRelanding(ingestionTracking)}
+                                    style={{ color: "#121212" }}>
+                                    <FontAwesomeIcon icon={faFileImport} title="Re-Land" /> Re-Land File
+                                </Dropdown.Item>
+                                <Dropdown.Item onClick={() => onEncryptedDownload(ingestionTracking)}
+                                    style={{ color: "#121212" }}>
+                                    <FontAwesomeIcon icon={faFileDownload} />  &nbsp;Download Encrypted File
+                                </Dropdown.Item>
+                                {ingestionTracking.decrypted && (
+                                    <Dropdown.Item onClick={() => onDecryptedDownload(ingestionTracking)}
+                                        style={{ color: "#121212" }}>
+                                        <FontAwesomeIcon icon={faFileExport} />  Download Decrypted File
+                                    </Dropdown.Item>
+                                )}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </TableBaseData>
+                </>
+            )}
 
             <TableBaseData>
                 <Link to={`/ingestionTrackingDetail/${ingestionTracking.id}`}>

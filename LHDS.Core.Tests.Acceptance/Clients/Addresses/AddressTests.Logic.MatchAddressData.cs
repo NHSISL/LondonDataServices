@@ -12,7 +12,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         [Fact(Skip = "Hassan to fix as part of his appcetance tests for UPRN")]
         public async Task ShouldMatchAddressDataAsync()
         {
-
+            await ValueTask.CompletedTask;
         }
     }
 }

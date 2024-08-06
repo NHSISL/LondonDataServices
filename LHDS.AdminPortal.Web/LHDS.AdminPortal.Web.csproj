@@ -241,6 +241,7 @@
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\optoutService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\pdsService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\foundations\resolvedAddressService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\subscriberAgreementService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\subscriberCredentialService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />

@@ -18,7 +18,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 {
     public partial class ResolvedAddressOrchestrationTests
     {
-
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
         public async Task
@@ -419,7 +418,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact(Skip = "come back to fix")]
+        [Fact]
         public async Task ShouldThrowAggregateServiceExceptionOnMatchErrorsInLoopAndLogItAsync()
         {
             // Given
@@ -433,6 +432,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    .Returns(randomResolvedAddresses.AsQueryable())
                    .Returns(new List<ResolvedAddress>().AsQueryable());
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             var innerFailedResolvedAddressOrchestrationServiceException =
                 new FailedResolvedAddressOrchestrationServiceException(
                     message: "Failed resolved address orchestration service error occurred, please contact support.",
@@ -440,7 +443,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             var innerResolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
-                    message: "Resolved address orchestration service errors occurred, please contact support.",
+                    message: "Resolved address orchestration service error occurred, please contact support.",
                     innerException: innerFailedResolvedAddressOrchestrationServiceException);
 
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
@@ -451,14 +454,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 processesingUnMatchedResolvedAddress.UpdatedDate = randomDateTimeOffset;
 
                 this.resolvedAddressProcessingServiceMock.Setup(processing =>
-                 processing.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
-                        .ThrowsAsync(serviceException);
+                    processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(
+                        processesingUnMatchedResolvedAddress))))
+                            .ThrowsAsync(serviceException);
 
                 ResolvedAddress UnMatchedResolvedAddressById = processesingUnMatchedResolvedAddress.DeepClone();
 
                 this.resolvedAddressProcessingServiceMock.Setup(processing =>
                     processing.RetrieveResolvedAddressByIdAsync(processesingUnMatchedResolvedAddress.Id))
-                            .ReturnsAsync(UnMatchedResolvedAddressById);
+                        .ReturnsAsync(UnMatchedResolvedAddressById);
 
                 exceptions.Add(innerResolvedAddressOrchestrationServiceException);
             }
@@ -483,8 +487,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
-               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                   await action);
+                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
+                    await action);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()
@@ -500,27 +504,28 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
             {
-                ResolvedAddress processesingVUnMatchedResolvedAddress = unMatchedResolvedAddress.DeepClone();
-                processesingVUnMatchedResolvedAddress.IsProcessing = true;
-                processesingVUnMatchedResolvedAddress.IsProcessed = false;
-                processesingVUnMatchedResolvedAddress.UpdatedDate = randomDateTimeOffset;
+                ResolvedAddress processesingUnMatchedResolvedAddress = unMatchedResolvedAddress.DeepClone();
+                processesingUnMatchedResolvedAddress.IsProcessing = true;
+                processesingUnMatchedResolvedAddress.IsProcessed = false;
+                processesingUnMatchedResolvedAddress.UpdatedDate = randomDateTimeOffset;
 
                 this.resolvedAddressProcessingServiceMock.Verify(processing =>
                     processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(
-                        processesingVUnMatchedResolvedAddress))),
+                        processesingUnMatchedResolvedAddress))),
                             Times.Once);
 
-                ResolvedAddress cleanedUnMatchedResolvedAddress = processesingVUnMatchedResolvedAddress.DeepClone();
+                ResolvedAddress cleanedUnMatchedResolvedAddress = processesingUnMatchedResolvedAddress.DeepClone();
 
                 this.resolvedAddressProcessingServiceMock.Verify(processing =>
                     processing.RetrieveResolvedAddressByIdAsync(cleanedUnMatchedResolvedAddress.Id),
-                            Times.Once);
+                        Times.Once);
 
                 cleanedUnMatchedResolvedAddress.IsProcessing = false;
                 cleanedUnMatchedResolvedAddress.UpdatedDate = randomDateTimeOffset;
 
                 this.resolvedAddressProcessingServiceMock.Verify(processing =>
-                    processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(cleanedUnMatchedResolvedAddress))),
+                    processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(
+                        cleanedUnMatchedResolvedAddress))),
                             Times.Once);
             };
 

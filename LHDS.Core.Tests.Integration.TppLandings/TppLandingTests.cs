@@ -110,6 +110,11 @@ namespace LHDS.Core.Tests.Integration.TppLandings
             return maybeSupplier;
         }
 
+        private async ValueTask<Supplier> GetTppSupplier()
+        {
+            return supplierService.RetrieveAllSuppliers()
+                .First(s => s.Name == "TPP");
+        }
         private async ValueTask<DataSet> SetupDataSet(Guid SupplierId)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;

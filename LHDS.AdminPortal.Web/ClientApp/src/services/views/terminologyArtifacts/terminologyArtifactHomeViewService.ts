@@ -15,13 +15,21 @@ type TerminologyArtifactHomeViewServiceResponse = {
 }
 
 export const TerminologyArtifactHomeViewService = {
-    useGetAllTerminologyArtifacts: (searchTerm?: string): TerminologyArtifactHomeViewServiceResponse => {
+    useGetAllTerminologyArtifacts: (searchTerm?: string, resourceType?: string): TerminologyArtifactHomeViewServiceResponse => {
         try 
         {
-            let query = `?$orderby=createdDate`;
+            let query = `?$orderby=isError desc, createdDate desc, version desc`;
 
             if (searchTerm) {
-                query = query + `&$filter=contains(name,'${searchTerm}')`;
+                query += `&$filter=contains(name,'${searchTerm}')`;
+            }
+
+            if (resourceType && resourceType !== "all") {
+                if (query.includes('&$filter=')) {
+                    query += ` and ResourceType eq '${resourceType}'`;
+                } else {
+                    query += `&$filter=ResourceType eq '${resourceType}'`;
+                }
             }
 
             const response = terminologyArtifactService.useGetAllTerminologyArtifactsPages(query);
@@ -48,6 +56,8 @@ export const TerminologyArtifactHomeViewService = {
                                 terminologyArtifact.lastUpdated,
                                 terminologyArtifact.isCore,
                                 terminologyArtifact.isDownloaded,
+                                terminologyArtifact.isError,
+                                terminologyArtifact.errorMessage,
                                 terminologyArtifact.createdBy,
                                 terminologyArtifact.createdDate,
                                 terminologyArtifact.updatedBy,

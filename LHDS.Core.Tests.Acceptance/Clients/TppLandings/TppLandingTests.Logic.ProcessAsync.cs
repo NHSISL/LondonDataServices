@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Xunit;
@@ -30,7 +31,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             Stream randomStream = new MemoryStream(randomBytes);
             Stream inputStream = randomStream;
             string inputFileName = GetRandomFileName();
-
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
             await this.supplierService.AddSupplierAsync(landingSupplier);
             await this.dataSetService.AddDataSetAsync(activeDataSet);
@@ -46,8 +46,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             IngestionTracking ingestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
-            var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
+            IQueryable<IngestionTrackingAudit> audits = 
+                this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
             foreach (var audit in audits)
             {
@@ -74,7 +75,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             string randomHash = GetRandomString();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
             Stream inputStream = new MemoryStream(documentData);
-
             Guid supplierId = Guid.NewGuid();
             Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
             await this.supplierService.AddSupplierAsync(landingSupplier);
@@ -101,8 +101,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             IngestionTracking ingestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
-            var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
+            IQueryable<IngestionTrackingAudit> audits =
+                this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
             foreach (var audit in audits)
             {
@@ -154,8 +155,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             IngestionTracking ingestionTracking =
                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
-            var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
+            IQueryable<IngestionTrackingAudit> audits =
+                this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
             foreach (var audit in audits)
             {

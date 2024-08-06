@@ -21,10 +21,10 @@ using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.Decryptions;
-using LHDS.Core.Services.Processings.Downloads;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
     public partial class DecryptionOrchestrationTests
     {
         private readonly Mock<IDocumentService> documentServiceMock;
-        private readonly Mock<IDownloadProcessingService> downloadProcessingServiceMock;
+        private readonly Mock<IDownloadService> downloadServiceMock;
         private readonly Mock<ICryptographyService> cryptographyServiceMock;
         private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock;
         private readonly Mock<IIngestionTrackingAuditService> auditServiceMock;
@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         {
             this.output = output;
             documentServiceMock = new Mock<IDocumentService>();
-            downloadProcessingServiceMock = new Mock<IDownloadProcessingService>();
+            downloadServiceMock = new Mock<IDownloadService>();
             cryptographyServiceMock = new Mock<ICryptographyService>();
             ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();
             auditServiceMock = new Mock<IIngestionTrackingAuditService>();
@@ -68,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             this.decryptionOrchestrationService = new DecryptionOrchestrationService(
                 documentService: documentServiceMock.Object,
-                downloadProcessingService: downloadProcessingServiceMock.Object,
+                downloadService: downloadServiceMock.Object,
                 cryptographyService: cryptographyServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
                 auditService: auditServiceMock.Object,

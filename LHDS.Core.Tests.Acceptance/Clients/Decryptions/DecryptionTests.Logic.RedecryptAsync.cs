@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             decryptedIngestionTracking.Decrypted.Should().BeTrue();
 
             var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
-                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
 
             foreach (var audit in audits)
             {

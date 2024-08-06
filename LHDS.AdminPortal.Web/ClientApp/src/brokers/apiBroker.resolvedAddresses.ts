@@ -48,7 +48,7 @@ class ResolvedAddressBroker {
             .then(result => new ResolvedAddress(result.data));
     }
 
-    async PutResolvedAddressAsync(address: Address) {
+    async PutResolvedAddressAsync(resolvedAddress: ResolvedAddress) {
         return await this.apiBroker.PutAsync(this.relativeResolvedAddressUrl, resolvedAddress)
             .then(result => new ResolvedAddress(result.data));
     }

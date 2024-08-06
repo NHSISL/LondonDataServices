@@ -8,7 +8,7 @@ export class Address {
     public departmentName?: string;
     public subBuildingName?: string;
     public buildingName?: string;
-    public BuildingNumber?: string;
+    public buildingNumber?: string;
     public dependentThoroughfare?: string;
     public thoroughfare?: string;
     public doubleDependentLocality?: string;
@@ -30,7 +30,7 @@ export class Address {
         this.departmentName = address.departmentName || "";
         this.subBuildingName = address.subBuildingName || "";
         this.buildingName = address.buildingName || "";
-        this.BuildingNumber = address.BuildingNumber || "";
+        this.buildingNumber = address.BuildingNumber || "";
         this.dependentThoroughfare = address.dependentThoroughfare || "";
         this.thoroughfare = address.thoroughfare || "";
         this.doubleDependentLocality = address.doubleDependentLocality || "";

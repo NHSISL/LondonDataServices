@@ -113,6 +113,14 @@ export const NavigationBar: FunctionComponent = () => {
                     </li>
                 </FeatureSwitch>
 
+                <FeatureSwitch feature={FeatureDefinitions.Address}>
+                    <li className="">
+                        <SecuredComponents allowedRoles={securityPoints.address.view}>
+                            <SecuredLink icon="address" to="/address">Address OPD</SecuredLink>
+                        </SecuredComponents>
+                    </li>
+                </FeatureSwitch>
+
                 {submenuItems.map((item, index) => (
                     <Submenu key={index} items={item} allowedRoles={item.allowedRoles} />
                 ))}

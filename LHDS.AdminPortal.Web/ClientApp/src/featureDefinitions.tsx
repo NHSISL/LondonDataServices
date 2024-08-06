@@ -6,4 +6,5 @@ export enum FeatureDefinitions {
     Pds,
     TerminologyArtifact,
     SubscriberAgreement,
+    Address
 }

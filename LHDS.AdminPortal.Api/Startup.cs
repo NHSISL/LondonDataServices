@@ -10,6 +10,7 @@ using Azure.Core.Extensions;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
@@ -20,6 +21,7 @@ using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
+using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataTypes;
@@ -37,6 +39,8 @@ using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Providers.Downloads.MockDownloads;
 using LHDS.Core.Services.Coordinations.Decryptions;
+using LHDS.Core.Services.Foundations.Addresses;
+using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
@@ -131,15 +135,13 @@ namespace LHDS.AdminPortal.Api
             });
 
             services.AddDbContext<StorageBroker>();
+            AddClients(services, this.Configuration);
             AddProviders(services, this.Configuration);
             AddBrokers(services, this.Configuration);
             AddFoundationServices(services, this.Configuration);
             AddOrchestrationServices(services, this.Configuration);
             AddProcessingServices(services, this.Configuration);
             AddCoordinationServices(services, this.Configuration);
-            services.AddEmisLandingClient(this.Configuration);
-            services.AddDecryptionClient(this.Configuration);
-            services.UseFtpDownloadProvider(this.Configuration, builder => builder.AddFtpDownloadProvider());
 
             services.AddSwaggerGen(options =>
             {
@@ -190,6 +192,17 @@ namespace LHDS.AdminPortal.Api
                 endpoints.MapRazorPages();
             });
         }
+        private static void AddClients(
+           IServiceCollection services,
+           IConfiguration configuration)
+        {
+            services.AddTransient<IAuditClient, AuditClient>();
+            services.AddEmisLandingClient(configuration);
+            services.AddDecryptionClient(configuration);
+            services.UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider());
+
+        }
+
 
         private static void AddProviders(IServiceCollection services, IConfiguration configuration)
         {
@@ -208,6 +221,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<ISecureDataService, SecureDataService>();
+            services.AddTransient<IAuditBroker, AuditBroker>();
         }
 
         private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)
@@ -227,7 +241,8 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IDataSetService, DataSetService>();
             services.AddTransient<ITerminologyArtifactService, TerminologyArtifactService>();
             services.AddTransient<ITerminologyPollService, TerminologyPollService>();
-
+            services.AddTransient<IAddressService, AddressService>();
+            services.AddTransient<IAuditService, AuditService>();
 
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
@@ -343,6 +358,7 @@ namespace LHDS.AdminPortal.Api
             builder.EntitySet<TerminologyArtifact>("TerminologyArtifacts");
             builder.EntitySet<SubscriberCredential>("SubscriberCredentials");
             builder.EntitySet<SubscriberAgreement>("SubscriberAgreements");
+            builder.EntitySet<Address>("Addresses");
             builder.EnableLowerCamelCase();
 
             return builder.GetEdmModel();

@@ -15,7 +15,7 @@ type AddressHomeViewServiceResponse = {
 }
 
 export const AddressHomeViewService = {
-    useGetAllAddresses: (searchTerm?: string, resourceType?: string): AddressHomeViewServiceResponse => {
+    useGetAllAddresses: (searchTerm?: string): AddressHomeViewServiceResponse => {
         try 
         {
             let query = `?$orderby=createdDate desc`;
@@ -47,7 +47,7 @@ export const AddressHomeViewService = {
                                 address.departmentName,
                                 address.subBuildingName,
                                 address.buildingName,
-                                address.BuildingNumber,
+                                address.buildingNumber,
                                 address.dependentThoroughfare,
                                 address.thoroughfare,
                                 address.doubleDependentLocality,

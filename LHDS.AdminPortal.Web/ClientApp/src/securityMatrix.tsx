@@ -30,6 +30,9 @@ const securityPoints = {
     terminologyArtifact: {
         view: ["ISL.LDS.AdminSpa.TerminologyArtifact", "ISL.LDS.AdminSpa.Administrators", "ISL.LDS.AdminSpa.ReadOnly"]
     },
+    address: {
+        view: ["ISL.LDS.AdminSpa.Address", "ISL.LDS.AdminSpa.Administrators", "ISL.LDS.AdminSpa.ReadOnly"]
+    },
     subscriberAgreement: {
         view: ["ISL.LDS.AdminSpa.Administrators", "ISL.LDS.AdminSpa.ReadOnly"],
         add: ["ISL.LDS.AdminSpa.Administrators"],

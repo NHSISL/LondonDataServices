@@ -55,6 +55,9 @@
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.terminologyArtifacts.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\toastBroker.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\addresses\addressRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\addresses\addressRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\addresses\addressTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\ingestionTrackingTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\BreadCrumb\BreadCrumbBase.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Content\ContentBase.tsx" />
@@ -203,6 +206,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\subscriberCredentials\subscriberCredentialView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\terminologyArtifacts\terminologyArtifactsView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\addressPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetsListPage.tsx" />

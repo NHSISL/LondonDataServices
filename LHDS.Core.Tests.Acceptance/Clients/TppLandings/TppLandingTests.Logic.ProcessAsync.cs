@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -46,7 +47,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             IngestionTracking ingestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
-            IQueryable<IngestionTrackingAudit> audits = 
+            IQueryable<IngestionTrackingAudit> audits =
                 this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                     .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
@@ -101,9 +102,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             IngestionTracking ingestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
-            IQueryable<IngestionTrackingAudit> audits =
+            List<IngestionTrackingAudit> audits =
                 this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
 
             foreach (var audit in audits)
             {

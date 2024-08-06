@@ -106,7 +106,6 @@ const AddressDetailCardView: FunctionComponent<AddressDetailCardViewProps> = (pr
                                                 .format("Do-MMM-yyyy HH:mm")}
                                         </SummaryListBaseValue>
                                     </SummaryListBaseRow>
-
                                     <SummaryListBaseRow>
                                         <SummaryListBaseKey>Updated Date</SummaryListBaseKey>
                                         <SummaryListBaseValue>

@@ -171,8 +171,10 @@
     <TypeScriptCompile Remove="ClientApp\src\hooks\validationMessages.ts" />
     <TypeScriptCompile Remove="ClientApp\src\hooks\validationProcessor.ts" />
     <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\models\addresses\address.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\addresses\addressHomeView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\addresses\resolvedAddress.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\addresses\resolvedAddressHomeView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\resolvedAddresses\address.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\resolvedAddresses\addressHomeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataSetSpecifications\dataSetSpecification.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataSets\dataSet.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataTypes\dataType.ts" />
@@ -204,6 +206,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\objectColumns\objectColumnView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\optOuts\optOutView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\pds\pdsView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\resolvedAddresses\resolvedAddressView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\specificationObjects\specificationObjectView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\subscriberAgreements\subscriberAgreement.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\subscriberCredentials\subscriberCredentialView.ts" />

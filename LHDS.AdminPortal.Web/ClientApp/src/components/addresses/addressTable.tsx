@@ -63,7 +63,7 @@ const AddressTable: FunctionComponent = () => {
             <CardBase>
                 <CardBaseBody>
                     <CardBaseTitle>
-                        <FontAwesomeIcon icon={faDatabase} className="me-2" /> Addresses OPD
+                        <FontAwesomeIcon icon={faDatabase} className="me-2" /> Addresses (Ordinance Database)
                     </CardBaseTitle>
                     <CardBaseContent>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>

@@ -116,7 +116,7 @@ export const NavigationBar: FunctionComponent = () => {
                 <FeatureSwitch feature={FeatureDefinitions.Address}>
                     <li className="">
                         <SecuredComponents allowedRoles={securityPoints.address.view}>
-                            <SecuredLink icon="address" to="/address">Address OPD</SecuredLink>
+                            <SecuredLink icon="address" to="/address">Address (Ordinance)</SecuredLink>
                         </SecuredComponents>
                     </li>
                 </FeatureSwitch>

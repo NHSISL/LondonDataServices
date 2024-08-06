@@ -5,6 +5,7 @@ import { Address } from "../../models/addresses/address";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import ButtonBase from "../bases/buttons/ButtonBase";
+import { Link } from "react-router-dom";
 
 type AddressRowProps = {
     address: Address;
@@ -62,7 +63,11 @@ const AddressRowView: FunctionComponent<AddressRowProps> = (props) => {
                 </span>
             </TableBaseData>
             <TableBaseData classes="text-center">
-                <ButtonBase onClick={() => { }} add> Details </ButtonBase>
+                <Link to={`/addressDetail/${address.id}`}>
+                    {
+                        <ButtonBase onClick={() => { }} add> Details </ButtonBase>
+                    }
+                </Link>
             </TableBaseData>
 
         </TableBaseRow>

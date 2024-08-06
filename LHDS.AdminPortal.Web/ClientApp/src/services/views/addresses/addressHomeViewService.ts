@@ -21,7 +21,27 @@ export const AddressHomeViewService = {
             let query = `?$orderby=createdDate desc`;
 
             if (searchTerm) {
-                query += `&$filter=contains(buildingName,'${searchTerm}')`;
+                const fields = [
+                    'uprn',
+                    'upsn',
+                    'organisationName',
+                    'departmentName',
+                    'subBuildingName',
+                    'buildingName',
+                    'buildingNumber',
+                    'dependentThoroughfare',
+                    'thoroughfare',
+                    'doubleDependentLocality',
+                    'dependentLocality',
+                    'postTown',
+                    'postCode'
+                ];
+
+                const filterConditions = fields
+                    .map(field => `contains(${field},'${searchTerm}')`)
+                    .join(' or ');
+
+                query = query + `&$filter=${filterConditions}`;
             }
 
             const response = addressService.useRetrieveAllAddressPages(query);

@@ -15,7 +15,27 @@ export const addressViewService = {
             let query = '?$orderby=name';
 
             if (searchTerm) {
-                query = query + `&$filter=contains(buildingName,'${searchTerm}')`;
+                const fields = [
+                    'uprn',
+                    'upsn',
+                    'organisationName',
+                    'departmentName',
+                    'subBuildingName',
+                    'buildingName',
+                    'buildingNumber',
+                    'dependentThoroughfare',
+                    'thoroughfare',
+                    'doubleDependentLocality',
+                    'dependentLocality',
+                    'postTown',
+                    'postCode'
+                ];
+
+                const filterConditions = fields
+                    .map(field => `contains(${field},'${searchTerm}')`)
+                    .join(' or ');
+
+                query = query + `&$filter=${filterConditions}`;
             }
 
             const response = addressService.useRetrieveAllAddresses(query);

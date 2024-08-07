@@ -9,6 +9,7 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Extensions.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Coordinations.Decryptions;
@@ -133,6 +134,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     message: "Decryption orchestration dependency validation error occurred, " +
                         "please try again.",
                     innerException),
+
+                new IngresOrchestrationValidationException(
+                    message: "Ingres orchestration validation error occured, please try again.",
+                    innerException),
+
+                new IngresOrchestrationDependencyValidationException(
+                    message: "Ingres orchestration dependency validation error occurred, " +
+                        "please try again.",
+                    innerException),
             };
         }
 
@@ -158,6 +168,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
                 new DecryptionOrchestrationServiceException(
                     message: "Decryption orchestration service error occurred, please contact support.",
+                    innerException),
+
+                new IngresOrchestrationDependencyException(
+                    message: "Ingres orchestration dependency error occured, please try again.",
+                    innerException),
+
+                new IngresOrchestrationServiceException(
+                    message: "Ingres orchestration service error occurred, please contact support.",
                     innerException)
             };
         }

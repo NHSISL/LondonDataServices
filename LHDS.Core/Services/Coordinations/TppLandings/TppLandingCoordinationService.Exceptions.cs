@@ -5,6 +5,8 @@
 using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Coordinations.TppLandings.Exceptions;
+using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
+using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Coordinations.TppLandings
@@ -22,6 +24,56 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
             catch (InvalidArgumentTppLandingCoordinationException invalidArgumentTppLandingCoordinationException)
             {
                 throw CreateAndLogValidationException(invalidArgumentTppLandingCoordinationException);
+            }
+            catch (TppLandingOrchestrationValidationException
+                tppLandingOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(tppLandingOrchestrationValidationException);
+            }
+            catch (TppLandingOrchestrationDependencyValidationException
+                tppLandingOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    tppLandingOrchestrationDependencyValidationException);
+            }
+            catch (IngresOrchestrationValidationException
+                ingresOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ingresOrchestrationValidationException);
+            }
+            catch (IngresOrchestrationDependencyValidationException
+                ingresOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ingresOrchestrationDependencyValidationException);
+            }
+            catch (TppLandingOrchestrationDependencyException
+                tppLandingOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(tppLandingOrchestrationDependencyException);
+            }
+            catch (TppLandingOrchestrationServiceException
+                tppLandingOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(tppLandingOrchestrationServiceException);
+            }
+            catch (IngresOrchestrationDependencyException
+                ingresOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(ingresOrchestrationDependencyException);
+            }
+            catch (IngresOrchestrationServiceException
+                ingresOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(ingresOrchestrationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedTppLandingCoordinationServiceException =
+                    new FailedTppLandingCoordinationServiceException(
+                        message: "Failed TPP landing coordination service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedTppLandingCoordinationServiceException);
             }
         }
 

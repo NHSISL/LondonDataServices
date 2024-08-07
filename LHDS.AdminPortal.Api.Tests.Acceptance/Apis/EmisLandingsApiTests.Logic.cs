@@ -22,6 +22,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         [Fact(Skip = "Hassan to fix")]
         public async Task ShouldReLandDocumentByFileNameForExistingIngestionTrackingAsync()
         {
+            await ValueTask.CompletedTask;
+
             ////Given
             //SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             //SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;
@@ -75,6 +77,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         [Fact(Skip = "Hassan to fix")]
         public async Task ShouldLandNewDocumentByFileNameForExistingIngestionTrackingAsync()
         {
+            await ValueTask.CompletedTask;
+
             ////Given
             //SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             //SubscriberCredential inputSubscriberCredential = randomSubscriberCredential;

@@ -214,7 +214,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                       Id = this.identifierBroker.GetIdentifier(),
                       FileName = filename,
                       SourceFolderPath = sourceFolderPath,
-                      SupplierId = landingConfiguration.LandingSupplierId,
+                      SupplierId = supplierId,
                       DataSetSpecificationId = retrievedDataSetSpecification.Id,
                       EncryptedFileName = encryptedFileName,
                       DecryptedFileName = decryptedFileName,
@@ -347,7 +347,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw new NotFoundDocumentProcessingException(
                     $"No active dataset specification found for supplier id: " +
-                    $"{landingConfiguration.LandingSupplierId}");
+                    $"{supplierId}");
             }
 
             string[] splitFileName = fileName.Split('/');

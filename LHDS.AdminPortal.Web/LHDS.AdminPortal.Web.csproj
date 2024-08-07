@@ -135,10 +135,13 @@
     <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCardView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressDetailCardEdit.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressDetailCardView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressSetErrors.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressValidation.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCardEdit.tsx" />

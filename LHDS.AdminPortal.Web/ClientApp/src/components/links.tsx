@@ -1,7 +1,7 @@
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css'
-import { faHome, faDatabase, faCog, faMapMarker, faUserLock, faSitemap } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faDatabase, faCog, faMapMarker, faUserLock, faSitemap, faMapLocationDot, faEarthEurope } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { ReactElement } from 'react';
 import { NavItem, NavLink } from 'react-bootstrap';
@@ -14,7 +14,9 @@ const iconMapping: Record<string, IconProp | undefined> = {
     config: faCog,
     address: faMapMarker,
     optOut: faUserLock,
-    terminology: faSitemap
+    terminology: faSitemap,
+    resolvedAddress: faMapLocationDot,
+    ordanances: faEarthEurope
 };
 
 type PublicLinkParameters = {

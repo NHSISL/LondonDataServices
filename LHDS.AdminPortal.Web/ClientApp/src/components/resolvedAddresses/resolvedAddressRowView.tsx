@@ -46,10 +46,10 @@ const ResolvedAddressRowView: FunctionComponent<ResolvedAddressRowProps> = (prop
                 </span>
             </TableBaseData>
             <TableBaseData>
-                <span style={{ fontSize: '12px' }}>{resolvedAddress.unstructuredPostalAddress}</span>
+                <span style={{ fontSize: '14px' }}>{resolvedAddress.unstructuredPostalAddress}</span>
             </TableBaseData>
             <TableBaseData>
-                <span style={{ fontSize: '12px' }}>{concateAddresses(resolvedAddress)}</span>
+                <span style={{ fontSize: '14px' }}>{concateAddresses(resolvedAddress)}</span>
             </TableBaseData>
             <TableBaseData classes="text-center">
                 <span>

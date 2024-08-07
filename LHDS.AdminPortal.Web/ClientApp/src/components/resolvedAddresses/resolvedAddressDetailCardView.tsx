@@ -12,17 +12,24 @@ import GridBase from "../bases/layouts/Grid/GridBase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { ResolvedAddressView } from "../../models/views/components/resolvedAddresses/resolvedAddressView";
+import { SecuredComponents } from "../links";
+import ButtonBase from "../bases/buttons/ButtonBase";
+import securityPoints from "../../securityMatrix";
 
 interface ResolvedAddressDetailCardViewProps {
     resolvedAddress: ResolvedAddressView;
     onRefresh: (resolvedAddress: ResolvedAddressView) => void;
     onUpdate: (resolvedAddress: ResolvedAddressView) => void;
+    mode: string;
+    onModeChange: (value: string) => void;
 }
 
 const ResolvedAddressDetailCardView: FunctionComponent<ResolvedAddressDetailCardViewProps> = (props) => {
     const {
         resolvedAddress,
-        onUpdate
+        onUpdate,
+        mode,
+        onModeChange
     } = props;
 
     return (
@@ -161,6 +168,9 @@ const ResolvedAddressDetailCardView: FunctionComponent<ResolvedAddressDetailCard
                                         </SummaryListBaseValue>
                                     </SummaryListBaseRow>
                                 </SummaryListBase>
+                                <SecuredComponents allowedRoles={securityPoints.resolvedAddress.edit}>
+                                    <ButtonBase onClick={() => onModeChange('EDIT')} edit>Edit</ButtonBase>
+                                </SecuredComponents>
                             </CardBaseContent>
                         </CardBaseBody>
                     </CardBase>

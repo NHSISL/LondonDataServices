@@ -34,7 +34,9 @@ const securityPoints = {
         view: ["ISL.LDS.AdminSpa.Address", "ISL.LDS.AdminSpa.Administrators", "ISL.LDS.AdminSpa.ReadOnly"]
     },
     resolvedAddress: {
-        view: ["ISL.LDS.AdminSpa.ResolvedAddress", "ISL.LDS.AdminSpa.Administrators", "ISL.LDS.AdminSpa.ReadOnly"]
+        view: ["ISL.LDS.AdminSpa.ResolvedAddress", "ISL.LDS.AdminSpa.Administrators", "ISL.LDS.AdminSpa.ReadOnly"],
+        add: ["ISL.LDS.AdminSpa.Administrators"],
+        edit: ["ISL.LDS.AdminSpa.Administrators"],
     },
     subscriberAgreement: {
         view: ["ISL.LDS.AdminSpa.Administrators", "ISL.LDS.AdminSpa.ReadOnly"],

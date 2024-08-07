@@ -92,3 +92,11 @@ a.linkVisited:visited {
     font-size: 12px;
     color: #ffffff;
 }
+
+hr {
+    margin: 0.3rem 0 !important;
+    color: inherit;
+    border: 0;
+    border-top: 1px solid #fff;
+    opacity: .25;
+}

@@ -1,5 +1,5 @@
 import { Guid } from "guid-typescript";
-import React, { FunctionComponent} from "react";
+import React, { FunctionComponent, useEffect, useState} from "react";
 import { resolvedAddressViewService } from "../../services/views/resolvedAddresses/resolvedAddressViewService";
 import { ResolvedAddressView } from "../../models/views/components/resolvedAddresses/resolvedAddressView";
 import ResolvedAddressDetailCard from "./resolvedAddressDetailCard";
@@ -15,6 +15,9 @@ const ResolvedAddressDetail: FunctionComponent<ResolvedAddressDetailProps> = (pr
         children
     } = props;
 
+    const [resolvedAddress, setResolvedAddress] = useState<ResolvedAddressView>();
+    const [mode, setMode] = useState<string>('VIEW');
+
      const { mappedResolvedAddress: resolvedAddressRetrieved } =
          resolvedAddressViewService.useGetResolvedAddressById(Guid.parse(resolvedAddressId))
 
@@ -26,6 +29,14 @@ const ResolvedAddressDetail: FunctionComponent<ResolvedAddressDetailProps> = (pr
         return updateResolvedAddress.mutateAsync(resolvedAddress);
     };
 
+    useEffect(() => {
+        if (resolvedAddressId !== "" && resolvedAddressRetrieved !== undefined) {
+            setResolvedAddress(resolvedAddressRetrieved);
+            setMode('VIEW');
+        }
+    }, [resolvedAddressId, resolvedAddressRetrieved]);
+
+
     return (
         <div>
             {resolvedAddressRetrieved !== undefined && (
@@ -33,6 +44,7 @@ const ResolvedAddressDetail: FunctionComponent<ResolvedAddressDetailProps> = (pr
                     <ResolvedAddressDetailCard
                         key={resolvedAddressRetrieved.id.toString()}
                         resolvedAddress={resolvedAddressRetrieved}
+                        mode={mode}
                         onRefresh={handleRefresh}
                         onUpdate={handleUpdate}>                   
                         {children}

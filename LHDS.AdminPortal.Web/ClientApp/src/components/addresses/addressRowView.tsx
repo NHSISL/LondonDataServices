@@ -48,14 +48,14 @@ const AddressRowView: FunctionComponent<AddressRowProps> = (props) => {
             <TableBaseData>
                 <span>{address.postCode}</span>
             </TableBaseData>
-            <TableBaseData>
+            <TableBaseData classes="text-center">
                 <span>
                     {address.isProcessing ?
                         <FontAwesomeIcon icon={faCheck} className="text-success" title="processing" /> :
                         <FontAwesomeIcon icon={faTimes} className="text-danger" title="not processing" />}
                 </span>
             </TableBaseData>
-            <TableBaseData>
+            <TableBaseData classes="text-center">
                 <span>
                     {address.isSynced ?
                         <FontAwesomeIcon icon={faCheck} className="text-success" title="processing" /> :

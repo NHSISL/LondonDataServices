@@ -81,9 +81,11 @@ export const NavigationBar: FunctionComponent = () => {
     return (
         <>
             <ul className="sidebar-nav">
-                <li className="mt-4">
+                <li className="mt-2">
                     <SecuredLink icon="faHome" to="/">Home</SecuredLink>
                 </li>
+
+                <hr />
 
                 <FeatureSwitch feature={FeatureDefinitions.IngestionTracking}>
                     <li className="">
@@ -93,17 +95,23 @@ export const NavigationBar: FunctionComponent = () => {
                     </li>
                 </FeatureSwitch>
 
+                <hr />
+
                 <li className="">
                     <SecuredComponents allowedRoles={securityPoints.optOut.view}>
                         <SecuredLink icon="optOut" to="/optOutSearch">Patient Opt Out</SecuredLink>
                     </SecuredComponents>
                 </li>
 
+                <hr />
+
                 <li className="">
                     <SecuredComponents allowedRoles={securityPoints.pds.view}>
                         <SecuredLink icon="address" to="/pds">Patient Demographic Search</SecuredLink>
                     </SecuredComponents>
                 </li>
+
+                <hr />
 
                 <FeatureSwitch feature={FeatureDefinitions.TerminologyArtifact}>
                     <li className="">
@@ -113,21 +121,27 @@ export const NavigationBar: FunctionComponent = () => {
                     </li>
                 </FeatureSwitch>
 
+                <hr />
+                <span style={{ color: 'white', marginLeft: '10px' }}>
+                    <strong>Addresses</strong>
+                </span>
                 <FeatureSwitch feature={FeatureDefinitions.Address}>
                     <li className="">
                         <SecuredComponents allowedRoles={securityPoints.address.view}>
-                            <SecuredLink icon="address" to="/address">Address (Ordinance)</SecuredLink>
+                            <SecuredLink icon="ordanances" to="/address">Ordanance Addresses</SecuredLink>
+                        </SecuredComponents>
+                    </li>
+                </FeatureSwitch>
+                
+                <FeatureSwitch feature={FeatureDefinitions.ResolvedAddress}>
+                    <li className="">
+                        <SecuredComponents allowedRoles={securityPoints.resolvedAddress.view}>
+                            <SecuredLink icon="resolvedAddress" to="/resolvedAddress">Resolved Addresses</SecuredLink>
                         </SecuredComponents>
                     </li>
                 </FeatureSwitch>
 
-                <FeatureSwitch feature={FeatureDefinitions.ResolvedAddress}>
-                    <li className="">
-                        <SecuredComponents allowedRoles={securityPoints.resolvedAddress.view}>
-                            <SecuredLink icon="address" to="/resolvedAddress">Resolved Addresses</SecuredLink>
-                        </SecuredComponents>
-                    </li>
-                </FeatureSwitch>
+                <hr />
 
                 {submenuItems.map((item, index) => (
                     <Submenu key={index} items={item} allowedRoles={item.allowedRoles} />

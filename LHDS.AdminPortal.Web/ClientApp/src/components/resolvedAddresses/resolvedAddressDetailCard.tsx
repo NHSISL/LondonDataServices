@@ -1,13 +1,15 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useState } from "react";
 import CardBase from "../bases/components/Card/CardBase";
 import CardBaseBody from "../bases/components/Card/CardBase.Body";
 import CardBaseContent from "../bases/components/Card/CardBase.Content";
 import CardBaseTitle from "../bases/components/Card/CardBase.Title";
 import { ResolvedAddressView } from "../../models/views/components/resolvedAddresses/resolvedAddressView";
 import ResolvedAddressDetailCardView from "./resolvedAddressDetailCardView";
+import ResolvedAddressDetailCardEdit from "./resolvedAddressDetailCardEdit";
 
 interface ResolvedAddressDetailCardProps {
     resolvedAddress: ResolvedAddressView;
+    mode: string;
     children?: React.ReactNode;
     onRefresh: (resolvedAddress: ResolvedAddressView) => void;
     onUpdate: (resolvedAddress: ResolvedAddressView,) => void;
@@ -16,10 +18,18 @@ interface ResolvedAddressDetailCardProps {
 const ResolvedAddressDetailCard: FunctionComponent<ResolvedAddressDetailCardProps> = (props) => {
     const {
         resolvedAddress,
+        mode,
         children,
         onRefresh,
         onUpdate
     } = props;
+
+    const [displayMode, setDisplayMode] = useState<string>(mode);
+    const [apiError, setApiError] = useState<any>({});
+
+    const handleModeChange = (value: string) => {
+        setDisplayMode(value);
+    };
 
     const handlRefresh = async (resolvedAddress: ResolvedAddressView) => {
         await onRefresh(resolvedAddress);
@@ -29,19 +39,38 @@ const ResolvedAddressDetailCard: FunctionComponent<ResolvedAddressDetailCardProp
         await onUpdate(resolvedAddress);
     };
 
+    const handleCancel = () => {
+        setApiError({});
+    }
+
     return (
         <div>
             <CardBase>
                 <CardBaseBody>
                     <CardBaseTitle>
-                        Address Details
+                        Resolved Address Details
                     </CardBaseTitle>
                     <CardBaseContent>
-                        <ResolvedAddressDetailCardView
-                            resolvedAddress={resolvedAddress}
-                            onRefresh={handlRefresh}
-                            onUpdate={handleUpdate}
-                        />
+
+                        {(displayMode === "VIEW" || displayMode === "CONFIRMDELETE") && (
+                            <ResolvedAddressDetailCardView
+                                resolvedAddress={resolvedAddress}
+                                onRefresh={handlRefresh}
+                                onUpdate={handleUpdate}
+                                mode={displayMode}
+                                onModeChange={handleModeChange}
+                                />
+                        )}
+                        {(displayMode === "EDIT" || displayMode === "ADD") && (
+                            <ResolvedAddressDetailCardEdit
+                                onModeChange={handleModeChange}
+                                onUpdate={handleUpdate}
+                                onCancel={handleCancel}
+                                resolvedAddress={resolvedAddress}
+                                mode={displayMode}
+                                apiError={apiError}
+                            />
+                        )}
 
                         {children !== undefined && (
                             <>

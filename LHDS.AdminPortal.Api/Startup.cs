@@ -30,6 +30,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.PdsAudits;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.Suppliers;
@@ -51,6 +52,7 @@ using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.PdsAudits;
+using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Foundations.SecureDatas;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
@@ -200,7 +202,6 @@ namespace LHDS.AdminPortal.Api
             services.AddEmisLandingClient(configuration);
             services.AddDecryptionClient(configuration);
             services.UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider());
-
         }
 
 
@@ -243,6 +244,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<ITerminologyPollService, TerminologyPollService>();
             services.AddTransient<IAddressService, AddressService>();
             services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IResolvedAddressService, ResolvedAddressService>();
 
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
@@ -359,6 +361,7 @@ namespace LHDS.AdminPortal.Api
             builder.EntitySet<SubscriberCredential>("SubscriberCredentials");
             builder.EntitySet<SubscriberAgreement>("SubscriberAgreements");
             builder.EntitySet<Address>("Addresses");
+            builder.EntitySet<ResolvedAddress>("ResolvedAddresses");
             builder.EnableLowerCamelCase();
 
             return builder.GetEdmModel();

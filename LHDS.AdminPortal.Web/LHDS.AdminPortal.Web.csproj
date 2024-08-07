@@ -133,6 +133,12 @@
     <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\resolvedAddresses\resolvedAddressTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCardEdit.tsx" />
@@ -230,6 +236,8 @@
     <TypeScriptCompile Remove="ClientApp\src\pages\ownershipsPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\PdsSearch.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\PdsUpload.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\resolvedAddressDetailPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\resolvedAddressPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\subscriberAgreementDetailPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\subscriberAgreementPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactDetailPage.tsx" />

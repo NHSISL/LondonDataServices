@@ -9,6 +9,7 @@ using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
@@ -58,7 +59,16 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IQueryable<ResolvedAddress>> GetAllResolvedAddresses()
+#if !DEBUG
+        [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 5000)]
+#endif
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.Address, ISL.LDS.AdminApi.ReadOnly")]
+#endif
+        public ActionResult<IQueryable<ResolvedAddress>> Get()
         {
             try
             {

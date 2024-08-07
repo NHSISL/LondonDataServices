@@ -19,17 +19,23 @@ export const resolvedAddressViewService = {
                 const fields = [
                     'uprn',
                     'upsn',
-                    'organisationName',
-                    'departmentName',
-                    'subBuildingName',
+                    'unstructuredPostalAddress',
+                    'addressFormatQuality',
+                    'algorithm',
                     'buildingName',
                     'buildingNumber',
-                    'dependentThoroughfare',
-                    'thoroughfare',
-                    'doubleDependentLocality',
+                    'classification',
+                    'departmentName',
                     'dependentLocality',
+                    'dependentThoroughfare',
+                    'doubleDependentLocality',
+                    'matchPattern',
+                    'organisationName',
+                    'postCodeQuality',
                     'postTown',
-                    'postCode'
+                    'qualifier',
+                    'subBuildingName',
+                    'thoroughfare'
                 ];
 
                 const filterConditions = fields

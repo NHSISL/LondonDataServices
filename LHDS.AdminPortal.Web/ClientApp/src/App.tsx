@@ -30,6 +30,8 @@ import { SubscriberAgreementDetailPage } from './pages/subscriberAgreementDetail
 import { SubscriberAgreementAddPage } from './pages/subscriberAgreementAddPage';
 import { AddressPage } from './pages/addressPage';
 import { AddressDetailPage } from './pages/addressDetailPage';
+import { ResolvedAddressPage } from './pages/resolvedAddressPage';
+import { ResolvedAddressDetailPage } from './pages/resolvedAddressDetailPage';
 
 const App = ({ msalInstance }: any) => {
     return (
@@ -63,6 +65,8 @@ const App = ({ msalInstance }: any) => {
                     <Route path="/terminologyArtifactDetail/:terminologyArtifactId" element={<SecuredRoute allowedRoles={securityPoints.terminologyArtifact.view}><TerminologyArtifactDetailPage /></SecuredRoute>} />
                     <Route path="/address" element={<SecuredRoute allowedRoles={securityPoints.address.view}><AddressPage /></SecuredRoute>} />
                     <Route path="/addressDetail/:addressId" element={<SecuredRoute allowedRoles={securityPoints.address.view}><AddressDetailPage /></SecuredRoute>} />
+                    <Route path="/resolvedAddress" element={<SecuredRoute allowedRoles={securityPoints.resolvedAddress.view}><ResolvedAddressPage /></SecuredRoute>} />
+                    <Route path="/resolvedAddressDetail/:resolvedAddressId" element={<SecuredRoute allowedRoles={securityPoints.resolvedAddress.view}><ResolvedAddressDetailPage /></SecuredRoute>} />
                     <Route path="/subscriberAgreements" element={<SecuredRoute allowedRoles={securityPoints.subscriberAgreement.view}><SubscriberAgreementPage /></SecuredRoute>} />
                     <Route path="/subscriberAgreement" element={<SecuredRoute allowedRoles={securityPoints.subscriberAgreement.add}><SubscriberAgreementAddPage /></SecuredRoute>} />
                     <Route path="/subscriberAgreement/new" element={<SecuredRoute allowedRoles={securityPoints.subscriberAgreement.add}><SubscriberAgreementAddPage /></SecuredRoute>} />

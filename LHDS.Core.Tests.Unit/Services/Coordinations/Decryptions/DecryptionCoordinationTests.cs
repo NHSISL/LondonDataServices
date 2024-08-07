@@ -13,6 +13,7 @@ using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Coordinations.Decryptions;
 using LHDS.Core.Services.Orchestrations.Decryptions;
+using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -25,6 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
     {
         private readonly Mock<ISubscriberCredentialOrchestration> subscriberCredentialOrchestrationMock;
         private readonly Mock<IDecryptionOrchestrationService> decryptionOrchestrationServiceMock;
+        private readonly Mock<IIngressOrchestrationService> ingressOrchestrationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly IDecryptionCoordinationService decryptionCoordinationService;
@@ -33,12 +35,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
         {
             this.subscriberCredentialOrchestrationMock = new Mock<ISubscriberCredentialOrchestration>();
             this.decryptionOrchestrationServiceMock = new Mock<IDecryptionOrchestrationService>();
+            this.ingressOrchestrationServiceMock = new Mock<IIngressOrchestrationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
             this.decryptionCoordinationService = new DecryptionCoordinationService(
                 subscriberCredentialOrchestration: subscriberCredentialOrchestrationMock.Object,
                 decryptionOrchestrationService: decryptionOrchestrationServiceMock.Object,
+                ingressOrchestrationService: ingressOrchestrationServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
         }
 

@@ -44,11 +44,16 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     Times.Once);
 
             this.decryptionOrchestrationServiceMock.Verify(service =>
-                    service.DecryptAsync(filePath, randomActiveSubscriberCredential),
-                        Times.Once);
+                service.DecryptAsync(filePath, randomActiveSubscriberCredential),
+                    Times.Once);
+
+            this.ingressOrchestrationServiceMock.Verify(service =>
+                service.CheckForEmisBatchCompleteAsync(filePath),
+                    Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
             this.decryptionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.ingressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

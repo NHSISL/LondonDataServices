@@ -169,7 +169,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 var relativeDecryptedPath =
                     $"/{landingConfiguration.DecryptedFolder}" +
                     $"/{dataSetSpecification.DataSet.DataSetName}" +
-                    $"/{dataSetSpecification.Id}" +
+                    $"/{dataSetSpecification.OurSpecificationVersion}" +
                     $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
                     $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 

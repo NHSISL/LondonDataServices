@@ -78,7 +78,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 }
 
                 await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-
             }
 
             await this.dataSetSpecificationProcessingService

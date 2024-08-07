@@ -69,6 +69,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 service.CheckForTPPBatchCompleteAsync(inputFileName),
                     Times.Never);
 
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTppLandingCoordinationValidationException))),
+                        Times.Once);
+
             this.tppLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.ingressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

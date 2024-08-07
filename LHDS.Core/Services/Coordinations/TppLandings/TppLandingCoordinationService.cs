@@ -30,6 +30,8 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
         public ValueTask<Guid> ProcessAsync(Stream input, string fileName, Guid supplierId) =>
             TryCatch(async () =>
             {
+                ValidateArgumentsOnProcess(input, fileName, supplierId);
+
                 Guid ingestionTrackingId = await this.tppOrchestrationService.ProcessAsync(
                     input: input,
                     fileName: fileName,

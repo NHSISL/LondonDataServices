@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             // Given
             string inputFilename = GetRandomString();
             string assembly = Assembly.GetExecutingAssembly().Location;
-            string projectRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(assembly), @"..\..\.."));
+            string projectRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(assembly), @"../../.."));
 
             string inputFilePath = Path.Combine(
                 projectRoot,

@@ -67,6 +67,6 @@ export class ResolvedAddress {
         this.createdBy = resolvedAddress.createdBy;
         this.createdDate = new Date(resolvedAddress.createdDate);
         this.updatedBy = resolvedAddress.updatedBy;
-        this.updatedDate = new Date(resolvedAddress.updatedDate);;=
+        this.updatedDate = new Date(resolvedAddress.updatedDate);
     }
 }

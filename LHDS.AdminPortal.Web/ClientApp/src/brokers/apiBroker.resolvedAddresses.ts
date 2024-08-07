@@ -1,7 +1,7 @@
 import { Guid } from "guid-typescript";
 import ApiBroker from "./apiBroker";
 import { AxiosResponse } from "axios";
-import { ResolvedAddress } from "../models/addresses/resolvedAddress";
+import { ResolvedAddress } from "../models/resolvedAddresses/resolvedAddress";
 
 class ResolvedAddressBroker {
     relativeResolvedAddressUrl = '/api/resolvedAddresses';

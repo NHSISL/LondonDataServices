@@ -1,6 +1,6 @@
 import { Guid } from 'guid-typescript';
 
-export class AddressHomeView {
+export class ResolvedAddressHomeView {
     public id: Guid;
     public uprn?: string;
     public upsn?: string;

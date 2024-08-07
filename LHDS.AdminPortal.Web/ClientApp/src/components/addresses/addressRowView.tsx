@@ -1,11 +1,11 @@
 import React, { FunctionComponent } from "react";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
-import { Address } from "../../models/addresses/address";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import { Link } from "react-router-dom";
+import { Address } from "../../models/addresses/address";
 
 type AddressRowProps = {
     address: Address;

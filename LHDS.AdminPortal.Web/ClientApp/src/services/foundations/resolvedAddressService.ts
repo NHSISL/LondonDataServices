@@ -2,7 +2,7 @@ import { useMsal } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
 import ResolvedAddressBroker from "../../brokers/apiBroker.resolvedAddresses";
-import { ResolvedAddress } from "../../models/addresses/resolvedAddress";
+import { ResolvedAddress } from "../../models/resolvedAddresses/resolvedAddress";
 
 export const resolvedAddressService = {
     useCreateResolvedAddress: () => {

@@ -172,10 +172,10 @@
     <TypeScriptCompile Remove="ClientApp\src\hooks\validationMessages.ts" />
     <TypeScriptCompile Remove="ClientApp\src\hooks\validationProcessor.ts" />
     <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\models\addresses\resolvedAddress.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\addresses\resolvedAddressHomeView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\resolvedAddresses\address.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\resolvedAddresses\addressHomeView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\resolvedAddresses\resolvedAddress.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\resolvedAddresses\resolvedAddressHomeView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\addresses\address.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\addresses\addressHomeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataSetSpecifications\dataSetSpecification.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataSets\dataSet.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataTypes\dataType.ts" />
@@ -259,6 +259,8 @@
     <TypeScriptCompile Remove="ClientApp\src\services\views\optOuts\optoutViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\pds\pdsHomeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\pds\pdsViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\resolvedAddresses\resolvedAddressHomeViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\resolvedAddresses\resolvedAddressViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\specificationObjects\specificationObjectViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\subscriberAgreements\subscriberAgreementViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\subscriberCredentials\subscriberCredentialViewService.ts" />

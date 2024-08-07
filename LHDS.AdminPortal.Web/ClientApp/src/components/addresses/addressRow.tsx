@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from "react";
-import { Address } from "../../models/addresses/address";
 import AddressRowView from "./addressRowView";
+import { Address } from "../../models/addresses/address";
 
 type AddressRowProps = {
     address: Address;

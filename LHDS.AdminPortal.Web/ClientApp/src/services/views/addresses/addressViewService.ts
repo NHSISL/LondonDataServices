@@ -1,8 +1,8 @@
 import { Guid } from "guid-typescript";
 import { useEffect, useState } from "react";
 import { addressService } from "../../foundations/addressService";
-import { Address } from "../../../models/addresses/address";
 import { AddressView } from "../../../models/views/components/addresses/addressView";
+import { Address } from "../../../models/addresses/address";
 
 export const addressViewService = {
 

@@ -95,6 +95,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             Id = this.identifierBroker.GetIdentifier(),
                             FileName = filename,
                             SupplierId = supplierId,
+                            DataSetSpecificationId = retrievedDataSetSpecification.Id,
                             EncryptedFileName = "Not Encrypted",
                             EncryptedFileSize = 0,
                             EncryptedFileSha256Hash = "Not Encrypted",

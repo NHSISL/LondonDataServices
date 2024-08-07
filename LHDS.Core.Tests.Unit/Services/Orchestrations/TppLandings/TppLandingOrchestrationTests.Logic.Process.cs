@@ -145,6 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Id = randomGuid,
                     FileName = filename,
                     SupplierId = randomSupplierId,
+                    DataSetSpecificationId = randomDataSetSpecification.Id,
                     EncryptedFileName = null,
 
                     DecryptedFileName =

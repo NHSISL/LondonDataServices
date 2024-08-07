@@ -28,6 +28,17 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
         }
 
         public ValueTask<Guid> ProcessAsync(Stream input, string fileName, Guid supplierId) =>
-            throw new NotImplementedException();
+            TryCatch(async () =>
+            {
+                Guid ingestionTrackingId = await this.tppOrchestrationService.ProcessAsync(
+                    input: input,
+                    fileName: fileName,
+                    supplierId: supplierId);
+
+                await this.ingressOrchestrationService.CheckForTPPBatchCompleteAsync(
+                    fileName);
+
+                return ingestionTrackingId;
+            });
     }
 }

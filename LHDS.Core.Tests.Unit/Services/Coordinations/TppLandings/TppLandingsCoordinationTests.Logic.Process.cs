@@ -30,17 +30,17 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     .ReturnsAsync(ingestionTrackingId);
 
             // when
-            ValueTask<Guid> actualIngestionTrackingId = this.tppLandingCoordinationService.ProcessAsync(
+            Guid actualIngestionTrackingId = await this.tppLandingCoordinationService.ProcessAsync(
                 input: inputData,
                 fileName: inputFileName,
                 supplierId: inputSupplierId);
 
             // then
-            actualIngestionTrackingId.Should().BeEquivalentTo(expectedIngestionTrackingId);
+            actualIngestionTrackingId.ToString().Should().BeEquivalentTo(expectedIngestionTrackingId.ToString());
 
-            this.tppLandingOrchestrationServiceMock.Setup(service =>
-                service.ProcessAsync(inputData, inputFileName, inputSupplierId))
-                    .ReturnsAsync(ingestionTrackingId);
+            this.tppLandingOrchestrationServiceMock.Verify(service =>
+                service.ProcessAsync(inputData, inputFileName, inputSupplierId),
+                Times.Once);
 
             this.ingressOrchestrationServiceMock.Verify(service =>
                 service.CheckForTPPBatchCompleteAsync(inputFileName),

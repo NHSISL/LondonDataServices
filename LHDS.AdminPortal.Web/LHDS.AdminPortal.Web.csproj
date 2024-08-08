@@ -61,6 +61,9 @@
     <TypeScriptCompile Remove="ClientApp\src\components\addresses\addressDetailCardView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\addresses\addressRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\addresses\addressRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\addresses\addressSearchRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\addresses\addressSearchRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\addresses\addressSearchTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\addresses\addressTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\ingestionTrackingTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\BreadCrumb\BreadCrumbBase.tsx" />

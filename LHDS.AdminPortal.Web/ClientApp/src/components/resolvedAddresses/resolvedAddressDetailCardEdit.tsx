@@ -72,18 +72,32 @@ const ResolvedAddressDetailCardEdit: FunctionComponent<ResolvedAddressDetailCard
         <>
             <SummaryListBase>
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Organisation Name</SummaryListBaseKey>
+                    <SummaryListBaseKey>Unstructured Address</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        <TextInputBase
-                            id="organisationName"
-                            name="organisationName"
-                            placeholder="Organisation Name"
-                            required={true}
-                            value={editResolvedAddress.organisationName}
-                            error={errors.organisationName}
-                            onChange={handleChange}/>
+                        <SummaryListBaseValue>{resolvedAddress.unstructuredPostalAddress}</SummaryListBaseValue>
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Alternate Unstructured Address</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        <SummaryListBaseValue>{resolvedAddress.alternateUnstructuredPostalAddress ? resolvedAddress.alternateUnstructuredPostalAddress : "Not Specified"}</SummaryListBaseValue>
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+
+                {/*<SummaryListBaseRow>*/}
+                {/*    <SummaryListBaseKey>Alternate Unstructured Address</SummaryListBaseKey>*/}
+                {/*    <SummaryListBaseValue>*/}
+                {/*        <TextInputBase*/}
+                {/*            id="alternateUnstructuredAddress"*/}
+                {/*            name="alternateUnstructuredAddress"*/}
+                {/*            placeholder="Alternate Unstructured Address"*/}
+                {/*            required={false}*/}
+                {/*            value={editResolvedAddress.alternateUnstructuredPostalAddress}*/}
+                {/*            error={errors.alternateUnstructuredPostalAddress}*/}
+                {/*            onChange={handleChange}/>*/}
+                {/*    </SummaryListBaseValue>*/}
+                {/*</SummaryListBaseRow>*/}
             </SummaryListBase>
 
             {mode === "ADD" && (
@@ -102,7 +116,6 @@ const ResolvedAddressDetailCardEdit: FunctionComponent<ResolvedAddressDetailCard
                     </SecuredComponents>
                 </div>
             )}
-
         </>
     );
 }

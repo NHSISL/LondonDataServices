@@ -63,7 +63,10 @@ const ResolvedAddressDetailCardView: FunctionComponent<ResolvedAddressDetailCard
                                         <SummaryListBaseKey>Unstructured Postal Address</SummaryListBaseKey>
                                         <SummaryListBaseValue>{resolvedAddress.unstructuredPostalAddress}</SummaryListBaseValue>
                                     </SummaryListBaseRow>
-                                   
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>Alternate Unstructured Postal Address</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{resolvedAddress.alternateUnstructuredPostalAddress}</SummaryListBaseValue>
+                                    </SummaryListBaseRow>
                                     <SummaryListBaseRow>
                                         <SummaryListBaseKey>Address Format Quality</SummaryListBaseKey>
                                         <SummaryListBaseValue>{resolvedAddress.addressFormatQuality}</SummaryListBaseValue>

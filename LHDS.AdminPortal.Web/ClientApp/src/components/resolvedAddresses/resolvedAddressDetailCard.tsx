@@ -6,6 +6,7 @@ import CardBaseTitle from "../bases/components/Card/CardBase.Title";
 import { ResolvedAddressView } from "../../models/views/components/resolvedAddresses/resolvedAddressView";
 import ResolvedAddressDetailCardView from "./resolvedAddressDetailCardView";
 import ResolvedAddressDetailCardEdit from "./resolvedAddressDetailCardEdit";
+import AddressSearchTable from "../addresses/addressSearchTable";
 
 interface ResolvedAddressDetailCardProps {
     resolvedAddress: ResolvedAddressView;
@@ -59,17 +60,22 @@ const ResolvedAddressDetailCard: FunctionComponent<ResolvedAddressDetailCardProp
                                 onUpdate={handleUpdate}
                                 mode={displayMode}
                                 onModeChange={handleModeChange}
-                                />
+                            />
                         )}
                         {(displayMode === "EDIT" || displayMode === "ADD") && (
-                            <ResolvedAddressDetailCardEdit
-                                onModeChange={handleModeChange}
-                                onUpdate={handleUpdate}
-                                onCancel={handleCancel}
-                                resolvedAddress={resolvedAddress}
-                                mode={displayMode}
-                                apiError={apiError}
-                            />
+                            <>
+                                <ResolvedAddressDetailCardEdit
+                                    onModeChange={handleModeChange}
+                                    onUpdate={handleUpdate}
+                                    onCancel={handleCancel}
+                                    resolvedAddress={resolvedAddress}
+                                    mode={displayMode}
+                                    apiError={apiError} />
+
+
+                                <AddressSearchTable></AddressSearchTable>
+
+                            </>
                         )}
 
                         {children !== undefined && (
@@ -81,7 +87,7 @@ const ResolvedAddressDetailCard: FunctionComponent<ResolvedAddressDetailCardProp
                     </CardBaseContent>
                 </CardBaseBody>
             </CardBase>
-        </div>
+        </div >
     );
 }
 

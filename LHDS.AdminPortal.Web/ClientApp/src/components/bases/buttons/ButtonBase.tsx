@@ -34,6 +34,7 @@ const ButtonBase: FunctionComponent<ButtonBaseProps> = (
         view,
         info,
         className,
+        disabled,
         ...rest
     }
 ) => 
@@ -43,6 +44,7 @@ const ButtonBase: FunctionComponent<ButtonBaseProps> = (
                 id={id}
                 title={title}
                 onClick={onClick}
+                disabled={disabled}
                 className={classNames(
                     { 'nhsuk-buttonBlue': add },
                     { 'nhsuk-buttonBlue': edit },

@@ -12,7 +12,7 @@ import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import { Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDatabase, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faRefresh, faSearch } from "@fortawesome/free-solid-svg-icons";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseThead from "../bases/components/Table/TableBase.Thead";
 import TableBaseHeader from "../bases/components/Table/TableBase.Header";
@@ -20,7 +20,7 @@ import { AddressHomeViewService } from "../../services/views/addresses/addressHo
 import { Address } from "../../models/addresses/address";
 import AddressSearchRow from "./addressSearchRow";
 
-const AddressTable: FunctionComponent = () => {
+const AddressSearchTable: FunctionComponent = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [showSpinner, setShowSpinner] = useState(false);
@@ -60,10 +60,10 @@ const AddressTable: FunctionComponent = () => {
 
     return (
         <div className="infiniteScrollContainer">
-            <CardBase>
+            <CardBase classes="mt-4">
                 <CardBaseBody>
                     <CardBaseTitle>
-                        <FontAwesomeIcon icon={faDatabase} className="me-2" /> Addresses (Ordinance Database)
+                        <FontAwesomeIcon icon={faSearch} className="me-2" /> Search (Ordinance Database)
                     </CardBaseTitle>
                     <CardBaseContent>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
@@ -92,9 +92,6 @@ const AddressTable: FunctionComponent = () => {
                                         <TableBaseHeader>UPRN</TableBaseHeader>
                                         <TableBaseHeader>UPSN</TableBaseHeader>
                                         <TableBaseHeader classes="text-center">Address</TableBaseHeader>
-                                        <TableBaseHeader classes="text-center">PostCode</TableBaseHeader>
-                                        <TableBaseHeader classes="text-center">IsProcessing</TableBaseHeader>
-                                        <TableBaseHeader classes="text-center">IsSynced</TableBaseHeader>
                                         <TableBaseHeader classes="text-center">Actions</TableBaseHeader>
                                     </TableBaseRow>
                                 </TableBaseThead>
@@ -108,14 +105,13 @@ const AddressTable: FunctionComponent = () => {
                                         </tr>
                                     ) : (
                                         <>
-                                            {addressesRetrieved?.map(
-                                                (address: Address) => (
-                                                    <AddressSearchRow
-                                                        key={address.id.toString()}
-                                                        address={address}
-                                                    />
-                                                )
-                                            )}
+                                            {
+                                                addressesRetrieved?.map(
+                                                    (address: Address) => (
+                                                        <AddressSearchRow
+                                                            key={address.id.toString()}
+                                                            address={address} />)
+                                                )}
                                             <tr>
                                                 <td colSpan={5} className="text-center">
                                                     <InfiniteScrollLoader
@@ -138,4 +134,4 @@ const AddressTable: FunctionComponent = () => {
     );
 };
 
-export default AddressTable;
+export default AddressSearchTable;

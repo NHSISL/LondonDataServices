@@ -81,6 +81,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
+            Console.WriteLine($"defaultFolderPath: {defaultFolderPath}");
 
             serviceCollection.AddTransient<IDownloadProvider>(_ =>
                 new DiskDownloadProvider(new DiskDownloadProviderSettings
@@ -139,7 +140,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         {
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
-
             List<DocumentSource> randomFiles = new List<DocumentSource>();
 
             for (int i = 0; i < count; i++)

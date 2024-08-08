@@ -2,12 +2,15 @@ import { IngestionTracking } from "../models/ingestionTrackings/ingestionTrackin
 import ApiBroker from "./apiBroker";
 
 class EmisLandingBroker {
-    relativeEmisLandinggUrl = '/api/emisLanding';
+    relativeEmisLandingUrl = '/api/emisLandings';
 
     private apiBroker: ApiBroker = new ApiBroker();
 
-    async PutRedecryptDocumentByIngestionTrackingIdgAsync(ingestionTracking: IngestionTracking) {
-        return await this.apiBroker.PutAsync(this.relativeEmisLandinggUrl, ingestionTracking.Id)
+    async PutRedecryptDocumentByIngestionTrackingIdAsync(ingestionTracking: IngestionTracking) {
+        var ingestionTrackingId = ingestionTracking.id;
+        const url = `${this.relativeEmisLandingUrl}/decrypt/${ingestionTrackingId}`;
+
+        return await this.apiBroker.PutAsync(url, {})
             .then(result => new IngestionTracking(result.data));
     }
 }

@@ -62,7 +62,6 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                     catch (Exception ex)
                     {
                         exceptions.Add(ex);
-                        Console.WriteLine(ex.ToString());
                     }
                 }
 

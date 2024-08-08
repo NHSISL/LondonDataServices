@@ -295,7 +295,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 }
 
                 var updatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
                 updatedIngestionTracking.IsDownloaded = true;
                 updatedIngestionTracking.Decrypted = false;
                 updatedIngestionTracking.IsProcessing = false;

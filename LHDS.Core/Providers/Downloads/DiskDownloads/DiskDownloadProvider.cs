@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -64,6 +65,13 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
 
             List<string> relativePaths = files.Select(file =>
                 Path.GetRelativePath(diskDownloadProviderSettings.LocalRootFolder, file).Replace("\\", "/")).ToList();
+
+            Console.WriteLine("DiskDownloadProvider relative paths: ");
+
+            foreach (string path in relativePaths)
+            {
+                Console.WriteLine(relativePaths);
+            }
 
             return await ValueTask.FromResult(relativePaths);
         }

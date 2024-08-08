@@ -27,29 +27,6 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
 
                 // then
                 files.Should().NotBeNull();
-
-                //foreach (var file in files)
-                //{
-                //    IngestionTracking ingestionTracking =
-                //        ingestionTrackingService.RetrieveAllIngestionTrackings()
-                //            .FirstOrDefault(item => item.DecryptedFileName == file);
-
-                //    ingestionTracking.Should().NotBeNull();
-
-                //    List<IngestionTrackingAudit> audits = auditService.RetrieveAllIngestionTrackingAudits()
-                //        .Where(item => item.IngestionTrackingId == ingestionTracking.Id).ToList();
-
-                //    foreach (IngestionTrackingAudit item in audits)
-                //    {
-                //        await auditService.RemoveIngestionTrackingAuditByIdAsync(item.Id);
-                //    }
-
-                //    await ingestionTrackingService
-                //        .RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-
-                //    await blobStorageBroker.DeleteFileAsync(
-                //        fileName: ingestionTracking.EncryptedFileName, container: encryptedFileContainer);
-                // }
             }
             catch (Exception ex)
             {

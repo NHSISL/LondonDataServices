@@ -531,13 +531,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             }
             else
             {
-                newFileName = $"{inputSubscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
+                newFileName = $"{inputSubscriberCredential.Id}/{filename.Split('_')[4]}/{splitFileName[6]}";
             }
 
             string decryptedFileName = $"/{landingConfiguration.DecryptedFolder}"
                         + $"/{randomDataSet.DataSetName}"
                         + $"/{randomDataSetSpecification.OurSpecificationVersion}"
-                        + $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}"
                         + $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
             string encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";

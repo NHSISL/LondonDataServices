@@ -359,7 +359,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             }
             else
             {
-                newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
+                newFileName = $"{subscriberCredential.Id}/{fileName.Split('_')[4]}/{splitFileName[6]}";
             }
 
             string encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
@@ -367,7 +367,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             string decryptedFileName = $"/{landingConfiguration.DecryptedFolder}" +
                 $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}" +
                 $"/{retrievedDataSetSpecification?.OurSpecificationVersion}" +
-                $"/{fileName.Split('_')[2]}_{fileName.Split('_')[3]}" +
                 $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
             return (encryptedFileName, decryptedFileName);

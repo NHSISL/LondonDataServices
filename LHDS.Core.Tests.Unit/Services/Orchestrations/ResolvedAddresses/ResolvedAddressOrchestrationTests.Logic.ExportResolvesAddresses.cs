@@ -53,11 +53,38 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 processing.BulkModifyResolvedAddressesAsync(processingResolvedAddresses))
                     .Returns(ValueTask.CompletedTask);
 
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                {
+                    { nameof(ResolvedAddress.UniqueReference), 0 },
+                    { nameof(ResolvedAddress.UPRN), 1 },
+                    { nameof(ResolvedAddress.UPSN), 2 },
+                    { nameof(ResolvedAddress.OrganisationName), 5 },
+                    { nameof(ResolvedAddress.DepartmentName), 6 },
+                    { nameof(ResolvedAddress.SubBuildingName), 7 },
+                    { nameof(ResolvedAddress.BuildingName), 8 },
+                    { nameof(ResolvedAddress.BuildingNumber), 9 },
+                    { nameof(ResolvedAddress.DependentThoroughfare), 10 },
+                    { nameof(ResolvedAddress.Thoroughfare), 11 },
+                    { nameof(ResolvedAddress.DoubleDependentLocality), 12 },
+                    { nameof(ResolvedAddress.DependentLocality), 13 },
+                    { nameof(ResolvedAddress.PostTown), 14 },
+                    { nameof(ResolvedAddress.PostCode), 15 },
+                    { nameof(ResolvedAddress.AddressFormatQuality), 16 },
+                    { nameof(ResolvedAddress.PostCodeQuality), 17 },
+                    { nameof(ResolvedAddress.MatchedWithAssign), 18 },
+                    { nameof(ResolvedAddress.Qualifier), 19 },
+                    { nameof(ResolvedAddress.Classification), 20 },
+                    { nameof(ResolvedAddress.Algorithm), 21 },
+                    { nameof(ResolvedAddress.MatchPattern), 22 },
+                    { nameof(ResolvedAddress.AddressFormatQuality), 23 },
+                    { nameof(ResolvedAddress.UnstructuredPostalAddress), 24 }
+                };
+
             this.csvHelperBrokerMock.Setup(broker =>
                 broker.MapObjectToCsvAsync<ResolvedAddress>(
                     It.Is(SameResolvedAddressListAs(processingResolvedAddresses)),
-                    false,
-                    null,
+                    true,
+                    fieldMappings,
                     true))
                         .ReturnsAsync(ouputCsv);
 

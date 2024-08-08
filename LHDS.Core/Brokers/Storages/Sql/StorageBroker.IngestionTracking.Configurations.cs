@@ -28,6 +28,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<IngestionTracking>()
+                .Property(ingestionTracking => ingestionTracking.DataSetSpecificationId)
+                .IsRequired();
+
+            modelBuilder.Entity<IngestionTracking>()
                 .Property(ingestionTracking => ingestionTracking.EncryptedFileName)
                 .HasMaxLength(450)
                 .IsRequired();

@@ -488,6 +488,9 @@ namespace LHDS.Core.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid>("DataSetSpecificationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("Decrypted")
                         .HasColumnType("bit");
 

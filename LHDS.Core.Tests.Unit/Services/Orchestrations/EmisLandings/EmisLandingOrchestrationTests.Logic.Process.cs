@@ -51,6 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 CreateRandomDataSetSpecifications(dataSet: randomDataSet);
 
             DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
+            Guid retrievedDataSetSpecificationId = randomDataSetSpecification.Id;
 
             this.downloadProcessingServiceMock.Setup(service =>
                service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))
@@ -98,6 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                         FileName = filename,
                         SourceFolderPath = sourceFolderPath,
                         SupplierId = landingConfiguration.LandingSupplierId,
+                        DataSetSpecificationId = retrievedDataSetSpecificationId,
                         EncryptedFileName = encryptedFileName,
                         DecryptedFileName = decryptedFileName,
                         Decrypted = false,
@@ -252,6 +254,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                         FileName = filename,
                         SourceFolderPath = sourceFolderPath,
                         SupplierId = landingConfiguration.LandingSupplierId,
+                        DataSetSpecificationId = retrievedDataSetSpecificationId,
                         EncryptedFileName = encryptedFileName,
                         DecryptedFileName = decryptedFileName,
                         Decrypted = false,

@@ -3,12 +3,16 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 
 namespace LHDS.Core.Brokers.Identifiers
 {
     public class IdentifierBroker : IIdentifierBroker
     {
         public Guid GetIdentifier() =>
+            Guid.NewGuid();
+
+        public async ValueTask<Guid> GetIdentifierAsync() =>
             Guid.NewGuid();
     }
 }

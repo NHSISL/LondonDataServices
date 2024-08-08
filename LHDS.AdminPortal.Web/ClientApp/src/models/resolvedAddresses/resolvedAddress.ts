@@ -9,6 +9,7 @@ export class ResolvedAddress {
     public isProcessing?: boolean;
     public uniqueReference?: string;
     public unstructuredPostalAddress?: string;
+    public alternateUnstructuredPostalAddress?: string;
     public batchReference?: string;
     public addressFormatQuality?: string;
     public algorithm?: string;
@@ -43,6 +44,7 @@ export class ResolvedAddress {
         this.isProcessing = resolvedAddress.isProcessing === true ? true : false;;
         this.uniqueReference = resolvedAddress.uniqueReference || "";
         this.unstructuredPostalAddress = resolvedAddress.unstructuredPostalAddress || "";
+        this.alternateUnstructuredPostalAddress = resolvedAddress.alternateUnstructuredPostalAddress || "";
         this.batchReference = resolvedAddress.batchReference || "";
         this.addressFormatQuality = resolvedAddress.addressFormatQuality || "";
         this.algorithm = resolvedAddress.algorithm || "";

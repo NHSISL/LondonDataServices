@@ -5,7 +5,7 @@ import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileImport, faFileDownload, faFileExport, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faFileDownload, faFileExport, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Dropdown } from "react-bootstrap";
 import moment from "moment";
 

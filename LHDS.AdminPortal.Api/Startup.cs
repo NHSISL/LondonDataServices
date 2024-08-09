@@ -305,7 +305,6 @@ namespace LHDS.AdminPortal.Api
 
         private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IEmisLandingOrchestrationService, EmisLandingOrchestrationService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services, IConfiguration configuration)
@@ -322,7 +321,6 @@ namespace LHDS.AdminPortal.Api
         private static void AddCoordinationServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IDecryptionCoordinationService, DecryptionCoordinationService>();
-
         }
 
         private IEdmModel GetEdmModel()

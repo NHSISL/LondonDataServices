@@ -531,7 +531,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             }
             else
             {
-                newFileName = $"{inputSubscriberCredential.Id}/{filename.Split('_')[4]}/{splitFileName[6]}";
+                newFileName = $"{inputSubscriberCredential.Id}/{filename.Split('/')[4]}/{splitFileName[6]}";
             }
 
             string decryptedFileName = $"/{landingConfiguration.DecryptedFolder}"

@@ -51,8 +51,9 @@ namespace LHDS.Core.Clients.Extensions
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
+            AddCoordination(services);
             AddClients(services);
-            services.AddTransient<ITppLandingCoordinationService, TppLandingCoordinationService>();
+
             return services;
         }
 
@@ -122,6 +123,11 @@ namespace LHDS.Core.Clients.Extensions
         {
             services.AddTransient<ITppLandingOrchestrationService, TppLandingOrchestrationService>();
             services.AddTransient<IIngressOrchestrationService, IngressOrchestrationService>();
+        }
+
+        private static void AddCoordination(IServiceCollection services)
+        {
+            services.AddTransient<ITppLandingCoordinationService, TppLandingCoordinationService>();
         }
 
         private static void AddClients(IServiceCollection services)

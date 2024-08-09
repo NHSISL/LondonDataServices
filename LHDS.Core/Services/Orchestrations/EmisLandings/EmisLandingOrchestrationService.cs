@@ -359,7 +359,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             }
             else
             {
-                newFileName = $"{subscriberCredential.Id}/{fileName.Split('_')[4]}/{splitFileName[6]}";
+                newFileName = $"{subscriberCredential.Id}/{fileName.Split('/')[4]}/{splitFileName[6]}";
             }
 
             string encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";

@@ -81,7 +81,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
-            Console.WriteLine($"defaultFolderPath: {defaultFolderPath}");
 
             serviceCollection.AddTransient<IDownloadProvider>(_ =>
                 new DiskDownloadProvider(new DiskDownloadProviderSettings

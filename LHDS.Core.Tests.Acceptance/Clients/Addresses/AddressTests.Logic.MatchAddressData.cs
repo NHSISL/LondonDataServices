@@ -36,15 +36,18 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 await this.resolvedAddressService.AddResolvedAddressAsync(resolvedAddress);
                 AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
 
-                this.wireMockServer.Given(
-                    Request.Create()
+                this.wireMockServer
+                    .Given(
+                        Request
+                            .Create()
                             .UsingGet()
                             .WithPath("/api/getinfo")
                             .WithParam("address", resolvedAddress.UnstructuredPostalAddress))
-                        .RespondWith(
-                            Response.Create()
-                                .WithStatusCode(HttpStatusCode.OK)
-                                .WithBodyAsJson(randomAssignAddress));
+                    .RespondWith(
+                        Response
+                            .Create()
+                            .WithStatusCode(HttpStatusCode.OK)
+                            .WithBodyAsJson(randomAssignAddress));
 
                 Address randomAddress = CreateRandomAddress(randomDateTimeOffset, randomAssignAddress.UPRN);
                 await this.addressService.AddAddressAsync(randomAddress);

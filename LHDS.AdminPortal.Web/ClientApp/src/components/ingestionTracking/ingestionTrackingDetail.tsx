@@ -3,7 +3,8 @@ import React, { FunctionComponent} from "react";
 import { IngestionTrackingView } from "../../models/views/components/ingestionTracking/ingestionTrackingView";
 import { ingestionTrackingViewService } from "../../services/views/ingestionTrackingViewService";
 import IngestionTrackingDetailCard from "./ingestionTrackingDetailCard";
-import { toastSuccess } from "../../brokers/toastBroker";
+import { toastError, toastSuccess } from "../../brokers/toastBroker";
+import { emisLandingService } from "../../services/foundations/emisLandingService";
 
 interface IngestionTrackingDetailProps {
     ingestionTrackingId: string;
@@ -19,6 +20,7 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
     const { mappedIngestionTracking: ingestionTrackingRetrieved } =
         ingestionTrackingViewService.useGetIngestionTrackingById(Guid.parse(ingestionTrackingId))
 
+
     //const [downloadFileName, setDownloadFileName] = useState<string>("");
     //const { mappedLink } = documentService.useGetDownloadLinkByFileName(encodeURIComponent(downloadFileName))
 
@@ -29,9 +31,17 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
         //toastSuccess(`${mappedLink}`);
     }
 
-    const handleReLand = async (ingestionTrackingView: IngestionTrackingView) => {
-        toastSuccess("Re-Land");
-    }
+    const updateEmisLanding = emisLandingService.useModifyEmisLanding();
+
+    const handleReDecrypt = async (ingestionTrackingView: IngestionTrackingView) => {
+        updateEmisLanding.updateIngestionTracking(ingestionTrackingView)
+            .then(() => {
+                toastSuccess("Ingestion Tracking Queued for Decrypt")
+            })
+            .catch(e => {
+            toastError("error")
+        });
+    };
 
     const handleRefresh = async (ingestionTrackingView: IngestionTrackingView) => {}
 
@@ -43,7 +53,7 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
                         key={ingestionTrackingRetrieved.id.toString()}
                         ingestionTracking={ingestionTrackingRetrieved}
                         onDownload={handleDownload}
-                        onReLand={handleReLand}
+                        onReDecrypt={handleReDecrypt}
                         onRefresh={handleRefresh}>
 
                         {children}

@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             var invalidDecryptionOrchestrationService = new DecryptionOrchestrationService(
                 documentService: documentServiceMock.Object,
-                downloadProcessingService: downloadProcessingServiceMock.Object,
+                downloadService: downloadServiceMock.Object,
                 cryptographyService: cryptographyServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
                 auditService: auditServiceMock.Object,
@@ -71,6 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
+            this.downloadServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -156,7 +157,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadServiceMock.VerifyNoOtherCalls();
             this.cryptographyServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
@@ -233,7 +234,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadServiceMock.VerifyNoOtherCalls();
             this.cryptographyServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();

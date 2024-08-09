@@ -39,15 +39,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
                 Scope = ""
             };
 
-            this.wireMockServer.Given(
-                Request.Create()
-                        .WithPath($"{authUri}")
-                        .UsingPost())
-                    .RespondWith(
-                        Response.Create()
-                            .WithStatusCode(HttpStatusCode.OK)
-                            .WithBodyAsJson(token));
-
             string returnedJsonString = $@"{{
                 ""resourceType"": ""Bundle"",
                 ""id"": ""{Guid.NewGuid}"",
@@ -87,6 +78,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
                     }}
                 ]
             }}";
+
+            this.wireMockServer.Given(
+                Request.Create()
+                        .WithPath($"{authUri}")
+                        .UsingPost())
+                    .RespondWith(
+                        Response.Create()
+                            .WithStatusCode(HttpStatusCode.OK)
+                            .WithBodyAsJson(token));
 
             this.wireMockServer.Given(
                 Request.Create()

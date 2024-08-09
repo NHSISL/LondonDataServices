@@ -23,6 +23,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         [Fact]
         public async Task ShouldProcessNewDocumentsAsync()
         {
+            // delete this line
             //Given
             CleanupDownloadFolder();
             DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();

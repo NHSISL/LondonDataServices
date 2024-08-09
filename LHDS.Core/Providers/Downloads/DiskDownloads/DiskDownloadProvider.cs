@@ -72,7 +72,7 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
 
             foreach (string path in relativePaths)
             {
-                Console.WriteLine(relativePaths.ToString());
+                Console.WriteLine(path.ToString());
             }
 
             return await ValueTask.FromResult(relativePaths);

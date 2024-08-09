@@ -19,6 +19,7 @@ using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
+using LHDS.Core.Services.Coordinations.TppLandings;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
@@ -50,6 +51,7 @@ namespace LHDS.Core.Clients.Extensions
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
+            AddCoordinations(services);
             AddClients(services);
 
             return services;
@@ -121,6 +123,11 @@ namespace LHDS.Core.Clients.Extensions
         {
             services.AddTransient<ITppLandingOrchestrationService, TppLandingOrchestrationService>();
             services.AddTransient<IIngressOrchestrationService, IngressOrchestrationService>();
+        }
+
+        private static void AddCoordinations(IServiceCollection services)
+        {
+            services.AddTransient<ITppLandingCoordinationService, TppLandingCoordinationService>();
         }
 
         private static void AddClients(IServiceCollection services)

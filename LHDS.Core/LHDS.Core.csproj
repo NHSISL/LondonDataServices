@@ -5,6 +5,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<OutputType>Library</OutputType>
+		<NoWarn>CS1998</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

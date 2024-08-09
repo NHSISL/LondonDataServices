@@ -9,10 +9,12 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Extensions.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Coordinations.Decryptions;
 using LHDS.Core.Services.Orchestrations.Decryptions;
+using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -25,6 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
     {
         private readonly Mock<ISubscriberCredentialOrchestration> subscriberCredentialOrchestrationMock;
         private readonly Mock<IDecryptionOrchestrationService> decryptionOrchestrationServiceMock;
+        private readonly Mock<IIngressOrchestrationService> ingressOrchestrationServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly IDecryptionCoordinationService decryptionCoordinationService;
@@ -33,12 +36,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
         {
             this.subscriberCredentialOrchestrationMock = new Mock<ISubscriberCredentialOrchestration>();
             this.decryptionOrchestrationServiceMock = new Mock<IDecryptionOrchestrationService>();
+            this.ingressOrchestrationServiceMock = new Mock<IIngressOrchestrationService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.compareLogic = new CompareLogic();
 
             this.decryptionCoordinationService = new DecryptionCoordinationService(
                 subscriberCredentialOrchestration: subscriberCredentialOrchestrationMock.Object,
                 decryptionOrchestrationService: decryptionOrchestrationServiceMock.Object,
+                ingressOrchestrationService: ingressOrchestrationServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
         }
 
@@ -129,6 +134,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     message: "Decryption orchestration dependency validation error occurred, " +
                         "please try again.",
                     innerException),
+
+                new IngresOrchestrationValidationException(
+                    message: "Ingres orchestration validation error occured, please try again.",
+                    innerException),
+
+                new IngresOrchestrationDependencyValidationException(
+                    message: "Ingres orchestration dependency validation error occurred, " +
+                        "please try again.",
+                    innerException),
             };
         }
 
@@ -154,6 +168,14 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
                 new DecryptionOrchestrationServiceException(
                     message: "Decryption orchestration service error occurred, please contact support.",
+                    innerException),
+
+                new IngresOrchestrationDependencyException(
+                    message: "Ingres orchestration dependency error occured, please try again.",
+                    innerException),
+
+                new IngresOrchestrationServiceException(
+                    message: "Ingres orchestration service error occurred, please contact support.",
                     innerException)
             };
         }

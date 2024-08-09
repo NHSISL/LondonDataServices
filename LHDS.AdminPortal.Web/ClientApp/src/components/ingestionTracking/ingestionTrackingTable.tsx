@@ -19,6 +19,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase, faFilter, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import IngestionFilterModal from "./ingestionTrackingFilter"; 
 import { SupplierView } from "../../models/views/components/suppliers/supplierView";
+import { emisLandingService } from "../../services/foundations/emisLandingService";
+import { toastError, toastSuccess } from "../../brokers/toastBroker";
 
 type IngestionTrackingTableProps = {};
 
@@ -63,19 +65,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         []
     );
 
-    const relandDocument = ingestionTrackingHomeViewService.useRelandIngestionTracking();
     const downloadEncryptedDocument = ingestionTrackingHomeViewService.useDownloadEncryptedDocument();
-    const downloadDecryptedDocument = ingestionTrackingHomeViewService.useDownloadDecryptedDocument();
-
-    const handleRelanding = (ingestionTracking: IngestionTracking) => {
-        return relandDocument.mutateAsync(ingestionTracking, {
-            onSuccess: () => {
-            },
-            onError: (error: any) => {
-            }
-        });
-    };
-
     const handleEncryptedDownload = (ingestionTracking: IngestionTracking) => {
         return downloadEncryptedDocument.mutateAsync(ingestionTracking, {
             onSuccess: () => {
@@ -85,13 +75,15 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         });
     };
 
-    const handleDecryptedDownload = (ingestionTracking: IngestionTracking) => {
-        return downloadDecryptedDocument.mutateAsync(ingestionTracking, {
-            onSuccess: () => {
-            },
-            onError: (error: any) => {
-            }
-        });
+    const updateEmisLanding = emisLandingService.useModifyEmisLanding();
+    const handleReDecrypt = (ingestionTracking: IngestionTracking) => {
+        updateEmisLanding.updateIngestionTracking(ingestionTracking)
+            .then(() => {
+                toastSuccess("Ingestion Tracking Queued for Decrypt")
+            })
+            .catch(e => {
+                toastError("error")
+            });
     };
 
     const handleFilter = (supplier: SupplierView) => {
@@ -164,9 +156,8 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                                     <IngestionTrackingRow
                                                         key={ingestionTrackingHomeView.id}
                                                         ingestionTracking={ingestionTrackingHomeView}
-                                                        onRelanding={handleRelanding}
                                                         onEncryptedDownload={handleEncryptedDownload}
-                                                        onDecryptedDownload={handleDecryptedDownload}
+                                                        onReDecrypted={handleReDecrypt}
                                                     />
                                                 )
                                             )}

@@ -198,8 +198,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     ? fileName
                     : "/" + fileName;
 
+                DataSetSpecification? retrievedDataSetSpecification = await
+                    this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
+                        supplierId);
+
                 (string encryptedFileName, string decryptedFileName) =
-                        await GetFileNames(subscriberCredential, filename, supplierId);
+                        await GetFileNames(subscriberCredential, retrievedDataSetSpecification, filename, supplierId);
 
                 string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
                 sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
@@ -211,6 +215,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                       FileName = filename,
                       SourceFolderPath = sourceFolderPath,
                       SupplierId = landingConfiguration.LandingSupplierId,
+                      DataSetSpecificationId = retrievedDataSetSpecification.Id,
                       EncryptedFileName = encryptedFileName,
                       DecryptedFileName = decryptedFileName,
                       Decrypted = false,
@@ -334,13 +339,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
         private async ValueTask<(string encryptedFileName, string decryptedFileName)> GetFileNames(
             SubscriberCredential subscriberCredential,
+            DataSetSpecification? retrievedDataSetSpecification,
             string fileName,
             Guid supplierId)
         {
-            DataSetSpecification? retrievedDataSetSpecification = await
-                this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
-                    supplierId);
-
             if (retrievedDataSetSpecification == null)
             {
                 throw new NotFoundDocumentProcessingException(
@@ -357,7 +359,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             }
             else
             {
-                newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
+                newFileName = $"{subscriberCredential.Id}/{fileName.Split('/')[4]}/{splitFileName[6]}";
             }
 
             string encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
@@ -365,7 +367,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             string decryptedFileName = $"/{landingConfiguration.DecryptedFolder}" +
                 $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}" +
                 $"/{retrievedDataSetSpecification?.OurSpecificationVersion}" +
-                $"/{fileName.Split('_')[2]}_{fileName.Split('_')[3]}" +
                 $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
             return (encryptedFileName, decryptedFileName);

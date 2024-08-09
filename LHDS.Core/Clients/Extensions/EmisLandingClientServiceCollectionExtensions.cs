@@ -36,6 +36,7 @@ using LHDS.Core.Services.Foundations.SubscriberAgreements;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
+using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.CryptographicKeys;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
@@ -154,6 +155,7 @@ namespace LHDS.Core.Clients.Extensions
         {
             services.AddTransient<IEmisLandingOrchestrationService, EmisLandingOrchestrationService>();
             services.AddTransient<ISubscriberCredentialOrchestration, SubscriberCredentialOrchestration>();
+            services.AddTransient<IIngressOrchestrationService, IngressOrchestrationService>();
         }
 
         private static void AddCoordinations(IServiceCollection services)

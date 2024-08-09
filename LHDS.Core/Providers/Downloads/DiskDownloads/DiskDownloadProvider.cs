@@ -63,6 +63,8 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
                     ? SearchOption.AllDirectories
                     : SearchOption.TopDirectoryOnly);
 
+            Console.WriteLine($"DiskDownloadProviderSettings Local folder: {diskDownloadProviderSettings.LocalRootFolder}");
+
             List<string> relativePaths = files.Select(file =>
                 Path.GetRelativePath(diskDownloadProviderSettings.LocalRootFolder, file).Replace("\\", "/")).ToList();
 
@@ -70,7 +72,7 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
 
             foreach (string path in relativePaths)
             {
-                Console.WriteLine(relativePaths);
+                Console.WriteLine(relativePaths.ToString());
             }
 
             return await ValueTask.FromResult(relativePaths);

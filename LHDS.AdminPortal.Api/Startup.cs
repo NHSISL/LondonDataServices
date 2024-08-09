@@ -305,8 +305,6 @@ namespace LHDS.AdminPortal.Api
 
         private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IEmisLandingOrchestrationService, EmisLandingOrchestrationService>();
-            services.AddTransient<IEmisLandingOrchestrationService, EmisLandingOrchestrationService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services, IConfiguration configuration)

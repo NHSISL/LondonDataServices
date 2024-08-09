@@ -17,7 +17,7 @@ import GridBase from "../bases/layouts/Grid/GridBase";
 interface IngestionTrackingDetailCardViewProps {
     ingestionTracking: IngestionTrackingView;
     onDownload: (ingestionTracking: IngestionTrackingView) => void;
-    onReLand: (ingestionTracking: IngestionTrackingView) => void;
+    onReDecrypt: (ingestionTracking: IngestionTrackingView) => void;
     onRefresh: (ingestionTracking: IngestionTrackingView) => void;
 }
 
@@ -25,7 +25,7 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
     const {
         ingestionTracking,
         onDownload,
-        onReLand
+        onReDecrypt
     } = props;
 
     return (
@@ -126,10 +126,13 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                                                 <p>Use this option to download a successfully decrypted file.</p>
                                             </li>
                                         </ul>
-
-                                        <ButtonBase onClick={() => onReLand(ingestionTracking)} add>
-                                            &nbsp;Re-Land
-                                        </ButtonBase>&nbsp;
+                                        {ingestionTracking.decrypted && (
+                                            <>
+                                                <ButtonBase onClick={() => onReDecrypt(ingestionTracking)} add>
+                                                    &nbsp;Re-Decrypt
+                                                </ButtonBase> &nbsp;
+                                            </>
+                                        )}
 
                                         <ButtonBase onClick={() => onDownload(ingestionTracking)} add>
                                             <FontAwesomeIcon icon={faFileDownload} />&nbsp;Download

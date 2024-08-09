@@ -43,6 +43,7 @@
     <TypeScriptCompile Remove="ClientApp\cypress.config.ts" />
     <TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.documents.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.emislandings.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.features.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackingAudits.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackings.ts" />
@@ -219,6 +220,7 @@
     <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactDetailPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\documentService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\foundations\emisLandingService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\featureService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingAuditService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingService.ts" />

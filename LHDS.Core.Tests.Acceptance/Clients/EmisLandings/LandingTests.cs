@@ -155,8 +155,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
                 File.WriteAllText(filePath, GetRandomString());
                 var relativeSourcePath = Path.GetRelativePath(defaultFolderPath, filePath).Replace("\\", "/");
-                Console.WriteLine($"relativeSourcePath: {relativeSourcePath}");
-
                 var filename = relativeSourcePath.StartsWith('/')
                     ? relativeSourcePath
                     : "/" + relativeSourcePath;

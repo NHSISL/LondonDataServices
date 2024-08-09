@@ -207,14 +207,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
         private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
         {
-            char separator = Path.DirectorySeparatorChar;
-
-            return $"emisnightingale-data-preprod-provider-extracts" +
-                $"{separator}IM1" +
-                $"{separator}sftp" +
-                $"{separator}{subscriberAgreementId}" +
-                $"{separator}{DateTime.Now.ToString("yyyyMMdd")}" +
-                $"{separator}{fileName}";
+            return Path.Combine(
+                "emisnightingale-data-preprod-provider-extracts",
+                "IM1",
+                "sftp",
+                $"{subscriberAgreementId}",
+                $"{DateTime.Now.ToString("yyyyMMdd")}",
+                $"{fileName}");
         }
 
         private static string GetRandomString(int length) =>

@@ -70,7 +70,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                     container: blobContainers.EmisLanding);
 
                 var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
 
                 foreach (var audit in audits)
                 {

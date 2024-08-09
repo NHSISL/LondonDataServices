@@ -30,7 +30,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             Stream inputStream = new MemoryStream(inputData);
             Stream expectedStream = inputStream;
             Stream actualStream = new MemoryStream();
-
             Guid batchReference = Guid.NewGuid();
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>

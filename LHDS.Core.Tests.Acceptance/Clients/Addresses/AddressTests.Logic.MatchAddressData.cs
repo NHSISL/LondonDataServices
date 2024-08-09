@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
     public partial class AddressTests
     {
         [Fact]
-        public async Task ShouldMatchAddressDataFromFileAsync()
+        public async Task ShouldMatchAddressDataAsync()
         {
             //Given
             DateTimeOffset randomDateTimeOffset = dateTimeBroker.GetCurrentDateTimeOffset();

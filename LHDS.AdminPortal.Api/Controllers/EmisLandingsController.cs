@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Services.Coordinations.EmisLandings;
@@ -45,37 +44,6 @@ namespace LHDS.AdminPortal.Api.Controllers
                     await emisLandingCoordinationService.RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId);
 
                 return Ok(retrieveFileList);
-            }
-            catch (DownloadDependencyException downloadDependencyException)
-            {
-                return InternalServerError(downloadDependencyException);
-            }
-            catch (DownloadServiceException downloadServiceException)
-            {
-                return InternalServerError(downloadServiceException);
-            }
-        }
-
-        [HttpGet("download/{supplierId}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
-#endif
-        public async ValueTask<ActionResult<List<string>>> DownloadDocumentsAsync(Guid supplierId)
-        {
-            try
-            {
-                List<string> retrievedDownloads = await emisLandingCoordinationService.ProcessAsync(supplierId);
-
-                return Ok(retrievedDownloads);
-            }
-            catch (DownloadValidationException downloadValidationException)
-                when (downloadValidationException.InnerException is NotFoundDocumentException)
-            {
-                return NotFound(downloadValidationException.InnerException);
-            }
-            catch (DownloadValidationException dataSetValidationException)
-            {
-                return BadRequest(dataSetValidationException.InnerException);
             }
             catch (DownloadDependencyException downloadDependencyException)
             {

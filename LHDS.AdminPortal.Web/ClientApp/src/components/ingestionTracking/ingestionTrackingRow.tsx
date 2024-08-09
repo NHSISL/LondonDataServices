@@ -3,39 +3,32 @@ import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTrac
 import IngestionTrackingRowView from "./ingestionTrackingRowView";
 
 type IngestionTrackingRowProps = {
-    onRelanding: (ingestionTracking: IngestionTracking) => void;
     onEncryptedDownload: (ingestionTracking: IngestionTracking) => void;
-    onDecryptedDownload: (ingestionTracking: IngestionTracking) => void;
+    onReDecrypted: (ingestionTracking: IngestionTracking) => void;
     ingestionTracking: IngestionTracking;
 };
 
 const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (props) => {
     const {
-        onRelanding,
         onEncryptedDownload,
-        onDecryptedDownload,
+        onReDecrypted,
         ingestionTracking
     } = props;
-
-    const handleRelanding = async (ingestionTracking: IngestionTracking) => {
-        await onRelanding(ingestionTracking);
-    };
 
     const handleEncryptedDownload = async (ingestionTracking: IngestionTracking) => {
         await onEncryptedDownload(ingestionTracking);
     };
 
-    const handleDecryptedDownload = async (ingestionTracking: IngestionTracking) => {
-        await onDecryptedDownload(ingestionTracking);
+    const handleReDecrypt = async (ingestionTracking: IngestionTracking) => {
+        await onReDecrypted(ingestionTracking);
     };
 
     return (
         <IngestionTrackingRowView
             key={ingestionTracking.id.toString()}
             ingestionTracking={ingestionTracking}
-            onRelanding={handleRelanding}
             onEncryptedDownload={handleEncryptedDownload}
-            onDecryptedDownload={handleDecryptedDownload}
+            onReDecrypted={handleReDecrypt}
         />
     );
 };

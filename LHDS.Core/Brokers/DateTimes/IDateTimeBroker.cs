@@ -3,11 +3,13 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 
 namespace LHDS.Core.Brokers.DateTimes
 {
     public interface IDateTimeBroker
     {
         DateTimeOffset GetCurrentDateTimeOffset();
+        ValueTask<DateTimeOffset> GetCurrentDateTimeOffsetAsync();
     }
 }

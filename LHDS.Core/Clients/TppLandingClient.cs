@@ -7,26 +7,26 @@ using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.TppLandingClient.Exceptions;
 using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
-using LHDS.Core.Services.Orchestrations.TppLandings;
+using LHDS.Core.Services.Coordinations.TppLandings;
 using Xeptions;
 
 namespace LHDS.Core.Clients
 {
     public class TppLandingClient : ITppLandingClient
     {
-        private readonly ITppLandingOrchestrationService tppOrchestrationService;
+        private readonly ITppLandingCoordinationService tppLandingCoordinationService;
 
         public TppLandingClient(
-            ITppLandingOrchestrationService tppOrchestrationService)
+            ITppLandingCoordinationService tppLandingCoordinationService)
         {
-            this.tppOrchestrationService = tppOrchestrationService;
+            this.tppLandingCoordinationService = tppLandingCoordinationService;
         }
 
         public async ValueTask<Guid> ProcessAsync(Stream input, string fileName, Guid supplierId)
         {
             try
             {
-                return await this.tppOrchestrationService.ProcessAsync(input, fileName, supplierId);
+                return await this.tppLandingCoordinationService.ProcessAsync(input, fileName, supplierId);
             }
             catch (TppLandingOrchestrationValidationException tppOrchestrationValidationException)
             {

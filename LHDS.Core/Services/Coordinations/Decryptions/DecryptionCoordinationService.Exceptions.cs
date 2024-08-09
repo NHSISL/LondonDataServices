@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Coordinations.Decryptions.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using Xeptions;
 
@@ -47,6 +48,16 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             {
                 throw CreateAndLogDependencyValidationException(decryptionOrchestrationDependencyValidationException);
             }
+            catch (IngresOrchestrationValidationException
+                ingresOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ingresOrchestrationValidationException);
+            }
+            catch (IngresOrchestrationDependencyValidationException
+                ingresOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ingresOrchestrationDependencyValidationException);
+            }
             catch (SubscriberCredentialDependencyOrchestrationException
                 subscriberCredentialDependencyOrchestrationException)
             {
@@ -66,6 +77,16 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                 decryptionOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(decryptionOrchestrationServiceException);
+            }
+            catch (IngresOrchestrationDependencyException
+                ingresOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(ingresOrchestrationDependencyException);
+            }
+            catch (IngresOrchestrationServiceException
+                ingresOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(ingresOrchestrationServiceException);
             }
             catch (Exception exception)
             {
@@ -109,6 +130,16 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             {
                 throw CreateAndLogDependencyValidationException(decryptionOrchestrationDependencyValidationException);
             }
+            catch (IngresOrchestrationValidationException
+                ingresOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ingresOrchestrationValidationException);
+            }
+            catch (IngresOrchestrationDependencyValidationException
+                ingresOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ingresOrchestrationDependencyValidationException);
+            }
             catch (SubscriberCredentialDependencyOrchestrationException
                 subscriberCredentialDependencyOrchestrationException)
             {
@@ -128,6 +159,16 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                 decryptionOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(decryptionOrchestrationServiceException);
+            }
+            catch (IngresOrchestrationDependencyException
+                ingresOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(ingresOrchestrationDependencyException);
+            }
+            catch (IngresOrchestrationServiceException
+                ingresOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(ingresOrchestrationServiceException);
             }
             catch (Exception exception)
             {

@@ -53,7 +53,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     expectedDecryptionCoordinationValidationException))),
                         Times.Once);
 
+            this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
             this.decryptionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.ingressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

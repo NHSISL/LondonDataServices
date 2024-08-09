@@ -152,7 +152,6 @@ namespace LHDS.Core.Tests.Integration.Addresses
             };
             resolvedAddresses.Add(resolvedAddress3);
 
-            // Add all resolved addresses to the database
             List<ResolvedAddress> addedResolvedAddresses = new List<ResolvedAddress>();
             foreach (var resolvedAddress in resolvedAddresses)
             {

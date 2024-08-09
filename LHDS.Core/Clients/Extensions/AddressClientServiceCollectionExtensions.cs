@@ -169,8 +169,7 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             Validate(
-                (Rule: IsInvalid(assignConfiguration.ApiUrl),
-                    Parameter: "assignConfiguration__apiUrl"));
+                (Rule: IsInvalid(assignConfiguration.ApiUrl), Parameter: "assignConfiguration__apiUrl")); 
         }
 
         private static dynamic IsInvalid(string? text) => new

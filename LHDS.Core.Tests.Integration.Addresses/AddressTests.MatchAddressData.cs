@@ -35,15 +35,16 @@ namespace LHDS.Core.Tests.Integration.Addresses
                 await this.resolvedAddressService.AddResolvedAddressAsync(resolvedAddress);
                 AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
 
-                this.wireMockServer.Given(
-                    Request.Create()
-                            .UsingGet()
-                            .WithPath("/api/getinfo")
-                            .WithParam("address", resolvedAddress.UnstructuredPostalAddress))
-                        .RespondWith(
-                            Response.Create()
-                                .WithStatusCode(HttpStatusCode.OK)
-                                .WithBodyAsJson(randomAssignAddress));
+                this.wireMockServer  
+                    .Given(Request  
+                        .Create()  
+                        .UsingGet()  
+                        .WithPath("/api/getinfo")  
+                        .WithParam("address", resolvedAddress.UnstructuredPostalAddress))  
+                    .RespondWith(Response  
+                        .Create()  
+                        .WithStatusCode(HttpStatusCode.OK)  
+                        .WithBodyAsJson(randomAssignAddress));
 
                 Address randomAddress = CreateRandomAddress(randomDateTimeOffset, randomAssignAddress.UPRN);
                 await this.addressService.AddAddressAsync(randomAddress);

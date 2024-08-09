@@ -137,7 +137,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             foreach (var tracking in ingestionTrackings)
             {
                 var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                    .Where(audit => audit.IngestionTrackingId == tracking.Id);
+                    .Where(audit => audit.IngestionTrackingId == tracking.Id).ToList();
 
                 foreach (var audit in audits)
                 {

@@ -254,7 +254,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                            .MapObjectToCsvAsync(
                             @object: unMatchedResolvedAddresses,
                             addHeaderRecord: true,
-                            fieldMappings,
+                            fieldMappings: fieldMappings,
                             shouldAddTrailingComma: true);
 
                         byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);

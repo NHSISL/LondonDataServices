@@ -30,6 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             Stream inputStream = new MemoryStream(inputData);
             Stream expectedStream = inputStream;
             Stream actualStream = new MemoryStream();
+
             Guid batchReference = Guid.NewGuid();
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
@@ -54,30 +55,30 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Returns(ValueTask.CompletedTask);
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
-                {
-                    { nameof(ResolvedAddress.UniqueReference), 0 },
-                    { nameof(ResolvedAddress.UPRN), 1 },
-                    { nameof(ResolvedAddress.UPSN), 2 },
-                    { nameof(ResolvedAddress.OrganisationName), 3 },
-                    { nameof(ResolvedAddress.DepartmentName), 4 },
-                    { nameof(ResolvedAddress.SubBuildingName), 5 },
-                    { nameof(ResolvedAddress.BuildingName), 6 },
-                    { nameof(ResolvedAddress.BuildingNumber), 7 },
-                    { nameof(ResolvedAddress.DependentThoroughfare), 8 },
-                    { nameof(ResolvedAddress.Thoroughfare), 9 },
-                    { nameof(ResolvedAddress.DoubleDependentLocality), 10 },
-                    { nameof(ResolvedAddress.DependentLocality), 11 },
-                    { nameof(ResolvedAddress.PostTown), 12 },
-                    { nameof(ResolvedAddress.PostCode), 13 },
-                    { nameof(ResolvedAddress.AddressFormatQuality), 14 },
-                    { nameof(ResolvedAddress.PostCodeQuality), 15 },
-                    { nameof(ResolvedAddress.MatchedWithAssign), 16 },
-                    { nameof(ResolvedAddress.Qualifier), 17 },
-                    { nameof(ResolvedAddress.Classification), 18 },
-                    { nameof(ResolvedAddress.Algorithm), 19 },
-                    { nameof(ResolvedAddress.MatchPattern), 20 },
-                    { nameof(ResolvedAddress.UnstructuredPostalAddress), 21 }
-                };
+            {
+                { nameof(ResolvedAddress.UniqueReference), 0 },
+                { nameof(ResolvedAddress.UPRN), 1 },
+                { nameof(ResolvedAddress.UPSN), 2 },
+                { nameof(ResolvedAddress.OrganisationName), 3 },
+                { nameof(ResolvedAddress.DepartmentName), 4 },
+                { nameof(ResolvedAddress.SubBuildingName), 5 },
+                { nameof(ResolvedAddress.BuildingName), 6 },
+                { nameof(ResolvedAddress.BuildingNumber), 7 },
+                { nameof(ResolvedAddress.DependentThoroughfare), 8 },
+                { nameof(ResolvedAddress.Thoroughfare), 9 },
+                { nameof(ResolvedAddress.DoubleDependentLocality), 10 },
+                { nameof(ResolvedAddress.DependentLocality), 11 },
+                { nameof(ResolvedAddress.PostTown), 12 },
+                { nameof(ResolvedAddress.PostCode), 13 },
+                { nameof(ResolvedAddress.AddressFormatQuality), 14 },
+                { nameof(ResolvedAddress.PostCodeQuality), 15 },
+                { nameof(ResolvedAddress.MatchedWithAssign), 16 },
+                { nameof(ResolvedAddress.Qualifier), 17 },
+                { nameof(ResolvedAddress.Classification), 18 },
+                { nameof(ResolvedAddress.Algorithm), 19 },
+                { nameof(ResolvedAddress.MatchPattern), 20 },
+                { nameof(ResolvedAddress.UnstructuredPostalAddress), 21 }
+            };
 
             this.csvHelperBrokerMock.Setup(broker =>
                 broker.MapObjectToCsvAsync<ResolvedAddress>(
@@ -134,7 +135,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.csvHelperBrokerMock.Verify(broker =>
                 broker.MapObjectToCsvAsync<ResolvedAddress>(
-                    It.Is(SameResolvedAddressListAs(processingResolvedAddresses)), false, null, true),
+                    It.Is(SameResolvedAddressListAs(processingResolvedAddresses)),
+                    true,
+                    fieldMappings,
+                    true),
                         Times.Once);
 
             this.documentProcessingServiceMock.Verify(processing =>

@@ -42,7 +42,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyArtifacts
 
             // when
             List<TerminologyArtifact> actualTerminologyArtifacts = 
-                await this.apiBroker.GetAllTerminologyArtifactsAsync().ToList();
+                await this.apiBroker.GetAllTerminologyArtifactsAsync();
 
             // then
             foreach (TerminologyArtifact expectedTerminologyArtifact in expectedTerminologyArtifacts)

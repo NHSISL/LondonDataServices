@@ -198,6 +198,15 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     ? fileName
                     : "/" + fileName;
 
+                string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
+                sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
+
+                string file = Path.GetFileName(filename);
+                string fileWithoutExtension = Path.GetFileNameWithoutExtension(file);
+                string[] segments = fileWithoutExtension.Split('_');
+                string batch = $"{segments[0]}_{segments[1]}";
+                string objectName = $"{segments[2]}_{segments[3]}";
+
                 DataSetSpecification? retrievedDataSetSpecification = await
                     this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
                         supplierId);
@@ -205,16 +214,16 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 (string encryptedFileName, string decryptedFileName) =
                         await GetFileNames(subscriberCredential, retrievedDataSetSpecification, filename, supplierId);
 
-                string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
-                sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
 
                 IngestionTracking newIngestionTracking =
                   new IngestionTracking
                   {
                       Id = this.identifierBroker.GetIdentifier(),
+                      SupplierId = landingConfiguration.LandingSupplierId,
                       FileName = filename,
                       SourceFolderPath = sourceFolderPath,
-                      SupplierId = landingConfiguration.LandingSupplierId,
+                      Batch = batch,
+                      ObjectName = objectName,
                       DataSetSpecificationId = retrievedDataSetSpecification.Id,
                       EncryptedFileName = encryptedFileName,
                       DecryptedFileName = decryptedFileName,

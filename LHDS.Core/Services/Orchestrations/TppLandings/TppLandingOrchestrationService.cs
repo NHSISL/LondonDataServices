@@ -83,6 +83,18 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         ? fileName
                         : "/" + fileName;
 
+                    string[] segments = filename.Split('/');
+
+                    if (segments.Length < 4)
+                    {
+                        throw new InvalidOperationException("The input string does not contain enough segments.");
+                    }
+
+                    string batch = segments[2];
+                    string objectName = Path.GetFileNameWithoutExtension(filename);
+                    string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
+                    sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
+
                     var decryptedFileName =
                         $"/{landingConfiguration.DecryptedFolder}"
                         + $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}"
@@ -93,8 +105,11 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         new IngestionTracking
                         {
                             Id = this.identifierBroker.GetIdentifier(),
-                            FileName = filename,
                             SupplierId = supplierId,
+                            FileName = filename,
+                            SourceFolderPath = sourceFolderPath,
+                            Batch = batch,
+                            ObjectName = objectName,
                             DataSetSpecificationId = retrievedDataSetSpecification.Id,
                             EncryptedFileName = "Not Encrypted",
                             EncryptedFileSize = 0,

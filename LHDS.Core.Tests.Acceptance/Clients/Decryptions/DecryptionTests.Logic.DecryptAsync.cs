@@ -11,7 +11,6 @@ using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
-using Org.BouncyCastle.Crypto;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
@@ -64,7 +63,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
             var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
-                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
 
             foreach (var audit in audits)
             {

@@ -20,8 +20,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             // Given
             string inputFilename = GetRandomString();
             string assembly = Assembly.GetExecutingAssembly().Location;
-            string projectRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(assembly), @"..\..\.."));
             Guid expectedUniqueRef = Guid.Parse("7b41335a-f2cf-4949-8b83-c5b210446631");
+            char separator = Path.DirectorySeparatorChar;
+
+            string projectRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(assembly),
+                $"..{separator}..{separator}.."));
 
             string inputFilePath = Path.Combine(
                 projectRoot,

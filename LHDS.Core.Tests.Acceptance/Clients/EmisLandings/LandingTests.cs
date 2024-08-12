@@ -139,7 +139,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         {
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
-
             List<DocumentSource> randomFiles = new List<DocumentSource>();
 
             for (int i = 0; i < count; i++)
@@ -156,21 +155,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
                 File.WriteAllText(filePath, GetRandomString());
                 var relativeSourcePath = Path.GetRelativePath(defaultFolderPath, filePath).Replace("\\", "/");
-
                 var filename = relativeSourcePath.StartsWith('/')
                     ? relativeSourcePath
                     : "/" + relativeSourcePath;
 
                 string[] splitFileName = filename.Split('/');
-                string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}"; ;
+                string newFileName = $"{subscriberAgreementId}/{splitFileName[4]}/{splitFileName[6]}"; ;
 
                 var encryptedFilePath = $"/{landingConfiguration.EncryptedFolder}/{newFileName}"; ;
 
                 var relativeDecryptedPath =
                     $"/{landingConfiguration.DecryptedFolder}" +
                     $"/{dataSetSpecification.DataSet.DataSetName}" +
-                    $"/{dataSetSpecification.Id}" +
-                    $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
+                    $"/{dataSetSpecification.OurSpecificationVersion}" +
                     $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
                 DocumentSource documentSource = new DocumentSource
@@ -186,7 +183,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             return randomFiles;
         }
-
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
@@ -206,12 +202,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
         private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
         {
-            return $"emisnightingale-data-preprod-provider-extracts" +
-                $"/IM1" +
-                $"/sftp" +
-                $"/{subscriberAgreementId}" +
-                $"/{DateTime.Now.ToString("yyyyMMdd")}" +
-                $"/{fileName}";
+            return Path.Combine(
+                "emisnightingale-data-preprod-provider-extracts",
+                "IM1",
+                "sftp",
+                $"{subscriberAgreementId}",
+                $"{DateTime.Now.ToString("yyyyMMdd")}",
+                $"{fileName}");
         }
 
         private static string GetRandomString(int length) =>

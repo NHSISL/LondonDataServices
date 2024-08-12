@@ -53,8 +53,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
             optionsBuilder.UseSqlServer(connectionString);
         }
 
-        public override void Dispose() { }
-
         private async ValueTask BulkInsertAsync<T>(IEnumerable<T> objects) where T : class
         {
             objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Added);

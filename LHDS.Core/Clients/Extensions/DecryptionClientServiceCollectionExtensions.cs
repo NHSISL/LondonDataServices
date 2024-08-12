@@ -38,6 +38,7 @@ using LHDS.Core.Services.Foundations.SecureDatas;
 using LHDS.Core.Services.Foundations.SubscriberAgreements;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Decryptions;
+using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.CryptographicKeys;
 using LHDS.Core.Services.Processings.Downloads;
@@ -194,6 +195,7 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddOrchestrations(IServiceCollection services)
         {
             services.AddTransient<ISubscriberCredentialOrchestration, SubscriberCredentialOrchestration>();
+            services.AddTransient<IIngressOrchestrationService, IngressOrchestrationService>();
         }
 
         private static void AddCoordinations(IServiceCollection services)

@@ -130,52 +130,75 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .Select(i => GetRandomString())
                 .ToList();
 
-        private static int GetRandomNumber() =>
-            new IntRange(min: 2, max: 10).GetValue();
+        private static int GetRandomNumber(int min = 2, int max = 10) =>
+            new IntRange(min, max).GetValue();
 
-        private static string GetRandomFileName(Guid subscriberAgreementId)
+        private static List<string> GetRandomFileNames(int count, Guid subscriberAgreementId)
+        {
+            string exportType = GetRandomString();
+            string batchNumber = GetRandomNumber(min: 1000, max: 9999).ToString();
+            string namespaceName = GetRandomString();
+            string objectName = GetRandomString();
+            DateTimeOffset timestamp = DateTimeOffset.UtcNow;
+
+            return Enumerable.Range(1, count)
+                .Select(i => GetRandomFileName(
+                    exportType,
+                    batchNumber,
+                    namespaceName,
+                    objectName,
+                    timestamp,
+                    subscriberAgreementId))
+                .ToList();
+        }
+
+        private static string GetRandomFileName(
+            string exportType,
+            string batchNumber,
+            string namespaceName,
+            string objectName,
+            DateTimeOffset timestamp,
+            Guid subscriberAgreementId)
         {
             string filename =
-                $"delta" +
-                $"_{GetRandomNumber()}" +
-                $"_Admin" +
-                $"_Location" +
-                $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}" +
+                $"{exportType}" +
+                $"_{batchNumber}" +
+                $"_{namespaceName}" +
+                $"_{objectName}" +
+                $"_{timestamp.ToString("yyyyMMddHHmmss")}" +
                 $"_{subscriberAgreementId}.csv.gpg";
 
             return filename;
         }
 
-        private static string CreateRandomFileName()
+        //private static string CreateRandomFileName()
+        //{
+        //    string filename = $"{GetRandomString()}/" +
+        //           $"{GetRandomString()}/" +
+        //           $"{GetRandomString()}/" +
+        //           $"{GetRandomString()}/" +
+        //           $"{0122235}/{GetRandomString(10)}_{GetRandomString(10)}_{GetRandomString(10)}_{GetRandomString(10)}";
+
+        //    return filename;
+        //}
+
+
+        private static List<string> GetRandomFilePaths(int count, Guid subscriberAgreementId)
         {
-            string filename = $"{GetRandomString()}/" +
-                   $"{GetRandomString()}/" +
-                   $"{GetRandomString()}/" +
-                   $"{GetRandomString()}/" +
-                   $"{0122235}/{GetRandomString(10)}_{GetRandomString(10)}_{GetRandomString(10)}_{GetRandomString(10)}";
-
-            return filename;
-        }
-
-
-        private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
-        {
-            return $"emisnightingale-data-preprod-provider-extracts" +
+            return Enumerable.Range(1, count).Select(i =>
+                $"emisnightingale-data-preprod-provider-extracts" +
                 $"/IM1" +
                 $"/sftp" +
                 $"/{subscriberAgreementId}" +
                 $"/{DateTime.Now.ToString("yyyyMMdd")}" +
-                $"/{fileName}";
+                $"/{GetRandomFileNames(count: 1, subscriberAgreementId)[0]}").ToList();
         }
 
         private static string GetRandomString() =>
-            new MnemonicString().GetValue();
+            new MnemonicString(wordCount: 1, wordMinLength: 1, wordMaxLength: GetRandomNumber()).GetValue();
 
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
-
-        private static string GetRandomMessage() =>
-            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();

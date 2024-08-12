@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         {
             // given
             Guid ingestionTrackingId = Guid.NewGuid();
-            var someFileName = GetRandomMessage();
+            var someFileName = GetRandomString();
 
             var expectedDependencyException =
                 new EmisLandingOrchestrationDependencyValidationException(
@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
         {
             // given
             Guid ingestionTrackingId = Guid.NewGuid();
-            var someFileName = GetRandomMessage();
+            var someFileName = GetRandomString();
 
             var expectedDependencyException =
                 new EmisLandingOrchestrationDependencyException(

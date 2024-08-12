@@ -20,12 +20,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         public async Task ShouldExportResolvedAddressesAsync()
         {
             //Given
-            DateTimeOffset randomDateTimeOffset = dateTimeBroker.GetCurrentDateTimeOffset();
-            string fileName = GetRandomString();
-            int count = GetRandomNumber();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 1);
-            List<ResolvedAddress> expectedResolvedAddresses = new List<ResolvedAddress>();
-            List<Address> addedAddresses = new List<Address>();
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(GetRandomNumber());
             Guid? batchReference = Guid.NewGuid();
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)

@@ -96,32 +96,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             DataSet randomDataSet = CreateRandomDataSet(supplierId: randomSupplierId);
             string randomHash = GetRandomString(64);
             int randomNumber = GetRandomNumber();
+            string resourceGroup = GetRandomString();
+            string batch = GetRandomString();
+            string objectName = GetRandomString();
+            string inputFileName = $"/{resourceGroup}/{batch}/{objectName}.csv";
+            string sourceFolderPath = $"/{resourceGroup}/{batch}";
 
-            List<string> randomFileNames = GetRandomStrings();
+            List<string> randomFileNames =
+                GetRandomTppFileNames(resourceGroup, batch, count: randomNumber);
+
             List<string> inputFileNames = randomFileNames;
-
             byte[] randomData = CreateRandomData();
             byte[] inputData = randomData;
             Stream inputDataStream = new MemoryStream(inputData);
-
-            List<IngestionTracking> randomIngestionTrackings =
-                CreateRandomIngestionTrackings(
-                    dateTimeOffset: randomDateTime,
-                    fileNames: inputFileNames,
-                    supplierId: randomSupplierId);
 
             IQueryable<DataSetSpecification> randomDataSetSpecificationList =
                CreateRandomDataSetSpecifications(dataSet: randomDataSet);
 
             DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
-            string inputFileName = randomIngestionTracking.FileName;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
 
+            string decryptedFileName =
+                $"/{landingConfiguration.DecryptedFolder}"
+                + $"/{randomDataSet.DataSetName}"
+                + $"/{randomDataSetSpecification.Id}"
+                + $"{inputFileName}";
+
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())
-                    .Returns(randomIngestionTrackings.AsQueryable());
+                    .Returns(new List<IngestionTracking>().AsQueryable());
 
             this.hashBrokerMock.Setup(broker =>
                 broker.GenerateSha256Hash(inputDataStream))
@@ -135,25 +140,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                service.GetActiveDataSetSpecification(randomSupplierId))
                    .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
 
-            var filename = inputFileName.StartsWith('/')
-                ? inputFileName
-                : "/" + inputFileName;
-
             IngestionTracking newIngestionTracking =
                 new IngestionTracking
                 {
                     Id = randomGuid,
-                    FileName = filename,
                     SupplierId = randomSupplierId,
+                    FileName = inputFileName,
+                    SourceFolderPath = sourceFolderPath,
+                    Batch = batch,
+                    ObjectName = objectName,
                     DataSetSpecificationId = randomDataSetSpecification.Id,
                     EncryptedFileName = null,
-
-                    DecryptedFileName =
-                        $"/{landingConfiguration.DecryptedFolder}"
-                        + $"/{randomDataSet.DataSetName}"
-                        + $"/{randomDataSetSpecification.Id}"
-                        + $"{filename}",
-
+                    DecryptedFileName = decryptedFileName,
                     Decrypted = false,
                     LastSeen = randomDateTime,
                     FileDeleted = false,
@@ -186,7 +184,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ReturnsAsync(value: ingestionTrackingAudit);
 
             // when
-            ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(
+            Guid returnedGuid = await this.tppOrchestrationService.ProcessAsync(
                 input: inputDataStream,
                 fileName: inputFileName,
                 supplierId: inputSupplierId);

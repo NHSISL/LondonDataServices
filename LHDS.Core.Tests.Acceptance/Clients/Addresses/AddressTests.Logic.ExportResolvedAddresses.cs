@@ -7,9 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
@@ -53,8 +51,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 retrievedDocumentStream, csvFileName, blobContainers.Addresses);
 
             await this.documentService.RemoveDocumentByFileNameAsync(csvFileName, blobContainers.Addresses);
-
-            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

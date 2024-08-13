@@ -247,26 +247,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             return sameFileName;
         }
 
-        private static bool IsSameStream(Stream expectedStream, Stream actualStream)
-        {
-            byte[] expectedBytes = ReadAllBytesFromStream(expectedStream);
-            byte[] actualBytes = ReadAllBytesFromStream(actualStream);
-
-            return new CompareLogic().Compare(expectedBytes, actualBytes).AreEqual;
-        }
-
         private bool IsSameSubsciberCredentialAs(
             SubscriberCredential expectedSubscriberCredential,
             SubscriberCredential actualSubscriberCredential)
         {
             return this.compareLogic.Compare(expectedSubscriberCredential, actualSubscriberCredential).AreEqual;
-        }
-
-
-        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
-        {
-            return actualStream =>
-                this.compareLogic.Compare(expectedStream, actualStream).AreEqual;
         }
 
         private static DataSet CreateRandomDataSet(Guid supplierId) =>
@@ -328,13 +313,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
 
             return filler;
-        }
-
-        private Expression<Func<Document, bool>> SameDocumentAs(
-            Document expectedDocument)
-        {
-            return actualDocument =>
-                CompareObjects(expectedDocument, actualDocument);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

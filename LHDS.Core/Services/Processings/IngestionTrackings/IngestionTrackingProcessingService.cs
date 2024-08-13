@@ -90,7 +90,25 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             });
 
         public ValueTask<List<string>> RetrieveObjectsInBatchByBatchReference(string bacthReference) =>
-            throw new NotImplementedException();
+            TryCatch(async () =>
+            {
+                List<string> objectNames = new List<string>();
+
+                List<string?> result = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                    .Where(ingestionTracking => ingestionTracking.Batch == bacthReference)
+                    .Select(ingestionTracking => ingestionTracking.ObjectName)
+                    .ToList();
+
+                result.ForEach(objectName =>
+                {
+                    if (string.IsNullOrWhiteSpace(objectName) is false)
+                    {
+                        objectNames.Add(objectName);
+                    }
+                });
+
+                return await ValueTask.FromResult(objectNames);
+            });
 
     }
 }

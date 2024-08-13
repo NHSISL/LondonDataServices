@@ -1,8 +1,9 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -87,5 +88,9 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
 
                 return await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTrackingId);
             });
+
+        public ValueTask<List<string>> RetrieveObjectsInBatchByBatchReference(string bacthReference) =>
+            throw new NotImplementedException();
+
     }
 }

@@ -30,7 +30,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 CreateRandomSubscriberCredential(SubscriberCredentialId);
 
             SubscriberCredential storageSubscriberCredential = randomActiveSubscriberCredential;
-            string randomEmisLandingPath = GetRandomString();
+            string randomDecryptedFilePath = GetRandomString();
+            Guid randomIngestionTrackingId = Guid.NewGuid();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
                 service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId, false))
@@ -38,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
             this.decryptionOrchestrationServiceMock.Setup(service =>
                     service.DecryptAsync(filePath, randomActiveSubscriberCredential))
-                        .ReturnsAsync(randomEmisLandingPath);
+                        .ReturnsAsync((randomDecryptedFilePath, randomIngestionTrackingId));
 
             // When
             await this.decryptionCoordinationService.RetryDecryptOnAllAsync();

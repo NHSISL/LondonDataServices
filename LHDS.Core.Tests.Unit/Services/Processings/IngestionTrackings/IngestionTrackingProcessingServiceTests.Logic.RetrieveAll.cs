@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -16,13 +17,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         public void ShouldRetrieveAllIngestionTrackings()
         {
             // given
-            IQueryable<IngestionTracking> randomIngestionTrackings = CreateRandomIngestionTrackings();
-            IQueryable<IngestionTracking> storageIngestionTrackings = randomIngestionTrackings;
-            IQueryable<IngestionTracking> expectedIngestionTrackings = storageIngestionTrackings;
+            List<IngestionTracking> randomIngestionTrackings = CreateRandomIngestionTrackings();
+            List<IngestionTracking> storageIngestionTrackings = randomIngestionTrackings;
+            IQueryable<IngestionTracking> expectedIngestionTrackings = storageIngestionTrackings.AsQueryable();
 
             this.ingestionTrackingServiceMock.Setup(broker =>
                 broker.RetrieveAllIngestionTrackings())
-                    .Returns(storageIngestionTrackings);
+                    .Returns(storageIngestionTrackings.AsQueryable());
 
             // when
             IQueryable<IngestionTracking> actualIngestionTrackings =

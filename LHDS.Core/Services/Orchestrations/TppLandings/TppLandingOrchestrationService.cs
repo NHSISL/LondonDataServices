@@ -87,7 +87,11 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
                     if (segments.Length < 4)
                     {
-                        throw new InvalidOperationException("The input string does not contain enough segments.");
+                        throw new InvalidOperationException(
+                            "The input string does not contain enough segments.  " +
+                            "Expected to see a path in the format:  " +
+                            "/{reporting group}/{manifest time}/{file}, but found " +
+                            $"{filename}");
                     }
 
                     string batch = segments[2];

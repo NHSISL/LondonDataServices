@@ -29,10 +29,21 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                 message: "Invalid argument(s). Please correct the errors and try again.",
                 (Rule: IsInvalid(ingestionTrackingId), Parameter: nameof(IngestionTracking.Id)));
 
+        public void ValidateOnRetrieveObjectsInBatchByBatchReference(string batchReference) =>
+            Validate<InvalidArgumentIngestionTrackingProcessingException>(
+                message: "Invalid argument(s). Please correct the errors and try again.",
+                (Rule: IsInvalid(batchReference), Parameter: nameof(batchReference)));
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(string? text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)

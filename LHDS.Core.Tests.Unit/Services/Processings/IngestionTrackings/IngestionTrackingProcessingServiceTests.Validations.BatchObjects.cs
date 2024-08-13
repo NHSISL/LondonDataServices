@@ -28,8 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     message: "Invalid argument(s). Please correct the errors and try again.");
 
             invalidArgumentIngestionTrackingProcessingException.AddData(
-                key: "Id",
-                values: "Id is required");
+                key: "batchReference",
+                values: "Text is required");
 
             var expectedIngestionTrackingProcessingValidationException =
                 new IngestionTrackingProcessingValidationException(

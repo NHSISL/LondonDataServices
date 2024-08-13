@@ -56,9 +56,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
             {
-                retrievedCsvAddresses.Where(retrievedAddress => retrievedAddress.Id == resolvedAddress.Id)
-                    .FirstOrDefault();
+                ResolvedAddress address = retrievedCsvAddresses.FirstOrDefault(
+                    retrievedAddress => retrievedAddress.UniqueReference == resolvedAddress.UniqueReference);
 
+                address.Should().NotBeNull();
                 await this.resolvedAddressService.RemoveResolvedAddressByIdAsync(resolvedAddress.Id);
             }
 

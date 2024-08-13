@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -92,6 +93,52 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedIngestionTrackingProcessingDependencyException))),
+                         Times.Once);
+
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveObjectsInBatchIfServiceErrorOccursAsync()
+        {
+            // given
+            string someBatchReference = GetRandomString();
+            var serviceException = new Exception();
+
+            var failedIngestionTrackingProcessingServiceException =
+                new FailedIngestionTrackingProcessingServiceException(
+                    message: "Failed IngestionTracking processing service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var expectedIngestionTrackingProcessingServiveException =
+                new IngestionTrackingProcessingServiceException(
+                    message: "IngestionTracking processing service error occurred, please contact support.",
+                    innerException: failedIngestionTrackingProcessingServiceException);
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackings())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<List<string>> retrieveObjectsTask =
+                this.ingestionTrackingProcessingService
+                    .RetrieveObjectsInBatchByBatchReference(someBatchReference);
+
+            IngestionTrackingProcessingServiceException actualException =
+                await Assert.ThrowsAsync<IngestionTrackingProcessingServiceException>(
+                    retrieveObjectsTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingServiveException);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RetrieveAllIngestionTrackings(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedIngestionTrackingProcessingServiveException))),
                          Times.Once);
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();

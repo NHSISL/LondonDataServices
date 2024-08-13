@@ -115,35 +115,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static List<IngestionTracking> CreateRandomIngestionTrackings(
-            DateTimeOffset dateTimeOffset,
-            List<string> fileNames,
-            Guid supplierId)
-        {
-            List<IngestionTracking> items = new List<IngestionTracking>();
-
-            foreach (var fileName in fileNames)
-            {
-                items.Add(CreateIngestionTrackingFiller(
-                    dateTimeOffset,
-                    fileName: fileName,
-                    supplierId).Create());
-            }
-
-            return items;
-        }
-
-        private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
-            CreateIngestionTrackingFiller(dateTimeOffset).Create();
-
-        private Expression<Func<IngestionTracking, bool>> SameIngestionTrackingAs(
-            IngestionTracking expectedIngestionTracking)
-        {
-            return actualIngestionTracking =>
-                this.compareLogic.Compare(expectedIngestionTracking, actualIngestionTracking)
-                    .AreEqual;
-        }
-
         private static DataSet CreateRandomDataSet(Guid supplierId) =>
             CreateDataSetFiller(supplierId).Create();
 
@@ -276,6 +247,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             };
         }
 
+        private List<string> GetRandomTppFileNames(string resourceGroup, object batch, int count)
+        {
+            return Enumerable.Range(start: 1, count: count)
+                .Select(index => $"{resourceGroup}/{batch}/{GetRandomString()}.csv")
+                .ToList();
+        }
+
+        private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
+            CreateIngestionTrackingFiller(dateTimeOffset).Create();
+
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {
             var filler = new Filler<IngestionTracking>();
@@ -287,6 +268,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
 
             return filler;
+        }
+
+        private static List<IngestionTracking> CreateRandomIngestionTrackings(
+            DateTimeOffset dateTimeOffset,
+            List<string> fileNames,
+            Guid supplierId)
+        {
+            List<IngestionTracking> items = new List<IngestionTracking>();
+
+            foreach (var fileName in fileNames)
+            {
+                items.Add(CreateIngestionTrackingFiller(
+                    dateTimeOffset,
+                    fileName: fileName,
+                    supplierId).Create());
+            }
+
+            return items;
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(

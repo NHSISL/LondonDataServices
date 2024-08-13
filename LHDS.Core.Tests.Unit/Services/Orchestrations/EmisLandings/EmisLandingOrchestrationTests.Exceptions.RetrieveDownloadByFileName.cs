@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // given
             Stream someStream = new MemoryStream();
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
-            var someFileName = GetRandomMessage();
+            var someFileName = GetRandomString();
 
             var expectedDependencyException =
                 new EmisLandingOrchestrationDependencyValidationException(
@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             // given
             Stream someStream = new MemoryStream();
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
-            string someFileName = GetRandomMessage();
+            string someFileName = GetRandomString();
 
             var expectedDependencyException =
                 new EmisLandingOrchestrationDependencyException(
@@ -129,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             //Given
             Stream someStream = new MemoryStream();
             SubscriberCredential someSubscriberCredential = CreateRandomSubscriberCredential();
-            var someFileName = GetRandomMessage();
+            var someFileName = GetRandomString();
             var serviceException = new Exception();
 
             var failedEmisLandingOrchestrationServiceException =

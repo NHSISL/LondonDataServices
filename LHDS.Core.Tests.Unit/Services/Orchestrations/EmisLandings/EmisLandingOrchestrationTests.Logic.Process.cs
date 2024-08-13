@@ -35,11 +35,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             Guid supplierId = randomGuid;
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             string tempFileName = GetRandomString();
+            int randomNumber = GetRandomNumber();
 
-            List<string> externalDownloadList = new List<string>()
-                {
-                    CreateRandomFileName()
-                };
+            List<string> externalDownloadList = GetRandomFilePaths(
+                count: randomNumber,
+                subscriberAgreementId: inputSubscriberCredential.Id);
 
             List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking>();
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
@@ -83,6 +83,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     ? externalFileName
                     : "/" + externalFileName;
 
+                string fileWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+                string[] segments = fileWithoutExtension.Split('_');
+                string batch = $"{segments[0]}_{segments[1]}";
+                string objectName = $"{segments[2]}_{segments[3]}";
+
                 (string encryptedFileName, string decryptedFileName) = GetFileNames(
                     inputSubscriberCredential,
                     randomDataSet,
@@ -96,9 +101,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     new IngestionTracking
                     {
                         Id = randomGuid,
+                        SupplierId = landingConfiguration.LandingSupplierId,
                         FileName = filename,
                         SourceFolderPath = sourceFolderPath,
-                        SupplierId = supplierId,
+                        Batch = batch,
+                        ObjectName = objectName,
                         DataSetSpecificationId = retrievedDataSetSpecificationId,
                         EncryptedFileName = encryptedFileName,
                         DecryptedFileName = decryptedFileName,
@@ -218,25 +225,30 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>
                 service.GetActiveDataSetSpecification(supplierId),
-                    Times.Once);
+                    Times.Exactly(externalDownloadList.Count));
 
             this.fileBrokerMock.Verify(broker =>
                 broker.GetTempFileName(),
-                    Times.Once);
+                    Times.Exactly(externalDownloadList.Count));
 
             this.fileBrokerMock.Verify(broker =>
                 broker.DeleteFileAsync(tempFileName),
-                    Times.Once);
+                    Times.Exactly(externalDownloadList.Count));
 
             this.auditServiceMock.Verify(service =>
                 service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
-                    Times.Exactly(3));
+                    Times.Exactly(3 * externalDownloadList.Count));
 
             foreach (var externalFileName in externalDownloadList)
             {
                 var filename = externalFileName.StartsWith('/')
                     ? externalFileName
                     : "/" + externalFileName;
+
+                string fileWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+                string[] segments = fileWithoutExtension.Split('_');
+                string batch = $"{segments[0]}_{segments[1]}";
+                string objectName = $"{segments[2]}_{segments[3]}";
 
                 (string encryptedFileName, string decryptedFileName) = GetFileNames(
                     inputSubscriberCredential,
@@ -251,9 +263,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     new IngestionTracking
                     {
                         Id = randomGuid,
+                        SupplierId = landingConfiguration.LandingSupplierId,
                         FileName = filename,
                         SourceFolderPath = sourceFolderPath,
-                        SupplierId = supplierId,
+                        Batch = batch,
+                        ObjectName = objectName,
                         DataSetSpecificationId = retrievedDataSetSpecificationId,
                         EncryptedFileName = encryptedFileName,
                         DecryptedFileName = decryptedFileName,
@@ -323,7 +337,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
                 this.hashBrokerMock.Verify(broker =>
                     broker.GenerateSha256Hash(It.IsAny<Stream>()),
-                        Times.Once);
+                        Times.Exactly(externalDownloadList.Count));
 
                 this.documentProcessingServiceMock
                     .Verify(service => service.AddDocumentAsync(

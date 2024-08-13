@@ -55,5 +55,47 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnRetrieveObjectsInBatchIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            string someBatchReference = GetRandomString();
+
+            var expectedIngestionTrackingProcessingDependencyException =
+                new IngestionTrackingProcessingDependencyException(
+                    message: "IngestionTracking processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackings())
+                    .Throws(dependencyException);
+
+            // when
+            ValueTask<List<string>> retrieveObjectsTask =
+                this.ingestionTrackingProcessingService
+                    .RetrieveObjectsInBatchByBatchReference(someBatchReference);
+
+            IngestionTrackingProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyException>(
+                    retrieveObjectsTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingDependencyException);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RetrieveAllIngestionTrackings(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedIngestionTrackingProcessingDependencyException))),
+                         Times.Once);
+
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

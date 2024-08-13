@@ -35,8 +35,8 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
         public ValueTask<string> DecryptAsync(string encryptedFileName) =>
             TryCatch(async () =>
             {
-                string decryptedFileName = await DecryptFileAsync(encryptedFileName);
-                await this.ingressOrchestrationService.CheckForEmisBatchCompleteAsync(encryptedFileName);
+                (string decryptedFileName, Guid ingestionTrackingId) = await DecryptFileAsync(encryptedFileName);
+                await this.ingressOrchestrationService.CheckForBatchCompleteAsync(ingestionTrackingId);
 
                 return decryptedFileName;
             });
@@ -60,7 +60,7 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                 }
             });
 
-        private async ValueTask<string> DecryptFileAsync(string encryptedFileName)
+        private async ValueTask<(string DecryptedFileName, Guid IngestionTrackingId)> DecryptFileAsync(string encryptedFileName)
         {
             ValidateFileNameOnDecrypt(encryptedFileName);
             string[] parts = encryptedFileName.Split("/");
@@ -82,12 +82,9 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                         subscriberCredentialId: new Guid(extractSubscriberCredentialIdString),
                         externalUse: false);
 
-                string decryptItem =
-                    await this.decryptionOrchestrationService.DecryptAsync(
+                return await this.decryptionOrchestrationService.DecryptAsync(
                         encryptedFileName,
                         maybeSubscriberCredential);
-
-                return decryptItem;
             }
             else
             {

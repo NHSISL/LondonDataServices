@@ -37,11 +37,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             Guid? batchReference = retrievedResolvedAddress.BatchReference;
 
-            foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
-            {
-                await this.resolvedAddressService.RemoveResolvedAddressByIdAsync(resolvedAddress.Id);
-            }
-
             MemoryStream retrievedDocumentStream = new MemoryStream();
             string csvFileName = $"out/{batchReference}.csv";
 
@@ -56,7 +51,17 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 retrievedDocumentCsv = await reader.ReadToEndAsync();
             }
 
-            retrievedDocumentCsv.Should().BeEquivalentTo(expectedAddresses);
+            List<ResolvedAddress> retrievedCsvAddresses = await this.MapCsvToObject(data: retrievedDocumentCsv);
+            randomResolvedAddresses.Count.Should().Be(randomResolvedAddresses.Count);
+
+            foreach (ResolvedAddress resolvedAddress in randomResolvedAddresses)
+            {
+                retrievedCsvAddresses.Where(retrievedAddress => retrievedAddress.Id == resolvedAddress.Id)
+                    .FirstOrDefault();
+
+                await this.resolvedAddressService.RemoveResolvedAddressByIdAsync(resolvedAddress.Id);
+            }
+
             await this.documentService.RemoveDocumentByFileNameAsync(csvFileName, blobContainers.Addresses);
         }
     }

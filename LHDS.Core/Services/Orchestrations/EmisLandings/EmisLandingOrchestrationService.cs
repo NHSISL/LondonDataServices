@@ -200,7 +200,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                 string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
                 sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
-
                 string file = Path.GetFileName(filename);
                 string fileWithoutExtension = Path.GetFileNameWithoutExtension(file);
                 string[] segments = fileWithoutExtension.Split('_');

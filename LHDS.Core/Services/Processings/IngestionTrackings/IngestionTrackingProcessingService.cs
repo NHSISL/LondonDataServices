@@ -92,6 +92,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
         public ValueTask<List<string>> RetrieveObjectsInBatchByBatchReference(string bacthReference) =>
             TryCatch(async () =>
             {
+                ValidateOnRetrieveObjectsInBatchByBatchReference(bacthReference);
+
                 List<string> objectNames = new List<string>();
 
                 List<string?> result = this.ingestionTrackingService.RetrieveAllIngestionTrackings()

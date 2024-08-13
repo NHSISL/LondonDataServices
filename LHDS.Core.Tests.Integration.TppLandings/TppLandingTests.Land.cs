@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
             var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                .Where(audit => audit.IngestionTrackingId == actualGuid);
+                .Where(audit => audit.IngestionTrackingId == actualGuid).ToList();
 
             foreach (var audit in audits)
             {

@@ -304,7 +304,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 }
 
                 var updatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
                 updatedIngestionTracking.IsDownloaded = true;
                 updatedIngestionTracking.Decrypted = false;
                 updatedIngestionTracking.IsProcessing = false;
@@ -356,7 +355,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw new NotFoundDocumentProcessingException(
                     $"No active dataset specification found for supplier id: " +
-                    $"{landingConfiguration.LandingSupplierId}");
+                    $"{supplierId}");
             }
 
             string[] splitFileName = fileName.Split('/');

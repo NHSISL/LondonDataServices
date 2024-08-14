@@ -218,7 +218,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                   new IngestionTracking
                   {
                       Id = this.identifierBroker.GetIdentifier(),
-                      SupplierId = landingConfiguration.LandingSupplierId,
+                      SupplierId = supplierId,
+                      Container = blobContainers.EmisLanding,
                       FileName = filename,
                       SourceFolderPath = sourceFolderPath,
                       Batch = batch,

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
@@ -256,6 +257,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
         private bool CompareObjects(object expected, object actual)
         {
+            try
+            {
+                actual.Should().BeEquivalentTo(expected);
+            }
+            catch (Exception exception)
+            {
+                output.WriteLine(exception.Message);
+            }
+
             return this.compareLogic.Compare(expected, actual)
                     .AreEqual;
         }

@@ -136,6 +136,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTime);
 
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(randomGuid);
+
             this.dataSetSpecificationProcessingServiceMock.Setup(service =>
                service.GetActiveDataSetSpecification(randomSupplierId))
                    .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
@@ -151,16 +155,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Batch = batch,
                     ObjectName = objectName,
                     DataSetSpecificationId = randomDataSetSpecification.Id,
-                    EncryptedFileName = null,
+                    EncryptedFileName = string.Empty,
                     DecryptedFileName = decryptedFileName,
-                    Decrypted = false,
+                    Decrypted = true,
                     LastSeen = randomDateTime,
                     FileDeleted = false,
                     RecordCount = 0,
-                    EncryptedFileSize = inputData.Length,
-                    EncryptedFileSha256Hash = randomHash,
-                    DecryptedFileSize = 0,
-                    DecryptedFileSha256Hash = string.Empty,
+                    EncryptedFileSize = 0,
+                    EncryptedFileSha256Hash = string.Empty,
+                    DecryptedFileSize = inputData.Length,
+                    DecryptedFileSha256Hash = randomHash,
                     CreatedBy = "System",
                     CreatedDate = randomDateTime,
                     UpdatedBy = "System",
@@ -202,6 +206,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
                     Times.Once);
 
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>

@@ -41,7 +41,9 @@ using LHDS.Core.Services.Orchestrations.Decryptions;
 using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.CryptographicKeys;
+using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Downloads;
+using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
 using Microsoft.Extensions.Configuration;
@@ -190,6 +192,8 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ISubscriberAgreementProcessingService, SubscriberAgreementProcessingService>();
             services.AddTransient<ISecureDataProcessingService, SecureDataProcessingService>();
             services.AddTransient<ICryptographyKeyProcessingService, CryptographyKeyProcessingService>();
+            services.AddTransient<IIngestionTrackingProcessingService, IngestionTrackingProcessingService>();
+            services.AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
         }
 
         private static void AddOrchestrations(IServiceCollection services)

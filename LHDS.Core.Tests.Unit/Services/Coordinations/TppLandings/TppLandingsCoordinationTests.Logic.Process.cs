@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 Times.Once);
 
             this.ingressOrchestrationServiceMock.Verify(service =>
-                service.CheckForTPPBatchCompleteAsync(inputFileName),
+                service.CheckForBatchCompleteAsync(ingestionTrackingId),
                     Times.Once);
 
             this.tppLandingOrchestrationServiceMock.VerifyNoOtherCalls();

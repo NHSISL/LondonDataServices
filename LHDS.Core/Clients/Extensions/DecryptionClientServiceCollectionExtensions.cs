@@ -10,6 +10,7 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.Cryptographies;
 using LHDS.Core.Brokers.CryptographyKeys;
 using LHDS.Core.Brokers.DateTimes;
@@ -28,8 +29,10 @@ using LHDS.Core.Providers.Cryptography.Gpg;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Providers.Downloads.FtpDownloads;
 using LHDS.Core.Services.Coordinations.Decryptions;
+using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.CryptographicKeys;
 using LHDS.Core.Services.Foundations.Cryptographies;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
@@ -41,7 +44,9 @@ using LHDS.Core.Services.Orchestrations.Decryptions;
 using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.CryptographicKeys;
+using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Downloads;
+using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
 using Microsoft.Extensions.Configuration;
@@ -124,6 +129,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
+            services.AddTransient<IAuditBroker, AuditBroker>();
 
             LandingConfiguration? landingConfiguration =
                 configuration.GetSection("landingSettings").Get<LandingConfiguration>();
@@ -172,6 +178,8 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddServices(IServiceCollection services)
         {
+            services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IDownloadService, DownloadService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
@@ -190,6 +198,8 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ISubscriberAgreementProcessingService, SubscriberAgreementProcessingService>();
             services.AddTransient<ISecureDataProcessingService, SecureDataProcessingService>();
             services.AddTransient<ICryptographyKeyProcessingService, CryptographyKeyProcessingService>();
+            services.AddTransient<IIngestionTrackingProcessingService, IngestionTrackingProcessingService>();
+            services.AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
         }
 
         private static void AddOrchestrations(IServiceCollection services)
@@ -206,6 +216,7 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddClients(IServiceCollection services)
         {
             services.AddTransient<IDecryptionClient, DecryptionClient>();
+            services.AddTransient<IAuditClient, AuditClient>();
         }
 
         private static void ValidateFtpProviderSettings(IFtpDownloadProviderSettings? ftpDownloadProviderSettings)

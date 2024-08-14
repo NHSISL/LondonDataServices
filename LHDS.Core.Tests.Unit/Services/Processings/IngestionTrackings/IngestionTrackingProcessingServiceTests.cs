@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
@@ -82,11 +83,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         private static IngestionTracking CreateRandomIngestionTracking() =>
             CreateIngestionTrackingFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
-        private static IQueryable<IngestionTracking> CreateRandomIngestionTrackings()
+        private static List<IngestionTracking> CreateRandomIngestionTrackings()
         {
             return CreateIngestionTrackingFiller(dateTimeOffset: GetRandomDateTimeOffset())
                 .Create(count: GetRandomNumber())
-                    .AsQueryable();
+                    .ToList();
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)

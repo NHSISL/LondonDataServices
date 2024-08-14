@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                    .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask<string> decryptTask = this.decryptionOrchestrationService.DecryptAsync(
+            ValueTask<(string, Guid)> decryptTask = this.decryptionOrchestrationService.DecryptAsync(
                 randomFileName,
                 inputSubscriberCredential);
 
@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                   .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask<string> decryptTask = this.decryptionOrchestrationService.DecryptAsync(
+            ValueTask<(string, Guid)> decryptTask = this.decryptionOrchestrationService.DecryptAsync(
                 randomFileName,
                 inputSubscriberCredential);
 
@@ -135,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<string> processTask = this.decryptionOrchestrationService.DecryptAsync(
+            ValueTask<(string, Guid)> processTask = this.decryptionOrchestrationService.DecryptAsync(
                 randomFileName,
                 inputSubscriberCredential);
 

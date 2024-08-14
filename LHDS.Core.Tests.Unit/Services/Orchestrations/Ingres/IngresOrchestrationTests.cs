@@ -4,7 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -14,6 +17,7 @@ using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.SpecificationObjects;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingres
 {
@@ -25,9 +29,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingres
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IAuditBroker> auditBrokerMock;
         private readonly IIngressOrchestrationService ingressOrchestrationService;
+        private readonly ITestOutputHelper output;
 
-        public IngresOrchestrationTests()
+        public IngresOrchestrationTests(ITestOutputHelper output)
         {
+            this.output = output;
             this.ingestionTrackingProcessingServiceMock = new Mock<IIngestionTrackingProcessingService>();
             this.specificationObjectProcessingServiceMock = new Mock<ISpecificationObjectProcessingService>();
             this.documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
@@ -41,6 +47,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingres
                 loggingBroker: this.loggingBrokerMock.Object,
                 auditBroker: this.auditBrokerMock.Object);
         }
+
+        private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
+        {
+            return actualStream =>
+                IsSameStream(expectedStream, actualStream);
+        }
+
+        private bool IsSameStream(Stream expectedStream, Stream actualStream)
+        {
+            byte[] expectedBytes = ReadAllBytesFromStream(expectedStream);
+            byte[] actualBytes = ReadAllBytesFromStream(actualStream);
+
+            return new CompareLogic().Compare(expectedBytes, actualBytes).AreEqual;
+        }
+
+        private static byte[] ReadAllBytesFromStream(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
+
+        private static string CreateRandomDecryptedFilePath() =>
+            $"/{GetRandomString()}/{DateTime.UtcNow.ToString("yyyyMMdd_HHmm")}/{GetRandomString()}.csv";
 
         private static string GetRandomString() =>
             new MnemonicString(wordCount: 1, wordMinLength: 1, wordMaxLength: GetRandomNumber()).GetValue();

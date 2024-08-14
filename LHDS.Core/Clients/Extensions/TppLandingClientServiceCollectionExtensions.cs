@@ -10,6 +10,7 @@ using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
@@ -20,6 +21,7 @@ using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Coordinations.TppLandings;
+using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
@@ -64,6 +66,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
+            services.AddTransient<IAuditBroker, AuditBroker>();
 
             LandingConfiguration landingConfiguration =
                 configuration.GetSection("landingSettings").Get<LandingConfiguration>();
@@ -101,6 +104,7 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddServices(IServiceCollection services)
         {
+            services.AddTransient<IAuditService, AuditService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
@@ -133,6 +137,7 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddClients(IServiceCollection services)
         {
             services.AddTransient<ITppLandingClient, TppLandingClient>();
+            services.AddTransient<IAuditClient, AuditClient>();
         }
 
         private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)

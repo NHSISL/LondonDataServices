@@ -145,6 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 {
                     Id = randomGuid,
                     SupplierId = randomSupplierId,
+                    Container = blobContainers.TppLanding,
                     FileName = inputFileName,
                     SourceFolderPath = sourceFolderPath,
                     Batch = batch,
@@ -208,7 +209,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.AddIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(newIngestionTracking))),
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
@@ -310,7 +311,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                service.ModifyIngestionTrackingAsync(updatedIngestionTracking),
                     Times.Once);
 
             this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>

@@ -109,7 +109,7 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                     }
                 });
 
-                return await ValueTask.FromResult(objectNames);
+                return objectNames;
             });
 
     }

@@ -247,6 +247,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             };
         }
 
+        private Expression<Func<IngestionTracking, bool>> SameIngestionTrackingAs(
+            IngestionTracking expectedIngestionTracking)
+        {
+            return actualIngestionTracking =>
+                CompareObjects(expectedIngestionTracking, actualIngestionTracking);
+        }
+
+        private bool CompareObjects(object expected, object actual)
+        {
+            return this.compareLogic.Compare(expected, actual)
+                    .AreEqual;
+        }
+
         private List<string> GetRandomTppFileNames(string resourceGroup, object batch, int count)
         {
             return Enumerable.Range(start: 1, count: count)

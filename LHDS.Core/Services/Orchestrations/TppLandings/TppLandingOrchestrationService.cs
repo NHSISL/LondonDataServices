@@ -110,6 +110,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         {
                             Id = this.identifierBroker.GetIdentifier(),
                             SupplierId = supplierId,
+                            Container = blobContainers.TppLanding,
                             FileName = filename,
                             SourceFolderPath = sourceFolderPath,
                             Batch = batch,

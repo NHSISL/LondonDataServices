@@ -116,7 +116,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             Batch = batch,
                             ObjectName = objectName,
                             DataSetSpecificationId = retrievedDataSetSpecification.Id,
-                            EncryptedFileName = string.Empty,
+                            EncryptedFileName = "Not Encrypted",
                             EncryptedFileSize = 0,
                             EncryptedFileSha256Hash = string.Empty,
                             DecryptedFileName = decryptedFileName,

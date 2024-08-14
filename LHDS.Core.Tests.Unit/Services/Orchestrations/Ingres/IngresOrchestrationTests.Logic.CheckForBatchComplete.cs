@@ -22,11 +22,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingres
             // given
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
             randomIngestionTracking.DecryptedFileName = CreateRandomDecryptedFilePath();
-
-            string batchReadyFileName =
-                $"{Path.GetDirectoryName(randomIngestionTracking.DecryptedFileName)}/BatchReady.txt"
-                    .Replace("\\", "/");
-
             IngestionTracking storageIngestionTracking = randomIngestionTracking.DeepClone();
             Guid ingestionTrackingId = randomIngestionTracking.Id;
             string batchReference = randomIngestionTracking.Batch;
@@ -69,9 +64,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingres
 
             this.documentProcessingServiceMock.Verify(service =>
             service.AddDocumentAsync(
-                It.Is(SameStreamAs(batchReadyStream)),
-                batchReadyFileName,
-                storageIngestionTracking.Container),
+                It.IsAny<Stream>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()),
                     Times.Never);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();

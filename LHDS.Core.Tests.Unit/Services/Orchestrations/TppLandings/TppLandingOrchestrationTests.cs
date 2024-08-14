@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
@@ -245,6 +246,28 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     message: "Audit service error occurred, please contact support.",
                     innerException)
             };
+        }
+
+        private Expression<Func<IngestionTracking, bool>> SameIngestionTrackingAs(
+            IngestionTracking expectedIngestionTracking)
+        {
+            return actualIngestionTracking =>
+                CompareObjects(expectedIngestionTracking, actualIngestionTracking);
+        }
+
+        private bool CompareObjects(object expected, object actual)
+        {
+            try
+            {
+                actual.Should().BeEquivalentTo(expected);
+            }
+            catch (Exception exception)
+            {
+                output.WriteLine(exception.Message);
+            }
+
+            return this.compareLogic.Compare(expected, actual)
+                    .AreEqual;
         }
 
         private List<string> GetRandomTppFileNames(string resourceGroup, object batch, int count)

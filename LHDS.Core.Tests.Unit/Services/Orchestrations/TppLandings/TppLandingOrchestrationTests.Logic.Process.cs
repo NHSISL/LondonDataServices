@@ -136,6 +136,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTime);
 
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(randomGuid);
+
             this.dataSetSpecificationProcessingServiceMock.Setup(service =>
                service.GetActiveDataSetSpecification(randomSupplierId))
                    .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
@@ -145,21 +149,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 {
                     Id = randomGuid,
                     SupplierId = randomSupplierId,
+                    Container = blobContainers.TppLanding,
                     FileName = inputFileName,
                     SourceFolderPath = sourceFolderPath,
                     Batch = batch,
                     ObjectName = objectName,
                     DataSetSpecificationId = randomDataSetSpecification.Id,
-                    EncryptedFileName = null,
+                    EncryptedFileName = string.Empty,
                     DecryptedFileName = decryptedFileName,
-                    Decrypted = false,
+                    Decrypted = true,
                     LastSeen = randomDateTime,
                     FileDeleted = false,
                     RecordCount = 0,
-                    EncryptedFileSize = inputData.Length,
-                    EncryptedFileSha256Hash = randomHash,
-                    DecryptedFileSize = 0,
-                    DecryptedFileSha256Hash = string.Empty,
+                    EncryptedFileSize = 0,
+                    EncryptedFileSha256Hash = string.Empty,
+                    DecryptedFileSize = inputData.Length,
+                    DecryptedFileSha256Hash = randomHash,
                     CreatedBy = "System",
                     CreatedDate = randomDateTime,
                     UpdatedBy = "System",
@@ -203,12 +208,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 broker.GetCurrentDateTimeOffset(),
                     Times.Once);
 
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Once);
+
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>
                 service.GetActiveDataSetSpecification(randomSupplierId),
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.AddIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(newIngestionTracking))),
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
@@ -310,7 +319,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))),
                     Times.Once);
 
             this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>

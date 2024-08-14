@@ -155,7 +155,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Batch = batch,
                     ObjectName = objectName,
                     DataSetSpecificationId = randomDataSetSpecification.Id,
-                    EncryptedFileName = string.Empty,
+                    EncryptedFileName = "Not Encrypted",
                     DecryptedFileName = decryptedFileName,
                     Decrypted = true,
                     LastSeen = randomDateTime,

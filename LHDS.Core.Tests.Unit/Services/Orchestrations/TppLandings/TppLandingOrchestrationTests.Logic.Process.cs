@@ -319,7 +319,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.ModifyIngestionTrackingAsync(updatedIngestionTracking),
+                service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))),
                     Times.Once);
 
             this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>

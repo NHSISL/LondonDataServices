@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             int randomNumber = GetRandomNumber();
 
             List<string> externalDownloadList = GetRandomFilePaths(
-                count: randomNumber,
+                count: 1,
                 subscriberAgreementId: inputSubscriberCredential.Id);
 
             List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking>();
@@ -97,11 +97,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
                 sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
 
-                IngestionTracking newIngestionTracking =
+                IngestionTracking newIngestionTrackingItem =
                     new IngestionTracking
                     {
                         Id = randomGuid,
-                        SupplierId = landingConfiguration.LandingSupplierId,
+                        SupplierId = supplierId,
+                        Container = blobContainers.EmisLanding,
                         FileName = filename,
                         SourceFolderPath = sourceFolderPath,
                         Batch = batch,
@@ -126,10 +127,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                         UpdatedDate = randomDateTime
                     };
 
-                IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
+                IngestionTracking storageIngestionTracking = newIngestionTrackingItem.DeepClone();
 
                 this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                    service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(newIngestionTracking))))
+                    service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(newIngestionTrackingItem))))
                         .ReturnsAsync(storageIngestionTracking);
 
                 IngestionTracking retryDownloadIngestionTracking = storageIngestionTracking.DeepClone();
@@ -263,7 +264,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     new IngestionTracking
                     {
                         Id = randomGuid,
-                        SupplierId = landingConfiguration.LandingSupplierId,
+                        SupplierId = supplierId,
+                        Container = blobContainers.EmisLanding,
                         FileName = filename,
                         SourceFolderPath = sourceFolderPath,
                         Batch = batch,

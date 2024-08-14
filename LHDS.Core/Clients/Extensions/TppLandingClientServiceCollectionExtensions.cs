@@ -137,6 +137,7 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddClients(IServiceCollection services)
         {
             services.AddTransient<ITppLandingClient, TppLandingClient>();
+            services.AddTransient<IAuditClient, AuditClient>();
         }
 
         private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)

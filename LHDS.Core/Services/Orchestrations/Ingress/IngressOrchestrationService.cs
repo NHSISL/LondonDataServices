@@ -15,7 +15,7 @@ using LHDS.Core.Services.Processings.SpecificationObjects;
 
 namespace LHDS.Core.Services.Orchestrations.Ingress
 {
-    public class IngressOrchestrationService : IIngressOrchestrationService
+    public partial class IngressOrchestrationService : IIngressOrchestrationService
     {
         private readonly IIngestionTrackingProcessingService ingestionTrackingProcessingService;
         private readonly ISpecificationObjectProcessingService specificationObjectProcessingService;
@@ -37,8 +37,11 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             this.auditBroker = auditBroker;
         }
 
-        public async ValueTask CheckForBatchCompleteAsync(Guid ingestionTrackingId)
+        public ValueTask CheckForBatchCompleteAsync(Guid ingestionTrackingId) =>
+            TryCatch(async () =>
         {
+            ValidateOnCheckForBatchComplete(ingestionTrackingId);
+
             IngestionTracking ingestionTracking =
                 await this.ingestionTrackingProcessingService
                     .RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
@@ -77,6 +80,6 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     fileName: batchCompleteFileName,
                     container: ingestionTracking.Container);
             }
-        }
+        });
     }
 }

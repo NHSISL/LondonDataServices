@@ -7,9 +7,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Orchestrations.Ingres.Exceptions
 {
-    public class FailedIngresOrchestrationServiceException : Xeption
+    public class FailedIngressOrchestrationServiceException : Xeption
     {
-        public FailedIngresOrchestrationServiceException(string message, Exception? innerException)
+        public FailedIngressOrchestrationServiceException(string message, Exception? innerException)
             : base(message, innerException)
         { }
     }

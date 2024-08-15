@@ -36,12 +36,12 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
                 throw CreateAndLogDependencyValidationException(
                     tppLandingOrchestrationDependencyValidationException);
             }
-            catch (IngresOrchestrationValidationException
+            catch (IngressOrchestrationValidationException
                 ingresOrchestrationValidationException)
             {
                 throw CreateAndLogDependencyValidationException(ingresOrchestrationValidationException);
             }
-            catch (IngresOrchestrationDependencyValidationException
+            catch (IngressOrchestrationDependencyValidationException
                 ingresOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(ingresOrchestrationDependencyValidationException);
@@ -56,12 +56,12 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
             {
                 throw CreateAndLogDependencyException(tppLandingOrchestrationServiceException);
             }
-            catch (IngresOrchestrationDependencyException
+            catch (IngressOrchestrationDependencyException
                 ingresOrchestrationDependencyException)
             {
                 throw CreateAndLogDependencyException(ingresOrchestrationDependencyException);
             }
-            catch (IngresOrchestrationServiceException
+            catch (IngressOrchestrationServiceException
                 ingresOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(ingresOrchestrationServiceException);

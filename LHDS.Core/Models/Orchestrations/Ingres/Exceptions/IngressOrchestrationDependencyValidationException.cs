@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Orchestrations.Ingres.Exceptions
 {
-    public class IngressOrchestrationDependencyException : Xeption
+    public class IngressOrchestrationDependencyValidationException : Xeption
     {
-        public IngressOrchestrationDependencyException(string message, Xeption? innerException)
+        public IngressOrchestrationDependencyValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

@@ -135,11 +135,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                         "please try again.",
                     innerException),
 
-                new IngresOrchestrationValidationException(
+                new IngressOrchestrationValidationException(
                     message: "Ingres orchestration validation error occured, please try again.",
                     innerException),
 
-                new IngresOrchestrationDependencyValidationException(
+                new IngressOrchestrationDependencyValidationException(
                     message: "Ingres orchestration dependency validation error occurred, " +
                         "please try again.",
                     innerException),
@@ -170,11 +170,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     message: "Decryption orchestration service error occurred, please contact support.",
                     innerException),
 
-                new IngresOrchestrationDependencyException(
+                new IngressOrchestrationDependencyException(
                     message: "Ingres orchestration dependency error occured, please try again.",
                     innerException),
 
-                new IngresOrchestrationServiceException(
+                new IngressOrchestrationServiceException(
                     message: "Ingres orchestration service error occurred, please contact support.",
                     innerException)
             };

@@ -3,16 +3,26 @@
 // ---------------------------------------------------------
 
 using System;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
 
 namespace LHDS.Core.Services.Orchestrations.Ingress
 {
     public partial class IngressOrchestrationService
     {
-        private void ValidateOnCheckForBatchComplete(Guid ingestionTrackingId)
+        private static void ValidateOnCheckForBatchComplete(Guid ingestionTrackingId)
         {
             Validate((Rule: IsInvalid(ingestionTrackingId),
                 Parameter: nameof(ingestionTrackingId)));
+        }
+
+        private static void ValidateStorageIngestionTracking(IngestionTracking ingestionTracking, Guid ingestionTrackingId)
+        {
+            if (ingestionTracking is null)
+            {
+                throw new NotFoundIngressOrchestrationException(
+                    $"Couldn't find ingestion tracking with Id: {ingestionTrackingId}.");
+            }
         }
 
         private static dynamic IsInvalid(Guid id) => new

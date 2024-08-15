@@ -22,6 +22,10 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             {
                 throw CreateAndLogValidationException(invalidArgumentIngressOrchestrationException);
             }
+            catch (NotFoundIngressOrchestrationException notFoundIngressOrchestrationException)
+            {
+                throw CreateAndLogValidationException(notFoundIngressOrchestrationException);
+            }
         }
 
         private IngressOrchestrationValidationException CreateAndLogValidationException(Xeption exception)

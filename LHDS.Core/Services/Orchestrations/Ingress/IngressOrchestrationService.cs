@@ -46,6 +46,8 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                 await this.ingestionTrackingProcessingService
                     .RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
 
+            ValidateStorageIngestionTracking(ingestionTracking, ingestionTrackingId);
+
             List<string> specificationObjectIds = await this.specificationObjectProcessingService
                 .RetrieveSpecificationObjectsByDataSetSpecificationId(ingestionTracking.DataSetSpecificationId);
 

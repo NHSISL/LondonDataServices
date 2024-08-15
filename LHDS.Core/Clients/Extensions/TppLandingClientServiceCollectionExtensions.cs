@@ -27,6 +27,7 @@ using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Orchestrations.Tpp;
@@ -112,6 +113,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDataSetService, DataSetService>();
             services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
             services.AddSingleton<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
+            services.AddSingleton<ISpecificationObjectService, SpecificationObjectService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)

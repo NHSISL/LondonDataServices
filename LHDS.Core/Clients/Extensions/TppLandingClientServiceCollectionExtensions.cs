@@ -37,6 +37,7 @@ using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.OptOuts;
+using LHDS.Core.Services.Processings.SpecificationObjects;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -121,6 +122,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();
             services.AddTransient<IIngestionTrackingProcessingService, IngestionTrackingProcessingService>();
             services.AddTransient<IIngestionTrackingAuditProcessingService, IngestionTrackingAuditProcessingService>();
+            services.AddTransient<ISpecificationObjectProcessingService, SpecificationObjectProcessingService>();
         }
 
         private static void AddOrchestrations(IServiceCollection services)

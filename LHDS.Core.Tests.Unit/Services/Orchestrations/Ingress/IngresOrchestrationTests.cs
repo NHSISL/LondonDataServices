@@ -10,7 +10,11 @@ using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
+using LHDS.Core.Models.Processings.IngestionTrackings.Exceptions;
+using LHDS.Core.Models.Processings.SpecificationObjects.Exceptions;
 using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.IngestionTrackings;
@@ -18,6 +22,7 @@ using LHDS.Core.Services.Processings.SpecificationObjects;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
@@ -56,6 +61,75 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
         {
             return actualStream =>
                 IsSameStream(expectedStream, actualStream);
+        }
+
+        public static TheoryData<Xeption> IngressDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new IngestionTrackingProcessingValidationException(
+                    message: "Ingestion tracking processing validation errors occurred, please try again.",
+                    innerException),
+
+                new IngestionTrackingProcessingDependencyValidationException(
+                    message: "Ingestion tracking processing dependency validation error occurred, " +
+                        "fix the errors and try again.",
+                    innerException),
+
+                new SpecificationObjectProcessingValidationException(
+                    message: "Specification object processing validation errors occurred, please try again.",
+                    innerException),
+
+                new SpecificationObjectProcessingDependencyValidationException(
+                    message: "Specification object processing  dependency validation occurred, please try again.",
+                    innerException),
+
+                new DocumentValidationException(
+                    message: "Document validation errors occured, please try again",
+                    innerException),
+
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation occurred, please try again.",
+                    innerException),
+            };
+        }
+
+        public static TheoryData<Xeption> IngressDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new IngestionTrackingProcessingDependencyException(
+                    message: "Ingestion tracking processing dependency error occurred, fix the errors and try again.",
+                    innerException),
+
+                new IngestionTrackingProcessingServiceException(
+                    message: "Ingestion tracking processing service error occurred, please contact support.",
+                    innerException),
+
+                new SpecificationObjectProcessingDependencyException(
+                    message: "Specification object processing dependency error occurred, please contact support.",
+                    innerException),
+
+                new SpecificationObjectProcessingServiceException(
+                    message: "Specification object processing service error occurred, please contact support.",
+                    innerException),
+
+                new DocumentProcessingDependencyException(
+                    message: "Document processing dependency error occurred, please contact support.",
+                    innerException),
+
+                new DocumentProcessingServiceException(
+                    message: "Document processing service error occurred, please contact support.",
+                    innerException),
+            };
         }
 
         private bool IsSameStream(Stream expectedStream, Stream actualStream)

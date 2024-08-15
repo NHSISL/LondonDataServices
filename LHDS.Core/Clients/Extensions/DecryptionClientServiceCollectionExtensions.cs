@@ -38,6 +38,7 @@ using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.SecureDatas;
+using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.SubscriberAgreements;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Decryptions;
@@ -45,9 +46,11 @@ using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.CryptographicKeys;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
+using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Downloads;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.SecureDatas;
+using LHDS.Core.Services.Processings.SpecificationObjects;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -190,16 +193,19 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ISubscriberAgreementService, SubscriberAgreementService>();
             services.AddTransient<ISecureDataService, SecureDataService>();
             services.AddTransient<ICryptographyKeyService, CryptographyKeyService>();
+            services.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
         {
             services.AddTransient<IDownloadProcessingService, DownloadProcessingService>();
+            services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();
             services.AddTransient<ISubscriberAgreementProcessingService, SubscriberAgreementProcessingService>();
             services.AddTransient<ISecureDataProcessingService, SecureDataProcessingService>();
             services.AddTransient<ICryptographyKeyProcessingService, CryptographyKeyProcessingService>();
             services.AddTransient<IIngestionTrackingProcessingService, IngestionTrackingProcessingService>();
             services.AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
+            services.AddTransient<ISpecificationObjectProcessingService, SpecificationObjectProcessingService>();
         }
 
         private static void AddOrchestrations(IServiceCollection services)

@@ -99,11 +99,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             {
                 if (i == 1)
                 {
-                    fileName += "/" + subscriberCredentialId.ToString();
+                    fileName += $"/{subscriberCredentialId.ToString()}";
+                }
+                if (i == 5)
+                {
+                    fileName += $"/{subscriberCredentialId.ToString()}.csv";
                 }
                 else
                 {
-                    fileName += "/" + GetRandomWordString();
+                    fileName += $"/{GetRandomWordString()}";
                 }
             }
 
@@ -112,12 +116,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
         private static IngestionTracking CreateRandomIngestionTracking(
            DateTimeOffset dateTimeOffset,
-           string fileName,
+           string encryptedFileName,
+           string decryptedFileName,
            Guid supplierId)
         {
             IngestionTracking ingestionTracking = CreateIngestionTrackingFiller(
                 dateTimeOffset,
-                fileName,
+                encryptedFileName,
+                decryptedFileName,
                 supplierId)
                     .Create();
 
@@ -125,13 +131,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset, string fileName, Guid supplierId)
+            DateTimeOffset dateTimeOffset, string encryptedFileName, string decryptedFileName, Guid supplierId)
         {
             string user = "System";
             var filler = new Filler<IngestionTracking>();
 
             filler.Setup()
-                .OnProperty(ingestionTracking => ingestionTracking.EncryptedFileName).Use(fileName)
+                .OnProperty(ingestionTracking => ingestionTracking.EncryptedFileName).Use(encryptedFileName)
+                .OnProperty(ingestionTracking => ingestionTracking.DecryptedFileName).Use(decryptedFileName)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)

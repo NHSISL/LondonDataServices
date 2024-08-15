@@ -33,18 +33,24 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             SubscriberCredential generatedSubscriberCredential = await this.subscriberCredentialOrchestration
                 .ModifyOrAddSubscriberCredentialAsync(subscriberCredential, regenerateKeys: true);
 
-            string fileName = CreateRandomFileName(subscriberCredential.Id);
+            string encryptedFileName = CreateRandomFileName(subscriberCredential.Id);
+            string decryptedFileName = CreateRandomFileName(subscriberCredential.Id);
             Stream inputStream = new MemoryStream(documentData);
 
             await this.cryptographyProvider
                 .EncryptAsync(input: inputStream, encryptedStream, generatedSubscriberCredential);
 
-            await this.documentService.AddDocumentAsync(input: encryptedStream, fileName, blobContainers.EmisLanding);
+            await this.documentService.AddDocumentAsync(
+                input: encryptedStream,
+                fileName: encryptedFileName,
+                container: blobContainers.EmisLanding);
+
             await this.supplierService.AddSupplierAsync(randomSupplier);
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                fileName,
+                encryptedFileName,
+                decryptedFileName,
                 supplierId: supplierId);
 
             ingestionTracking.IsDownloaded = true;
@@ -84,7 +90,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: subscriberCredential.Id);
 
             await this.supplierService.RemoveSupplierByIdAsync(supplierId: supplierId);
-            await this.documentService.RemoveDocumentByFileNameAsync(fileName, blobContainers.EmisLanding);
+            await this.documentService.RemoveDocumentByFileNameAsync(encryptedFileName, blobContainers.EmisLanding);
 
             await this.documentService.RemoveDocumentByFileNameAsync(
                 ingestionTracking.DecryptedFileName, blobContainers.Ingress);

@@ -17,11 +17,12 @@ using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.SpecificationObjects;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 using Xunit.Abstractions;
 
-namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingres
+namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 {
-    public partial class IngresOrchestrationTests
+    public partial class IngressOrchestrationTests
     {
         private readonly Mock<IIngestionTrackingProcessingService> ingestionTrackingProcessingServiceMock;
         private readonly Mock<ISpecificationObjectProcessingService> specificationObjectProcessingServiceMock;
@@ -31,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingres
         private readonly IIngressOrchestrationService ingressOrchestrationService;
         private readonly ITestOutputHelper output;
 
-        public IngresOrchestrationTests(ITestOutputHelper output)
+        public IngressOrchestrationTests(ITestOutputHelper output)
         {
             this.output = output;
             this.ingestionTrackingProcessingServiceMock = new Mock<IIngestionTrackingProcessingService>();
@@ -47,6 +48,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingres
                 loggingBroker: this.loggingBrokerMock.Object,
                 auditBroker: this.auditBrokerMock.Object);
         }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private Expression<Func<Stream, bool>> SameStreamAs(Stream expectedStream)
         {

@@ -12,9 +12,9 @@ using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingres
+namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 {
-    public partial class IngresOrchestrationTests
+    public partial class IngressOrchestrationTests
     {
         [Fact]
         public async Task ShouldCheckForBatchCompleteAndNotCreateBatchReadyFileAsync()

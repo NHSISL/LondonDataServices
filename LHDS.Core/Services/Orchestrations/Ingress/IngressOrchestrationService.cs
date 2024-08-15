@@ -56,6 +56,11 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
 
             bool isBatchComplete = true;
 
+            //if (specificationObjectIds.Count == 0)
+            //{
+            //    isBatchComplete = false;
+            //}
+
             foreach (string specificationObjectId in specificationObjectIds)
             {
                 if (!ingestiontrackingObject.Contains(specificationObjectId))

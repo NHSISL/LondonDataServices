@@ -139,12 +139,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             return filler;
         }
 
-        private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(DataSet dataSet)
-        {
-            return CreateDataSetSpecificationFiller(dataSet)
-                .Create(count: 1)
-                    .AsQueryable();
-        }
+        private static DataSetSpecification CreateRandomDataSetSpecification(DataSet dataSet) =>
+            CreateDataSetSpecificationFiller(dataSet).Create();
 
         private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(DataSet dataSet)
         {

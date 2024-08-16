@@ -97,7 +97,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             string randomHash = GetRandomString(64);
             int randomNumber = GetRandomNumber();
             string resourceGroup = GetRandomString();
-            string batch = GetRandomString();
+            string batch = randomDateTime.ToString("yyyyMMdd_HHmm");
+            string extractTime = DateTime.ParseExact(batch, "yyyyMMdd_HHmm", null).ToString("yyyyMMddHHmmss");
             string objectName = GetRandomString();
             string inputFileName = $"/{resourceGroup}/{batch}/{objectName}.csv";
             string sourceFolderPath = $"/{resourceGroup}/{batch}";
@@ -110,19 +111,28 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             byte[] inputData = randomData;
             Stream inputDataStream = new MemoryStream(inputData);
 
-            IQueryable<DataSetSpecification> randomDataSetSpecificationList =
-               CreateRandomDataSetSpecifications(dataSet: randomDataSet);
+            DataSetSpecification randomDataSetSpecification =
+               CreateRandomDataSetSpecification(dataSet: randomDataSet);
 
-            DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
-            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
-            IngestionTracking storageIngestionTracking = randomIngestionTracking;
-            IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
+            randomDataSetSpecification.DataSetId = randomDataSet.Id;
 
-            string decryptedFileName =
+            string basePath =
                 $"/{landingConfiguration.DecryptedFolder}"
                 + $"/{randomDataSet.DataSetName}"
-                + $"/{randomDataSetSpecification.Id}"
-                + $"{inputFileName}";
+                + $"/{randomDataSetSpecification.OurSpecificationVersion}"
+                + $"/{resourceGroup}"
+                + $"/{extractTime}";
+
+            string decryptedFileName =
+                $"{basePath}"
+                + $"/{objectName}.csv";
+
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
+            randomIngestionTracking.DataSetSpecificationId = randomDataSetSpecification.Id;
+            randomIngestionTracking.ObjectName = objectName;
+            randomIngestionTracking.BatchReadyFolderPath = basePath;
+            IngestionTracking storageIngestionTracking = randomIngestionTracking;
+            IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())
@@ -142,7 +152,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             this.dataSetSpecificationProcessingServiceMock.Setup(service =>
                service.GetActiveDataSetSpecification(randomSupplierId))
-                   .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
+                   .Returns(ValueTask.FromResult(randomDataSetSpecification));
 
             IngestionTracking newIngestionTracking =
                 new IngestionTracking
@@ -152,6 +162,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Container = blobContainers.TppLanding,
                     FileName = inputFileName,
                     SourceFolderPath = sourceFolderPath,
+                    BatchReadyFolderPath = basePath,
                     Batch = batch,
                     ObjectName = objectName,
                     DataSetSpecificationId = randomDataSetSpecification.Id,

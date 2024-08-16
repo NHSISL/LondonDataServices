@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.Loggings;
@@ -61,6 +62,26 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
         {
             return actualStream =>
                 IsSameStream(expectedStream, actualStream);
+        }
+
+        private bool IsSameStream(Stream expectedStream, Stream actualStream)
+        {
+            byte[] expectedBytes = ReadAllBytesFromStream(expectedStream);
+            byte[] actualBytes = ReadAllBytesFromStream(actualStream);
+
+            string expectedString = System.Text.Encoding.UTF8.GetString(expectedBytes);
+            string actualString = System.Text.Encoding.UTF8.GetString(actualBytes);
+
+            try
+            {
+                actualString.Should().BeEquivalentTo(expectedString);
+            }
+            catch (Exception exception)
+            {
+                output.WriteLine(exception.Message);
+            }
+
+            return new CompareLogic().Compare(expectedBytes, actualBytes).AreEqual;
         }
 
         public static TheoryData<Xeption> IngressDependencyValidationExceptions()
@@ -130,14 +151,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     message: "Document processing service error occurred, please contact support.",
                     innerException),
             };
-        }
-
-        private bool IsSameStream(Stream expectedStream, Stream actualStream)
-        {
-            byte[] expectedBytes = ReadAllBytesFromStream(expectedStream);
-            byte[] actualBytes = ReadAllBytesFromStream(actualStream);
-
-            return new CompareLogic().Compare(expectedBytes, actualBytes).AreEqual;
         }
 
         private static byte[] ReadAllBytesFromStream(Stream stream)

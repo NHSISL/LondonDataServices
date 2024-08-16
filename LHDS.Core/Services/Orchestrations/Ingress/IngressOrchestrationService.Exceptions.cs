@@ -31,6 +31,10 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             {
                 throw CreateAndLogValidationException(notFoundIngressOrchestrationException);
             }
+            catch (NoConfigIngressOrchestrationException noConfigIngressOrchestrationException)
+            {
+                throw CreateAndLogValidationException(noConfigIngressOrchestrationException);
+            }
             catch (IngestionTrackingProcessingValidationException ingestionTrackingProcessingValidationException)
             {
                 throw CreateAndLogDependencyValidationException(ingestionTrackingProcessingValidationException);

@@ -76,7 +76,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             if (isBatchComplete)
             {
                 string batchCompleteFileName =
-                    $"{Path.GetDirectoryName(ingestionTracking.DecryptedFileName)}/BatchReady.txt"
+                    $"{ingestionTracking.BatchReadyFolderPath}/BatchReady.txt"
                     .Replace("\\", "/");
 
                 string batchComplete =

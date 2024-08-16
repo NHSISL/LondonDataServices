@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.SpecificationObjects;
@@ -51,15 +52,17 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             List<string> specificationObjectIds = await this.specificationObjectProcessingService
                 .RetrieveSpecificationObjectsByDataSetSpecificationId(ingestionTracking.DataSetSpecificationId);
 
-            List<string> ingestiontrackingObject = await this.ingestionTrackingProcessingService
-                .RetrieveObjectsInBatchByBatchReference(ingestionTracking.Batch);
-
             bool isBatchComplete = true;
 
-            //if (specificationObjectIds.Count == 0)
-            //{
-            //    isBatchComplete = false;
-            //}
+            if (specificationObjectIds is null || specificationObjectIds.Count == 0)
+            {
+                throw new NoConfigIngressOrchestrationException(
+                    "No specification object files found for dataset specification id: " +
+                    $"{ingestionTracking.DataSetSpecificationId}");
+            }
+
+            List<string> ingestiontrackingObject = await this.ingestionTrackingProcessingService
+                .RetrieveObjectsInBatchByBatchReference(ingestionTracking.Batch);
 
             foreach (string specificationObjectId in specificationObjectIds)
             {

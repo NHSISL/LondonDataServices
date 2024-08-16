@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 string batch = $"{segments[0]}_{segments[1]}";
                 string objectName = $"{segments[2]}_{segments[3]}";
 
-                (string encryptedFileName, string decryptedFileName) = GetFileNames(
+                (string encryptedFileName, string decryptedFileName, string baseFolder) = GetFileNames(
                     inputSubscriberCredential,
                     randomDataSet,
                     randomDataSetSpecification,
@@ -105,6 +105,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                         Container = blobContainers.EmisLanding,
                         FileName = filename,
                         SourceFolderPath = sourceFolderPath,
+                        BatchReadyFolderPath = baseFolder,
                         Batch = batch,
                         ObjectName = objectName,
                         DataSetSpecificationId = retrievedDataSetSpecificationId,
@@ -251,7 +252,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 string batch = $"{segments[0]}_{segments[1]}";
                 string objectName = $"{segments[2]}_{segments[3]}";
 
-                (string encryptedFileName, string decryptedFileName) = GetFileNames(
+                (string encryptedFileName, string decryptedFileName, string baseFolder) = GetFileNames(
                     inputSubscriberCredential,
                     randomDataSet,
                     randomDataSetSpecification,
@@ -268,6 +269,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                         Container = blobContainers.EmisLanding,
                         FileName = filename,
                         SourceFolderPath = sourceFolderPath,
+                        BatchReadyFolderPath = baseFolder,
                         Batch = batch,
                         ObjectName = objectName,
                         DataSetSpecificationId = retrievedDataSetSpecificationId,
@@ -528,7 +530,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             this.auditServiceMock.VerifyNoOtherCalls();
         }
 
-        private (string encryptedFileName, string decryptedFileName) GetFileNames(
+        private (string encryptedFileName, string decryptedFileName, string baseFolder) GetFileNames(
             SubscriberCredential inputSubscriberCredential,
             DataSet randomDataSet,
             DataSetSpecification randomDataSetSpecification,
@@ -545,19 +547,32 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             {
                 throw new InvalidArgumentsDocumentProcessingException(filename);
             }
-            else
-            {
-                newFileName = $"{inputSubscriberCredential.Id}/{filename.Split('/')[4]}/{splitFileName[6]}";
-            }
 
-            string decryptedFileName = $"/{landingConfiguration.DecryptedFolder}"
-                        + $"/{randomDataSet.DataSetName}"
-                        + $"/{randomDataSetSpecification.OurSpecificationVersion}"
-                        + $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+            string dataSetName = randomDataSetSpecification?.DataSet?.DataSetName ?? string.Empty;
+            string dataSetVersion = randomDataSetSpecification?.OurSpecificationVersion ?? string.Empty;
+            string extractGroup = inputSubscriberCredential.Id.ToString();
+            string extractTime = splitFileName[4];
 
-            string encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
+            string baseFolder =
+                $"/{landingConfiguration.DecryptedFolder}" +
+                $"/{dataSetName}" +
+                $"/{dataSetVersion}" +
+                $"/{extractGroup}" +
+                $"/{extractTime}";
 
-            return (encryptedFileName, decryptedFileName);
+            newFileName = $"{splitFileName[6]}";
+
+            string encryptedFileName =
+                $"/{landingConfiguration.EncryptedFolder}" +
+                $"/{extractGroup}" +
+                $"/{extractTime}" +
+                $"/{newFileName}";
+
+            string decryptedFileName =
+                $"{baseFolder}" +
+                $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
+            return (encryptedFileName, decryptedFileName, baseFolder);
         }
     }
 }

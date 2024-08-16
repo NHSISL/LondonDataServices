@@ -94,16 +94,28 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             $"{filename}");
                     }
 
-                    string batch = segments[2];
                     string objectName = Path.GetFileNameWithoutExtension(filename);
                     string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
                     sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
+                    string dataSetName = retrievedDataSetSpecification?.DataSet?.DataSetName ?? string.Empty;
+                    string dataSetVersion = retrievedDataSetSpecification?.OurSpecificationVersion ?? string.Empty;
+                    string extractGroup = segments[1];
+                    string batch = segments[2];
+                    string file = segments[3];
+
+                    string extractTime = DateTime.ParseExact(segments[2], "yyyyMMdd_HHmm", null)
+                        .ToString("yyyyMMddHHmmss");
+
+                    string baseFolder =
+                        $"/{landingConfiguration.DecryptedFolder}" +
+                        $"/{dataSetName}" +
+                        $"/{dataSetVersion}" +
+                        $"/{extractGroup}" +
+                        $"/{extractTime}";
 
                     var decryptedFileName =
-                        $"/{landingConfiguration.DecryptedFolder}"
-                        + $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}"
-                        + $"/{retrievedDataSetSpecification?.Id}"
-                        + $"{filename}";
+                        $"{baseFolder}"
+                        + $"/{file}";
 
                     IngestionTracking newIngestionTracking =
                         new IngestionTracking
@@ -113,6 +125,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             Container = blobContainers.TppLanding,
                             FileName = filename,
                             SourceFolderPath = sourceFolderPath,
+                            BatchReadyFolderPath = baseFolder,
                             Batch = batch,
                             ObjectName = objectName,
                             DataSetSpecificationId = retrievedDataSetSpecification.Id,

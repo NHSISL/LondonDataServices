@@ -210,9 +210,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
                         supplierId);
 
-                (string encryptedFileName, string decryptedFileName) =
+                (string encryptedFileName, string decryptedFileName, string baseFolder) =
                         await GetFileNames(subscriberCredential, retrievedDataSetSpecification, filename, supplierId);
-
 
                 IngestionTracking newIngestionTracking =
                   new IngestionTracking
@@ -222,6 +221,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                       Container = blobContainers.EmisLanding,
                       FileName = filename,
                       SourceFolderPath = sourceFolderPath,
+                      BatchReadyFolderPath = baseFolder,
                       Batch = batch,
                       ObjectName = objectName,
                       DataSetSpecificationId = retrievedDataSetSpecification.Id,
@@ -345,7 +345,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             await this.auditService.AddIngestionTrackingAuditAsync(newAudit);
         }
 
-        private async ValueTask<(string encryptedFileName, string decryptedFileName)> GetFileNames(
+        private async ValueTask<(string encryptedFileName, string decryptedFileName, string baseFolder)> GetFileNames(
             SubscriberCredential subscriberCredential,
             DataSetSpecification? retrievedDataSetSpecification,
             string fileName,
@@ -365,19 +365,32 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw new InvalidArgumentsDocumentProcessingException(fileName);
             }
-            else
-            {
-                newFileName = $"{subscriberCredential.Id}/{fileName.Split('/')[4]}/{splitFileName[6]}";
-            }
 
-            string encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
+            string dataSetName = retrievedDataSetSpecification?.DataSet?.DataSetName ?? string.Empty;
+            string dataSetVersion = retrievedDataSetSpecification?.OurSpecificationVersion ?? string.Empty;
+            string extractGroup = subscriberCredential.Id.ToString();
+            string extractTime = splitFileName[4];
 
-            string decryptedFileName = $"/{landingConfiguration.DecryptedFolder}" +
-                $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}" +
-                $"/{retrievedDataSetSpecification?.OurSpecificationVersion}" +
+            string baseFolder =
+                $"/{landingConfiguration.DecryptedFolder}" +
+                $"/{dataSetName}" +
+                $"/{dataSetVersion}" +
+                $"/{extractGroup}" +
+                $"/{extractTime}";
+
+            newFileName = $"{splitFileName[6]}";
+
+            string encryptedFileName =
+                $"/{landingConfiguration.EncryptedFolder}" +
+                $"/{extractGroup}" +
+                $"/{extractTime}" +
+                $"/{newFileName}";
+
+            string decryptedFileName =
+                $"{baseFolder}" +
                 $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
-            return (encryptedFileName, decryptedFileName);
+            return (encryptedFileName, decryptedFileName, baseFolder);
         }
 
         private async ValueTask DownloadFile(

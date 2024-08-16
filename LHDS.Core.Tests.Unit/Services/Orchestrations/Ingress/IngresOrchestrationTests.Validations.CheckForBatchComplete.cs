@@ -5,6 +5,8 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
 using Moq;
 using Xunit;
@@ -90,6 +92,59 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.ingestionTrackingProcessingServiceMock
                 .Verify(service => service.RetrieveIngestionTrackingByIdAsync(inputIngestionTracking),
                     Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedIngresOrchestrationValidationException))),
+                        Times.Once);
+
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.specificationObjectProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnCheckForBatchCompleteIfConfigIsNullAndLogItAsync()
+        {
+            // given
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
+            IngestionTracking storageIngestionTracking = randomIngestionTracking.DeepClone();
+
+            var noConfigIngressOrchestrationException = new NoConfigIngressOrchestrationException(
+                message:
+                    "No specification object files found for dataset specification id: " +
+                    $"{storageIngestionTracking.DataSetSpecificationId}");
+
+            var expectedIngresOrchestrationValidationException =
+                new IngressOrchestrationValidationException(
+                    message: "Ingress orchestration validation errors occurred, please try again.",
+                    innerException: noConfigIngressOrchestrationException);
+
+            this.ingestionTrackingProcessingServiceMock
+                .Setup(service => service.RetrieveIngestionTrackingByIdAsync(randomIngestionTracking.Id))
+                .ReturnsAsync(storageIngestionTracking);
+
+            // when
+            ValueTask batchCompleteTask = this.ingressOrchestrationService
+                .CheckForBatchCompleteAsync(ingestionTrackingId: randomIngestionTracking.Id);
+
+            IngressOrchestrationValidationException actualIngressOrchestrationValidationException =
+                await Assert.ThrowsAsync<IngressOrchestrationValidationException>(batchCompleteTask.AsTask);
+
+            // then
+            actualIngressOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedIngresOrchestrationValidationException);
+
+            this.ingestionTrackingProcessingServiceMock
+                .Verify(service => service.RetrieveIngestionTrackingByIdAsync(randomIngestionTracking.Id),
+                    Times.Once);
+
+            this.specificationObjectProcessingServiceMock.Verify(service =>
+                service.RetrieveSpecificationObjectsByDataSetSpecificationId(
+                    storageIngestionTracking.DataSetSpecificationId),
+                        Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

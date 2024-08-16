@@ -84,8 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             randomIngestionTracking.DecryptedFileName = CreateRandomDecryptedFilePath();
 
             string batchReadyFileName =
-                $"{Path.GetDirectoryName(randomIngestionTracking.DecryptedFileName)}/BatchReady.txt"
-                    .Replace("\\", "/");
+                $"{randomIngestionTracking.BatchReadyFolderPath}/BatchReady.txt";
 
             IngestionTracking storageIngestionTracking = randomIngestionTracking.DeepClone();
             Guid ingestionTrackingId = randomIngestionTracking.Id;
@@ -100,6 +99,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     $"All specification object files present for dataset specification id: " +
                     $"{randomIngestionTracking.DataSetSpecificationId}"));
 
+            Stream expectedStream = batchReadyStream.DeepClone();
+
+            Stream actualStream = new MemoryStream();
+
             this.ingestionTrackingProcessingServiceMock
                 .Setup(service => service.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId))
                 .ReturnsAsync(storageIngestionTracking);
@@ -111,6 +114,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveObjectsInBatchByBatchReference(batchReference))
                     .ReturnsAsync(ingestionTrackingObjects);
+
+            this.documentProcessingServiceMock
+                .Setup(service => service.AddDocumentAsync(
+                    It.Is(SameStreamAs(batchReadyStream)),
+                    batchReadyFileName,
+                    storageIngestionTracking.Container))
+                .Callback<Stream, string, string>((output, fileName, container) =>
+                {
+                    batchReadyStream.Position = 0;
+                    batchReadyStream.CopyTo(actualStream);
+                })
+                .Returns(ValueTask.CompletedTask);
 
             // when
             await this.ingressOrchestrationService.CheckForBatchCompleteAsync(ingestionTrackingId);
@@ -129,11 +144,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
-            service.AddDocumentAsync(
-                It.Is(SameStreamAs(batchReadyStream)),
-                batchReadyFileName,
-                storageIngestionTracking.Container),
-                    Times.Once);
+                service.AddDocumentAsync(
+                    It.IsAny<Stream>(),
+                    batchReadyFileName,
+                    storageIngestionTracking.Container),
+                        Times.Once);
+
+            Assert.True(IsSameStream(expectedStream, actualStream));
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.specificationObjectProcessingServiceMock.VerifyNoOtherCalls();

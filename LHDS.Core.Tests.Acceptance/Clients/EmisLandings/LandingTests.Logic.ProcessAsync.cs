@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 {
     public partial class LandingTests
     {
-        [Fact(Skip = "Hassan to fix duplicate key")]
+        [Fact(Skip = "Hassan to fix duplicate key. make sure there is no missing awaits")]
         public async Task ShouldProcessNewDocumentsAsync()
         {
             //Given
@@ -93,7 +93,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             CleanupDownloadFolder();
         }
 
-        [Fact(Skip = "Temporary skip")]
+        [Fact]
         public async Task ShouldNotProcessExistingDocumentsAsync()
         {
             //Given

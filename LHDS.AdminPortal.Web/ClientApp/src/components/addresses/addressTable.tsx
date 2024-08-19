@@ -18,7 +18,7 @@ import TableBaseThead from "../bases/components/Table/TableBase.Thead";
 import TableBaseHeader from "../bases/components/Table/TableBase.Header";
 import { AddressHomeViewService } from "../../services/views/addresses/addressHomeViewService";
 import { Address } from "../../models/addresses/address";
-import AddressSearchRow from "./addressSearchRow";
+import AddressRow from "./addressRow";
 
 const AddressTable: FunctionComponent = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
@@ -110,7 +110,7 @@ const AddressTable: FunctionComponent = () => {
                                         <>
                                             {addressesRetrieved?.map(
                                                 (address: Address) => (
-                                                    <AddressSearchRow
+                                                    <AddressRow
                                                         key={address.id.toString()}
                                                         address={address}
                                                     />

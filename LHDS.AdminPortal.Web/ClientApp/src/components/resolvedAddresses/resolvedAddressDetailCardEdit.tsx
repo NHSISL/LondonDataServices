@@ -20,6 +20,7 @@ interface ResolvedAddressDetailCardEditProps {
     mode: string;
     onModeChange: (value: string) => void;
     apiError?: any;
+    onPickAlternateAddress: (alternateAddress: string) => void;
 }
 
 const ResolvedAddressDetailCardEdit: FunctionComponent<ResolvedAddressDetailCardEditProps> = (props) => {
@@ -29,7 +30,8 @@ const ResolvedAddressDetailCardEdit: FunctionComponent<ResolvedAddressDetailCard
         onCancel,
         mode,
         onModeChange,
-        apiError
+        apiError,
+        onPickAlternateAddress
     } = props;
 
     const [editResolvedAddress, setEditResolvedAddress] = useState<ResolvedAddressView>({ ...resolvedAddress });
@@ -81,7 +83,9 @@ const ResolvedAddressDetailCardEdit: FunctionComponent<ResolvedAddressDetailCard
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Alternate Unstructured Address</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        <SummaryListBaseValue>{resolvedAddress.alternateUnstructuredPostalAddress ? resolvedAddress.alternateUnstructuredPostalAddress : "Not Specified"}</SummaryListBaseValue>
+                        <SummaryListBaseValue>
+                            onPickAlternateAddress
+                            {resolvedAddress.alternateUnstructuredPostalAddress ? resolvedAddress.alternateUnstructuredPostalAddress : "Not Specified"}</SummaryListBaseValue>
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 

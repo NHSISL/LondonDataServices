@@ -6,12 +6,14 @@ import ResolvedAddressDetailCard from "./resolvedAddressDetailCard";
 
 interface ResolvedAddressDetailProps {
     resolvedAddressId: string;
+    onPickAlternateAddress: (alternateAddress: string) => void; // Corrected prop
     children?: React.ReactNode;
 }
 
 const ResolvedAddressDetail: FunctionComponent<ResolvedAddressDetailProps> = (props) => {
     const {
         resolvedAddressId,
+        onPickAlternateAddress,
         children
     } = props;
 
@@ -21,7 +23,10 @@ const ResolvedAddressDetail: FunctionComponent<ResolvedAddressDetailProps> = (pr
      const { mappedResolvedAddress: resolvedAddressRetrieved } =
          resolvedAddressViewService.useGetResolvedAddressById(Guid.parse(resolvedAddressId))
 
-    const handleRefresh = async (resolvedAddressView: ResolvedAddressView) => { }
+    const handleRefresh = async (resolvedAddressView: ResolvedAddressView) => {
+        const alternateAddress = resolvedAddressView.alternateUnstructuredPostalAddress ?? ""; // Fallback to empty string
+        onPickAlternateAddress(alternateAddress);
+    }
 
     const updateResolvedAddress = resolvedAddressViewService.useUpdateResolvedAddress();
 
@@ -46,7 +51,8 @@ const ResolvedAddressDetail: FunctionComponent<ResolvedAddressDetailProps> = (pr
                         resolvedAddress={resolvedAddressRetrieved}
                         mode={mode}
                         onRefresh={handleRefresh}
-                        onUpdate={handleUpdate}>                   
+                        onUpdate={handleUpdate}
+                        onPickAlternateAddress={onPickAlternateAddress}>                   
                         {children}
                     </ResolvedAddressDetailCard>
                 </div>

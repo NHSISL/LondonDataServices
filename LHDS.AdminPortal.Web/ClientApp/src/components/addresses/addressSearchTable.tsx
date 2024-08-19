@@ -20,7 +20,15 @@ import { AddressHomeViewService } from "../../services/views/addresses/addressHo
 import { Address } from "../../models/addresses/address";
 import AddressSearchRow from "./addressSearchRow";
 
-const AddressSearchTable: FunctionComponent = () => {
+type AddressSearchTableProps = {
+    onPick: (ordinanceAddress: string) => void;
+};
+
+const AddressSearchTable: FunctionComponent<AddressSearchTableProps> = (props) => {
+    const {
+        onPick
+    } = props;
+
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [showSpinner, setShowSpinner] = useState(false);
@@ -47,6 +55,11 @@ const AddressSearchTable: FunctionComponent = () => {
             }, 500),
         []
     );
+
+    const handlePick = (ordinanceAddress: string) => {
+        onPick(ordinanceAddress);
+    };
+
 
     const refreshData = () => {
         setShowSpinner(true);
@@ -110,7 +123,8 @@ const AddressSearchTable: FunctionComponent = () => {
                                                     (address: Address) => (
                                                         <AddressSearchRow
                                                             key={address.id.toString()}
-                                                            address={address} />)
+                                                            address={address}
+                                                            onPick={handlePick}                                                        />)
                                                 )}
                                             <tr>
                                                 <td colSpan={5} className="text-center">

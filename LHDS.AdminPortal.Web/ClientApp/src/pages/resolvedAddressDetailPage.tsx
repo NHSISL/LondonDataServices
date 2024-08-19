@@ -21,7 +21,7 @@ export const ResolvedAddressDetailPage = () => {
 
                     {
                         resolvedAddressId &&
-                        <ResolvedAddressDetail resolvedAddressId={resolvedAddressId} />
+                        <ResolvedAddressDetail resolvedAddressId={resolvedAddressId} onPickAlternateAddress={() => { }} />
                     }
                     
                     <br />

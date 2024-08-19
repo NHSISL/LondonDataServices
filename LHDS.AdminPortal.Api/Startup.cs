@@ -60,7 +60,6 @@ using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
-using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Downloads;
@@ -324,7 +323,6 @@ namespace LHDS.AdminPortal.Api
         private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IEmisLandingOrchestrationService, EmisLandingOrchestrationService>();
-            services.AddTransient<IIngresOrchestrationService, IngressOrchestrationService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services, IConfiguration configuration)

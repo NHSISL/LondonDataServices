@@ -6,11 +6,13 @@ import { Address } from "../../models/addresses/address";
 
 type AddressSearchRowProps = {
     address: Address;
+    onPick: (ordinanceAddress: string) => void;
 }
 
 const AddressSearchRowView: FunctionComponent<AddressSearchRowProps> = (props) => {
     const {
-        address
+        address,
+        onPick
     } = props;
 
 
@@ -44,8 +46,8 @@ const AddressSearchRowView: FunctionComponent<AddressSearchRowProps> = (props) =
                 <span>{concateAddresses(address)}</span>
             </TableBaseData>
             <TableBaseData classes="text-center">
-                <ButtonBase onClick={() => { }} add> Pick </ButtonBase>
-                <ButtonBase onClick={() => { }} view title="test against assign Api" disabled={true}> Test </ButtonBase>
+                <ButtonBase onClick={() => onPick(concateAddresses(address))} remove>Pick</ButtonBase>
+                {/*<ButtonBase onClick={() => { }} view title="test against assign Api" disabled={true}> Test </ButtonBase>*/}
             </TableBaseData>
         </TableBaseRow>
     );

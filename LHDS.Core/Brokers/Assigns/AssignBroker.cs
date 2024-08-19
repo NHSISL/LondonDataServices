@@ -4,6 +4,7 @@
 
 using System;
 using System.Net.Http;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Assigns;
 using LHDS.Core.Models.Foundations.AssignAddresses;
@@ -26,10 +27,13 @@ namespace LHDS.Core.Brokers.Assigns
 
         public async ValueTask<AssignAddress> MatchAddressAsync(string address)
         {
-            var returnedAddress = 
-                await this.apiClient.GetContentAsync<AssignAddress>($"/api/getinfo?address={address}");
-
-            return returnedAddress;
+            //var returnedAddress = 
+            //    await this.apiClient.GetContentAsync<AssignAddress>($"api/getinfo?adrec={address}");
+            var response = await this.apiClient.GetContentStringAsync($"/api/getinfo?adrec={address}");
+            //var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(response);
+            AssignAddress assign = new AssignAddress();
+            return assign;
         }
 
         private HttpClient SetupHttpClient()

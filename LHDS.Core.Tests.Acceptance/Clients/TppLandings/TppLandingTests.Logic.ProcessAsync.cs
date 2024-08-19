@@ -102,6 +102,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             randomIngestionTracking.FileName = randomFileName;
             randomIngestionTracking.DecryptedFileSha256Hash = randomHash;
+            randomIngestionTracking.DataSetSpecificationId = activeDataSetSpecification.Id;
             await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
 
             //When

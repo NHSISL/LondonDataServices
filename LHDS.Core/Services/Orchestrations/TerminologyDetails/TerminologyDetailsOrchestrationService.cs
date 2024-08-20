@@ -99,5 +99,8 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                         exceptions);
                 }
             });
+
+        public ValueTask RetrieveUserArtifactDetailsAsync() =>
+            throw new NotImplementedException();
     }
 }

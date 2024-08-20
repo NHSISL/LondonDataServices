@@ -80,49 +80,49 @@
 //            List<ResolvedAddress> resolvedAddresses = new List<ResolvedAddress>();
 
             // First resolved address
-            ResolvedAddress resolvedAddress1 = new ResolvedAddress
-            {
-                Id = Guid.NewGuid(),
-                UniqueReference = Guid.NewGuid(),
-                BatchReference = Guid.NewGuid(),
-                UnstructuredPostalAddress = "",
-                PostCode = "",
-                CreatedBy = "Test User",
-                UpdatedBy = "Test User",
-                UpdatedDate = now,
-                CreatedDate = now
-            };
-            resolvedAddresses.Add(resolvedAddress1);
+            //ResolvedAddress resolvedAddress1 = new ResolvedAddress
+            //{
+            //    Id = Guid.NewGuid(),
+            //    UniqueReference = Guid.NewGuid(),
+            //    BatchReference = Guid.NewGuid(),
+            //    UnstructuredPostalAddress = "",
+            //    PostCode = "",
+            //    CreatedBy = "Test User",
+            //    UpdatedBy = "Test User",
+            //    UpdatedDate = now,
+            //    CreatedDate = now
+            //};
+            //resolvedAddresses.Add(resolvedAddress1);
 
-            // Second resolved address
-            ResolvedAddress resolvedAddress2 = new ResolvedAddress
-            {
-                Id = Guid.NewGuid(),
-                UniqueReference = Guid.NewGuid(),
-                BatchReference = Guid.NewGuid(),
-                UnstructuredPostalAddress = "",
-                PostCode = "",
-                CreatedBy = "Test User",
-                UpdatedBy = "Test User",
-                UpdatedDate = now,
-                CreatedDate = now
-            };
-            resolvedAddresses.Add(resolvedAddress2);
+            //// Second resolved address
+            //ResolvedAddress resolvedAddress2 = new ResolvedAddress
+            //{
+            //    Id = Guid.NewGuid(),
+            //    UniqueReference = Guid.NewGuid(),
+            //    BatchReference = Guid.NewGuid(),
+            //    UnstructuredPostalAddress = "",
+            //    PostCode = "",
+            //    CreatedBy = "Test User",
+            //    UpdatedBy = "Test User",
+            //    UpdatedDate = now,
+            //    CreatedDate = now
+            //};
+            //resolvedAddresses.Add(resolvedAddress2);
 
-            // Third resolved address
-            ResolvedAddress resolvedAddress3 = new ResolvedAddress
-            {
-                Id = Guid.NewGuid(),
-                UniqueReference = Guid.NewGuid(),
-                BatchReference = Guid.NewGuid(),
-                UnstructuredPostalAddress = "",
-                PostCode = "",
-                CreatedBy = "Test User",
-                UpdatedBy = "Test User",
-                UpdatedDate = now,
-                CreatedDate = now
-            };
-            resolvedAddresses.Add(resolvedAddress3);
+            //// Third resolved address
+            //ResolvedAddress resolvedAddress3 = new ResolvedAddress
+            //{
+            //    Id = Guid.NewGuid(),
+            //    UniqueReference = Guid.NewGuid(),
+            //    BatchReference = Guid.NewGuid(),
+            //    UnstructuredPostalAddress = "",
+            //    PostCode = "",
+            //    CreatedBy = "Test User",
+            //    UpdatedBy = "Test User",
+            //    UpdatedDate = now,
+            //    CreatedDate = now
+            //};
+            //resolvedAddresses.Add(resolvedAddress3);
 
 //            // Add all resolved addresses to the database
 //            List<ResolvedAddress> addedResolvedAddresses = new List<ResolvedAddress>();

@@ -93,5 +93,25 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
 
             return filler;
         }
+
+        private static TerminologyArtifact CreateRandomUserTerminologyArtifact(DateTimeOffset dateTimeOffset) =>
+            CreateUserTerminologyArtifactFiller(dateTimeOffset).Create();
+
+        private static Filler<TerminologyArtifact> CreateUserTerminologyArtifactFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<TerminologyArtifact>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(terminologyArtifact => terminologyArtifact.IsForUser).Use(false)
+                .OnProperty(terminologyArtifact => terminologyArtifact.IsDownloadedForUser).Use(false)
+                .OnProperty(terminologyArtifact => terminologyArtifact.IsError).Use(false)
+                .OnProperty(terminologyArtifact => terminologyArtifact.CreatedBy).Use(user)
+                .OnProperty(terminologyArtifact => terminologyArtifact.UpdatedBy).Use(user);
+
+            return filler;
+        }
     }
 }

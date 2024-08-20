@@ -88,9 +88,10 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                 return await ValueTask.FromResult(nonDownloadedArtifact);
             });
 
-        public async ValueTask<TerminologyArtifact?> GetNonDownloadedUserArtifactAsync()
-        {
-            TerminologyArtifact? nonDownloadedArtifact =
+        public ValueTask<TerminologyArtifact?> GetNonDownloadedUserArtifactAsync() =>
+            TryCatch(async () =>
+            {
+                TerminologyArtifact? nonDownloadedArtifact =
                      this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
                         .OrderBy(terminologyArtifact => terminologyArtifact.ResourceType)
                         .FirstOrDefault(terminologyArtifact =>
@@ -98,7 +99,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                             && terminologyArtifact.IsDownloadedForUser == false
                             && terminologyArtifact.IsError == false);
 
-            return await ValueTask.FromResult(nonDownloadedArtifact);
-        }
+                return await ValueTask.FromResult(nonDownloadedArtifact);
+            });
     }
 }

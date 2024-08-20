@@ -11,12 +11,12 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace LHDS.Functions.Terminology
 {
-    public class TerminologyUserDetailFunction
+    public class TerminologyDetailFunction
     {
         private readonly ILoggingBroker loggingBroker;
         private readonly ITerminologyClient terminologyClient;
 
-        public TerminologyUserDetailFunction(
+        public TerminologyDetailFunction(
             ILoggingBroker loggingBroker,
             ITerminologyClient terminologyClient)
         {
@@ -24,14 +24,14 @@ namespace LHDS.Functions.Terminology
             this.terminologyClient = terminologyClient;
         }
 
-        [Function("TerminologyUserDetailFunction")]
+        [Function("TerminologyDetailFunction")]
         public async Task Run([TimerTrigger("0 */15 * * * *")] MyInformation myTimer)
         {
             loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
-                await terminologyClient.RetrieveUserArtifactDetailsAsync();
+                await terminologyClient.RetrieveArtifactDetailsAsync();
             }
             catch (Exception ex)
             {

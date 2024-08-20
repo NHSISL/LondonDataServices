@@ -87,5 +87,8 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 
                 return await ValueTask.FromResult(nonDownloadedArtifact);
             });
+
+        public ValueTask<TerminologyArtifact?> GetNonDownloadedUserArtifactAsync() =>
+            throw new NotImplementedException();
     }
 }

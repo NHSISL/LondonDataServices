@@ -63,6 +63,16 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<TerminologyArtifact>()
+                .Property(terminologyArtifact => terminologyArtifact.IsForUser)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<TerminologyArtifact>()
+                .Property(terminologyArtifact => terminologyArtifact.IsDownloadedForUser)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<TerminologyArtifact>()
                 .Property(terminologyArtifact => terminologyArtifact.IsError)
                 .HasDefaultValue(false)
                 .IsRequired();

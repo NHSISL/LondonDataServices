@@ -10,5 +10,6 @@ namespace LHDS.Core.Clients
     {
         public ValueTask RetrieveArtifactMetadataAsync(string[] resourceTypes);
         public ValueTask RetrieveArtifactDetailsAsync();
+        public ValueTask RetrieveUserArtifactDetailsAsync();
     }
 }

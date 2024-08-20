@@ -98,5 +98,42 @@ namespace LHDS.Core.Clients
                     terminologyDetailOrchestrationServiceException.InnerException as Xeption);
             }
         }
+
+        public async ValueTask RetrieveUserArtifactDetailsAsync()
+        {
+            try
+            {
+                await this.terminologyDetailOrchestrationService.RetrieveUserArtifactDetailsAsync();
+            }
+            catch (TerminologyDetailOrchestrationValidationException
+                terminologyDetailOrchestrationValidationException)
+            {
+                throw new TerminologyClientValidationException(
+                    message: "Terminology client validation error occurred, fix errors and try again.",
+                    innerException: terminologyDetailOrchestrationValidationException.InnerException as Xeption);
+            }
+            catch (TerminologyDetailOrchestrationDependencyValidationException
+                terminologyDetailOrchestrationDependencyValidationException)
+            {
+                throw new TerminologyClientValidationException(
+                    message: "Address client validation error occurred, fix errors and try again.",
+                    innerException:
+                        terminologyDetailOrchestrationDependencyValidationException.InnerException as Xeption);
+            }
+            catch (TerminologyDetailOrchestrationDependencyException
+                terminologyDetailOrchestrationDependencyException)
+            {
+                throw new TerminologyClientDependencyException(
+                    message: "Terminology client dependency error occurred, please contact support.",
+                    innerException: terminologyDetailOrchestrationDependencyException.InnerException as Xeption);
+            }
+            catch (TerminologyDetailOrchestrationServiceException
+                terminologyDetailOrchestrationServiceException)
+            {
+                throw new TerminologyClientServiceException(
+                    message: "Terminology client service error occurred, fix errors and try again.",
+                    terminologyDetailOrchestrationServiceException.InnerException as Xeption);
+            }
+        }
     }
 }

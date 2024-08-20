@@ -13,14 +13,14 @@ namespace LHDS.Core.Tests.Integration.Addresses
         [Fact(Skip = "Will fix in another PR")]
         public async Task AddressMatcherDataAsync()
         {
-            //var filePath = @"Resources\DataEngineering\IncomingFileToMatch.csv";
-            var filePath = @"Resources\DataEngineering\1000AddressToMatch.csv";
-            byte[] fileBytes = File.ReadAllBytes(filePath);
-            FileInfo fi = new FileInfo(filePath);
-            var fileName = fi.Name;
+            ////var filePath = @"Resources\DataEngineering\IncomingFileToMatch.csv";
+            //var filePath = @"Resources\DataEngineering\1000AddressToMatch.csv";
+            //byte[] fileBytes = File.ReadAllBytes(filePath);
+            //FileInfo fi = new FileInfo(filePath);
+            //var fileName = fi.Name;
 
-            // When
-            //await addressClient.MatchPatientAddressDataAsync(fileBytes, fileName);
+            //// When
+            ////await addressClient.MatchPatientAddressDataAsync(fileBytes, fileName);
 
             // Then
 

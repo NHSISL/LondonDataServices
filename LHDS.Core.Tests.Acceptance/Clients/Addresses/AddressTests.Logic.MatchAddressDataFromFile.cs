@@ -20,9 +20,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
     public partial class AddressTests
     {
         [Fact]
-        public async Task ShouldMatchAddressDataAsync()
+        public async Task ShouldMatchAddressDataFromFileAsync()
         {
-            ////Given
+            //Given
             //DateTimeOffset randomDateTimeOffset = dateTimeBroker.GetCurrentDateTimeOffset();
             //string fileName = GetRandomString();
             //int count = GetRandomNumber();
@@ -36,18 +36,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             //    await this.resolvedAddressService.AddResolvedAddressAsync(resolvedAddress);
             //    AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
 
-            //    this.wireMockServer
-            //        .Given(
-            //            Request
-            //                .Create()
+            //    this.wireMockServer.Given(
+            //        Request.Create()
             //                .UsingGet()
             //                .WithPath("/api/getinfo")
             //                .WithParam("address", resolvedAddress.UnstructuredPostalAddress))
-            //        .RespondWith(
-            //            Response
-            //                .Create()
-            //                .WithStatusCode(HttpStatusCode.OK)
-            //                .WithBodyAsJson(randomAssignAddress));
+            //            .RespondWith(
+            //                Response.Create()
+            //                    .WithStatusCode(HttpStatusCode.OK)
+            //                    .WithBodyAsJson(randomAssignAddress));
 
             //    Address randomAddress = CreateRandomAddress(randomDateTimeOffset, randomAssignAddress.UPRN);
             //    await this.addressService.AddAddressAsync(randomAddress);
@@ -61,10 +58,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             //    expectedResolvedAddresses.Add(expectedResolvedAddress);
             //}
 
-            ////When
-            //await this.addressClient.MatchAddressDataAsync();
+            //When
+            await this.addressClient.MatchAddressDataAsync();
 
-            ////Then
+            //Then
             //foreach (ResolvedAddress expectedResolvedAddress in expectedResolvedAddresses)
             //{
             //    ResolvedAddress retrievedResolvedAddress =

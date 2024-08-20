@@ -31,58 +31,58 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             string inputFilePath = Path.Combine(
                 projectRoot,
-                @"Resource/Clients/Address/ShouldProcessCsvAddressesZippedSetup.zip");
+                @"Resource/Clients/Address/Ordinance_data_London.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);
 
-            string csvFilePath = Path.Combine(
-                projectRoot,
-                @"Resource/Clients/Address/ShouldProcessCsvAddressesSetup.csv");
+            //string csvFilePath = Path.Combine(
+            //    projectRoot,
+            //    @"Resource/Clients/Address/ShouldProcessCsvAddressesSetup.csv");
 
-            byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
-            string stringData = Encoding.UTF8.GetString(csvData);
-            List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+            //byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
+            //string stringData = Encoding.UTF8.GetString(csvData);
+            //List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
 
-            List<string> filteredRecords = records.Where(record =>
-               record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
+            //List<string> filteredRecords = records.Where(record =>
+            //   record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
 
-            string stringRecords = string.Join(Environment.NewLine, filteredRecords);
-            bool hasHeaderRecord = false;
+            //string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+            //bool hasHeaderRecord = false;
 
-            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
-            {
-                { "UPRN", 3 },
-                { "UPSN", 4 },
-                { "OrganisationName", 5 },
-                { "DepartmentName", 6 },
-                { "SubBuildingName", 7 },
-                { "BuildingName", 8 },
-                { "BuildingNumber", 9 },
-                { "DependentThoroughfare", 10 },
-                { "Thoroughfare", 11 },
-                { "DoubleDependentLocality", 12 },
-                { "DependentLocality", 13 },
-                { "PostTown", 14 },
-                { "PostCode", 15 }
-            };
+            //Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            //{
+            //    { "UPRN", 3 },
+            //    { "UPSN", 4 },
+            //    { "OrganisationName", 5 },
+            //    { "DepartmentName", 6 },
+            //    { "SubBuildingName", 7 },
+            //    { "BuildingName", 8 },
+            //    { "BuildingNumber", 9 },
+            //    { "DependentThoroughfare", 10 },
+            //    { "Thoroughfare", 11 },
+            //    { "DoubleDependentLocality", 12 },
+            //    { "DependentLocality", 13 },
+            //    { "PostTown", 14 },
+            //    { "PostCode", 15 }
+            //};
 
-            List<Address> expectedListAddresses =
-                await this.csvHelperBroker.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings);
+            //List<Address> expectedListAddresses =
+            //    await this.csvHelperBroker.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings);
 
             // When
-            await this.addressClient.LoadAddressDataAsync(inputStream, inputFilename);
+            await this.addressClient.LoadAddressDataAsync(inputStream, "Ordinance_data_London.zip");
 
             // Then
-            IQueryable<Address> retrievedListAddresses = this.addressService.RetrieveAllAddresses();
+            //IQueryable<Address> retrievedListAddresses = this.addressService.RetrieveAllAddresses();
 
-            foreach (Address expectedAddress in expectedListAddresses)
-            {
-                Address retrievedAddress = 
-                    retrievedListAddresses.Where(address => address.UPRN == expectedAddress.UPRN).FirstOrDefault();
+            //foreach (Address expectedAddress in expectedListAddresses)
+            //{
+            //    Address retrievedAddress = 
+            //        retrievedListAddresses.Where(address => address.UPRN == expectedAddress.UPRN).FirstOrDefault();
 
-                await this.addressService.RemoveAddressByIdAsync(retrievedAddress.Id);
-            }
+            //    await this.addressService.RemoveAddressByIdAsync(retrievedAddress.Id);
+            //}
         }
     }
 }

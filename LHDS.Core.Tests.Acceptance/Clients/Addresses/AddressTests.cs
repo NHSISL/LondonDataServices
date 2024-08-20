@@ -52,11 +52,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly AddressConfiguration addressConfiguration;
         private readonly BlobContainers blobContainers;
-        private readonly WireMockServer wireMockServer;
+        //private readonly WireMockServer wireMockServer;
 
         public AddressTests(DependencyBroker dependencyBroker)
         {
-            this.wireMockServer = WireMockServer.Start();
+            //this.wireMockServer = WireMockServer.Start();
             this.dependencyBroker = dependencyBroker;
             this.compareLogic = new CompareLogic();
             var serviceCollection = new ServiceCollection();
@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 builder.AddConsole();
             });
 
-            this.dependencyBroker.Configuration["assignConfiguration:apiUrl"] = this.wireMockServer.Url;
+            //this.dependencyBroker.Configuration["assignConfiguration:apiUrl"] = this.wireMockServer.Url;
             serviceCollection.AddAddressClient(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -336,9 +336,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             updatedResolovedAddress.AddressFormatQuality = foundAssignAddress.AddressFormat;
             updatedResolovedAddress.PostCodeQuality = foundAssignAddress.PostcodeQuality;
             updatedResolovedAddress.MatchedWithAssign = foundAssignAddress.Matched;
-            updatedResolovedAddress.Qualifier = foundAssignAddress.Qualifier;
-            updatedResolovedAddress.Classification = foundAssignAddress.Classification;
-            updatedResolovedAddress.Algorithm = foundAssignAddress.Algorithm;
+            updatedResolovedAddress.Qualifier = foundAssignAddress.BestMatch.Qualifier;
+            updatedResolovedAddress.Classification = foundAssignAddress.BestMatch.Classification;
+            updatedResolovedAddress.Algorithm = foundAssignAddress.BestMatch.Algorithm;
             updatedResolovedAddress.MatchPattern = foundAssignAddress.Pattern;
             updatedResolovedAddress.IsProcessing = true;
             updatedResolovedAddress.IsExported = false;

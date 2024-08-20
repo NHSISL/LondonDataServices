@@ -170,6 +170,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             return filler;
         }
 
+        private static TerminologyArtifact CreateRandomUndownloadedUserTerminologyArtifact() =>
+           CreateUndownloadedUserTerminologyArtifactFiller().Create();
+
+        private static Filler<TerminologyArtifact> CreateUndownloadedUserTerminologyArtifactFiller()
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTimeOffset dateTimeOffset = DateTimeOffset.Now;
+            var filler = new Filler<TerminologyArtifact>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(terminologyArtifact => terminologyArtifact.IsDownloadedForUser).Use(false)
+                .OnProperty(terminologyArtifact => terminologyArtifact.CreatedBy).Use(user)
+                .OnProperty(terminologyArtifact => terminologyArtifact.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 

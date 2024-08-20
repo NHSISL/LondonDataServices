@@ -101,6 +101,60 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
             });
 
         public ValueTask RetrieveUserArtifactDetailsAsync() =>
-            throw new NotImplementedException();
+            TryCatch(async () =>
+            {
+                TerminologyArtifact artifact = null;
+                var exceptions = new List<Exception>();
+
+                while ((artifact =
+                    await this.terminologyArtifactProcessingService.GetNonDownloadedUserArtifactAsync()) != null)
+                {
+                    try
+                    {
+                        await TryCatch(async () =>
+                        {
+                            string relativeUrl = artifact.FullUrl;
+
+                            string artifactDetail = await this.ontologyProcessingService
+                                .RetrieveArtifactDetailsAsync(relativeUrl);
+
+                            byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
+                            string fileName = $"users/{artifact.ResourceType}/{artifact.Name}.json";
+
+                            using (Stream input = new MemoryStream(artifactDetailData))
+                            {
+                                await this.documentProcessingService.AddDocumentAsync(
+                                    input,
+                                    fileName,
+                                    container: blobContainers.Terminology);
+                            }
+
+                            artifact.IsDownloadedForUser = true;
+                            artifact.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+
+                            await this.terminologyArtifactProcessingService
+                                .ModifyOrAddTerminologyArtifactAsync(artifact);
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        artifact.IsDownloadedForUser = false;
+                        artifact.IsError = true;
+
+                        artifact.ErrorMessage = ex?.InnerException?.InnerException?.Message
+                            ?? ex?.InnerException?.Message
+                            ?? ex?.Message;
+
+                        exceptions.Add(ex);
+                        await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);
+                    }
+                }
+                if (exceptions.Any())
+                {
+                    throw new AggregateException(
+                        $"Unable to retrieve terminology artifact details for {exceptions.Count} message IDs",
+                        exceptions);
+                }
+            });
     }
 }

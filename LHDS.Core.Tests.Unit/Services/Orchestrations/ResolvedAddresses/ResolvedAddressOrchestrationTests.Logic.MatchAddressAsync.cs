@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
             AssignAddress storageAssignAddress = randomAssignAddress;
-            string matchedUprn = storageAssignAddress.UPRN.ToString();
+            string matchedUprn = storageAssignAddress.BestMatch.UPRN.ToString();
 
             Address? randomAddress = CreateRandomAddress(randomDateTimeOffset);
             Address? storageAddress = randomAddress;
@@ -227,9 +227,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             newResolvedAddress.AddressFormatQuality = assignAddress?.AddressFormat;
             newResolvedAddress.PostCodeQuality = assignAddress?.PostcodeQuality;
             newResolvedAddress.MatchedWithAssign = assignAddress?.Matched ?? false;
-            newResolvedAddress.Qualifier = assignAddress?.Qualifier;
-            newResolvedAddress.Classification = assignAddress?.Classification;
-            newResolvedAddress.Algorithm = assignAddress?.Algorithm;
+            newResolvedAddress.Qualifier = assignAddress?.BestMatch.Qualifier;
+            newResolvedAddress.Classification = assignAddress?.BestMatch.Classification;
+            newResolvedAddress.Algorithm = assignAddress?.BestMatch.Algorithm;
             newResolvedAddress.MatchPattern = assignAddress?.Pattern;
             newResolvedAddress.IsProcessing = false;
             newResolvedAddress.IsExported = false;

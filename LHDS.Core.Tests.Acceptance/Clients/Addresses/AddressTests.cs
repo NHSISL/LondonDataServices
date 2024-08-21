@@ -321,6 +321,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             Address foundOrdananceAddress)
         {
             ResolvedAddress updatedResolovedAddress = unMatchedResolvedAddress;
+            updatedResolovedAddress.UPRN = foundOrdananceAddress.UPRN;
             updatedResolovedAddress.UPSN = foundOrdananceAddress.UPSN;
             updatedResolovedAddress.OrganisationName = foundOrdananceAddress.OrganisationName;
             updatedResolovedAddress.DepartmentName = foundOrdananceAddress.DepartmentName;

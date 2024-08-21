@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             string inputFilePath = Path.Combine(
                 projectRoot,
-                @"Resource/Clients/Address/Ordinance_data_London.zip");
+                @"Resource/Clients/Address/ShouldProcessZipFileWithZippedCsvAddressesData.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);
@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 await this.csvHelperBroker.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings);
 
             // When
-            await this.addressClient.LoadAddressDataAsync(inputStream, "Ordinance_data_London.zip");
+            await this.addressClient.LoadAddressDataAsync(inputStream, "ZipFileWithZippedCsvAddressesData.zip");
 
             // Then
             IQueryable<Address> retrievedListAddresses = this.addressService.RetrieveAllAddresses();

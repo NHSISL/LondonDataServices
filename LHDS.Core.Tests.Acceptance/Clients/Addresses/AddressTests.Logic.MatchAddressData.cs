@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                             .WithStatusCode(HttpStatusCode.OK)
                             .WithBodyAsJson(randomAssignAddress));
 
-                Address randomAddress = CreateRandomAddress(randomDateTimeOffset, randomAssignAddress.UPRN);
+                Address randomAddress = CreateRandomAddress(randomDateTimeOffset, randomAssignAddress.BestMatch.UPRN);
                 await this.addressService.AddAddressAsync(randomAddress);
                 addedAddresses.Add(randomAddress);
 

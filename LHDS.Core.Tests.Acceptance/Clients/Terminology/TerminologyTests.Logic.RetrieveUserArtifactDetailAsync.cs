@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             TerminologyArtifact terminologyArtifact = CreateRandomUserTerminologyArtifact(dateTimeOffset);
             string baseUrl = $"{ontologyConfiguration.TerminologyServerBaseUrl}";
             string authUri = $"{ontologyConfiguration.TerminologyServerAuthenticationRelativeUrl}";
-            terminologyArtifact.FullUrl = $"users/{baseUrl}/test";
+            terminologyArtifact.FullUrl = $"{baseUrl}/test";
             terminologyArtifact.IsForUser = true;
             await this.terminologyArtifactService.AddTerminologyArtifactAsync(terminologyArtifact);
 

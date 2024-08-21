@@ -156,6 +156,8 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                     LastUpdated = asset.LastUpdated,
                     IsCore = false,
                     IsDownloaded = false,
+                    IsForUser = false,
+                    IsDownloadedForUser = false,
                     CreatedBy = "System",
                     UpdatedBy = "System",
                     UpdatedDate = newDateTimeOffset,

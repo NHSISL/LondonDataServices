@@ -29,14 +29,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             string expectedAddresses = await MapObjectToCsv(randomResolvedAddresses);
 
             //When
-            List<Guid> batchRefId = await this.addressClient.ExportResolvedAddressesAsync();
+            List<Guid> batchRefIds = await this.addressClient.ExportResolvedAddressesAsync();
 
             //Then
-            ResolvedAddress retrievedResolvedAddress =
-                await this.resolvedAddressService.RetrieveResolvedAddressByIdAsync(randomResolvedAddresses[0].Id);
-
-            Guid? batchReference = retrievedResolvedAddress.BatchReference;
-
+            Guid? batchReference = batchRefIds[0];
             MemoryStream retrievedDocumentStream = new MemoryStream();
             string csvFileName = $"out/{batchReference}.csv";
 

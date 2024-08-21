@@ -122,6 +122,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             {
                 await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(artifact.Id);
             }
+
         }
     }
 }

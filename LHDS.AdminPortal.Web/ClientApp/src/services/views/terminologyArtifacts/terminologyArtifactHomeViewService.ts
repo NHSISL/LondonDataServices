@@ -56,6 +56,8 @@ export const TerminologyArtifactHomeViewService = {
                                 terminologyArtifact.lastUpdated,
                                 terminologyArtifact.isCore,
                                 terminologyArtifact.isDownloaded,
+                                terminologyArtifact.isForUser,
+                                terminologyArtifact.isDownloadedForUser,
                                 terminologyArtifact.isError,
                                 terminologyArtifact.errorMessage,
                                 terminologyArtifact.createdBy,

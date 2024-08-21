@@ -11,6 +11,8 @@ export class TerminologyArtifact {
     public lastUpdated?: Date;
     public isCore?: boolean;
     public isDownloaded?: boolean;
+    public isForUser?: boolean;
+    public isDownloadedForUser?: boolean;
     public isError?: boolean;
     public errorMessage?: string;
     public createdBy?: string;
@@ -29,6 +31,8 @@ export class TerminologyArtifact {
         this.lastUpdated = new Date(terminologyArtifact.lastUpdated);
         this.isCore = terminologyArtifact.isCore;
         this.isDownloaded = terminologyArtifact.isDownloaded;
+        this.isForUser = terminologyArtifact.isForUser;
+        this.isDownloadedForUser = terminologyArtifact.isDownloadedForUser;
         this.isError = terminologyArtifact.isError;
         this.errorMessage = terminologyArtifact.errorMessage;
         this.createdBy = terminologyArtifact.createdBy;

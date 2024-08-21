@@ -43,6 +43,21 @@ const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDe
         onUpdate(terminologyArtifact);
     }
 
+    const handleIsForUserUpdate = () => {
+        terminologyArtifact.isForUser = true;
+        onUpdate(terminologyArtifact);
+    }
+
+    const handleIsNotForUserUpdate = () => {
+        terminologyArtifact.isForUser = false;
+        onUpdate(terminologyArtifact);
+    }
+
+    const handleIsNotDownloadedForUserUpdate = () => {
+        terminologyArtifact.isDownloadedForUser = false;
+        onUpdate(terminologyArtifact);
+    }
+
     return (
         <>
             <div className="row">
@@ -122,6 +137,44 @@ const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDe
                                                     <ButtonBase onClick={handleIsNotDownloadedUpdate} remove>
                                                         Mark Not Downloaded
                                                     </ButtonBase> : "" }
+                                            </span>
+                                        </SummaryListBaseAction>
+                                    </SummaryListBaseRow>
+
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>Is For User</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{terminologyArtifact.isForUser ?
+                                            <FontAwesomeIcon icon={faCheck} className="text-success" /> :
+                                            <FontAwesomeIcon icon={faTimes} className="text-danger" />}
+                                        </SummaryListBaseValue>
+                                        <SummaryListBaseAction>
+                                            <span style={{ float: "right" }}>
+                                                {terminologyArtifact.isForUser ?
+                                                    <ButtonBase onClick={handleIsNotForUserUpdate} remove>
+                                                        Mark Not For User
+                                                    </ButtonBase> :
+                                                    <span>
+                                                        <ButtonBase onClick={handleIsForUserUpdate} add>
+                                                            Mark For User
+                                                        </ButtonBase>
+                                                    </span>}
+                                            </span>
+                                        </SummaryListBaseAction>
+
+                                    </SummaryListBaseRow>
+
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>Is Downloaded For User</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{terminologyArtifact.isDownloadedForUser ?
+                                            <FontAwesomeIcon icon={faCheck} className="text-success" /> :
+                                            <FontAwesomeIcon icon={faTimes} className="text-danger" />}
+                                        </SummaryListBaseValue>
+                                        <SummaryListBaseAction>
+                                            <span style={{ float: "right" }}>
+                                                {terminologyArtifact.isDownloadedForUser ?
+                                                    <ButtonBase onClick={handleIsNotDownloadedForUserUpdate} remove>
+                                                        Mark Not Downloaded For User
+                                                    </ButtonBase> : ""}
                                             </span>
                                         </SummaryListBaseAction>
                                     </SummaryListBaseRow>

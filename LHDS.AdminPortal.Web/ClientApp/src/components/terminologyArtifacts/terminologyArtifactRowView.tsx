@@ -5,7 +5,7 @@ import { TerminologyArtifact } from "../../models/terminologyArtifacts/terminolo
 import { Link } from 'react-router-dom';
 import ButtonBase from "../bases/buttons/ButtonBase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCircleExclamation,faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCircleExclamation, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 type TerminologyArtifactRowProps = {
     terminologyArtifact: TerminologyArtifact;
@@ -43,19 +43,37 @@ const TerminologyArtifactRowView: FunctionComponent<TerminologyArtifactRowProps>
             </TableBaseData>
 
             <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white text-center" : "text-center"}>
-                <span>
-                   {terminologyArtifact.isCore ?
-                        <FontAwesomeIcon icon={faCheck} className="text-success" title="isCore" /> :
-                        <FontAwesomeIcon icon={faTimes} className="text-danger" title="notCore" />}
-                </span>
+                {!terminologyArtifact.isError &&
+                    <>
+                        <span> Core:&nbsp;
+                            {terminologyArtifact.isCore ?
+                                <FontAwesomeIcon icon={faCheck} className="text-success" title="isCore" /> :
+                                <FontAwesomeIcon icon={faTimes} className="text-danger" title="notCore" />}
+                        </span>
+                        <span> User:&nbsp;
+                            {terminologyArtifact.isForUser ?
+                                <FontAwesomeIcon icon={faCheck} className="text-success" title="isCore" /> :
+                                <FontAwesomeIcon icon={faTimes} className="text-danger" title="notCore" />}
+                        </span>
+                    </>
+                }
             </TableBaseData>
 
             <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white text-center" : "text-center"}>
-                <span>
-                    {terminologyArtifact.isDownloaded ?
-                        <FontAwesomeIcon icon={faCheck} className="text-success" title="downloaded" /> :
-                        <FontAwesomeIcon icon={faTimes} className="text-danger" title="not downloaded" />}
-                </span>
+                {!terminologyArtifact.isError &&
+                    <>
+                        <span>Core:&nbsp;
+                            {terminologyArtifact.isDownloaded ?
+                                <FontAwesomeIcon icon={faCheck} className="text-success" title="downloaded" /> :
+                                <FontAwesomeIcon icon={faTimes} className="text-danger" title="not downloaded" />}
+                        </span>&nbsp;&nbsp;
+                        <span>User:&nbsp;
+                            {terminologyArtifact.isDownloadedForUser ?
+                                <FontAwesomeIcon icon={faCheck} className="text-success" title="downloaded" /> :
+                                <FontAwesomeIcon icon={faTimes} className="text-danger" title="not downloaded" />}
+                        </span>
+                    </>
+                }
             </TableBaseData>
 
             <TableBaseData classes={terminologyArtifact.isError ? "bg-danger text-white text-center" : "text-center"}>
@@ -68,7 +86,7 @@ const TerminologyArtifactRowView: FunctionComponent<TerminologyArtifactRowProps>
                 </Link>
             </TableBaseData>
 
-        </TableBaseRow>
+        </TableBaseRow >
     );
 }
 

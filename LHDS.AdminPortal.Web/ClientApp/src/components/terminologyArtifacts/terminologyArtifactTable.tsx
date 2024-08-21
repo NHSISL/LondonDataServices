@@ -154,7 +154,7 @@ const TerminologyArtifactTable: FunctionComponent = () => {
                                         <TableBaseHeader classes="text-center">Version</TableBaseHeader>
                                         <TableBaseHeader classes="text-center">Status</TableBaseHeader>
                                         <TableBaseHeader classes="text-center">Error</TableBaseHeader>
-                                        <TableBaseHeader classes="text-center">Marked as Core</TableBaseHeader>
+                                        <TableBaseHeader classes="text-center">Marked as</TableBaseHeader>
                                         <TableBaseHeader classes="text-center">Downloaded</TableBaseHeader>
                                         <TableBaseHeader classes="text-center">Actions</TableBaseHeader>
                                     </TableBaseRow>

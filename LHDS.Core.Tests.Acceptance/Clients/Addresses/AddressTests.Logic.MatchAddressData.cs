@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                             .Create()
                             .UsingGet()
                             .WithPath("/api/getinfo")
-                            .WithParam("address", resolvedAddress.UnstructuredPostalAddress))
+                            .WithParam("adrec", resolvedAddress.UnstructuredPostalAddress))
                     .RespondWith(
                         Response
                             .Create()

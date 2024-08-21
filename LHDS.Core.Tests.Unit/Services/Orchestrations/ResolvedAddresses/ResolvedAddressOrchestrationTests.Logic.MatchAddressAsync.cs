@@ -61,6 +61,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 processing.MatchAddressAsync(inputResolvedAddress))
                     .ReturnsAsync(storageAssignAddress);
 
+            storageAddress.UPRN = matchedUprn;
+
             this.addressProcessingServiceMock.Setup(processing =>
                 processing.RetrieveAddressByUPRNAsync(matchedUprn))
                     .ReturnsAsync(storageAddress);
@@ -73,6 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             newResolvedAddress.UpdatedDate = randomDateTimeOffset;
             newResolvedAddress.IsProcessed = true;
+            newResolvedAddress.UPRN = matchedUprn;
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
                processing.ModifyResolvedAddressAsync(newResolvedAddress))
@@ -167,6 +170,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             resolvedAddress.UpdatedDate = randomDateTimeOffset;
             resolvedAddress.IsProcessed = true;
+            resolvedAddress.UPRN = null;
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
                processing.ModifyResolvedAddressAsync(resolvedAddress))

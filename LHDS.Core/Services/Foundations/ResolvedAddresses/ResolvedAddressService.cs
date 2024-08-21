@@ -267,7 +267,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                     var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
                     resolvedAddress.UpdatedDate = resolvedAddress.CreatedDate;
                     resolvedAddress.UpdatedBy = resolvedAddress.CreatedBy;
-                    //ValidateResolvedAddressOnAdd(resolvedAddress);
+                    ValidateResolvedAddressOnAdd(resolvedAddress);
                     validatedResolvedAddresses.Add(resolvedAddress);
                 }
                 catch (Exception ex)

@@ -93,7 +93,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             CleanupDownloadFolder();
         }
 
-        [Fact(Skip = "Temporary skip")]
+        [Fact]
         public async Task ShouldNotProcessExistingDocumentsAsync()
         {
             //Given

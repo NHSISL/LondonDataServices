@@ -64,7 +64,16 @@
     <None Update="Resource\Clients\Address\ShouldProcessCsvAddressesSetup.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resource\Clients\Address\ShouldProcessCsvAddressesZippedSetup.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resource\Clients\Address\ShouldProcessZipFileWithZippedCsvAddressesData.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resource\Clients\Address\ShouldUploadAddressesSetup.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resource\Clients\Address\Test.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

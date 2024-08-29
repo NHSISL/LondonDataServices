@@ -119,7 +119,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                                 .RetrieveArtifactDetailsAsync(relativeUrl);
 
                             byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
-                            string fileName = $"Users/{artifact.ResourceType}/{artifact.Name}.json";
+                            string fileName = $"Subscribers/{artifact.ResourceType}/{artifact.Name}.json";
 
                             using (Stream input = new MemoryStream(artifactDetailData))
                             {

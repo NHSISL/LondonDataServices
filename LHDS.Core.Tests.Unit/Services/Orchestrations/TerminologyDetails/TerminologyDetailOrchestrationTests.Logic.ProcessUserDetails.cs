@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             Stream inputStream = new MemoryStream(outputArtifactDetailData);
             Stream expectedStream = inputStream;
             Stream actualStream = new MemoryStream();
-            string inputFileName = $"users/{undownloadedTerminologyArtifact.ResourceType}/" +
+            string inputFileName = $"Users/{undownloadedTerminologyArtifact.ResourceType}/" +
                     $"{undownloadedTerminologyArtifact.Name}.json";
 
             this.documentProcessingServiceMock

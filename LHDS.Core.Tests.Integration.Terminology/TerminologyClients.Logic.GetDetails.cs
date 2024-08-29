@@ -3,12 +3,13 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Terminology
 {
     public partial class TerminologyClients
     {
-        [ReleaseCandidateFact]
+        [Fact]
         public async Task ShouldRetrieveArtifactDetailsAsync()
         {
             //Given

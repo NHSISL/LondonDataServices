@@ -12,6 +12,8 @@ using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Xunit;
 
@@ -19,7 +21,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 {
     public partial class TppLandingTests
     {
-        [Fact(Skip = "Excluding test so ingress changes can be checked in")]
+        [Fact]
         public async Task ShouldProcessNewDocumentAndAddHashAsync()
         {
             //Given
@@ -33,9 +35,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             Stream inputStream = randomStream;
             string inputFileName = GetRandomFileName();
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
+            SpecificationObject specificationObject = CreateRandomSpecificationObjects(activeDataSetSpecification);
+            ObjectColumn objectColumn = CreateRandomObjectColumns(specificationObject);
             await this.supplierService.AddSupplierAsync(landingSupplier);
             await this.dataSetService.AddDataSetAsync(activeDataSet);
             await this.dataSetSpecificationService.AddDataSetSpecificationAsync(activeDataSetSpecification);
+            await this.specificationObjectService.AddSpecificationObjectAsync(specificationObject);
+            await this.objectColumnService.AddObjectColumnAsync(objectColumn);
 
             //When
             Guid actualGuid = await this.tppLandingClient.ProcessAsync(
@@ -56,6 +62,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
             }
 
+            await this.objectColumnService.RemoveObjectColumnByIdAsync(objectColumn.Id);
+            await this.specificationObjectService.RemoveSpecificationObjectByIdAsync(specificationObject.Id);
             await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
@@ -66,7 +74,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 blobContainers.Ingress);
         }
 
-        [Fact(Skip = "Excluding test so ingress changes can be checked in")]
+        [Fact]
         public async Task ShouldNotProcessExistingDocumentAsync()
         {
             //Given
@@ -81,15 +89,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.supplierService.AddSupplierAsync(landingSupplier);
             DataSet activeDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
+            SpecificationObject specificationObject = CreateRandomSpecificationObjects(activeDataSetSpecification);
+            ObjectColumn objectColumn = CreateRandomObjectColumns(specificationObject);
             await this.supplierService.AddSupplierAsync(landingSupplier);
             await this.dataSetService.AddDataSetAsync(activeDataSet);
             await this.dataSetSpecificationService.AddDataSetSpecificationAsync(activeDataSetSpecification);
+            await this.specificationObjectService.AddSpecificationObjectAsync(specificationObject);
+            await this.objectColumnService.AddObjectColumnAsync(objectColumn);
 
             IngestionTracking randomIngestionTracking =
                 CreateRandomIngestionTracking(randomDateTime, fileName, supplierId);
 
             randomIngestionTracking.FileName = randomFileName;
             randomIngestionTracking.DecryptedFileSha256Hash = randomHash;
+            randomIngestionTracking.DataSetSpecificationId = activeDataSetSpecification.Id;
             await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
 
             //When
@@ -111,6 +124,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
             }
 
+            await this.objectColumnService.RemoveObjectColumnByIdAsync(objectColumn.Id);
+            await this.specificationObjectService.RemoveSpecificationObjectByIdAsync(specificationObject.Id);
             await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
@@ -121,7 +136,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 blobContainers.Ingress);
         }
 
-        [Fact(Skip = "Excluding test so ingress changes can be checked in")]
+        [Fact]
         public async Task ShouldProcessExistingDocumentAndUpdateHashAsync()
         {
             //Given
@@ -136,14 +151,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.supplierService.AddSupplierAsync(landingSupplier);
             DataSet activeDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
+            SpecificationObject specificationObject = CreateRandomSpecificationObjects(activeDataSetSpecification);
+            ObjectColumn objectColumn = CreateRandomObjectColumns(specificationObject);
             await this.supplierService.AddSupplierAsync(landingSupplier);
             await this.dataSetService.AddDataSetAsync(activeDataSet);
             await this.dataSetSpecificationService.AddDataSetSpecificationAsync(activeDataSetSpecification);
+            await this.specificationObjectService.AddSpecificationObjectAsync(specificationObject);
+            await this.objectColumnService.AddObjectColumnAsync(objectColumn);
 
             IngestionTracking randomIngestionTracking =
                 CreateRandomIngestionTracking(randomDateTime, fileName, supplierId);
 
             randomIngestionTracking.FileName = randomFileName;
+            randomIngestionTracking.DataSetSpecificationId = activeDataSetSpecification.Id;
             await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
 
             //When
@@ -165,6 +185,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
             }
 
+            await this.objectColumnService.RemoveObjectColumnByIdAsync(objectColumn.Id);
+            await this.specificationObjectService.RemoveSpecificationObjectByIdAsync(specificationObject.Id);
             await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);

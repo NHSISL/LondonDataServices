@@ -80,14 +80,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
         private static string GetRandomFileName()
         {
+            string resourceGroup = GetRandomString();
+            string batch = DateTimeOffset.UtcNow.ToString("yyyyMMdd_HHmm");
             string filename = GetRandomString();
 
-            for (int i = 0; i < 6; i++)
-            {
-                filename = $"{filename}_{GetRandomString(10)}";
-            }
-
-            return filename;
+            return $"{resourceGroup}/{batch}/{filename}.csv";
         }
 
         private static string GetRandomString(int length) =>

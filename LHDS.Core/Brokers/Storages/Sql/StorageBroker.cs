@@ -53,11 +53,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
             optionsBuilder.UseSqlServer(connectionString);
         }
 
-        public override void Dispose() { }
-
         private async ValueTask BulkInsertAsync<T>(IEnumerable<T> objects) where T : class
         {
-            objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Added);
+            objects.ToList();
             this.AddRange(objects);
             await this.SaveChangesAsync();
             objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Detached);
@@ -74,7 +72,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
         private IQueryable<T> ReadAll<T>() where T : class => this.Set<T>();
 
-        private async ValueTask<T> ReadAsync<T>(params object[] @objectIds) where T : class =>
+        private async ValueTask<IQueryable<T>> ReadAllAsync<T>() where T : class =>
+            this.Set<T>();
+
+        private async ValueTask<T?> ReadAsync<T>(params object[] @objectIds) where T : class =>
             await this.FindAsync<T>(objectIds);
 
         private async ValueTask<T> UpdateAsync<T>(T @object)
@@ -89,7 +90,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private async ValueTask BulkUpdateAsync<T>(IEnumerable<T> objects) where T : class
         {
             objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Modified);
-            this.AddRange(objects);
             await this.SaveChangesAsync();
             objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Detached);
         }

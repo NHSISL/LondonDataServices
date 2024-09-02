@@ -17,7 +17,7 @@ namespace LHDS.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.5")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -480,6 +480,16 @@ namespace LHDS.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Batch")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BatchReadyFolderPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Container")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -487,6 +497,9 @@ namespace LHDS.Core.Migrations
 
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("DataSetSpecificationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Decrypted")
                         .HasColumnType("bit");
@@ -536,6 +549,9 @@ namespace LHDS.Core.Migrations
 
                     b.Property<DateTimeOffset>("LastSeen")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ObjectName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("RecordCount")
                         .HasColumnType("bigint");

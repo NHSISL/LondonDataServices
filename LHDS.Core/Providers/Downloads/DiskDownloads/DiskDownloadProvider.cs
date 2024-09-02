@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,8 +38,9 @@ namespace LHDS.Core.Providers.Downloads.DiskDownloads
 
         public async ValueTask GetDocumentByFileNameAsync(Download download)
         {
+            char separator = Path.DirectorySeparatorChar;
             string docFileName = download?.Document?.FileName ?? "";
-            string relativePath = docFileName.Replace("/", "\\");
+            string relativePath = docFileName.Replace("/", $"{separator}").Replace("\\", $"{separator}");
             string filePath = Path.Combine(diskDownloadProviderSettings.LocalRootFolder, relativePath);
 
             if (!File.Exists(filePath))

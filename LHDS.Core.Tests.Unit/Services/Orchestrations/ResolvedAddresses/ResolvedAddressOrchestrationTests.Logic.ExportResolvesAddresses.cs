@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     It.Is(SameResolvedAddressListAs(processingResolvedAddresses)),
                     true,
                     fieldMappings,
-                    true))
+                    false))
                         .ReturnsAsync(ouputCsv);
 
             string inputFileName = $"out/{batchReference}.csv";

@@ -24,7 +24,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             // Given
             string inputFilename = GetRandomString();
             string assembly = Assembly.GetExecutingAssembly().Location;
-
             char separator = Path.DirectorySeparatorChar;
 
             string projectRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(assembly),
@@ -32,14 +31,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             string inputFilePath = Path.Combine(
                 projectRoot,
-                @"Resource\Clients\Address\ShouldProcessZipFileWithZippedCsvAddressesData.zip");
+                $"Resource{separator}Clients{separator}Address{separator}" +
+                "ShouldProcessZipFileWithZippedCsvAddressesData.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);
 
             string csvFilePath = Path.Combine(
                 projectRoot,
-                @"Resource\Clients\Address\ShouldProcessCsvAddressesSetup.csv");
+                $"Resource{separator}Clients{separator}Address{separator}" + 
+                "ShouldProcessCsvAddressesSetup.csv");
 
             byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
             string stringData = Encoding.UTF8.GetString(csvData);

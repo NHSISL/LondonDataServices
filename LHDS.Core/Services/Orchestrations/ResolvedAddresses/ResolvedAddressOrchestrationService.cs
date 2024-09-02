@@ -256,7 +256,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             @object: unMatchedResolvedAddresses,
                             addHeaderRecord: true,
                             fieldMappings: fieldMappings,
-                            shouldAddTrailingComma: true);
+                            shouldAddTrailingComma: false);
 
                         byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
                         batchReferenceIds.Add(batchReference);

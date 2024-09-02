@@ -24,21 +24,22 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             // Given
             string inputFilename = GetRandomString();
             string assembly = Assembly.GetExecutingAssembly().Location;
+
             char separator = Path.DirectorySeparatorChar;
 
-            string projectRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(assembly), 
+            string projectRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(assembly),
                 $"..{separator}..{separator}.."));
 
             string inputFilePath = Path.Combine(
                 projectRoot,
-                @"Resource/Clients/Address/ShouldProcessZipFileWithZippedCsvAddressesData.zip");
+                @"Resource\Clients\Address\ShouldProcessZipFileWithZippedCsvAddressesData.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);
 
             string csvFilePath = Path.Combine(
                 projectRoot,
-                @"Resource/Clients/Address/ShouldProcessCsvAddressesSetup.csv");
+                @"Resource\Clients\Address\ShouldProcessCsvAddressesSetup.csv");
 
             byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
             string stringData = Encoding.UTF8.GetString(csvData);
@@ -71,7 +72,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 await this.csvHelperBroker.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings);
 
             // When
-            await this.addressClient.LoadAddressDataAsync(inputStream, "ZipFileWithZippedCsvAddressesData.zip");
+            await this.addressClient.LoadAddressDataAsync(
+                inputStream,
+                "ShouldProcessZipFileWithZippedCsvAddressesData.zip");
 
             // Then
             IQueryable<Address> retrievedListAddresses = this.addressService.RetrieveAllAddresses();

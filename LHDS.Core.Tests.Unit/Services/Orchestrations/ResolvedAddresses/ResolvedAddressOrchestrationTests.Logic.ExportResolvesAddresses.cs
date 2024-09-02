@@ -137,7 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     It.Is(SameResolvedAddressListAs(processingResolvedAddresses)),
                     true,
                     fieldMappings,
-                    true),
+                    false),
                         Times.Once);
 
             this.documentProcessingServiceMock.Verify(processing =>

@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 
             string csvFilePath = Path.Combine(
                 projectRoot,
-                $"Resource{separator}Clients{separator}Address{separator}" + 
+                $"Resource{separator}Clients{separator}Address{separator}" +
                 "ShouldProcessCsvAddressesSetup.csv");
 
             byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);

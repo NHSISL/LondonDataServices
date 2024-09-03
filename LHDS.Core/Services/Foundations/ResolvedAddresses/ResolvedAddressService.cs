@@ -263,11 +263,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 try
                 {
-                    //TODO: CDT to review
                     var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                    resolvedAddress.UpdatedDate = resolvedAddress.CreatedDate;
+                    resolvedAddress.UpdatedDate = currentDateTime;
                     resolvedAddress.UpdatedBy = resolvedAddress.CreatedBy;
-                    ValidateResolvedAddressOnAdd(resolvedAddress);
+                    ValidateResolvedAddressOnModify(resolvedAddress);
                     validatedResolvedAddresses.Add(resolvedAddress);
                 }
                 catch (Exception ex)

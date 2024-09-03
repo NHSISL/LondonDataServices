@@ -369,7 +369,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             string dataSetName = retrievedDataSetSpecification?.DataSet?.DataSetName ?? string.Empty;
             string dataSetVersion = retrievedDataSetSpecification?.OurSpecificationVersion ?? string.Empty;
             string extractGroup = subscriberCredential.Id.ToString();
-            string extractTime = splitFileName[4];
+            string extractTime = splitFileName[5];
 
             string baseFolder =
                 $"/{landingConfiguration.DecryptedFolder}" +

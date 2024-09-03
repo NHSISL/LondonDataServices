@@ -23,22 +23,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         {
             // Given
             string inputFilename = GetRandomString();
-            string assembly = Assembly.GetExecutingAssembly().Location;
+            string assembly = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             char separator = Path.DirectorySeparatorChar;
 
-            string projectRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(assembly),
-                $"..{separator}..{separator}.."));
-
             string inputFilePath = Path.Combine(
-                projectRoot,
+                assembly,
                 $"Resource{separator}Clients{separator}Address{separator}" +
-                "ShouldProcessZipFileWithZippedCsvAddressesData.zip");
+                    "ShouldProcessZipFileWithZippedCsvAddressesData.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);
 
             string csvFilePath = Path.Combine(
-                projectRoot,
+                assembly,
                 $"Resource{separator}Clients{separator}Address{separator}" +
                 "ShouldProcessCsvAddressesSetup.csv");
 

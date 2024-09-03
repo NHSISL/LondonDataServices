@@ -19,15 +19,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         {
             // Given
             string inputFilename = GetRandomString();
-            string assembly = Assembly.GetExecutingAssembly().Location;
+            string assembly = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             char separator = Path.DirectorySeparatorChar;
             Guid expectedUniqueRef = Guid.Parse("7b41335a-f2cf-4949-8b83-c5b210446631");
 
-            string projectRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(assembly),
-                $"..{separator}..{separator}.."));
-
             string inputFilePath = Path.Combine(
-                projectRoot,
+                assembly,
                 $@"Resource{separator}Clients{separator}Address{separator}ShouldUploadAddressesSetup.csv");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);

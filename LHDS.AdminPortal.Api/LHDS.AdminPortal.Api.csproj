@@ -15,20 +15,19 @@
 	  <PackageReference Include="EFxceptions" Version="0.4.5" />
 	  <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
 	  <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
-	  <PackageReference Include="Microsoft.AspNet.WebPages" Version="3.3.0" />
-	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
-	  <PackageReference Include="Microsoft.AspNetCore.OData" Version="8.2.5" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.7" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7">
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
+	  <PackageReference Include="Microsoft.AspNetCore.OData" Version="9.0.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		  <PrivateAssets>all</PrivateAssets>
 	  </PackageReference>
-	  <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.4" />
+	  <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.5" />
 	  <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-	  <PackageReference Include="Microsoft.Identity.Web" Version="3.0.1" />
+	  <PackageReference Include="Microsoft.Identity.Web" Version="3.1.0" />
 	  <PackageReference Include="RESTFulSense" Version="3.0.0" />
 	  <PackageReference Include="SshKeyGenerator" Version="1.1.51" />
-	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
+	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
 	  <PackageReference Include="Xeption" Version="2.8.0" />
 	  <PackageReference Include="xunit.extensibility.core" Version="2.9.0" />
   </ItemGroup>

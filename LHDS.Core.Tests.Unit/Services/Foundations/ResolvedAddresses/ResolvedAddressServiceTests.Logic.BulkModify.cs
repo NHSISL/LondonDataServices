@@ -23,14 +23,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 GetRandomDateTimeOffset();
 
             Guid randomIdentifier = Guid.NewGuid();
-            DateTimeOffset createdDate = randomDateTimeOffset;
             DateTimeOffset updatedDate = randomDateTimeOffset;
             string randomFileName = GetRandomString();
 
             List<ResolvedAddress> randomResolvedAddresses = new List<ResolvedAddress>
                 {
-                    CreateRandomResolvedAddress(randomDateTimeOffset),
-                    CreateRandomResolvedAddress(randomDateTimeOffset)
+                    CreateRandomModifyResolvedAddress(randomDateTimeOffset),
+                    CreateRandomModifyResolvedAddress(randomDateTimeOffset)
                 };
 
             List<ResolvedAddress> inputResolvedAddresses = randomResolvedAddresses;

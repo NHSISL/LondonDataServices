@@ -162,7 +162,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                     : "/" + relativeSourcePath;
 
                 string[] splitFileName = filename.Split('/');
-                string newFileName = $"{subscriberAgreementId}/{splitFileName[4]}/{splitFileName[6]}"; ;
+                string newFileName = $"{subscriberAgreementId}/{splitFileName[5]}/{splitFileName[6]}"; ;
 
                 var encryptedFilePath = $"/{landingConfiguration.EncryptedFolder}/{newFileName}"; ;
 

@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 {
     public partial class ResolvedAddressOrchestrationTests
     {
-        [Fact(Skip = "No longer used, keeping for now just in case")]
+        [Fact(Skip = "DH, not sure why you excluded this.  We need this to match resolved addresses with Assign")]
         public async Task ShouldThrowValidationExceptionOnMatchIfAssignUPRNIsNullAndLogItAsync()
         {
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
             AssignAddress storageAssignAddress = randomAssignAddress;
-            storageAssignAddress.UPRN = "";
+            storageAssignAddress.BestMatch.UPRN = "";
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
                service.RetrieveAllResolvedAddresses())

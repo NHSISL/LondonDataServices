@@ -55,7 +55,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             this.hashBroker = hashBroker;
         }
 
-        public ValueTask<string> DecryptAsync(string encryptedFileName, SubscriberCredential subscriberCredential) =>
+        public ValueTask<(string DecryptedFileName, Guid IngestionTrackingId)> DecryptAsync(
+            string encryptedFileName,
+            SubscriberCredential subscriberCredential) =>
             TryCatch(async () =>
             {
                 ValidateBlobContainersIsNotNull();
@@ -108,7 +110,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 await LogAudit(ingestionTracking, currentDateTime);
 
-                return ingestionTracking.DecryptedFileName;
+                return (ingestionTracking.DecryptedFileName, ingestionTracking.Id);
             });
 
         public ValueTask<string?> GetNextItemToBeDecrypted() =>

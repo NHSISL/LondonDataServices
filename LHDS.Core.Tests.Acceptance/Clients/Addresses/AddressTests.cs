@@ -6,9 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using HandlebarsDotNet.MemberAccessors.EnumerableAccessors;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -25,6 +29,7 @@ using LHDS.Core.Services.Processings.ResolvedAddresses;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Moq;
 using Tynamix.ObjectFiller;
 using WireMock.Server;
 using Xunit;
@@ -316,6 +321,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             Address foundOrdananceAddress)
         {
             ResolvedAddress updatedResolovedAddress = unMatchedResolvedAddress;
+            updatedResolovedAddress.UPRN = foundOrdananceAddress.UPRN;
             updatedResolovedAddress.UPSN = foundOrdananceAddress.UPSN;
             updatedResolovedAddress.OrganisationName = foundOrdananceAddress.OrganisationName;
             updatedResolovedAddress.DepartmentName = foundOrdananceAddress.DepartmentName;
@@ -331,9 +337,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             updatedResolovedAddress.AddressFormatQuality = foundAssignAddress.AddressFormat;
             updatedResolovedAddress.PostCodeQuality = foundAssignAddress.PostcodeQuality;
             updatedResolovedAddress.MatchedWithAssign = foundAssignAddress.Matched;
-            updatedResolovedAddress.Qualifier = foundAssignAddress.Qualifier;
-            updatedResolovedAddress.Classification = foundAssignAddress.Classification;
-            updatedResolovedAddress.Algorithm = foundAssignAddress.Algorithm;
+            updatedResolovedAddress.Qualifier = foundAssignAddress.BestMatch.Qualifier;
+            updatedResolovedAddress.Classification = foundAssignAddress.BestMatch.Classification;
+            updatedResolovedAddress.Algorithm = foundAssignAddress.BestMatch.Algorithm;
             updatedResolovedAddress.MatchPattern = foundAssignAddress.Pattern;
             updatedResolovedAddress.IsProcessing = true;
             updatedResolovedAddress.IsExported = false;
@@ -367,6 +373,77 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .OnType<DateTimeOffset>().Use(dateTimeOffset);
 
             return filler;
+        }
+
+        private async ValueTask<string> MapObjectToCsv(List<ResolvedAddress> resolvedAddresses)
+        {
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { nameof(ResolvedAddress.UniqueReference), 0 },
+                { nameof(ResolvedAddress.UPRN), 1 },
+                { nameof(ResolvedAddress.UPSN), 2 },
+                { nameof(ResolvedAddress.OrganisationName), 3 },
+                { nameof(ResolvedAddress.DepartmentName), 4 },
+                { nameof(ResolvedAddress.SubBuildingName), 5 },
+                { nameof(ResolvedAddress.BuildingName), 6 },
+                { nameof(ResolvedAddress.BuildingNumber), 7 },
+                { nameof(ResolvedAddress.DependentThoroughfare), 8 },
+                { nameof(ResolvedAddress.Thoroughfare), 9 },
+                { nameof(ResolvedAddress.DoubleDependentLocality), 10 },
+                { nameof(ResolvedAddress.DependentLocality), 11 },
+                { nameof(ResolvedAddress.PostTown), 12 },
+                { nameof(ResolvedAddress.PostCode), 13 },
+                { nameof(ResolvedAddress.AddressFormatQuality), 14 },
+                { nameof(ResolvedAddress.PostCodeQuality), 15 },
+                { nameof(ResolvedAddress.MatchedWithAssign), 16 },
+                { nameof(ResolvedAddress.Qualifier), 17 },
+                { nameof(ResolvedAddress.Classification), 18 },
+                { nameof(ResolvedAddress.Algorithm), 19 },
+                { nameof(ResolvedAddress.MatchPattern), 20 },
+                { nameof(ResolvedAddress.UnstructuredPostalAddress), 21 }
+            };
+
+            return  await this.csvHelperBroker
+               .MapObjectToCsvAsync(
+                    @object: resolvedAddresses,
+                    addHeaderRecord: true,
+                    fieldMappings: fieldMappings,
+                    shouldAddTrailingComma: true);
+        }
+
+        private async ValueTask<List<ResolvedAddress>> MapCsvToObject(string data)
+        {
+            Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+            {
+                { nameof(ResolvedAddress.UniqueReference), 0 },
+                { nameof(ResolvedAddress.UPRN), 1 },
+                { nameof(ResolvedAddress.UPSN), 2 },
+                { nameof(ResolvedAddress.OrganisationName), 3 },
+                { nameof(ResolvedAddress.DepartmentName), 4 },
+                { nameof(ResolvedAddress.SubBuildingName), 5 },
+                { nameof(ResolvedAddress.BuildingName), 6 },
+                { nameof(ResolvedAddress.BuildingNumber), 7 },
+                { nameof(ResolvedAddress.DependentThoroughfare), 8 },
+                { nameof(ResolvedAddress.Thoroughfare), 9 },
+                { nameof(ResolvedAddress.DoubleDependentLocality), 10 },
+                { nameof(ResolvedAddress.DependentLocality), 11 },
+                { nameof(ResolvedAddress.PostTown), 12 },
+                { nameof(ResolvedAddress.PostCode), 13 },
+                { nameof(ResolvedAddress.AddressFormatQuality), 14 },
+                { nameof(ResolvedAddress.PostCodeQuality), 15 },
+                { nameof(ResolvedAddress.MatchedWithAssign), 16 },
+                { nameof(ResolvedAddress.Qualifier), 17 },
+                { nameof(ResolvedAddress.Classification), 18 },
+                { nameof(ResolvedAddress.Algorithm), 19 },
+                { nameof(ResolvedAddress.MatchPattern), 20 },
+                { nameof(ResolvedAddress.UnstructuredPostalAddress), 21 }
+            };
+
+            return await this.csvHelperBroker
+               .MapCsvToObjectAsync<ResolvedAddress>(
+                    data,
+                    hasHeaderRecord: true,
+                    fieldMappings: fieldMappings);
         }
     }
 }

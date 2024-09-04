@@ -17,6 +17,8 @@ using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Downloads;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -28,6 +30,8 @@ using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.ObjectColumns;
+using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
@@ -46,6 +50,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IDataSetSpecificationService dataSetSpecificationService;
+        private readonly ISpecificationObjectService specificationObjectService;
+        private readonly IObjectColumnService objectColumnService;
         private readonly ISupplierService supplierService;
         private readonly IDataSetService dataSetService;
         private readonly IDocumentService documentService;
@@ -70,12 +76,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 builder.AddConsole();
             });
 
-            serviceCollection
-                .AddTransient<ISupplierService, SupplierService>()
-                .AddTransient<IDataSetService, DataSetService>()
-                .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
-                .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
-
             serviceCollection.AddEmisLandingClient(this.dependencyBroker.Configuration);
             serviceCollection.Remove(new ServiceDescriptor(typeof(IDownloadProvider), typeof(FtpDownloadProvider)));
 
@@ -94,6 +94,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             this.supplierService = serviceProvider.GetService<ISupplierService>();
             this.dataSetService = serviceProvider.GetService<IDataSetService>();
             this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
+            this.specificationObjectService = serviceProvider.GetService<ISpecificationObjectService>();
+            this.objectColumnService = serviceProvider.GetService<IObjectColumnService>();
             this.subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
             this.documentService = serviceProvider.GetService<IDocumentService>();
             this.blobContainers = serviceProvider.GetService<BlobContainers>();
@@ -139,7 +141,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         {
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string defaultFolderPath = Path.Combine(assemblyPath, "temp", dropfolder);
-
             List<DocumentSource> randomFiles = new List<DocumentSource>();
 
             for (int i = 0; i < count; i++)
@@ -156,7 +157,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
                 File.WriteAllText(filePath, GetRandomString());
                 var relativeSourcePath = Path.GetRelativePath(defaultFolderPath, filePath).Replace("\\", "/");
-
                 var filename = relativeSourcePath.StartsWith('/')
                     ? relativeSourcePath
                     : "/" + relativeSourcePath;
@@ -169,8 +169,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 var relativeDecryptedPath =
                     $"/{landingConfiguration.DecryptedFolder}" +
                     $"/{dataSetSpecification.DataSet.DataSetName}" +
-                    $"/{dataSetSpecification.Id}" +
-                    $"/{filename.Split('_')[2]}_{filename.Split('_')[3]}" +
+                    $"/{dataSetSpecification.OurSpecificationVersion}" +
                     $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
                 DocumentSource documentSource = new DocumentSource
@@ -186,7 +185,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             return randomFiles;
         }
-
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
@@ -206,12 +204,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
         private static string CreateRandomFilePath(Guid subscriberAgreementId, string fileName)
         {
-            return $"emisnightingale-data-preprod-provider-extracts" +
-                $"/IM1" +
-                $"/sftp" +
-                $"/{subscriberAgreementId}" +
-                $"/{DateTime.Now.ToString("yyyyMMdd")}" +
-                $"/{fileName}";
+            return Path.Combine(
+                "emisnightingale-data-preprod-provider-extracts",
+                "IM1",
+                "sftp",
+                $"{subscriberAgreementId}",
+                $"{DateTime.Now.ToString("yyyyMMdd")}",
+                $"{fileName}");
         }
 
         private static string GetRandomString(int length) =>
@@ -341,6 +340,49 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static SpecificationObject CreateRandomSpecificationObjects(
+           DataSetSpecification dataSetSpecification) =>
+           CreateSpecificationObjectFiller(dataSetSpecification).Create();
+
+        private static Filler<SpecificationObject> CreateSpecificationObjectFiller(
+            DataSetSpecification dataSetSpecification)
+        {
+            string user = GetRandomString(255);
+            var filler = new Filler<SpecificationObject>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+
+                .OnProperty(specificationObject => specificationObject.DataSetSpecificationId)
+                    .Use(dataSetSpecification.Id)
+
+                .OnProperty(specificationObject => specificationObject.CreatedBy).Use(user)
+                .OnProperty(specificationObject => specificationObject.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static ObjectColumn CreateRandomObjectColumns(SpecificationObject specificationObject) =>
+            CreateObjectColumnFiller(specificationObject).Create();
+
+        private static Filler<ObjectColumn> CreateObjectColumnFiller(SpecificationObject specificationObject)
+        {
+            string user = GetRandomString(255);
+            var filler = new Filler<ObjectColumn>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(objectColumn => objectColumn.SpecificationObjectId).Use(specificationObject.Id)
+                .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
+                .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
 
             return filler;
         }

@@ -128,8 +128,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: GetRandomNumber());
             List<ResolvedAddress> unmatchedResolvedAddresses = randomResolvedAddresses;
 
-            string inputResolvedAddress = unmatchedResolvedAddresses
-                .FirstOrDefault().UnstructuredPostalAddress;
+            string inputResolvedAddress =
+                unmatchedResolvedAddresses?.FirstOrDefault()?.UnstructuredPostalAddress
+                    ?? string.Empty;
 
             AssignAddress randomAssignAddress = CreateRandomAssignAddress(randomDateTimeOffset);
             AssignAddress storageAssignAddress = randomAssignAddress;

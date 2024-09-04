@@ -48,12 +48,12 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             {
                 throw CreateAndLogDependencyValidationException(decryptionOrchestrationDependencyValidationException);
             }
-            catch (IngresOrchestrationValidationException
+            catch (IngressOrchestrationValidationException
                 ingresOrchestrationValidationException)
             {
                 throw CreateAndLogDependencyValidationException(ingresOrchestrationValidationException);
             }
-            catch (IngresOrchestrationDependencyValidationException
+            catch (IngressOrchestrationDependencyValidationException
                 ingresOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(ingresOrchestrationDependencyValidationException);
@@ -78,12 +78,12 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             {
                 throw CreateAndLogDependencyException(decryptionOrchestrationServiceException);
             }
-            catch (IngresOrchestrationDependencyException
+            catch (IngressOrchestrationDependencyException
                 ingresOrchestrationDependencyException)
             {
                 throw CreateAndLogDependencyException(ingresOrchestrationDependencyException);
             }
-            catch (IngresOrchestrationServiceException
+            catch (IngressOrchestrationServiceException
                 ingresOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(ingresOrchestrationServiceException);
@@ -130,12 +130,12 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             {
                 throw CreateAndLogDependencyValidationException(decryptionOrchestrationDependencyValidationException);
             }
-            catch (IngresOrchestrationValidationException
+            catch (IngressOrchestrationValidationException
                 ingresOrchestrationValidationException)
             {
                 throw CreateAndLogDependencyValidationException(ingresOrchestrationValidationException);
             }
-            catch (IngresOrchestrationDependencyValidationException
+            catch (IngressOrchestrationDependencyValidationException
                 ingresOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(ingresOrchestrationDependencyValidationException);
@@ -160,12 +160,12 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
             {
                 throw CreateAndLogDependencyException(decryptionOrchestrationServiceException);
             }
-            catch (IngresOrchestrationDependencyException
+            catch (IngressOrchestrationDependencyException
                 ingresOrchestrationDependencyException)
             {
                 throw CreateAndLogDependencyException(ingresOrchestrationDependencyException);
             }
-            catch (IngresOrchestrationServiceException
+            catch (IngressOrchestrationServiceException
                 ingresOrchestrationServiceException)
             {
                 throw CreateAndLogDependencyException(ingresOrchestrationServiceException);

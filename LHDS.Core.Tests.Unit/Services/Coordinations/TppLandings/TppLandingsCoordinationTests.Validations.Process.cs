@@ -61,18 +61,18 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             actualTppLandingCoordinationValidationException.Should()
                .BeEquivalentTo(expectedTppLandingCoordinationValidationException);
 
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTppLandingCoordinationValidationException))),
+                        Times.Once);
+
             this.tppLandingOrchestrationServiceMock.Verify(service =>
                 service.ProcessAsync(inputStream, inputFileName, inputSupplierId),
                 Times.Never);
 
             this.ingressOrchestrationServiceMock.Verify(service =>
-                service.CheckForTPPBatchCompleteAsync(inputFileName),
+                service.CheckForBatchCompleteAsync(It.IsAny<Guid>()),
                     Times.Never);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedTppLandingCoordinationValidationException))),
-                        Times.Once);
 
             this.tppLandingOrchestrationServiceMock.VerifyNoOtherCalls();
             this.ingressOrchestrationServiceMock.VerifyNoOtherCalls();

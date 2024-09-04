@@ -37,8 +37,8 @@ namespace LHDS.Core.Services.Coordinations.TppLandings
                     fileName: fileName,
                     supplierId: supplierId);
 
-                await this.ingressOrchestrationService.CheckForTPPBatchCompleteAsync(
-                    fileName);
+                await this.ingressOrchestrationService
+                    .CheckForBatchCompleteAsync(ingestionTrackingId);
 
                 return ingestionTrackingId;
             });

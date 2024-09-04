@@ -26,8 +26,8 @@ namespace LHDS.Core.Brokers.Assigns
 
         public async ValueTask<AssignAddress> MatchAddressAsync(string address)
         {
-            var returnedAddress = 
-                await this.apiClient.GetContentAsync<AssignAddress>($"/api/getinfo?address={address}");
+            var returnedAddress =
+                await this.apiClient.GetContentAsync<AssignAddress>($"api/getinfo?adrec={address}");
 
             return returnedAddress;
         }

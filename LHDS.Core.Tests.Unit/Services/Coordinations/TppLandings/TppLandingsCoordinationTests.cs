@@ -72,11 +72,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                         "fix the errors and try again.",
                     innerException),
 
-                new IngresOrchestrationValidationException(
+                new IngressOrchestrationValidationException(
                     message: "Ingres orchestration validation errors occured, please try again.",
                     innerException),
 
-                new IngresOrchestrationDependencyValidationException(
+                new IngressOrchestrationDependencyValidationException(
                     message: "Ingres orchestration dependency validation error occurred, " +
                         "fix the errors and try again.",
                     innerException)
@@ -99,11 +99,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     message: "TPP landing orchestration service error occurred, please contact support.",
                     innerException),
 
-                new IngresOrchestrationDependencyException(
+                new IngressOrchestrationDependencyException(
                     message: "Ingres orchestration dependency error occurred, fix the errors and try again.",
                     innerException),
 
-                new IngresOrchestrationServiceException(
+                new IngressOrchestrationServiceException(
                     message: "Ingres orchestration service error occurred, please contact support.",
                     innerException)
             };

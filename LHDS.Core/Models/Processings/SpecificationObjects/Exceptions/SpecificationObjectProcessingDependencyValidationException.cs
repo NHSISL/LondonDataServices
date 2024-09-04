@@ -4,11 +4,11 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Orchestrations.Ingres.Exceptions
+namespace LHDS.Core.Models.Processings.SpecificationObjects.Exceptions
 {
-    public class IngresOrchestrationDependencyValidationException : Xeption
+    public class SpecificationObjectProcessingDependencyValidationException : Xeption
     {
-        public IngresOrchestrationDependencyValidationException(string message, Xeption? innerException)
+        public SpecificationObjectProcessingDependencyValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

@@ -480,6 +480,16 @@ namespace LHDS.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Batch")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BatchReadyFolderPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Container")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -539,6 +549,9 @@ namespace LHDS.Core.Migrations
 
                     b.Property<DateTimeOffset>("LastSeen")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ObjectName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("RecordCount")
                         .HasColumnType("bigint");

@@ -321,6 +321,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             Address foundOrdananceAddress)
         {
             ResolvedAddress updatedResolovedAddress = unMatchedResolvedAddress;
+            updatedResolovedAddress.UPRN = foundOrdananceAddress.UPRN;
             updatedResolovedAddress.UPSN = foundOrdananceAddress.UPSN;
             updatedResolovedAddress.OrganisationName = foundOrdananceAddress.OrganisationName;
             updatedResolovedAddress.DepartmentName = foundOrdananceAddress.DepartmentName;
@@ -336,9 +337,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             updatedResolovedAddress.AddressFormatQuality = foundAssignAddress.AddressFormat;
             updatedResolovedAddress.PostCodeQuality = foundAssignAddress.PostcodeQuality;
             updatedResolovedAddress.MatchedWithAssign = foundAssignAddress.Matched;
-            updatedResolovedAddress.Qualifier = foundAssignAddress.Qualifier;
-            updatedResolovedAddress.Classification = foundAssignAddress.Classification;
-            updatedResolovedAddress.Algorithm = foundAssignAddress.Algorithm;
+            updatedResolovedAddress.Qualifier = foundAssignAddress.BestMatch.Qualifier;
+            updatedResolovedAddress.Classification = foundAssignAddress.BestMatch.Classification;
+            updatedResolovedAddress.Algorithm = foundAssignAddress.BestMatch.Algorithm;
             updatedResolovedAddress.MatchPattern = foundAssignAddress.Pattern;
             updatedResolovedAddress.IsProcessing = true;
             updatedResolovedAddress.IsExported = false;

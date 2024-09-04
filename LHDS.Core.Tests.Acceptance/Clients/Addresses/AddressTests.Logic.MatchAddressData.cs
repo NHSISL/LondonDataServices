@@ -42,14 +42,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                             .Create()
                             .UsingGet()
                             .WithPath("/api/getinfo")
-                            .WithParam("address", resolvedAddress.UnstructuredPostalAddress))
+                            .WithParam("adrec", resolvedAddress.UnstructuredPostalAddress))
                     .RespondWith(
                         Response
                             .Create()
                             .WithStatusCode(HttpStatusCode.OK)
                             .WithBodyAsJson(randomAssignAddress));
 
-                Address randomAddress = CreateRandomAddress(randomDateTimeOffset, randomAssignAddress.UPRN);
+                Address randomAddress = CreateRandomAddress(randomDateTimeOffset, randomAssignAddress.BestMatch.UPRN);
                 await this.addressService.AddAddressAsync(randomAddress);
                 addedAddresses.Add(randomAddress);
 

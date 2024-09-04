@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-namespace LHDS.Core.Models.Foundations.AssignABPAddresses
+namespace LHDS.Core.Models.Foundations.AssignAddresses.AssignABPAddresses
 {
     public class AssignABPAddress
     {

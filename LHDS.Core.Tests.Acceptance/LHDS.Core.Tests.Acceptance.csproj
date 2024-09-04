@@ -55,6 +55,27 @@
     <None Update="local.appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resource\Clients\Address\registrar-request-test.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resource\Clients\Address\RegistrarAddressRequest_88E5FE25-4950-49DF-A14D-2E22AADA41E2.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resource\Clients\Address\ShouldProcessCsvAddressesSetup.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resource\Clients\Address\ShouldProcessCsvAddressesZippedSetup.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resource\Clients\Address\ShouldProcessZipFileWithZippedCsvAddressesData.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resource\Clients\Address\ShouldUploadAddressesSetup.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resource\Clients\Address\Test.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

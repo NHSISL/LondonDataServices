@@ -37,7 +37,6 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             }
             catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {
-                Console.Write($"Landings debug: {ingestionTrackingValidationException.Data.ToString()}");
                 throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)

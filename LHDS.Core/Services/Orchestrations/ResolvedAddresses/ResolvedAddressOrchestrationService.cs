@@ -113,11 +113,11 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
                         Address? foundOrdananceAddress = null;
 
-                        if (foundAssignAddress != null && !string.IsNullOrWhiteSpace(foundAssignAddress.UPRN))
+                        if (foundAssignAddress != null && !string.IsNullOrWhiteSpace(foundAssignAddress.BestMatch.UPRN))
                         {
                             foundOrdananceAddress =
                                 await addressProcessingService
-                                    .RetrieveAddressByUPRNAsync(foundAssignAddress.UPRN);
+                                    .RetrieveAddressByUPRNAsync(foundAssignAddress.BestMatch.UPRN);
                         }
 
                         ResolvedAddress newResolvedAddress =
@@ -164,6 +164,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             Address? foundOrdananceAddress)
         {
             ResolvedAddress updatedResolovedAddress = unMatchedResolvedAddress;
+            updatedResolovedAddress.UPRN = foundOrdananceAddress?.UPRN ?? null;
             updatedResolovedAddress.UPSN = foundOrdananceAddress?.UPSN ?? null;
             updatedResolovedAddress.OrganisationName = foundOrdananceAddress?.OrganisationName;
             updatedResolovedAddress.DepartmentName = foundOrdananceAddress?.DepartmentName;
@@ -179,9 +180,9 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             updatedResolovedAddress.AddressFormatQuality = foundAssignAddress?.AddressFormat;
             updatedResolovedAddress.PostCodeQuality = foundAssignAddress?.PostcodeQuality;
             updatedResolovedAddress.MatchedWithAssign = foundAssignAddress?.Matched ?? false;
-            updatedResolovedAddress.Qualifier = foundAssignAddress?.Qualifier;
-            updatedResolovedAddress.Classification = foundAssignAddress?.Classification;
-            updatedResolovedAddress.Algorithm = foundAssignAddress?.Algorithm;
+            updatedResolovedAddress.Qualifier = foundAssignAddress?.BestMatch.Qualifier;
+            updatedResolovedAddress.Classification = foundAssignAddress?.BestMatch.Classification;
+            updatedResolovedAddress.Algorithm = foundAssignAddress?.BestMatch.Algorithm;
             updatedResolovedAddress.MatchPattern = foundAssignAddress?.Pattern;
             updatedResolovedAddress.IsProcessing = false;
             updatedResolovedAddress.IsExported = false;
@@ -200,7 +201,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
             while ((unMatchedResolvedAddresses = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
                 .Where(address =>
-                    address.IsProcessed == false &&
+                    address.IsExported == false &&
                     address.IsProcessing == false &&
                     address.RetryCount < 4)
                 .Take(batchCount)
@@ -255,7 +256,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             @object: unMatchedResolvedAddresses,
                             addHeaderRecord: true,
                             fieldMappings: fieldMappings,
-                            shouldAddTrailingComma: true);
+                            shouldAddTrailingComma: false);
 
                         byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
                         batchReferenceIds.Add(batchReference);

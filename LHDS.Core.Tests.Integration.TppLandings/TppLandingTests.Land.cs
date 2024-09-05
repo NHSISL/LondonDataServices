@@ -7,8 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.DataSets;
-using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Xunit;
@@ -26,9 +24,9 @@ namespace LHDS.Core.Tests.Integration.TppLandings
             FileInfo fi = new FileInfo(@"Resources\TppLandingTests\ShouldLandTPPFileAsync.txt");
             var fileNameWithoutExtension = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
             string sha256Hash = CalculateSHA256Hash(fileBytes);
-            Supplier supplier = await SetupSupplier();
-            DataSet dataSet = await SetupDataSet(supplier.Id);
-            DataSetSpecification dataSetSpecification = await SetupDataSetSpecification(dataSet.Id);
+
+            string encryptedFileContainer = blobContainers.TppLanding;
+            Supplier supplier = await GetTppSupplier();
 
             // when
             Guid actualGuid = await this.tppLandingClient.ProcessAsync(
@@ -43,19 +41,14 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
             var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                .Where(audit => audit.IngestionTrackingId == actualGuid);
+                .Where(audit => audit.IngestionTrackingId == actualGuid).ToList();
 
             foreach (var audit in audits)
             {
                 await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
             }
 
-            await this.dataSetSpecificationService
-               .RemoveDataSetSpecificationByIdAsync(dataSetSpecification.Id);
-
-            await this.dataSetService.RemoveDataSetByIdAsync(dataSet.Id);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(actualGuid);
-            await this.supplierService.RemoveSupplierByIdAsync(supplier.Id);
         }
     }
 }

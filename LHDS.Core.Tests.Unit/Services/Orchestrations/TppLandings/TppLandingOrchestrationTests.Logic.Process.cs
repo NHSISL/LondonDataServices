@@ -96,32 +96,47 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             DataSet randomDataSet = CreateRandomDataSet(supplierId: randomSupplierId);
             string randomHash = GetRandomString(64);
             int randomNumber = GetRandomNumber();
+            string resourceGroup = GetRandomString();
+            string batch = randomDateTime.ToString("yyyyMMdd_HHmm");
+            string extractTime = DateTime.ParseExact(batch, "yyyyMMdd_HHmm", null).ToString("yyyyMMddHHmmss");
+            string objectName = GetRandomString();
+            string inputFileName = $"/{resourceGroup}/{batch}/{objectName}.csv";
+            string sourceFolderPath = $"/{resourceGroup}/{batch}";
 
-            List<string> randomFileNames = GetRandomStrings();
+            List<string> randomFileNames =
+                GetRandomTppFileNames(resourceGroup, batch, count: randomNumber);
+
             List<string> inputFileNames = randomFileNames;
-
             byte[] randomData = CreateRandomData();
             byte[] inputData = randomData;
             Stream inputDataStream = new MemoryStream(inputData);
 
-            List<IngestionTracking> randomIngestionTrackings =
-                CreateRandomIngestionTrackings(
-                    dateTimeOffset: randomDateTime,
-                    fileNames: inputFileNames,
-                    supplierId: randomSupplierId);
+            DataSetSpecification randomDataSetSpecification =
+               CreateRandomDataSetSpecification(dataSet: randomDataSet);
 
-            IQueryable<DataSetSpecification> randomDataSetSpecificationList =
-               CreateRandomDataSetSpecifications(dataSet: randomDataSet);
+            randomDataSetSpecification.DataSetId = randomDataSet.Id;
 
-            DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
+            string basePath =
+                $"/{landingConfiguration.DecryptedFolder}"
+                + $"/{randomDataSet.DataSetName}"
+                + $"/{randomDataSetSpecification.OurSpecificationVersion}"
+                + $"/{resourceGroup}"
+                + $"/{extractTime}";
+
+            string decryptedFileName =
+                $"{basePath}"
+                + $"/{objectName}.csv";
+
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
-            string inputFileName = randomIngestionTracking.FileName;
+            randomIngestionTracking.DataSetSpecificationId = randomDataSetSpecification.Id;
+            randomIngestionTracking.ObjectName = objectName;
+            randomIngestionTracking.BatchReadyFolderPath = basePath;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())
-                    .Returns(randomIngestionTrackings.AsQueryable());
+                    .Returns(new List<IngestionTracking>().AsQueryable());
 
             this.hashBrokerMock.Setup(broker =>
                 broker.GenerateSha256Hash(inputDataStream))
@@ -131,36 +146,36 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTime);
 
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(randomGuid);
+
             this.dataSetSpecificationProcessingServiceMock.Setup(service =>
                service.GetActiveDataSetSpecification(randomSupplierId))
-                   .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
-
-            var filename = inputFileName.StartsWith('/')
-                ? inputFileName
-                : "/" + inputFileName;
+                   .Returns(ValueTask.FromResult(randomDataSetSpecification));
 
             IngestionTracking newIngestionTracking =
                 new IngestionTracking
                 {
                     Id = randomGuid,
-                    FileName = filename,
                     SupplierId = randomSupplierId,
-                    EncryptedFileName = null,
-
-                    DecryptedFileName =
-                        $"/{landingConfiguration.DecryptedFolder}"
-                        + $"/{randomDataSet.DataSetName}"
-                        + $"/{randomDataSetSpecification.Id}"
-                        + $"{filename}",
-
-                    Decrypted = false,
+                    Container = blobContainers.TppLanding,
+                    FileName = inputFileName,
+                    SourceFolderPath = sourceFolderPath,
+                    BatchReadyFolderPath = basePath,
+                    Batch = batch,
+                    ObjectName = objectName,
+                    DataSetSpecificationId = randomDataSetSpecification.Id,
+                    EncryptedFileName = "Not Encrypted",
+                    DecryptedFileName = decryptedFileName,
+                    Decrypted = true,
                     LastSeen = randomDateTime,
                     FileDeleted = false,
                     RecordCount = 0,
-                    EncryptedFileSize = inputData.Length,
-                    EncryptedFileSha256Hash = randomHash,
-                    DecryptedFileSize = 0,
-                    DecryptedFileSha256Hash = string.Empty,
+                    EncryptedFileSize = 0,
+                    EncryptedFileSha256Hash = string.Empty,
+                    DecryptedFileSize = inputData.Length,
+                    DecryptedFileSha256Hash = randomHash,
                     CreatedBy = "System",
                     CreatedDate = randomDateTime,
                     UpdatedBy = "System",
@@ -185,7 +200,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .ReturnsAsync(value: ingestionTrackingAudit);
 
             // when
-            ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(
+            Guid returnedGuid = await this.tppOrchestrationService.ProcessAsync(
                 input: inputDataStream,
                 fileName: inputFileName,
                 supplierId: inputSupplierId);
@@ -204,12 +219,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 broker.GetCurrentDateTimeOffset(),
                     Times.Once);
 
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Once);
+
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>
                 service.GetActiveDataSetSpecification(randomSupplierId),
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.AddIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(newIngestionTracking))),
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
@@ -311,7 +330,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))),
                     Times.Once);
 
             this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>

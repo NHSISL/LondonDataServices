@@ -3,8 +3,11 @@
 // ---------------------------------------------------------
 
 using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Addresses
@@ -12,33 +15,23 @@ namespace LHDS.Core.Tests.Integration.Addresses
     public partial class AddressTests
     {
         [Fact]
-        public async Task ProcessResolvedAddressDataAsync()
+        public async Task ShouldLoadAddressesToResolveAsync()
         {
             // Given
-            string addressContainer = this.blobContainers.Addresses;
+            string assembly = Assembly.GetExecutingAssembly().Location;
+            string projectRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(assembly), @"..\..\.."));
+
+            string inputFilePath = Path.Combine(
+                projectRoot,
+                @"Resource/Clients/Address/registrar-request-test.csv");
+
+            byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+            Stream inputStream = new MemoryStream(inputData);
 
             // When
-            Guid? returnedBatchGuid = await addressClient.ProcessResolvedAddressDataAsync();
+            await this.addressClient.LoadAddressesToResolveAsync(inputStream, "registrar-request-test.csv");
 
             // Then
-            Assert.True(returnedBatchGuid == null || returnedBatchGuid != Guid.Empty,
-               "The returned GUID should be either null or a valid GUID.");
-
-            if (returnedBatchGuid != null)
-            {
-                string fileName = $"{returnedBatchGuid.ToString()}.csv";
-
-                Document uploadedDocument =
-                    await this.documentService.RetrieveDocumentByFileNameAsync(fileName, addressContainer);
-
-                Assert.NotNull(uploadedDocument);
-                await this.documentService.RemoveDocumentByFileNameAsync(fileName, addressContainer);
-
-                Document uploadedDocumentDeleteCheck =
-                   await this.documentService.RetrieveDocumentByFileNameAsync(fileName, addressContainer);
-
-                Assert.Null(uploadedDocumentDeleteCheck);
-            }
         }
     }
 }

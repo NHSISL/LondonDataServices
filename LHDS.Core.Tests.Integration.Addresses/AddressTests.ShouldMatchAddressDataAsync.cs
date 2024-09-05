@@ -1,0 +1,35 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using Xunit;
+
+namespace LHDS.Core.Tests.Integration.Addresses
+{
+    public partial class AddressTests
+    {
+        [Fact]
+        public async Task ShouldMatchAddressDataAsync()
+        {
+            //Given
+            IQueryable<ResolvedAddress> unprocessedResolvedAddresses =
+                this.resolvedAddressService.RetrieveAllResolvedAddresses().Where(
+                    address => address.IsProcessed == false);
+
+            //When
+            await this.addressClient.MatchAddressDataAsync();
+
+            //Then
+            IQueryable<ResolvedAddress> processedResolvedAddress =
+                this.resolvedAddressService.RetrieveAllResolvedAddresses().Where(
+                    address => address.IsProcessed == true);
+
+            List<ResolvedAddress> unmatchedResolvedAddress =
+                unprocessedResolvedAddresses.Intersect(processedResolvedAddress).ToList();
+        }
+    }
+}

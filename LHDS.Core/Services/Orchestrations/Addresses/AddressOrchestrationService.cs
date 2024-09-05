@@ -17,6 +17,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
+using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.Addresses
 {
@@ -133,45 +134,49 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             {
                 try
                 {
-                    byte[] csvData = await fileBroker.ReadFileAsync(csvFile);
-
-                    string stringData = Encoding.UTF8.GetString(csvData);
-                    List<string> records = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-                    List<string> filteredRecords = records.Where(record =>
-                       record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
-
-                    string stringRecords = string.Join(Environment.NewLine, filteredRecords);
-
-                    Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                    await TryCatch(async () =>
                     {
-                        { "UPRN", 3 },
-                        { "UPSN", 4 },
-                        { "OrganisationName", 5 },
-                        { "DepartmentName", 6 },
-                        { "SubBuildingName", 7 },
-                        { "BuildingName", 8 },
-                        { "BuildingNumber", 9 },
-                        { "DependentThoroughfare", 10 },
-                        { "Thoroughfare", 11 },
-                        { "DoubleDependentLocality", 12 },
-                        { "DependentLocality", 13 },
-                        { "PostTown", 14 },
-                        { "PostCode", 15 }
-                    };
+                        byte[] csvData = await fileBroker.ReadFileAsync(csvFile);
 
-                    List<Address> addresses = await this.csvHelperBroker
-                        .MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord: false, fieldMappings);
+                        string stringData = Encoding.UTF8.GetString(csvData);
 
-                    await addressProcessingService.BulkAddAddressesAsync(addresses, csvFile);
+                        List<string> records = stringData.Split(
+                            new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+
+                        List<string> filteredRecords = records.Where(record =>
+                           record.StartsWith("28,") || record.StartsWith("\"28\",")).ToList();
+
+                        string stringRecords = string.Join(Environment.NewLine, filteredRecords);
+
+                        Dictionary<string, int> fieldMappings = new Dictionary<string, int>
+                        {
+                            { "UPRN", 3 },
+                            { "UPSN", 4 },
+                            { "OrganisationName", 5 },
+                            { "DepartmentName", 6 },
+                            { "SubBuildingName", 7 },
+                            { "BuildingName", 8 },
+                            { "BuildingNumber", 9 },
+                            { "DependentThoroughfare", 10 },
+                            { "Thoroughfare", 11 },
+                            { "DoubleDependentLocality", 12 },
+                            { "DependentLocality", 13 },
+                            { "PostTown", 14 },
+                            { "PostCode", 15 }
+                        };
+
+                        List<Address> addresses = await this.csvHelperBroker
+                            .MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord: false, fieldMappings);
+
+                        await addressProcessingService.BulkAddAddressesAsync(addresses, csvFile);
+                    });
                 }
                 catch (Exception ex)
                 {
-                    ex.Data.Add("ExtractionError", csvFile);
+                    ((Xeption)ex).AddData("ExtractionError", csvFile);
                     exceptions.Add(ex);
                 }
             }
-
             if (exceptions.Any())
             {
                 throw new AggregateException(

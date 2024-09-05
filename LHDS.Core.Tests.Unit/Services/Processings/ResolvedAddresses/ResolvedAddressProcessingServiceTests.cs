@@ -41,10 +41,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
             return new TheoryData<Xeption>
             {
                 new ResolvedAddressValidationException(
-                    message: "ResolvedAddress validation errors occurred, please try again.", innerException),
+                    message: "Resolved address validation errors occurred, please try again.", innerException),
 
                 new ResolvedAddressDependencyValidationException(
-                    message: "ResolvedAddress dependency validation occurred, please try again.", innerException)
+                    message: "Resolved address dependency validation occurred, please try again.", innerException)
             };
         }
 
@@ -57,10 +57,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
             return new TheoryData<Xeption>
             {
                 new ResolvedAddressDependencyException(
-                    message: "ResolvedAddress validation errors occurred, please try again.", innerException),
+                    message: "Resolved address validation errors occurred, please try again.", innerException),
 
                 new ResolvedAddressServiceException(
-                    message : "ResolvedAddress service error occurred, please contact support.", innerException)
+                    message : "Resolved address service error occurred, please contact support.", innerException)
             };
         }
 

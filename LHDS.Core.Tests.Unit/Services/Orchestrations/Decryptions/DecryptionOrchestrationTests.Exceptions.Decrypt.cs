@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                    .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask<string> decryptTask = this.decryptionOrchestrationService.DecryptAsync(
+            ValueTask<(string, Guid)> decryptTask = this.decryptionOrchestrationService.DecryptAsync(
                 randomFileName,
                 inputSubscriberCredential);
 
@@ -61,6 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.auditServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
+            this.downloadServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -83,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                   .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask<string> decryptTask = this.decryptionOrchestrationService.DecryptAsync(
+            ValueTask<(string, Guid)> decryptTask = this.decryptionOrchestrationService.DecryptAsync(
                 randomFileName,
                 inputSubscriberCredential);
 
@@ -107,6 +108,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
+            this.downloadServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -133,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<string> processTask = this.decryptionOrchestrationService.DecryptAsync(
+            ValueTask<(string, Guid)> processTask = this.decryptionOrchestrationService.DecryptAsync(
                 randomFileName,
                 inputSubscriberCredential);
 
@@ -157,6 +159,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
+            this.downloadServiceMock.VerifyNoOtherCalls();
         }
     }
 }

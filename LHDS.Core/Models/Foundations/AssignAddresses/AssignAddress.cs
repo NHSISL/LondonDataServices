@@ -3,27 +3,51 @@
 // ---------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Bases;
-using LHDS.Core.Models.Foundations.AssignABPAddresses;
-using LHDS.Core.Models.Foundations.AssignAddresses.AssignMatchPatterns;
+using Newtonsoft.Json;
 
 namespace LHDS.Core.Models.Foundations.AssignAddresses
 {
-    public class AssignAddress : IKey, IAudit
+    public class AssignAddress
     {
-        public Guid Id { get; set; }
+        [JsonProperty("Address_format")]
         public string AddressFormat { get; set; }
+
+        [JsonProperty("Postcode_quality")]
         public string PostcodeQuality { get; set; }
+
         public bool Matched { get; set; }
-        public long UPRN { get; set; }
-        public string Qualifier { get; set; }
-        public string Classification { get; set; }
-        public string Algorithm { get; set; }
-        public AssignABPAddress ABPAddress { get; set; }
-        public AssignMatchPattern MatchPattern { get; set; }
-        public string CreatedBy { get; set; } = string.Empty;
-        public string UpdatedBy { get; set; } = string.Empty;
-        public DateTimeOffset UpdatedDate { get; set; }
-        public DateTimeOffset CreatedDate { get; set; }
+        public BestMatch.BestMatch BestMatch { get; set; }
+
+        public string Pattern
+        {
+            get
+            {
+                if (BestMatch.MatchPattern != null)
+                {
+                    return
+                        (!String.IsNullOrWhiteSpace(BestMatch.MatchPattern.Flat)
+                            ? $"Flat: {BestMatch.MatchPattern.Flat}, "
+                            : "") +
+
+                        (!String.IsNullOrWhiteSpace(BestMatch.MatchPattern.Building)
+                            ? $"Building: {BestMatch.MatchPattern.Building}, "
+                            : "") +
+
+                        (!String.IsNullOrWhiteSpace(BestMatch.MatchPattern.Number)
+                            ? $"Number: {BestMatch.MatchPattern.Number}, "
+                            : "") +
+
+                        (!String.IsNullOrWhiteSpace(BestMatch.MatchPattern.Street)
+                            ? $"Street: {BestMatch.MatchPattern.Street}, "
+                            : "") +
+
+                        (!String.IsNullOrWhiteSpace(BestMatch.MatchPattern.Postcode)
+                            ? $"Postcode: {BestMatch.MatchPattern.Postcode}"
+                            : "");
+                };
+
+                return string.Empty;
+            }
+        }
     }
 }

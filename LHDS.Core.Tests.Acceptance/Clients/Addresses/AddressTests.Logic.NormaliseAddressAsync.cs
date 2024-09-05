@@ -12,6 +12,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         [Fact(Skip = "No longer used, will refactor out")]
         public async Task ShouldNormaliseAddressAsync()
         {
+            await ValueTask.CompletedTask;
+
             ////Given
             //Address address = GetRandomAddress();
             //Address savedAddress = await this.addressService.AddAddressAsync(address);

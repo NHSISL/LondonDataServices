@@ -83,25 +83,60 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         ? fileName
                         : "/" + fileName;
 
+                    string[] segments = filename.Split('/');
+
+                    if (segments.Length < 4)
+                    {
+                        throw new InvalidOperationException(
+                            "The input string does not contain enough segments.  " +
+                            "Expected to see a path in the format:  " +
+                            "/{reporting group}/{manifest time}/{file}, but found " +
+                            $"{filename}");
+                    }
+
+                    string objectName = Path.GetFileNameWithoutExtension(filename);
+                    string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
+                    sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
+                    string dataSetName = retrievedDataSetSpecification?.DataSet?.DataSetName ?? string.Empty;
+                    string dataSetVersion = retrievedDataSetSpecification?.OurSpecificationVersion ?? string.Empty;
+                    string extractGroup = segments[1];
+                    string batch = segments[2];
+                    string file = segments[3];
+
+                    string extractTime = DateTime.ParseExact(segments[2], "yyyyMMdd_HHmm", null)
+                        .ToString("yyyyMMddHHmmss");
+
+                    string baseFolder =
+                        $"/{landingConfiguration.DecryptedFolder}" +
+                        $"/{dataSetName}" +
+                        $"/{dataSetVersion}" +
+                        $"/{extractGroup}" +
+                        $"/{extractTime}";
+
                     var decryptedFileName =
-                        $"/{landingConfiguration.DecryptedFolder}"
-                        + $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}"
-                        + $"/{retrievedDataSetSpecification?.Id}"
-                        + $"{filename}";
+                        $"{baseFolder}"
+                        + $"/{file}";
 
                     IngestionTracking newIngestionTracking =
                         new IngestionTracking
                         {
                             Id = this.identifierBroker.GetIdentifier(),
-                            FileName = filename,
                             SupplierId = supplierId,
+                            Container = blobContainers.TppLanding,
+                            FileName = filename,
+                            SourceFolderPath = sourceFolderPath,
+                            BatchReadyFolderPath = baseFolder,
+                            Batch = batch,
+                            ObjectName = objectName,
+                            DataSetSpecificationId = retrievedDataSetSpecification.Id,
                             EncryptedFileName = "Not Encrypted",
                             EncryptedFileSize = 0,
-                            EncryptedFileSha256Hash = "Not Encrypted",
+                            EncryptedFileSha256Hash = string.Empty,
                             DecryptedFileName = decryptedFileName,
                             Decrypted = true,
-                            DecryptedFileSize = 0,
+                            DecryptedFileSize = input.Length,
                             DecryptedFileSha256Hash = decryptedFileSha256Hash,
+                            LastSeen = currentDateTime,
                             FileDeleted = false,
                             RecordCount = 0,
                             CreatedBy = "System",

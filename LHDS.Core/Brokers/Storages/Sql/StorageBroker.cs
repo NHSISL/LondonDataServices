@@ -53,35 +53,36 @@ namespace LHDS.Core.Brokers.Storages.Sql
             optionsBuilder.UseSqlServer(connectionString);
         }
 
-        public override void Dispose() { }
-
         private async ValueTask BulkInsertAsync<T>(IEnumerable<T> objects) where T : class
         {
-            objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Added);
+            objects.ToList();
             this.AddRange(objects);
             await this.SaveChangesAsync();
-            DetachSavedEntities(objects);
+            objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Detached);
         }
 
         private async ValueTask<T> InsertAsync<T>(T @object)
         {
             this.Entry(@object).State = EntityState.Added;
             await this.SaveChangesAsync();
-            DetachSavedEntity(@object);
+            this.Entry(@object).State = EntityState.Detached;
 
             return @object;
         }
 
         private IQueryable<T> ReadAll<T>() where T : class => this.Set<T>();
 
-        private async ValueTask<T> ReadAsync<T>(params object[] @objectIds) where T : class =>
+        private async ValueTask<IQueryable<T>> ReadAllAsync<T>() where T : class =>
+            this.Set<T>();
+
+        private async ValueTask<T?> ReadAsync<T>(params object[] @objectIds) where T : class =>
             await this.FindAsync<T>(objectIds);
 
         private async ValueTask<T> UpdateAsync<T>(T @object)
         {
             this.Entry(@object).State = EntityState.Modified;
             await this.SaveChangesAsync();
-            DetachSavedEntity(@object);
+            this.Entry(@object).State = EntityState.Detached;
 
             return @object;
         }
@@ -89,27 +90,17 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private async ValueTask BulkUpdateAsync<T>(IEnumerable<T> objects) where T : class
         {
             objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Modified);
-            this.AddRange(objects);
             await this.SaveChangesAsync();
-            DetachSavedEntities(objects);
+            objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Detached);
         }
 
         private async ValueTask<T> DeleteAsync<T>(T @object)
         {
             this.Entry(@object).State = EntityState.Deleted;
             await this.SaveChangesAsync();
+            this.Entry(@object).State = EntityState.Detached;
 
             return @object;
-        }
-
-        private void DetachSavedEntities<T>(IEnumerable<T> @objects)
-        {
-            objects.ToList().ForEach(DetachSavedEntity);
-        }
-
-        private void DetachSavedEntity<T>(T @object)
-        {
-            this.Entry(@object).State = EntityState.Detached;
         }
     }
 }

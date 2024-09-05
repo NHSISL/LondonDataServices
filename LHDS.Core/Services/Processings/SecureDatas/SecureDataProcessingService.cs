@@ -60,7 +60,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 if (exceptions.Any())
                 {
                     throw new AggregateException(
-                        $"Unable to add or modify {exceptions.Count} secure data",
+                        $"Unable to add or modify {exceptions.Count} secure data item(s)",
                         exceptions);
                 }
 
@@ -103,7 +103,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 if (exceptions.Any())
                 {
                     throw new AggregateException(
-                        $"Unable to retrieve {exceptions.Count} secure data",
+                        $"Unable to retrieve {exceptions.Count} secure data item(s)",
                         exceptions);
                 }
 
@@ -137,7 +137,7 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                 if (exceptions.Any())
                 {
                     throw new AggregateException(
-                        $"Unable to retrieve {exceptions.Count} secure data",
+                        $"Unable to remove {exceptions.Count} secure data item(s)",
                         exceptions);
                 }
             });

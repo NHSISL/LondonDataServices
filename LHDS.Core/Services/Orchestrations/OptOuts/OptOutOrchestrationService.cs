@@ -93,7 +93,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 {
                     try
                     {
-                        await TryCatch(async () =>
+                        OptOut processedOptOut = await TryCatch(async () =>
                         {
                             DateTimeOffset timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
                             var expirationDate = timeStamp.AddDays(-optOutConfiguration.ExpiredAfterDays);
@@ -113,9 +113,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                         UpdatedBy = "System"
                                     });
 
-                            processedOptOuts.Add(item);
+                            return item;
+
                         });
 
+                        processedOptOuts.Add(processedOptOut);
                     }
                     catch (Exception ex)
                     {

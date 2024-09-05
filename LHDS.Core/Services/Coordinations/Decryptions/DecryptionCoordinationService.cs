@@ -8,6 +8,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Coordinations.Decryptions.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Orchestrations.Decryptions;
+using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 
 namespace LHDS.Core.Services.Coordinations.Decryptions
@@ -16,22 +17,28 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
     {
         private readonly IDecryptionOrchestrationService decryptionOrchestrationService;
         private readonly ISubscriberCredentialOrchestration subscriberCredentialOrchestration;
+        private readonly IIngressOrchestrationService ingressOrchestrationService;
         private readonly ILoggingBroker loggingBroker;
 
         public DecryptionCoordinationService(
             IDecryptionOrchestrationService decryptionOrchestrationService,
             ISubscriberCredentialOrchestration subscriberCredentialOrchestration,
+            IIngressOrchestrationService ingressOrchestrationService,
             ILoggingBroker loggingBroker)
         {
             this.decryptionOrchestrationService = decryptionOrchestrationService;
             this.subscriberCredentialOrchestration = subscriberCredentialOrchestration;
+            this.ingressOrchestrationService = ingressOrchestrationService;
             this.loggingBroker = loggingBroker;
         }
 
         public ValueTask<string> DecryptAsync(string encryptedFileName) =>
             TryCatch(async () =>
             {
-                return await DecryptFileAsync(encryptedFileName);
+                (string decryptedFileName, Guid ingestionTrackingId) = await DecryptFileAsync(encryptedFileName);
+                await this.ingressOrchestrationService.CheckForBatchCompleteAsync(ingestionTrackingId);
+
+                return decryptedFileName;
             });
 
         public ValueTask RetryDecryptOnAllAsync() =>
@@ -53,7 +60,7 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                 }
             });
 
-        private async ValueTask<string> DecryptFileAsync(string encryptedFileName)
+        private async ValueTask<(string DecryptedFileName, Guid IngestionTrackingId)> DecryptFileAsync(string encryptedFileName)
         {
             ValidateFileNameOnDecrypt(encryptedFileName);
             string[] parts = encryptedFileName.Split("/");
@@ -75,12 +82,9 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                         subscriberCredentialId: new Guid(extractSubscriberCredentialIdString),
                         externalUse: false);
 
-                string decryptItem =
-                    await this.decryptionOrchestrationService.DecryptAsync(
+                return await this.decryptionOrchestrationService.DecryptAsync(
                         encryptedFileName,
                         maybeSubscriberCredential);
-
-                return decryptItem;
             }
             else
             {

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,24 +18,26 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 {
     public partial class AddressTests
     {
-        [Fact(Skip = "Hassan to fix as part of his appcetance tests for UPRN")]
+        [Fact]
         public async Task ShouldLoadAddressDataAsync()
         {
             // Given
             string inputFilename = GetRandomString();
-            string assembly = Assembly.GetExecutingAssembly().Location;
-            string projectRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(assembly), @"..\..\.."));
+            string assembly = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            char separator = Path.DirectorySeparatorChar;
 
             string inputFilePath = Path.Combine(
-                projectRoot,
-                @"Resource/Clients/Address/Test.zip");
+                assembly,
+                $"Resource{separator}Clients{separator}Address{separator}" +
+                    "ShouldProcessZipFileWithZippedCsvAddressesData.zip");
 
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             Stream inputStream = new MemoryStream(inputData);
 
             string csvFilePath = Path.Combine(
-                projectRoot,
-                @"Resource/Clients/Address/ShouldProcessCsvAddressesSetup.csv");
+                assembly,
+                $"Resource{separator}Clients{separator}Address{separator}" +
+                "ShouldProcessCsvAddressesSetup.csv");
 
             byte[] csvData = await File.ReadAllBytesAsync(csvFilePath);
             string stringData = Encoding.UTF8.GetString(csvData);
@@ -67,12 +70,22 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 await this.csvHelperBroker.MapCsvToObjectAsync<Address>(stringRecords, hasHeaderRecord, fieldMappings);
 
             // When
-            await this.addressClient.LoadAddressDataAsync(inputStream, inputFilename);
+            await this.addressClient.LoadAddressDataAsync(
+                inputStream,
+                "ShouldProcessZipFileWithZippedCsvAddressesData.zip");
 
             // Then
+            IQueryable<Address> retrievedListAddresses = this.addressService.RetrieveAllAddresses();
 
-            // TODO: Add cleanup code here
+            foreach (Address expectedAddress in expectedListAddresses)
+            {
+                Address retrievedAddress =
+                    retrievedListAddresses.Where(address => address.UPRN == expectedAddress.UPRN).FirstOrDefault();
+
+                await this.addressService.RemoveAddressByIdAsync(retrievedAddress.Id);
+            }
         }
     }
 }
+
 

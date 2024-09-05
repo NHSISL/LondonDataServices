@@ -4,7 +4,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>disable</Nullable>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
     <SpaRoot>ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
@@ -22,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="8.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="8.0.7" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.5.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -37,9 +36,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\tsconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <TypeScriptCompile Remove="ClientApp\cypress.config.ts" />
     <TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.documents.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.emislandings.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.features.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackingAudits.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackings.ts" />
@@ -216,6 +220,7 @@
     <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactDetailPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\documentService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\foundations\emisLandingService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\featureService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingAuditService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingService.ts" />
@@ -242,6 +247,10 @@
     <TypeScriptCompile Remove="ClientApp\src\services\views\supplierViewService .ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\terminologyArtifacts\terminologyArtifactHomeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\terminologyArtifacts\terminologyArtifactViewService.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="ClientApp\tsconfig.json" />
   </ItemGroup>
 
   <ItemGroup>

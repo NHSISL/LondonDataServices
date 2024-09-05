@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnDecryptFileIfFileNameIsNullAndLogItAsync(string invalidData)
+        public async Task ShouldThrowValidationExceptionOnDecryptFileIfFileNameIsNullAndLogItAsync(string? invalidData)
         {
             // given
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
@@ -53,7 +53,9 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     expectedDecryptionCoordinationValidationException))),
                         Times.Once);
 
+            this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
             this.decryptionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.ingressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

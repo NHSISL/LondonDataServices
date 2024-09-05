@@ -198,19 +198,33 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     ? fileName
                     : "/" + fileName;
 
-                (string encryptedFileName, string decryptedFileName) =
-                        await GetFileNames(subscriberCredential, filename, supplierId);
-
                 string sourceFolderPath = Path.GetDirectoryName(filename) ?? string.Empty;
                 sourceFolderPath = sourceFolderPath.Replace("\\", "/").Replace("\\", "/");
+                string file = Path.GetFileName(filename);
+                string fileWithoutExtension = Path.GetFileNameWithoutExtension(file);
+                string[] segments = fileWithoutExtension.Split('_');
+                string batch = $"{segments[0]}_{segments[1]}";
+                string objectName = $"{segments[2]}_{segments[3]}";
+
+                DataSetSpecification? retrievedDataSetSpecification = await
+                    this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
+                        supplierId);
+
+                (string encryptedFileName, string decryptedFileName, string baseFolder) =
+                        await GetFileNames(subscriberCredential, retrievedDataSetSpecification, filename, supplierId);
 
                 IngestionTracking newIngestionTracking =
                   new IngestionTracking
                   {
                       Id = this.identifierBroker.GetIdentifier(),
+                      SupplierId = supplierId,
+                      Container = blobContainers.EmisLanding,
                       FileName = filename,
                       SourceFolderPath = sourceFolderPath,
-                      SupplierId = landingConfiguration.LandingSupplierId,
+                      BatchReadyFolderPath = baseFolder,
+                      Batch = batch,
+                      ObjectName = objectName,
+                      DataSetSpecificationId = retrievedDataSetSpecification.Id,
                       EncryptedFileName = encryptedFileName,
                       DecryptedFileName = decryptedFileName,
                       Decrypted = false,
@@ -290,7 +304,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 }
 
                 var updatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
                 updatedIngestionTracking.IsDownloaded = true;
                 updatedIngestionTracking.Decrypted = false;
                 updatedIngestionTracking.IsProcessing = false;
@@ -332,20 +345,17 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             await this.auditService.AddIngestionTrackingAuditAsync(newAudit);
         }
 
-        private async ValueTask<(string encryptedFileName, string decryptedFileName)> GetFileNames(
+        private async ValueTask<(string encryptedFileName, string decryptedFileName, string baseFolder)> GetFileNames(
             SubscriberCredential subscriberCredential,
+            DataSetSpecification? retrievedDataSetSpecification,
             string fileName,
             Guid supplierId)
         {
-            DataSetSpecification? retrievedDataSetSpecification = await
-                this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
-                    supplierId);
-
             if (retrievedDataSetSpecification == null)
             {
                 throw new NotFoundDocumentProcessingException(
                     $"No active dataset specification found for supplier id: " +
-                    $"{landingConfiguration.LandingSupplierId}");
+                    $"{supplierId}");
             }
 
             string[] splitFileName = fileName.Split('/');
@@ -355,20 +365,32 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw new InvalidArgumentsDocumentProcessingException(fileName);
             }
-            else
-            {
-                newFileName = $"{subscriberCredential.Id}/{splitFileName[5]}/{splitFileName[6]}";
-            }
 
-            string encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{newFileName}";
+            string dataSetName = retrievedDataSetSpecification?.DataSet?.DataSetName ?? string.Empty;
+            string dataSetVersion = retrievedDataSetSpecification?.OurSpecificationVersion ?? string.Empty;
+            string extractGroup = subscriberCredential.Id.ToString();
+            string extractTime = splitFileName[5];
 
-            string decryptedFileName = $"/{landingConfiguration.DecryptedFolder}" +
-                $"/{retrievedDataSetSpecification?.DataSet?.DataSetName}" +
-                $"/{retrievedDataSetSpecification?.OurSpecificationVersion}" +
-                $"/{fileName.Split('_')[2]}_{fileName.Split('_')[3]}" +
+            string baseFolder =
+                $"/{landingConfiguration.DecryptedFolder}" +
+                $"/{dataSetName}" +
+                $"/{dataSetVersion}" +
+                $"/{extractGroup}" +
+                $"/{extractTime}";
+
+            newFileName = $"{splitFileName[6]}";
+
+            string encryptedFileName =
+                $"/{landingConfiguration.EncryptedFolder}" +
+                $"/{extractGroup}" +
+                $"/{extractTime}" +
+                $"/{newFileName}";
+
+            string decryptedFileName =
+                $"{baseFolder}" +
                 $"/{newFileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
-            return (encryptedFileName, decryptedFileName);
+            return (encryptedFileName, decryptedFileName, baseFolder);
         }
 
         private async ValueTask DownloadFile(

@@ -15,16 +15,16 @@ using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
-using LHDS.Core.Services.Processings.Downloads;
 
 namespace LHDS.Core.Services.Orchestrations.Decryptions
 {
     public partial class DecryptionOrchestrationService : IDecryptionOrchestrationService
     {
         private readonly IDocumentService documentService;
-        private readonly IDownloadProcessingService downloadProcessingService;
+        private readonly IDownloadService downloadService;
         private readonly ICryptographyService cryptographyService;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IIngestionTrackingAuditService auditService;
@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
         public DecryptionOrchestrationService(
             IDocumentService documentService,
-            IDownloadProcessingService downloadProcessingService,
+            IDownloadService downloadService,
             ICryptographyService cryptographyService,
             IIngestionTrackingService ingestionTrackingService,
             IIngestionTrackingAuditService auditService,
@@ -45,7 +45,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             IHashBroker hashBroker)
         {
             this.documentService = documentService;
-            this.downloadProcessingService = downloadProcessingService;
+            this.downloadService = downloadService;
             this.cryptographyService = cryptographyService;
             this.ingestionTrackingService = ingestionTrackingService;
             this.auditService = auditService;
@@ -55,7 +55,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             this.hashBroker = hashBroker;
         }
 
-        public ValueTask<string> DecryptAsync(string encryptedFileName, SubscriberCredential subscriberCredential) =>
+        public ValueTask<(string DecryptedFileName, Guid IngestionTrackingId)> DecryptAsync(
+            string encryptedFileName,
+            SubscriberCredential subscriberCredential) =>
             TryCatch(async () =>
             {
                 ValidateBlobContainersIsNotNull();
@@ -108,7 +110,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 await LogAudit(ingestionTracking, currentDateTime);
 
-                return ingestionTracking.DecryptedFileName;
+                return (ingestionTracking.DecryptedFileName, ingestionTracking.Id);
             });
 
         public ValueTask<string?> GetNextItemToBeDecrypted() =>

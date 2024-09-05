@@ -26,16 +26,20 @@ using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Services.Coordinations.EmisLandings;
 using LHDS.Core.Services.Foundations.CryptographicKeys;
+using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.SecureDatas;
+using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.SubscriberAgreements;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
+using LHDS.Core.Services.Orchestrations.Ingress;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Services.Processings.CryptographicKeys;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
@@ -130,11 +134,14 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDownloadService, DownloadService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
+            services.AddTransient<IDataSetService, DataSetService>();
             services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
             services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
             services.AddTransient<ISubscriberAgreementService, SubscriberAgreementService>();
             services.AddTransient<ISecureDataService, SecureDataService>();
             services.AddTransient<ICryptographyKeyService, CryptographyKeyService>();
+            services.AddSingleton<ISpecificationObjectService, SpecificationObjectService>();
+            services.AddSingleton<IObjectColumnService, ObjectColumnService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
@@ -154,6 +161,7 @@ namespace LHDS.Core.Clients.Extensions
         {
             services.AddTransient<IEmisLandingOrchestrationService, EmisLandingOrchestrationService>();
             services.AddTransient<ISubscriberCredentialOrchestration, SubscriberCredentialOrchestration>();
+            services.AddTransient<IIngressOrchestrationService, IngressOrchestrationService>();
         }
 
         private static void AddCoordinations(IServiceCollection services)

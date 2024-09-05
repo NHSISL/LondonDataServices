@@ -25,7 +25,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 CreateRandomSubscriberCredential(SubscriberCredentialId);
 
             SubscriberCredential storageSubscriberCredential = randomActiveSubscriberCredential;
-            string randomEmisLandingPath = GetRandomString();
+            string randomDecryptedFilePath = GetRandomString();
+            Guid randomIngestionTrackingId = Guid.NewGuid();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
                 service.RetrieveSubscriberCredentialByIdAsync(SubscriberCredentialId, false))
@@ -33,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
 
             this.decryptionOrchestrationServiceMock.Setup(service =>
                     service.DecryptAsync(filePath, randomActiveSubscriberCredential))
-                        .ReturnsAsync(randomEmisLandingPath);
+                        .ReturnsAsync((randomDecryptedFilePath, randomIngestionTrackingId));
 
             // When
             string actualPath = await this.decryptionCoordinationService.DecryptAsync(filePath);
@@ -44,11 +45,16 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     Times.Once);
 
             this.decryptionOrchestrationServiceMock.Verify(service =>
-                    service.DecryptAsync(filePath, randomActiveSubscriberCredential),
-                        Times.Once);
+                service.DecryptAsync(filePath, randomActiveSubscriberCredential),
+                    Times.Once);
+
+            this.ingressOrchestrationServiceMock.Verify(service =>
+                service.CheckForBatchCompleteAsync(randomIngestionTrackingId),
+                    Times.Once);
 
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
             this.decryptionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.ingressOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

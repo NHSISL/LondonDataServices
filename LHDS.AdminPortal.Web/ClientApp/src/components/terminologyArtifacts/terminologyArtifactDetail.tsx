@@ -18,7 +18,18 @@ const TerminologyArtifactDetail: FunctionComponent<TerminologyArtifactDetailProp
      const { mappedTerminologyArtifact: terminologyArtifactRetrieved } =
         terminologyArtifactViewService.useGetTerminologyArtifactById(Guid.parse(terminologyArtifactId))
 
-    const handleRefresh = async (terminologyArtifactView: TerminologyArtifactView) => {}
+    const handleRefresh = async (terminologyArtifactView: TerminologyArtifactView) => { }
+
+    const updateTerminology = terminologyArtifactViewService.useUpdateTerminologyArtifact();
+
+    //const handleUpdate = async (terminologyArtifact: TerminologyArtifactView) => {
+    //    return updateDataSet.mutateAsync(terminologyArtifact);
+    //}
+
+    const handleUpdate = async (terminologyArtifact: TerminologyArtifactView) => {
+        console.log(terminologyArtifact);
+        return updateTerminology.mutateAsync(terminologyArtifact);
+    };
 
     return (
         <div>
@@ -27,7 +38,8 @@ const TerminologyArtifactDetail: FunctionComponent<TerminologyArtifactDetailProp
                     <TerminologyArtifactDetailCard
                         key={terminologyArtifactRetrieved.id.toString()}
                         terminologyArtifact={terminologyArtifactRetrieved}
-                        onRefresh={handleRefresh}>
+                        onRefresh={handleRefresh}
+                        onUpdate={handleUpdate}>                   
                         {children}
                     </TerminologyArtifactDetailCard>
                 </div>

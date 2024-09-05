@@ -16,7 +16,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                 (Rule: IsInvalidInputStream(input), Parameter: "Input"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"),
                 (Rule: IsInvalid(supplierId), Parameter: "SupplierId"));
-
         }
 
         private static dynamic IsInvalid(Guid id) => new

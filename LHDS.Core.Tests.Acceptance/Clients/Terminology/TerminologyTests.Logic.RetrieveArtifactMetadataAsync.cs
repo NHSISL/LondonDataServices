@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -38,15 +39,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
                 NotBeforePolicy = 0,
                 Scope = ""
             };
-
-            this.wireMockServer.Given(
-                Request.Create()
-                        .WithPath($"{authUri}")
-                        .UsingPost())
-                    .RespondWith(
-                        Response.Create()
-                            .WithStatusCode(HttpStatusCode.OK)
-                            .WithBodyAsJson(token));
 
             string returnedJsonString = $@"{{
                 ""resourceType"": ""Bundle"",
@@ -90,6 +82,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
 
             this.wireMockServer.Given(
                 Request.Create()
+                        .WithPath($"{authUri}")
+                        .UsingPost())
+                    .RespondWith(
+                        Response.Create()
+                            .WithStatusCode(HttpStatusCode.OK)
+                            .WithBodyAsJson(token));
+
+            this.wireMockServer.Given(
+                Request.Create()
                         .UsingGet()
                         .WithPath($"{relativeUrl}"))
                     .RespondWith(
@@ -101,8 +102,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             await this.terminologyClient.RetrieveArtifactMetadataAsync(resourceTypes);
 
             //Then
-            IQueryable<TerminologyPoll> retrievedTerminologyPolls =
-                this.terminologyPollService.RetrieveAllTerminologyPolls();
+            List<TerminologyPoll> retrievedTerminologyPolls =
+                this.terminologyPollService.RetrieveAllTerminologyPolls().ToList();
 
             retrievedTerminologyPolls.Count().Should().BeGreaterThan(0);
 
@@ -111,9 +112,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
                 await this.terminologyPollService.RemoveTerminologyPollByIdAsync(poll.Id);
             }
 
-            IQueryable<TerminologyArtifact> retrievedTerminologyArtifacts =
+            List<TerminologyArtifact> retrievedTerminologyArtifacts =
                 this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
-                    .Where(artifact => artifact.ResourceType == resourceType);
+                    .Where(artifact => artifact.ResourceType == resourceType).ToList();
 
             retrievedTerminologyArtifacts.Count().Should().BeGreaterThan(0);
 

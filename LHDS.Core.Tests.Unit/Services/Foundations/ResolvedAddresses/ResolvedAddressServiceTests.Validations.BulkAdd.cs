@@ -27,11 +27,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
-                    message: "Invalid resolvedAddress. Please correct the errors and try again.");
+                    message: "Invalid resolved address. Please correct the errors and try again.");
 
             invalidResolvedAddressException.AddData(
                 key: "resolvedAddresses",
-                values: "ResolvedAddresses is required");
+                values: "List of resolved addresses is required");
 
             invalidResolvedAddressException.AddData(
                 key: "fileName",
@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var expectedResolvedAddressValidationException =
                 new ResolvedAddressValidationException(
-                    message: "ResolvedAddress validation errors occurred, please try again.",
+                    message: "Resolved address validation errors occurred, please try again.",
                     innerException: invalidResolvedAddressException);
 
             // when

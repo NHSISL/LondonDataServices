@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to add or modify {exceptions.Count} secure data",
+                    $"Unable to remove {exceptions.Count} secure data item(s)",
                     exceptions);
 
             var failedSubscriberCredentialProcessingServiceException =
@@ -128,7 +128,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
                 var subscriberCredentialProcessingDependencyException =
                     new SubscriberCredentialProcessingDependencyException(
-                        message: "Subscriber credential processing dependency validation error occurred, " +
+                        message: "Subscriber credential processing dependency error occurred, " +
                             "please try again.",
                      innerException: dependencyException.InnerException as Xeption);
 
@@ -137,7 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to add or modify {exceptions.Count} secure data",
+                    $"Unable to remove {exceptions.Count} secure data item(s)",
                     exceptions);
 
             var failedSubscriberCredentialProcessingServiceException =
@@ -226,7 +226,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
 
             var aggregateException =
                 new AggregateException(
-                    $"Unable to add or modify {exceptions.Count} secure data",
+                    $"Unable to remove {exceptions.Count} secure data item(s)",
                     exceptions);
 
             var failedSubscriberCredentialProcessingServiceException =

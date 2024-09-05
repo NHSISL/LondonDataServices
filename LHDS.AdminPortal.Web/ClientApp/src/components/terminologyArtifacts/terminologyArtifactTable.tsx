@@ -10,19 +10,21 @@ import SearchBase from "../bases/inputs/SearchBase";
 import InfiniteScroll from "../bases/pagers/InfiniteScroll";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
-import { Row } from "react-bootstrap";
+import { Form, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import TerminologyArtifactRow from "./terminologyArtifactRow";
 import { TerminologyArtifact } from "../../models/terminologyArtifacts/terminologyArtifact";
 import { TerminologyArtifactHomeViewService } from "../../services/views/terminologyArtifacts/terminologyArtifactHomeViewService";
+import TableBaseRow from "../bases/components/Table/TableBase.Row";
+import TableBaseThead from "../bases/components/Table/TableBase.Thead";
+import TableBaseHeader from "../bases/components/Table/TableBase.Header";
 
-type TerminologyArtifactTableProps = {};
-
-const TerminologyArtifactTable: FunctionComponent<TerminologyArtifactTableProps> = (props) => {
+const TerminologyArtifactTable: FunctionComponent = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
     const [showSpinner, setShowSpinner] = useState(false);
+    const [selectedResourceType, setSelectedResourceType] = useState<string>("all");
 
     const {
         mappedTerminologyArtifacts: terminologyArtifactsRetrieved,
@@ -32,7 +34,7 @@ const TerminologyArtifactTable: FunctionComponent<TerminologyArtifactTableProps>
         hasNextPage,
         data,
         refetch
-    } = TerminologyArtifactHomeViewService.useGetAllTerminologyArtifacts(debouncedTerm);
+    } = TerminologyArtifactHomeViewService.useGetAllTerminologyArtifacts(debouncedTerm, selectedResourceType);
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
@@ -47,8 +49,22 @@ const TerminologyArtifactTable: FunctionComponent<TerminologyArtifactTableProps>
         []
     );
 
-    const hasNoMorePages = () => {
-        return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
+    const handleResourceTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newResourceType = event.target.id;
+        setSelectedResourceType(newResourceType);
+        handleFilter(newResourceType);
+    };
+
+    const handleResourceDebounce = useMemo(
+        () =>
+            debounce((value: string) => {
+                setSelectedResourceType(value);
+            }, 500),
+        []
+    );
+
+    const handleFilter = (resourceType: string) => {
+        handleResourceDebounce(resourceType);
     };
 
     const refreshData = () => {
@@ -65,7 +81,9 @@ const TerminologyArtifactTable: FunctionComponent<TerminologyArtifactTableProps>
         <div className="infiniteScrollContainer">
             <CardBase>
                 <CardBaseBody>
-                    <CardBaseTitle> <FontAwesomeIcon icon={faDatabase} className="me-2" /> Terminology Artifacts</CardBaseTitle>
+                    <CardBaseTitle>
+                        <FontAwesomeIcon icon={faDatabase} className="me-2" /> Terminology Artifacts
+                    </CardBaseTitle>
                     <CardBaseContent>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
                             <Row>
@@ -86,8 +104,62 @@ const TerminologyArtifactTable: FunctionComponent<TerminologyArtifactTableProps>
                                         </div>
                                     )}
                                 </div>
+                                <Row>
+                                    <span className="input-group mb-3">
+                                        <div className="input-group mb-3">
+                                            <Form.Check
+                                                type="radio"
+                                                id="all"
+                                                name="resourceType"
+                                                label="All"
+                                                onChange={handleResourceTypeChange}
+                                                checked={selectedResourceType === "all"}
+                                            />
+                                            <Form.Check
+                                                type="radio"
+                                                id="codeSystem"
+                                                name="resourceType"
+                                                label="CodeSystem"
+                                                className="ms-3"
+                                                onChange={handleResourceTypeChange}
+                                                checked={selectedResourceType === "codeSystem"}
+                                            />
+                                            <Form.Check
+                                                type="radio"
+                                                id="valueSet"
+                                                name="resourceType"
+                                                label="ValueSet"
+                                                className="ms-3"
+                                                onChange={handleResourceTypeChange}
+                                                checked={selectedResourceType === "valueSet"}
+                                            />
+                                            <Form.Check
+                                                type="radio"
+                                                id="conceptMap"
+                                                name="resourceType"
+                                                label="ConceptMap"
+                                                className="ms-3"
+                                                onChange={handleResourceTypeChange}
+                                                checked={selectedResourceType === "conceptMap"}
+                                            />
+                                        </div>
+                                    </span>
+                                </Row>
                             </Row>
                             <TableBase classes="table-bordered">
+                                <TableBaseThead>
+                                    <TableBaseRow>
+                                        <TableBaseHeader>Resource Type</TableBaseHeader>
+                                        <TableBaseHeader>Name</TableBaseHeader>
+                                        <TableBaseHeader classes="text-center">Version</TableBaseHeader>
+                                        <TableBaseHeader classes="text-center">Status</TableBaseHeader>
+                                        <TableBaseHeader classes="text-center">Error</TableBaseHeader>
+                                        <TableBaseHeader classes="text-center">Marked as Core</TableBaseHeader>
+                                        <TableBaseHeader classes="text-center">Downloaded</TableBaseHeader>
+                                        <TableBaseHeader classes="text-center">Actions</TableBaseHeader>
+                                    </TableBaseRow>
+                                </TableBaseThead>
+
                                 <TableBaseTbody>
                                     {isLoading || showSpinner ? (
                                         <tr>
@@ -110,7 +182,7 @@ const TerminologyArtifactTable: FunctionComponent<TerminologyArtifactTableProps>
                                                     <InfiniteScrollLoader
                                                         loading={isLoading || isFetchingNextPage}
                                                         spinner={<SpinnerBase />}
-                                                        noMorePages={hasNoMorePages()}
+                                                        noMorePages={!hasNextPage}
                                                         noMorePagesMessage={<>-- No more pages --</>}
                                                         totalPages={data?.pages.length} />
                                                 </td>
@@ -123,7 +195,7 @@ const TerminologyArtifactTable: FunctionComponent<TerminologyArtifactTableProps>
                     </CardBaseContent>
                 </CardBaseBody>
             </CardBase>
-        </div >
+        </div>
     );
 };
 

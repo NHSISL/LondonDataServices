@@ -12,6 +12,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         [Fact(Skip = "Hassan to fix as part of his appcetance tests for UPRN")]
         public async Task ShouldUploadResolvedAddressesAsync()
         {
+            await ValueTask.CompletedTask;
             //// Given
             //DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             //string addressContainer = this.blobContainers.Addresses;

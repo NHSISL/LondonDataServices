@@ -9,6 +9,7 @@ using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -163,6 +164,28 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .OnProperty(subscriberCredential => subscriberCredential.IsActive).Use(true)
                 .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static SpecificationObject CreateRandomSpecificationObject(Guid datasetSpecificationId) =>
+            CreateSpecificationObjectFiller(datasetSpecificationId).Create();
+
+        private static Filler<SpecificationObject> CreateSpecificationObjectFiller(Guid datasetSpecificationId)
+        {
+            var filler = new Filler<SpecificationObject>();
+            string user = Guid.NewGuid().ToString();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+
+                .OnProperty(specificationObject => 
+                    specificationObject.DataSetSpecificationId).Use(datasetSpecificationId)
+
+                .OnProperty(specificationObject => specificationObject.CreatedBy).Use(user)
+                .OnProperty(specificationObject => specificationObject.UpdatedBy).Use(user);
 
             return filler;
         }

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Xunit;
@@ -17,7 +18,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 {
     public partial class DecryptionTests
     {
-        [Fact(Skip = "DH to review file paths and setup specification opject for test data")]
+        [Fact]
         public async Task ShouldDecryptNewDocumentsAsync()
         {
             //Given
@@ -29,6 +30,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             Stream decryptedStream = new MemoryStream();
             Supplier randomSupplier = CreateRandomSupplier(supplierId, dateTimeOffset);
             SubscriberCredential subscriberCredential = CreateRandomSubscriberCredential();
+            SpecificationObject specificationObject = CreateRandomSpecificationObject(datasetSpecificationId);
 
             SubscriberCredential generatedSubscriberCredential = await this.subscriberCredentialOrchestration
                 .ModifyOrAddSubscriberCredentialAsync(subscriberCredential, regenerateKeys: true);

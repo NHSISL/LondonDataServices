@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             SpecificationObject specificationObject = 
                 CreateRandomSpecificationObject(ingestionTracking.DataSetSpecificationId);
 
-            this.
+            await this.specificationObjectService.AddSpecificationObjectAsync(specificationObject);
 
             //When
             var actualString = await this.decryptionClient.DecryptAsync(encryptedFileName);

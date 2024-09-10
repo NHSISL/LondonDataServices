@@ -30,7 +30,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             Stream decryptedStream = new MemoryStream();
             Supplier randomSupplier = CreateRandomSupplier(supplierId, dateTimeOffset);
             SubscriberCredential subscriberCredential = CreateRandomSubscriberCredential();
-            SpecificationObject specificationObject = CreateRandomSpecificationObject(datasetSpecificationId);
 
             SubscriberCredential generatedSubscriberCredential = await this.subscriberCredentialOrchestration
                 .ModifyOrAddSubscriberCredentialAsync(subscriberCredential, regenerateKeys: true);
@@ -48,6 +47,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 supplierId: supplierId);
 
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
+
+            SpecificationObject specificationObject = 
+                CreateRandomSpecificationObject(ingestionTracking.DataSetSpecificationId);
+
+            this.
 
             //When
             var actualString = await this.decryptionClient.DecryptAsync(encryptedFileName);

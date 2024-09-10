@@ -17,6 +17,7 @@ using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
@@ -33,6 +34,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private readonly DependencyBroker dependencyBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly ISpecificationObjectService specificationObjectService;
         private readonly IDecryptionClient decryptionClient;
         private readonly ISupplierService supplierService;
         private readonly IDocumentService documentService;
@@ -55,6 +57,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             serviceCollection.AddDecryptionClient(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
+            this.specificationObjectService = serviceProvider.GetService<ISpecificationObjectService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();
             this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
@@ -62,8 +65,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.blobContainers = serviceProvider.GetRequiredService<BlobContainers>();
             this.documentService = serviceProvider.GetService<IDocumentService>();
             this.cryptographyProvider = serviceProvider.GetRequiredService<ICryptographyProvider>();
-            decryptionClient = serviceProvider.GetService<IDecryptionClient>();
-            subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
+            this.decryptionClient = serviceProvider.GetService<IDecryptionClient>();
+            this.subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
         }
 
         static byte[] ReadAllBytesFromStream(Stream stream)

@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 supplierId: supplierId);
 
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
-            DataSet dataSet = CreateRandomDataSet();
+            DataSet dataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification dataSetSpecification = CreateRandomDataSetSpecification(dataSet.Id);
 
             SpecificationObject specificationObject = 

@@ -179,10 +179,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             return filler;
         }
 
-        private static DataSet CreateRandomDataSet() =>
-            CreateDataSetFiller().Create();
+        private static DataSet CreateRandomDataSet(Guid supplierId) =>
+            CreateDataSetFiller(supplierId).Create();
 
-        private static Filler<DataSet> CreateDataSetFiller()
+        private static Filler<DataSet> CreateDataSetFiller(Guid supplierId)
         {
             var filler = new Filler<DataSet>();
             string user = Guid.NewGuid().ToString();
@@ -191,6 +191,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(dataSet => dataSet.SupplierId).Use(supplierId)
                 .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
                 .OnProperty(dataSet => dataSet.UpdatedBy).Use(user);
 

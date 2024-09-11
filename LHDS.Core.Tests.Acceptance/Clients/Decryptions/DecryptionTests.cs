@@ -103,6 +103,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private static string GetRandomWordString() =>
            new MnemonicString(wordCount: 1).GetValue();
 
+        private static string GetRandomString(int length) =>
+               new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
         private static string CreateRandomFileName(Guid subscriberCredentialId)
         {
             string fileName = "acceptance-test-only-should-be-deleted-soon";
@@ -198,19 +201,34 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             return filler;
         }
 
-        private static DataSetSpecification CreateRandomDataSetSpecification(Guid datasetSetId) =>
-            CreateDataSetSpecificationFiller(datasetSetId).Create();
+        private static DataSetSpecification CreateRandomDataSetSpecification(DataSet dataSet) =>
+            CreateDataSetSpecificationFiller(dataSet).Create();
 
-        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(Guid datasetSetId)
+        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(DataSet dataSet)
         {
+            string user = GetRandomString(255);
             var filler = new Filler<DataSetSpecification>();
-            string user = Guid.NewGuid().ToString();
             var now = DateTimeOffset.UtcNow;
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
-                .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId).Use(datasetSetId)
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId).Use(dataSet.Id)
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).Use(dataSet)
+                .OnProperty(dataSetSpecification => dataSetSpecification.IsActive).Use(true)
+                .OnProperty(dataSetSpecification => dataSetSpecification.ActiveFrom).Use(now.AddDays(-2))
+                .OnProperty(dataSetSpecification => dataSetSpecification.ActiveTo).Use(now.AddDays(2))
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
 

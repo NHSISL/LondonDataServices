@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
@@ -47,10 +49,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 supplierId: supplierId);
 
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
+            DataSet dataSet = CreateRandomDataSet();
+            DataSetSpecification dataSetSpecification = CreateRandomDataSetSpecification(dataSet.Id);
 
             SpecificationObject specificationObject = 
                 CreateRandomSpecificationObject(ingestionTracking.DataSetSpecificationId);
 
+            await this.dataSetService.AddDataSetAsync(dataSet);
+            await this.dataSetSpecificationService.AddDataSetSpecificationAsync(dataSetSpecification);
             await this.specificationObjectService.AddSpecificationObjectAsync(specificationObject);
 
             //When

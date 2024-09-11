@@ -32,6 +32,7 @@ using LHDS.Core.Services.Coordinations.Decryptions;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.CryptographicKeys;
 using LHDS.Core.Services.Foundations.Cryptographies;
+using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
@@ -182,6 +183,7 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddServices(IServiceCollection services)
         {
             services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IDataSetService, DataSetService>();
             services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IDownloadService, DownloadService>();

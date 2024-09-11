@@ -8,12 +8,16 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
+using LHDS.Core.Services.Foundations.DataSets;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -34,6 +38,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private readonly DependencyBroker dependencyBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly IDataSetService dataSetService;
+        private readonly IDataSetSpecificationService dataSetSpecificationService;
         private readonly ISpecificationObjectService specificationObjectService;
         private readonly IDecryptionClient decryptionClient;
         private readonly ISupplierService supplierService;
@@ -57,6 +63,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             serviceCollection.AddDecryptionClient(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
+            this.dataSetService = serviceProvider.GetService<IDataSetService>();
+            this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
             this.specificationObjectService = serviceProvider.GetService<ISpecificationObjectService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();
             this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
@@ -167,6 +175,43 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .OnProperty(subscriberCredential => subscriberCredential.IsActive).Use(true)
                 .OnProperty(subscriberCredential => subscriberCredential.CreatedBy).Use(user)
                 .OnProperty(subscriberCredential => subscriberCredential.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static DataSet CreateRandomDataSet() =>
+            CreateDataSetFiller().Create();
+
+        private static Filler<DataSet> CreateDataSetFiller()
+        {
+            var filler = new Filler<DataSet>();
+            string user = Guid.NewGuid().ToString();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static DataSetSpecification CreateRandomDataSetSpecification(Guid datasetSetId) =>
+            CreateDataSetSpecificationFiller(datasetSetId).Create();
+
+        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(Guid datasetSetId)
+        {
+            var filler = new Filler<DataSetSpecification>();
+            string user = Guid.NewGuid().ToString();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId).Use(datasetSetId)
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
 
             return filler;
         }

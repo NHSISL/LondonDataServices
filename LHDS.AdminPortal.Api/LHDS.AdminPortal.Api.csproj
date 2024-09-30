@@ -30,7 +30,7 @@
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
 	  <PackageReference Include="Tynamix.ObjectFiller" Version="1.5.8" />
 	  <PackageReference Include="Xeption" Version="2.8.0" />
-	  <PackageReference Include="xunit.extensibility.core" Version="2.9.0" />
+	  <PackageReference Include="xunit.extensibility.core" Version="2.9.2" />
   </ItemGroup>
 
   <ItemGroup>

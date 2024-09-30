@@ -39,6 +39,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.ObjectColumns
         public string CodeSystem { get; set; } = string.Empty;
         public string PartitionColumnLevel { get; set; } = string.Empty;
         public Guid DataTypeId { get; set; }
+        public bool IsForeignKey { get; set; } = false;
+        public string ForeignKeyTableName { get; set; } = string.Empty;
+        public string ForeignKeyColumnName { get; set; } = string.Empty;
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
 

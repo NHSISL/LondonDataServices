@@ -55,6 +55,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.Functions.Terminology"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.Core.Tests.Integration.Terminology", "LHDS.Core.Tests.Integration.Terminology\LHDS.Core.Tests.Integration.Terminology.csproj", "{1E18210A-7575-45E5-9F16-7B806B032F72}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConfigImportExportTool", "ConfigImportExportTool", "{026243AA-56AF-48C7-9E7F-8279241AAE6E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Acceptance|Any CPU = Acceptance|Any CPU

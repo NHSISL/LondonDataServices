@@ -14,6 +14,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         {
             await ValueTask.CompletedTask;
 
+            // Testing
             ////Given
             //Address address = GetRandomAddress();
             //Address savedAddress = await this.addressService.AddAddressAsync(address);

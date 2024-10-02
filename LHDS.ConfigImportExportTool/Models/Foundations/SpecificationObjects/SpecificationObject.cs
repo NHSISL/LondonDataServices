@@ -1,11 +1,9 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using LHDS.ConfigImportExportTool.Models.Bases;
-using LHDS.ConfigImportExportTool.Models.Foundations.DataSetSpecifications;
+using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 

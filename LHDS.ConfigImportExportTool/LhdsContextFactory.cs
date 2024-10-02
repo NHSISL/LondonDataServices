@@ -1,7 +1,9 @@
 ﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
+using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 
 namespace LHDS.ConfigImportExportTool

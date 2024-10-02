@@ -57,41 +57,6 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask SyncAddressesWithAssign()
-        {
-            try
-            {
-                await this.addressCoordinationService.SyncAddressesWithAssignAsync();
-            }
-            catch (AddressCoordinationValidationException addressCoordinationValidationException)
-            {
-                throw new AddressClientValidationException(
-                    message: "Address client validation error occurred, fix errors and try again.",
-                    innerException: addressCoordinationValidationException.InnerException as Xeption);
-            }
-            catch (AddressCoordinationDependencyValidationException
-                addressCoordinationDependencyValidationException)
-            {
-                throw new AddressClientValidationException(
-                    message: "Address client validation error occurred, fix errors and try again.",
-                    innerException: addressCoordinationDependencyValidationException.InnerException as Xeption);
-            }
-            catch (AddressCoordinationDependencyException
-                addressCoordinationDependencyException)
-            {
-                throw new AddressClientDependencyException(
-                    message: "Address client dependency error occurred, please contact support.",
-                    innerException: addressCoordinationDependencyException.InnerException as Xeption);
-            }
-            catch (AddressCoordinationServiceException
-                addressCoordinationServiceException)
-            {
-                throw new AddressClientServiceException(
-                    message: "Address client service error occurred, fix errors and try again.",
-                    addressCoordinationServiceException.InnerException as Xeption);
-            }
-        }
-
         public async ValueTask LoadAddressesToResolveAsync(Stream data, string filename)
         {
             try

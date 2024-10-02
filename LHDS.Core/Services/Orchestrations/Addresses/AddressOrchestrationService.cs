@@ -182,5 +182,10 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     exceptions);
             }
         }
+
+        public ValueTask SyncAddressesWithAssignAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

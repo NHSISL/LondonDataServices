@@ -21,9 +21,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
     {
         [Theory]
         [MemberData(nameof(OptOutDependencyValidationExceptions))]
-        public async Task
-            ShouldThrowAggregateDependencyValidationExceptionOnRetrieveStatusIfErrorsInLoopAndLogItAsync(
-            Xeption dependencyValidationException)
+        public async Task ShouldThrowAggregateDependencyValidationExceptionOnRetrieveStatusIfErrorsInLoopAndLogItAsync(  
+            Xeption dependencyValidationException)  
         {
             // Given
             List<Exception> exceptions = new List<Exception>();
@@ -123,9 +122,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
         [Theory]
         [MemberData(nameof(OptOutDependencyExceptions))]
-        public async Task
-           ShouldThrowAggregateDependencyExceptionOnRetrieveStatusIfErrorsInLoopAndLogItAsync(
-           Xeption dependencyException)
+        public async Task ShouldThrowAggregateDependencyExceptionOnRetrieveStatusIfErrorsInLoopAndLogItAsync(  
+           Xeption dependencyException)  
         {
             // Given
             List<Exception> exceptions = new List<Exception>();

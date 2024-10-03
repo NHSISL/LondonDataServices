@@ -38,7 +38,7 @@ namespace LHDS.ConfigImportExportTool.Brokers.Storages.Sql
         }
 
         private async ValueTask<T> InsertAsync<T>(T @object) where T : class =>
-          await efCoreClient.InsertAsync(@object);
+            await efCoreClient.InsertAsync(@object);
 
         private async ValueTask<IQueryable<T>> SelectAllAsync<T>() where T : class =>
             await efCoreClient.SelectAllAsync<T>();

@@ -40,23 +40,24 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             string encryptedFileName = CreateRandomFileName(subscriberCredential.Id);
             string decryptedFileName = CreateRandomFileName(subscriberCredential.Id);
             await this.documentService.AddDocumentAsync(encryptedStream, encryptedFileName, blobContainers.EmisLanding);
+            DataSet dataSet = CreateRandomDataSet(supplierId);
+            DataSetSpecification dataSetSpecification = CreateRandomDataSetSpecification(dataSet);
             await this.supplierService.AddSupplierAsync(randomSupplier);
+            await this.dataSetService.AddDataSetAsync(dataSet);
+            await this.dataSetSpecificationService.AddDataSetSpecificationAsync(dataSetSpecification);
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
                 encryptedFileName,
                 decryptedFileName,
-                supplierId: supplierId);
+                supplierId: supplierId,
+                dataSetSpecficiationId: dataSetSpecification.Id);
 
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
-            DataSet dataSet = CreateRandomDataSet(supplierId);
-            DataSetSpecification dataSetSpecification = CreateRandomDataSetSpecification(dataSet);
 
             SpecificationObject specificationObject = 
                 CreateRandomSpecificationObject(ingestionTracking.DataSetSpecificationId);
 
-            await this.dataSetService.AddDataSetAsync(dataSet);
-            await this.dataSetSpecificationService.AddDataSetSpecificationAsync(dataSetSpecification);
             await this.specificationObjectService.AddSpecificationObjectAsync(specificationObject);
 
             //When

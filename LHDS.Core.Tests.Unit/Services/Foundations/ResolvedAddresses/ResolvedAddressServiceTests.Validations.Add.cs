@@ -49,11 +49,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfResolvedAddressIsInvalidAndLogItAsync(string invalidText)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfResolvedAddressIsInvalidAndLogItAsync()
         {
             // given
             var invalidResolvedAddress = new ResolvedAddress();

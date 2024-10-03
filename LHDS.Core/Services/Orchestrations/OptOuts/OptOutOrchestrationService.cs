@@ -114,7 +114,6 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                     });
 
                             return item;
-
                         });
 
                         processedOptOuts.Add(processedOptOut);

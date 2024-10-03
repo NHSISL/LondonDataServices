@@ -68,9 +68,6 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                 await this.fileBroker.DeleteDirectoryAsync(ordinanceTempFolder, true);
             });
 
-        public ValueTask SyncAddressesWithAssignAsync() =>
-            throw new NotImplementedException();
-
         virtual internal async ValueTask UnZipAndExtractAsync(Stream data, string extractPath)
         {
             using (ZipArchive archive = new ZipArchive(data, ZipArchiveMode.Read))
@@ -184,6 +181,11 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     $"File has been moved to the error folder.",
                     exceptions);
             }
+        }
+
+        public ValueTask SyncAddressesWithAssignAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -58,7 +58,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             // given
             var invalidPdsAudit = new PdsAudit
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                FileName = invalidText,
+                Message = invalidText
             };
 
             var invalidPdsAuditException =

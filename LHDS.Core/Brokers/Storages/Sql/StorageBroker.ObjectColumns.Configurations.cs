@@ -131,6 +131,19 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired(false);
 
             modelBuilder.Entity<ObjectColumn>()
+                .Property(objectColumn => objectColumn.IsForeignKey)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<ObjectColumn>()
+                .Property(objectColumn => objectColumn.ForeignKeyTableName)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ObjectColumn>()
+                .Property(objectColumn => objectColumn.ForeignKeyColumnName)
+                .IsRequired(false);
+
+            modelBuilder.Entity<ObjectColumn>()
                 .Property(objectColumn => objectColumn.CreatedBy)
                 .HasMaxLength(255)
                 .IsRequired();

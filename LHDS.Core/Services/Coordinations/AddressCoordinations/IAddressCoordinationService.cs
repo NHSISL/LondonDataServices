@@ -12,7 +12,6 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
     public interface IAddressCoordinationService
     {
         public ValueTask LoadAddressDataAsync(Stream data, string filename);
-        public ValueTask SyncAddressesWithAssignAsync();
         public ValueTask LoadAddressesToResolveAsync(Stream data, string filename);
         public ValueTask MatchAddressDataAsync();
         public ValueTask<List<Guid>> ExportResolvedAddressesAsync();

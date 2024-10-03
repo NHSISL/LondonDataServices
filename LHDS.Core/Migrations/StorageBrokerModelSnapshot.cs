@@ -17,7 +17,7 @@ namespace LHDS.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -613,6 +613,12 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("ForeignKeyColumnName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ForeignKeyTableName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsAuthorCode")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -624,6 +630,11 @@ namespace LHDS.Core.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<bool>("IsDeleteFlag")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsForeignKey")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);

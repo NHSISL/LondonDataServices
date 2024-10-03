@@ -2,12 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads;
-using Tynamix.ObjectFiller;
 
 namespace LHDS.Core.Providers.Downloads.MockDownloads
 {
@@ -22,11 +23,15 @@ namespace LHDS.Core.Providers.Downloads.MockDownloads
             IsOfflineProvider = true;
         }
 
-        private static string GetRandomString() =>
-            new MnemonicString().GetValue();
+        private static string GetRandomString()
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            int length = random.Next(5, 16);
 
-        private static int GetRandomNumber() =>
-            new IntRange(min: 2, max: 10).GetValue();
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
 
         public async ValueTask GetDocumentByFileNameAsync(Download download)
         {

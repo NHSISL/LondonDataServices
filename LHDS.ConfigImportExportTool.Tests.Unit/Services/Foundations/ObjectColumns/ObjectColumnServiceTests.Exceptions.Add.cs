@@ -35,7 +35,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     innerException: failedObjectColumnStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(sqlException);
 
             // when
@@ -51,7 +51,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .BeEquivalentTo(expectedObjectColumnDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -59,7 +59,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnDependencyException))),
                         Times.Once);
 
@@ -90,7 +90,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     innerException: alreadyExistsObjectColumnException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(duplicateKeyException);
 
             // when
@@ -106,7 +106,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .BeEquivalentTo(expectedObjectColumnDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -114,7 +114,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnDependencyValidationException))),
                         Times.Once);
 
@@ -145,7 +145,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     innerException: invalidObjectColumnReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(foreignKeyConstraintConflictException);
 
             // when
@@ -161,11 +161,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once);
 
@@ -198,7 +198,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     innerException: failedObjectColumnStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(databaseUpdateException);
 
             // when
@@ -214,7 +214,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .BeEquivalentTo(expectedObjectColumnDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -222,7 +222,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnDependencyException))),
                         Times.Once);
 
@@ -249,7 +249,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     innerException: failedObjectColumnServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(serviceException);
 
             // when
@@ -265,7 +265,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .BeEquivalentTo(expectedObjectColumnServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -273,7 +273,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnServiceException))),
                         Times.Once);
 

@@ -6,8 +6,8 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.ObjectColumns;
-using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns.Exceptions;
 using Moq;
 using Xunit;
 
@@ -40,12 +40,12 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
@@ -138,11 +138,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once());
 
@@ -237,8 +237,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     innerException: invalidObjectColumnException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
@@ -253,11 +253,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once());
 
@@ -292,8 +292,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     innerException: invalidObjectColumnException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
@@ -308,11 +308,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once);
 
@@ -348,8 +348,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     innerException: invalidObjectColumnException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
@@ -364,11 +364,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .BeEquivalentTo(expectedObjectColumnValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidatonException))),
                         Times.Once);
 
@@ -403,8 +403,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .ReturnsAsync(nullObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when 
             ValueTask<ObjectColumn> modifyObjectColumnTask =
@@ -423,11 +423,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once);
 
@@ -467,8 +467,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .ReturnsAsync(storageObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
@@ -487,11 +487,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedObjectColumnValidationException))),
                        Times.Once);
 
@@ -529,8 +529,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .ReturnsAsync(storageObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
@@ -548,11 +548,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedObjectColumnValidationException))),
                        Times.Once);
 
@@ -588,8 +588,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .ReturnsAsync(storageObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
@@ -600,11 +600,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 modifyObjectColumnTask.AsTask);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once);
 

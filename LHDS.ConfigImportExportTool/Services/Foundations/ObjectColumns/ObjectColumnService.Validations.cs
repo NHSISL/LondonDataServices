@@ -1,10 +1,9 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
-using System;
-using LHDS.Core.Models.Foundations.ObjectColumns;
-using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.ObjectColumns
 {
@@ -249,14 +248,14 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
         private dynamic IsNotRecent(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

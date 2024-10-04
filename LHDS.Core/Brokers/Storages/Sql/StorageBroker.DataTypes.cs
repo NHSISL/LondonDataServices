@@ -17,10 +17,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public async ValueTask<DataType> InsertDataTypeAsync(DataType dataType) =>
             await InsertAsync(dataType);
 
-        public IQueryable<DataType> SelectAllDataTypes() => ReadAll<DataType>();
+        public IQueryable<DataType> SelectAllDataTypes() => SelectAll<DataType>();
 
         public async ValueTask<DataType> SelectDataTypeByIdAsync(Guid dataTypeId) =>
-            await ReadAsync<DataType>(dataTypeId);
+            await SelectAsync<DataType>(dataTypeId);
 
         public async ValueTask<DataType> UpdateDataTypeAsync(DataType dataType) =>
             await UpdateAsync(dataType);

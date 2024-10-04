@@ -17,10 +17,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public async ValueTask<OptOut> InsertOptOutAsync(OptOut optout) =>
             await InsertAsync(optout);
 
-        public IQueryable<OptOut> SelectAllOptOuts() => ReadAll<OptOut>();
+        public IQueryable<OptOut> SelectAllOptOuts() => SelectAll<OptOut>();
 
         public async ValueTask<OptOut> SelectOptOutByIdAsync(Guid id) =>
-            await ReadAsync<OptOut>(id);
+            await SelectAsync<OptOut>(id);
 
         public async ValueTask<OptOut> UpdateOptOutAsync(OptOut optout) =>
             await UpdateAsync(optout);

@@ -90,11 +90,11 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             }
         }
 
-        private ValueTask<IQueryable<ObjectColumn>> TryCatch(ReturningObjectColumnsFunction returningObjectColumnsFunction)
+        private async ValueTask<IQueryable<ObjectColumn>> TryCatch(ReturningObjectColumnsFunction returningObjectColumnsFunction)
         {
             try
             {
-                return returningObjectColumnsFunction();
+                return await returningObjectColumnsFunction();
             }
             catch (SqlException sqlException)
             {

@@ -18,11 +18,11 @@ namespace LHDS.Core.Brokers.Storages.Sql
             TerminologyPoll terminologyPoll) =>
                 await InsertAsync(terminologyPoll);
 
-        public IQueryable<TerminologyPoll> SelectAllTerminologyPolls() => ReadAll<TerminologyPoll>();
+        public IQueryable<TerminologyPoll> SelectAllTerminologyPolls() => SelectAll<TerminologyPoll>();
 
         public async ValueTask<TerminologyPoll> SelectTerminologyPollByIdAsync(
             Guid terminologyPollId) =>
-                await ReadAsync<TerminologyPoll>(terminologyPollId);
+                await SelectAsync<TerminologyPoll>(terminologyPollId);
 
         public async ValueTask<TerminologyPoll> UpdateTerminologyPollAsync(
             TerminologyPoll terminologyPoll) =>

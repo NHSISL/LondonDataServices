@@ -2,14 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using LHDS.ConfigImportExportTool.Models.Bases;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects
 {
-    public class SpecificationObject : IKey, IAudit
+    public class SpecificationObject
     {
         public Guid Id { get; set; }
         public Guid DataSetSpecificationId { get; set; }

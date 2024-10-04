@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -14,7 +17,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
     public partial class ObjectColumnServiceTests
     {
         [Fact]
-        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -31,14 +34,14 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllObjectColumnsAsync())
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
-            Action retrieveAllObjectColumnsAction = () =>
+            ValueTask<IQueryable<ObjectColumn>> retrieveAllObjectColumnsTask =
                 this.objectColumnService.RetrieveAllObjectColumnsAsync();
 
             ObjectColumnDependencyException actualObjectColumnDependencyException =
-                Assert.Throws<ObjectColumnDependencyException>(retrieveAllObjectColumnsAction);
+                await Assert.ThrowsAsync<ObjectColumnDependencyException>(retrieveAllObjectColumnsTask.AsTask);
 
             // then
             actualObjectColumnDependencyException.Should()
@@ -59,7 +62,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string exceptionMessage = GetRandomString();
@@ -77,14 +80,14 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllObjectColumnsAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action retrieveAllObjectColumnsAction = () =>
+            ValueTask<IQueryable<ObjectColumn>> retrieveAllObjectColumnsTask =
                 this.objectColumnService.RetrieveAllObjectColumnsAsync();
 
             ObjectColumnServiceException actualObjectColumnServiceException =
-                Assert.Throws<ObjectColumnServiceException>(retrieveAllObjectColumnsAction);
+                await Assert.ThrowsAsync<ObjectColumnServiceException>(retrieveAllObjectColumnsTask.AsTask);
 
             // then
             actualObjectColumnServiceException.Should()

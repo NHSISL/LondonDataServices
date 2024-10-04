@@ -9,7 +9,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 {
     public partial class ObjectColumnService
     {
-        private void ValidateObjectColumnOnAdd(ObjectColumn objectColumn)
+        private async ValueTask ValidateObjectColumnOnAddAsync(ObjectColumn objectColumn)
         {
             ValidateObjectColumnIsNotNull(objectColumn);
 
@@ -77,10 +77,10 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     secondName: nameof(ObjectColumn.CreatedBy)),
                 Parameter: nameof(ObjectColumn.UpdatedBy)),
 
-                (Rule: IsNotRecent(objectColumn.CreatedDate), Parameter: nameof(ObjectColumn.CreatedDate)));
+                (Rule: await IsNotRecentAsync(objectColumn.CreatedDate), Parameter: nameof(ObjectColumn.CreatedDate)));
         }
 
-        private void ValidateObjectColumnOnModify(ObjectColumn objectColumn)
+        private async ValueTask ValidateObjectColumnOnModifyAsync(ObjectColumn objectColumn)
         {
             ValidateObjectColumnIsNotNull(objectColumn);
 
@@ -142,7 +142,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     secondDateName: nameof(ObjectColumn.CreatedDate)),
                 Parameter: nameof(ObjectColumn.UpdatedDate)),
 
-                (Rule: IsNotRecent(objectColumn.UpdatedDate), Parameter: nameof(objectColumn.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(objectColumn.UpdatedDate), Parameter: nameof(objectColumn.UpdatedDate)));
         }
 
         public void ValidateObjectColumnId(Guid objectColumnId) =>
@@ -246,9 +246,10 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecentAsync(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 

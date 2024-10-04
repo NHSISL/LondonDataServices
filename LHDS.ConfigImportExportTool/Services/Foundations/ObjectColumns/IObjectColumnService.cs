@@ -9,7 +9,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns
     public interface IObjectColumnService
     {
         ValueTask<ObjectColumn> AddObjectColumnAsync(ObjectColumn objectColumn);
-        IQueryable<ObjectColumn> RetrieveAllObjectColumns();
+        ValueTask<IQueryable<ObjectColumn>> RetrieveAllObjectColumnsAsync();
         ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId);
         ValueTask<ObjectColumn> ModifyObjectColumnAsync(ObjectColumn objectColumn);
         ValueTask<ObjectColumn> RemoveObjectColumnByIdAsync(Guid objectColumnId);

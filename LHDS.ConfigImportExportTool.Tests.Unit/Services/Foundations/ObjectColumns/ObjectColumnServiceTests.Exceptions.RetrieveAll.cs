@@ -30,12 +30,12 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     innerException: failedObjectColumnStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllObjectColumns())
+                broker.SelectAllObjectColumnsAsync())
                     .Throws(sqlException);
 
             // when
             Action retrieveAllObjectColumnsAction = () =>
-                this.objectColumnService.RetrieveAllObjectColumns();
+                this.objectColumnService.RetrieveAllObjectColumnsAsync();
 
             ObjectColumnDependencyException actualObjectColumnDependencyException =
                 Assert.Throws<ObjectColumnDependencyException>(retrieveAllObjectColumnsAction);
@@ -45,7 +45,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .BeEquivalentTo(expectedObjectColumnDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllObjectColumns(),
+                broker.SelectAllObjectColumnsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -76,12 +76,12 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     innerException: failedObjectColumnServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllObjectColumns())
+                broker.SelectAllObjectColumnsAsync())
                     .Throws(serviceException);
 
             // when
             Action retrieveAllObjectColumnsAction = () =>
-                this.objectColumnService.RetrieveAllObjectColumns();
+                this.objectColumnService.RetrieveAllObjectColumnsAsync();
 
             ObjectColumnServiceException actualObjectColumnServiceException =
                 Assert.Throws<ObjectColumnServiceException>(retrieveAllObjectColumnsAction);
@@ -91,7 +91,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .BeEquivalentTo(expectedObjectColumnServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllObjectColumns(),
+                broker.SelectAllObjectColumnsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

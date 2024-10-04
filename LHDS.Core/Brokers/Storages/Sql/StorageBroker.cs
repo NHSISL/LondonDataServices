@@ -70,12 +70,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
             return @object;
         }
 
-        private IQueryable<T> ReadAll<T>() where T : class => this.Set<T>();
+        private IQueryable<T> SelectAll<T>() where T : class => this.Set<T>();
 
-        private async ValueTask<IQueryable<T>> ReadAllAsync<T>() where T : class =>
+        private async ValueTask<IQueryable<T>> SelectAllAsync<T>() where T : class =>
             this.Set<T>();
 
-        private async ValueTask<T?> ReadAsync<T>(params object[] @objectIds) where T : class =>
+        private async ValueTask<T?> SelectAsync<T>(params object[] @objectIds) where T : class =>
             await this.FindAsync<T>(objectIds);
 
         private async ValueTask<T> UpdateAsync<T>(T @object)

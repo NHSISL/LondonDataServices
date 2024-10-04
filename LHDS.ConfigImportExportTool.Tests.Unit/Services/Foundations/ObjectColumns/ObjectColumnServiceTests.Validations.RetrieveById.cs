@@ -5,6 +5,8 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns.Exceptions;
 using Moq;
 using Xunit;
 
@@ -44,7 +46,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once);
 
@@ -92,7 +94,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once);
 

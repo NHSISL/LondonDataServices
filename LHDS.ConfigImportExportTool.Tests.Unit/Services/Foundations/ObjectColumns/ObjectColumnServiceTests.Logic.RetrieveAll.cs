@@ -4,7 +4,7 @@
 
 using System.Linq;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using Moq;
 using Xunit;
 

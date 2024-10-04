@@ -17,10 +17,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public async ValueTask<ObjectColumn> InsertObjectColumnAsync(ObjectColumn objectColumn) =>
             await InsertAsync(objectColumn);
 
-        public IQueryable<ObjectColumn> SelectAllObjectColumns() => ReadAll<ObjectColumn>();
+        public IQueryable<ObjectColumn> SelectAllObjectColumns() => SelectAll<ObjectColumn>();
 
         public async ValueTask<ObjectColumn> SelectObjectColumnByIdAsync(Guid objectColumnId) =>
-            await ReadAsync<ObjectColumn>(objectColumnId);
+            await SelectAsync<ObjectColumn>(objectColumnId);
 
         public async ValueTask<ObjectColumn> UpdateObjectColumnAsync(ObjectColumn objectColumn) =>
             await UpdateAsync(objectColumn);

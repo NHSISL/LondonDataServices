@@ -55,7 +55,7 @@ namespace LHDS.ConfigImportExportTool.Brokers.Storages.Sql
             await efCoreClient.UpdateAsync(@object);
 
         private async ValueTask<T> DeleteAsync<T>(T @object) where T : class =>
-            await efCoreClient.UpdateAsync(@object);
+            await efCoreClient.DeleteAsync(@object);
 
         private async ValueTask BulkInsertAsync<T>(IEnumerable<T> objects) where T : class =>
             await efCoreClient.BulkInsertAsync<T>(objects);

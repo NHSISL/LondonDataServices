@@ -36,7 +36,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
         public async Task ShouldGetAllPdsAuditsAsync()
         {
             // Given
-            IQueryable<PdsAudit> randomPdsAudits = CreateRandomPdsAudits();
+            IQueryable<PdsAudit> randomPdsAudits = CreateRandomPdsAudits().AsQueryable();
             IQueryable<PdsAudit> inputPdsAudits = randomPdsAudits;
             IQueryable<PdsAudit> expectedPdsAudits = inputPdsAudits;
 
@@ -49,12 +49,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
             List<PdsAudit> actualPdsAudits = await this.apiBroker.GetAllPdsAuditsAsync();
 
             // Then
-            actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
-
-            // Cleanup
-            foreach (PdsAudit inputPdsAudit in expectedPdsAudits)
+            foreach (PdsAudit expectedPdsAudit in expectedPdsAudits)
             {
-                await this.apiBroker.DeletePdsAuditByIdAsync(inputPdsAudit.Id);
+                PdsAudit actualPdsAudit = actualPdsAudits.Single(approval => approval.Id == expectedPdsAudit.Id);
+                actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
+                await this.apiBroker.DeletePdsAuditByIdAsync(expectedPdsAudit.Id);
             }
         }
 

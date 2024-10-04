@@ -17,10 +17,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public async ValueTask<PdsAudit> InsertPdsAuditAsync(PdsAudit pdsAudit) =>
             await InsertAsync(pdsAudit);
 
-        public IQueryable<PdsAudit> SelectAllPdsAudits() => ReadAll<PdsAudit>();
+        public IQueryable<PdsAudit> SelectAllPdsAudits() => SelectAll<PdsAudit>();
 
         public async ValueTask<PdsAudit> SelectPdsAuditByIdAsync(Guid pdsAuditId) =>
-            await ReadAsync<PdsAudit>(pdsAuditId);
+            await SelectAsync<PdsAudit>(pdsAuditId);
 
         public async ValueTask<PdsAudit> UpdatePdsAuditAsync(PdsAudit pdsAudit) =>
             await UpdateAsync(pdsAudit);

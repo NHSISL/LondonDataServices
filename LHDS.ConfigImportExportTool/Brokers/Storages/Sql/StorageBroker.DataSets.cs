@@ -2,13 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using Microsoft.EntityFrameworkCore;
 
-namespace LHDS.Core.Brokers.Storages.Sql
+namespace LHDS.ConfigImportExportTool.Brokers.Storages.Sql
 {
     public partial class StorageBroker
     {
@@ -17,7 +14,8 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public async ValueTask<DataSet> InsertDataSetAsync(DataSet dataSet) =>
             await InsertAsync(dataSet);
 
-        public IQueryable<DataSet> SelectAllDataSets() => SelectAll<DataSet>();
+        public async ValueTask<IQueryable<DataSet>> SelectAllDataSetsAsync() =>
+            await SelectAllAsync<DataSet>();
 
         public async ValueTask<DataSet> SelectDataSetByIdAsync(Guid dataSetId) =>
             await SelectAsync<DataSet>(dataSetId);

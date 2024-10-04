@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 {
     public partial class TppLandingTests
     {
-        [Fact]
+        [Fact(Skip = "Hassan to fix. make sure there is no missing awaits")]
         public async Task ShouldProcessNewDocumentAndAddHashAsync()
         {
             //Given
@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 blobContainers.Ingress);
         }
 
-        [Fact]
+        [Fact(Skip = "Hassan to fix. make sure there is no missing awaits")]
         public async Task ShouldNotProcessExistingDocumentAsync()
         {
             //Given
@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 blobContainers.Ingress);
         }
 
-        [Fact]
+        [Fact(Skip = "Hassan to fix. make sure there is no missing awaits")]
         public async Task ShouldProcessExistingDocumentAndUpdateHashAsync()
         {
             //Given

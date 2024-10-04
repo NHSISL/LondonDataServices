@@ -34,8 +34,8 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 return await this.storageBroker.InsertObjectColumnAsync(objectColumn);
             });
 
-        public IQueryable<ObjectColumn> RetrieveAllObjectColumns() =>
-            TryCatch(() => this.storageBroker.SelectAllObjectColumns());
+        public ValueTask<IQueryable<ObjectColumn>> RetrieveAllObjectColumnsAsync() =>
+            TryCatch(async() => await this.storageBroker.SelectAllObjectColumnsAsync());
 
         public ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId) =>
             TryCatch(async () =>

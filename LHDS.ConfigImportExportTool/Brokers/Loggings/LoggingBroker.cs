@@ -29,7 +29,7 @@ namespace LHDS.ConfigImportExportTool.Brokers.Loggings
             logger.LogWarning(message);
 
         public async ValueTask LogErrorAsync(Exception exception) =>
-            logger.LogError(exception, $"{exception.Message} {exception.GetValidationSummary()}");
+            logger.LogErrorAsync(exception, $"{exception.Message} {exception.GetValidationSummary()}");
 
         public async ValueTask LogCriticalAsync(Exception exception) =>
             logger.LogCritical(exception, $"{exception.Message} {exception.GetValidationSummary()}");

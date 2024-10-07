@@ -5,11 +5,11 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
+namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.SpecificationObjects
 {
     public partial class SpecificationObjectServiceTests
     {

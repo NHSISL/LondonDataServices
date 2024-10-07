@@ -3,12 +3,13 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
+namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.SpecificationObjects
 {
     public partial class SpecificationObjectServiceTests
     {
@@ -21,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             IQueryable<SpecificationObject> expectedSpecificationObjects = storageSpecificationObjects;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllSpecificationObjects())
+                broker.SelectAllSpecificationObjectsAsync())
                     .ReturnsAsync(storageSpecificationObjects);
 
             // when
-            IQueryable<SpecificationObject> actualSpecificationObjects =
-                this.specificationObjectService.RetrieveAllSpecificationObjects();
+            ValueTask<IQueryable<SpecificationObject>> actualSpecificationObjects =
+                this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
 
             // then
             actualSpecificationObjects.Should().BeEquivalentTo(expectedSpecificationObjects);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllSpecificationObjects(),
+                broker.SelectAllSpecificationObjectsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

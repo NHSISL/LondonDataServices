@@ -16,28 +16,43 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
 
             Validate(
                 (Rule: IsInvalid(specificationObject.Id), Parameter: nameof(SpecificationObject.Id)),
-                (Rule: IsInvalid(specificationObject.DataSetSpecificationId), Parameter: nameof(specificationObject.DataSetSpecificationId)),
-                (Rule: IsInvalid(specificationObject.SupplierObjectName), Parameter: nameof(specificationObject.SupplierObjectName)),
-                (Rule: IsInvalid(specificationObject.OurObjectName), Parameter: nameof(specificationObject.OurObjectName)),
-                (Rule: IsInvalid(specificationObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)),
+                (Rule: IsInvalid(specificationObject.DataSetSpecificationId), 
+                Parameter: nameof(specificationObject.DataSetSpecificationId)),
+
+                (Rule: IsInvalid(
+                    specificationObject.SupplierObjectName), 
+                Parameter: nameof(specificationObject.SupplierObjectName)),
+
+                (Rule: IsInvalid(
+                    specificationObject.OurObjectName), 
+                Parameter: nameof(specificationObject.OurObjectName)),
+
+                (Rule: IsInvalid(
+                    specificationObject.CreatedDate), 
+                Parameter: nameof(SpecificationObject.CreatedDate)),
+
                 (Rule: IsInvalid(specificationObject.CreatedBy), Parameter: nameof(SpecificationObject.CreatedBy)),
                 (Rule: IsInvalid(specificationObject.UpdatedDate), Parameter: nameof(SpecificationObject.UpdatedDate)),
                 (Rule: IsInvalid(specificationObject.UpdatedBy), Parameter: nameof(SpecificationObject.UpdatedBy)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.SupplierObjectName, 255), Parameter: nameof(specificationObject.SupplierObjectName)),
+                    specificationObject.SupplierObjectName, 255), 
+                Parameter: nameof(specificationObject.SupplierObjectName)),
 
                 (Rule: IsEqualOrSmallerThan(
                     specificationObject.OurObjectName, 255), Parameter: nameof(specificationObject.OurObjectName)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.ObjectDescription, 500), Parameter: nameof(specificationObject.ObjectDescription)),
+                    specificationObject.ObjectDescription, 500), 
+                Parameter: nameof(specificationObject.ObjectDescription)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.InterchangeProtocol, 255), Parameter: nameof(specificationObject.InterchangeProtocol)),
+                    specificationObject.InterchangeProtocol, 255), 
+                Parameter: nameof(specificationObject.InterchangeProtocol)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.DeletionHandling, 255), Parameter: nameof(specificationObject.DeletionHandling)),
+                    specificationObject.DeletionHandling, 255), 
+                Parameter: nameof(specificationObject.DeletionHandling)),
 
                 (Rule: IsEqualOrSmallerThan(
                     specificationObject.CreatedBy, 255), Parameter: nameof(specificationObject.CreatedBy)),
@@ -57,7 +72,8 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
                     secondName: nameof(SpecificationObject.CreatedBy)),
                 Parameter: nameof(SpecificationObject.UpdatedBy)),
 
-                (Rule: await IsNotRecentAsync(specificationObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)));
+                (Rule: await IsNotRecentAsync(specificationObject.CreatedDate), 
+                    Parameter: nameof(SpecificationObject.CreatedDate)));
         }
 
         private async ValueTask ValidateSpecificationObjectOnModifyAsync(SpecificationObject specificationObject)
@@ -66,28 +82,40 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
 
             Validate(
                 (Rule: IsInvalid(specificationObject.Id), Parameter: nameof(SpecificationObject.Id)),
-                (Rule: IsInvalid(specificationObject.DataSetSpecificationId), Parameter: nameof(specificationObject.DataSetSpecificationId)),
-                (Rule: IsInvalid(specificationObject.SupplierObjectName), Parameter: nameof(specificationObject.SupplierObjectName)),
-                (Rule: IsInvalid(specificationObject.OurObjectName), Parameter: nameof(specificationObject.OurObjectName)),
+
+                (Rule: IsInvalid(specificationObject.DataSetSpecificationId), 
+                Parameter: nameof(specificationObject.DataSetSpecificationId)),
+
+                (Rule: IsInvalid(specificationObject.SupplierObjectName), 
+                Parameter: nameof(specificationObject.SupplierObjectName)),
+
+                (Rule: IsInvalid(specificationObject.OurObjectName), 
+                Parameter: nameof(specificationObject.OurObjectName)),
+
                 (Rule: IsInvalid(specificationObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)),
                 (Rule: IsInvalid(specificationObject.CreatedBy), Parameter: nameof(SpecificationObject.CreatedBy)),
                 (Rule: IsInvalid(specificationObject.UpdatedDate), Parameter: nameof(SpecificationObject.UpdatedDate)),
                 (Rule: IsInvalid(specificationObject.UpdatedBy), Parameter: nameof(SpecificationObject.UpdatedBy)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.SupplierObjectName, 255), Parameter: nameof(specificationObject.SupplierObjectName)),
+                    specificationObject.SupplierObjectName, 255), 
+                    Parameter: nameof(specificationObject.SupplierObjectName)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.OurObjectName, 255), Parameter: nameof(specificationObject.OurObjectName)),
+                    specificationObject.OurObjectName, 255), 
+                    Parameter: nameof(specificationObject.OurObjectName)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.ObjectDescription, 500), Parameter: nameof(specificationObject.ObjectDescription)),
+                    specificationObject.ObjectDescription, 500), 
+                    Parameter: nameof(specificationObject.ObjectDescription)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.InterchangeProtocol, 255), Parameter: nameof(specificationObject.InterchangeProtocol)),
+                    specificationObject.InterchangeProtocol, 255), 
+                    Parameter: nameof(specificationObject.InterchangeProtocol)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    specificationObject.DeletionHandling, 255), Parameter: nameof(specificationObject.DeletionHandling)),
+                    specificationObject.DeletionHandling, 255), 
+                Parameter: nameof(specificationObject.DeletionHandling)),
 
                 (Rule: IsEqualOrSmallerThan(
                     specificationObject.CreatedBy, 255), Parameter: nameof(specificationObject.CreatedBy)),
@@ -101,13 +129,16 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
                     secondDateName: nameof(SpecificationObject.CreatedDate)),
                 Parameter: nameof(SpecificationObject.UpdatedDate)),
 
-                (Rule: await IsNotRecentAsync(specificationObject.UpdatedDate), Parameter: nameof(specificationObject.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(specificationObject.UpdatedDate), Parameter: nameof(
+                    specificationObject.UpdatedDate)));
         }
 
         public void ValidateSpecificationObjectId(Guid specificationObjectId) =>
             Validate((Rule: IsInvalid(specificationObjectId), Parameter: nameof(SpecificationObject.Id)));
 
-        private static void ValidateStorageSpecificationObject(SpecificationObject maybeSpecificationObject, Guid specificationObjectId)
+        private static void ValidateStorageSpecificationObject(
+            SpecificationObject maybeSpecificationObject, 
+            Guid specificationObjectId)
         {
             if (maybeSpecificationObject is null)
             {

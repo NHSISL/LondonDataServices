@@ -52,7 +52,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
         public ValueTask<SpecificationObject> ModifySpecificationObjectAsync(SpecificationObject specificationObject) =>
             TryCatch(async () =>
             {
-                await ValidateSpecificationObjectOnAddAsync(specificationObject);
+                await ValidateSpecificationObjectOnModifyAsync(specificationObject);
 
                 SpecificationObject maybeSpecificationObject =
                     await storageBroker.SelectSpecificationObjectByIdAsync(specificationObject.Id);

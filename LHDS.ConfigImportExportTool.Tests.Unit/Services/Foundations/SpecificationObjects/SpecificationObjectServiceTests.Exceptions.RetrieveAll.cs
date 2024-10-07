@@ -40,15 +40,9 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.Specificat
             ValueTask<IQueryable<SpecificationObject>> retrieveAllSpecificationObjectsTask =
                 this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
 
-            SpecificationObjectDependencyException actualObjectColumnDependencyExceptionTas =
+            SpecificationObjectDependencyException actualSpecificationObjectDependencyException =
                 await Assert.ThrowsAsync<SpecificationObjectDependencyException>(
                     retrieveAllSpecificationObjectsTask.AsTask);
-
-            Action retrieveAllSpecificationObjectsAction = () =>
-                this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
-
-            SpecificationObjectDependencyException actualSpecificationObjectDependencyException =
-                Assert.Throws<SpecificationObjectDependencyException>(retrieveAllSpecificationObjectsAction);
 
             // then
             actualSpecificationObjectDependencyException.Should()

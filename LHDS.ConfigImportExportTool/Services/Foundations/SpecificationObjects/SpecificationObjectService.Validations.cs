@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Diagnostics.Metrics;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects.Exceptions;
 
@@ -9,7 +10,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
 {
     public partial class SpecificationObjectService
     {
-        private void ValidateSpecificationObjectOnAdd(SpecificationObject specificationObject)
+        private async ValueTask ValidateSpecificationObjectOnAddAsync(SpecificationObject specificationObject)
         {
             ValidateSpecificationObjectIsNotNull(specificationObject);
 
@@ -56,10 +57,10 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
                     secondName: nameof(SpecificationObject.CreatedBy)),
                 Parameter: nameof(SpecificationObject.UpdatedBy)),
 
-                (Rule: IsNotRecent(specificationObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)));
+                (Rule: await IsNotRecentAsync(specificationObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)));
         }
 
-        private void ValidateSpecificationObjectOnModify(SpecificationObject specificationObject)
+        private async ValueTask ValidateSpecificationObjectOnModifyAsync(SpecificationObject specificationObject)
         {
             ValidateSpecificationObjectIsNotNull(specificationObject);
 
@@ -100,7 +101,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
                     secondDateName: nameof(SpecificationObject.CreatedDate)),
                 Parameter: nameof(SpecificationObject.UpdatedDate)),
 
-                (Rule: IsNotRecent(specificationObject.UpdatedDate), Parameter: nameof(specificationObject.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(specificationObject.UpdatedDate), Parameter: nameof(specificationObject.UpdatedDate)));
         }
 
         public void ValidateSpecificationObjectId(Guid specificationObjectId) =>
@@ -122,7 +123,9 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
             }
         }
 
-        private static void ValidateAgainstStorageSpecificationObjectOnModify(SpecificationObject inputSpecificationObject, SpecificationObject storageSpecificationObject)
+        private static void ValidateAgainstStorageSpecificationObjectOnModify(
+            SpecificationObject inputSpecificationObject, 
+            SpecificationObject storageSpecificationObject)
         {
             Validate(
                 (Rule: IsNotSame(
@@ -204,13 +207,13 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
                Message = $"Text is not the same as {secondName}"
            };
 
-        private async ValueTask<dynamic> IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private async ValueTask<bool> IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
                 await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
@@ -221,7 +224,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
             return timeDifference.Duration() > oneMinute;
         }
 
-        private async static ValueTask Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidSpecificationObjectException =
                 new InvalidSpecificationObjectException(

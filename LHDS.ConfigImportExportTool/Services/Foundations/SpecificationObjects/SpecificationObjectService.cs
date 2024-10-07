@@ -6,9 +6,8 @@ using LHDS.ConfigImportExportTool.Brokers.DateTimes;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
-using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects;
 
-namespace LHDS.Core.Services.Foundations.SpecificationObjects
+namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
 {
     public partial class SpecificationObjectService : ISpecificationObjectService
     {
@@ -61,7 +60,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                 ValidateStorageSpecificationObject(maybeSpecificationObject, specificationObject.Id);
 
                 ValidateAgainstStorageSpecificationObjectOnModify(
-                    inputSpecificationObject: specificationObject, 
+                    inputSpecificationObject: specificationObject,
                     storageSpecificationObject: maybeSpecificationObject);
 
                 return await storageBroker.UpdateSpecificationObjectAsync(specificationObject);

@@ -5,7 +5,7 @@
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects.Exceptions;
 
-namespace LHDS.Core.Services.Foundations.SpecificationObjects
+namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
 {
     public partial class SpecificationObjectService
     {

@@ -25,4 +25,10 @@
 		<PackageReference Include="Xeption" Version="2.8.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<InternalsVisibleTo Include="LHDS.ConfigImportExportTool.Tests.Unit" />
+		<InternalsVisibleTo Include="LHDS.ConfigImportExportTool.Tests.Acceptance" />
+		<InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+	</ItemGroup>
+
 </Project>

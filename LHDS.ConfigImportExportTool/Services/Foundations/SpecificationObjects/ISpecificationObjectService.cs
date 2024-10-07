@@ -9,7 +9,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
     public interface ISpecificationObjectService
     {
         ValueTask<SpecificationObject> AddSpecificationObjectAsync(SpecificationObject specificationObject);
-        ValueTask<IQueryable<SpecificationObject>> RetrieveAllSpecificationObjects();
+        ValueTask<IQueryable<SpecificationObject>> RetrieveAllSpecificationObjectsAsync();
         ValueTask<SpecificationObject> RetrieveSpecificationObjectByIdAsync(Guid specificationObjectId);
         ValueTask<SpecificationObject> ModifySpecificationObjectAsync(SpecificationObject specificationObject);
         ValueTask<SpecificationObject> RemoveSpecificationObjectByIdAsync(Guid specificationObjectId);

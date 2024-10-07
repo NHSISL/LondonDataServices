@@ -9,14 +9,15 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
-namespace LHDS.Core.Services.Foundations.SpecificationObjects
+namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
 {
     public partial class SpecificationObjectService
     {
         private delegate ValueTask<SpecificationObject> ReturningSpecificationObjectFunction();
         private delegate ValueTask<IQueryable<SpecificationObject>> ReturningSpecificationObjectsFunction();
 
-        private async ValueTask<SpecificationObject> TryCatch(ReturningSpecificationObjectFunction returningSpecificationObjectFunction)
+        private async ValueTask<SpecificationObject> TryCatch(
+            ReturningSpecificationObjectFunction returningSpecificationObjectFunction)
         {
             try
             {
@@ -90,7 +91,8 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             }
         }
 
-        private async ValueTask<IQueryable<SpecificationObject>> TryCatch(ReturningSpecificationObjectsFunction returningSpecificationObjectsFunction)
+        private async ValueTask<IQueryable<SpecificationObject>> TryCatch(
+            ReturningSpecificationObjectsFunction returningSpecificationObjectsFunction)
         {
             try
             {
@@ -140,7 +142,8 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             return specificationObjectDependencyException;
         }
 
-        private SpecificationObjectDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private SpecificationObjectDependencyValidationException CreateAndLogDependencyValidationException(
+            Xeption exception)
         {
             var specificationObjectDependencyValidationException =
                 new SpecificationObjectDependencyValidationException(
@@ -160,7 +163,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                     message: "SpecificationObject dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(specificationObjectDependencyException);
+            this.loggingBroker.LogErrorAsync(specificationObjectDependencyException);
 
             return specificationObjectDependencyException;
         }
@@ -173,7 +176,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                     message: "SpecificationObject service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(specificationObjectServiceException);
+            this.loggingBroker.LogErrorAsync(specificationObjectServiceException);
 
             return specificationObjectServiceException;
         }

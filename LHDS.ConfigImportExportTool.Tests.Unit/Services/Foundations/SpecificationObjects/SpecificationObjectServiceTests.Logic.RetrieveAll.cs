@@ -14,7 +14,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.Specificat
     public partial class SpecificationObjectServiceTests
     {
         [Fact]
-        public void ShouldReturnSpecificationObjects()
+        public async void ShouldReturnSpecificationObjects()
         {
             // given
             IQueryable<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects();
@@ -26,8 +26,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.Specificat
                     .ReturnsAsync(storageSpecificationObjects);
 
             // when
-            ValueTask<IQueryable<SpecificationObject>> actualSpecificationObjects =
-                this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
+            IQueryable<SpecificationObject> actualSpecificationObjects =
+                await this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
 
             // then
             actualSpecificationObjects.Should().BeEquivalentTo(expectedSpecificationObjects);

@@ -87,12 +87,12 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.Specificat
             ValueTask<IQueryable<SpecificationObject>> retrieveAllSpecificationObjectsTask =
                 this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
 
-            SpecificationObjectDependencyException actualSpecificationObjectDependencyException =
-                await Assert.ThrowsAsync<SpecificationObjectDependencyException>(
+            SpecificationObjectServiceException actualSpecificationObjectServiceException =
+                await Assert.ThrowsAsync<SpecificationObjectServiceException>(
                     retrieveAllSpecificationObjectsTask.AsTask);
 
             // then
-            actualSpecificationObjectDependencyException.Should()
+            actualSpecificationObjectServiceException.Should()
                 .BeEquivalentTo(expectedSpecificationObjectServiceException);
 
             this.storageBrokerMock.Verify(broker =>

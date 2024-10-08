@@ -350,7 +350,9 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.Specificat
             SpecificationObject nullSpecificationObject = null;
 
             var notFoundSpecificationObjectException =
-                new NotFoundSpecificationObjectException(nonExistSpecificationObject.Id);
+                new NotFoundSpecificationObjectException(
+                    message: $"Couldn't find specificationObject with specificationObjectId: " +
+                        $"{nonExistSpecificationObject.Id}.");
 
             var expectedSpecificationObjectValidationException =
                 new SpecificationObjectValidationException(

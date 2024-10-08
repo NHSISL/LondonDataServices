@@ -5,8 +5,8 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects.
 {
     public class NotFoundSpecificationObjectException : Xeption
     {
-        public NotFoundSpecificationObjectException(Guid specificationObjectId)
-            : base(message: $"Couldn't find specificationObject with specificationObjectId: {specificationObjectId}.")
+        public NotFoundSpecificationObjectException(string message)
+            : base(message)
         { }
     }
 }

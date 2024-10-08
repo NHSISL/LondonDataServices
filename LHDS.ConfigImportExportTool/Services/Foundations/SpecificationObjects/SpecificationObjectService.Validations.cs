@@ -19,46 +19,39 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
                 (Rule: IsInvalid(specificationObject.DataSetSpecificationId), 
                 Parameter: nameof(specificationObject.DataSetSpecificationId)),
 
-                (Rule: IsInvalid(
-                    specificationObject.SupplierObjectName), 
+                (Rule: IsInvalid(specificationObject.SupplierObjectName), 
                 Parameter: nameof(specificationObject.SupplierObjectName)),
 
-                (Rule: IsInvalid(
-                    specificationObject.OurObjectName), 
+                (Rule: IsInvalid(specificationObject.OurObjectName), 
                 Parameter: nameof(specificationObject.OurObjectName)),
 
-                (Rule: IsInvalid(
-                    specificationObject.CreatedDate), 
+                (Rule: IsInvalid(specificationObject.CreatedDate), 
                 Parameter: nameof(SpecificationObject.CreatedDate)),
 
                 (Rule: IsInvalid(specificationObject.CreatedBy), Parameter: nameof(SpecificationObject.CreatedBy)),
                 (Rule: IsInvalid(specificationObject.UpdatedDate), Parameter: nameof(SpecificationObject.UpdatedDate)),
                 (Rule: IsInvalid(specificationObject.UpdatedBy), Parameter: nameof(SpecificationObject.UpdatedBy)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    specificationObject.SupplierObjectName, 255), 
+                (Rule: IsEqualOrSmallerThan(specificationObject.SupplierObjectName, 255), 
                 Parameter: nameof(specificationObject.SupplierObjectName)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    specificationObject.OurObjectName, 255), Parameter: nameof(specificationObject.OurObjectName)),
+                (Rule: IsEqualOrSmallerThan(specificationObject.OurObjectName, 255), 
+                Parameter: nameof(specificationObject.OurObjectName)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    specificationObject.ObjectDescription, 500), 
+                (Rule: IsEqualOrSmallerThan(specificationObject.ObjectDescription, 500), 
                 Parameter: nameof(specificationObject.ObjectDescription)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    specificationObject.InterchangeProtocol, 255), 
+                (Rule: IsEqualOrSmallerThan(specificationObject.InterchangeProtocol, 255), 
                 Parameter: nameof(specificationObject.InterchangeProtocol)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    specificationObject.DeletionHandling, 255), 
+                (Rule: IsEqualOrSmallerThan(specificationObject.DeletionHandling, 255), 
                 Parameter: nameof(specificationObject.DeletionHandling)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    specificationObject.CreatedBy, 255), Parameter: nameof(specificationObject.CreatedBy)),
+                (Rule: IsEqualOrSmallerThan(specificationObject.CreatedBy, 255), 
+                Parameter: nameof(specificationObject.CreatedBy)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    specificationObject.UpdatedBy, 255), Parameter: nameof(specificationObject.UpdatedBy)),
+                (Rule: IsEqualOrSmallerThan(specificationObject.UpdatedBy, 255), 
+                Parameter: nameof(specificationObject.UpdatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: specificationObject.UpdatedDate,
@@ -73,7 +66,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
                 Parameter: nameof(SpecificationObject.UpdatedBy)),
 
                 (Rule: await IsNotRecentAsync(specificationObject.CreatedDate), 
-                    Parameter: nameof(SpecificationObject.CreatedDate)));
+                Parameter: nameof(SpecificationObject.CreatedDate)));
         }
 
         private async ValueTask ValidateSpecificationObjectOnModifyAsync(SpecificationObject specificationObject)
@@ -97,31 +90,26 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
                 (Rule: IsInvalid(specificationObject.UpdatedDate), Parameter: nameof(SpecificationObject.UpdatedDate)),
                 (Rule: IsInvalid(specificationObject.UpdatedBy), Parameter: nameof(SpecificationObject.UpdatedBy)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    specificationObject.SupplierObjectName, 255), 
-                    Parameter: nameof(specificationObject.SupplierObjectName)),
+                (Rule: IsEqualOrSmallerThan(specificationObject.SupplierObjectName, 255), 
+                Parameter: nameof(specificationObject.SupplierObjectName)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    specificationObject.OurObjectName, 255), 
-                    Parameter: nameof(specificationObject.OurObjectName)),
+                (Rule: IsEqualOrSmallerThan(specificationObject.OurObjectName, 255), 
+                Parameter: nameof(specificationObject.OurObjectName)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    specificationObject.ObjectDescription, 500), 
-                    Parameter: nameof(specificationObject.ObjectDescription)),
+                (Rule: IsEqualOrSmallerThan(specificationObject.ObjectDescription, 500), 
+                Parameter: nameof(specificationObject.ObjectDescription)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    specificationObject.InterchangeProtocol, 255), 
-                    Parameter: nameof(specificationObject.InterchangeProtocol)),
+                (Rule: IsEqualOrSmallerThan(specificationObject.InterchangeProtocol, 255), 
+                Parameter: nameof(specificationObject.InterchangeProtocol)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    specificationObject.DeletionHandling, 255), 
+                (Rule: IsEqualOrSmallerThan(specificationObject.DeletionHandling, 255), 
                 Parameter: nameof(specificationObject.DeletionHandling)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    specificationObject.CreatedBy, 255), Parameter: nameof(specificationObject.CreatedBy)),
+                (Rule: IsEqualOrSmallerThan(specificationObject.CreatedBy, 255), 
+                Parameter: nameof(specificationObject.CreatedBy)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    specificationObject.UpdatedBy, 255), Parameter: nameof(specificationObject.UpdatedBy)),
+                (Rule: IsEqualOrSmallerThan(specificationObject.UpdatedBy, 255), 
+                Parameter: nameof(specificationObject.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: specificationObject.UpdatedDate,
@@ -129,8 +117,8 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
                     secondDateName: nameof(SpecificationObject.CreatedDate)),
                 Parameter: nameof(SpecificationObject.UpdatedDate)),
 
-                (Rule: await IsNotRecentAsync(specificationObject.UpdatedDate), Parameter: nameof(
-                    specificationObject.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(specificationObject.UpdatedDate), 
+                Parameter: nameof(specificationObject.UpdatedDate)));
         }
 
         public void ValidateSpecificationObjectId(Guid specificationObjectId) =>
@@ -142,7 +130,8 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
         {
             if (maybeSpecificationObject is null)
             {
-                throw new NotFoundSpecificationObjectException(specificationObjectId);
+                throw new NotFoundSpecificationObjectException(
+                    message: $"Couldn't find specificationObject with specificationObjectId: {specificationObjectId}.");
             }
         }
 

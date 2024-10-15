@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers;
 using LHDS.ConfigImportExportTool.Services.Foundations.Files;
 using LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema;
 using Moq;
@@ -19,17 +20,17 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
     public partial class ReadSchemaOrchestrationServiceTests
     {
         private readonly Mock<IFileService> fileServiceMock;
-        private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
+        private readonly Mock<ICsvHelperService> csvHelperServiceMock;
         private readonly IReadSchemaOrchestrationService readSchemaOrchestrationService;
 
         public ReadSchemaOrchestrationServiceTests()
         {
             this.fileServiceMock = new Mock<IFileService>();
-            this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
+            this.csvHelperServiceMock = new Mock<ICsvHelperService>();
 
             this.readSchemaOrchestrationService = new ReadSchemaOrchestrationService(
                 fileService: this.fileServiceMock.Object,
-                csvHelperBroker: this.csvHelperBrokerMock.Object);
+                csvHelperService : this.csvHelperServiceMock.Object);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers;
 using LHDS.ConfigImportExportTool.Services.Foundations.Files;
 
 namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
@@ -13,12 +14,12 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
     internal partial class ReadSchemaOrchestrationService : IReadSchemaOrchestrationService
     {
         private readonly IFileService fileService;
-        private readonly ICsvHelperBroker csvHelperBroker;
+        private readonly ICsvHelperService csvHelperService;
 
-        public ReadSchemaOrchestrationService(IFileService fileService, ICsvHelperBroker csvHelperBroker)
+        public ReadSchemaOrchestrationService(IFileService fileService, ICsvHelperService csvHelperService)
         {
             this.fileService = fileService;
-            this.csvHelperBroker = csvHelperBroker;
+            this.csvHelperService = csvHelperService;
         }
 
         public async ValueTask<List<ObjectColumn>> ProcessSchemaFile(string path)
@@ -26,7 +27,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
             byte[] csvData = await this.fileService.ReadFromFileAsync(path);
             string csvString = ASCIIEncoding.UTF8.GetString(csvData);
 
-            return await this.csvHelperBroker.MapCsvToObjectAsync<ObjectColumn>(csvString, true);
+            return await this.csvHelperService.MapCsvToObjectAsync<ObjectColumn>(csvString, true);
         }
     }
 }

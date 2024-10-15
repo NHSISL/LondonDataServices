@@ -19,7 +19,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
             this.csvHelperBroker = csvHelperBroker;
         }
 
-        public ValueTask<IQueryable<ObjectColumn>> ProcessSchemaFile(string path) =>
+        public ValueTask<List<ObjectColumn>> ProcessSchemaFile(string path) =>
             throw new NotImplementedException();
     }
 }

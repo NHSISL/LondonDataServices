@@ -10,6 +10,6 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.Files
 {
     internal interface IReadSchemaOrchestrationService
     {
-        ValueTask<IQueryable<ObjectColumn>> ProcessSchemaFile(string path);
+        ValueTask<List<ObjectColumn>> ProcessSchemaFile(string path);
     }
 }

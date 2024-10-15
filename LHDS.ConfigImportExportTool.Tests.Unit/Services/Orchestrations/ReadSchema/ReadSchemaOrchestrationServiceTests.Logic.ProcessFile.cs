@@ -33,8 +33,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                 service.ReadFromFileAsync(inputFilePath))
                     .ReturnsAsync(outputResult);
 
-            this.csvHelperBrokerMock.Setup(broker =>
-                broker.MapCsvToObjectAsync<ObjectColumn>(inputCsvString, true, fieldMappings))
+            this.csvHelperServiceMock.Setup(service =>
+                service.MapCsvToObjectAsync<ObjectColumn>(inputCsvString, true, fieldMappings))
                     .ReturnsAsync(expectedObjectColumns.ToList);
 
             // when
@@ -48,12 +48,12 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                 service.ReadFromFileAsync(inputFilePath),
                     Times.Once);
 
-            this.csvHelperBrokerMock.Verify(broker =>
-                broker.MapCsvToObjectAsync<ObjectColumn>(inputCsvString, true, fieldMappings)
+            this.csvHelperServiceMock.Verify(service =>
+                service.MapCsvToObjectAsync<ObjectColumn>(inputCsvString, true, fieldMappings)
                     ,Times.Once);
 
             this.fileServiceMock.VerifyNoOtherCalls();
-            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.csvHelperServiceMock.VerifyNoOtherCalls();
         }
     }
 }

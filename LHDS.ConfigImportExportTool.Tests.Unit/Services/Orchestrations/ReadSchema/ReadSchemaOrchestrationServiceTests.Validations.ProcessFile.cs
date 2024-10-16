@@ -44,6 +44,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             // then
             actualException.Should().BeEquivalentTo(expectedReadSchemaValidationOrchestrationException);
 
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedReadSchemaValidationOrchestrationException))),
+                        Times.Once);
+
             this.fileServiceMock.Verify(service =>
                 service.ReadFromFileAsync(invalidPath),
                     Times.Never);

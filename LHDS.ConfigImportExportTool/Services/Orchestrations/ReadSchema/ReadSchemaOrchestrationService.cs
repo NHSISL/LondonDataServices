@@ -2,9 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Runtime.InteropServices;
 using System.Text;
-using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
+using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers;
 using LHDS.ConfigImportExportTool.Services.Foundations.Files;
@@ -15,11 +14,16 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
     {
         private readonly IFileService fileService;
         private readonly ICsvHelperService csvHelperService;
+        private readonly ILoggingBroker loggingBroker;
 
-        public ReadSchemaOrchestrationService(IFileService fileService, ICsvHelperService csvHelperService)
+        public ReadSchemaOrchestrationService(
+            IFileService fileService, 
+            ICsvHelperService csvHelperService,
+            ILoggingBroker loggingBroker)
         {
             this.fileService = fileService;
             this.csvHelperService = csvHelperService;
+            this.loggingBroker = loggingBroker;
         }
 
         public ValueTask<List<ObjectColumn>> ProcessSchemaFile(string path) =>

@@ -22,12 +22,14 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
             this.csvHelperService = csvHelperService;
         }
 
-        public async ValueTask<List<ObjectColumn>> ProcessSchemaFile(string path)
-        {
-            byte[] csvData = await this.fileService.ReadFromFileAsync(path);
-            string csvString = ASCIIEncoding.UTF8.GetString(csvData);
+        public ValueTask<List<ObjectColumn>> ProcessSchemaFile(string path) =>
+            TryCatch(async () =>
+            {
+                ValidateProcessSchemaFileArguments(path);
+                byte[] csvData = await this.fileService.ReadFromFileAsync(path);
+                string csvString = ASCIIEncoding.UTF8.GetString(csvData);
 
-            return await this.csvHelperService.MapCsvToObjectAsync<ObjectColumn>(csvString, true);
-        }
+                return await this.csvHelperService.MapCsvToObjectAsync<ObjectColumn>(csvString, true);
+            });
     }
 }

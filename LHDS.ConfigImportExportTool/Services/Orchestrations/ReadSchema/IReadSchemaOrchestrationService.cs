@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 
-namespace LHDS.ConfigImportExportTool.Services.Foundations.Files
+namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
 {
     internal interface IReadSchemaOrchestrationService
     {

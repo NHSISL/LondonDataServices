@@ -2,12 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
 using LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers;
-using NHSISL.CsvHelperClient.Clients;
 
-namespace LHDS.ConfigImportExportTool.Brokers.CsvHelpers
+namespace LHDS.ConfigImportExportTool.Foundations.CsvHelpers
 {
     public class CsvHelperService : ICsvHelperService
     {
@@ -22,7 +20,7 @@ namespace LHDS.ConfigImportExportTool.Brokers.CsvHelpers
             string data,
             bool hasHeaderRecord,
             Dictionary<string, int>? fieldMappings = null) =>
-                throw new NotImplementedException();
+                await this.csvHelperBroker.MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);
 
         public async ValueTask<string> MapObjectToCsvAsync<T>(
             List<T> @object,

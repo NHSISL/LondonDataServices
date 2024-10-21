@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -26,11 +25,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.CsvHelpers
             List<dynamic> expectedResults = new List<dynamic> { expectedResult };
 
             this.csvHelperBrokerMock.Setup(broker =>
-                broker.MapCsvToObjectAsync<dynamic>(inputCsv,true,emptyDict))
+                broker.MapCsvToObjectAsync<dynamic>(inputCsv, true, emptyDict))
                     .ReturnsAsync(expectedResults);
 
             // when
-            List<dynamic> actualResult = 
+            List<dynamic> actualResult =
                 await this.csvHelperService.MapCsvToObjectAsync<dynamic>(inputCsv, true, emptyDict);
 
             // then

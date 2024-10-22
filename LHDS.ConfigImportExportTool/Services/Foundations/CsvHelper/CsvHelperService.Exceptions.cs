@@ -2,16 +2,17 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Threading.Tasks;
 using LHDS.ConfigImportExportTool.Models.Foundations.CsvHelpers.Exceptions;
 using Xeptions;
 
 namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
 {
-    public partial class CsvHelperService
+    internal partial class CsvHelperService<T>
     {
-        private delegate ValueTask<List<T>> ReturningObjectListFunction();
+        private delegate ValueTask<List<T>> ReturningObjectListFunction<T>();
 
-        private async ValueTask<List<T>> TryCatch(ReturningObjectListFunction returningObjectListFunction)
+        private async ValueTask<List<T>> TryCatch<T>(ReturningObjectListFunction<T> returningObjectListFunction)
         {
             try
             {

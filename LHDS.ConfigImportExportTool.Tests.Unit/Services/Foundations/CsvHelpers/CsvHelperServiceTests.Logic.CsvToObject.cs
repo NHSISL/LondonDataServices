@@ -29,11 +29,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.CsvHelpers
                     .ReturnsAsync(expectedResults);
 
             // when
-            List<dynamic> actualResult =
+            List<dynamic> actualResults =
                 await this.csvHelperService.MapCsvToObjectAsync<dynamic>(inputCsv, true, emptyDict);
 
             // then
-            actualResult.Should().BeEquivalentTo(expectedResults);
+            actualResults.Should().BeEquivalentTo(expectedResults);
 
             this.csvHelperBrokerMock.Verify(broker =>
                 broker.MapCsvToObjectAsync<dynamic>(inputCsv, true, emptyDict),

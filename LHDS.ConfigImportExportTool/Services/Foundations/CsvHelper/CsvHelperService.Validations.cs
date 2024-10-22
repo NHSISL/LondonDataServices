@@ -8,7 +8,7 @@ using Xeptions;
 
 namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
 {
-    internal partial class CsvHelperService
+    internal partial class CsvHelperService<T>
     {
         private void ValidateCheckIfCsvHelperExistsArguments(string path)
         {

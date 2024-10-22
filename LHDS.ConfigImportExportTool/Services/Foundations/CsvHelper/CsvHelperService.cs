@@ -3,16 +3,21 @@
 // ---------------------------------------------------------
 
 using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
+using LHDS.ConfigImportExportTool.Brokers.Loggings;
 
 namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
 {
     internal partial class CsvHelperService<T> : ICsvHelperService
     {
         private readonly ICsvHelperBroker csvHelperBroker;
+        private readonly ILoggingBroker loggingBroker;
 
-        public CsvHelperService(ICsvHelperBroker csvHelperBroker)
+        public CsvHelperService(
+            ICsvHelperBroker csvHelperBroker, 
+            ILoggingBroker loggingBroker)
         {
             this.csvHelperBroker = csvHelperBroker;
+            this.loggingBroker = loggingBroker;
         }
 
         public ValueTask<List<T>> MapCsvToObjectAsync<T>(

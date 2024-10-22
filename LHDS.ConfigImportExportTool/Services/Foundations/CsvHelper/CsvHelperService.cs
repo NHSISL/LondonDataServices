@@ -6,7 +6,7 @@ using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
 
 namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
 {
-    internal partial class CsvHelperService : ICsvHelperService
+    internal partial class CsvHelperService<T> : ICsvHelperService
     {
         private readonly ICsvHelperBroker csvHelperBroker;
 
@@ -15,11 +15,14 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
             this.csvHelperBroker = csvHelperBroker;
         }
 
-        public async ValueTask<List<T>> MapCsvToObjectAsync<T>(
-            string data,
-            bool hasHeaderRecord,
-            Dictionary<string, int>? fieldMappings = null) =>
-                await this.csvHelperBroker.MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);
+        public ValueTask<List<T>> MapCsvToObjectAsync<T>(
+        string data,
+        bool hasHeaderRecord,
+        Dictionary<string, int>? fieldMappings = null) =>
+            TryCatch(async () =>
+            {
+                return await this.csvHelperBroker.MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);
+            });
 
         public async ValueTask<string> MapObjectToCsvAsync<T>(
             List<T> @object,

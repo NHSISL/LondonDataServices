@@ -10,11 +10,11 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
 {
     internal partial class CsvHelperService<T>
     {
-        private void ValidateCheckIfCsvHelperExistsArguments(string path)
+        private void ValidateMapCsvToObjectArguments(string data)
         {
             Validate<InvalidArgumentCsvHelperException>(
                 message: "Invalid csv helper argument(s), please correct the errors and try again.",
-                (Rule: IsInvalid(path), Parameter: nameof(path)));
+                (Rule: IsInvalid(data), Parameter: nameof(data)));
         }
 
         private static dynamic IsInvalid(string? text) => new

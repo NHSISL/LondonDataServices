@@ -21,6 +21,8 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
         Dictionary<string, int>? fieldMappings = null) =>
             TryCatch(async () =>
             {
+                ValidateMapCsvToObjectArguments(data);
+
                 return await this.csvHelperBroker.MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);
             });
 

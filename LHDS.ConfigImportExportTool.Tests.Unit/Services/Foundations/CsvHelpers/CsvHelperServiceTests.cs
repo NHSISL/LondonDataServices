@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
+using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -17,14 +18,17 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.CsvHelpers
     public partial class CsvHelperServiceTests
     {
         private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ICsvHelperService csvHelperService;
 
         public CsvHelperServiceTests()
         {
             this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.csvHelperService = new CsvHelperService<dynamic>(
-                csvHelperBroker: this.csvHelperBrokerMock.Object);
+                csvHelperBroker: this.csvHelperBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

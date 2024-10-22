@@ -3,9 +3,8 @@
 // ---------------------------------------------------------
 
 using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
-using LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers;
 
-namespace LHDS.ConfigImportExportTool.Foundations.CsvHelpers
+namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
 {
     public class CsvHelperService : ICsvHelperService
     {
@@ -13,7 +12,7 @@ namespace LHDS.ConfigImportExportTool.Foundations.CsvHelpers
 
         public CsvHelperService(ICsvHelperBroker csvHelperBroker)
         {
-            csvHelperBroker = new CsvHelperBroker();
+            this.csvHelperBroker = csvHelperBroker;
         }
 
         public async ValueTask<List<T>> MapCsvToObjectAsync<T>(

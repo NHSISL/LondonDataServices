@@ -36,6 +36,10 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
             bool addHeaderRecord,
             Dictionary<string, int>? fieldMappings = null,
             bool? shouldAddTrailingComma = false) =>
-                throw new NotImplementedException();
+                await this.csvHelperBroker.MapObjectToCsvAsync<T>(
+                    @object, 
+                    addHeaderRecord, 
+                    fieldMappings, 
+                    shouldAddTrailingComma);
     }
 }

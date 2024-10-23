@@ -45,8 +45,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.CsvHelpers
                     It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>());
 
-            CsvHelperValidationException actualCsvHelperServiceException =
-                await Assert.ThrowsAsync<CsvHelperValidationException>(mapCsvToObjectTask.AsTask);
+            CsvHelperServiceException actualCsvHelperServiceException =
+                await Assert.ThrowsAsync<CsvHelperServiceException>(mapCsvToObjectTask.AsTask);
 
             // then
             actualCsvHelperServiceException.Should()

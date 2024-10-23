@@ -40,6 +40,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.CsvHelpers
                     Times.Once);
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

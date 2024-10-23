@@ -23,6 +23,15 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
             Message = "Text is required"
         };
 
+        private static void ValidateObjectListIsNotNull<T>(List<T> objectList)
+        {
+            if (objectList is null)
+            {
+                throw new InvalidArgumentCsvHelperException(
+                    message: "Invalid csv helper argument(s), please correct the errors and try again.");
+            }
+        }
+
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {

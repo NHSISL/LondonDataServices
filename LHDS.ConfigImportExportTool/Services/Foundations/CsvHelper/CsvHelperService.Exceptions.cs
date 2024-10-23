@@ -39,6 +39,10 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
             {
                 return await returningStringFunction();
             }
+            catch (InvalidArgumentCsvHelperException invalidArgumentCsvHelperException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentCsvHelperException);
+            }
             catch (Exception exception)
             {
                 var failedCsvHelperServiceException =

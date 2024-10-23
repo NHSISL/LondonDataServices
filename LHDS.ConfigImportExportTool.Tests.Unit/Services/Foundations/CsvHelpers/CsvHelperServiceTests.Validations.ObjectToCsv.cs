@@ -20,11 +20,12 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.CsvHelpers
             List<dynamic> nullObjectList = null;
 
             var invalidArgumentCsvHelperException =
-                new InvalidArgumentCsvHelperException(message: "Invalid argument csv helper exception.");
+                new InvalidArgumentCsvHelperException(
+                    message: "Invalid csv helper argument(s), please correct the errors and try again.");
 
             var expectedCsvHelperValidationException =
                 new CsvHelperValidationException(
-                    message: "Csv helper validation errors occurred, please try again.",
+                    message: "Csv helper validation error occurred, fix the errors and try again.",
                     innerException: invalidArgumentCsvHelperException);
 
             // when
@@ -35,8 +36,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.CsvHelpers
                     It.IsAny<Dictionary<string, int>>(),
                     It.IsAny<bool>());
 
-            CsvHelperServiceException actualCsvHelperServiceException =
-                await Assert.ThrowsAsync<CsvHelperServiceException>(mapObjectToCsvTask.AsTask);
+            CsvHelperValidationException actualCsvHelperServiceException =
+                await Assert.ThrowsAsync<CsvHelperValidationException>(mapObjectToCsvTask.AsTask);
 
             // then
             actualCsvHelperServiceException.Should()

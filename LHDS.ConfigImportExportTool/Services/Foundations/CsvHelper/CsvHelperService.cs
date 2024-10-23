@@ -38,11 +38,13 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
             bool? shouldAddTrailingComma = false) =>
                 TryCatch(async () =>
                 {
+                    ValidateObjectListIsNotNull<T>(@object);
+
                     return await this.csvHelperBroker.MapObjectToCsvAsync<T>(
-                    @object, 
-                    addHeaderRecord, 
-                    fieldMappings, 
-                    shouldAddTrailingComma);
+                        @object, 
+                        addHeaderRecord, 
+                        fieldMappings, 
+                        shouldAddTrailingComma);
                 });
     }
 }

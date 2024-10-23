@@ -53,7 +53,12 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.CsvHelpers
                     It.IsAny<Dictionary<string, int>>()),
                         Times.Never);
 
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedCsvHelperValidationException))),
+                    Times.Once());
+
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

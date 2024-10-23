@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Threading.Tasks;
 using LHDS.ConfigImportExportTool.Models.Foundations.CsvHelpers.Exceptions;
 using Xeptions;
 
@@ -22,6 +21,15 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
             {
                 throw CreateAndLogValidationException(invalidArgumentCsvHelperException);
             }
+            catch (Exception exception)
+            {
+                var failedCsvHelperServiceException =
+                    new FailedCsvHelperServiceException(
+                        message: "Failed csv helper service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedCsvHelperServiceException);
+            }
         }
 
         private CsvHelperValidationException CreateAndLogValidationException(Xeption exception)
@@ -29,6 +37,8 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
             var csvHelperValidationException = new CsvHelperValidationException(
                 message: "Csv helper validation error occurred, fix the errors and try again.",
                 innerException: exception);
+
+            this.loggingBroker.LogErrorAsync(csvHelperValidationException);
 
             return csvHelperValidationException;
         }
@@ -40,34 +50,30 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
                     message: "Csv helper dependency validation error occurred, please contact support.",
                     innerException: exception);
 
+            this.loggingBroker.LogErrorAsync(csvHelperServiceDependencyValidationException);
+
             return csvHelperServiceDependencyValidationException;
         }
 
         private CsvHelperDependencyException CreateAndLogDependencyException(Xeption exception)
         {
-            var csvHelperServiceDependencyException = new CsvHelperDependencyException(
-                message: "CsvHelper dependency error occurred, please contact support.",
-                innerException: exception);
-
-            return csvHelperServiceDependencyException;
-        }
-
-        private CsvHelperDependencyException CreateAndLogCriticalDependencyException(
-            Xeption exception)
-        {
-            var csvHelperServiceDependencyException = new CsvHelperDependencyException(
+            var csvHelperDependencyException = new CsvHelperDependencyException(
                 message: "Csv helper dependency error occurred, please contact support.",
                 innerException: exception);
 
-            return csvHelperServiceDependencyException;
+            this.loggingBroker.LogErrorAsync(csvHelperDependencyException);
+
+            return csvHelperDependencyException;
         }
 
         private CsvHelperServiceException CreateAndLogServiceException(
             Xeption exception)
         {
             var csvHelperServiceException = new CsvHelperServiceException(
-                message: "CsvHelper service error occurred, please contact support.",
+                message: "Csv helper service error occurred, please contact support.",
                 innerException: exception);
+
+            this.loggingBroker.LogErrorAsync(csvHelperServiceException);
 
             return csvHelperServiceException;
         }

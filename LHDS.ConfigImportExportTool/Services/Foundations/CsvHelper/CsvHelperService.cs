@@ -31,15 +31,18 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
                 return await this.csvHelperBroker.MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);
             });
 
-        public async ValueTask<string> MapObjectToCsvAsync<T>(
+        public ValueTask<string> MapObjectToCsvAsync<T>(
             List<T> @object,
             bool addHeaderRecord,
             Dictionary<string, int>? fieldMappings = null,
             bool? shouldAddTrailingComma = false) =>
-                await this.csvHelperBroker.MapObjectToCsvAsync<T>(
+                TryCatch(async () =>
+                {
+                    return await this.csvHelperBroker.MapObjectToCsvAsync<T>(
                     @object, 
                     addHeaderRecord, 
                     fieldMappings, 
                     shouldAddTrailingComma);
+                });
     }
 }

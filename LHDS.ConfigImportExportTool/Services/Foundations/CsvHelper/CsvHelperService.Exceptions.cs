@@ -10,6 +10,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
     internal partial class CsvHelperService<T>
     {
         private delegate ValueTask<List<T>> ReturningObjectListFunction<T>();
+        private delegate ValueTask<string> ReturningStringFunction();
 
         private async ValueTask<List<T>> TryCatch<T>(ReturningObjectListFunction<T> returningObjectListFunction)
         {
@@ -20,6 +21,23 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
             catch (InvalidArgumentCsvHelperException invalidArgumentCsvHelperException)
             {
                 throw CreateAndLogValidationException(invalidArgumentCsvHelperException);
+            }
+            catch (Exception exception)
+            {
+                var failedCsvHelperServiceException =
+                    new FailedCsvHelperServiceException(
+                        message: "Failed csv helper service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedCsvHelperServiceException);
+            }
+        }
+
+        private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
+        {
+            try
+            {
+                return await returningStringFunction();
             }
             catch (Exception exception)
             {

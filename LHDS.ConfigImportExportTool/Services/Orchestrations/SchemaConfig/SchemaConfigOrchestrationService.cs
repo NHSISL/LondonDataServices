@@ -25,7 +25,10 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfig
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask Import(List<ObjectColumn> objectColumnList) =>
+        public async ValueTask Export(List<ObjectColumn> data, string dataSetName, string version) =>
+            throw new NotImplementedException();
+
+        public async ValueTask Import(List<ObjectColumn> data, string dataSetName, string version) =>
             throw new NotImplementedException();
     }
 }

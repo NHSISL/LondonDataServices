@@ -8,6 +8,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfig
 {
     internal interface ISchemaConfigOrchestrationService
     {
-        ValueTask Import(List<ObjectColumn> objectColumnList);
+        ValueTask Import(List<ObjectColumn> data, string dataSetName, string version);
+        ValueTask Export(List<ObjectColumn> data, string dataSetName, string version);
     }
 }

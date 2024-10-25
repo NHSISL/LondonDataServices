@@ -2,33 +2,49 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers;
-using NHSISL.CsvHelperClient.Clients;
+using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
+using LHDS.ConfigImportExportTool.Brokers.Loggings;
 
-namespace LHDS.ConfigImportExportTool.Brokers.CsvHelpers
+namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
 {
-    public class CsvHelperService : ICsvHelperService
+    internal partial class CsvHelperService<T> : ICsvHelperService
     {
         private readonly ICsvHelperBroker csvHelperBroker;
+        private readonly ILoggingBroker loggingBroker;
 
-        public CsvHelperService(ICsvHelperBroker csvHelperBroker)
+        public CsvHelperService(
+            ICsvHelperBroker csvHelperBroker, 
+            ILoggingBroker loggingBroker)
         {
-            csvHelperBroker = new CsvHelperBroker();
+            this.csvHelperBroker = csvHelperBroker;
+            this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<List<T>> MapCsvToObjectAsync<T>(
-            string data,
-            bool hasHeaderRecord,
-            Dictionary<string, int>? fieldMappings = null) =>
-                throw new NotImplementedException();
+        public ValueTask<List<T>> MapCsvToObjectAsync<T>(
+        string data,
+        bool hasHeaderRecord,
+        Dictionary<string, int>? fieldMappings = null) =>
+            TryCatch(async () =>
+            {
+                ValidateMapCsvToObjectArguments(data);
 
-        public async ValueTask<string> MapObjectToCsvAsync<T>(
+                return await this.csvHelperBroker.MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);
+            });
+
+        public ValueTask<string> MapObjectToCsvAsync<T>(
             List<T> @object,
             bool addHeaderRecord,
             Dictionary<string, int>? fieldMappings = null,
             bool? shouldAddTrailingComma = false) =>
-                throw new NotImplementedException();
+                TryCatch(async () =>
+                {
+                    ValidateObjectListIsNotNull<T>(@object);
+
+                    return await this.csvHelperBroker.MapObjectToCsvAsync<T>(
+                        @object, 
+                        addHeaderRecord, 
+                        fieldMappings, 
+                        shouldAddTrailingComma);
+                });
     }
 }

@@ -17,10 +17,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public async ValueTask<DataSet> InsertDataSetAsync(DataSet dataSet) =>
             await InsertAsync(dataSet);
 
-        public IQueryable<DataSet> SelectAllDataSets() => ReadAll<DataSet>();
+        public IQueryable<DataSet> SelectAllDataSets() => SelectAll<DataSet>();
 
         public async ValueTask<DataSet> SelectDataSetByIdAsync(Guid dataSetId) =>
-            await ReadAsync<DataSet>(dataSetId);
+            await SelectAsync<DataSet>(dataSetId);
 
         public async ValueTask<DataSet> UpdateDataSetAsync(DataSet dataSet) =>
             await UpdateAsync(dataSet);

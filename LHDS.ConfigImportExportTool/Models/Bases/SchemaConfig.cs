@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-namespace LHDS.ConfigImportExportTool.Models.Bases.SchemaConfig
+namespace LHDS.ConfigImportExportTool.Models.Bases.SchemaConfigs
 {
     public class SchemaConfig
     {

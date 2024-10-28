@@ -3,32 +3,37 @@
 // ---------------------------------------------------------
 
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
+using LHDS.ConfigImportExportTool.Models.Bases.SchemaConfigs;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
-using LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns;
-using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects;
+using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
+using LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns;
+using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
 
-namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfig
+namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
 {
     internal partial class SchemaConfigOrchestrationService : ISchemaConfigOrchestrationService
     {
-        private readonly IObjectColumnService objectColumnService;
-        private readonly ISpecificationObjectService specificationObjectService;
+        private readonly IObjectColumnProcessingService objectColumnService;
+        private readonly ISpecificationObjectProcessingService specificationObjectService;
+        private readonly IDataSetProcessingService dataSetProcessingService;
         private readonly ILoggingBroker loggingBroker;
 
         public SchemaConfigOrchestrationService(
-            IObjectColumnService objectColumnService,
-            ISpecificationObjectService specificationObjectService,
+            IObjectColumnProcessingService objectColumnService, 
+            ISpecificationObjectProcessingService specificationObjectService, 
+            IDataSetProcessingService dataSetProcessingService, 
             ILoggingBroker loggingBroker)
         {
             this.objectColumnService = objectColumnService;
             this.specificationObjectService = specificationObjectService;
+            this.dataSetProcessingService = dataSetProcessingService;
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask Export(List<ObjectColumn> data, string dataSetName, string version) =>
+        public async ValueTask Export(List<SchemaConfig> data, string dataSetName, string version) =>
             throw new NotImplementedException();
 
-        public async ValueTask Import(List<ObjectColumn> data, string dataSetName, string version) =>
+        public async ValueTask Import(List<SchemaConfig> data, string dataSetName, string version) =>
             throw new NotImplementedException();
     }
 }

@@ -56,55 +56,116 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static List<SchemaConfig> CreateRandomSchemaConfigs()
+        private static dynamic GetRandomTrackingInfo()
         {
-            return CreateSchemaConfigFiller()
-                .Create(count: GetRandomNumber())
-                    .ToList();
+            return new
+            {
+                AddressType = GetRandomString(),
+                Checksum = GetRandomString(),
+                ChunkCount = GetRandomNumber(),
+                CompressFlag = GetRandomString(),
+                DownloadTimestamp = GetRandomString(),
+                DtsId = GetRandomString(),
+                EncryptedFlag = GetRandomString(),
+                ExpiryTime = GetRandomString(),
+                FileName = GetRandomString(),
+                FileSize = GetRandomNumber(),
+                IsCompressed = GetRandomString(),
+                LocalId = GetRandomString(),
+                MeshRecipientOdsCode = GetRandomString(),
+                MessageId = GetRandomString(),
+                MessageType = GetRandomString(),
+                PartnerId = GetRandomString(),
+                Recipient = GetRandomString(),
+                RecipientName = GetRandomString(),
+                RecipientOrgCode = GetRandomString(),
+                RecipientSmtp = GetRandomString(),
+                Sender = GetRandomString(),
+                SenderName = GetRandomString(),
+                SenderOdsCode = GetRandomString(),
+                SenderOrgCode = GetRandomString(),
+                SenderSmtp = GetRandomString(),
+                Status = GetRandomString(),
+                StatusSuccess = GetRandomString(),
+                UploadTimestamp = GetRandomString(),
+                Version = GetRandomString(),
+                WorkflowId = GetRandomString()
+            };
         }
 
-        private static SchemaConfig CreateRandomSchemaConfig() =>
-            CreateSchemaConfigFiller().Create();
-
-        private static Filler<SchemaConfig> CreateSchemaConfigFiller()
+        private static MessageTrackingInfo MaptToMeshMessageTrackingInfo(dynamic dynamicTrackingInfo)
         {
-            var filler = new Filler<SchemaConfig>();
-
-            return filler;
+            return new MessageTrackingInfo
+            {
+                AddressType = dynamicTrackingInfo.AddressType,
+                Checksum = dynamicTrackingInfo.Checksum,
+                ChunkCount = dynamicTrackingInfo.ChunkCount,
+                CompressFlag = dynamicTrackingInfo.CompressFlag,
+                DownloadTimestamp = dynamicTrackingInfo.DownloadTimestamp,
+                DtsId = dynamicTrackingInfo.DtsId,
+                EncryptedFlag = dynamicTrackingInfo.EncryptedFlag,
+                ExpiryTime = dynamicTrackingInfo.ExpiryTime,
+                FileName = dynamicTrackingInfo.FileName,
+                FileSize = dynamicTrackingInfo.FileSize,
+                IsCompressed = dynamicTrackingInfo.IsCompressed,
+                LocalId = dynamicTrackingInfo.LocalId,
+                MeshRecipientOdsCode = dynamicTrackingInfo.MeshRecipientOdsCode,
+                MessageId = dynamicTrackingInfo.MessageId,
+                MessageType = dynamicTrackingInfo.MessageType,
+                PartnerId = dynamicTrackingInfo.PartnerId,
+                Recipient = dynamicTrackingInfo.Recipient,
+                RecipientName = dynamicTrackingInfo.RecipientName,
+                RecipientOrgCode = dynamicTrackingInfo.RecipientOrgCode,
+                RecipientSmtp = dynamicTrackingInfo.RecipientSmtp,
+                Sender = dynamicTrackingInfo.Sender,
+                SenderName = dynamicTrackingInfo.SenderName,
+                SenderOdsCode = dynamicTrackingInfo.SenderOdsCode,
+                SenderOrgCode = dynamicTrackingInfo.SenderOrgCode,
+                SenderSmtp = dynamicTrackingInfo.SenderSmtp,
+                Status = dynamicTrackingInfo.Status,
+                StatusSuccess = dynamicTrackingInfo.StatusSuccess,
+                UploadTimestamp = dynamicTrackingInfo.UploadTimestamp,
+                Version = dynamicTrackingInfo.Version,
+                WorkflowId = dynamicTrackingInfo.WorkflowId,
+            };
         }
 
-        private static IQueryable<SpecificationObject> CreateRandomSpecificationObjects()
+        private static TrackingInfo MaptToMessageTrackingInfo(dynamic dynamicTrackingInfo)
         {
-            return CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
+            return new TrackingInfo
+            {
+                AddressType = dynamicTrackingInfo.AddressType,
+                Checksum = dynamicTrackingInfo.Checksum,
+                ChunkCount = dynamicTrackingInfo.ChunkCount,
+                CompressFlag = dynamicTrackingInfo.CompressFlag,
+                DownloadTimestamp = dynamicTrackingInfo.DownloadTimestamp,
+                DtsId = dynamicTrackingInfo.DtsId,
+                EncryptedFlag = dynamicTrackingInfo.EncryptedFlag,
+                ExpiryTime = dynamicTrackingInfo.ExpiryTime,
+                FileName = dynamicTrackingInfo.FileName,
+                FileSize = dynamicTrackingInfo.FileSize,
+                IsCompressed = dynamicTrackingInfo.IsCompressed,
+                LocalId = dynamicTrackingInfo.LocalId,
+                MeshRecipientOdsCode = dynamicTrackingInfo.MeshRecipientOdsCode,
+                MessageId = dynamicTrackingInfo.MessageId,
+                MessageType = dynamicTrackingInfo.MessageType,
+                PartnerId = dynamicTrackingInfo.PartnerId,
+                Recipient = dynamicTrackingInfo.Recipient,
+                RecipientName = dynamicTrackingInfo.RecipientName,
+                RecipientOrgCode = dynamicTrackingInfo.RecipientOrgCode,
+                RecipientSmtp = dynamicTrackingInfo.RecipientSmtp,
+                Sender = dynamicTrackingInfo.Sender,
+                SenderName = dynamicTrackingInfo.SenderName,
+                SenderOdsCode = dynamicTrackingInfo.SenderOdsCode,
+                SenderOrgCode = dynamicTrackingInfo.SenderOrgCode,
+                SenderSmtp = dynamicTrackingInfo.SenderSmtp,
+                Status = dynamicTrackingInfo.Status,
+                StatusSuccess = dynamicTrackingInfo.StatusSuccess,
+                UploadTimestamp = dynamicTrackingInfo.UploadTimestamp,
+                Version = dynamicTrackingInfo.Version,
+                WorkflowId = dynamicTrackingInfo.WorkflowId,
+            };
         }
 
-        private static SpecificationObject CreateRandomSpecificationObject() =>
-            CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
-
-        private static SpecificationObject CreateRandomSpecificationObject(DateTimeOffset dateTimeOffset) =>
-            CreateSpecificationObjectFiller(dateTimeOffset).Create();
-
-        private static Filler<SpecificationObject> CreateSpecificationObjectFiller(DateTimeOffset dateTimeOffset)
-        {
-            string user = GetRandomString(255);
-            var filler = new Filler<SpecificationObject>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(specificationObject => specificationObject.SupplierObjectName).Use(GetRandomString(255))
-                .OnProperty(specificationObject => specificationObject.OurObjectName).Use(GetRandomString(255))
-                .OnProperty(specificationObject => specificationObject.ObjectDescription).Use(GetRandomString(500))
-                .OnProperty(specificationObject => specificationObject.InterchangeProtocol).Use(GetRandomString(255))
-                .OnProperty(specificationObject => specificationObject.DeletionHandling).Use(GetRandomString(255))
-                .OnProperty(specificationObject => specificationObject.CreatedBy).Use(user)
-                .OnProperty(specificationObject => specificationObject.UpdatedBy).Use(user)
-                .OnProperty(specificationObject => specificationObject.ObjectColumns).IgnoreIt()
-                .OnProperty(specificationObject => specificationObject.DataSetSpecification).IgnoreIt();
-
-            return filler;
-        }
     }
 }

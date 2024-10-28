@@ -2,14 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
-using LHDS.ConfigImportExportTool.Models.Bases.SchemaConfigs;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
+using LHDS.ConfigImportExportTool.Models.Bases.SchemaConfigs;
 using Moq;
 using Xunit;
+using System.Collections.Generic;
 
 namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaConfigs
 {
@@ -24,6 +24,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             List<SchemaConfig> expectedSchemaConfigs = inputSchemaConfigs;
             string randomDataSetName = GetRandomString();
             string inputDataSetName = randomDataSetName;
+            string randomVersion = GetRandomString();
+            string inputVersion = randomVersion;
 
             foreach (SchemaConfig schemaConfig in inputSchemaConfigs)
             {
@@ -86,13 +88,13 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             }
 
             // when
-            await this.schemaConfigOrchestrationService.Import(inputSchemaConfigs, );
+            await this.schemaConfigOrchestrationService.Import(inputSchemaConfigs, randomDataSetName, randomVersion);
 
             // then
             foreach (SchemaConfig schemaConfig in inputSchemaConfigs)
             {
                 this.objectColumnProcessingServiceMock.Verify(service =>
-                    service.ReadOrInsertObjectColumnAsync(objectColumn),
+                    service.ReadOrInsertObjectColumnAsync(inputSchemaConfigs),
                         Times.Once);
 
                 this.specificationObjectProcessingServiceMock.Verify(service =>

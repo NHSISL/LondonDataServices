@@ -7,33 +7,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
-using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Models.Bases.SchemaConfigs;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
-using LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns;
-using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects;
-using LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfig;
+using LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs;
+using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
+using LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns;
+using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
-namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaConfig
+namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaConfigs
 {
     public partial class SchemaConfigOrchestrationServiceTests
     {
-        private readonly Mock<IObjectColumnService> objectColumnServiceMock;
-        private readonly Mock<ISpecificationObjectService> specificationObjectServiceMock;
+        private readonly Mock<IObjectColumnProcessingService> objectColumnProcessingServiceMock;
+        private readonly Mock<ISpecificationObjectProcessingService> specificationObjectProcessingServiceMock;
+        private readonly Mock<IDataSetProcessingService> dataSetProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ISchemaConfigOrchestrationService schemaConfigOrchestrationService;
 
         public SchemaConfigOrchestrationServiceTests()
         {
-            this.objectColumnServiceMock = new Mock<IObjectColumnService>();
-            this.specificationObjectServiceMock = new Mock<ISpecificationObjectService>();
+            this.objectColumnProcessingServiceMock = new Mock<IObjectColumnProcessingService>();
+            this.specificationObjectProcessingServiceMock = new Mock<ISpecificationObjectProcessingService>();
+            this.dataSetProcessingServiceMock = new Mock<IDataSetProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.schemaConfigOrchestrationService = new SchemaConfigOrchestrationService(
-                objectColumnService: this.objectColumnServiceMock.Object,
-                specificationObjectService: this.specificationObjectServiceMock.Object,
+                objectColumnService: this.objectColumnProcessingServiceMock.Object,
+                specificationObjectService: this.specificationObjectProcessingServiceMock.Object,
+                dataSetProcessingService: this.dataSetProcessingServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
@@ -52,29 +56,19 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static List<ObjectColumn> CreateRandomObjectColumns()
+        private static List<SchemaConfig> CreateRandomSchemaConfigs()
         {
-            return CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset())
+            return CreateSchemaConfigFiller()
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
 
-        private static ObjectColumn CreateRandomObjectColumn() =>
-            CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+        private static SchemaConfig CreateRandomSchemaConfig() =>
+            CreateSchemaConfigFiller().Create();
 
-        private static ObjectColumn CreateRandomObjectColumn(DateTimeOffset dateTimeOffset) =>
-            CreateObjectColumnFiller(dateTimeOffset).Create();
-
-        private static Filler<ObjectColumn> CreateObjectColumnFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<SchemaConfig> CreateSchemaConfigFiller()
         {
-            string user = Guid.NewGuid().ToString();
-            var filler = new Filler<ObjectColumn>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
-                .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
+            var filler = new Filler<SchemaConfig>();
 
             return filler;
         }

@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
+using LHDS.ConfigImportExportTool.Models.Foundations.Datasets.Exceptions;
 using LHDS.ConfigImportExportTool.Services.Foundations.DataSets;
 using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
 using Microsoft.Data.SqlClient;
@@ -16,7 +17,7 @@ using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Processing.DataSets
+namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.DataSets
 {
     public partial class DataSetProcessingServiceTests
     {
@@ -52,6 +53,38 @@ namespace LHDS.Core.Tests.Unit.Services.Processing.DataSets
             {
                 randomNumber,
                 randomNegativeNumber
+            };
+        }
+
+        public static TheoryData<Xeption> DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DataSetValidationException(
+                    message: "DataSet validation errors occurred, please try again.", innerException),
+
+                new DataSetDependencyValidationException(
+                    message: "DataSet dependency validation occurred, please try again.", innerException)
+            };
+        }
+
+        public static TheoryData<Xeption> DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DataSetDependencyException(
+                    message: "DataSet validation errors occurred, please try again.", innerException),
+
+                new DataSetServiceException(
+                    message : "DataSet service error occurred, please contact support.", innerException)
             };
         }
 

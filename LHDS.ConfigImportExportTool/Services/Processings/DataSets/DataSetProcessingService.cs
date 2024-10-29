@@ -20,8 +20,8 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.DataSets
             this.dataSetService = dataSetService;
             this.loggingBroker = loggingBroker;
         }
-
+        
         public async ValueTask<IQueryable<DataSet>> RetrieveAllDataSetsAsync() =>
-            throw new NotImplementedException();
+            await this.dataSetService.RetrieveAllDataSetsAsync();
     }
 }

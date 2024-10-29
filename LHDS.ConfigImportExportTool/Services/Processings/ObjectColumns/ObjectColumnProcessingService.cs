@@ -16,7 +16,7 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns
             this.objectColumnService = objectColumnService;
         }
 
-        public async ValueTask<List<ObjectColumn>> ReadOrInsertObjectColumnAsync(ObjectColumn objectColumn) =>
+        public async ValueTask<ObjectColumn> ReadOrInsertObjectColumnAsync(ObjectColumn objectColumn) =>
             throw new NotImplementedException();
     }
 }

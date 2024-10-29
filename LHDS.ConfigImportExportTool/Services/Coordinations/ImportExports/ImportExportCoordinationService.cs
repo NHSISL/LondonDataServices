@@ -4,7 +4,7 @@
 
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema;
-using LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfig;
+using LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs;
 
 namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports
 {

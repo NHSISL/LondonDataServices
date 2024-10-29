@@ -8,10 +8,6 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.DataSets
 {
     public interface IDataSetService
     {
-        ValueTask<DataSet> AddDataSetAsync(DataSet dataSet);
         ValueTask<IQueryable<DataSet>> RetrieveAllDataSetsAsync();
-        ValueTask<DataSet> RetrieveDataSetByIdAsync(Guid dataSetId);
-        ValueTask<DataSet> ModifyDataSetAsync(DataSet dataSet);
-        ValueTask<DataSet> RemoveDataSetByIdAsync(Guid dataSetId);
     }
 }

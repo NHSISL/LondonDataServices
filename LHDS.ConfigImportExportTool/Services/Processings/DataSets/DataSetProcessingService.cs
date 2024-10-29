@@ -8,7 +8,7 @@ using LHDS.ConfigImportExportTool.Services.Foundations.DataSets;
 
 namespace LHDS.ConfigImportExportTool.Services.Processings.DataSets
 {
-    internal class DataSetProcessingService : IDataSetProcessingService
+    internal partial class DataSetProcessingService : IDataSetProcessingService
     {
         private readonly IDataSetService dataSetService;
         private readonly ILoggingBroker loggingBroker;
@@ -20,8 +20,8 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.DataSets
             this.dataSetService = dataSetService;
             this.loggingBroker = loggingBroker;
         }
-        
-        public async ValueTask<IQueryable<DataSet>> RetrieveAllDataSetsAsync() =>
-            await this.dataSetService.RetrieveAllDataSetsAsync();
+
+        public ValueTask<IQueryable<DataSet>> RetrieveAllDataSetsAsync() =>
+            TryCatch(async() => await this.dataSetService.RetrieveAllDataSetsAsync());
     }
 }

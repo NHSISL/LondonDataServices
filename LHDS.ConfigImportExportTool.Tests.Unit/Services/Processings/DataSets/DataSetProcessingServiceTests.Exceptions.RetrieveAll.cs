@@ -35,8 +35,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.DataSets
             ValueTask<IQueryable<DataSet>> retrieveAllDataSetsTask =
                 this.dataSetProcessingService.RetrieveAllDataSetsAsync();
 
-            DataSetProcessingDependencyException actualDataSetDependencyException =
-                await Assert.ThrowsAsync<DataSetProcessingDependencyException>(retrieveAllDataSetsTask.AsTask);
+            DataSetProcessingDependencyValidationException actualDataSetDependencyException =
+                await Assert.ThrowsAsync<DataSetProcessingDependencyValidationException>(retrieveAllDataSetsTask.AsTask);
 
             // then
             actualDataSetDependencyException.Should().BeEquivalentTo(
@@ -57,7 +57,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.DataSets
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public void ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -68,17 +68,17 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.DataSets
 
             dataSetServiceMock.Setup(service =>
                 service.RetrieveAllDataSetsAsync())
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
-            Action dataSetRetrieveAction = () =>
-                dataSetProcessingService.RetrieveAllDataSetsAsync();
+            ValueTask<IQueryable<DataSet>> retrieveAllDataSetsTask =
+                this.dataSetProcessingService.RetrieveAllDataSetsAsync();
 
-            DataSetProcessingDependencyException actualException =
-                Assert.Throws<DataSetProcessingDependencyException>(dataSetRetrieveAction);
+            DataSetProcessingDependencyException actualDataSetDependencyException =
+                await Assert.ThrowsAsync<DataSetProcessingDependencyException>(retrieveAllDataSetsTask.AsTask);
 
             // then
-            actualException.Should().BeEquivalentTo(expectedDataSetProcessingDependencyException);
+            actualDataSetDependencyException.Should().BeEquivalentTo(expectedDataSetProcessingDependencyException);
 
             dataSetServiceMock.Verify(service =>
                 service.RetrieveAllDataSetsAsync(),
@@ -94,7 +94,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.DataSets
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
         {
             // given
             var serviceException = new Exception();
@@ -111,17 +111,17 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.DataSets
 
             dataSetServiceMock.Setup(service =>
                 service.RetrieveAllDataSetsAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action dataSetRetrieveAction = () =>
-                dataSetProcessingService.RetrieveAllDataSetsAsync();
+            ValueTask<IQueryable<DataSet>> retrieveAllDataSetsTask =
+                this.dataSetProcessingService.RetrieveAllDataSetsAsync();
 
-            DataSetProcessingServiceException actualException =
-                Assert.Throws<DataSetProcessingServiceException>(dataSetRetrieveAction);
+            DataSetProcessingServiceException actualDataSetServiceException =
+                await Assert.ThrowsAsync<DataSetProcessingServiceException>(retrieveAllDataSetsTask.AsTask);
 
             // then
-            actualException.Should().BeEquivalentTo(expectedDataSetProcessingServiveException);
+            actualDataSetServiceException.Should().BeEquivalentTo(expectedDataSetProcessingServiveException);
 
             dataSetServiceMock.Verify(service =>
                 service.RetrieveAllDataSetsAsync(),

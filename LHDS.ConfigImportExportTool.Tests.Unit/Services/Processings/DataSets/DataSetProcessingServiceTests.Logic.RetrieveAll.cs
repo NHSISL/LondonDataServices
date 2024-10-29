@@ -9,7 +9,7 @@ using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Processing.DataSets
+namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.DataSets
 {
     public partial class DataSetProcessingServiceTests
     {

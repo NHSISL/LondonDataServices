@@ -8,7 +8,7 @@ using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects.Exce
 
 namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
 {
-    public partial class SpecificationObjectService
+    internal partial class SpecificationObjectService
     {
         private async ValueTask ValidateSpecificationObjectOnAddAsync(SpecificationObject specificationObject)
         {

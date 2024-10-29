@@ -11,7 +11,7 @@ using Xeptions;
 
 namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
 {
-    public partial class SpecificationObjectService
+    internal partial class SpecificationObjectService
     {
         private delegate ValueTask<SpecificationObject> ReturningSpecificationObjectFunction();
         private delegate ValueTask<IQueryable<SpecificationObject>> ReturningSpecificationObjectsFunction();

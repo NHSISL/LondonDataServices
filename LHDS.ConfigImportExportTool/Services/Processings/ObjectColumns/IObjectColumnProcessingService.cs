@@ -6,7 +6,7 @@ using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 
 namespace LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns
 {
-    public interface IObjectColumnProcessingService
+    internal interface IObjectColumnProcessingService
     {
         ValueTask<ObjectColumn> ReadOrInsertObjectColumnAsync(ObjectColumn objectColumn);
     }

@@ -18,11 +18,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.Specificat
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnReadOrInsertIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
-            Guid someId = Guid.NewGuid();
+            SpecificationObject randomSpecificationObject = CreateRandomSpecificationObject();
 
             var expectedException =
                 new SpecificationObjectProcessingDependencyValidationException(
@@ -30,12 +30,13 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.Specificat
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.specificationObjectServiceMock.Setup(service =>
-                service.RetrieveAllSpecificationObjectsAsync())
-                    .ThrowsAsync(dependencyValidationException);
+                 service.RetrieveAllSpecificationObjectsAsync())
+                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask<IQueryable<SpecificationObject>> retrieveObjectsTask =
-                this.specificationObjectProcessingService.RetrieveAllSpecificationObjectsAsync();
+            ValueTask<SpecificationObject> retrieveObjectsTask =
+                this.specificationObjectProcessingService.ReadOrInsertSpecificationObjectAsync(
+                    randomSpecificationObject);
 
             SpecificationObjectProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<SpecificationObjectProcessingDependencyValidationException>(
@@ -59,11 +60,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.Specificat
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnReadOrInsertIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
-            Guid someId = Guid.NewGuid();
+            SpecificationObject randomSpecificationObject = CreateRandomSpecificationObject();
 
             var expectedException =
                 new SpecificationObjectProcessingDependencyException(
@@ -71,12 +72,13 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.Specificat
                     innerException: dependencyException.InnerException as Xeption);
 
             this.specificationObjectServiceMock.Setup(service =>
-                service.RetrieveAllSpecificationObjectsAsync())
-                    .Throws(dependencyException);
+                 service.RetrieveAllSpecificationObjectsAsync())
+                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<IQueryable<SpecificationObject>> retrieveObjectsTask =
-               this.specificationObjectProcessingService.RetrieveAllSpecificationObjectsAsync();
+            ValueTask<SpecificationObject> retrieveObjectsTask =
+                this.specificationObjectProcessingService.ReadOrInsertSpecificationObjectAsync(
+                    randomSpecificationObject);
 
             SpecificationObjectProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<SpecificationObjectProcessingDependencyException>(
@@ -99,11 +101,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.Specificat
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnReadOrInsertIfServiceErrorOccursAsync()
         {
             // given
-            Guid someId = Guid.NewGuid();
-
+            SpecificationObject randomSpecificationObject = CreateRandomSpecificationObject();
             var serviceException = new Exception();
 
             var failedSpecificationObjectProcessingServiceException =
@@ -117,12 +118,13 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.Specificat
                     innerException: failedSpecificationObjectProcessingServiceException);
 
             this.specificationObjectServiceMock.Setup(service =>
-                service.RetrieveAllSpecificationObjectsAsync())
-                    .Throws(serviceException);
+                 service.RetrieveAllSpecificationObjectsAsync())
+                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<IQueryable<SpecificationObject>> retrieveObjectsTask =
-                this.specificationObjectProcessingService.RetrieveAllSpecificationObjectsAsync();
+            ValueTask<SpecificationObject> retrieveObjectsTask =
+                this.specificationObjectProcessingService.ReadOrInsertSpecificationObjectAsync(
+                    randomSpecificationObject);
 
             SpecificationObjectProcessingServiceException actualException =
                 await Assert.ThrowsAsync<SpecificationObjectProcessingServiceException>(

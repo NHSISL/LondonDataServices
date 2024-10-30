@@ -21,9 +21,26 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<SpecificationObject> ReadOrInsertSpecificationObjectAsync(
+        public ValueTask<SpecificationObject> ReadOrInsertSpecificationObjectAsync(
             SpecificationObject specificationObject) =>
-                throw new NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateSpecificationObjectProcessingOnRetrieveOrAdd(specificationObject);
+
+                IQueryable<SpecificationObject> retrievedSpecificationObject =
+                    await this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
+
+                SpecificationObject? maybeSpecificationObject =
+                    retrievedSpecificationObject.FirstOrDefault(
+                        item => item.SupplierObjectName == specificationObject.SupplierObjectName);
+
+                if (maybeSpecificationObject == null)
+                {
+                    return await this.specificationObjectService.AddSpecificationObjectAsync(specificationObject);
+                }
+
+                return maybeSpecificationObject;
+            });
 
         public ValueTask<IQueryable<SpecificationObject>> RetrieveAllSpecificationObjectsAsync() =>
             TryCatch(async () => await this.specificationObjectService.RetrieveAllSpecificationObjectsAsync());

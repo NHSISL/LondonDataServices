@@ -10,7 +10,7 @@ using LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns;
 
 namespace LHDS.Core.Services.Foundations.ObjectColumns
 {
-    public partial class ObjectColumnService : IObjectColumnService
+    internal partial class ObjectColumnService : IObjectColumnService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;

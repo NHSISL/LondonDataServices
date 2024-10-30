@@ -26,7 +26,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<ObjectColumn>> ProcessSchemaFile(string path) =>
+        public ValueTask<List<ObjectColumn>> ReadFile(string path) =>
             TryCatch(async () =>
             {
                 ValidateProcessSchemaFileArguments(path);
@@ -35,5 +35,8 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
 
                 return await this.csvHelperService.MapCsvToObjectAsync<ObjectColumn>(csvString, true);
             });
+
+        public async ValueTask WriteFile(List<ObjectColumn> data, string path) =>
+            throw new NotImplementedException();
     }
 }

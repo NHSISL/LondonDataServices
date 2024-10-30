@@ -37,7 +37,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
 
             // when
             ValueTask<List<ObjectColumn>> processSchemaFileTask =
-                this.readSchemaOrchestrationService.ProcessSchemaFile(inputPath);
+                this.readSchemaOrchestrationService.ReadFile(inputPath);
 
             ReadSchemaOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<ReadSchemaOrchestrationDependencyValidationException>(
@@ -82,7 +82,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
 
             // when
             ValueTask<List<ObjectColumn>> processSchemaFileTask =
-                this.readSchemaOrchestrationService.ProcessSchemaFile(inputPath);
+                this.readSchemaOrchestrationService.ReadFile(inputPath);
 
             ReadSchemaOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<ReadSchemaOrchestrationDependencyException>(
@@ -131,7 +131,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
 
             // when
             ValueTask<List<ObjectColumn>> processSchemaFileTask =
-                this.readSchemaOrchestrationService.ProcessSchemaFile(inputPath);
+                this.readSchemaOrchestrationService.ReadFile(inputPath);
 
             ReadSchemaOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<ReadSchemaOrchestrationServiceException>(

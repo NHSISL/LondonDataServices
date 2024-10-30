@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects;
+using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects.Exceptions;
 using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -49,6 +50,38 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.Specificat
             {
                 randomNumber,
                 randomNegativeNumber
+            };
+        }
+
+        public static TheoryData<Xeption> DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new SpecificationObjectValidationException(
+                    message: "SpecificationObject validation errors occurred, please try again.", innerException),
+
+                new SpecificationObjectDependencyValidationException(
+                    message: "SpecificationObject dependency validation occurred, please try again.", innerException)
+            };
+        }
+
+        public static TheoryData<Xeption> DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new SpecificationObjectDependencyException(
+                    message: "SpecificationObject validation errors occurred, please try again.", innerException),
+
+                new SpecificationObjectServiceException(
+                    message : "SpecificationObject service error occurred, please contact support.", innerException)
             };
         }
 

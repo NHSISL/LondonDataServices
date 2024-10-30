@@ -25,7 +25,7 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects
             SpecificationObject specificationObject) =>
                 throw new NotImplementedException();
 
-        public ValueTask<IQueryable<SpecificationObject>> RetrieveAllSpecificationObjectsAsync() =>
-            throw new NotImplementedException();
+        public async ValueTask<IQueryable<SpecificationObject>> RetrieveAllSpecificationObjectsAsync() =>
+            await this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
     }
 }

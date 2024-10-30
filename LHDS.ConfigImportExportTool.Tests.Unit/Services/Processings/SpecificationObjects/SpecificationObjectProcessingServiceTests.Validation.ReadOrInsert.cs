@@ -21,7 +21,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.Specificat
             SpecificationObject nullSpecificationObject = null;
 
             var nullSpecificationObjectProcessingException =
-                new NullSpecificationObjectProcessingException(message: $"Specification object processing is Null");
+                new NullSpecificationObjectProcessingException(message: "Specification object processing is Null");
 
             var expectedSpecificationObjectProcessingValidationException =
                 new SpecificationObjectProcessingValidationException(

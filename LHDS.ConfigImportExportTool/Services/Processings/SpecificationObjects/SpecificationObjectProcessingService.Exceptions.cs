@@ -11,8 +11,47 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects
 {
     internal partial class SpecificationObjectProcessingService
     {
+        private delegate ValueTask<SpecificationObject> ReturningSpecificationObjectFunction();
         private delegate ValueTask<IQueryable<SpecificationObject>> ReturningSpecificationObjectsFunction();
 
+        private async ValueTask<SpecificationObject> TryCatch(
+           ReturningSpecificationObjectFunction returningSpecificationObjectFunction)
+        {
+            try
+            {
+                return await returningSpecificationObjectFunction();
+            }
+            catch (NullSpecificationObjectProcessingException nullSpecificationObjectProcessingException)
+            {
+                throw CreateAndLogValidationException(nullSpecificationObjectProcessingException);
+            }
+            catch (SpecificationObjectValidationException specificationObjectValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(specificationObjectValidationException);
+            }
+            catch (SpecificationObjectDependencyValidationException specificationObjectDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(specificationObjectDependencyValidationException);
+            }
+            catch (SpecificationObjectDependencyException specificationObjectDependencyException)
+            {
+                throw CreateAndLogDependencyException(specificationObjectDependencyException);
+            }
+            catch (SpecificationObjectServiceException specificationObjectServiceException)
+            {
+                throw CreateAndLogDependencyException(specificationObjectServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedSpecificationObjectProcessingServiceException =
+                    new FailedSpecificationObjectProcessingServiceException(
+                        message: "Failed SpecificationObject processing service error occurred, " +
+                        "please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedSpecificationObjectProcessingServiceException);
+            }
+        }
 
         private async ValueTask<IQueryable<SpecificationObject>> TryCatch(
             ReturningSpecificationObjectsFunction returningSpecificationObjectsFunction)
@@ -21,21 +60,21 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects
             {
                 return await returningSpecificationObjectsFunction();
             }
-            catch (SpecificationObjectValidationException dataSetSpecificationValidationException)
+            catch (SpecificationObjectValidationException specificationObjectValidationException)
             {
-                throw CreateAndLogDependencyValidationException(dataSetSpecificationValidationException);
+                throw CreateAndLogDependencyValidationException(specificationObjectValidationException);
             }
-            catch (SpecificationObjectDependencyValidationException dataSetSpecificationDependencyValidationException)
+            catch (SpecificationObjectDependencyValidationException specificationObjectDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(dataSetSpecificationDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(specificationObjectDependencyValidationException);
             }
-            catch (SpecificationObjectDependencyException dataSetSpecificationDependencyException)
+            catch (SpecificationObjectDependencyException specificationObjectDependencyException)
             {
-                throw CreateAndLogDependencyException(dataSetSpecificationDependencyException);
+                throw CreateAndLogDependencyException(specificationObjectDependencyException);
             }
-            catch (SpecificationObjectServiceException dataSetSpecificationServiceException)
+            catch (SpecificationObjectServiceException specificationObjectServiceException)
             {
-                throw CreateAndLogDependencyException(dataSetSpecificationServiceException);
+                throw CreateAndLogDependencyException(specificationObjectServiceException);
             }
             catch (Exception exception)
             {
@@ -50,51 +89,51 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects
 
         private SpecificationObjectProcessingValidationException CreateAndLogValidationException(Xeption exception)
         {
-            var dataSetSpecificationProcessingValidationExceptionn =
+            var specificationObjectProcessingValidationExceptionn =
                 new SpecificationObjectProcessingValidationException(
                     message: "SpecificationObject processing validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogErrorAsync(dataSetSpecificationProcessingValidationExceptionn);
+            this.loggingBroker.LogErrorAsync(specificationObjectProcessingValidationExceptionn);
 
-            return dataSetSpecificationProcessingValidationExceptionn;
+            return specificationObjectProcessingValidationExceptionn;
         }
 
         private SpecificationObjectProcessingDependencyValidationException CreateAndLogDependencyValidationException(
             Xeption exception)
         {
-            var dataSetSpecificationProcessingDependencyValidationException =
+            var specificationObjectProcessingDependencyValidationException =
                 new SpecificationObjectProcessingDependencyValidationException(
                     message: "SpecificationObject processing dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogErrorAsync(dataSetSpecificationProcessingDependencyValidationException);
+            this.loggingBroker.LogErrorAsync(specificationObjectProcessingDependencyValidationException);
 
-            return dataSetSpecificationProcessingDependencyValidationException;
+            return specificationObjectProcessingDependencyValidationException;
         }
 
         private SpecificationObjectProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
         {
-            var dataSetSpecificationProcessingDependencyException =
+            var specificationObjectProcessingDependencyException =
                 new SpecificationObjectProcessingDependencyException(
                     message: "SpecificationObject processing dependency error occurred, please try again.",
                     innerException: exception?.InnerException as Xeption);
 
-            this.loggingBroker.LogErrorAsync(dataSetSpecificationProcessingDependencyException);
+            this.loggingBroker.LogErrorAsync(specificationObjectProcessingDependencyException);
 
-            throw dataSetSpecificationProcessingDependencyException;
+            throw specificationObjectProcessingDependencyException;
         }
 
         private SpecificationObjectProcessingServiceException CreateAndLogServiceException(Xeption exception)
         {
-            var dataSetSpecificationProcessingServiceException = new
+            var specificationObjectProcessingServiceException = new
                 SpecificationObjectProcessingServiceException(
                     message: "SpecificationObject processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogErrorAsync(dataSetSpecificationProcessingServiceException);
+            this.loggingBroker.LogErrorAsync(specificationObjectProcessingServiceException);
 
-            return dataSetSpecificationProcessingServiceException;
+            return specificationObjectProcessingServiceException;
         }
     }
 }

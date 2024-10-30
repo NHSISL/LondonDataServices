@@ -21,23 +21,26 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<SpecificationObject> ReadOrInsertSpecificationObjectAsync(
-            SpecificationObject specificationObject)
-        {
-            IQueryable<SpecificationObject> retrievedSpecificationObject =
-                await this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
-
-            SpecificationObject? maybeSpecificationObject = 
-                retrievedSpecificationObject.FirstOrDefault(
-                    item => item.SupplierObjectName == specificationObject.SupplierObjectName);
-
-            if (maybeSpecificationObject == null)
+        public ValueTask<SpecificationObject> ReadOrInsertSpecificationObjectAsync(
+            SpecificationObject specificationObject) =>
+            TryCatch(async () =>
             {
-                return await this.specificationObjectService.AddSpecificationObjectAsync(specificationObject);
-            }
+                ValidateSpecificationObjectProcessingOnRetrieveOrAdd(specificationObject);
 
-            return maybeSpecificationObject;
-        }
+                IQueryable<SpecificationObject> retrievedSpecificationObject =
+                    await this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
+
+                SpecificationObject? maybeSpecificationObject =
+                    retrievedSpecificationObject.FirstOrDefault(
+                        item => item.SupplierObjectName == specificationObject.SupplierObjectName);
+
+                if (maybeSpecificationObject == null)
+                {
+                    return await this.specificationObjectService.AddSpecificationObjectAsync(specificationObject);
+                }
+
+                return maybeSpecificationObject;
+            });
 
         public ValueTask<IQueryable<SpecificationObject>> RetrieveAllSpecificationObjectsAsync() =>
             TryCatch(async () => await this.specificationObjectService.RetrieveAllSpecificationObjectsAsync());

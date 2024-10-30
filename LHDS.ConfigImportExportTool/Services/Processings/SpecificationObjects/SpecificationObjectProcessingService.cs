@@ -8,7 +8,7 @@ using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects;
 
 namespace LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects
 {
-    internal class SpecificationObjectProcessingService : ISpecificationObjectProcessingService
+    internal partial class SpecificationObjectProcessingService : ISpecificationObjectProcessingService
     {
         private readonly ISpecificationObjectService specificationObjectService;
         private readonly ILoggingBroker loggingBroker;
@@ -25,7 +25,7 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects
             SpecificationObject specificationObject) =>
                 throw new NotImplementedException();
 
-        public async ValueTask<IQueryable<SpecificationObject>> RetrieveAllSpecificationObjectsAsync() =>
-            await this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
+        public ValueTask<IQueryable<SpecificationObject>> RetrieveAllSpecificationObjectsAsync() =>
+            TryCatch(async () => await this.specificationObjectService.RetrieveAllSpecificationObjectsAsync());
     }
 }

@@ -9,6 +9,6 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects
     public interface ISpecificationObjectProcessingService
     {
         ValueTask<SpecificationObject> ReadOrInsertSpecificationObjectAsync(SpecificationObject specificationObject);
-        ValueTask<List<SpecificationObject>> RetrieveAllSpecificationObjectsAsync();
+        ValueTask<IQueryable<SpecificationObject>> RetrieveAllSpecificationObjectsAsync();
     }
 }

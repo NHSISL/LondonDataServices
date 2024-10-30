@@ -39,7 +39,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
 
             // when
             List<ObjectColumn> actualObjectColumn = 
-                await this.readSchemaOrchestrationService.ProcessSchemaFile(inputFilePath);
+                await this.readSchemaOrchestrationService.ReadFile(inputFilePath);
 
             // then
             actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumns);

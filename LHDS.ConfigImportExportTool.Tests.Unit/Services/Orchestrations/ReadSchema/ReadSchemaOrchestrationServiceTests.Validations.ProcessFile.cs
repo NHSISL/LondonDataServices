@@ -36,7 +36,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
 
             // when
             ValueTask<List<ObjectColumn>> readObjectColumnFromCsv =
-                this.readSchemaOrchestrationService.ProcessSchemaFile(invalidPath);
+                this.readSchemaOrchestrationService.ReadFile(invalidPath);
 
             ReadSchemaValidationOrchestrationException actualException =
                 await Assert.ThrowsAsync<ReadSchemaValidationOrchestrationException>(readObjectColumnFromCsv.AsTask);

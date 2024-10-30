@@ -9,7 +9,7 @@ using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 
 namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
 {
-    public partial class SpecificationObjectService : ISpecificationObjectService
+    internal partial class SpecificationObjectService : ISpecificationObjectService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;

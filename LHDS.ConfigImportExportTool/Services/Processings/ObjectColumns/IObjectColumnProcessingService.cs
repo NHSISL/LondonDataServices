@@ -4,11 +4,10 @@
 
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 
-namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
+namespace LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns
 {
-    internal interface IReadSchemaOrchestrationService
+    public interface IObjectColumnProcessingService
     {
-        ValueTask<List<ObjectColumn>> ReadFile(string path);
-        ValueTask WriteFile(List<ObjectColumn> data, string path);
+        ValueTask<ObjectColumn> ReadOrInsertObjectColumnAsync(ObjectColumn objectColumn);
     }
 }

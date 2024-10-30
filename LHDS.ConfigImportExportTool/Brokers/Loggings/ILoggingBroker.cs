@@ -2,12 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using System.Threading.Tasks;
-
 namespace LHDS.ConfigImportExportTool.Brokers.Loggings
 {
-    public interface ILoggingBroker
+    internal interface ILoggingBroker
     {
         ValueTask LogInformationAsync(string message);
         ValueTask LogTraceAsync(string message);

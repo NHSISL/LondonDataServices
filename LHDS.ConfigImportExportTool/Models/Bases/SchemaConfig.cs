@@ -2,16 +2,22 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using LHDS.ConfigImportExportTool.Models.Bases;
-using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-
-namespace LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns
+namespace LHDS.ConfigImportExportTool.Models.Bases.SchemaConfigs
 {
-    public class ObjectColumn : IKey, IAudit
+    public class SchemaConfig
     {
-        public Guid Id { get; set; }
         public Guid SpecificationObjectId { get; set; }
+        public Guid DataSetSpecificationId { get; set; }
+        public string SupplierObjectName { get; set; } = string.Empty;
+        public string OurObjectName { get; set; } = string.Empty;
+        public string ObjectDescription { get; set; } = string.Empty;
+        public string InterchangeProtocol { get; set; } = string.Empty;
+        public bool IsPushedToUs { get; set; }
+        public bool IsPulledByUs { get; set; }
+        public string DeletionHandling { get; set; } = string.Empty;
+        public bool IsSubmissionHeaderObject { get; set; }
+        public bool IsTransactionLog { get; set; }
+        public Guid ObjectColumnId { get; set; }
         public string SupplierColumnName { get; set; } = string.Empty;
         public string OurColumnName { get; set; } = string.Empty;
         public string ColumnDescription { get; set; } = string.Empty;
@@ -42,12 +48,5 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns
         public bool IsForeignKey { get; set; } = false;
         public string ForeignKeyTableName { get; set; } = string.Empty;
         public string ForeignKeyColumnName { get; set; } = string.Empty;
-        public string CreatedBy { get; set; } = string.Empty;
-        public string UpdatedBy { get; set; } = string.Empty;
-        public DateTimeOffset UpdatedDate { get; set; }
-        public DateTimeOffset CreatedDate { get; set; }
-
-        [BindNever]
-        public SpecificationObject? SpecificationObject { get; set; } = null!;
     }
 }

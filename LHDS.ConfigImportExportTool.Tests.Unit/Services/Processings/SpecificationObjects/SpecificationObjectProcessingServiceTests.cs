@@ -100,17 +100,6 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.Specificat
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static SpecificationObject CreateRandomModifySpecificationObject(DateTimeOffset dateTimeOffset)
-        {
-            int randomDaysInPast = GetRandomNegativeNumber();
-            SpecificationObject randomSpecificationObject = CreateRandomSpecificationObject(dateTimeOffset);
-
-            randomSpecificationObject.CreatedDate =
-                randomSpecificationObject.CreatedDate.AddDays(randomDaysInPast);
-
-            return randomSpecificationObject;
-        }
-
         private static IQueryable<SpecificationObject> CreateRandomSpecificationObjects()
         {
             return CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset())

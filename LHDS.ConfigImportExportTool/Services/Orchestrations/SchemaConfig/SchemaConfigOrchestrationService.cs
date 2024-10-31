@@ -4,7 +4,6 @@
 
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Bases.SchemaConfigs;
-using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
 using LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
@@ -13,19 +12,19 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
 {
     internal partial class SchemaConfigOrchestrationService : ISchemaConfigOrchestrationService
     {
-        private readonly IObjectColumnProcessingService objectColumnService;
-        private readonly ISpecificationObjectProcessingService specificationObjectService;
+        private readonly IObjectColumnProcessingService objectColumnProcessingService;
+        private readonly ISpecificationObjectProcessingService specificationObjectProcessingService;
         private readonly IDataSetProcessingService dataSetProcessingService;
         private readonly ILoggingBroker loggingBroker;
 
         public SchemaConfigOrchestrationService(
-            IObjectColumnProcessingService objectColumnService, 
-            ISpecificationObjectProcessingService specificationObjectService, 
-            IDataSetProcessingService dataSetProcessingService, 
+            IObjectColumnProcessingService objectColumnProcessingService,
+            ISpecificationObjectProcessingService specificationObjectProcessingService,
+            IDataSetProcessingService dataSetProcessingProcessingService,
             ILoggingBroker loggingBroker)
         {
-            this.objectColumnService = objectColumnService;
-            this.specificationObjectService = specificationObjectService;
+            this.objectColumnProcessingService = objectColumnProcessingService;
+            this.specificationObjectProcessingService = specificationObjectProcessingService;
             this.dataSetProcessingService = dataSetProcessingService;
             this.loggingBroker = loggingBroker;
         }

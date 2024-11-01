@@ -59,14 +59,16 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
         private static string GetRandomString(int length) =>
            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
-        private static List<ObjectColumn> CreateRandomObjectColumns()
+        private static List<ObjectColumn> CreateRandomObjectColumns(Guid specificationId)
         {
-            return CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset())
+            return CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset(), specificationId)
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
 
-        private static Filler<ObjectColumn> CreateObjectColumnFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<ObjectColumn> CreateObjectColumnFiller(
+            DateTimeOffset dateTimeOffset, 
+            Guid specificationId)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<ObjectColumn>();
@@ -74,6 +76,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(objectColumn => objectColumn.SpecificationObjectId).Use(specificationId)
                 .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
                 .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
 
@@ -109,19 +112,23 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             return filler;
         }
 
-        public static SchemaConfig CreateRandomSchemaConfig(Guid dataSetId) =>
-            CreateSchemaConfigFiller(dataSetId).Create();
+        public static SchemaConfig CreateRandomSchemaConfig(
+            Guid dataSetId, 
+            List<SpecificationObject> specificationObjects,
+            List<ObjectColumn> objectColumns) =>
+                CreateSchemaConfigFiller(dataSetId, specificationObjects, objectColumns).Create();
 
-        private static Filler<SchemaConfig> CreateSchemaConfigFiller(Guid dataSetId)
+        private static Filler<SchemaConfig> CreateSchemaConfigFiller(
+            Guid dataSetId,
+            List<SpecificationObject> specificationObjects,
+            List<ObjectColumn> objectColumns)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<SchemaConfig>();
-            List<SpecificationObject> specificationObjects = CreateRandomSpecificationObjects(dataSetId);
-            List<ObjectColumn> objectColumn = CreateRandomObjectColumns();
 
             filler.Setup()
                 .OnProperty(schemaConfig => schemaConfig.SpecificationObjects).Use(specificationObjects)
-                .OnProperty(schemaConfig => schemaConfig.ObjectColumns).Use(objectColumn);
+                .OnProperty(schemaConfig => schemaConfig.ObjectColumns).Use(objectColumns);
 
             return filler;
         }

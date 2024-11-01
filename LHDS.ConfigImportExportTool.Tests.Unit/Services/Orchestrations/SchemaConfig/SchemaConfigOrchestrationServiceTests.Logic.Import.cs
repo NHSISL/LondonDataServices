@@ -49,8 +49,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
             foreach(SpecificationObject specificationObject in inputSchemaConfig.SpecificationObjects) 
             {
+                specificationObject.DataSetSpecificationId = storageDataSetSpecification.Id;
+
                 this.specificationObjectProcessingServiceMock.Setup(service =>
-                    service.ReadOrInsertSpecificationObjectAsync())
+                    service.ReadOrInsertSpecificationObjectAsync(specificationObject))
                         .ReturnsAsync(inputSchemaConfig);
             };
 

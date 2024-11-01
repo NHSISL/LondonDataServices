@@ -38,8 +38,14 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
             DataSetSpecification storageDataSetSpecification = randomDataSetSpecification;
             randomDataSet.DataSetSpecifications.Add(randomDataSetSpecification);
+
             DataSet storageDataSet = randomDataSet;
-            SchemaConfig randomSchemaConfig = CreateRandomSchemaConfig(storageDataSet.Id);
+
+            List<SpecificationObject> specificationObjects = CreateRandomSpecificationObjects(inputDataSetId); 
+
+            SchemaConfig randomSchemaConfig = CreateRandomSchemaConfig(
+                storageDataSet.Id, );
+
             SchemaConfig inputSchemaConfig = randomSchemaConfig;
             List<DataSet> storageDataSets = new List<DataSet> { storageDataSet };
 
@@ -47,20 +53,29 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                 service.RetrieveAllDataSetsAsync())
                     .ReturnsAsync(storageDataSets.AsQueryable());
 
+
             foreach(SpecificationObject specificationObject in inputSchemaConfig.SpecificationObjects) 
             {
                 specificationObject.DataSetSpecificationId = storageDataSetSpecification.Id;
 
                 this.specificationObjectProcessingServiceMock.Setup(service =>
                     service.ReadOrInsertSpecificationObjectAsync(specificationObject))
-                        .ReturnsAsync(inputSchemaConfig);
+                        .ReturnsAsync(specificationObject);
+            };
+
+            foreach (ObjectColumn objectColumn in inputSchemaConfig.ObjectColumns)
+            {
+                objectColumn.SpecificationObjectId = storageDataSetSpecification.Id;
+
+                this.objectColumnProcessingServiceMock.Setup(service =>
+                    service.ReadOrInsertObjectColumnAsync(objectColumn))
+                        .ReturnsAsync(objectColumn);
             };
 
             // when
             await this.schemaConfigOrchestrationService.Import(inputSchemaConfig, randomDataSetName, inputVersion);
 
             // then
-
             this.specificationObjectProcessingServiceMock.Verify(service =>
                 service.ReadOrInsertSpecificationObjectAsync(),
                     Times.Once);

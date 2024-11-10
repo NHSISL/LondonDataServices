@@ -35,21 +35,15 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
             DataSetSpecification storageDataSetSpecification = randomDataSetSpecification;
             randomDataSet.DataSetSpecifications.Add(randomDataSetSpecification);
-
             DataSet storageDataSet = randomDataSet;
-
             List<SpecificationObject> specificationObjects = CreateRandomSpecificationObjects(inputDataSetId); 
-
-            SchemaConfig randomSchemaConfig = CreateRandomSchemaConfig(
-                storageDataSet.Id, );
-
+            SchemaConfig randomSchemaConfig = CreateRandomSchemaConfig(storageDataSet.Id);
             SchemaConfig inputSchemaConfig = randomSchemaConfig;
             List<DataSet> storageDataSets = new List<DataSet> { storageDataSet };
 
             this.dataSetProcessingServiceMock.Setup(service =>
                 service.RetrieveAllDataSetsAsync())
                     .ReturnsAsync(storageDataSets.AsQueryable());
-
 
             foreach(SpecificationObject specificationObject in inputSchemaConfig.SpecificationObjects) 
             {
@@ -73,6 +67,23 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             await this.schemaConfigOrchestrationService.Import(inputSchemaConfig, randomDataSetName, inputVersion);
 
             // then
+            foreach (SpecificationObject specificationObject in inputSchemaConfig.SpecificationObjects)
+            {
+                specificationObject.DataSetSpecificationId = storageDataSetSpecification.Id;
+
+                this.specificationObjectProcessingServiceMock.Setup(service =>
+                    service.ReadOrInsertSpecificationObjectAsync(specificationObject))
+                        .ReturnsAsync(specificationObject);
+            };
+
+            foreach (ObjectColumn objectColumn in inputSchemaConfig.ObjectColumns)
+            {
+                objectColumn.SpecificationObjectId = storageDataSetSpecification.Id;
+
+                this.objectColumnProcessingServiceMock.Setup(service =>
+                    service.ReadOrInsertObjectColumnAsync(objectColumn))
+                        .ReturnsAsync(objectColumn);
+            };
             this.specificationObjectProcessingServiceMock.Verify(service =>
                 service.ReadOrInsertSpecificationObjectAsync(),
                     Times.Once);

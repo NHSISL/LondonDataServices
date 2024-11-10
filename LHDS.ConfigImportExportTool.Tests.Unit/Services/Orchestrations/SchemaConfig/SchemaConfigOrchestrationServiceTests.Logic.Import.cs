@@ -4,11 +4,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
 using LHDS.ConfigImportExportTool.Models.Bases.SchemaConfigs;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
@@ -33,7 +30,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             DataSet randomDataSet = CreateRandomDataSet(inputDataSetName);
             randomDataSet.Id = inputDataSetId;
 
-            DataSetSpecification randomDataSetSpecification = 
+            DataSetSpecification randomDataSetSpecification =
                 CreateRandomDataSetSpecification(inputDataSetId, inputVersion);
 
             DataSetSpecification storageDataSetSpecification = randomDataSetSpecification;
@@ -47,7 +44,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                 service.RetrieveAllDataSetsAsync())
                     .ReturnsAsync(storageDataSets.AsQueryable());
 
-            foreach(SpecificationObject specificationObject in inputSchemaConfig.SpecificationObjects) 
+            foreach (SpecificationObject specificationObject in inputSchemaConfig.SpecificationObjects)
             {
                 this.specificationObjectProcessingServiceMock.Setup(service =>
                     service.ReadOrInsertSpecificationObjectAsync())
@@ -58,14 +55,13 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             await this.schemaConfigOrchestrationService.Import(inputSchemaConfig, randomDataSetName, inputVersion);
 
             // then
-
             this.specificationObjectProcessingServiceMock.Verify(service =>
                 service.ReadOrInsertSpecificationObjectAsync(),
                     Times.Once);
 
             this.csvHelperServiceMock.Verify(service =>
-                service.MapCsvToObjectAsync<ObjectColumn>(inputCsvString, true, fieldMappings)
-                    ,Times.Once);
+                service.MapCsvToObjectAsync<ObjectColumn>(inputCsvString, true, fieldMappings),
+                    Times.Once);
 
             this.fileServiceMock.VerifyNoOtherCalls();
             this.csvHelperServiceMock.VerifyNoOtherCalls();

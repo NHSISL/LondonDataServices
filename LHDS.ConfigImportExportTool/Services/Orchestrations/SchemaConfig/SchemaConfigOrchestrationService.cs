@@ -4,6 +4,8 @@
 
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Bases.SchemaConfigs;
+using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
 using LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
@@ -32,7 +34,20 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
         public async ValueTask Export(SchemaConfig schemaConfig, string dataSetName, string version) =>
             throw new NotImplementedException();
 
-        public async ValueTask Import(SchemaConfig schemaConfig, string dataSetName, string version) =>
-            throw new NotImplementedException();
+        public async ValueTask Import(SchemaConfig schemaConfig, string dataSetName, string version)
+        {
+            IQueryable<DataSet> storageDataSets = await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
+
+            DataSet? matchedDataSet = 
+                storageDataSets.Where(dataSet => dataSet.DataSetName == dataSetName).FirstOrDefault();
+
+            foreach (SpecificationObject specificationObject in schemaConfig.SpecificationObjects)
+            {
+                specificationObject.DataSetSpecificationId = matchedDataSet.Id;
+
+                await this.specificationObjectProcessingService.ReadOrInsertSpecificationObjectAsync(
+                    specificationObject);
+            };
+        }
     }
 }

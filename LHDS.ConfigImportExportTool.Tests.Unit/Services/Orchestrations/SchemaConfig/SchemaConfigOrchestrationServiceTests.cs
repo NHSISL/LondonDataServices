@@ -194,7 +194,6 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
                 .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
                 .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
-                .OnProperty(dataSet => dataSet.DataSetName).Use(GetRandomString(150))
                 .OnProperty(dataSet => dataSet.DataSetAliases).Use(GetRandomString(250))
                 .OnProperty(dataSet => dataSet.DataSetAuthor).Use(GetRandomString(150))
                 .OnProperty(dataSet => dataSet.DataSourceType).Use(GetRandomString(50))

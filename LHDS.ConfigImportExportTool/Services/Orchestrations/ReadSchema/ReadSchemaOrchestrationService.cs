@@ -4,13 +4,11 @@
 
 using System.Text;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
-using LHDS.ConfigImportExportTool.Models.Bases.;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema;
 using LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers;
 using LHDS.ConfigImportExportTool.Services.Foundations.Files;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
 {
@@ -21,7 +19,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
         private readonly ILoggingBroker loggingBroker;
 
         public ReadSchemaOrchestrationService(
-            IFileService fileService, 
+            IFileService fileService,
             ICsvHelperService csvHelperService,
             ILoggingBroker loggingBroker)
         {
@@ -41,23 +39,34 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                     .MapCsvToObjectAsync<CannonicalSchemaItem>(csvString, true);
 
                 List<SpecificationObject> specificationObjects = new List<SpecificationObject>();
+                var groupedSchemaObjects = canonicalSchemaObjects.GroupBy(cso => cso.TableName).ToList();
 
-                foreach (var canonicalSchemaObject in canonicalSchemaObjects)
+                foreach (var group in groupedSchemaObjects)
                 {
                     var newSpecificationObjects = new SpecificationObject
                     {
-                        SupplierObjectName = canonicalSchemaObject.TableName,
+                        SupplierObjectName = group.Key,
                     };
 
-                    var newObjectColumn = new ObjectColumn
+                    foreach (var canonicalSchemaObject in group)
                     {
-                        
+                        var newObjectColumn = new ObjectColumn
+                        {
+                            SupplierColumnName = canonicalSchemaObject.ColumnName,
+                            SqlDataType = canonicalSchemaObject.ColumnDataType,
+                            Length = canonicalSchemaObject.ColumnLength,
+                            OrdinalPosition = canonicalSchemaObject.ColumnOrdinal,
+                            ForeignKeyTableName = canonicalSchemaObject.LinkedTable,
+                            ForeignKeyColumnName = canonicalSchemaObject.LinkedColumn,
+                        };
 
-                               
-                    };
+                        newSpecificationObjects.ObjectColumns.Add(newObjectColumn);
+                    }
 
-                    newSpecificationObjects.ObjectColumns.Add(newObjectColumn);
+                    specificationObjects.Add(newSpecificationObjects);
                 }
+
+                return specificationObjects;
             });
 
         public async ValueTask WriteFile(List<ObjectColumn> data, string path) =>

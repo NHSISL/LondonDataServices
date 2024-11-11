@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using Moq;
 using Xunit;
 
@@ -26,19 +27,19 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             string inputCsvString = randomCsvString;
             byte[] outputResult = ASCIIEncoding.UTF8.GetBytes(inputCsvString);
             byte[] expectedBytes = outputResult;
-            List<ObjectColumn> randomObjectColumns = CreateRandomObjectColumns();
-            List<ObjectColumn> expectedObjectColumns = randomObjectColumns;
+            List<SpecificationObject> randomObjectColumns = CreateRandomObjectColumns();
+            List<SpecificationObject> expectedObjectColumns = randomObjectColumns;
 
             this.fileServiceMock.Setup(service =>
                 service.ReadFromFileAsync(inputFilePath))
                     .ReturnsAsync(outputResult);
 
             this.csvHelperServiceMock.Setup(service =>
-                service.MapCsvToObjectAsync<ObjectColumn>(inputCsvString, true, fieldMappings))
+                service.MapCsvToObjectAsync<SpecificationObject>(inputCsvString, true, fieldMappings))
                     .ReturnsAsync(expectedObjectColumns.ToList);
 
             // when
-            List<ObjectColumn> actualObjectColumn = 
+            List<SpecificationObject> actualObjectColumn = 
                 await this.readSchemaOrchestrationService.ReadFile(inputFilePath);
 
             // then

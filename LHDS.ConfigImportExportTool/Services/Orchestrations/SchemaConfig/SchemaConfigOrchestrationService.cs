@@ -5,6 +5,8 @@
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Bases.SchemaConfigs;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
+using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
+using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
 using LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns;
@@ -45,8 +47,30 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             {
                 specificationObject.DataSetSpecificationId = matchedDataSet.Id;
 
-                await this.specificationObjectProcessingService.ReadOrInsertSpecificationObjectAsync(
-                    specificationObject);
+                SpecificationObject insertedSpecificationObject = 
+                    await this.specificationObjectProcessingService.ReadOrInsertSpecificationObjectAsync(
+                        specificationObject);
+            };
+
+            foreach (ObjectColumn objectColumn in schemaConfig.ObjectColumns)
+            {
+                IQueryable<DataSetSpecification> retrievedDataSetSpecifications = 
+                    matchedDataSet.DataSetSpecifications.AsQueryable();
+
+                DataSetSpecification? matchedDataSetSpecification = 
+                    retrievedDataSetSpecifications.Where(specfication => 
+                        specfication.SupplierSpecificationVersion == version).FirstOrDefault();
+
+                objectColumn.SpecificationObjectId = matchedDataSetSpecification.Id;
+
+                IQueryable<SpecificationObject> storageSpecificaitonObjects = 
+                    await this.specificationObjectProcessingService.RetrieveAllSpecificationObjectsAsync();
+
+                storageSpecificaitonObjects.Where(specificationObject => specificationObject.SupplierObjectName == objectColumn.)
+
+                this.objectColumnProcessingServiceMock.Setup(service =>
+                    service.ReadOrInsertObjectColumnAsync(objectColumn))
+                        .ReturnsAsync(objectColumn);
             };
         }
     }

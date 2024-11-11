@@ -11,6 +11,7 @@ using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
@@ -67,6 +68,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             {
                 objectColumn.SpecificationObjectId = storageDataSetSpecification.Id;
 
+                this.specificationObjectProcessingServiceMock.Setup(service =>
+                    service.RetrieveAllSpecificationObjectsAsync()).
+                        ReturnsAsync(specificationObjects.AsQueryable());
+
                 this.objectColumnProcessingServiceMock.Setup(service =>
                     service.ReadOrInsertObjectColumnAsync(objectColumn))
                         .ReturnsAsync(objectColumn);
@@ -92,6 +97,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             foreach (ObjectColumn objectColumn in inputSchemaConfig.ObjectColumns)
             {
                 objectColumn.SpecificationObjectId = storageDataSetSpecification.Id;
+
+                this.specificationObjectProcessingServiceMock.Verify(service =>
+                    service.RetrieveAllSpecificationObjectsAsync(), 
+                        Times.Once());
 
                 this.objectColumnProcessingServiceMock.Verify(service =>
                     service.ReadOrInsertObjectColumnAsync(objectColumn),

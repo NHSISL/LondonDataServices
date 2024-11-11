@@ -11,6 +11,7 @@ using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
 using LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
+using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
 {
@@ -36,41 +37,28 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
         public async ValueTask Export(SchemaConfig schemaConfig, string dataSetName, string version) =>
             throw new NotImplementedException();
 
-        public async ValueTask Import(SchemaConfig schemaConfig, string dataSetName, string version)
+        public async ValueTask Import(List<SpecificationObject> specificationObjects, string dataSetName, string version)
         {
             IQueryable<DataSet> storageDataSets = await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
 
-            DataSet? matchedDataSet = 
-                storageDataSets.Where(dataSet => dataSet.DataSetName == dataSetName).FirstOrDefault();
+            DataSet matchedDataSet = await storageDataSets.FirstAsync(dataSet => dataSet.DataSetName == dataSetName);
+            DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications
+                .First(specification => specification.SupplierSpecificationVersion == version);
 
-            foreach (SpecificationObject specificationObject in schemaConfig.SpecificationObjects)
+            foreach (SpecificationObject specificationObject in specificationObjects)
             {
-                specificationObject.DataSetSpecificationId = matchedDataSet.Id;
+                specificationObject.DataSetSpecificationId = dataSetSpecification.Id;
 
-                SpecificationObject insertedSpecificationObject = 
-                    await this.specificationObjectProcessingService.ReadOrInsertSpecificationObjectAsync(
-                        specificationObject);
-            };
+                SpecificationObject storageSpecificationObject = await specificationObjectProcessingService
+                    .ReadOrInsertSpecificationObjectAsync(specificationObject);
 
-            foreach (ObjectColumn objectColumn in schemaConfig.ObjectColumns)
-            {
-                IQueryable<DataSetSpecification> retrievedDataSetSpecifications = 
-                    matchedDataSet.DataSetSpecifications.AsQueryable();
+                foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
+                {
+                    objectColumn.SpecificationObjectId = storageSpecificationObject.Id;
 
-                DataSetSpecification? matchedDataSetSpecification = 
-                    retrievedDataSetSpecifications.Where(specfication => 
-                        specfication.SupplierSpecificationVersion == version).FirstOrDefault();
-
-                objectColumn.SpecificationObjectId = matchedDataSetSpecification.Id;
-
-                IQueryable<SpecificationObject> storageSpecificaitonObjects = 
-                    await this.specificationObjectProcessingService.RetrieveAllSpecificationObjectsAsync();
-
-                storageSpecificaitonObjects.Where(specificationObject => specificationObject.SupplierObjectName == objectColumn.)
-
-                this.objectColumnProcessingServiceMock.Setup(service =>
-                    service.ReadOrInsertObjectColumnAsync(objectColumn))
-                        .ReturnsAsync(objectColumn);
+                    ObjectColumn storageObjectColumn = await objectColumnProcessingService
+                        .ReadOrInsertObjectColumnAsync(objectColumn);
+                }
             };
         }
     }

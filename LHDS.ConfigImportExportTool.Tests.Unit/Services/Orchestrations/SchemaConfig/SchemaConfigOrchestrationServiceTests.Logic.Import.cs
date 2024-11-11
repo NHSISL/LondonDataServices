@@ -35,7 +35,6 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
             DataSetSpecification storageDataSetSpecification = randomDataSetSpecification;
             randomDataSet.DataSetSpecifications.Add(randomDataSetSpecification);
-            DataSet storageDataSet = randomDataSet;
             List<SpecificationObject> specificationObjects = CreateRandomSpecificationObjects(inputDataSetId);
             List<ObjectColumn> objectColumns = new List<ObjectColumn>();
 
@@ -46,10 +45,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             }
 
             SchemaConfig randomSchemaConfig = CreateRandomSchemaConfig(
-                storageDataSet.Id, specificationObjects, objectColumns);
+                randomDataSet.Id, specificationObjects, objectColumns);
 
             SchemaConfig inputSchemaConfig = randomSchemaConfig;
-            List<DataSet> storageDataSets = new List<DataSet> { storageDataSet };
+            List<DataSet> storageDataSets = new List<DataSet> { randomDataSet };
 
             this.dataSetProcessingServiceMock.Setup(service =>
                 service.RetrieveAllDataSetsAsync())

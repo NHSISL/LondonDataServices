@@ -20,7 +20,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
         public SchemaConfigOrchestrationService(
             IObjectColumnProcessingService objectColumnProcessingService,
             ISpecificationObjectProcessingService specificationObjectProcessingService,
-            IDataSetProcessingService dataSetProcessingProcessingService,
+            IDataSetProcessingService dataSetProcessingService,
             ILoggingBroker loggingBroker)
         {
             this.objectColumnProcessingService = objectColumnProcessingService;
@@ -29,10 +29,10 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask Export(List<SchemaConfig> data, string dataSetName, string version) =>
+        public async ValueTask Export(SchemaConfig schemaConfig, string dataSetName, string version) =>
             throw new NotImplementedException();
 
-        public async ValueTask Import(List<SchemaConfig> data, string dataSetName, string version) =>
+        public async ValueTask Import(SchemaConfig schemaConfig, string dataSetName, string version) =>
             throw new NotImplementedException();
     }
 }

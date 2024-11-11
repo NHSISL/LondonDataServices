@@ -40,7 +40,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             this.schemaConfigOrchestrationService = new SchemaConfigOrchestrationService(
                 specificationObjectProcessingService: this.specificationObjectProcessingServiceMock.Object,
                 objectColumnProcessingService: this.objectColumnProcessingServiceMock.Object,
-                dataSetProcessingProcessingService: this.dataSetProcessingServiceMock.Object,
+                dataSetProcessingService: this.dataSetProcessingServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 

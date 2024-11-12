@@ -42,9 +42,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             string version)
             {
                 IQueryable<DataSet> storageDataSets = await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
-
-                DataSet matchedDataSet = 
-                    await storageDataSets.FirstAsync(dataSet => dataSet.DataSetName == dataSetName);
+                DataSet matchedDataSet = storageDataSets.First(dataSet => dataSet.DataSetName == dataSetName);
 
                 DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications
                     .First(specification => specification.SupplierSpecificationVersion == version);

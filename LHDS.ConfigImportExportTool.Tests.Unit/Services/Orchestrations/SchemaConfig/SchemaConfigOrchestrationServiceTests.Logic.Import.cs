@@ -69,7 +69,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             };
 
             // when
-            await this.schemaConfigOrchestrationService.Import(inputSpecificationObjects, randomDataSetName, inputVersion);
+            await this.schemaConfigOrchestrationService.Import(
+                inputSpecificationObjects, randomDataSetName, inputVersion);
 
             // then
             this.dataSetProcessingServiceMock.Verify(service =>

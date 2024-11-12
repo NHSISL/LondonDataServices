@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
 using Moq;
 using Xunit;
@@ -35,7 +36,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                     innerException: invalidArgumentReadSchemaOrchestrationException);
 
             // when
-            ValueTask<List<ObjectColumn>> readObjectColumnFromCsv =
+            ValueTask<List<SpecificationObject>> readObjectColumnFromCsv =
                 this.readSchemaOrchestrationService.ReadFile(invalidPath);
 
             ReadSchemaValidationOrchestrationException actualException =

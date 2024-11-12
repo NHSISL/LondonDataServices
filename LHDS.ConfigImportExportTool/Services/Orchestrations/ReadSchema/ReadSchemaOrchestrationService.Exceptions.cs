@@ -4,6 +4,7 @@
 
 using LHDS.ConfigImportExportTool.Models.Foundations.Files.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
 using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using Xeptions;
@@ -12,9 +13,9 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
 {
     internal partial class ReadSchemaOrchestrationService
     {
-        private delegate ValueTask<List<ObjectColumn>> ReturningObjectColumnListFunction();
+        private delegate ValueTask<List<SpecificationObject>> ReturningObjectColumnListFunction();
 
-        private async ValueTask<List<ObjectColumn>> TryCatch(
+        private async ValueTask<List<SpecificationObject>> TryCatch(
             ReturningObjectColumnListFunction returningObjectColumnListFunction)
         {
             try

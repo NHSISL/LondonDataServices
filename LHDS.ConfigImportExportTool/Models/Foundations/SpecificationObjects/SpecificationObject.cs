@@ -26,6 +26,5 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects
         public DateTimeOffset CreatedDate { get; set; }
         public DataSetSpecification? DataSetSpecification { get; set; } = null!;
         public List<ObjectColumn> ObjectColumns { get; set; } = new List<ObjectColumn>();
-
     }
 }

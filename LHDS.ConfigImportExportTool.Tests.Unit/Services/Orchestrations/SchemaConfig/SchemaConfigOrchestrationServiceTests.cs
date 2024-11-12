@@ -111,27 +111,6 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             return filler;
         }
 
-        //public static SchemaConfig CreateRandomSchemaConfig(
-        //    Guid dataSetId,
-        //    List<SpecificationObject> specificationObjects,
-        //    List<ObjectColumn> objectColumns) =>
-        //        CreateSchemaConfigFiller(dataSetId, specificationObjects, objectColumns).Create();
-
-        //private static Filler<SchemaConfig> CreateSchemaConfigFiller(
-        //    Guid dataSetId,
-        //    List<SpecificationObject> specificationObjects,
-        //    List<ObjectColumn> objectColumns)
-        //{
-        //    string user = Guid.NewGuid().ToString();
-        //    var filler = new Filler<SchemaConfig>();
-
-        //    filler.Setup()
-        //        .OnProperty(schemaConfig => schemaConfig.SpecificationObjects).Use(specificationObjects)
-        //        .OnProperty(schemaConfig => schemaConfig.ObjectColumns).Use(objectColumns);
-
-        //    return filler;
-        //}
-
         private static DataSetSpecification CreateRandomDataSetSpecification(Guid dataSetId, string version) =>
             CreateDataSetSpecificationFiller(dateTimeOffset: GetRandomDateTimeOffset(), dataSetId, version).Create();
 

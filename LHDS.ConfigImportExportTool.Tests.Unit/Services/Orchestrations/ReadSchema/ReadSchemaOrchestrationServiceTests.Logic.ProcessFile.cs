@@ -33,10 +33,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             {
                 List<ObjectColumn> randomObjectColumns = CreateRandomObjectColumns();
 
-                List<SpecificationObject> randomSpecificationObjects =
-                    CreateRandomSpecificationObjects(randomObjectColumns, tableName: GetRandomString());
+                SpecificationObject randomSpecificationObject =
+                    CreateRandomSpecificationObject(randomObjectColumns, tableName: GetRandomString());
 
-                expectedSpecificationObjects.AddRange(randomSpecificationObjects);
+                expectedSpecificationObjects.Add(randomSpecificationObject);
             }
 
             List<CannonicalSchemaItem> randomCannonicalSchemaItems = new List<CannonicalSchemaItem>();
@@ -70,11 +70,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                     .ReturnsAsync(randomCannonicalSchemaItems);
 
             // when
-            List<SpecificationObject> actualObjectColumn =
+            List<SpecificationObject> actualSpecificationObject =
                 await this.readSchemaOrchestrationService.ReadFile(inputFilePath);
 
             // then
-            actualObjectColumn.Should().BeEquivalentTo(expectedSpecificationObjects);
+            actualSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObjects);
 
             this.fileServiceMock.Verify(service =>
                 service.ReadFromFileAsync(inputFilePath),

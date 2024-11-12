@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
 using Moq;
@@ -25,7 +24,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
         {
             // given
             string inputPath = GetRandomString();
-            
+
             var expectedDependencyException =
                 new ReadSchemaOrchestrationDependencyValidationException(
                     message: "Read schema orchestration dependency validation error occurred, " +

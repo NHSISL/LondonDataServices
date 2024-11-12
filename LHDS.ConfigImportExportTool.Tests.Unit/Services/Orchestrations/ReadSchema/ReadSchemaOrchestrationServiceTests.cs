@@ -56,21 +56,29 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static IQueryable<SpecificationObject> CreateRandomSpecificationObjects(
-            List<ObjectColumn> objectColumns)
+        private static List<SpecificationObject> CreateRandomSpecificationObjects(
+            List<ObjectColumn> objectColumns, string tableName)
         {
-            return CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
+            return CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset(), objectColumns, tableName)
+                .Create(count: GetRandomNumber()).ToList();
         }
 
-        private static SpecificationObject CreateRandomSpecificationObject(List<ObjectColumn> objectColumns) =>
-            CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset(), objectColumns).Create();
+        private static SpecificationObject CreateRandomSpecificationObject(
+            List<ObjectColumn> objectColumns, 
+            string tableName) =>
+            CreateSpecificationObjectFiller(
+                dateTimeOffset: GetRandomDateTimeOffset(), objectColumns, tableName).Create();
 
-        private static SpecificationObject CreateRandomSpecificationObject(DateTimeOffset dateTimeOffset, List<ObjectColumn> objectColumns) =>
-            CreateSpecificationObjectFiller(dateTimeOffset, objectColumns).Create();
+        private static SpecificationObject CreateRandomSpecificationObject(
+            DateTimeOffset dateTimeOffset, 
+            List<ObjectColumn> objectColumns,
+            string tableName) =>
+                CreateSpecificationObjectFiller(dateTimeOffset, objectColumns, tableName).Create();
 
-        private static Filler<SpecificationObject> CreateSpecificationObjectFiller(DateTimeOffset dateTimeOffset, List<ObjectColumn> objectColumns)
+        private static Filler<SpecificationObject> CreateSpecificationObjectFiller(
+            DateTimeOffset dateTimeOffset, 
+            List<ObjectColumn> objectColumns,
+            string tableName)
         {
             string user = GetRandomString(255);
             var filler = new Filler<SpecificationObject>();
@@ -78,7 +86,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(specificationObject => specificationObject.SupplierObjectName).Use(GetRandomString(255))
+                .OnProperty(specificationObject => specificationObject.SupplierObjectName).Use(tableName)
                 .OnProperty(specificationObject => specificationObject.OurObjectName).Use(GetRandomString(255))
                 .OnProperty(specificationObject => specificationObject.ObjectDescription).Use(GetRandomString(500))
                 .OnProperty(specificationObject => specificationObject.InterchangeProtocol).Use(GetRandomString(255))
@@ -91,11 +99,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             return filler;
         }
 
-        private static IQueryable<ObjectColumn> CreateRandomObjectColumns()
+        private static List<ObjectColumn> CreateRandomObjectColumns()
         {
             return CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
+                .Create(count: GetRandomNumber()).ToList();
         }
 
         private static ObjectColumn CreateRandomObjectColumn() =>

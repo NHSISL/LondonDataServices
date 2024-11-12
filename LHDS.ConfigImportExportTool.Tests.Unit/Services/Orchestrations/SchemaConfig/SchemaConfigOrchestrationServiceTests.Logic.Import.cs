@@ -34,13 +34,14 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
             DataSetSpecification storageDataSetSpecification = randomDataSetSpecification;
             randomDataSet.DataSetSpecifications.Add(randomDataSetSpecification);
-            List<SpecificationObject> specificationObjects = CreateRandomSpecificationObjects(inputDataSetId);
-            List<ObjectColumn> objectColumns = new List<ObjectColumn>();
+            List<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects(inputDataSetId);
+            List<SpecificationObject> inputSpecificationObjects = new List<SpecificationObject>();
 
-            foreach (SpecificationObject specificationObject in specificationObjects)
+            foreach (SpecificationObject specificationObject in randomSpecificationObjects)
             {
                 List<ObjectColumn> newObjectColumns = CreateRandomObjectColumns(specificationObject.Id);
-                objectColumns.AddRange(newObjectColumns);
+                specificationObject.ObjectColumns = newObjectColumns;
+                inputSpecificationObjects.Add(specificationObject);
             }
 
             List<DataSet> storageDataSets = new List<DataSet> { randomDataSet };
@@ -49,56 +50,48 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                 service.RetrieveAllDataSetsAsync())
                     .ReturnsAsync(storageDataSets.AsQueryable());
 
-            foreach (SpecificationObject specificationObject in inputSchemaConfig.SpecificationObjects)
+            foreach (SpecificationObject specificationObject in randomSpecificationObjects)
             {
                 specificationObject.DataSetSpecificationId = storageDataSetSpecification.Id;
 
                 this.specificationObjectProcessingServiceMock.Setup(service =>
                     service.ReadOrInsertSpecificationObjectAsync(specificationObject))
                         .ReturnsAsync(specificationObject);
-            };
 
-            foreach (ObjectColumn objectColumn in inputSchemaConfig.ObjectColumns)
-            {
-                objectColumn.SpecificationObjectId = storageDataSetSpecification.Id;
+                foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
+                {
+                    objectColumn.SpecificationObjectId = storageDataSetSpecification.Id;
 
-                this.specificationObjectProcessingServiceMock.Setup(service =>
-                    service.RetrieveAllSpecificationObjectsAsync()).
-                        ReturnsAsync(specificationObjects.AsQueryable());
-
-                this.objectColumnProcessingServiceMock.Setup(service =>
-                    service.ReadOrInsertObjectColumnAsync(objectColumn))
-                        .ReturnsAsync(objectColumn);
+                    this.objectColumnProcessingServiceMock.Setup(service =>
+                        service.ReadOrInsertObjectColumnAsync(objectColumn))
+                            .ReturnsAsync(objectColumn);
+                };
             };
 
             // when
-            await this.schemaConfigOrchestrationService.Import(inputSchemaConfig, randomDataSetName, inputVersion);
+            await this.schemaConfigOrchestrationService.Import(inputSpecificationObjects, randomDataSetName, inputVersion);
 
             // then
             this.dataSetProcessingServiceMock.Verify(service =>
                 service.RetrieveAllDataSetsAsync(),
                     Times.Once());
 
-            foreach (SpecificationObject specificationObject in inputSchemaConfig.SpecificationObjects)
+            foreach (SpecificationObject specificationObject in randomSpecificationObjects)
             {
                 specificationObject.DataSetSpecificationId = storageDataSetSpecification.Id;
 
                 this.specificationObjectProcessingServiceMock.Verify(service =>
                     service.ReadOrInsertSpecificationObjectAsync(specificationObject),
                         Times.Once());
-            };
 
-            foreach (ObjectColumn objectColumn in inputSchemaConfig.ObjectColumns)
-            {
-                objectColumn.SpecificationObjectId = storageDataSetSpecification.Id;
+                foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
+                {
+                    objectColumn.SpecificationObjectId = storageDataSetSpecification.Id;
 
-                this.specificationObjectProcessingServiceMock.Verify(service =>
-                    service.RetrieveAllSpecificationObjectsAsync(),
-                        Times.Once());
-
-                this.objectColumnProcessingServiceMock.Verify(service =>
-                    service.ReadOrInsertObjectColumnAsync(objectColumn),
-                        Times.Once());
+                    this.objectColumnProcessingServiceMock.Verify(service =>
+                        service.ReadOrInsertObjectColumnAsync(objectColumn),
+                            Times.Once());
+                };
             };
 
             this.dataSetProcessingServiceMock.VerifyNoOtherCalls();

@@ -28,14 +28,45 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<ObjectColumn>> ReadFile(string path) =>
+        public ValueTask<List<SpecificationObject>> ReadFile(string path) =>
             TryCatch(async () =>
             {
                 ValidateProcessSchemaFileArguments(path);
                 byte[] csvData = await this.fileService.ReadFromFileAsync(path);
                 string csvString = ASCIIEncoding.UTF8.GetString(csvData);
 
-                return await this.csvHelperService.MapCsvToObjectAsync<ObjectColumn>(csvString, true);
+                List<CannonicalSchemaItem> canonicalSchemaObjects = await this.csvHelperService
+                    .MapCsvToObjectAsync<CannonicalSchemaItem>(csvString, true);
+
+                List<SpecificationObject> specificationObjects = new List<SpecificationObject>();
+                var groupedSchemaObjects = canonicalSchemaObjects.GroupBy(cso => cso.TableName).ToList();
+
+                foreach (var group in groupedSchemaObjects)
+                {
+                    var newSpecificationObjects = new SpecificationObject
+                    {
+                        SupplierObjectName = group.Key,
+                    };
+
+                    foreach (var canonicalSchemaObject in group)
+                    {
+                        var newObjectColumn = new ObjectColumn
+                        {
+                            SupplierColumnName = canonicalSchemaObject.ColumnName,
+                            SqlDataType = canonicalSchemaObject.ColumnDataType,
+                            Length = canonicalSchemaObject.ColumnLength,
+                            OrdinalPosition = canonicalSchemaObject.ColumnOrdinal,
+                            ForeignKeyTableName = canonicalSchemaObject.LinkedTable,
+                            ForeignKeyColumnName = canonicalSchemaObject.LinkedColumn,
+                        };
+
+                        newSpecificationObjects.ObjectColumns.Add(newObjectColumn);
+                    }
+
+                    specificationObjects.Add(newSpecificationObjects);
+                }
+
+                return specificationObjects;
             });
 
         public async ValueTask WriteFile(List<ObjectColumn> data, string path) =>

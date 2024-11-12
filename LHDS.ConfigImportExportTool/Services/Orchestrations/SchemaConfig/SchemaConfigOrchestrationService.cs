@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
-using LHDS.ConfigImportExportTool.Models.Bases.SchemaConfigs;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
@@ -34,7 +33,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask Export(SchemaConfig schemaConfig, string dataSetName, string version) =>
+        public async ValueTask Export(List<SpecificationObject> schemaConfig, string dataSetName, string version) =>
             throw new NotImplementedException();
 
         public async ValueTask Import(List<SpecificationObject> specificationObjects, string dataSetName, string version)

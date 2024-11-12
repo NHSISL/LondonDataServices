@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
-using LHDS.ConfigImportExportTool.Models.Bases.SchemaConfigs;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
@@ -67,7 +66,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
         }
 
         private static Filler<ObjectColumn> CreateObjectColumnFiller(
-            DateTimeOffset dateTimeOffset, 
+            DateTimeOffset dateTimeOffset,
             Guid specificationId)
         {
             string user = Guid.NewGuid().ToString();
@@ -112,26 +111,26 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             return filler;
         }
 
-        public static SchemaConfig CreateRandomSchemaConfig(
-            Guid dataSetId, 
-            List<SpecificationObject> specificationObjects,
-            List<ObjectColumn> objectColumns) =>
-                CreateSchemaConfigFiller(dataSetId, specificationObjects, objectColumns).Create();
+        //public static SchemaConfig CreateRandomSchemaConfig(
+        //    Guid dataSetId,
+        //    List<SpecificationObject> specificationObjects,
+        //    List<ObjectColumn> objectColumns) =>
+        //        CreateSchemaConfigFiller(dataSetId, specificationObjects, objectColumns).Create();
 
-        private static Filler<SchemaConfig> CreateSchemaConfigFiller(
-            Guid dataSetId,
-            List<SpecificationObject> specificationObjects,
-            List<ObjectColumn> objectColumns)
-        {
-            string user = Guid.NewGuid().ToString();
-            var filler = new Filler<SchemaConfig>();
+        //private static Filler<SchemaConfig> CreateSchemaConfigFiller(
+        //    Guid dataSetId,
+        //    List<SpecificationObject> specificationObjects,
+        //    List<ObjectColumn> objectColumns)
+        //{
+        //    string user = Guid.NewGuid().ToString();
+        //    var filler = new Filler<SchemaConfig>();
 
-            filler.Setup()
-                .OnProperty(schemaConfig => schemaConfig.SpecificationObjects).Use(specificationObjects)
-                .OnProperty(schemaConfig => schemaConfig.ObjectColumns).Use(objectColumns);
+        //    filler.Setup()
+        //        .OnProperty(schemaConfig => schemaConfig.SpecificationObjects).Use(specificationObjects)
+        //        .OnProperty(schemaConfig => schemaConfig.ObjectColumns).Use(objectColumns);
 
-            return filler;
-        }
+        //    return filler;
+        //}
 
         private static DataSetSpecification CreateRandomDataSetSpecification(Guid dataSetId, string version) =>
             CreateDataSetSpecificationFiller(dateTimeOffset: GetRandomDateTimeOffset(), dataSetId, version).Create();
@@ -170,7 +169,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             CreateDataSetFiller(dateTimeOffset: GetRandomDateTimeOffset(), dataSetName).Create();
 
         private static Filler<DataSet> CreateDataSetFiller(
-            DateTimeOffset dateTimeOffset, 
+            DateTimeOffset dateTimeOffset,
             string dataSetName)
         {
             string user = Guid.NewGuid().ToString();

@@ -3,6 +3,9 @@
 // ---------------------------------------------------------
 
 using LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Orchestrations.SchemaConfigs.Exceptions;
+using LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema;
 using Xeptions;
 
 namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports
@@ -21,6 +24,40 @@ namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports
             catch (InvalidArgumentImportExportCoordinationException invalidArgumentImportExportCoordinationException)
             {
                 throw CreateAndLogValidationException(invalidArgumentImportExportCoordinationException);
+            }
+            catch (ReadSchemaValidationOrchestrationException readSchemaValidationOrchestrationException)
+            {
+                throw CreateAndLogDependencyValidationException(readSchemaValidationOrchestrationException);
+            }
+            catch (ReadSchemaOrchestrationDependencyValidationException readSchemaOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(readSchemaOrchestrationDependencyValidationException);
+            }
+            catch (SchemaConfigValidationOrchestrationException schemaConfigValidationOrchestrationException)
+            {
+                throw CreateAndLogDependencyValidationException(schemaConfigValidationOrchestrationException);
+            }
+            catch (SchemaConfigOrchestrationDependencyValidationException
+                schemaConfigOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    schemaConfigOrchestrationDependencyValidationException);
+            }
+            catch (ReadSchemaOrchestrationDependencyException readSchemaOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(readSchemaOrchestrationDependencyException);
+            }
+            catch (ReadSchemaOrchestrationServiceException readSchemaOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(readSchemaOrchestrationServiceException);
+            }
+            catch (SchemaConfigOrchestrationDependencyException schemaConfigOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(schemaConfigOrchestrationDependencyException);
+            }
+            catch (SchemaConfigOrchestrationServiceException schemaConfigOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(schemaConfigOrchestrationServiceException);
             }
             catch (Exception exception)
             {

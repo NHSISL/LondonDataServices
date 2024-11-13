@@ -19,11 +19,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
         [Theory]
         [InlineData(null)]
         [InlineData("")]
-        [InlineData("   ")]
-        public async Task ShouldThrowValidationExceptionOnImportIfDataSetNameIsInvalidAsync(string invalidDataSetName)
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnImportIfDataSetNameIsInvalidAsync(string invalidString)
         {
             // given
-            string validVersion = GetRandomString(10);
             Guid inputDataSetId = Guid.NewGuid();
             List<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects(inputDataSetId);
             List<SpecificationObject> inputSpecificationObjects = new List<SpecificationObject>();
@@ -43,6 +42,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                 key: "dataSetName",
                 values: "Text is required");
 
+            invalidArgumentReadSchemaOrchestrationException.AddData(
+                key: "version",
+                values: "Text is required");
+
             var expectedSchemaConfigValidationOrchestrationException =
                 new SchemaConfigValidationOrchestrationException(
                     message: "Schema config orchestration validation error occurred, fix the errors and try again.",
@@ -51,7 +54,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             // when
             ValueTask importTask =
                 this.schemaConfigOrchestrationService.Import(
-                    inputSpecificationObjects, invalidDataSetName, validVersion);
+                    inputSpecificationObjects, dataSetName: invalidString, version: invalidString);
 
             SchemaConfigValidationOrchestrationException actualException =
                 await Assert.ThrowsAsync<SchemaConfigValidationOrchestrationException>(importTask.AsTask);

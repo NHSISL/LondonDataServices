@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema;
 using LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs;
 
@@ -27,7 +28,12 @@ namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports
         public async ValueTask Export(string dataSetName, string version, string filePath) =>
             throw new NotImplementedException();
 
-        public async ValueTask Import(string dataSetName, string version, string filePath) =>
-            throw new NotImplementedException();
+        public async ValueTask Import(string dataSetName, string version, string filePath) 
+        {
+            List<SpecificationObject> specificationObjects = 
+                await this.readSchemaOrchestrationService.ReadFile(filePath);
+
+            await this.schemaConfigOrchestrationService.Import(specificationObjects, dataSetName, version);
+        }
     }
 }

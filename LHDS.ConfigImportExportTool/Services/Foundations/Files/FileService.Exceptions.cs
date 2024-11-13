@@ -445,10 +445,10 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.Files
             return fileValidationException;
         }
 
-        private ObjectColumnProcessingDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private FileDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
             var fileServiceDependencyValidationException =
-                new ObjectColumnProcessingDependencyValidationException(
+                new FileDependencyValidationException(
                     message: "File dependency validation error occurred, please contact support.",
                     innerException: exception);
 

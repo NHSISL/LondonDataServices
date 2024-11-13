@@ -43,7 +43,10 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                 TryCatch(async () =>
                 {
                     ValidateSchemaImportArguments(specificationObjects, dataSetName, version);
-                    IQueryable<DataSet> storageDataSets = await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
+
+                    IQueryable<DataSet> storageDataSets = 
+                        await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
+
                     DataSet matchedDataSet = storageDataSets.First(dataSet => dataSet.DataSetName == dataSetName);
 
                     DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications

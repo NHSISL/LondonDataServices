@@ -3,8 +3,8 @@
 // ---------------------------------------------------------
 
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Processings.SpecificationObjects.Exceptions;
-using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects.Exceptions;
 using Xeptions;
 
 namespace LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects

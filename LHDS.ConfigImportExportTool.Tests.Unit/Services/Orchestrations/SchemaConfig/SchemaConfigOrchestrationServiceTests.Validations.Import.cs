@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
-using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.SchemaConfigs.Exceptions;
 using Moq;
 using Xunit;
@@ -44,9 +43,9 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                 key: "dataSetName",
                 values: "Text is required");
 
-            var expectedReadSchemaValidationOrchestrationException =
-                new ReadSchemaValidationOrchestrationException(
-                    message: "SchemaConfig orchestration validation error occurred, fix the errors and try again.",
+            var expectedSchemaConfigValidationOrchestrationException =
+                new SchemaConfigValidationOrchestrationException(
+                    message: "Schema config orchestration validation error occurred, fix the errors and try again.",
                     innerException: invalidArgumentReadSchemaOrchestrationException);
 
             // when
@@ -54,15 +53,51 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                 this.schemaConfigOrchestrationService.Import(
                     inputSpecificationObjects, invalidDataSetName, validVersion);
 
-            ReadSchemaValidationOrchestrationException actualException =
-                await Assert.ThrowsAsync<ReadSchemaValidationOrchestrationException>(importTask.AsTask);
+            SchemaConfigValidationOrchestrationException actualException =
+                await Assert.ThrowsAsync<SchemaConfigValidationOrchestrationException>(importTask.AsTask);
 
             // then
-            actualException.Should().BeEquivalentTo(expectedReadSchemaValidationOrchestrationException);
+            actualException.Should().BeEquivalentTo(expectedSchemaConfigValidationOrchestrationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedReadSchemaValidationOrchestrationException))),
+                    expectedSchemaConfigValidationOrchestrationException))),
+                        Times.Once);
+
+            this.dataSetProcessingServiceMock.VerifyNoOtherCalls();
+            this.specificationObjectProcessingServiceMock.VerifyNoOtherCalls();
+            this.objectColumnProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnImportIfSpecificationObjectListIsNullAsync()
+        {
+            // given
+            List<SpecificationObject> nullSpecificationObject = null;
+            string inputVersion = GetRandomString(10);
+            string inputDataSetName = GetRandomString(10);
+            var nullSpecificationObjectException =
+                new NullSpecificationObjectListException(message: "Specification object list is null.");
+
+            var expectedSchemaConfigValidationOrchestrationException =
+                new SchemaConfigValidationOrchestrationException(
+                    message: "Schema config orchestration validation error occurred, fix the errors and try again.",
+                    innerException: nullSpecificationObjectException);
+
+            // when
+            ValueTask importTask =
+                this.schemaConfigOrchestrationService.Import(
+                    nullSpecificationObject, inputDataSetName, inputVersion);
+
+            SchemaConfigValidationOrchestrationException actualException =
+                await Assert.ThrowsAsync<SchemaConfigValidationOrchestrationException>(importTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedSchemaConfigValidationOrchestrationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedSchemaConfigValidationOrchestrationException))),
                         Times.Once);
 
             this.dataSetProcessingServiceMock.VerifyNoOtherCalls();

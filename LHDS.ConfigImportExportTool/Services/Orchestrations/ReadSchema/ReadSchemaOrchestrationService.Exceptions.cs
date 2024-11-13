@@ -5,6 +5,7 @@
 using LHDS.ConfigImportExportTool.Models.Foundations.Files.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Processings.ObjectColumns.Exceptions;
 using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using Xeptions;
 
@@ -29,7 +30,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
             {
                 throw CreateAndLogDependencyValidationException(fileValidationException);
             }
-            catch (FileDependencyValidationException fileDependencyValidationException)
+            catch (ObjectColumnProcessingDependencyValidationException fileDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(fileDependencyValidationException);
             }

@@ -11,6 +11,9 @@ using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
+using LHDS.ConfigImportExportTool.Models.Processings.DataSets.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Processings.ObjectColumns.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Processings.SpecificationObjects.Exceptions;
 using LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs;
 using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
 using LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns;
@@ -18,6 +21,7 @@ using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaConfigs
 {
@@ -179,6 +183,74 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                 .OnProperty(dataSet => dataSet.Supplier).IgnoreIt();
 
             return filler;
+        }
+
+        public static TheoryData<Xeption> SchemaConfigOrchestrationDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DataSetProcessingValidationException(
+                    message: "File validation error occured, please contact support.",
+                    innerException),
+
+                new DataSetProcessingDependencyValidationException(
+                    message: "File dependency validation error occurred, please contact support.",
+                    innerException),
+
+                new SpecificationObjectProcessingValidationException(
+                    message: "File validation error occured, please contact support.",
+                    innerException),
+
+                new SpecificationObjectProcessingDependencyValidationException(
+                    message: "File dependency validation error occurred, please contact support.",
+                    innerException),
+
+                new ObjectColumnProcessingValidationException(
+                    message: "File validation error occured, please contact support.",
+                    innerException),
+
+                new ObjectColumnProcessingDependencyValidationException(
+                    message: "File dependency validation error occurred, please contact support.",
+                    innerException),
+            };
+        }
+
+        public static TheoryData<Xeption> SchemaConfigOrchestrationDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DataSetProcessingDependencyException(
+                    message: "File dependency error occurred, please contact support.",
+                    innerException),
+
+                new DataSetProcessingServiceException(
+                    message: "File service error occurred, please contact support.",
+                    innerException),
+
+                new SpecificationObjectProcessingDependencyException(
+                    message: "File dependency error occurred, please contact support.",
+                    innerException),
+
+                new SpecificationObjectProcessingServiceException(
+                    message: "File service error occurred, please contact support.",
+                    innerException),
+
+                new ObjectColumnProcessingDependencyException(
+                    message: "File dependency error occurred, please contact support.",
+                    innerException),
+
+                new ObjectColumnProcessingServiceException(
+                    message: "File service error occurred, please contact support.",
+                    innerException),
+            };
         }
     }
 }

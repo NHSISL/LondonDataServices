@@ -34,22 +34,22 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                 inputSpecificationObjects.Add(specificationObject);
             }
 
-            var invalidArgumentReadSchemaOrchestrationException =
+            var invalidArgumentSchemaConfigOrchestrationException =
                 new InvalidArgumentSchemaConfigOrchestrationException(
                     message: "Invalid schema config argument(s), please correct the errors and try again.");
 
-            invalidArgumentReadSchemaOrchestrationException.AddData(
+            invalidArgumentSchemaConfigOrchestrationException.AddData(
                 key: "dataSetName",
                 values: "Text is required");
 
-            invalidArgumentReadSchemaOrchestrationException.AddData(
+            invalidArgumentSchemaConfigOrchestrationException.AddData(
                 key: "version",
                 values: "Text is required");
 
             var expectedSchemaConfigValidationOrchestrationException =
                 new SchemaConfigValidationOrchestrationException(
                     message: "Schema config orchestration validation error occurred, fix the errors and try again.",
-                    innerException: invalidArgumentReadSchemaOrchestrationException);
+                    innerException: invalidArgumentSchemaConfigOrchestrationException);
 
             // when
             ValueTask importTask =

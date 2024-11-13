@@ -3,6 +3,9 @@
 // ---------------------------------------------------------
 
 using LHDS.ConfigImportExportTool.Models.Orchestrations.SchemaConfigs.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Processings.DataSets.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Processings.ObjectColumns.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Processings.SpecificationObjects.Exceptions;
 using Xeptions;
 
 namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
@@ -25,6 +28,57 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             catch (NullSpecificationObjectListException nullSpecificationObjectListException)
             {
                 throw CreateAndLogValidationException(nullSpecificationObjectListException);
+            }
+            catch (DataSetProcessingValidationException dataSetProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(dataSetProcessingValidationException);
+            }
+            catch (DataSetProcessingDependencyValidationException dataSetProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(dataSetProcessingDependencyValidationException);
+            }
+            catch (SpecificationObjectProcessingValidationException specificationObjectProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(specificationObjectProcessingValidationException);
+            }
+            catch (SpecificationObjectProcessingDependencyValidationException 
+                specificationObjectProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    specificationObjectProcessingDependencyValidationException);
+            }
+            catch (ObjectColumnProcessingValidationException objectColumnProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(objectColumnProcessingValidationException);
+            }
+            catch (ObjectColumnProcessingDependencyValidationException 
+                objectColumnProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(objectColumnProcessingDependencyValidationException);
+            }
+            catch (DataSetProcessingDependencyException dataSetProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(dataSetProcessingDependencyException);
+            }
+            catch (DataSetProcessingServiceException dataSetProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(dataSetProcessingServiceException);
+            }
+            catch (SpecificationObjectProcessingDependencyException specificationObjectProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(specificationObjectProcessingDependencyException);
+            }
+            catch (SpecificationObjectProcessingServiceException specificationObjectProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(specificationObjectProcessingServiceException);
+            }
+            catch (ObjectColumnProcessingDependencyException objectColumnProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(objectColumnProcessingDependencyException);
+            }
+            catch (ObjectColumnProcessingServiceException objectColumnProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(objectColumnProcessingServiceException);
             }
             catch (Exception exception)
             {

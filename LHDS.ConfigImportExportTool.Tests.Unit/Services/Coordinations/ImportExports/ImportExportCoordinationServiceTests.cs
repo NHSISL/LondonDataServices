@@ -8,12 +8,15 @@ using System.Linq;
 using System.Linq.Expressions;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
+using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Orchestrations.SchemaConfigs.Exceptions;
 using LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports;
 using LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema;
 using LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Coordinations.ImportExports
 {
@@ -82,6 +85,59 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Coordinations.ImportEx
                 .OnProperty(specificationObject => specificationObject.DataSetSpecification).IgnoreIt();
 
             return filler;
+        }
+
+        public static TheoryData<Xeption> ImportExportCoordinationDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new ReadSchemaValidationOrchestrationException(
+                    message: "Read schema orchestration validation error occured, please contact support.",
+                    innerException),
+
+                new ReadSchemaOrchestrationDependencyValidationException(
+                    message: "Read schema orchestration dependency validation error occurred, please contact support.",
+                    innerException),
+
+                new SchemaConfigValidationOrchestrationException(
+                    message: "Schema config orchestration validation error occured, please contact support.",
+                    innerException),
+
+                new SchemaConfigOrchestrationDependencyValidationException(
+                    message: 
+                        "Schema config orchestration dependency validation error occurred, please contact support.",
+                    innerException),
+            };
+        }
+
+        public static TheoryData<Xeption> ImportExportCoordinationDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new ReadSchemaOrchestrationDependencyException(
+                    message: "Read schema orchestration dependency error occurred, please contact support.",
+                    innerException),
+
+                new ReadSchemaOrchestrationServiceException(
+                    message: "Read schema orchestration service error occurred, please contact support.",
+                    innerException),
+
+                new SchemaConfigOrchestrationDependencyException(
+                    message: "Schema config orchestration dependency error occurred, please contact support.",
+                    innerException),
+
+                new SchemaConfigOrchestrationServiceException(
+                    message: "Schema config orchestration service error occurred, please contact support.",
+                    innerException),
+            };
         }
     }
 }

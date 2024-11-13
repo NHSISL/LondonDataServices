@@ -37,7 +37,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Coordinations.ImportEx
                 values: "Text is required");
 
             var expectedImportExportValidationOrchestrationException =
-                new ImportExportValidationOrchestrationException(
+                new ImportExportValidationCoordinationException(
                     message: "Import export coordination validation error occurred, fix the errors and try again.",
                     innerException: invalidArgumentImportExportCoordinationException);
 
@@ -47,8 +47,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Coordinations.ImportEx
                     version: invalidString,
                     filePath: invalidString);
 
-            ImportExportValidationOrchestrationException actualException =
-                await Assert.ThrowsAsync<ImportExportValidationOrchestrationException>(importTask.AsTask);
+            ImportExportValidationCoordinationException actualException =
+                await Assert.ThrowsAsync<ImportExportValidationCoordinationException>(importTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedImportExportValidationOrchestrationException);

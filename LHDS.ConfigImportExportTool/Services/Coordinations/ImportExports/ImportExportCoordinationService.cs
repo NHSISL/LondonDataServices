@@ -28,12 +28,15 @@ namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports
         public async ValueTask Export(string dataSetName, string version, string filePath) =>
             throw new NotImplementedException();
 
-        public async ValueTask Import(string dataSetName, string version, string filePath) 
-        {
-            List<SpecificationObject> specificationObjects = 
-                await this.readSchemaOrchestrationService.ReadFile(filePath);
+        public ValueTask Import(string dataSetName, string version, string filePath) =>
+            TryCatch(async () =>
+            {
+                ValidateImportFileArguments(dataSetName, version, filePath);
 
-            await this.schemaConfigOrchestrationService.Import(specificationObjects, dataSetName, version);
-        }
+                List<SpecificationObject> specificationObjects =
+                    await this.readSchemaOrchestrationService.ReadFile(filePath);
+
+                await this.schemaConfigOrchestrationService.Import(specificationObjects, dataSetName, version);
+            });
     }
 }

@@ -29,7 +29,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.Files
                     innerException: dependencyValidationException);
 
             var expectedFileDependencyValidationException =
-                new ObjectColumnProcessingDependencyValidationException(
+                new FileDependencyValidationException(
                     message: "File dependency validation error occurred, please contact support.",
                     innerException: invalidFileServiceDependencyException);
 
@@ -41,8 +41,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.Files
             ValueTask<bool> writeToFileTask =
                 this.fileService.DeleteDirectoryAsync(somePath, recursive);
 
-            ObjectColumnProcessingDependencyValidationException actualException =
-                await Assert.ThrowsAsync<ObjectColumnProcessingDependencyValidationException>(writeToFileTask.AsTask);
+            FileDependencyValidationException actualException =
+                await Assert.ThrowsAsync<FileDependencyValidationException>(writeToFileTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedFileDependencyValidationException);

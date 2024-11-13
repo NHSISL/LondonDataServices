@@ -5,19 +5,16 @@
 using EFxceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using STX.EFCore.Client.Clients;
 
 namespace LHDS.ConfigImportExportTool.Brokers.Storages.Sql
 {
     public partial class StorageBroker : EFxceptionsContext, IStorageBroker
     {
         private readonly IConfiguration configuration;
-        private readonly IEFCoreClient efCoreClient;
 
         public StorageBroker(IConfiguration configuration)
         {
             this.configuration = configuration;
-            this.efCoreClient = new EFCoreClient(this);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -42,28 +39,61 @@ namespace LHDS.ConfigImportExportTool.Brokers.Storages.Sql
             optionsBuilder.UseSqlServer(connectionString);
         }
 
-        private async ValueTask<T> InsertAsync<T>(T @object) where T : class =>
-            await efCoreClient.InsertAsync(@object);
+        private async ValueTask<T> InsertAsync<T>(T @object)
+        {
+            this.Entry(@object).State = EntityState.Added;
+            await this.SaveChangesAsync();
+            this.Entry(@object).State = EntityState.Detached;
+
+            return @object;
+        }
+
+        private IQueryable<T> SelectAll<T>() where T : class => this.Set<T>();
 
         private async ValueTask<IQueryable<T>> SelectAllAsync<T>() where T : class =>
-            await efCoreClient.SelectAllAsync<T>();
+            this.Set<T>();
 
-        private async ValueTask<T> SelectAsync<T>(params object[] @objectIds) where T : class =>
-            await efCoreClient.SelectAsync<T>(@objectIds);
+        private async ValueTask<T?> SelectAsync<T>(params object[] @objectIds) where T : class =>
+            await this.FindAsync<T>(objectIds);
 
-        private async ValueTask<T> UpdateAsync<T>(T @object) where T : class =>
-            await efCoreClient.UpdateAsync(@object);
+        private async ValueTask<T> UpdateAsync<T>(T @object)
+        {
+            this.Entry(@object).State = EntityState.Modified;
+            await this.SaveChangesAsync();
+            this.Entry(@object).State = EntityState.Detached;
 
-        private async ValueTask<T> DeleteAsync<T>(T @object) where T : class =>
-            await efCoreClient.DeleteAsync(@object);
+            return @object;
+        }
 
-        private async ValueTask BulkInsertAsync<T>(IEnumerable<T> objects) where T : class =>
-            await efCoreClient.BulkInsertAsync<T>(objects);
+        private async ValueTask<T> DeleteAsync<T>(T @object)
+        {
+            this.Entry(@object).State = EntityState.Deleted;
+            await this.SaveChangesAsync();
+            this.Entry(@object).State = EntityState.Detached;
 
-        private async ValueTask BulkUpdateAsync<T>(IEnumerable<T> objects) where T : class =>
-            await efCoreClient.BulkUpdateAsync<T>(objects);
+            return @object;
+        }
 
-        private async ValueTask BulkDeleteAsync<T>(IEnumerable<T> objects) where T : class =>
-            await efCoreClient.BulkDeleteAsync<T>(objects);
+        private async ValueTask BulkInsertAsync<T>(IEnumerable<T> objects) where T : class
+        {
+            objects.ToList();
+            this.AddRange(objects);
+            await this.SaveChangesAsync();
+            objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Detached);
+        }
+
+        private async ValueTask BulkUpdateAsync<T>(IEnumerable<T> objects) where T : class
+        {
+            objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Modified);
+            await this.SaveChangesAsync();
+            objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Detached);
+        }
+
+        private async ValueTask BulkDeleteAsync<T>(IEnumerable<T> objects) where T : class
+        {
+            objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Deleted);
+            await this.SaveChangesAsync();
+            objects.ToList().ForEach(@object => this.Entry(@object).State = EntityState.Detached);
+        }
     }
 }

@@ -7,7 +7,7 @@ using LHDS.ConfigImportExportTool.Models.Foundations.Datasets.Exceptions;
 using Microsoft.Data.SqlClient;
 using Xeptions;
 
-namespace LHDS.Core.Services.Foundations.DataSets
+namespace LHDS.ConfigImportExportTool.Services.Foundations.DataSets
 {
     internal partial class DataSetService
     {

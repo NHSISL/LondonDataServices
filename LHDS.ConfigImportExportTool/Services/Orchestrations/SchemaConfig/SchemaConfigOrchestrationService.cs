@@ -37,7 +37,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask Export(List<SpecificationObject> schemaConfig, string dataSetName, string version) =>
+        public async ValueTask Export(List<SpecificationObject> specificationObjects, string dataSetName, string version) =>
             throw new NotImplementedException();
 
         public ValueTask Import(

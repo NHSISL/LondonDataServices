@@ -3,10 +3,14 @@
 // ---------------------------------------------------------
 
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
-using LHDS.ConfigImportExportTool.Models.Bases.SchemaConfigs;
+using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
+using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
+using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
 using LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
+using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
 {
@@ -20,7 +24,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
         public SchemaConfigOrchestrationService(
             IObjectColumnProcessingService objectColumnProcessingService,
             ISpecificationObjectProcessingService specificationObjectProcessingService,
-            IDataSetProcessingService dataSetProcessingProcessingService,
+            IDataSetProcessingService dataSetProcessingService,
             ILoggingBroker loggingBroker)
         {
             this.objectColumnProcessingService = objectColumnProcessingService;
@@ -29,10 +33,40 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask Export(List<SchemaConfig> data, string dataSetName, string version) =>
+        public async ValueTask Export(List<SpecificationObject> schemaConfig, string dataSetName, string version) =>
             throw new NotImplementedException();
 
-        public async ValueTask Import(List<SchemaConfig> data, string dataSetName, string version) =>
-            throw new NotImplementedException();
+        public ValueTask Import(
+            List<SpecificationObject> specificationObjects,
+            string dataSetName,
+            string version) =>
+                TryCatch(async () =>
+                {
+                    ValidateSchemaImportArguments(specificationObjects, dataSetName, version);
+
+                    IQueryable<DataSet> storageDataSets = 
+                        await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
+
+                    DataSet matchedDataSet = storageDataSets.First(dataSet => dataSet.DataSetName == dataSetName);
+
+                    DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications
+                        .First(specification => specification.SupplierSpecificationVersion == version);
+
+                    foreach (SpecificationObject specificationObject in specificationObjects)
+                    {
+                        specificationObject.DataSetSpecificationId = dataSetSpecification.Id;
+
+                        SpecificationObject storageSpecificationObject = await specificationObjectProcessingService
+                            .ReadOrInsertSpecificationObjectAsync(specificationObject);
+
+                        foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
+                        {
+                            objectColumn.SpecificationObjectId = storageSpecificationObject.Id;
+
+                            ObjectColumn storageObjectColumn = await objectColumnProcessingService
+                                .ReadOrInsertObjectColumnAsync(objectColumn);
+                        }
+                    };
+                });
     }
 }

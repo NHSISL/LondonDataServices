@@ -2,21 +2,47 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns;
 
 namespace LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns
 {
-    internal class ObjectColumnProcessingService : IObjectColumnProcessingService
+    internal partial class ObjectColumnProcessingService : IObjectColumnProcessingService
     {
-        private readonly IObjectColumnService objectColumnService;
+        private readonly IObjectColumnService ObjectColumnService;
+        private readonly ILoggingBroker loggingBroker;
 
-        public ObjectColumnProcessingService(IObjectColumnService objectColumnService)
+        public ObjectColumnProcessingService(
+            IObjectColumnService ObjectColumnService,
+            ILoggingBroker loggingBroker)
         {
-            this.objectColumnService = objectColumnService;
+            this.ObjectColumnService = ObjectColumnService;
+            this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<ObjectColumn> ReadOrInsertObjectColumnAsync(ObjectColumn objectColumn) =>
-            throw new NotImplementedException();
+        public ValueTask<ObjectColumn> ReadOrInsertObjectColumnAsync(
+            ObjectColumn ObjectColumn) =>
+            TryCatch(async () =>
+            {
+                ValidateObjectColumnProcessingOnRetrieveOrAdd(ObjectColumn);
+
+                IQueryable<ObjectColumn> retrievedObjectColumn =
+                    await this.ObjectColumnService.RetrieveAllObjectColumnsAsync();
+
+                ObjectColumn? maybeObjectColumn =
+                    retrievedObjectColumn.FirstOrDefault(
+                        item => item.SupplierColumnName == ObjectColumn.SupplierColumnName);
+
+                if (maybeObjectColumn == null)
+                {
+                    return await this.ObjectColumnService.AddObjectColumnAsync(ObjectColumn);
+                }
+
+                return maybeObjectColumn;
+            });
+
+        public ValueTask<IQueryable<ObjectColumn>> RetrieveAllObjectColumnsAsync() =>
+            TryCatch(async () => await this.ObjectColumnService.RetrieveAllObjectColumnsAsync());
     }
 }

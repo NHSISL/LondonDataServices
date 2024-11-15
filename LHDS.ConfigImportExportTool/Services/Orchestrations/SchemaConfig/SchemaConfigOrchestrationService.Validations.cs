@@ -2,21 +2,33 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using LHDS.ConfigImportExportTool.Models.Foundations.Files.Exceptions;
-using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.SchemaConfigs.Exceptions;
 using Xeptions;
 
-namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
+namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
 {
-    internal partial class ReadSchemaOrchestrationService
+    internal partial class SchemaConfigOrchestrationService
     {
-        private void ValidateProcessSchemaFileArguments(string path)
+        private void ValidateSchemaImportArguments(
+            List<SpecificationObject> specificationObjects,
+            string dataSetName,
+            string version)
         {
-            Validate<InvalidArgumentReadSchemaOrchestrationException>(
-                message: "Invalid read schema argument(s), please correct the errors and try again.",
-                (Rule: IsInvalid(path), Parameter: nameof(path)));
+            ValidateSpecificationObjectListIsNotNull(specificationObjects);
+
+            Validate<InvalidArgumentSchemaConfigOrchestrationException>(
+                message: "Invalid schema config argument(s), please correct the errors and try again.",
+                (Rule: IsInvalid(dataSetName), Parameter: nameof(dataSetName)),
+                (Rule: IsInvalid(version), Parameter: nameof(version)));
+        }
+
+        private static void ValidateSpecificationObjectListIsNotNull(List<SpecificationObject> specificationObjects)
+        {
+            if (specificationObjects is null)
+            {
+                throw new NullSpecificationObjectListException(message: "Specification object list is null.");
+            }
         }
 
         private static dynamic IsInvalid(string? text) => new

@@ -8,8 +8,8 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects.Exceptions;
 using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects;
-using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects.Exceptions;
 using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -99,17 +99,6 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.Specificat
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
-
-        private static SpecificationObject CreateRandomModifySpecificationObject(DateTimeOffset dateTimeOffset)
-        {
-            int randomDaysInPast = GetRandomNegativeNumber();
-            SpecificationObject randomSpecificationObject = CreateRandomSpecificationObject(dateTimeOffset);
-
-            randomSpecificationObject.CreatedDate =
-                randomSpecificationObject.CreatedDate.AddDays(randomDaysInPast);
-
-            return randomSpecificationObject;
-        }
 
         private static IQueryable<SpecificationObject> CreateRandomSpecificationObjects()
         {

@@ -16,8 +16,7 @@ namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports
                 message: "Invalid import export coordination argument(s), please correct the errors and try again.",
                 (Rule: IsInvalid(dataSetName), Parameter: nameof(dataSetName)),
                 (Rule: IsInvalid(version), Parameter: nameof(version)),
-                (Rule: IsInvalid(filePath), Parameter: nameof(filePath))
-                );
+                (Rule: IsInvalid(filePath), Parameter: nameof(filePath)));
         }
 
         private static dynamic IsInvalid(string? text) => new

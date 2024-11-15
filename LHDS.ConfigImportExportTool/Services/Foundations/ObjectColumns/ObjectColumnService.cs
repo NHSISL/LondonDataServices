@@ -8,7 +8,7 @@ using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns;
 
-namespace LHDS.Core.Services.Foundations.ObjectColumns
+namespace LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns
 {
     internal partial class ObjectColumnService : IObjectColumnService
     {

@@ -8,7 +8,7 @@ using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Services.Foundations.DataSets;
 
-namespace LHDS.Core.Services.Foundations.DataSets
+namespace LHDS.ConfigImportExportTool.Services.Foundations.DataSets
 {
     internal partial class DataSetService : IDataSetService
     {

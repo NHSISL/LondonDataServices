@@ -2,9 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-namespace LHDS.ConfigImportExportTool.Clients
+namespace LHDS.ConfigImportExportTool.Clients.ImportExports
 {
-    internal interface IImportExportClient
+    public interface IImportExportClient
     {
         public ValueTask Import(string dataSetName, string version, string filePath);
     }

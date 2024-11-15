@@ -30,7 +30,6 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects
                 IQueryable<SpecificationObject> retrievedSpecificationObject =
                     await this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
 
-                // TODO: Check for the existence of the specification object => Supplier Object Name, DataSetSpecificationId
                 SpecificationObject? maybeSpecificationObject =
                     retrievedSpecificationObject.FirstOrDefault(
                         item => item.SupplierObjectName == specificationObject.SupplierObjectName);

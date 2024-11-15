@@ -37,14 +37,16 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             List<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects(inputDataSetId);
             List<SpecificationObject> inputSpecificationObjects = new List<SpecificationObject>();
 
+            DataSet storageDataSet = randomDataSet;
+            List<SpecificationObject> specificationObjects = CreateRandomSpecificationObjects(inputDataSetId); 
+            List<DataSet> storageDataSets = new List<DataSet> { storageDataSet };
+
             foreach (SpecificationObject specificationObject in randomSpecificationObjects)
             {
                 List<ObjectColumn> newObjectColumns = CreateRandomObjectColumns(specificationObject.Id);
                 specificationObject.ObjectColumns = newObjectColumns;
                 inputSpecificationObjects.Add(specificationObject);
             }
-
-            List<DataSet> storageDataSets = new List<DataSet> { randomDataSet };
 
             this.dataSetProcessingServiceMock.Setup(service =>
                 service.RetrieveAllDataSetsAsync())

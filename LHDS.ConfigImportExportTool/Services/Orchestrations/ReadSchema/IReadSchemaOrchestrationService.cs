@@ -10,6 +10,6 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
     internal interface IReadSchemaOrchestrationService
     {
         ValueTask<List<SpecificationObject>> ReadFile(string path);
-        ValueTask WriteFile(List<ObjectColumn> data, string path);
+        ValueTask WriteFile(List<SpecificationObject> data, string path);
     }
 }

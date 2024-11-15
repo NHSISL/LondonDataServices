@@ -1,7 +1,7 @@
 using System;
 using Xeptions;
 
-namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects.Exceptions
+namespace LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects.Exceptions
 {
     public class InvalidSpecificationObjectReferenceException : Xeption
     {

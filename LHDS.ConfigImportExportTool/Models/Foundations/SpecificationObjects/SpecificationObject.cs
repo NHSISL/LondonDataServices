@@ -4,7 +4,6 @@
 
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects
 {
@@ -25,12 +24,7 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
-
-        [BindNever]
         public DataSetSpecification? DataSetSpecification { get; set; } = null!;
-
-        [BindNever]
         public List<ObjectColumn> ObjectColumns { get; set; } = new List<ObjectColumn>();
-
     }
 }

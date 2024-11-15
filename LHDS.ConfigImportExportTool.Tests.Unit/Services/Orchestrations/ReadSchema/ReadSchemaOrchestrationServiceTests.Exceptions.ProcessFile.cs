@@ -6,8 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Orchestrations.SchemaConfigs.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -24,7 +25,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
         {
             // given
             string inputPath = GetRandomString();
-            
+
             var expectedDependencyException =
                 new ReadSchemaOrchestrationDependencyValidationException(
                     message: "Read schema orchestration dependency validation error occurred, " +
@@ -36,7 +37,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask<List<ObjectColumn>> processSchemaFileTask =
+            ValueTask<List<SpecificationObject>> processSchemaFileTask =
                 this.readSchemaOrchestrationService.ReadFile(inputPath);
 
             ReadSchemaOrchestrationDependencyValidationException actualException =
@@ -81,7 +82,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<List<ObjectColumn>> processSchemaFileTask =
+            ValueTask<List<SpecificationObject>> processSchemaFileTask =
                 this.readSchemaOrchestrationService.ReadFile(inputPath);
 
             ReadSchemaOrchestrationDependencyException actualException =
@@ -130,7 +131,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<List<ObjectColumn>> processSchemaFileTask =
+            ValueTask<List<SpecificationObject>> processSchemaFileTask =
                 this.readSchemaOrchestrationService.ReadFile(inputPath);
 
             ReadSchemaOrchestrationServiceException actualException =

@@ -7,7 +7,7 @@ using LHDS.ConfigImportExportTool.Brokers.Loggings;
 
 namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
 {
-    internal partial class CsvHelperService<T> : ICsvHelperService
+    internal partial class CsvHelperService : ICsvHelperService
     {
         private readonly ICsvHelperBroker csvHelperBroker;
         private readonly ILoggingBroker loggingBroker;

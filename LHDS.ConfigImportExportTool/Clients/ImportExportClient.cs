@@ -2,9 +2,22 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
+using LHDS.ConfigImportExportTool.Brokers.DateTimes;
+using LHDS.ConfigImportExportTool.Brokers.Files;
 using LHDS.ConfigImportExportTool.Models.Clients.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Foundations.Configurations.Retries;
 using LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports;
+using LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers;
+using LHDS.ConfigImportExportTool.Services.Foundations.DataSets;
+using LHDS.ConfigImportExportTool.Services.Foundations.Files;
+using LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects;
+using LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema;
+using LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Xeptions;
 
 namespace LHDS.ConfigImportExportTool.Clients
@@ -13,9 +26,35 @@ namespace LHDS.ConfigImportExportTool.Clients
     {
         private readonly IImportExportCoordinationService importExportCoordinationService;
 
-        public ImportExportClient(IImportExportCoordinationService importExportCoordinationService)
+        public ImportExportClient()
         {
-            this.importExportCoordinationService = importExportCoordinationService;
+            IHost host = RegisterServices();
+            importExportCoordinationService = host.Services.GetRequiredService<IImportExportCoordinationService>();
+        }
+
+        private static IHost RegisterServices()
+        {
+            IHostBuilder builder = Host.CreateDefaultBuilder();
+
+            builder.ConfigureServices(configuration =>
+            {
+                configuration.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
+                configuration.AddTransient<IDateTimeBroker, DateTimeBroker>();
+                configuration.AddTransient<IFileBroker, FileBroker>();
+                configuration.AddTransient<ICsvHelperService, CsvHelperService>();
+                configuration.AddTransient<IDataSetService, DataSetService>();
+                configuration.AddTransient<IFileService, FileService>();
+                configuration.AddTransient<IRetryConfig, RetryConfig>();
+                configuration.AddTransient<IObjectColumnService, ObjectColumnService>();
+                configuration.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
+                configuration.AddTransient<IReadSchemaOrchestrationService, ReadSchemaOrchestrationService>();
+                configuration.AddTransient<ISchemaConfigOrchestrationService, SchemaConfigOrchestrationService>();
+                configuration.AddTransient<IImportExportCoordinationService, ImportExportCoordinationService>();
+            });
+
+            IHost host = builder.Build();
+
+            return host;
         }
 
         public async ValueTask Import(string dataSetName, string version, string filePath)

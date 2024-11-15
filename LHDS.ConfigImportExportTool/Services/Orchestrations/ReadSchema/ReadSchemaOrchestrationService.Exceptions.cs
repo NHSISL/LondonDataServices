@@ -30,7 +30,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
             {
                 throw CreateAndLogDependencyValidationException(fileValidationException);
             }
-            catch (ObjectColumnProcessingDependencyValidationException fileDependencyValidationException)
+            catch (FileDependencyValidationException fileDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(fileDependencyValidationException);
             }

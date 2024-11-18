@@ -32,7 +32,7 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
     {
         private readonly IImportExportCoordinationService importExportCoordinationService;
         private readonly IConfiguration configuration;
-        public IStorageBroker storageBroker;
+        internal readonly IStorageBroker storageBroker;
 
         public ImportExportClient()
         {

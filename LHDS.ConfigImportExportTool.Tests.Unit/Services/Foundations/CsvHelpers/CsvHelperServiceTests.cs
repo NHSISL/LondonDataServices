@@ -26,7 +26,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.CsvHelpers
             this.csvHelperBrokerMock = new Mock<ICsvHelperBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
-            this.csvHelperService = new CsvHelperService<dynamic>(
+            this.csvHelperService = new CsvHelperService(
                 csvHelperBroker: this.csvHelperBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }

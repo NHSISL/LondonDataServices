@@ -38,7 +38,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
 		<PackageReference Include="Azure.Storage.Blobs" Version="12.22.2" />
 		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.20.1" />
-		<PackageReference Include="Azure.Storage.Queues" Version="12.20.1" />
+		<PackageReference Include="Azure.Storage.Queues" Version="12.21.0" />
 		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.6" />
 		<PackageReference Include="NEL.MESH" Version="1.0.0.8" />
 		<PackageReference Include="RESTFulSense" Version="3.1.0" />

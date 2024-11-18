@@ -69,7 +69,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                 return specificationObjects;
             });
 
-        public async ValueTask WriteFile(List<ObjectColumn> data, string path) =>
+        public async ValueTask WriteFile(List<SpecificationObject> data, string path) =>
             throw new NotImplementedException();
     }
 }

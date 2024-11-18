@@ -47,6 +47,8 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                     IQueryable<DataSet> storageDataSets = 
                         await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
 
+                    storageDataSets.Include(dataSet => dataSet.DataSetSpecifications);
+
                     DataSet matchedDataSet = storageDataSets.First(dataSet => dataSet.DataSetName == dataSetName);
 
                     DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications

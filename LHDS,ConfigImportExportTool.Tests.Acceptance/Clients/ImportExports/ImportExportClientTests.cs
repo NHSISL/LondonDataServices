@@ -29,8 +29,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
 
             var configuration = configurationBuilder.Build();
 
-            storageBroker = new StorageBroker(configuration);
             importExportClient = new ImportExportClient();
+            storageBroker = importExportClient.st
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

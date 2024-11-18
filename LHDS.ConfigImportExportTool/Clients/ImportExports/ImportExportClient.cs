@@ -21,6 +21,7 @@ using LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs;
 using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
 using LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xeptions;
@@ -30,18 +31,31 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
     public class ImportExportClient : IImportExportClient
     {
         private readonly IImportExportCoordinationService importExportCoordinationService;
+        private readonly IConfiguration configuration;
+        public IStorageBroker storageBroker;
 
         public ImportExportClient()
         {
-            IHost host = RegisterServices();
+            var configurationBuilder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.development.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
+            this.configuration = configurationBuilder.Build();
+            IHost host = RegisterServices(this.configuration);
             importExportCoordinationService = host.Services.GetRequiredService<IImportExportCoordinationService>();
+            storageBroker = host.Services.GetRequiredService<IStorageBroker>();
         }
 
-        private static IHost RegisterServices()
+        private static IHost RegisterServices(IConfiguration configuration)
         {
             IHostBuilder builder = Host.CreateDefaultBuilder();
+            int maxRetryAttempts = configuration.GetSection("RetryConfig..MaxRetryAttempts").Get<int>();
 
-            var retry = new RetryConfig(5, TimeSpan.FromSeconds(10));
+            int pauseBetweenFailuresInSeconds = 
+                configuration.GetSection("RetryConfig..PauseBetweenFailures").Get<int>();
+
+            var retrySettings = new RetryConfig(maxRetryAttempts, TimeSpan.FromSeconds(pauseBetweenFailuresInSeconds));
 
             builder.ConfigureServices(configuration =>
             {
@@ -53,8 +67,7 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
                 configuration.AddTransient<ICsvHelperService, CsvHelperService>();
                 configuration.AddTransient<IDataSetService, DataSetService>();
                 configuration.AddTransient<IFileService, FileService>();
-                //configuration.AddTransient<IRetryConfig, RetryConfig>();
-                configuration.AddSingleton<IRetryConfig>(retry);
+                configuration.AddSingleton<IRetryConfig>(retrySettings);
                 configuration.AddTransient<IObjectColumnService, ObjectColumnService>();
                 configuration.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
                 configuration.AddTransient<IDataSetProcessingService, DataSetProcessingService>();

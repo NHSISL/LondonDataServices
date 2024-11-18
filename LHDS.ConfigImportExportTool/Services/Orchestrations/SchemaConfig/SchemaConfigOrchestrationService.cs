@@ -48,8 +48,13 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                 {
                     ValidateSchemaImportArguments(specificationObjects, dataSetName, version);
 
-                    IQueryable<DataSet> storageDataSets = 
-                        await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
+                    //IQueryable<DataSet> storageDataSets = 
+                    //    await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
+
+                    //storageDataSets.Include(dataSet => dataSet.DataSetSpecifications);
+
+                    IQueryable<DataSet> storageDataSets =
+                        await this.storageBroker.SelectAllDataSetsAsync();
 
                     storageDataSets.Include(dataSet => dataSet.DataSetSpecifications);
 
@@ -58,7 +63,9 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                     IQueryable<DataSetSpecification> storageDataSetSpecification =
                         await this.storageBroker.SelectAllDataSetSpecificationsAsync();
 
-                    storageDataSetSpecification = storageDataSetSpecification.Where(dss => dss.DataSetId == matchedDataSet.Id);
+                    storageDataSetSpecification = storageDataSetSpecification
+                        .Where(dss => dss.DataSetId == matchedDataSet.Id).Include(dss => dss.DataSet);
+
                     var results = storageDataSetSpecification.ToList();
 
                     DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications

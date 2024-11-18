@@ -70,9 +70,9 @@ namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports
             }
         }
 
-        private ImportExportValidationCoordinationException CreateAndLogValidationException(Xeption exception)
+        private ImportExportCoordinationValidationException CreateAndLogValidationException(Xeption exception)
         {
-            var importExportValidationCoordinationException = new ImportExportValidationCoordinationException(
+            var importExportValidationCoordinationException = new ImportExportCoordinationValidationException(
                 message: "Import export coordination validation error occurred, fix the errors and try again.",
                 innerException: exception);
 

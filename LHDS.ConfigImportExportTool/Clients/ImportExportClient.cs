@@ -63,7 +63,7 @@ namespace LHDS.ConfigImportExportTool.Clients
             {
                 await this.importExportCoordinationService.Import(dataSetName, version, filePath);
             }
-            catch (ImportExportValidationCoordinationException ImportExportCoordinationValidationException)
+            catch (ImportExportCoordinationValidationException ImportExportCoordinationValidationException)
             {
                 throw new ImportExportClientValidationException(
                     message: "Import export client validation error occurred, fix errors and try again.",

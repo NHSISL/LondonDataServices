@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
+using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
@@ -20,17 +21,20 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
         private readonly ISpecificationObjectProcessingService specificationObjectProcessingService;
         private readonly IDataSetProcessingService dataSetProcessingService;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IStorageBroker storageBroker;
 
         public SchemaConfigOrchestrationService(
             IObjectColumnProcessingService objectColumnProcessingService,
             ISpecificationObjectProcessingService specificationObjectProcessingService,
             IDataSetProcessingService dataSetProcessingService,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            IStorageBroker storageBroker)
         {
             this.objectColumnProcessingService = objectColumnProcessingService;
             this.specificationObjectProcessingService = specificationObjectProcessingService;
             this.dataSetProcessingService = dataSetProcessingService;
             this.loggingBroker = loggingBroker;
+            this.storageBroker = storageBroker;
         }
 
         public async ValueTask Export(List<SpecificationObject> schemaConfig, string dataSetName, string version) =>
@@ -50,6 +54,12 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                     storageDataSets.Include(dataSet => dataSet.DataSetSpecifications);
 
                     DataSet matchedDataSet = storageDataSets.First(dataSet => dataSet.DataSetName == dataSetName);
+
+                    IQueryable<DataSetSpecification> storageDataSetSpecification =
+                        await this.storageBroker.SelectAllDataSetSpecificationsAsync();
+
+                    storageDataSetSpecification = storageDataSetSpecification.Where(dss => dss.DataSetId == matchedDataSet.Id);
+                    var results = storageDataSetSpecification.ToList();
 
                     DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications
                         .First(specification => specification.SupplierSpecificationVersion == version);

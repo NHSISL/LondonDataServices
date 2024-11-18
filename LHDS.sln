@@ -63,7 +63,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.ConfigImportExportTool
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LHDS.ConfigImportExportTool.Tests.Integration", "LHDS.ConfigImportExportTool.Tests.Integration\LHDS.ConfigImportExportTool.Tests.Integration.csproj", "{08017380-62BA-4F7F-AC37-E17D558ADEBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LHDS,ConfigImportExportTool.Tests.Acceptance", "LHDS,ConfigImportExportTool.Tests.Acceptance\LHDS,ConfigImportExportTool.Tests.Acceptance.csproj", "{76B8EDC6-5418-435C-81F9-CF9659A2483E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LHDS.ConfigImportExportTool.Tests.Acceptance", "LHDS,ConfigImportExportTool.Tests.Acceptance\LHDS.ConfigImportExportTool.Tests.Acceptance.csproj", "{76B8EDC6-5418-435C-81F9-CF9659A2483E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

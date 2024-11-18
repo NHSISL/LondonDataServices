@@ -52,27 +52,11 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                         await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
 
                     storageDataSetQuery = storageDataSetQuery
-                        .Include(dataSet => dataSet.DataSetSpecifications);
-                    //.Where(dataSet => dataSet.DataSetName == dataSetName);
+                        .Include(dataSet => dataSet.DataSetSpecifications)
+                        .Where(dataSet => dataSet.DataSetName == dataSetName);
 
-                    var x = storageDataSetQuery.FirstOrDefault(dataSet => dataSet.DataSetName == dataSetName);
-
-
-
-                    IQueryable<DataSet> storageDataSets =
-                        await this.storageBroker.SelectAllDataSetsAsync();
-
-                    storageDataSets.Include(dataSet => dataSet.DataSetSpecifications);
-
-                    DataSet matchedDataSet = storageDataSets.First(dataSet => dataSet.DataSetName == dataSetName);
-
-                    IQueryable<DataSetSpecification> storageDataSetSpecification =
-                        await this.storageBroker.SelectAllDataSetSpecificationsAsync();
-
-                    storageDataSetSpecification = storageDataSetSpecification
-                        .Where(dss => dss.DataSetId == matchedDataSet.Id).Include(dss => dss.DataSet);
-
-                    var results = storageDataSetSpecification.ToList();
+                    DataSet matchedDataSet = 
+                        storageDataSetQuery.FirstOrDefault(dataSet => dataSet.DataSetName == dataSetName);
 
                     DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications
                         .FirstOrDefault(specification => specification.SupplierSpecificationVersion == version);

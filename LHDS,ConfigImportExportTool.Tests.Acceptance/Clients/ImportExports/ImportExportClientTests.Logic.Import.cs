@@ -18,6 +18,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
             Supplier randomSupplier = CreateRandomSupplier();
             DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
             DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(randomDataSet.Id);
+
+            List<DataSetSpecification> dataSetSpecifications = 
+                new List<DataSetSpecification> { randomDataSetSpecification };
+
+            randomDataSet.DataSetSpecifications = dataSetSpecifications;
             await this.storageBroker.InsertSupplierAsync(randomSupplier);
             await this.storageBroker.InsertDataSetAsync(randomDataSet);
             await this.storageBroker.InsertDataSetSpecificationAsync(randomDataSetSpecification);
@@ -26,7 +31,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
 
             string inputFilePath = Path.Combine(
                 assembly,
-                $"Resource{separator}Clients{separator}ImportExports{separator}" +
+                $"Resources{separator}Clients{separator}ImportExport{separator}" +
                     "Test_schema_file.csv");
 
             //When

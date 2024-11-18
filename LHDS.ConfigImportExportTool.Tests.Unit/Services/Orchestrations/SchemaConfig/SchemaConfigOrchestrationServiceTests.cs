@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using LHDS.ConfigImportExportTool.Brokers.DateTimes;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
@@ -31,6 +32,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
         private readonly Mock<IObjectColumnProcessingService> objectColumnProcessingServiceMock;
         private readonly Mock<IDataSetProcessingService> dataSetProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ISchemaConfigOrchestrationService schemaConfigOrchestrationService;
 
         public SchemaConfigOrchestrationServiceTests()
@@ -39,12 +41,14 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             this.objectColumnProcessingServiceMock = new Mock<IObjectColumnProcessingService>();
             this.dataSetProcessingServiceMock = new Mock<IDataSetProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
 
             this.schemaConfigOrchestrationService = new SchemaConfigOrchestrationService(
                 specificationObjectProcessingService: this.specificationObjectProcessingServiceMock.Object,
                 objectColumnProcessingService: this.objectColumnProcessingServiceMock.Object,
                 dataSetProcessingService: this.dataSetProcessingServiceMock.Object,
-                loggingBroker: this.loggingBrokerMock.Object);
+                loggingBroker: this.loggingBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

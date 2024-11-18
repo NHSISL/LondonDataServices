@@ -37,7 +37,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             this.storageBroker = storageBroker;
         }
 
-        public async ValueTask Export(List<SpecificationObject> schemaConfig, string dataSetName, string version) =>
+        public async ValueTask Export(List<SpecificationObject> specificationObject, string dataSetName, string version) =>
             throw new NotImplementedException();
 
         public ValueTask Import(
@@ -48,10 +48,16 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                 {
                     ValidateSchemaImportArguments(specificationObjects, dataSetName, version);
 
-                    //IQueryable<DataSet> storageDataSets = 
-                    //    await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
+                    IQueryable<DataSet> storageDataSetQuery =
+                        await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
 
-                    //storageDataSets.Include(dataSet => dataSet.DataSetSpecifications);
+                    storageDataSetQuery = storageDataSetQuery
+                        .Include(dataSet => dataSet.DataSetSpecifications);
+                    //.Where(dataSet => dataSet.DataSetName == dataSetName);
+
+                    var x = storageDataSetQuery.FirstOrDefault(dataSet => dataSet.DataSetName == dataSetName);
+
+
 
                     IQueryable<DataSet> storageDataSets =
                         await this.storageBroker.SelectAllDataSetsAsync();
@@ -69,7 +75,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                     var results = storageDataSetSpecification.ToList();
 
                     DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications
-                        .First(specification => specification.SupplierSpecificationVersion == version);
+                        .FirstOrDefault(specification => specification.SupplierSpecificationVersion == version);
 
                     foreach (SpecificationObject specificationObject in specificationObjects)
                     {

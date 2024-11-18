@@ -5,6 +5,8 @@
 using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
 using LHDS.ConfigImportExportTool.Brokers.DateTimes;
 using LHDS.ConfigImportExportTool.Brokers.Files;
+using LHDS.ConfigImportExportTool.Brokers.Loggings;
+using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
 using LHDS.ConfigImportExportTool.Models.Clients.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Foundations.Configurations.Retries;
@@ -16,6 +18,9 @@ using LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema;
 using LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs;
+using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
+using LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns;
+using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xeptions;
@@ -36,17 +41,25 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
         {
             IHostBuilder builder = Host.CreateDefaultBuilder();
 
+            var retry = new RetryConfig(5, TimeSpan.FromSeconds(10));
+
             builder.ConfigureServices(configuration =>
             {
                 configuration.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
                 configuration.AddTransient<IDateTimeBroker, DateTimeBroker>();
+                configuration.AddTransient<IStorageBroker, StorageBroker>();
+                configuration.AddTransient<ILoggingBroker, LoggingBroker>();
                 configuration.AddTransient<IFileBroker, FileBroker>();
                 configuration.AddTransient<ICsvHelperService, CsvHelperService>();
                 configuration.AddTransient<IDataSetService, DataSetService>();
                 configuration.AddTransient<IFileService, FileService>();
-                configuration.AddTransient<IRetryConfig, RetryConfig>();
+                //configuration.AddTransient<IRetryConfig, RetryConfig>();
+                configuration.AddSingleton<IRetryConfig>(retry);
                 configuration.AddTransient<IObjectColumnService, ObjectColumnService>();
                 configuration.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
+                configuration.AddTransient<IDataSetProcessingService, DataSetProcessingService>();
+                configuration.AddTransient<ISpecificationObjectProcessingService, SpecificationObjectProcessingService>();
+                configuration.AddTransient<IObjectColumnProcessingService, ObjectColumnProcessingService>();
                 configuration.AddTransient<IReadSchemaOrchestrationService, ReadSchemaOrchestrationService>();
                 configuration.AddTransient<ISchemaConfigOrchestrationService, SchemaConfigOrchestrationService>();
                 configuration.AddTransient<IImportExportCoordinationService, ImportExportCoordinationService>();

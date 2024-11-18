@@ -28,11 +28,7 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.Datasets
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
-
-        [BindNever]
         public Supplier? Supplier { get; set; } = null;
-
-        [BindNever]
         public List<DataSetSpecification> DataSetSpecifications { get; set; } = new List<DataSetSpecification>();
     }
 }

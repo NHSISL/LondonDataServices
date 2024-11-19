@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Exceptions
 {
-    public class ImportExportValidationCoordinationException : Xeption
+    public class ImportExportCoordinationValidationException : Xeption
     {
-        public ImportExportValidationCoordinationException(string message, Xeption? innerException)
+        public ImportExportCoordinationValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

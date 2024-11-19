@@ -70,6 +70,13 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
         private static string GetRandomString(int length) =>
            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
+        private static List<ObjectColumn> CreateRandomObjectColumns(DateTimeOffset dateTimeOffset, Guid specificationId)
+        {
+            return CreateObjectColumnFiller(dateTimeOffset, specificationId)
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
         private static List<ObjectColumn> CreateRandomObjectColumns(Guid specificationId)
         {
             return CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset(), specificationId)
@@ -95,10 +102,16 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
         }
 
         private static List<SpecificationObject> CreateRandomSpecificationObjects(
-            DateTimeOffset dateTimeOffset, 
-            Guid dataSetId)
+            DateTimeOffset dateTimeOffset)
         {
-            return CreateSpecificationObjectFiller(dateTimeOffset, dataSetId)
+            return CreateSpecificationObjectFiller(dateTimeOffset)
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static List<SpecificationObject> CreateRandomSpecificationObjects()
+        {
+            return CreateSpecificationObjectFiller(dateTimeOffset:GetRandomDateTimeOffset())
                 .Create(count: GetRandomNumber())
                     .ToList();
         }

@@ -46,6 +46,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                     var newSpecificationObjects = new SpecificationObject
                     {
                         SupplierObjectName = group.Key,
+                        ObjectDescription = group.First().TableDescription,
                     };
 
                     foreach (var canonicalSchemaObject in group)
@@ -53,6 +54,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                         var newObjectColumn = new ObjectColumn
                         {
                             SupplierColumnName = canonicalSchemaObject.ColumnName,
+                            ColumnDescription = canonicalSchemaObject.ColumnDescription,
                             SqlDataType = canonicalSchemaObject.ColumnDataType,
                             Length = canonicalSchemaObject.ColumnLength,
                             OrdinalPosition = canonicalSchemaObject.ColumnOrdinal,

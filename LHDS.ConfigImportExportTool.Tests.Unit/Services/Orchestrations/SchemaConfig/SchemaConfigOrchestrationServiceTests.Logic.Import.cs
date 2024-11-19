@@ -21,6 +21,9 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
         public async Task ShouldImportObjectsAsync()
         {
             // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Guid inputSpecifcationObjectId = Guid.NewGuid();
+            Guid inputObjectColumnId = Guid.NewGuid();
             Guid inputDataSetId = Guid.NewGuid();
             string randomDataSetName = GetRandomString(150);
             string inputDataSetName = randomDataSetName;
@@ -54,6 +57,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
             foreach (SpecificationObject specificationObject in randomSpecificationObjects)
             {
+                this.identifierBrokerMock.Setup(broker =>
+                        broker.GetIdentifier())
+                            .Returns(inputSpecifcationObjectId);
+
+                specificationObject.Id = inputSpecifcationObjectId;
                 specificationObject.DataSetSpecificationId = storageDataSetSpecification.Id;
 
                 this.specificationObjectProcessingServiceMock.Setup(service =>
@@ -62,6 +70,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
                 foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
                 {
+                    this.identifierBrokerMock.Setup(broker =>
+                        broker.GetIdentifier())
+                            .Returns(inputObjectColumnId);
+
+                    objectColumn.Id = inputObjectColumnId;
                     objectColumn.SpecificationObjectId = storageDataSetSpecification.Id;
 
                     this.objectColumnProcessingServiceMock.Setup(service =>
@@ -100,6 +113,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             this.dataSetProcessingServiceMock.VerifyNoOtherCalls();
             this.specificationObjectProcessingServiceMock.VerifyNoOtherCalls();
             this.objectColumnProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

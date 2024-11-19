@@ -5,6 +5,7 @@
 using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
 using LHDS.ConfigImportExportTool.Brokers.DateTimes;
 using LHDS.ConfigImportExportTool.Brokers.Files;
+using LHDS.ConfigImportExportTool.Brokers.Identifiers;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
 using LHDS.ConfigImportExportTool.Models.Clients.Exceptions;
@@ -62,6 +63,7 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
                 configuration.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
                 configuration.AddTransient<IDateTimeBroker, DateTimeBroker>();
                 configuration.AddTransient<IStorageBroker, StorageBroker>();
+                configuration.AddTransient<IIdentifierBroker, IdentifierBroker>();
                 configuration.AddTransient<ILoggingBroker, LoggingBroker>();
                 configuration.AddTransient<IFileBroker, FileBroker>();
                 configuration.AddTransient<ICsvHelperService, CsvHelperService>();

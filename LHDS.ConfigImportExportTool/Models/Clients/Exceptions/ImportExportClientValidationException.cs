@@ -4,11 +4,11 @@
 
 using Xeptions;
 
-namespace LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Exceptions
+namespace LHDS.ConfigImportExportTool.Models.Clients.Exceptions
 {
-    public class ImportExportValidationCoordinationException : Xeption
+    public class ImportExportClientValidationException : Xeption
     {
-        public ImportExportValidationCoordinationException(string message, Xeption? innerException)
+        public ImportExportClientValidationException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

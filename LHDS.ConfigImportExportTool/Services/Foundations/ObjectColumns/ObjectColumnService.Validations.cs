@@ -5,7 +5,7 @@
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns.Exceptions;
 
-namespace LHDS.Core.Services.Foundations.ObjectColumns
+namespace LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns
 {
     internal partial class ObjectColumnService
     {

@@ -7,7 +7,7 @@ using Xeptions;
 
 namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
 {
-    internal partial class CsvHelperService<T>
+    internal partial class CsvHelperService
     {
         private delegate ValueTask<List<T>> ReturningObjectListFunction<T>();
         private delegate ValueTask<string> ReturningStringFunction();

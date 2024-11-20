@@ -24,8 +24,6 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             Dictionary<string, int> fieldMappings = null;
             string randomCsvString = GetRandomString();
             string inputCsvString = randomCsvString;
-            byte[] outputResult = ASCIIEncoding.UTF8.GetBytes(inputCsvString);
-            byte[] expectedBytes = outputResult;
             List<SpecificationObject> inputSpecificationObjects = new List<SpecificationObject>();
 
             for (int i = 0; i < GetRandomNumber(); i++)
@@ -47,6 +45,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                     CannonicalSchemaItem cannonicalSchemaItem = new CannonicalSchemaItem
                     {
                         TableName = specificationObject.SupplierObjectName,
+                        TableDescription = specificationObject.ObjectDescription,
                         ColumnName = objectColumn.SupplierColumnName,
                         ColumnDataType = objectColumn.SqlDataType,
                         ColumnDescription = objectColumn.ColumnDescription,

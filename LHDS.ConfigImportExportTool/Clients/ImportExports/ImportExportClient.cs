@@ -51,10 +51,10 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
         private static IHost RegisterServices(IConfiguration configuration)
         {
             IHostBuilder builder = Host.CreateDefaultBuilder();
-            int maxRetryAttempts = configuration.GetSection("RetryConfig..MaxRetryAttempts").Get<int>();
+            int maxRetryAttempts = configuration.GetSection("RetryConfig:MaxRetryAttempts").Get<int>();
 
             int pauseBetweenFailuresInSeconds = 
-                configuration.GetSection("RetryConfig..PauseBetweenFailures").Get<int>();
+                configuration.GetSection("RetryConfig:PauseBetweenFailuresInSeconds").Get<int>();
 
             var retrySettings = new RetryConfig(maxRetryAttempts, TimeSpan.FromSeconds(pauseBetweenFailuresInSeconds));
 

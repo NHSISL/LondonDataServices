@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CsvHelper.Configuration.Attributes;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
@@ -37,7 +36,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             DataSetSpecification storageDataSetSpecification = randomDataSetSpecification;
             randomDataSet.DataSetSpecifications.Add(randomDataSetSpecification);
 
-            List<SpecificationObject> randomSpecificationObjects = 
+            List<SpecificationObject> randomSpecificationObjects =
                 CreateRandomSpecificationObjects(randomDateTimeOffset);
 
             List<SpecificationObject> inputSpecificationObjects = new List<SpecificationObject>();
@@ -46,7 +45,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
             foreach (SpecificationObject specificationObject in randomSpecificationObjects)
             {
-                List<ObjectColumn> newObjectColumns = 
+                List<ObjectColumn> newObjectColumns =
                     CreateRandomObjectColumns(randomDateTimeOffset, specificationObject.Id);
 
                 specificationObject.ObjectColumns = newObjectColumns;
@@ -110,7 +109,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                     service.ReadOrInsertSpecificationObjectAsync(specificationObject),
                         Times.Once());
 
-                invocationCount ++;
+                invocationCount++;
 
                 foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
                 {

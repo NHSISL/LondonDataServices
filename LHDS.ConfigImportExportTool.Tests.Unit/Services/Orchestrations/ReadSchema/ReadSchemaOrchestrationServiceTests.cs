@@ -47,7 +47,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
-        private Expression<Func<List<CannonicalSchemaItem>, bool>> SameCannonicalSchemaItemListAs(List<CannonicalSchemaItem> expectedCannonicalSchemaItems)
+        private Expression<Func<List<CannonicalSchemaItem>, bool>> SameCannonicalSchemaItemListAs(
+            List<CannonicalSchemaItem> expectedCannonicalSchemaItems)
         {
             return actualCannonicalSchemaItems =>
                 this.compareLogic.Compare(expectedCannonicalSchemaItems, actualCannonicalSchemaItems)

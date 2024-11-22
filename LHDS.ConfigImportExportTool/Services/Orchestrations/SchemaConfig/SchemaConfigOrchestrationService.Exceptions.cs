@@ -45,6 +45,22 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                 throw CreateAndLogDependencyValidationException(
                     specificationObjectProcessingDependencyValidationException);
             }
+            catch (DataSetProcessingDependencyException dataSetProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(dataSetProcessingDependencyException);
+            }
+            catch (DataSetProcessingServiceException dataSetProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(dataSetProcessingServiceException);
+            }
+            catch (SpecificationObjectProcessingDependencyException specificationObjectProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(specificationObjectProcessingDependencyException);
+            }
+            catch (SpecificationObjectProcessingServiceException specificationObjectProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(specificationObjectProcessingServiceException);
+            }
         }
 
         private async ValueTask TryCatch(

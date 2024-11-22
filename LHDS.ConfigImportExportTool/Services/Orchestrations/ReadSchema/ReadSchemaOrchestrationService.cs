@@ -69,34 +69,35 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                 return specificationObjects;
             });
 
-        public async ValueTask WriteFile(List<SpecificationObject> data, string path)
-        {
-            List<CannonicalSchemaItem> mappedCannonicalSchemaItems = new List<CannonicalSchemaItem>();
-
-            foreach (SpecificationObject specificationObject in data)
+        public ValueTask WriteFile(List<SpecificationObject> data, string path) =>
+            TryCatch(async () =>
             {
-                foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
+                List<CannonicalSchemaItem> mappedCannonicalSchemaItems = new List<CannonicalSchemaItem>();
+
+                foreach (SpecificationObject specificationObject in data)
                 {
-                    CannonicalSchemaItem cannonicalSchemaItem = new CannonicalSchemaItem
+                    foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
                     {
-                        TableName = specificationObject.SupplierObjectName,
-                        TableDescription = specificationObject.ObjectDescription,
-                        ColumnName = objectColumn.SupplierColumnName,
-                        ColumnDataType = objectColumn.SqlDataType,
-                        ColumnDescription = objectColumn.ColumnDescription,
-                        ColumnLength = objectColumn.Length,
-                        ColumnOrdinal = objectColumn.OrdinalPosition,
-                        LinkedTable = objectColumn.ForeignKeyTableName,
-                        LinkedColumn = objectColumn.ForeignKeyColumnName,
-                    };
+                        CannonicalSchemaItem cannonicalSchemaItem = new CannonicalSchemaItem
+                        {
+                            TableName = specificationObject.SupplierObjectName,
+                            TableDescription = specificationObject.ObjectDescription,
+                            ColumnName = objectColumn.SupplierColumnName,
+                            ColumnDataType = objectColumn.SqlDataType,
+                            ColumnDescription = objectColumn.ColumnDescription,
+                            ColumnLength = objectColumn.Length,
+                            ColumnOrdinal = objectColumn.OrdinalPosition,
+                            LinkedTable = objectColumn.ForeignKeyTableName,
+                            LinkedColumn = objectColumn.ForeignKeyColumnName,
+                        };
 
-                    mappedCannonicalSchemaItems.Add(cannonicalSchemaItem);
+                        mappedCannonicalSchemaItems.Add(cannonicalSchemaItem);
+                    }
                 }
-            }
 
-            string csvString = await this.csvHelperService.MapObjectToCsvAsync(mappedCannonicalSchemaItems, true);
+                string csvString = await this.csvHelperService.MapObjectToCsvAsync(mappedCannonicalSchemaItems, true);
 
-            await this.fileService.WriteToFileAsync(path, csvString);
-        }
+                await this.fileService.WriteToFileAsync(path, csvString);
+            });
     }
 }

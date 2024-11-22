@@ -25,8 +25,13 @@ namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask Export(string dataSetName, string version, string filePath) =>
-            throw new NotImplementedException();
+        public async ValueTask Export(string dataSetName, string version, string filePath)
+        {
+            List<SpecificationObject> specificationObjects =
+                await this.schemaConfigOrchestrationService.Export(dataSetName, version);
+
+            await this.readSchemaOrchestrationService.WriteFile(specificationObjects, filePath);
+        }
 
         public ValueTask Import(string dataSetName, string version, string filePath) =>
         TryCatch(async () =>

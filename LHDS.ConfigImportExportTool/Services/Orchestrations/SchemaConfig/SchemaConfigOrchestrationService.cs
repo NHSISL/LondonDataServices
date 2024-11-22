@@ -36,25 +36,28 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask<List<SpecificationObject>> Export(string dataSetName, string version)
-        {
-            IQueryable<DataSet> storageDataSets =
-                        await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
+        public ValueTask<List<SpecificationObject>> Export(string dataSetName, string version) =>
+            TryCatch(async () =>
+            {
+                ValidateSchemaExportArguments(dataSetName, version);
 
-            DataSet matchedDataSet = storageDataSets.First(dataSet => dataSet.DataSetName == dataSetName);
+                IQueryable<DataSet> storageDataSets =
+                            await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
 
-            DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications
-                .First(specification => specification.SupplierSpecificationVersion == version);
+                DataSet matchedDataSet = storageDataSets.First(dataSet => dataSet.DataSetName == dataSetName);
 
-            IQueryable<SpecificationObject> storageSpecificationObjects =
-                await this.specificationObjectProcessingService.RetrieveAllSpecificationObjectsAsync();
+                DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications
+                    .First(specification => specification.SupplierSpecificationVersion == version);
 
-            List<SpecificationObject> matchedSpecificationObjects = storageSpecificationObjects
-                .Where(specificationObject => specificationObject.DataSetSpecificationId == dataSetSpecification.Id)
-                    .ToList();
+                IQueryable<SpecificationObject> storageSpecificationObjects =
+                    await this.specificationObjectProcessingService.RetrieveAllSpecificationObjectsAsync();
 
-            return matchedSpecificationObjects;
-        }
+                List<SpecificationObject> matchedSpecificationObjects = storageSpecificationObjects
+                    .Where(specificationObject => specificationObject.DataSetSpecificationId == dataSetSpecification.Id)
+                        .ToList();
+
+                return matchedSpecificationObjects;
+            });
 
         public ValueTask Import(
             List<SpecificationObject> specificationObjects,

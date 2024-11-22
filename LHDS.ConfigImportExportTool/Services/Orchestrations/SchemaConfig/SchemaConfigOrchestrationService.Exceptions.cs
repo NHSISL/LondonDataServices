@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.SchemaConfigs.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Processings.DataSets.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Processings.ObjectColumns.Exceptions;
@@ -12,7 +13,21 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
 {
     internal partial class SchemaConfigOrchestrationService
     {
+        private delegate ValueTask<List<SpecificationObject>> ReturningListSpecificationObjectsFunction();
         private delegate ValueTask ReturningNothingFunction();
+
+        private async ValueTask<List<SpecificationObject>> TryCatch(
+            ReturningListSpecificationObjectsFunction returningListSpecificationObjectsFunction)
+        {
+            try
+            {
+                return await returningListSpecificationObjectsFunction();
+            }
+            catch (InvalidArgumentSchemaConfigOrchestrationException invalidArgumentSchemaConfigOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentSchemaConfigOrchestrationException);
+            }
+        }
 
         private async ValueTask TryCatch(
             ReturningNothingFunction returningNothingFunction)
@@ -41,7 +56,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             {
                 throw CreateAndLogDependencyValidationException(specificationObjectProcessingValidationException);
             }
-            catch (SpecificationObjectProcessingDependencyValidationException 
+            catch (SpecificationObjectProcessingDependencyValidationException
                 specificationObjectProcessingDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
@@ -51,7 +66,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             {
                 throw CreateAndLogDependencyValidationException(objectColumnProcessingValidationException);
             }
-            catch (ObjectColumnProcessingDependencyValidationException 
+            catch (ObjectColumnProcessingDependencyValidationException
                 objectColumnProcessingDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(objectColumnProcessingDependencyValidationException);

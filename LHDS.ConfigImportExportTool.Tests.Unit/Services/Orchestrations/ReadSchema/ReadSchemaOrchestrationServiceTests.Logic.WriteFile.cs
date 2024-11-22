@@ -60,7 +60,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
 
             this.csvHelperServiceMock.Setup(service =>
                 service.MapObjectToCsvAsync<CannonicalSchemaItem>(
-                    inputCannonicalSchemaItems, true, fieldMappings, false))
+                    It.Is(SameCannonicalSchemaItemListAs(inputCannonicalSchemaItems)), true, fieldMappings, false))
                         .ReturnsAsync(inputCsvString);
 
             this.fileServiceMock.Setup(service =>
@@ -73,7 +73,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             // then
             this.csvHelperServiceMock.Verify(service =>
                 service.MapObjectToCsvAsync<CannonicalSchemaItem>(
-                    inputCannonicalSchemaItems, true, fieldMappings, false),
+                    It.Is(SameCannonicalSchemaItemListAs(inputCannonicalSchemaItems)), true, fieldMappings, false),
                         Times.Once);
 
             this.fileServiceMock.Verify(service =>

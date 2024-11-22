@@ -16,7 +16,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
     public partial class SchemaConfigOrchestrationServiceTests
     {
         [Theory]
-        [MemberData(nameof(SchemaConfigOrchestrationDependencyValidationExceptions))]
+        [MemberData(nameof(SchemaConfigOrchestrationExportDependencyValidationExceptions))]
         public async Task
             ShouldThrowDependencyValidationOnExportIfDependencyValidationOccursAndLogItAsync(
             Xeption dependencyValidationException)

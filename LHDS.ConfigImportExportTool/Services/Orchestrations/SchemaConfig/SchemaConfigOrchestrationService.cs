@@ -36,8 +36,25 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask<List<SpecificationObject>> Export(string dataSetName, string version) =>
-            throw new NotImplementedException();
+        public async ValueTask<List<SpecificationObject>> Export(string dataSetName, string version)
+        {
+            IQueryable<DataSet> storageDataSets =
+                        await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
+
+            DataSet matchedDataSet = storageDataSets.First(dataSet => dataSet.DataSetName == dataSetName);
+
+            DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications
+                .First(specification => specification.SupplierSpecificationVersion == version);
+
+            IQueryable<SpecificationObject> storageSpecificationObjects =
+                await this.specificationObjectProcessingService.RetrieveAllSpecificationObjectsAsync();
+
+            List<SpecificationObject> matchedSpecificationObjects = storageSpecificationObjects
+                .Where(specificationObject => specificationObject.DataSetSpecificationId == dataSetSpecification.Id)
+                    .ToList();
+
+            return matchedSpecificationObjects;
+        }
 
         public ValueTask Import(
             List<SpecificationObject> specificationObjects,

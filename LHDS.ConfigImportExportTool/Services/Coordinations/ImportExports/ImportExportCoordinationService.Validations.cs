@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Exceptions;
-using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
 using Xeptions;
 
 namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports
@@ -11,6 +10,15 @@ namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports
     internal partial class ImportExportCoordinationService
     {
         private void ValidateImportFileArguments(string dataSetName, string version, string filePath)
+        {
+            Validate<InvalidArgumentImportExportCoordinationException>(
+                message: "Invalid import export coordination argument(s), please correct the errors and try again.",
+                (Rule: IsInvalid(dataSetName), Parameter: nameof(dataSetName)),
+                (Rule: IsInvalid(version), Parameter: nameof(version)),
+                (Rule: IsInvalid(filePath), Parameter: nameof(filePath)));
+        }
+
+        private void ValidateExportFileArguments(string dataSetName, string version, string filePath)
         {
             Validate<InvalidArgumentImportExportCoordinationException>(
                 message: "Invalid import export coordination argument(s), please correct the errors and try again.",

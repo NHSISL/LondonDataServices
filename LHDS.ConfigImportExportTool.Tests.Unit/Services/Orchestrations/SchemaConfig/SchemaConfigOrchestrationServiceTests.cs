@@ -256,5 +256,57 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                     innerException),
             };
         }
+
+        public static TheoryData<Xeption> SchemaConfigOrchestrationExportDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DataSetProcessingValidationException(
+                    message: "File validation error occured, please contact support.",
+                    innerException),
+
+                new DataSetProcessingDependencyValidationException(
+                    message: "File dependency validation error occurred, please contact support.",
+                    innerException),
+
+                new SpecificationObjectProcessingValidationException(
+                    message: "File validation error occured, please contact support.",
+                    innerException),
+
+                new SpecificationObjectProcessingDependencyValidationException(
+                    message: "File dependency validation error occurred, please contact support.",
+                    innerException),
+            };
+        }
+
+        public static TheoryData<Xeption> SchemaConfigOrchestrationExportDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DataSetProcessingDependencyException(
+                    message: "File dependency error occurred, please contact support.",
+                    innerException),
+
+                new DataSetProcessingServiceException(
+                    message: "File service error occurred, please contact support.",
+                    innerException),
+
+                new SpecificationObjectProcessingDependencyException(
+                    message: "File dependency error occurred, please contact support.",
+                    innerException),
+
+                new SpecificationObjectProcessingServiceException(
+                    message: "File service error occurred, please contact support.",
+                    innerException),
+            };
+        }
     }
 }

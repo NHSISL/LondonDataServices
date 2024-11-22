@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -101,6 +102,57 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
+                       Times.Once);
+
+            this.dataSetProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.specificationObjectProcessingServiceMock.VerifyNoOtherCalls();
+            this.objectColumnProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task
+            ShouldThrowServiceExceptionOnExportIfServiceErrorOccursAndLogItAsync()
+        {
+            //given
+            string inputDataSetName = GetRandomString(10);
+            string inputVersion = GetRandomString(10);
+            var serviceException = new Exception();
+
+            var failedSchemaConfigOrchestrationServiceException =
+                new FailedSchemaConfigOrchestrationServiceException(
+                    message: "Failed schema config orchestration service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var expectedServiceException =
+                new SchemaConfigOrchestrationServiceException(
+                    message: "Schema config orchestration service error occurred, " +
+                        "please contact support.",
+                    innerException: failedSchemaConfigOrchestrationServiceException);
+
+            this.dataSetProcessingServiceMock.Setup(service =>
+                service.RetrieveAllDataSetsAsync())
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<List<SpecificationObject>> exportTask =
+                this.schemaConfigOrchestrationService.Export(inputDataSetName, inputVersion);
+
+            SchemaConfigOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<SchemaConfigOrchestrationServiceException>(
+                    exportTask.AsTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedServiceException);
+
+            this.dataSetProcessingServiceMock.Verify(service =>
+             service.RetrieveAllDataSetsAsync(),
+                 Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedServiceException))),
                        Times.Once);
 
             this.dataSetProcessingServiceMock.VerifyNoOtherCalls();

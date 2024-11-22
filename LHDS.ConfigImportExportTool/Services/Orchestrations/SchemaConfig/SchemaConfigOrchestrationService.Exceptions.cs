@@ -27,6 +27,24 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             {
                 throw CreateAndLogValidationException(invalidArgumentSchemaConfigOrchestrationException);
             }
+            catch (DataSetProcessingValidationException dataSetProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(dataSetProcessingValidationException);
+            }
+            catch (DataSetProcessingDependencyValidationException dataSetProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(dataSetProcessingDependencyValidationException);
+            }
+            catch (SpecificationObjectProcessingValidationException specificationObjectProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(specificationObjectProcessingValidationException);
+            }
+            catch (SpecificationObjectProcessingDependencyValidationException
+                specificationObjectProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(
+                    specificationObjectProcessingDependencyValidationException);
+            }
         }
 
         private async ValueTask TryCatch(

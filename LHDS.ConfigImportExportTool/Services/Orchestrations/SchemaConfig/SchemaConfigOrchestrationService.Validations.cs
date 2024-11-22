@@ -23,9 +23,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                 (Rule: IsInvalid(version), Parameter: nameof(version)));
         }
 
-        private void ValidateSchemaExportArguments(
-            string dataSetName,
-            string version)
+        private void ValidateSchemaExportArguments(string dataSetName, string version)
         {
             Validate<InvalidArgumentSchemaConfigOrchestrationException>(
                 message: "Invalid schema config argument(s), please correct the errors and try again.",

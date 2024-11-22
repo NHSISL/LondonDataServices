@@ -22,7 +22,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Coordinations.ImportEx
             string inputVersion = randomVersion;
             string randomPath = GetRandomString();
             string inputPath = randomPath;
-            List<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects();
+            List<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjectsWithObjectColumns();
             List<SpecificationObject> outputSpecificationObjects = randomSpecificationObjects;
             List<SpecificationObject> inputSpecificationObjects = outputSpecificationObjects;
 

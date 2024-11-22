@@ -94,6 +94,34 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Coordinations.ImportEx
         private static Filler<SpecificationObject> CreateSpecificationObjectFiller(DateTimeOffset dateTimeOffset)
         {
             string user = GetRandomString(255);
+            var filler = new Filler<SpecificationObject>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(specificationObject => specificationObject.SupplierObjectName).Use(GetRandomString(255))
+                .OnProperty(specificationObject => specificationObject.OurObjectName).Use(GetRandomString(255))
+                .OnProperty(specificationObject => specificationObject.ObjectDescription).Use(GetRandomString(500))
+                .OnProperty(specificationObject => specificationObject.InterchangeProtocol).Use(GetRandomString(255))
+                .OnProperty(specificationObject => specificationObject.DeletionHandling).Use(GetRandomString(255))
+                .OnProperty(specificationObject => specificationObject.CreatedBy).Use(user)
+                .OnProperty(specificationObject => specificationObject.UpdatedBy).Use(user)
+                .OnProperty(specificationObject => specificationObject.ObjectColumns).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.DataSetSpecification).IgnoreIt();
+
+
+            return filler;
+        }
+
+        private static List<SpecificationObject> CreateRandomSpecificationObjectsWithObjectColumns()
+        {
+            return CreateSpecificationObjectWithObjectColumnsFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber()).ToList();
+        }
+
+        private static Filler<SpecificationObject> CreateSpecificationObjectWithObjectColumnsFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = GetRandomString(255);
             Guid dataSetSpecificationId = Guid.NewGuid();
             var filler = new Filler<SpecificationObject>();
 

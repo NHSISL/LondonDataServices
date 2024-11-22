@@ -11,7 +11,6 @@ using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
 using LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
-using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
 {
@@ -37,7 +36,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask Export(List<SpecificationObject> specificationObjects, string dataSetName, string version) =>
+        public async ValueTask<List<SpecificationObject>> Export(string dataSetName, string version) =>
             throw new NotImplementedException();
 
         public ValueTask Import(
@@ -48,7 +47,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                 {
                     ValidateSchemaImportArguments(specificationObjects, dataSetName, version);
 
-                    IQueryable<DataSet> storageDataSets = 
+                    IQueryable<DataSet> storageDataSets =
                         await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
 
                     DataSet matchedDataSet = storageDataSets.First(dataSet => dataSet.DataSetName == dataSetName);
@@ -63,7 +62,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                         specificationObject.UpdatedBy = "System";
                         specificationObject.CreatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                         specificationObject.UpdatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                        
+
                         SpecificationObject storageSpecificationObject = await specificationObjectProcessingService
                             .ReadOrInsertSpecificationObjectAsync(specificationObject);
 

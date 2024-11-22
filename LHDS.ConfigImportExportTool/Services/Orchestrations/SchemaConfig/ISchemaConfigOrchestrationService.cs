@@ -9,6 +9,6 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
     internal interface ISchemaConfigOrchestrationService
     {
         ValueTask Import(List<SpecificationObject> SpecificationObject, string dataSetName, string version);
-        ValueTask Export(List<SpecificationObject> SpecificationObject, string dataSetName, string version);
+        ValueTask<List<SpecificationObject>> Export(string dataSetName, string version);
     }
 }

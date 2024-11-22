@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Text;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
@@ -69,7 +70,36 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                 return specificationObjects;
             });
 
-        public async ValueTask WriteFile(List<SpecificationObject> data, string path) =>
-            throw new NotImplementedException();
+        public ValueTask WriteFile(List<SpecificationObject> specificationObjects, string path) =>
+            TryCatch(async () =>
+            {
+                ValidateWriteSchemaFileArguments(specificationObjects, path);
+                List<CannonicalSchemaItem> mappedCannonicalSchemaItems = new List<CannonicalSchemaItem>();
+
+                foreach (SpecificationObject specificationObject in specificationObjects)
+                {
+                    foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
+                    {
+                        CannonicalSchemaItem cannonicalSchemaItem = new CannonicalSchemaItem
+                        {
+                            TableName = specificationObject.SupplierObjectName,
+                            TableDescription = specificationObject.ObjectDescription,
+                            ColumnName = objectColumn.SupplierColumnName,
+                            ColumnDataType = objectColumn.SqlDataType,
+                            ColumnDescription = objectColumn.ColumnDescription,
+                            ColumnLength = objectColumn.Length,
+                            ColumnOrdinal = objectColumn.OrdinalPosition,
+                            LinkedTable = objectColumn.ForeignKeyTableName,
+                            LinkedColumn = objectColumn.ForeignKeyColumnName,
+                        };
+
+                        mappedCannonicalSchemaItems.Add(cannonicalSchemaItem);
+                    }
+                }
+
+                string csvString = await this.csvHelperService.MapObjectToCsvAsync(mappedCannonicalSchemaItems, true);
+
+                await this.fileService.WriteToFileAsync(path, csvString);
+            });
     }
 }

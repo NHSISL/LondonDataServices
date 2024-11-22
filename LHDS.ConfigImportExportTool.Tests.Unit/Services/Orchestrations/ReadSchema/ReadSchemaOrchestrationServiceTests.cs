@@ -6,12 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.Files.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema;
-using LHDS.ConfigImportExportTool.Models.Processings.ObjectColumns.Exceptions;
 using LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers;
 using LHDS.ConfigImportExportTool.Services.Foundations.Files;
 using LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema;
@@ -28,6 +28,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
         private readonly Mock<IFileService> fileServiceMock;
         private readonly Mock<ICsvHelperService> csvHelperServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly ICompareLogic compareLogic;
         private readonly IReadSchemaOrchestrationService readSchemaOrchestrationService;
 
         public ReadSchemaOrchestrationServiceTests()
@@ -35,6 +36,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             this.fileServiceMock = new Mock<IFileService>();
             this.csvHelperServiceMock = new Mock<ICsvHelperService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.compareLogic = new CompareLogic();
 
             this.readSchemaOrchestrationService = new ReadSchemaOrchestrationService(
                 fileService: this.fileServiceMock.Object,
@@ -44,6 +46,14 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
+
+        private Expression<Func<List<CannonicalSchemaItem>, bool>> SameCannonicalSchemaItemListAs(
+            List<CannonicalSchemaItem> expectedCannonicalSchemaItems)
+        {
+            return actualCannonicalSchemaItems =>
+                this.compareLogic.Compare(expectedCannonicalSchemaItems, actualCannonicalSchemaItems)
+                    .AreEqual;
+        }
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
@@ -65,7 +75,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
         }
 
         private static SpecificationObject CreateRandomSpecificationObject(
-            List<ObjectColumn> objectColumns, 
+            List<ObjectColumn> objectColumns,
             string tableName) =>
             CreateSpecificationObjectFiller(objectColumns, tableName).Create();
 

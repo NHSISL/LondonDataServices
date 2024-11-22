@@ -111,8 +111,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
         }
 
         [Fact]
-        public async Task
-            ShouldThrowServiceExceptionOnExportIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnExportIfServiceErrorOccursAndLogItAsync()
         {
             //given
             string inputDataSetName = GetRandomString(10);

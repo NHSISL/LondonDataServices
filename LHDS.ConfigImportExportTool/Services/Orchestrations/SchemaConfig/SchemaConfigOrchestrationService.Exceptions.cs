@@ -61,6 +61,15 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             {
                 throw CreateAndLogDependencyException(specificationObjectProcessingServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedFileServiceException =
+                    new FailedSchemaConfigOrchestrationServiceException(
+                        message: "Failed schema config orchestration service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedFileServiceException);
+            }
         }
 
         private async ValueTask TryCatch(

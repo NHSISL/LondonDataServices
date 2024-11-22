@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Text;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
@@ -69,12 +70,13 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                 return specificationObjects;
             });
 
-        public ValueTask WriteFile(List<SpecificationObject> data, string path) =>
+        public ValueTask WriteFile(List<SpecificationObject> specificationObjects, string path) =>
             TryCatch(async () =>
             {
+                ValidateWriteSchemaFileArguments(specificationObjects, path);
                 List<CannonicalSchemaItem> mappedCannonicalSchemaItems = new List<CannonicalSchemaItem>();
 
-                foreach (SpecificationObject specificationObject in data)
+                foreach (SpecificationObject specificationObject in specificationObjects)
                 {
                     foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
                     {

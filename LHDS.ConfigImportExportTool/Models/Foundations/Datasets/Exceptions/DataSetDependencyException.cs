@@ -1,0 +1,11 @@
+using Xeptions;
+
+namespace LHDS.ConfigImportExportTool.Models.Foundations.Datasets.Exceptions
+{
+    public class DataSetDependencyException : Xeption
+    {
+        public DataSetDependencyException(string message, Xeption? innerException)
+            : base(message, innerException)
+        { }
+    }
+}

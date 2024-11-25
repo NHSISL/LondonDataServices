@@ -1,11 +1,9 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
-using System;
-using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Bases;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 
 namespace LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns
 {
@@ -47,8 +45,6 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
-
-        [BindNever]
         public SpecificationObject? SpecificationObject { get; set; } = null!;
     }
 }

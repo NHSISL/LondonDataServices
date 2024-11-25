@@ -11,7 +11,6 @@ using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns;
-using LHDS.Core.Services.Foundations.ObjectColumns;
 using Microsoft.Data.SqlClient;
 using Moq;
 using Tynamix.ObjectFiller;

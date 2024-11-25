@@ -23,6 +23,8 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
 		<PackageReference Include="NHSISL.CsvHelperClient" Version="0.0.0.3" />
 		<PackageReference Include="STX.EFCore.Client" Version="0.0.0.3" />
+		<PackageReference Include="System.Linq" Version="4.3.0" />
+		<PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
 		<PackageReference Include="Xeption" Version="2.8.0" />
 	</ItemGroup>
 

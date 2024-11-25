@@ -4,14 +4,14 @@
 
 using EFxceptions.Models.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
-using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
 {
-    public partial class SpecificationObjectService
+    internal partial class SpecificationObjectService
     {
         private delegate ValueTask<SpecificationObject> ReturningSpecificationObjectFunction();
         private delegate ValueTask<IQueryable<SpecificationObject>> ReturningSpecificationObjectsFunction();

@@ -9,9 +9,9 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
-namespace LHDS.Core.Services.Foundations.ObjectColumns
+namespace LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns
 {
-    public partial class ObjectColumnService
+    internal partial class ObjectColumnService
     {
         private delegate ValueTask<ObjectColumn> ReturningObjectColumnFunction();
         private delegate ValueTask<IQueryable<ObjectColumn>> ReturningObjectColumnsFunction();

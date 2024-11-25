@@ -5,9 +5,9 @@
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns.Exceptions;
 
-namespace LHDS.Core.Services.Foundations.ObjectColumns
+namespace LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns
 {
-    public partial class ObjectColumnService
+    internal partial class ObjectColumnService
     {
         private async ValueTask ValidateObjectColumnOnAddAsync(ObjectColumn objectColumn)
         {

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
+using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.SchemaConfigs.Exceptions;
@@ -54,6 +55,30 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Coordinations.ImportEx
         private static string GetRandomString(int length) =>
            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
+        private static List<ObjectColumn> CreateRandomObjectColumns(Guid specificationId)
+        {
+            return CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset(), specificationId)
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static Filler<ObjectColumn> CreateObjectColumnFiller(
+            DateTimeOffset dateTimeOffset,
+            Guid specificationId)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<ObjectColumn>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(objectColumn => objectColumn.SpecificationObjectId).Use(specificationId)
+                .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
+                .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
         private static List<SpecificationObject> CreateRandomSpecificationObjects()
         {
             return CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset())
@@ -84,6 +109,38 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Coordinations.ImportEx
                 .OnProperty(specificationObject => specificationObject.ObjectColumns).IgnoreIt()
                 .OnProperty(specificationObject => specificationObject.DataSetSpecification).IgnoreIt();
 
+
+            return filler;
+        }
+
+        private static List<SpecificationObject> CreateRandomSpecificationObjectsWithObjectColumns()
+        {
+            return CreateSpecificationObjectWithObjectColumnsFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber()).ToList();
+        }
+
+        private static Filler<SpecificationObject> CreateSpecificationObjectWithObjectColumnsFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = GetRandomString(255);
+            Guid dataSetSpecificationId = Guid.NewGuid();
+            var filler = new Filler<SpecificationObject>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(specificationObject => specificationObject.SupplierObjectName).Use(GetRandomString(255))
+                .OnProperty(specificationObject => specificationObject.OurObjectName).Use(GetRandomString(255))
+                .OnProperty(specificationObject => specificationObject.ObjectDescription).Use(GetRandomString(500))
+                .OnProperty(specificationObject => specificationObject.InterchangeProtocol).Use(GetRandomString(255))
+                .OnProperty(specificationObject => specificationObject.DeletionHandling).Use(GetRandomString(255))
+                .OnProperty(specificationObject => specificationObject.CreatedBy).Use(user)
+                .OnProperty(specificationObject => specificationObject.UpdatedBy).Use(user)
+                .OnProperty(specificationObject => specificationObject.DataSetSpecificationId).Use(dataSetSpecificationId)
+                .OnProperty(specificationObject => specificationObject.DataSetSpecification).IgnoreIt()
+
+                .OnProperty(specificationObject => specificationObject.ObjectColumns)
+                    .Use(CreateRandomObjectColumns(dataSetSpecificationId));
+
             return filler;
         }
 
@@ -108,7 +165,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Coordinations.ImportEx
                     innerException),
 
                 new SchemaConfigOrchestrationDependencyValidationException(
-                    message: 
+                    message:
                         "Schema config orchestration dependency validation error occurred, please contact support.",
                     innerException),
             };

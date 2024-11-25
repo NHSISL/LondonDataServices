@@ -16,7 +16,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Coordinations.ImportEx
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnImportIfDataSetNameIsInvalidAsync(string invalidString)
+        public async Task ShouldThrowValidationExceptionOnExportIfDataSetNameIsInvalidAsync(string invalidString)
         {
             // given
             var invalidArgumentImportExportCoordinationException =
@@ -42,13 +42,13 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Coordinations.ImportEx
                     innerException: invalidArgumentImportExportCoordinationException);
 
             // when
-            ValueTask importTask = this.importExportCoordinationService.Import(
+            ValueTask exportTask = this.importExportCoordinationService.Export(
                     dataSetName: invalidString,
                     version: invalidString,
                     filePath: invalidString);
 
             ImportExportCoordinationValidationException actualException =
-                await Assert.ThrowsAsync<ImportExportCoordinationValidationException>(importTask.AsTask);
+                await Assert.ThrowsAsync<ImportExportCoordinationValidationException>(exportTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedImportExportValidationOrchestrationException);

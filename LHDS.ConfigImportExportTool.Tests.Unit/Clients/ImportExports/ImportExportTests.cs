@@ -46,5 +46,19 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
                     innerException)
             };
         }
+
+        public static TheoryData<Xeption> ImportExportClientDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new ImportExportCoordinationDependencyException(
+                    message: "Import export coordination dependency error occurred, please contact support.",
+                    innerException)
+            };
+        }
     }
 }

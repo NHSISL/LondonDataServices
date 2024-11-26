@@ -91,5 +91,10 @@ namespace LHDS.ConfigImportExportTool.Clients
                     ImportExportCoordinationServiceException.InnerException as Xeption);
             }
         }
+
+        public async ValueTask Export(string dataSetName, string version, string filePath)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

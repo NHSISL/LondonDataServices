@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.ConfigImportExportTool.Models.Clients.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -16,7 +18,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
         [Theory]
         [MemberData(nameof(ImportExportClientDependencyValidationExceptions))]
         public async Task
-            ShouldThrowDependencyValidationOnExportIfDependencyValidationOccursAndLogItAsync(
+            ShouldThrowDependencyValidationOnExportIfDependencyValidationOccurs(
             Xeption dependencyValidationException)
         {
             // given
@@ -56,7 +58,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
         [Theory]
         [MemberData(nameof(ImportExportClientDependencyExceptions))]
         public async Task
-            ShouldThrowDependencyErrorOnExportIfDependencyErrorOccursAndLogItAsync(
+            ShouldThrowDependencyErrorOnExportIfDependencyErrorOccurs(
             Xeption dependencyException)
         {
             // given
@@ -85,6 +87,49 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
             // then
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyException);
+
+            this.importExportCoordinationServiceMock.Verify(service =>
+             service.Export(inputDataSetName, inputVersion, inputFilePath),
+                 Times.Once);
+
+            this.importExportCoordinationServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowErrorOnExportIfErrorOccurs()
+        {
+            // given
+            string inputDataSetName = GetRandomString(10);
+            string inputVersion = GetRandomString(10);
+            string inputFilePath = GetRandomString();
+            var serviceException = new Exception();
+
+            var importExportCoordinationServiceException =
+                new ImportExportCoordinationServiceException(
+                    message: "Import export coordination service error occurred, please contact support.",
+                    innerException: serviceException);
+
+            var expectedServiceException =
+                new ImportExportClientServiceException(
+                    message: "Import export client service error occurred, " +
+                        "fix errors and try again.",
+                    innerException: importExportCoordinationServiceException.InnerException as Xeption);
+
+            this.importExportCoordinationServiceMock.Setup(service =>
+                service.Export(inputDataSetName, inputVersion, inputFilePath))
+                    .ThrowsAsync(importExportCoordinationServiceException);
+
+            // when
+            ValueTask exportFileTask =
+                this.importExportClient.Export(inputDataSetName, inputVersion, inputFilePath);
+
+            ImportExportClientServiceException actualException =
+                await Assert.ThrowsAsync<ImportExportClientServiceException>(
+                    exportFileTask.AsTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedServiceException);
 
             this.importExportCoordinationServiceMock.Verify(service =>
              service.Export(inputDataSetName, inputVersion, inputFilePath),

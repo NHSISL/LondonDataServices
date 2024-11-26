@@ -32,6 +32,11 @@ namespace LHDS.ConfigImportExportTool.Clients
             importExportCoordinationService = host.Services.GetRequiredService<IImportExportCoordinationService>();
         }
 
+        internal ImportExportClient(IImportExportCoordinationService importExportCoordinationService)
+        {
+            this.importExportCoordinationService = importExportCoordinationService;
+        }
+
         private static IHost RegisterServices()
         {
             IHostBuilder builder = Host.CreateDefaultBuilder();

@@ -94,7 +94,37 @@ namespace LHDS.ConfigImportExportTool.Clients
 
         public async ValueTask Export(string dataSetName, string version, string filePath)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await this.importExportCoordinationService.Export(dataSetName, version, filePath);
+            }
+            catch (ImportExportCoordinationValidationException ImportExportCoordinationValidationException)
+            {
+                throw new ImportExportClientValidationException(
+                    message: "Import export client validation error occurred, fix errors and try again.",
+                    innerException: ImportExportCoordinationValidationException.InnerException as Xeption);
+            }
+            catch (ImportExportCoordinationDependencyValidationException
+                ImportExportCoordinationDependencyValidationException)
+            {
+                throw new ImportExportClientValidationException(
+                    message: "Import export client validation error occurred, fix errors and try again.",
+                    innerException: ImportExportCoordinationDependencyValidationException.InnerException as Xeption);
+            }
+            catch (ImportExportCoordinationDependencyException
+                ImportExportCoordinationDependencyException)
+            {
+                throw new ImportExportClientDependencyException(
+                    message: "Import export client dependency error occurred, please contact support.",
+                    innerException: ImportExportCoordinationDependencyException.InnerException as Xeption);
+            }
+            catch (ImportExportCoordinationServiceException
+                ImportExportCoordinationServiceException)
+            {
+                throw new ImportExportClientServiceException(
+                    message: "Import export client service error occurred, fix errors and try again.",
+                    ImportExportCoordinationServiceException.InnerException as Xeption);
+            }
         }
     }
 }

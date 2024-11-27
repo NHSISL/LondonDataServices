@@ -68,18 +68,36 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static List<SpecificationObject> CreateRandomSpecificationObjects(
-            List<ObjectColumn> objectColumns, string tableName)
+            List<ObjectColumn> objectColumns, string tableName, bool isExport)
         {
-            return CreateSpecificationObjectFiller(objectColumns, tableName)
-                .Create(count: GetRandomNumber()).ToList();
+            if (isExport)
+            {
+                return CreateImportSpecificationObjectFiller(objectColumns, tableName)
+                    .Create(count: GetRandomNumber()).ToList();
+            }
+            else
+            {
+                return CreateImportSpecificationObjectFiller(objectColumns, tableName)
+                    .Create(count: GetRandomNumber()).ToList();
+            }
         }
 
         private static SpecificationObject CreateRandomSpecificationObject(
             List<ObjectColumn> objectColumns,
-            string tableName) =>
-            CreateSpecificationObjectFiller(objectColumns, tableName).Create();
+            string tableName,
+            bool isExport)
+        {
+            if (isExport)
+            {
+                return CreateExportSpecificationObjectFiller(objectColumns, tableName).Create();
+            }
+            else
+            {
+                return CreateImportSpecificationObjectFiller(objectColumns, tableName).Create();
+            }
+        }
 
-        private static Filler<SpecificationObject> CreateSpecificationObjectFiller(
+            private static Filler<SpecificationObject> CreateImportSpecificationObjectFiller(
             List<ObjectColumn> objectColumns,
             string tableName)
         {
@@ -89,6 +107,18 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             filler.Setup()
                 .OnType<DateTimeOffset>().IgnoreIt()
                 .OnType<DateTimeOffset?>().IgnoreIt()
+                .OnType<Guid>().IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.SupplierObjectName).Use(tableName)
+                .OnProperty(specificationObject => specificationObject.ObjectColumns).Use(objectColumns)
+                .OnProperty(specificationObject => specificationObject.DataSetSpecificationId).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.OurObjectName).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.ObjectDescription).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.InterchangeProtocol).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.IsPushedToUs).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.IsPulledByUs).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.DeletionHandling).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.IsSubmissionHeaderObject).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.IsTransactionLog).IgnoreIt()
                 .OnProperty(specificationObject => specificationObject.CreatedBy).IgnoreIt()
                 .OnProperty(specificationObject => specificationObject.UpdatedBy).IgnoreIt()
                 .OnProperty(specificationObject => specificationObject.DataSetSpecification).IgnoreIt();
@@ -96,27 +126,70 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             return filler;
         }
 
-        private static List<ObjectColumn> CreateRandomObjectColumns()
+        private static Filler<SpecificationObject> CreateExportSpecificationObjectFiller(
+            List<ObjectColumn> objectColumns,
+            string tableName)
         {
-            return CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber()).ToList();
+            string user = GetRandomString(255);
+            var filler = new Filler<SpecificationObject>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().IgnoreIt()
+                .OnType<DateTimeOffset?>().IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.SupplierObjectName).Use(tableName)
+                .OnProperty(specificationObject => specificationObject.ObjectColumns).Use(objectColumns)
+                .OnProperty(specificationObject => specificationObject.CreatedBy).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.UpdatedBy).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.DataSetSpecification).IgnoreIt();
+
+            return filler;
         }
 
-        private static ObjectColumn CreateRandomObjectColumn() =>
-            CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+        private static List<ObjectColumn> CreateRandomObjectColumns(bool isExport)
+        {
+            if (isExport)
+            {
+                return CreateExportObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                    .Create(count: GetRandomNumber()).ToList();
+            }
+            else
+            {
+                return CreateImportObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                    .Create(count: GetRandomNumber()).ToList();    
+            }
+        }
 
-        private static ObjectColumn CreateRandomObjectColumn(DateTimeOffset dateTimeOffset) =>
-            CreateObjectColumnFiller(dateTimeOffset).Create();
-
-        private static Filler<ObjectColumn> CreateObjectColumnFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<ObjectColumn> CreateImportObjectColumnFiller(DateTimeOffset dateTimeOffset)
         {
             var filler = new Filler<ObjectColumn>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().IgnoreIt()
                 .OnType<DateTimeOffset?>().IgnoreIt()
-                .OnProperty(specificationObject => specificationObject.CreatedBy).IgnoreIt()
-                .OnProperty(specificationObject => specificationObject.UpdatedBy).IgnoreIt()
+                .OnType<string>().IgnoreIt()
+                .OnType<bool>().IgnoreIt()
+                .OnType<int?>().IgnoreIt()
+                .OnType<int>().IgnoreIt()
+                .OnType<Guid>().IgnoreIt()
+                .OnProperty(objectColumn => objectColumn.SupplierColumnName).Use(GetRandomString())
+                .OnProperty(objectColumn => objectColumn.SqlDataType).Use(GetRandomString())
+                .OnProperty(objectColumn => objectColumn.ColumnDescription).Use(GetRandomString())
+                .OnProperty(objectColumn => objectColumn.Length).Use(GetRandomNumber())
+                .OnProperty(objectColumn => objectColumn.OrdinalPosition).Use(GetRandomNumber())
+                .OnProperty(objectColumn => objectColumn.ForeignKeyTableName).Use(GetRandomString())
+                .OnProperty(objectColumn => objectColumn.ForeignKeyColumnName).Use(GetRandomString())
+                .OnProperty(objectColumn => objectColumn.SpecificationObject).IgnoreIt();
+
+            return filler;
+        }
+
+        private static Filler<ObjectColumn> CreateExportObjectColumnFiller(DateTimeOffset dateTimeOffset)
+        {
+            var filler = new Filler<ObjectColumn>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().IgnoreIt()
+                .OnType<DateTimeOffset?>().IgnoreIt()
                 .OnProperty(objectColumn => objectColumn.SpecificationObject).IgnoreIt();
 
             return filler;

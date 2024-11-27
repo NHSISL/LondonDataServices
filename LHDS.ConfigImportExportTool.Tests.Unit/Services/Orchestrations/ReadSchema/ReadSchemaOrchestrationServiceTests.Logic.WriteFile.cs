@@ -27,10 +27,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
 
             for (int i = 0; i < GetRandomNumber(); i++)
             {
-                List<ObjectColumn> randomObjectColumns = CreateRandomObjectColumns();
+                List<ObjectColumn> randomObjectColumns = CreateRandomObjectColumns(isExport: true);
 
                 SpecificationObject randomSpecificationObject =
-                    CreateRandomSpecificationObject(randomObjectColumns, tableName: GetRandomString());
+                    CreateRandomSpecificationObject(randomObjectColumns, tableName: GetRandomString(), isExport: true);
 
                 inputSpecificationObjects.Add(randomSpecificationObject);
             }

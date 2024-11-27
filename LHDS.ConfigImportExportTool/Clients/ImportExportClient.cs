@@ -70,14 +70,14 @@ namespace LHDS.ConfigImportExportTool.Clients
             }
             catch (ImportExportCoordinationValidationException ImportExportCoordinationValidationException)
             {
-                throw new ImportExportClientValidationException(
+                throw new ImportExportClientDependencyValidationException(
                     message: "Import export client validation error occurred, fix errors and try again.",
                     innerException: ImportExportCoordinationValidationException.InnerException as Xeption);
             }
             catch (ImportExportCoordinationDependencyValidationException
                 ImportExportCoordinationDependencyValidationException)
             {
-                throw new ImportExportClientValidationException(
+                throw new ImportExportClientDependencyValidationException(
                     message: "Import export client validation error occurred, fix errors and try again.",
                     innerException: ImportExportCoordinationDependencyValidationException.InnerException as Xeption);
             }

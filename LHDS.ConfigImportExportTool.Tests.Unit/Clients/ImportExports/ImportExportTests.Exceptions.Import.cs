@@ -26,7 +26,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
             string inputFilePath = GetRandomString();
 
             var expectedValidationException =
-                new ImportExportClientDependencyValidationException(
+                new ImportExportClientValidationException(
                     message: "Import export client validation error occurred, fix errors and try again.",
                         innerException: dependencyValidationException.InnerException as Xeption);
 
@@ -37,8 +37,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
             // when
             ValueTask importFileTask = this.importExportClient.Import(inputDataSetName, inputVersion, inputFilePath);
 
-            ImportExportClientDependencyValidationException actualException =
-                await Assert.ThrowsAsync<ImportExportClientDependencyValidationException>(
+            ImportExportClientValidationException actualException =
+                await Assert.ThrowsAsync<ImportExportClientValidationException>(
                     importFileTask.AsTask);
 
             // then

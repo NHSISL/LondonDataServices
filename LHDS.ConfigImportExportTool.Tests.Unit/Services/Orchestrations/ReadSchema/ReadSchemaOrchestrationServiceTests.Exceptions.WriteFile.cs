@@ -27,10 +27,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             // given
             string inputPath = GetRandomString();
             string inputTableName = GetRandomString();
-            List<ObjectColumn> objectColumns = CreateRandomObjectColumns();
+            List<ObjectColumn> objectColumns = CreateRandomObjectColumns(isExport: true);
 
             List<SpecificationObject> inputSpecificationObjects =
-                CreateRandomSpecificationObjects(objectColumns, inputTableName);
+                CreateRandomSpecificationObjects(objectColumns, inputTableName, true);
 
             var expectedDependencyException =
                 new ReadSchemaOrchestrationDependencyValidationException(
@@ -85,10 +85,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             // given
             string inputPath = GetRandomString();
             string inputTableName = GetRandomString();
-            List<ObjectColumn> objectColumns = CreateRandomObjectColumns();
+            List<ObjectColumn> objectColumns = CreateRandomObjectColumns(isExport: true);
 
             List<SpecificationObject> inputSpecificationObjects =
-                CreateRandomSpecificationObjects(objectColumns, inputTableName);
+                CreateRandomSpecificationObjects(objectColumns, inputTableName, isExport: true);
 
             var expectedDependencyException =
                 new ReadSchemaOrchestrationDependencyException(
@@ -141,11 +141,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             //given
             string inputPath = GetRandomString();
             string inputTableName = GetRandomString();
-            List<ObjectColumn> objectColumns = CreateRandomObjectColumns();
+            List<ObjectColumn> objectColumns = CreateRandomObjectColumns(isExport: true);
             var serviceException = new Exception();
 
             List<SpecificationObject> inputSpecificationObjects =
-                CreateRandomSpecificationObjects(objectColumns, inputTableName);
+                CreateRandomSpecificationObjects(objectColumns, inputTableName, isExport: true);
 
             var failedReadSchemaOrchestrationServiceException =
                 new FailedReadSchemaOrchestrationServiceException(

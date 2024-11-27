@@ -13,7 +13,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
         [Fact]
         public async Task ShouldExport()
         {
-            // Given
+            // given
             string someDataSetName = GetRandomString();
             string someVersion = GetRandomString();
             string someFilePath = GetRandomString();
@@ -21,11 +21,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
             string inputVersion = someVersion;
             string inputFilePath = someFilePath;
 
-            // When
+            // when
             await this.importExportClient.Export(inputDataSetName, inputVersion, inputFilePath);
 
-            // Then
-
+            // then
             this.importExportCoordinationServiceMock.Verify(service =>
                 service.Export(inputDataSetName, inputVersion, inputFilePath),
                     Times.Once());

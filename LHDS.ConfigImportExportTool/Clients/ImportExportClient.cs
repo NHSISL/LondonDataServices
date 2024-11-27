@@ -70,14 +70,14 @@ namespace LHDS.ConfigImportExportTool.Clients
             }
             catch (ImportExportCoordinationValidationException ImportExportCoordinationValidationException)
             {
-                throw new ImportExportClientDependencyValidationException(
+                throw new ImportExportClientValidationException(
                     message: "Import export client validation error occurred, fix errors and try again.",
                     innerException: ImportExportCoordinationValidationException.InnerException as Xeption);
             }
             catch (ImportExportCoordinationDependencyValidationException
                 ImportExportCoordinationDependencyValidationException)
             {
-                throw new ImportExportClientDependencyValidationException(
+                throw new ImportExportClientValidationException(
                     message: "Import export client validation error occurred, fix errors and try again.",
                     innerException: ImportExportCoordinationDependencyValidationException.InnerException as Xeption);
             }
@@ -105,15 +105,15 @@ namespace LHDS.ConfigImportExportTool.Clients
             }
             catch (ImportExportCoordinationValidationException ImportExportCoordinationValidationException)
             {
-                throw new ImportExportClientDependencyValidationException(
-                    message: "Import export client dependency validation error occurred, please contact support.",
+                throw new ImportExportClientValidationException(
+                    message: "Import export client validation error occurred, please contact support.",
                     innerException: ImportExportCoordinationValidationException.InnerException as Xeption);
             }
             catch (ImportExportCoordinationDependencyValidationException
                 ImportExportCoordinationDependencyValidationException)
             {
-                throw new ImportExportClientDependencyValidationException(
-                    message: "Import export client dependency validation error occurred, please contact support.",
+                throw new ImportExportClientValidationException(
+                    message: "Import export client validation error occurred, please contact support.",
                     innerException: ImportExportCoordinationDependencyValidationException.InnerException as Xeption);
             }
             catch (ImportExportCoordinationDependencyException

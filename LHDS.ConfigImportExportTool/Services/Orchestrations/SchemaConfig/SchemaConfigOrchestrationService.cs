@@ -12,7 +12,6 @@ using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
 using LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
-using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
 {
@@ -41,8 +40,28 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask Export(List<SpecificationObject> specificationObjects, string dataSetName, string version) =>
-            throw new NotImplementedException();
+        public ValueTask<List<SpecificationObject>> Export(string dataSetName, string version) =>
+            TryCatch(async () =>
+            {
+                ValidateSchemaExportArguments(dataSetName, version);
+
+                IQueryable<DataSet> storageDataSets =
+                            await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
+
+                DataSet matchedDataSet = storageDataSets.First(dataSet => dataSet.DataSetName == dataSetName);
+
+                DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications
+                    .First(specification => specification.SupplierSpecificationVersion == version);
+
+                IQueryable<SpecificationObject> storageSpecificationObjects =
+                    await this.specificationObjectProcessingService.RetrieveAllSpecificationObjectsAsync();
+
+                List<SpecificationObject> matchedSpecificationObjects = storageSpecificationObjects
+                    .Where(specificationObject => specificationObject.DataSetSpecificationId == dataSetSpecification.Id)
+                        .ToList();
+
+                return matchedSpecificationObjects;
+            });
 
         public ValueTask Import(
             List<SpecificationObject> specificationObjects,
@@ -52,7 +71,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                 {
                     ValidateSchemaImportArguments(specificationObjects, dataSetName, version);
 
-                    IQueryable<DataSet> storageDataSetQuery =
+                    IQueryable<DataSet> storageDataSets =
                         await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
 
                     storageDataSetQuery = storageDataSetQuery
@@ -73,6 +92,9 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                         specificationObject.OurObjectName = specificationObject.SupplierObjectName;
                         specificationObject.CreatedBy = "System";
                         specificationObject.UpdatedBy = "System";
+                        specificationObject.CreatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                        specificationObject.UpdatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
                         specificationObject.CreatedDate = currentDateTime;
                         specificationObject.UpdatedDate = currentDateTime;
 

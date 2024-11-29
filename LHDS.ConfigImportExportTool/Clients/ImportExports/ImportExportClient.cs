@@ -48,6 +48,11 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
             storageBroker = host.Services.GetRequiredService<IStorageBroker>();
         }
 
+        internal ImportExportClient(IImportExportCoordinationService importExportCoordinationService)
+        {
+            this.importExportCoordinationService = importExportCoordinationService;
+        }
+
         private static IHost RegisterServices(IConfiguration configuration)
         {
             IHostBuilder builder = Host.CreateDefaultBuilder();

@@ -2,9 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using System.Linq;
-using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 

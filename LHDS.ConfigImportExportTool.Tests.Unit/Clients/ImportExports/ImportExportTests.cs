@@ -21,7 +21,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
         public ImportExportTests()
         {
             this.importExportCoordinationServiceMock = new Mock<IImportExportCoordinationService>();
-            this.importExportClient = new ImportExportClient();
+            this.importExportClient = new ImportExportClient(this.importExportCoordinationServiceMock.Object);
         }
 
         private static string GetRandomString() =>

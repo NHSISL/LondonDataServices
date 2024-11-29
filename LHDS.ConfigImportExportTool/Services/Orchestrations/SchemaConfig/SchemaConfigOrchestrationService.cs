@@ -92,8 +92,6 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                         specificationObject.OurObjectName = specificationObject.SupplierObjectName;
                         specificationObject.CreatedBy = "System";
                         specificationObject.UpdatedBy = "System";
-                        specificationObject.CreatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                        specificationObject.UpdatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                         specificationObject.CreatedDate = currentDateTime;
                         specificationObject.UpdatedDate = currentDateTime;
 

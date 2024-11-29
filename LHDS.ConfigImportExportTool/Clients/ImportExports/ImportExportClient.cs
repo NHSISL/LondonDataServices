@@ -8,7 +8,7 @@ using LHDS.ConfigImportExportTool.Brokers.Files;
 using LHDS.ConfigImportExportTool.Brokers.Identifiers;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
-using LHDS.ConfigImportExportTool.Models.Clients.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Clients.ImportExports.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Foundations.Configurations.Retries;
 using LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports;
@@ -39,7 +39,7 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
         {
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.development.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
             this.configuration = configurationBuilder.Build();
@@ -53,7 +53,7 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
             IHostBuilder builder = Host.CreateDefaultBuilder();
             int maxRetryAttempts = configuration.GetSection("RetryConfig:MaxRetryAttempts").Get<int>();
 
-            int pauseBetweenFailuresInSeconds = 
+            int pauseBetweenFailuresInSeconds =
                 configuration.GetSection("RetryConfig:PauseBetweenFailuresInSeconds").Get<int>();
 
             var retrySettings = new RetryConfig(maxRetryAttempts, TimeSpan.FromSeconds(pauseBetweenFailuresInSeconds));
@@ -102,6 +102,41 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
             {
                 throw new ImportExportClientValidationException(
                     message: "Import export client validation error occurred, fix errors and try again.",
+                    innerException: ImportExportCoordinationDependencyValidationException.InnerException as Xeption);
+            }
+            catch (ImportExportCoordinationDependencyException
+                ImportExportCoordinationDependencyException)
+            {
+                throw new ImportExportClientDependencyException(
+                    message: "Import export client dependency error occurred, please contact support.",
+                    innerException: ImportExportCoordinationDependencyException.InnerException as Xeption);
+            }
+            catch (ImportExportCoordinationServiceException
+                ImportExportCoordinationServiceException)
+            {
+                throw new ImportExportClientServiceException(
+                    message: "Import export client service error occurred, fix errors and try again.",
+                    ImportExportCoordinationServiceException.InnerException as Xeption);
+            }
+        }
+
+        public async ValueTask Export(string dataSetName, string version, string filePath)
+        {
+            try
+            {
+                await this.importExportCoordinationService.Export(dataSetName, version, filePath);
+            }
+            catch (ImportExportCoordinationValidationException ImportExportCoordinationValidationException)
+            {
+                throw new ImportExportClientValidationException(
+                    message: "Import export client validation error occurred, please contact support.",
+                    innerException: ImportExportCoordinationValidationException.InnerException as Xeption);
+            }
+            catch (ImportExportCoordinationDependencyValidationException
+                ImportExportCoordinationDependencyValidationException)
+            {
+                throw new ImportExportClientValidationException(
+                    message: "Import export client validation error occurred, please contact support.",
                     innerException: ImportExportCoordinationDependencyValidationException.InnerException as Xeption);
             }
             catch (ImportExportCoordinationDependencyException

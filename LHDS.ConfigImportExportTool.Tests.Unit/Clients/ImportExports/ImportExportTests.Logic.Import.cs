@@ -21,8 +21,6 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
             string inputVersion = someVersion;
             string inputFilePath = someFilePath;
 
-            this.importExportCoordinationServiceMock
-
             // when
             await this.importExportClient.Import(inputDataSetName, inputVersion, inputFilePath);
 

@@ -23,12 +23,12 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
         public ImportExportClientTests()
         {
 
-            var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
+           // var configurationBuilder = new ConfigurationBuilder()
+                //.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+           //     .AddJsonFile("appsettings.ContinuousIntegration.json", optional: true, reloadOnChange: true);
+                //.AddEnvironmentVariables();
 
-            var configuration = configurationBuilder.Build();
+            //var configuration = configurationBuilder.Build();
             ImportExportClient importExportClient = new ImportExportClient();
             this.importExportClient = importExportClient;
             storageBroker = importExportClient.storageBroker;

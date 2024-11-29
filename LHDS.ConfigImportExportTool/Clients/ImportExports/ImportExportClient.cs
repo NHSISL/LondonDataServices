@@ -37,9 +37,19 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
 
         public ImportExportClient()
         {
+            string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var args = Environment.GetCommandLineArgs();
+            var environmentArg = args.FirstOrDefault(arg => arg.StartsWith("--environment="));
+
+            var environmentName = !string.IsNullOrEmpty(aspNetCoreEnvironment)
+                ? aspNetCoreEnvironment
+                : !string.IsNullOrEmpty(environmentArg)
+                    ? environmentArg
+                    : "Development";
+
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
             this.configuration = configurationBuilder.Build();

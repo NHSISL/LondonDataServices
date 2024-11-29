@@ -14,7 +14,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Brokers.DependencyBrokers
 
         public DependencyBroker()
         {
-            string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            /*string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var args = Environment.GetCommandLineArgs();
             var environmentArg = args.FirstOrDefault(arg => arg.StartsWith("--environment="));
 
@@ -37,9 +37,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Brokers.DependencyBrokers
                 throw new Exception("No configuration");
             }
 
+            Console.WriteLine("CFOOO:" + this.Configuration.GetConnectionString("DefaultConnection"));
+
             var storageBroker = new StorageBroker(this.Configuration);
             storageBroker.Database.Migrate();
-            bool canConnect = storageBroker.Database.CanConnect();
+            bool canConnect = storageBroker.Database.CanConnect();*/
         }
     }
 }

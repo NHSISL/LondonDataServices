@@ -14,6 +14,7 @@ namespace LHDS.ConfigImportExportTool.Brokers.Storages.Sql
 
         public StorageBroker(IConfiguration configuration)
         {
+            Console.WriteLine($"StorageBroker created - {configuration.GetConnectionString("DefaultConnection")}");
             this.configuration = configuration;
         }
 

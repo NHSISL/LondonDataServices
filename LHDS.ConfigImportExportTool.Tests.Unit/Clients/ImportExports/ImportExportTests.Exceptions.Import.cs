@@ -5,7 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.ConfigImportExportTool.Models.Clients.Exceptions;
+using LHDS.ConfigImportExportTool.Models.Clients.ImportExports.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Exceptions;
 using Moq;
 using Xeptions;

@@ -22,7 +22,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.0" />
-		<PackageReference Include="NHSISL.CsvHelperClient" Version="0.0.0.5" />
+		<PackageReference Include="NHSISL.CsvHelperClient" Version="1.0.0.1" />
 		<PackageReference Include="STX.EFCore.Client" Version="1.0.0" />
 		<PackageReference Include="System.Linq" Version="4.3.0" />
 		<PackageReference Include="System.Linq.Expressions" Version="4.3.0" />

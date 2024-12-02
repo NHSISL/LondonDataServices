@@ -14,9 +14,9 @@
 	<PackageReference Include="DeepCloner" Version="0.10.4" />
 	<PackageReference Include="EFxceptions" Version="0.4.5" />
 	<PackageReference Include="FluentAssertions" Version="6.12.1" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
@@ -44,17 +44,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="appsettings.ContinuousIntegration.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-    <None Update="appsettings.Development.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="local.appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

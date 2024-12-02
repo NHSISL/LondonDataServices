@@ -187,8 +187,6 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(specificationObject => specificationObject.DataSetSpecificationId).Use(dataSetSpecificationId)
-                .OnProperty(specificationObject => specificationObject.CreatedBy).Use(user)
-                .OnProperty(specificationObject => specificationObject.UpdatedBy).Use(user)
                 .OnProperty(specificationObject => specificationObject.ObjectColumns).IgnoreIt()
                 .OnProperty(specificationObject => specificationObject.DataSetSpecification).IgnoreIt();
 

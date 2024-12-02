@@ -36,14 +36,17 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
 
             foreach(var specificationObject in specificationObjects)
             {
-                await this.storageBroker.InsertSpecificationObjectAsync(specificationObject);
-
                 List<ObjectColumn> createdObjectColumns = 
                     CreateRandomObjectColumns(specificationObject.Id);
 
-                foreach(var createdObjectColumn in createdObjectColumns)
+                specificationObject.ObjectColumns = createdObjectColumns;
 
-                await this.storageBroker.InsertObjectColumnAsync(createdObjectColumn);
+                await this.storageBroker.InsertSpecificationObjectAsync(specificationObject);
+
+                foreach(var createdObjectColumn in createdObjectColumns)
+                {
+                    await this.storageBroker.InsertObjectColumnAsync(createdObjectColumn);
+                }
             }
 
             string assembly = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);

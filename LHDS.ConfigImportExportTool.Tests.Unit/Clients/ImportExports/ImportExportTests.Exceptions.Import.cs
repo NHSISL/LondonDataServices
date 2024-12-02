@@ -17,8 +17,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
     {
         [Theory]
         [MemberData(nameof(ImportExportClientDependencyValidationExceptions))]
-        public async Task
-            ShouldThrowDependencyValidationOnExportIfDependencyValidationOccurs(
+        public async Task ShouldThrowValidationOnImportIfValidationOccurs(
             Xeption dependencyValidationException)
         {
             // given
@@ -28,38 +27,33 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
 
             var expectedValidationException =
                 new ImportExportClientValidationException(
-                    message: "Import export client validation error occurred, " +
-                        "please contact support.",
-                    innerException: dependencyValidationException.InnerException as Xeption);
+                    message: "Import export client validation error occurred, fix errors and try again.",
+                        innerException: dependencyValidationException.InnerException as Xeption);
 
             this.importExportCoordinationServiceMock.Setup(service =>
-                service.Export(inputDataSetName, inputVersion, inputFilePath))
-                    .ThrowsAsync(dependencyValidationException);
+                    service.Import(inputDataSetName, inputVersion, inputFilePath))
+                        .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask exportFileTask =
-                this.importExportClient.Export(inputDataSetName, inputVersion, inputFilePath);
+            ValueTask importFileTask = this.importExportClient.Import(inputDataSetName, inputVersion, inputFilePath);
 
             ImportExportClientValidationException actualException =
                 await Assert.ThrowsAsync<ImportExportClientValidationException>(
-                    exportFileTask.AsTask);
+                    importFileTask.AsTask);
 
             // then
-            actualException.Should()
-                 .BeEquivalentTo(expectedValidationException);
+            actualException.Should().BeEquivalentTo(expectedValidationException);
 
             this.importExportCoordinationServiceMock.Verify(service =>
-             service.Export(inputDataSetName, inputVersion, inputFilePath),
-                 Times.Once);
+                    service.Import(inputDataSetName, inputVersion, inputFilePath),
+                        Times.Once);
 
             this.importExportCoordinationServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
         [MemberData(nameof(ImportExportClientDependencyExceptions))]
-        public async Task
-            ShouldThrowDependencyErrorOnExportIfDependencyErrorOccurs(
-            Xeption dependencyException)
+        public async Task ShouldThrowDependencyErrorOnImportIfDependencyErrorOccurs(Xeption dependencyException)
         {
             // given
             string inputDataSetName = GetRandomString(10);
@@ -68,35 +62,34 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
 
             var expectedDependencyException =
                 new ImportExportClientDependencyException(
-                    message: "Import export client dependency error occurred, " +
-                        "please contact support.",
-                    innerException: dependencyException.InnerException as Xeption);
+                    message: "Import export client dependency error occurred, " + "please contact support.",
+                        innerException: dependencyException.InnerException as Xeption);
 
             this.importExportCoordinationServiceMock.Setup(service =>
-                service.Export(inputDataSetName, inputVersion, inputFilePath))
+                service.Import(inputDataSetName, inputVersion, inputFilePath))
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask exportFileTask =
-                this.importExportClient.Export(inputDataSetName, inputVersion, inputFilePath);
+            ValueTask importFileTask =
+                this.importExportClient.Import(inputDataSetName, inputVersion, inputFilePath);
 
             ImportExportClientDependencyException actualException =
                 await Assert.ThrowsAsync<ImportExportClientDependencyException>(
-                    exportFileTask.AsTask);
+                    importFileTask.AsTask);
 
             // then
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
             this.importExportCoordinationServiceMock.Verify(service =>
-             service.Export(inputDataSetName, inputVersion, inputFilePath),
+             service.Import(inputDataSetName, inputVersion, inputFilePath),
                  Times.Once);
 
             this.importExportCoordinationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowErrorOnExportIfErrorOccurs()
+        public async Task ShouldThrowErrorOnImportIfErrorOccurs()
         {
             // given
             string inputDataSetName = GetRandomString(10);
@@ -116,23 +109,23 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Clients.ImportExports
                     innerException: importExportCoordinationServiceException.InnerException as Xeption);
 
             this.importExportCoordinationServiceMock.Setup(service =>
-                service.Export(inputDataSetName, inputVersion, inputFilePath))
+                service.Import(inputDataSetName, inputVersion, inputFilePath))
                     .ThrowsAsync(importExportCoordinationServiceException);
 
             // when
-            ValueTask exportFileTask =
-                this.importExportClient.Export(inputDataSetName, inputVersion, inputFilePath);
+            ValueTask importFileTask =
+                this.importExportClient.Import(inputDataSetName, inputVersion, inputFilePath);
 
             ImportExportClientServiceException actualException =
                 await Assert.ThrowsAsync<ImportExportClientServiceException>(
-                    exportFileTask.AsTask);
+                    importFileTask.AsTask);
 
             // then
             actualException.Should()
                  .BeEquivalentTo(expectedServiceException);
 
             this.importExportCoordinationServiceMock.Verify(service =>
-             service.Export(inputDataSetName, inputVersion, inputFilePath),
+             service.Import(inputDataSetName, inputVersion, inputFilePath),
                  Times.Once);
 
             this.importExportCoordinationServiceMock.VerifyNoOtherCalls();

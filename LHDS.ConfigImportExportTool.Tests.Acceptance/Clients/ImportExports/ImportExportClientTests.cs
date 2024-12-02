@@ -9,6 +9,7 @@ using LHDS.ConfigImportExportTool.Clients.ImportExports;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Foundations.Suppliers;
 using Microsoft.Extensions.Configuration;
 using Tynamix.ObjectFiller;
@@ -164,6 +165,44 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
                 .OnProperty(objectColumn => objectColumn.SpecificationObjectId).Use(specificationId)
                 .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
                 .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+
+        private static List<SpecificationObject> CreateRandomSpecificationObjects(
+            DateTimeOffset dateTimeOffset)
+        {
+            return CreateSpecificationObjectFiller(dateTimeOffset)
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static List<SpecificationObject> CreateRandomSpecificationObjects()
+        {
+            return CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static Filler<SpecificationObject> CreateSpecificationObjectFiller(
+            DateTimeOffset dateTimeOffset)
+        {
+            string user = GetRandomString(255);
+            var filler = new Filler<SpecificationObject>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(specificationObject => specificationObject.SupplierObjectName).Use(GetRandomString(255))
+                .OnProperty(specificationObject => specificationObject.OurObjectName).Use(GetRandomString(255))
+                .OnProperty(specificationObject => specificationObject.ObjectDescription).Use(GetRandomString(500))
+                .OnProperty(specificationObject => specificationObject.InterchangeProtocol).Use(GetRandomString(255))
+                .OnProperty(specificationObject => specificationObject.DeletionHandling).Use(GetRandomString(255))
+                .OnProperty(specificationObject => specificationObject.CreatedBy).Use(user)
+                .OnProperty(specificationObject => specificationObject.UpdatedBy).Use(user)
+                .OnProperty(specificationObject => specificationObject.ObjectColumns).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.DataSetSpecification).IgnoreIt();
 
             return filler;
         }

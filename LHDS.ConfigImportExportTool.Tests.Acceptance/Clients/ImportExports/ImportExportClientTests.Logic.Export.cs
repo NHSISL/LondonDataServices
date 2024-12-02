@@ -1,0 +1,46 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System.Reflection;
+using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
+using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
+using LHDS.ConfigImportExportTool.Models.Foundations.Suppliers;
+
+namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
+{
+    public partial class ImportExportClientTests
+    {
+        [Fact]
+        public async Task ShouldExportSchemaFileAsync()
+        {
+            //Given
+            Supplier randomSupplier = CreateRandomSupplier();
+            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
+            DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(randomDataSet.Id);
+
+            List<DataSetSpecification> dataSetSpecifications = 
+                new List<DataSetSpecification> { randomDataSetSpecification };
+
+
+
+            randomDataSet.DataSetSpecifications = dataSetSpecifications;
+            await this.storageBroker.InsertSupplierAsync(randomSupplier);
+            await this.storageBroker.InsertDataSetAsync(randomDataSet);
+            await this.storageBroker.InsertDataSetSpecificationAsync(randomDataSetSpecification);
+            string assembly = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            char separator = Path.DirectorySeparatorChar;
+
+            string inputFilePath = Path.Combine(
+                assembly,
+                $"Resources{separator}Clients{separator}ImportExport{separator}" +
+                    "Test_Export_schema_file.csv");
+
+            //When
+            await this.importExportClient.Import(
+                dataSetName: randomDataSet.DataSetName,
+                version: randomDataSetSpecification.SupplierSpecificationVersion,
+                filePath: inputFilePath);
+        }
+    }
+}

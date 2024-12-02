@@ -8,6 +8,7 @@ using LHDS.ConfigImportExportTool.Clients;
 using LHDS.ConfigImportExportTool.Clients.ImportExports;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
+using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.Suppliers;
 using Microsoft.Extensions.Configuration;
 using Tynamix.ObjectFiller;
@@ -116,7 +117,6 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
             return filler;
         }
 
-
         private static Supplier CreateRandomSupplier() =>
             CreateRandomSupplierFiller().Create();
 
@@ -133,6 +133,37 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
                 .OnProperty(supplier => supplier.CreatedBy).Use(userId)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now)
                 .OnProperty(supplier => supplier.UpdatedBy).Use(userId);
+
+            return filler;
+        }
+
+        private static List<ObjectColumn> CreateRandomObjectColumns(DateTimeOffset dateTimeOffset, Guid specificationId)
+        {
+            return CreateObjectColumnFiller(dateTimeOffset, specificationId)
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static List<ObjectColumn> CreateRandomObjectColumns(Guid specificationId)
+        {
+            return CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset(), specificationId)
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static Filler<ObjectColumn> CreateObjectColumnFiller(
+            DateTimeOffset dateTimeOffset,
+            Guid specificationId)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<ObjectColumn>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(objectColumn => objectColumn.SpecificationObjectId).Use(specificationId)
+                .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
+                .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
 
             return filler;
         }

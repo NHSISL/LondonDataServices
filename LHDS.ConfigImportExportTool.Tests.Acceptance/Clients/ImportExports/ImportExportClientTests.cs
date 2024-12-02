@@ -162,31 +162,23 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(objectColumn => objectColumn.SpecificationObjectId).Use(specificationId)
                 .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
                 .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
 
             return filler;
         }
 
-
         private static List<SpecificationObject> CreateRandomSpecificationObjects(
-            DateTimeOffset dateTimeOffset)
+            Guid dataSetSpecificationId)
         {
-            return CreateSpecificationObjectFiller(dateTimeOffset)
-                .Create(count: GetRandomNumber())
-                    .ToList();
-        }
-
-        private static List<SpecificationObject> CreateRandomSpecificationObjects()
-        {
-            return CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset())
+            return CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset(), dataSetSpecificationId)
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
 
         private static Filler<SpecificationObject> CreateSpecificationObjectFiller(
-            DateTimeOffset dateTimeOffset)
+            DateTimeOffset dateTimeOffset,
+            Guid dataSetSpecificationId)
         {
             string user = GetRandomString(255);
             var filler = new Filler<SpecificationObject>();
@@ -194,11 +186,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(specificationObject => specificationObject.SupplierObjectName).Use(GetRandomString(255))
-                .OnProperty(specificationObject => specificationObject.OurObjectName).Use(GetRandomString(255))
-                .OnProperty(specificationObject => specificationObject.ObjectDescription).Use(GetRandomString(500))
-                .OnProperty(specificationObject => specificationObject.InterchangeProtocol).Use(GetRandomString(255))
-                .OnProperty(specificationObject => specificationObject.DeletionHandling).Use(GetRandomString(255))
+                .OnProperty(specificationObject => specificationObject.DataSetSpecificationId).Use(dataSetSpecificationId)
                 .OnProperty(specificationObject => specificationObject.CreatedBy).Use(user)
                 .OnProperty(specificationObject => specificationObject.UpdatedBy).Use(user)
                 .OnProperty(specificationObject => specificationObject.ObjectColumns).IgnoreIt()

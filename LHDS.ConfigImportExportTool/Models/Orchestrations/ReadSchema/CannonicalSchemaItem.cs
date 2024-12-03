@@ -18,11 +18,11 @@ namespace LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema
         public string DataSetSpecificationId { get; set; }
         public string OurObjectName { get; set; } = string.Empty;
         public string InterchangeProtocol { get; set; } = string.Empty;
-        public bool IsPushedToUs { get; set; }
-        public bool IsPulledByUs { get; set; }
+        public bool? IsPushedToUs { get; set; }
+        public bool? IsPulledByUs { get; set; }
         public string DeletionHandling { get; set; } = string.Empty;
-        public bool IsSubmissionHeaderObject { get; set; }
-        public bool IsTransactionLog { get; set; }
+        public bool? IsSubmissionHeaderObject { get; set; }
+        public bool? IsTransactionLog { get; set; }
         public string SpecificationObjectId { get; set; }
         public string OurColumnName { get; set; } = string.Empty;
         public string PopulatedBy { get; set; } = string.Empty;
@@ -30,22 +30,22 @@ namespace LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema
         public int? Precision { get; set; }
         public int? Scale { get; set; }
         public string SupplierDateFormat { get; set; } = string.Empty;
-        public bool IsWatermark { get; set; }
-        public bool IsSequencing { get; set; }
-        public bool IsBusinessKey { get; set; }
-        public bool IsUniqueRecordKey { get; set; }
-        public bool IsVersionHashElement { get; set; }
-        public bool IsSenderCode { get; set; }
-        public bool IsAuthorCode { get; set; }
-        public bool IsRelatedOrganisationId { get; set; }
-        public bool IsDeleteFlag { get; set; }
-        public bool IsSensitiveRecordMarker { get; set; }
-        public bool IsPersonConfidentialData { get; set; }
+        public bool? IsWatermark { get; set; }
+        public bool? IsSequencing { get; set; }
+        public bool? IsBusinessKey { get; set; }
+        public bool? IsUniqueRecordKey { get; set; }
+        public bool? IsVersionHashElement { get; set; }
+        public bool? IsSenderCode { get; set; }
+        public bool? IsAuthorCode { get; set; }
+        public bool? IsRelatedOrganisationId { get; set; }
+        public bool? IsDeleteFlag { get; set; }
+        public bool? IsSensitiveRecordMarker { get; set; }
+        public bool? IsPersonConfidentialData { get; set; }
         public string PersonConfidentialDataType { get; set; } = string.Empty;
         public string MaskingMethod { get; set; } = string.Empty;
         public string CodeSystem { get; set; } = string.Empty;
         public string PartitionColumnLevel { get; set; } = string.Empty;
-        public Guid DataTypeId { get; set; }
-        public bool IsForeignKey { get; set; } = false;
+        public string DataTypeId { get; set; }
+        public bool? IsForeignKey { get; set; } = false;
     }
 }

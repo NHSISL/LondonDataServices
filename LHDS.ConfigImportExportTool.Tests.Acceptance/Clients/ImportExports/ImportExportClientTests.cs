@@ -162,6 +162,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(objectColumn => objectColumn.SpecificationObjectId).Use(specificationId)
                 .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
                 .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
 

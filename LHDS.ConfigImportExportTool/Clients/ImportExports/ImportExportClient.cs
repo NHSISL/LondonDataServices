@@ -39,6 +39,9 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
         {
             string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var args = Environment.GetCommandLineArgs();
+            Console.WriteLine("*********************************************");
+            Console.WriteLine(aspNetCoreEnvironment);
+            Console.WriteLine("*********************************************");
             var environmentArg = args.FirstOrDefault(arg => arg.StartsWith("--environment="));
 
             var environmentName = !string.IsNullOrEmpty(aspNetCoreEnvironment)

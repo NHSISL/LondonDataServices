@@ -49,6 +49,7 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
                 : !string.IsNullOrEmpty(environmentArg)
                     ? environmentArg
                     : "Development";
+
             var configurationBuilder = new ConfigurationBuilder()
                  .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                  .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)

@@ -77,6 +77,7 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
 
             builder.ConfigureServices(configuration =>
             {
+                configuration.AddSingleton(configuration);
                 configuration.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
                 configuration.AddTransient<IDateTimeBroker, DateTimeBroker>();
                 configuration.AddTransient<IStorageBroker, StorageBroker>();

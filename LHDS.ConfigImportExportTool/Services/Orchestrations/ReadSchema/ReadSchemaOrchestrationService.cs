@@ -122,7 +122,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                             MaskingMethod = objectColumn.MaskingMethod,
                             CodeSystem = objectColumn.CodeSystem,
                             PartitionColumnLevel = objectColumn.PartitionColumnLevel,
-                            DataTypeId = objectColumn.DataTypeId,
+                            DataTypeId = objectColumn.DataTypeId.ToString(),
                             IsForeignKey = objectColumn.IsForeignKey,
                         };
 

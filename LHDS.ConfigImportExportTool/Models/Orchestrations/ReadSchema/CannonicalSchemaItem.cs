@@ -15,7 +15,7 @@ namespace LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema
         public int ColumnOrdinal { get; set; }
         public string LinkedTable { get; set; }
         public string LinkedColumn { get; set; }
-        public Guid DataSetSpecificationId { get; set; }
+        public string DataSetSpecificationId { get; set; }
         public string OurObjectName { get; set; } = string.Empty;
         public string InterchangeProtocol { get; set; } = string.Empty;
         public bool IsPushedToUs { get; set; }
@@ -23,7 +23,7 @@ namespace LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema
         public string DeletionHandling { get; set; } = string.Empty;
         public bool IsSubmissionHeaderObject { get; set; }
         public bool IsTransactionLog { get; set; }
-        public Guid SpecificationObjectId { get; set; }
+        public string SpecificationObjectId { get; set; }
         public string OurColumnName { get; set; } = string.Empty;
         public string PopulatedBy { get; set; } = string.Empty;
         public string FhirDataType { get; set; } = string.Empty;

@@ -54,7 +54,8 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
 
             this.configuration = configurationBuilder.Build();
 
-            Console.WriteLine("Conection string from config:" + this.configuration.GetConnectionString("DefaultConnection"));
+            var connectionString = this.configuration.GetConnectionString("DefaultConnection");
+            Console.WriteLine($"Conection string from config: {connectionString}");
             IHost host = RegisterServices(this.configuration);
             importExportCoordinationService = host.Services.GetRequiredService<IImportExportCoordinationService>();
             storageBroker = host.Services.GetRequiredService<IStorageBroker>();
@@ -68,39 +69,37 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
         private static IHost RegisterServices(IConfiguration configuration)
         {
             IHostBuilder builder = Host.CreateDefaultBuilder();
-            int maxRetryAttempts = configuration.GetSection("RetryConfig:MaxRetryAttempts").Get<int>();
 
-            int pauseBetweenFailuresInSeconds =
-                configuration.GetSection("RetryConfig:PauseBetweenFailuresInSeconds").Get<int>();
-
-            var retrySettings = new RetryConfig(maxRetryAttempts, TimeSpan.FromSeconds(pauseBetweenFailuresInSeconds));
-
-            builder.ConfigureServices(configuration =>
+            builder.ConfigureServices(services =>
             {
-                configuration.AddSingleton(configuration);
-                configuration.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
-                configuration.AddTransient<IDateTimeBroker, DateTimeBroker>();
-                configuration.AddTransient<IStorageBroker, StorageBroker>();
-                configuration.AddTransient<IIdentifierBroker, IdentifierBroker>();
-                configuration.AddTransient<ILoggingBroker, LoggingBroker>();
-                configuration.AddTransient<IFileBroker, FileBroker>();
-                configuration.AddTransient<ICsvHelperService, CsvHelperService>();
-                configuration.AddTransient<IDataSetService, DataSetService>();
-                configuration.AddTransient<IFileService, FileService>();
-                configuration.AddSingleton<IRetryConfig>(retrySettings);
-                configuration.AddTransient<IObjectColumnService, ObjectColumnService>();
-                configuration.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
-                configuration.AddTransient<IDataSetProcessingService, DataSetProcessingService>();
-                configuration.AddTransient<ISpecificationObjectProcessingService, SpecificationObjectProcessingService>();
-                configuration.AddTransient<IObjectColumnProcessingService, ObjectColumnProcessingService>();
-                configuration.AddTransient<IReadSchemaOrchestrationService, ReadSchemaOrchestrationService>();
-                configuration.AddTransient<ISchemaConfigOrchestrationService, SchemaConfigOrchestrationService>();
-                configuration.AddTransient<IImportExportCoordinationService, ImportExportCoordinationService>();
+                services.AddSingleton(configuration);
+                services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
+                services.AddTransient<IDateTimeBroker, DateTimeBroker>();
+                services.AddTransient<IStorageBroker, StorageBroker>();
+                services.AddTransient<IIdentifierBroker, IdentifierBroker>();
+                services.AddTransient<ILoggingBroker, LoggingBroker>();
+                services.AddTransient<IFileBroker, FileBroker>();
+                services.AddTransient<ICsvHelperService, CsvHelperService>();
+                services.AddTransient<IDataSetService, DataSetService>();
+                services.AddTransient<IFileService, FileService>();
+
+                // Load RetryConfig
+                int maxRetryAttempts = configuration.GetSection("RetryConfig:MaxRetryAttempts").Get<int>();
+                int pauseBetweenFailuresInSeconds = configuration.GetSection("RetryConfig:PauseBetweenFailuresInSeconds").Get<int>();
+                var retrySettings = new RetryConfig(maxRetryAttempts, TimeSpan.FromSeconds(pauseBetweenFailuresInSeconds));
+                services.AddSingleton<IRetryConfig>(retrySettings);
+
+                services.AddTransient<IObjectColumnService, ObjectColumnService>();
+                services.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
+                services.AddTransient<IDataSetProcessingService, DataSetProcessingService>();
+                services.AddTransient<ISpecificationObjectProcessingService, SpecificationObjectProcessingService>();
+                services.AddTransient<IObjectColumnProcessingService, ObjectColumnProcessingService>();
+                services.AddTransient<IReadSchemaOrchestrationService, ReadSchemaOrchestrationService>();
+                services.AddTransient<ISchemaConfigOrchestrationService, SchemaConfigOrchestrationService>();
+                services.AddTransient<IImportExportCoordinationService, ImportExportCoordinationService>();
             });
 
-            IHost host = builder.Build();
-
-            return host;
+            return builder.Build();
         }
 
         public async ValueTask Import(string dataSetName, string version, string filePath)

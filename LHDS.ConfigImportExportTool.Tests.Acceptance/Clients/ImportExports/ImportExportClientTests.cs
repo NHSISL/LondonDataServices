@@ -20,20 +20,9 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
 
         public ImportExportClientTests()
         {
-
-            Environment.SetEnvironmentVariable(
-                "ASPNETCORE_ENVIRONMENT",
-                "ContinuousIntegration",
-                EnvironmentVariableTarget.Process);
-
             ImportExportClient importExportClient = new ImportExportClient();
             this.importExportClient = importExportClient;
             storageBroker = importExportClient.storageBroker;
-
-            Environment.SetEnvironmentVariable(
-                "ASPNETCORE_ENVIRONMENT",
-                null,
-                EnvironmentVariableTarget.Process);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

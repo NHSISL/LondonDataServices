@@ -40,7 +40,6 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
                     CreateRandomObjectColumns(specificationObject.Id);
 
                 specificationObject.ObjectColumns = createdObjectColumns;
-
                 await this.storageBroker.InsertSpecificationObjectAsync(specificationObject);
 
                 foreach(var createdObjectColumn in createdObjectColumns)

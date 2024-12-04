@@ -54,7 +54,6 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
 
             this.configuration = configurationBuilder.Build();
 
-            Console.WriteLine("Conection string from config:" + this.configuration.GetConnectionString("DefaultConnection"));
             IHost host = RegisterServices(this.configuration);
             importExportCoordinationService = host.Services.GetRequiredService<IImportExportCoordinationService>();
             storageBroker = host.Services.GetRequiredService<IStorageBroker>();

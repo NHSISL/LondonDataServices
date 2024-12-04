@@ -4,12 +4,10 @@
 
 using System.Linq.Expressions;
 using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
-using LHDS.ConfigImportExportTool.Clients;
 using LHDS.ConfigImportExportTool.Clients.ImportExports;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.Suppliers;
-using Microsoft.Extensions.Configuration;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -23,15 +21,19 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
         public ImportExportClientTests()
         {
 
-           // var configurationBuilder = new ConfigurationBuilder()
-                //.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-           //     .AddJsonFile("appsettings.ContinuousIntegration.json", optional: true, reloadOnChange: true);
-                //.AddEnvironmentVariables();
+            Environment.SetEnvironmentVariable(
+                "ASPNETCORE_ENVIRONMENT",
+                "ContinuousIntegration",
+                EnvironmentVariableTarget.Process);
 
-            //var configuration = configurationBuilder.Build();
             ImportExportClient importExportClient = new ImportExportClient();
             this.importExportClient = importExportClient;
             storageBroker = importExportClient.storageBroker;
+
+            Environment.SetEnvironmentVariable(
+                "ASPNETCORE_ENVIRONMENT",
+                null,
+                EnvironmentVariableTarget.Process);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

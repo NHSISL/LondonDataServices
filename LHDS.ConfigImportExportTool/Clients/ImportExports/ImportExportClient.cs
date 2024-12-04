@@ -83,12 +83,16 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
                 services.AddTransient<IDataSetService, DataSetService>();
                 services.AddTransient<IFileService, FileService>();
 
-                // Load RetryConfig
-                int maxRetryAttempts = configuration.GetSection("RetryConfig:MaxRetryAttempts").Get<int>();
-                int pauseBetweenFailuresInSeconds = configuration.GetSection("RetryConfig:PauseBetweenFailuresInSeconds").Get<int>();
-                var retrySettings = new RetryConfig(maxRetryAttempts, TimeSpan.FromSeconds(pauseBetweenFailuresInSeconds));
-                services.AddSingleton<IRetryConfig>(retrySettings);
+                int maxRetryAttempts =
+                    configuration.GetSection("RetryConfig:MaxRetryAttempts").Get<int>();
 
+                int pauseBetweenFailuresInSeconds =
+                    configuration.GetSection("RetryConfig:PauseBetweenFailuresInSeconds").Get<int>();
+
+                var retrySettings =
+                    new RetryConfig(maxRetryAttempts, TimeSpan.FromSeconds(pauseBetweenFailuresInSeconds));
+
+                services.AddSingleton<IRetryConfig>(retrySettings);
                 services.AddTransient<IObjectColumnService, ObjectColumnService>();
                 services.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
                 services.AddTransient<IDataSetProcessingService, DataSetProcessingService>();

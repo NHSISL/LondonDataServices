@@ -92,7 +92,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                     foreach (SpecificationObject specificationObject in specificationObjects)
                     {
                         DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                        specificationObject.Id = this.identifierBroker.GetIdentifier();
+                        specificationObject.Id = await this.identifierBroker.GetIdentifierAsync();
                         specificationObject.DataSetSpecificationId = dataSetSpecification.Id;
                         specificationObject.OurObjectName = specificationObject.SupplierObjectName;
                         specificationObject.CreatedBy = "System";
@@ -106,7 +106,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                         foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
                         {
                             DateTimeOffset dateTimeNow = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                            objectColumn.Id = this.identifierBroker.GetIdentifier();
+                            objectColumn.Id = await this.identifierBroker.GetIdentifierAsync();
                             objectColumn.SpecificationObjectId = storageSpecificationObject.Id;
                             objectColumn.OurColumnName = objectColumn.SupplierColumnName;
                             objectColumn.CodeSystem = "System";

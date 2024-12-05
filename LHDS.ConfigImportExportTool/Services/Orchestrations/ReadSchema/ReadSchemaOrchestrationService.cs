@@ -131,7 +131,6 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                 }
 
                 string csvString = await this.csvHelperService.MapObjectToCsvAsync(mappedCannonicalSchemaItems, true);
-
                 await this.fileService.WriteToFileAsync(path, csvString);
             });
     }

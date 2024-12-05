@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using LHDS.ConfigImportExportTool.Brokers.DateTimes;
+using LHDS.ConfigImportExportTool.Brokers.Identifiers;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
@@ -11,6 +12,7 @@ using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Services.Processings.DataSets;
 using LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects;
+using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
 {
@@ -20,6 +22,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
         private readonly ISpecificationObjectProcessingService specificationObjectProcessingService;
         private readonly IDataSetProcessingService dataSetProcessingService;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IIdentifierBroker identifierBroker;
         private readonly IDateTimeBroker dateTimeBroker;
 
         public SchemaConfigOrchestrationService(
@@ -27,12 +30,14 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             ISpecificationObjectProcessingService specificationObjectProcessingService,
             IDataSetProcessingService dataSetProcessingService,
             ILoggingBroker loggingBroker,
+            IIdentifierBroker identifierBroker,
             IDateTimeBroker dateTimeBroker)
         {
             this.objectColumnProcessingService = objectColumnProcessingService;
             this.specificationObjectProcessingService = specificationObjectProcessingService;
             this.dataSetProcessingService = dataSetProcessingService;
             this.loggingBroker = loggingBroker;
+            this.identifierBroker = identifierBroker;
             this.dateTimeBroker = dateTimeBroker;
         }
 
@@ -67,32 +72,43 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
                 {
                     ValidateSchemaImportArguments(specificationObjects, dataSetName, version);
 
-                    IQueryable<DataSet> storageDataSets =
+                    IQueryable<DataSet> storageDataSetQuery =
                         await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
 
-                    DataSet matchedDataSet = storageDataSets.First(dataSet => dataSet.DataSetName == dataSetName);
+                    storageDataSetQuery = storageDataSetQuery
+                        .Include(dataSet => dataSet.DataSetSpecifications)
+                        .Where(dataSet => dataSet.DataSetName == dataSetName);
+
+                    DataSet matchedDataSet = storageDataSetQuery.First(dataSet => dataSet.DataSetName == dataSetName);
 
                     DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications
                         .First(specification => specification.SupplierSpecificationVersion == version);
 
                     foreach (SpecificationObject specificationObject in specificationObjects)
                     {
+                        DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                        specificationObject.Id = await this.identifierBroker.GetIdentifierAsync();
                         specificationObject.DataSetSpecificationId = dataSetSpecification.Id;
+                        specificationObject.OurObjectName = specificationObject.SupplierObjectName;
                         specificationObject.CreatedBy = "System";
                         specificationObject.UpdatedBy = "System";
-                        specificationObject.CreatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                        specificationObject.UpdatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                        specificationObject.CreatedDate = currentDateTime;
+                        specificationObject.UpdatedDate = currentDateTime;
 
                         SpecificationObject storageSpecificationObject = await specificationObjectProcessingService
                             .ReadOrInsertSpecificationObjectAsync(specificationObject);
 
                         foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
                         {
+                            DateTimeOffset dateTimeNow = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                            objectColumn.Id = await this.identifierBroker.GetIdentifierAsync();
                             objectColumn.SpecificationObjectId = storageSpecificationObject.Id;
+                            objectColumn.OurColumnName = objectColumn.SupplierColumnName;
+                            objectColumn.CodeSystem = "System";
                             objectColumn.CreatedBy = "System";
                             objectColumn.UpdatedBy = "System";
-                            objectColumn.CreatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                            objectColumn.UpdatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                            objectColumn.CreatedDate = dateTimeNow;
+                            objectColumn.UpdatedDate = dateTimeNow;
 
                             ObjectColumn storageObjectColumn = await objectColumnProcessingService
                                 .ReadOrInsertObjectColumnAsync(objectColumn);

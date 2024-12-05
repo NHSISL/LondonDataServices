@@ -47,6 +47,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                     var newSpecificationObjects = new SpecificationObject
                     {
                         SupplierObjectName = group.Key,
+                        ObjectDescription = group.First().TableDescription,
                     };
 
                     foreach (var canonicalSchemaObject in group)
@@ -54,6 +55,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                         var newObjectColumn = new ObjectColumn
                         {
                             SupplierColumnName = canonicalSchemaObject.ColumnName,
+                            ColumnDescription = canonicalSchemaObject.ColumnDescription,
                             SqlDataType = canonicalSchemaObject.ColumnDataType,
                             Length = canonicalSchemaObject.ColumnLength,
                             OrdinalPosition = canonicalSchemaObject.ColumnOrdinal,
@@ -90,7 +92,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                             ColumnOrdinal = objectColumn.OrdinalPosition,
                             LinkedTable = objectColumn.ForeignKeyTableName,
                             LinkedColumn = objectColumn.ForeignKeyColumnName,
-                            DataSetSpecificationId = specificationObject.DataSetSpecificationId,
+                            DataSetSpecificationId = specificationObject.DataSetSpecificationId.ToString(),
                             OurObjectName = specificationObject.OurObjectName,
                             InterchangeProtocol = specificationObject.InterchangeProtocol,
                             IsPushedToUs = specificationObject.IsPushedToUs,
@@ -98,7 +100,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                             DeletionHandling = specificationObject.DeletionHandling,
                             IsSubmissionHeaderObject = specificationObject.IsSubmissionHeaderObject,
                             IsTransactionLog = specificationObject.IsTransactionLog,
-                            SpecificationObjectId = objectColumn.SpecificationObjectId,
+                            SpecificationObjectId = objectColumn.SpecificationObjectId.ToString(),
                             OurColumnName = objectColumn.OurColumnName,
                             PopulatedBy = objectColumn.PopulatedBy,
                             FhirDataType = objectColumn.FhirDataType,
@@ -120,7 +122,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                             MaskingMethod = objectColumn.MaskingMethod,
                             CodeSystem = objectColumn.CodeSystem,
                             PartitionColumnLevel = objectColumn.PartitionColumnLevel,
-                            DataTypeId = objectColumn.DataTypeId,
+                            DataTypeId = objectColumn.DataTypeId.ToString(),
                             IsForeignKey = objectColumn.IsForeignKey,
                         };
 
@@ -129,7 +131,6 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                 }
 
                 string csvString = await this.csvHelperService.MapObjectToCsvAsync(mappedCannonicalSchemaItems, true);
-
                 await this.fileService.WriteToFileAsync(path, csvString);
             });
     }

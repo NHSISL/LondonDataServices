@@ -3,15 +3,15 @@
 // ---------------------------------------------------------
 
 using System.Linq.Expressions;
+using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
+using LHDS.ConfigImportExportTool.Brokers.Files;
 using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
-using LHDS.ConfigImportExportTool.Clients;
 using LHDS.ConfigImportExportTool.Clients.ImportExports;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Foundations.Suppliers;
-using Microsoft.Extensions.Configuration;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -20,20 +20,24 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
     public partial class ImportExportClientTests
     {
         private readonly IStorageBroker storageBroker;
+        private readonly ICsvHelperBroker csvHelperBroker;
+        private readonly IFileBroker fileBroker;
         private readonly IImportExportClient importExportClient;
 
         public ImportExportClientTests()
         {
 
-           // var configurationBuilder = new ConfigurationBuilder()
-                //.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-           //     .AddJsonFile("appsettings.ContinuousIntegration.json", optional: true, reloadOnChange: true);
-                //.AddEnvironmentVariables();
+            // var configurationBuilder = new ConfigurationBuilder()
+            //.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            //     .AddJsonFile("appsettings.ContinuousIntegration.json", optional: true, reloadOnChange: true);
+            //.AddEnvironmentVariables();
 
             //var configuration = configurationBuilder.Build();
             ImportExportClient importExportClient = new ImportExportClient();
             this.importExportClient = importExportClient;
             storageBroker = importExportClient.storageBroker;
+            this.csvHelperBroker = csvHelperBroker;
+            this.fileBroker = fileBroker;
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
@@ -54,9 +58,13 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
             };
         }
 
+        public static bool GetRandomBoolean()
+        {
+            Random rand = new Random(); return rand.Next(2) == 0;
+        }
+
         private static string GetRandomString(int length) =>
            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
-
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
@@ -136,6 +144,130 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
                 .OnProperty(supplier => supplier.UpdatedBy).Use(userId);
 
             return filler;
+        }
+
+        private static dynamic CreateRandomDynamicSchemaItem()
+        {
+            return new
+            {
+                TableName = GetRandomString(),
+                OurObjectName = GetRandomString(),
+                TableDescription = GetRandomString(),
+                InterchangeProtocol = GetRandomString(),
+                IsPushedToUs = GetRandomBoolean(),
+                IsPulledByUs = GetRandomBoolean(),
+                DeletionHandling = GetRandomString(),
+                IsSubmissionHeaderObject = GetRandomBoolean(),
+                IsTransactionLog = GetRandomBoolean(),
+                ColumnName = GetRandomString(),
+                OurColumnName = GetRandomString(),
+                ColumnDescription = GetRandomString(),
+                ColumnOrdinal = GetRandomNumber(),
+                PopulatedBy = GetRandomString(),
+                FhirDataType = GetRandomString(10),
+                SqlDataType = GetRandomString(10),
+                Length = GetRandomNumber(),
+                Precision = GetRandomNumber(),
+                Scale = GetRandomNumber(),
+                SupplierDateFormat = GetRandomString(),
+                IsWatermark = GetRandomBoolean(),
+                IsSequencing = GetRandomBoolean(),
+                IsBusinessKey = GetRandomBoolean(),
+                IsUniqueRecordKey = GetRandomBoolean(),
+                IsVersionHashElement = GetRandomBoolean(),
+                IsSenderCode = GetRandomBoolean(),
+                IsAuthorCode = GetRandomBoolean(),
+                IsRelatedOrganisationId = GetRandomBoolean(),
+                IsDeleteFlag = GetRandomBoolean(),
+                IsSensitiveRecordMarker = GetRandomBoolean(),
+                IsPersonConfidentialData = GetRandomBoolean(),
+                PersonConfidentialDataType = GetRandomString(),
+                MaskingMethod = GetRandomString(),
+                CodeSystem = GetRandomString(),
+                PartitionColumnLevel = GetRandomString(),
+                IsForeignKey = GetRandomBoolean(),
+                LinkedTable = GetRandomString(),
+                LinkedColumn = GetRandomString()
+            };
+        }
+
+        private static SpecificationObject CreateSpecificationObjectFromDynamic(
+            dynamic schemaItem,
+            Guid dataSetSpecificationId)
+        {
+            string user = GetRandomString();
+            DateTimeOffset currentDateTime = DateTimeOffset.Now;
+
+            SpecificationObject randomSpecificationObject = new SpecificationObject
+            {
+                Id = Guid.NewGuid(),
+                DataSetSpecificationId = dataSetSpecificationId,
+                SupplierObjectName = schemaItem.TableName,
+                OurObjectName = schemaItem.OurObjectName,
+                ObjectDescription = schemaItem.TableDescription,
+                InterchangeProtocol = schemaItem.InterchangeProtocol,
+                IsPushedToUs = schemaItem.IsPushedToUs,
+                IsPulledByUs = schemaItem.IsPulledByUs,
+                DeletionHandling = schemaItem.DeletionHandling,
+                IsSubmissionHeaderObject = schemaItem.IsSubmissionHeaderObject,
+                IsTransactionLog = schemaItem.IsTransactionLog,
+                CreatedBy = user,
+                UpdatedBy = user,
+                UpdatedDate = currentDateTime,
+                CreatedDate = currentDateTime,
+            };
+
+            return randomSpecificationObject;
+        }
+
+        private static ObjectColumn CreateObjectColumnFromDynamic(
+            dynamic schemaItem,
+            Guid specificationObjectId)
+        {
+            string user = GetRandomString();
+            DateTimeOffset currentDateTime = DateTimeOffset.Now;
+
+            ObjectColumn randomObjectColumn = new ObjectColumn
+            {
+                Id = Guid.NewGuid(),
+                SpecificationObjectId = specificationObjectId,
+                SupplierColumnName = schemaItem.ColumnName,
+                OurColumnName = schemaItem.OurColumnName,
+                ColumnDescription = schemaItem.ColumnDescription,
+                OrdinalPosition = schemaItem.ColumnOrdinal,
+                PopulatedBy = schemaItem.PopulatedBy,
+                FhirDataType = schemaItem.FhirDataType,
+                SqlDataType = schemaItem.SqlDataType,
+                Length = schemaItem.Length,
+                Precision = schemaItem.Precision,
+                Scale = schemaItem.Scale,
+                SupplierDateFormat = schemaItem.SupplierDateFormat,
+                IsWatermark = schemaItem.IsWatermark,
+                IsSequencing = schemaItem.IsSequencing,
+                IsBusinessKey = schemaItem.IsBusinessKey,
+                IsUniqueRecordKey = schemaItem.IsUniqueRecordKey,
+                IsVersionHashElement = schemaItem.IsVersionHashElement,
+                IsSenderCode = schemaItem.IsSenderCode,
+                IsAuthorCode = schemaItem.IsAuthorCode,
+                IsRelatedOrganisationId = schemaItem.IsRelatedOrganisationId,
+                IsDeleteFlag = schemaItem.IsDeleteFlag,
+                IsSensitiveRecordMarker = schemaItem.IsSensitiveRecordMarker,
+                IsPersonConfidentialData = schemaItem.IsPersonConfidentialData,
+                PersonConfidentialDataType = schemaItem.PersonConfidentialDataType,
+                MaskingMethod = schemaItem.MaskingMethod,
+                CodeSystem = schemaItem.CodeSystem,
+                PartitionColumnLevel = schemaItem.PartitionColumnLevel,
+                DataTypeId = Guid.NewGuid(),
+                IsForeignKey = schemaItem.IsForeignKey,
+                ForeignKeyTableName = schemaItem.LinkedTable,
+                ForeignKeyColumnName = schemaItem.LinkedColumn,
+                CreatedBy = user,
+                UpdatedBy = user,
+                UpdatedDate = currentDateTime,
+                CreatedDate = currentDateTime,
+            };
+
+            return randomObjectColumn;
         }
 
         private static List<ObjectColumn> CreateRandomObjectColumns(DateTimeOffset dateTimeOffset, Guid specificationId)

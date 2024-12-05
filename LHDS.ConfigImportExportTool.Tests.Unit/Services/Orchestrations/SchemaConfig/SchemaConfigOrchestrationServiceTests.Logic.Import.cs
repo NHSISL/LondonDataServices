@@ -63,8 +63,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                         .ReturnsAsync(randomDateTimeOffset);
 
                 this.identifierBrokerMock.Setup(broker =>
-                        broker.GetIdentifier())
-                            .Returns(specificationObject.Id);
+                        broker.GetIdentifierAsync())
+                            .ReturnsAsync(specificationObject.Id);
 
                 specificationObject.DataSetSpecificationId = storageDataSetSpecification.Id;
 
@@ -79,8 +79,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                         .ReturnsAsync(randomDateTimeOffset);
 
                     this.identifierBrokerMock.Setup(broker =>
-                        broker.GetIdentifier())
-                            .Returns(objectColumn.Id);
+                        broker.GetIdentifierAsync())
+                            .ReturnsAsync(objectColumn.Id);
 
                     objectColumn.SpecificationObjectId = storageDataSetSpecification.Id;
 
@@ -128,7 +128,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                     Times.Exactly(invocationCount));
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Exactly(invocationCount));
 
             this.dataSetProcessingServiceMock.VerifyNoOtherCalls();

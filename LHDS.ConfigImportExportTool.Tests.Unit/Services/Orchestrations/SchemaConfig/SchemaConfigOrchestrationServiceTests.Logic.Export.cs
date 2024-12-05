@@ -35,7 +35,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
             DataSetSpecification storageDataSetSpecification = randomDataSetSpecification;
             randomDataSet.DataSetSpecifications.Add(randomDataSetSpecification);
-            List<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects(inputDataSetId);
+            List<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects();
             randomSpecificationObjects[0].DataSetSpecificationId = storageDataSetSpecification.Id;
             randomSpecificationObjects[0].DataSetSpecification = storageDataSetSpecification;
 

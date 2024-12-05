@@ -5,7 +5,10 @@
 using System.Reflection;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
+using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
+using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Foundations.Suppliers;
+using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
 {
@@ -19,7 +22,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
             DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
             DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(randomDataSet.Id);
 
-            List<DataSetSpecification> dataSetSpecifications = 
+            List<DataSetSpecification> dataSetSpecifications =
                 new List<DataSetSpecification> { randomDataSetSpecification };
 
             randomDataSet.DataSetSpecifications = dataSetSpecifications;
@@ -39,6 +42,27 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
                 dataSetName: randomDataSet.DataSetName,
                 version: randomDataSetSpecification.SupplierSpecificationVersion,
                 filePath: inputFilePath);
+
+            //Then
+            IQueryable<SpecificationObject> specificationObjectsQuery = 
+                await this.storageBroker.SelectAllSpecificationObjectsAsync();
+
+            List<SpecificationObject> specificationObjects = specificationObjectsQuery
+                .Include(specificationObject => specificationObject.ObjectColumns)
+                .Where(so => so.DataSetSpecificationId == randomDataSetSpecification.Id).ToList();
+
+            foreach (SpecificationObject specificationObject in specificationObjects)
+            {
+                foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
+                {
+                    await this.storageBroker.DeleteObjectColumnAsync(objectColumn);
+                }
+
+                await this.storageBroker.DeleteSpecificationObjectAsync(specificationObject);
+            }
+
+            await this.storageBroker.DeleteDataSetSpecificationAsync(randomDataSetSpecification);
+            await this.storageBroker.DeleteDataSetAsync(randomDataSet);
         }
     }
 }

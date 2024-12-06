@@ -12,6 +12,7 @@ using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Foundations.Suppliers;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema;
+using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
 {
@@ -70,6 +71,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
                 await this.csvHelperBroker.MapCsvToObjectAsync<CannonicalSchemaItem>(csvString, true);
 
             cannonicalSchemaItems.FirstOrDefault().Should().BeEquivalentTo(expectedCannonicalSchemaItem);
+
+            await this.storageBroker.DeleteObjectColumnAsync(objectColumn);
+            await this.storageBroker.DeleteSpecificationObjectAsync(specificationObject);
+            await this.storageBroker.DeleteDataSetSpecificationAsync(randomDataSetSpecification);
+            await this.storageBroker.DeleteDataSetAsync(randomDataSet);
         }
     }
 }

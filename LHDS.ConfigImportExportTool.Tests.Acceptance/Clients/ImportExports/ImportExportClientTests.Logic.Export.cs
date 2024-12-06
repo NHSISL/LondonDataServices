@@ -48,7 +48,6 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
             await this.storageBroker.InsertDataSetSpecificationAsync(randomDataSetSpecification);
             await this.storageBroker.InsertSpecificationObjectAsync(specificationObject);
             await this.storageBroker.InsertObjectColumnAsync(objectColumn);
-
             string assembly = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             char separator = Path.DirectorySeparatorChar;
 

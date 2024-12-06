@@ -5,6 +5,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using FluentAssertions;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
@@ -30,6 +31,9 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
                 new List<DataSetSpecification> { randomDataSetSpecification };
 
             dynamic dynamicSchemaItem = CreateRandomDynamicSchemaItem();
+
+            CannonicalSchemaItem expectedCannonicalSchemaItem = 
+                CreateCannonicalSchemaItemFromDynamic(dynamicSchemaItem);
 
             SpecificationObject specificationObject = 
                 CreateSpecificationObjectFromDynamic(dynamicSchemaItem, randomDataSetSpecification.Id);
@@ -64,6 +68,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
 
             List<CannonicalSchemaItem> cannonicalSchemaItems = 
                 await this.csvHelperBroker.MapCsvToObjectAsync<CannonicalSchemaItem>(csvString, true);
+
+            cannonicalSchemaItems.FirstOrDefault().Should().BeEquivalentTo(expectedCannonicalSchemaItem);
         }
     }
 }

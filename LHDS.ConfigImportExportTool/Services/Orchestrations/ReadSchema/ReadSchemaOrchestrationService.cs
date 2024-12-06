@@ -85,6 +85,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                         CannonicalSchemaItem cannonicalSchemaItem = new CannonicalSchemaItem
                         {
                             TableName = specificationObject.SupplierObjectName,
+                            TableDescription = specificationObject.ObjectDescription,
                             ColumnName = objectColumn.SupplierColumnName,
                             ColumnDataType = objectColumn.SqlDataType,
                             ColumnDescription = objectColumn.ColumnDescription,
@@ -92,7 +93,6 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                             ColumnOrdinal = objectColumn.OrdinalPosition,
                             LinkedTable = objectColumn.ForeignKeyTableName,
                             LinkedColumn = objectColumn.ForeignKeyColumnName,
-                            DataSetSpecificationId = specificationObject.DataSetSpecificationId.ToString(),
                             OurObjectName = specificationObject.OurObjectName,
                             InterchangeProtocol = specificationObject.InterchangeProtocol,
                             IsPushedToUs = specificationObject.IsPushedToUs,
@@ -100,7 +100,6 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                             DeletionHandling = specificationObject.DeletionHandling,
                             IsSubmissionHeaderObject = specificationObject.IsSubmissionHeaderObject,
                             IsTransactionLog = specificationObject.IsTransactionLog,
-                            SpecificationObjectId = objectColumn.SpecificationObjectId.ToString(),
                             OurColumnName = objectColumn.OurColumnName,
                             PopulatedBy = objectColumn.PopulatedBy,
                             FhirDataType = objectColumn.FhirDataType,
@@ -122,7 +121,6 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
                             MaskingMethod = objectColumn.MaskingMethod,
                             CodeSystem = objectColumn.CodeSystem,
                             PartitionColumnLevel = objectColumn.PartitionColumnLevel,
-                            DataTypeId = objectColumn.DataTypeId.ToString(),
                             IsForeignKey = objectColumn.IsForeignKey,
                         };
 

@@ -33,7 +33,7 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
     {
         private readonly IImportExportCoordinationService importExportCoordinationService;
         private readonly IConfiguration configuration;
-        internal readonly IStorageBroker storageBroker;
+        internal readonly IStorageBroker StorageBroker;
 
         public ImportExportClient()
         {
@@ -59,7 +59,7 @@ namespace LHDS.ConfigImportExportTool.Clients.ImportExports
 
             IHost host = RegisterServices(this.configuration);
             importExportCoordinationService = host.Services.GetRequiredService<IImportExportCoordinationService>();
-            storageBroker = host.Services.GetRequiredService<IStorageBroker>();
+            StorageBroker = host.Services.GetRequiredService<IStorageBroker>();
         }
 
         internal ImportExportClient(IImportExportCoordinationService importExportCoordinationService)

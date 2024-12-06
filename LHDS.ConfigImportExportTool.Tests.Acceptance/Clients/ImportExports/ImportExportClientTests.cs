@@ -12,6 +12,7 @@ using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Foundations.Suppliers;
+using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -28,9 +29,9 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
         {
             ImportExportClient importExportClient = new ImportExportClient();
             this.importExportClient = importExportClient;
-            storageBroker = importExportClient.storageBroker;
-            this.csvHelperBroker = csvHelperBroker;
-            this.fileBroker = fileBroker;
+            storageBroker = importExportClient.StorageBroker;
+            this.csvHelperBroker = new CsvHelperBroker();
+            this.fileBroker = new FileBroker();
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
@@ -181,6 +182,51 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
                 IsForeignKey = GetRandomBoolean(),
                 LinkedTable = GetRandomString(),
                 LinkedColumn = GetRandomString()
+            };
+        }
+
+        private static CannonicalSchemaItem CreateCannonicalSchemaItemFromDynamic(dynamic schemaItem)
+        {
+            return new CannonicalSchemaItem
+            {
+                TableName = schemaItem.TableName,
+                OurObjectName = schemaItem.OurObjectName,
+                TableDescription = schemaItem.TableDescription,
+                InterchangeProtocol = schemaItem.InterchangeProtocol,
+                IsPushedToUs = schemaItem.IsPushedToUs,
+                IsPulledByUs = schemaItem.IsPulledByUs,
+                DeletionHandling = schemaItem.DeletionHandling,
+                IsSubmissionHeaderObject = schemaItem.IsSubmissionHeaderObject,
+                IsTransactionLog = schemaItem.IsTransactionLog,
+                ColumnName = schemaItem.ColumnName,
+                OurColumnName = schemaItem.OurColumnName,
+                ColumnDescription = schemaItem.ColumnDescription,
+                ColumnOrdinal = schemaItem.ColumnOrdinal,
+                PopulatedBy = schemaItem.PopulatedBy,
+                FhirDataType = schemaItem.FhirDataType,
+                ColumnDataType = schemaItem.SqlDataType,
+                ColumnLength = schemaItem.Length,
+                Precision = schemaItem.Precision,
+                Scale = schemaItem.Scale,
+                SupplierDateFormat = schemaItem.SupplierDateFormat,
+                IsWatermark = schemaItem.IsWatermark,
+                IsSequencing = schemaItem.IsSequencing,
+                IsBusinessKey = schemaItem.IsBusinessKey,
+                IsUniqueRecordKey = schemaItem.IsUniqueRecordKey,
+                IsVersionHashElement = schemaItem.IsVersionHashElement,
+                IsSenderCode = schemaItem.IsSenderCode,
+                IsAuthorCode = schemaItem.IsAuthorCode,
+                IsRelatedOrganisationId = schemaItem.IsRelatedOrganisationId,
+                IsDeleteFlag = schemaItem.IsDeleteFlag,
+                IsSensitiveRecordMarker = schemaItem.IsSensitiveRecordMarker,
+                IsPersonConfidentialData = schemaItem.IsPersonConfidentialData,
+                PersonConfidentialDataType = schemaItem.PersonConfidentialDataType,
+                MaskingMethod = schemaItem.MaskingMethod,
+                CodeSystem = schemaItem.CodeSystem,
+                PartitionColumnLevel = schemaItem.PartitionColumnLevel,
+                IsForeignKey = schemaItem.IsForeignKey,
+                LinkedTable = schemaItem.LinkedTable,
+                LinkedColumn = schemaItem.LinkedColumn
             };
         }
 

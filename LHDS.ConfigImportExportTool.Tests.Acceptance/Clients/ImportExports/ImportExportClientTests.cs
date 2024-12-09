@@ -54,7 +54,9 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
 
         public static bool GetRandomBoolean()
         {
-            Random rand = new Random(); return rand.Next(2) == 0;
+            Random rand = new Random();
+
+            return rand.Next(2) == 0;
         }
 
         private static string GetRandomString(int length) =>

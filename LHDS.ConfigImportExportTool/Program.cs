@@ -2,46 +2,48 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Xml.Serialization;
+using System.Runtime.CompilerServices;
 using LHDS.ConfigImportExportTool.Clients.ImportExports;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        //var args = Environment.GetCommandLineArgs();
-        var environmentArg = args.FirstOrDefault(arg => arg.StartsWith("--environment="));
+        string executionType = args[0];
+        string dataSetName = args[1];
+        string version = args[2];
+        string filePath = args[3];
+        ConfigImportExport(executionType, dataSetName, version, filePath);
+    }
 
-        // Check if you have the arguments to support building the config
-        // Otherwise fallback to the appsettings
+    private static IHost RegisterServices()
+    {
+        IHostBuilder builder = Host.CreateDefaultBuilder();
 
-        //var environmentName = !string.IsNullOrEmpty(aspNetCoreEnvironment)
-        //    ? aspNetCoreEnvironment
-        //    : !string.IsNullOrEmpty(environmentArg)
-        //        ? environmentArg
-        //        : "Development";
+        builder.ConfigureServices(services =>
+        {
+            services.AddTransient<IImportExportClient, ImportExportClient>();
+        });
 
-        //var configurationBuilder = new ConfigurationBuilder()
-        //     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-        //     .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
-        //     .AddEnvironmentVariables();
+        return builder.Build();
+    }
 
-        //this.configuration = configurationBuilder.Build();
+    private static async void ConfigImportExport(string executionType, string dataSetName, string version, string filePath)
+    {
+        IHost host = RegisterServices();
+        var executionTypes = host.Services.GetServices<IImportExportClient>();
 
-        //ImportExportConfig config = new ImportExportConfig { };
+        if (executionType == "Import")
+        {
+            await executionTypes
+        }
+        else { }
 
-        //var client = new ImportExportClient(config);
-
-        //if (config.Import == true)
-        //{
-        //    client.Import(dataSetName: config.DataSetName, version: config.Version, filePath: config.FilePath);
-        //}
-        //else
-        //{
-        //    client.Export(dataSetName: config.DataSetName, version: config.Version, filePath: config.FilePath);
-        //}
-
+        var calculator = new Conf(calcOperations.ToArray());
+        Console.WriteLine($"{operation}");
+        Console.WriteLine(calculator.Calculate(operation, values));
+        Console.ReadLine();
     }
 }

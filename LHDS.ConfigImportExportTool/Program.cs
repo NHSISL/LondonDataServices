@@ -41,11 +41,25 @@ internal class Program
 
         if (executionType == "import")
         {
-            await execution.Import(dataSetName, version, filePath);
+            try
+            {
+                await execution.Import(dataSetName, version, filePath);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
         else if (executionType == "export")
         {
-            await execution.Export(dataSetName, version, filePath);
+            try
+            {
+                await execution.Export(dataSetName, version, filePath);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
         else
         {

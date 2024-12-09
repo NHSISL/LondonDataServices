@@ -2,10 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using CsvHelper;
 using LHDS.ConfigImportExportTool.Clients.ImportExports;
 using LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Exceptions;
-using LHDS.ConfigImportExportTool.Models.Foundations.CsvHelpers.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xeptions;
@@ -44,6 +42,7 @@ internal class Program
             try
             {
                 await execution.Import(dataSetName, version, filePath);
+                Console.WriteLine($"Import into config db is successful.");
             }
             catch (Exception ex)
             {
@@ -55,6 +54,7 @@ internal class Program
             try
             {
                 await execution.Export(dataSetName, version, filePath);
+                Console.WriteLine($"Export from config db to {filePath} successful.");
             }
             catch (Exception ex)
             {
@@ -80,7 +80,6 @@ internal class Program
             (Rule: IsInvalid(version), Parameter: nameof(version)),
             (Rule: IsInvalid(filePath), Parameter: nameof(filePath)));
     }
-
 
     private static dynamic IsInvalid(string? text) => new
     {

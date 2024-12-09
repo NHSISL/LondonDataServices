@@ -64,6 +64,7 @@ internal class Program
         else
         {
             Console.WriteLine("Please enter a correct execution type (import or export)");
+            throw new System.NotImplementedException();
         }
     }
 

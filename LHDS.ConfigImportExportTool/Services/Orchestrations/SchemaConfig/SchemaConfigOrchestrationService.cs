@@ -46,22 +46,27 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             {
                 ValidateSchemaExportArguments(dataSetName, version);
 
-                IQueryable<DataSet> storageDataSets =
-                            await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
+                IQueryable<DataSet> storageDataSetQuery =
+                        await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
 
-                DataSet matchedDataSet = storageDataSets.First(dataSet => dataSet.DataSetName == dataSetName);
+                storageDataSetQuery = storageDataSetQuery
+                    .Include(dataSet => dataSet.DataSetSpecifications)
+                    .Where(dataSet => dataSet.DataSetName == dataSetName);
+
+                DataSet matchedDataSet = storageDataSetQuery.First(dataSet => dataSet.DataSetName == dataSetName);
 
                 DataSetSpecification dataSetSpecification = matchedDataSet.DataSetSpecifications
                     .First(specification => specification.SupplierSpecificationVersion == version);
 
-                IQueryable<SpecificationObject> storageSpecificationObjects =
+                IQueryable<SpecificationObject> storageSpecificationObjectQuery =
                     await this.specificationObjectProcessingService.RetrieveAllSpecificationObjectsAsync();
 
-                List<SpecificationObject> matchedSpecificationObjects = storageSpecificationObjects
-                    .Where(specificationObject => specificationObject.DataSetSpecificationId == dataSetSpecification.Id)
-                        .ToList();
+                storageSpecificationObjectQuery = storageSpecificationObjectQuery
+                    .Include(specificationObject => specificationObject.ObjectColumns)
+                    .Where(specificationObject => 
+                        specificationObject.DataSetSpecificationId == dataSetSpecification.Id);
 
-                return matchedSpecificationObjects;
+                return storageSpecificationObjectQuery.ToList();
             });
 
         public ValueTask Import(

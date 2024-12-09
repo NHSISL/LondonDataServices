@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Runtime.CompilerServices;
 using LHDS.ConfigImportExportTool.Clients.ImportExports;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,16 +33,19 @@ internal class Program
     {
         IHost host = RegisterServices();
         var executionTypes = host.Services.GetServices<IImportExportClient>();
+        var execution = new ImportExportClient();
 
-        if (executionType == "Import")
+        if (executionType == "import")
         {
-            await executionTypes
+            await execution.Import(dataSetName, version, filePath);
         }
-        else { }
-
-        var calculator = new Conf(calcOperations.ToArray());
-        Console.WriteLine($"{operation}");
-        Console.WriteLine(calculator.Calculate(operation, values));
-        Console.ReadLine();
+        else if (executionType == "export")
+        {
+            await execution.Export(dataSetName, version, filePath);
+        }
+        else
+        {
+            Console.WriteLine("Please enter a correct execution type (import or export)");
+        }
     }
 }

@@ -12,11 +12,19 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        string executionType = args[0];
-        string dataSetName = args[1];
-        string version = args[2];
-        string filePath = args[3];
-        ConfigImportExport(executionType, dataSetName, version, filePath);
+        try
+        {
+            //ValidateImportExportArguments(args[0], args[1], args[2], args[3]);
+            string executionType = args[0];
+            string dataSetName = args[1];
+            string version = args[2];
+            string filePath = args[3];
+            ConfigImportExport(executionType, dataSetName, version, filePath);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     private static IHost RegisterServices()
@@ -68,7 +76,7 @@ internal class Program
         }
     }
 
-    private void ValidateImportFileArguments(
+    private void ValidateImportExportArguments(
         string executionType,
         string dataSetName,
         string version,

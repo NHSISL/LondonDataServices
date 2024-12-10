@@ -8,7 +8,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using Moq;
@@ -21,8 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
     {
         [Theory]
         [MemberData(nameof(OptOutDependencyValidationExceptions))]
-        public async Task ShouldThrowAggregateDependencyValidationExceptionOnRetrieveStatusIfErrorsInLoopAndLogItAsync(  
-            Xeption dependencyValidationException)  
+        public async Task ShouldThrowAggregateDependencyValidationExceptionOnRetrieveStatusIfErrorsInLoopAndLogItAsync(
+            Xeption dependencyValidationException)
         {
             // Given
             List<Exception> exceptions = new List<Exception>();
@@ -38,7 +37,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset expireDate = randomDateTimeOffset.AddDays(-optOutConfiguration.ExpiredAfterDays);
             List<OptOutIdentifier> randomOptOuts = CreateRandomOptOutIdentifiersList();
             List<OptOutIdentifier> outputOptOuts = randomOptOuts;
-            string inputContainer = "optout";
 
             this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))
@@ -122,8 +120,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
         [Theory]
         [MemberData(nameof(OptOutDependencyExceptions))]
-        public async Task ShouldThrowAggregateDependencyExceptionOnRetrieveStatusIfErrorsInLoopAndLogItAsync(  
-           Xeption dependencyException)  
+        public async Task ShouldThrowAggregateDependencyExceptionOnRetrieveStatusIfErrorsInLoopAndLogItAsync(
+           Xeption dependencyException)
         {
             // Given
             List<Exception> exceptions = new List<Exception>();
@@ -139,7 +137,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset expireDate = randomDateTimeOffset.AddDays(-optOutConfiguration.ExpiredAfterDays);
             List<OptOutIdentifier> randomOptOuts = CreateRandomOptOutIdentifiersList();
             List<OptOutIdentifier> outputOptOuts = randomOptOuts;
-            string inputContainer = "optout";
 
             this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))
@@ -239,7 +236,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset expireDate = randomDateTimeOffset.AddDays(-optOutConfiguration.ExpiredAfterDays);
             List<OptOutIdentifier> randomOptOuts = CreateRandomOptOutIdentifiersList();
             List<OptOutIdentifier> outputOptOuts = randomOptOuts;
-            string inputContainer = "optout";
 
             this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))

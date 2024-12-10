@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             OptOut someOptOut = CreateRandomOptOut();

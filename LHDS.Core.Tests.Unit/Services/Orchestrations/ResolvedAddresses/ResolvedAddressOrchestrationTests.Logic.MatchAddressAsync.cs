@@ -32,9 +32,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             AssignAddress storageAssignAddress = randomAssignAddress;
             string matchedUprn = storageAssignAddress.BestMatch.UPRN.ToString();
 
-            Address? randomAddress = CreateRandomAddress(randomDateTimeOffset);
-            Address? storageAddress = randomAddress;
-            Address? ordananceAddress = storageAddress;
+            Address randomAddress = CreateRandomAddress(randomDateTimeOffset);
+            Address storageAddress = randomAddress;
+            Address ordananceAddress = storageAddress;
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
                service.RetrieveAllResolvedAddresses())

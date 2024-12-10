@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             PdsAudit somePdsAudit = CreateRandomPdsAudit();

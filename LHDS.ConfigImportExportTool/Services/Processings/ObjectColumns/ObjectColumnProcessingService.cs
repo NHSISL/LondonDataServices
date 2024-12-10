@@ -32,7 +32,7 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns
                 IQueryable<ObjectColumn> retrievedObjectColumn =
                     await this.ObjectColumnService.RetrieveAllObjectColumnsAsync();
 
-                ObjectColumn? maybeObjectColumn =
+                ObjectColumn maybeObjectColumn =
                     retrievedObjectColumn.FirstOrDefault(
                         item => item.SupplierColumnName == ObjectColumn.SupplierColumnName
                         && item.SpecificationObjectId == ObjectColumn.SpecificationObjectId);

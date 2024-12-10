@@ -63,7 +63,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
             // then
             foreach (IngestionTracking expectedIngestionTracking in expectedIngestionTrackings)
             {
-                IngestionTracking? actualIngestionTracking =
+                IngestionTracking actualIngestionTracking =
                     actualIngestionTrackings.FirstOrDefault(ingestionTracking =>
                         ingestionTracking.Id == expectedIngestionTracking.Id);
 

@@ -73,7 +73,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.Specificat
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             SpecificationObject someSpecificationObject = CreateRandomSpecificationObject();

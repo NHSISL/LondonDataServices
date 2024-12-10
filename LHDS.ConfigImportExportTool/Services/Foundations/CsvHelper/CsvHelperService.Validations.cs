@@ -18,7 +18,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
                 (Rule: IsInvalid(data), Parameter: nameof(data)));
         }
 
-        private static dynamic IsInvalid(string? text) => new
+        private static dynamic IsInvalid(string text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
@@ -36,19 +36,19 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T?)Activator.CreateInstance(typeof(T), message);
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataException?.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataException?.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

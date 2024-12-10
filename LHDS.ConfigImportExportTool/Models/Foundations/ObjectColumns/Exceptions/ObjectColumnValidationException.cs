@@ -4,7 +4,7 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns.Exception
 {
     public class ObjectColumnValidationException : Xeption
     {
-        public ObjectColumnValidationException(string message, Xeption? innerException)
+        public ObjectColumnValidationException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

@@ -5,13 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
-using Xunit;
 
 namespace LHDS.Core.Tests.Integration.OptOuts
 {
@@ -70,6 +65,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             //{
             //    Assert.Fail($"{ex.Message} {ex?.InnerException?.Message} {ex.StackTrace}");
             //}
+            await Task.CompletedTask;
         }
 
         private static List<OptOutIdentifier> ConvertToOptOutIdentifierList(string content, bool hasHeader = false)

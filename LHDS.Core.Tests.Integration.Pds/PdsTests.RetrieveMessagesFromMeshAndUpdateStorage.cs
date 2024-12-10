@@ -59,6 +59,8 @@ namespace LHDS.Core.Tests.Integration.Pds
             //}
 
             //await this.meshService.AcknowledgeMessageByIdAsync(meshMessage.MessageId);
+
+            await Task.CompletedTask;
         }
     }
 }

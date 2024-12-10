@@ -8,7 +8,7 @@ namespace LHDS.ConfigImportExportTool.Models.Orchestrations.SchemaConfigs.Except
 {
     public class SchemaConfigOrchestrationDependencyException : Xeption
     {
-        public SchemaConfigOrchestrationDependencyException(string message, Xeption? innerException)
+        public SchemaConfigOrchestrationDependencyException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

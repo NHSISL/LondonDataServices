@@ -82,7 +82,9 @@ steps:
         dotnet --list-sdks
         rm -rf /agent/_work/_tool/dotnet/sdk8.0.404
         rm -rf /agent/_work/_tool/dotnet/sdk8.0.404.complete
+        ls /agent/_work/_tool/dotnet/
         dotnet --list-sdks
+        dotnet sdk check
     
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Restore"

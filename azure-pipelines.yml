@@ -80,8 +80,8 @@ steps:
       script: |
         dotnet --version
         dotnet --list-sdks
-        rm -rf 8.0.404
-        rm -rf 8.0.404.complete
+        rm -rf /agent/_work/_tool/dotnet/sdk8.0.404
+        rm -rf /agent/_work/_tool/dotnet/sdk8.0.404.complete
         dotnet --list-sdks
     
   - task: DotNetCoreCLI@2

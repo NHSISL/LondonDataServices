@@ -62,10 +62,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
         {
             // given
             string inputTableName = GetRandomString();
-            List<ObjectColumn> objectColumns = CreateRandomObjectColumns();
+            List<ObjectColumn> objectColumns = CreateRandomObjectColumns(isExport: true);
 
             List<SpecificationObject> inputSpecificationObjects =
-                CreateRandomSpecificationObjects(objectColumns, inputTableName);
+                CreateRandomSpecificationObjects(objectColumns, inputTableName, isExport:true);
 
             var invalidArgumentReadSchemaOrchestrationException =
                 new InvalidArgumentReadSchemaOrchestrationException(

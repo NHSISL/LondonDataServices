@@ -27,10 +27,10 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
 
             for (int i = 0; i < GetRandomNumber(); i++)
             {
-                List<ObjectColumn> randomObjectColumns = CreateRandomObjectColumns();
+                List<ObjectColumn> randomObjectColumns = CreateRandomObjectColumns(isExport: true);
 
                 SpecificationObject randomSpecificationObject =
-                    CreateRandomSpecificationObject(randomObjectColumns, tableName: GetRandomString());
+                    CreateRandomSpecificationObject(randomObjectColumns, tableName: GetRandomString(), isExport: true);
 
                 inputSpecificationObjects.Add(randomSpecificationObject);
             }
@@ -52,6 +52,35 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                         ColumnOrdinal = objectColumn.OrdinalPosition,
                         LinkedTable = objectColumn.ForeignKeyTableName,
                         LinkedColumn = objectColumn.ForeignKeyColumnName,
+                        OurObjectName = specificationObject.OurObjectName,
+                        InterchangeProtocol = specificationObject.InterchangeProtocol,
+                        IsPushedToUs = specificationObject.IsPushedToUs,
+                        IsPulledByUs = specificationObject.IsPulledByUs,
+                        DeletionHandling = specificationObject.DeletionHandling,
+                        IsSubmissionHeaderObject = specificationObject.IsSubmissionHeaderObject,
+                        IsTransactionLog = specificationObject.IsTransactionLog,
+                        OurColumnName = objectColumn.OurColumnName,
+                        PopulatedBy = objectColumn.PopulatedBy,
+                        FhirDataType = objectColumn.FhirDataType,
+                        Precision = objectColumn.Precision,
+                        Scale = objectColumn.Scale,
+                        SupplierDateFormat = objectColumn.SupplierDateFormat,
+                        IsWatermark = objectColumn.IsWatermark,
+                        IsSequencing = objectColumn.IsSequencing,
+                        IsBusinessKey = objectColumn.IsBusinessKey,
+                        IsUniqueRecordKey = objectColumn.IsUniqueRecordKey,
+                        IsVersionHashElement = objectColumn.IsVersionHashElement,
+                        IsSenderCode = objectColumn.IsSenderCode,
+                        IsAuthorCode = objectColumn.IsAuthorCode,
+                        IsRelatedOrganisationId = objectColumn.IsRelatedOrganisationId,
+                        IsDeleteFlag = objectColumn.IsDeleteFlag,
+                        IsSensitiveRecordMarker = objectColumn.IsSensitiveRecordMarker,
+                        IsPersonConfidentialData = objectColumn.IsPersonConfidentialData,
+                        PersonConfidentialDataType = objectColumn.PersonConfidentialDataType,
+                        MaskingMethod = objectColumn.MaskingMethod,
+                        CodeSystem = objectColumn.CodeSystem,
+                        PartitionColumnLevel = objectColumn.PartitionColumnLevel,
+                        IsForeignKey = objectColumn.IsForeignKey,
                     };
 
                     inputCannonicalSchemaItems.Add(cannonicalSchemaItem);

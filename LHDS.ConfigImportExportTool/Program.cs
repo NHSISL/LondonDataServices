@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Security.Cryptography;
 using LHDS.ConfigImportExportTool.Clients.ImportExports;
 using LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,107 +11,58 @@ using Xeptions;
 
 internal class Program
 {
-    private static void Main(string[] args)
+
+    private static async Task Main(string[] args)
     {
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadLine();
+        string executionType = string.Empty;
+        string dataSetName = string.Empty;
+        string version = string.Empty;
+        string filePath = string.Empty;
+
         try
         {
-            //ValidateImportExportArguments(args[0], args[1], args[2], args[3]);
-            string executionType = args[0];
-            string dataSetName = args[1];
-            string version = args[2];
-            string filePath = args[3];
-            ConfigImportExport(executionType, dataSetName, version, filePath);
+            var client = new ImportExportClient();
+            //Try to gracefully assign if args exist
+            executionType = args[0];
+            dataSetName = args[1];
+            version = args[2];
+            filePath = args[3];
+
+            if (args.Length == 4)
+            {
+                if (executionType.ToLower() != "import" && executionType.ToLower() != "export")
+                {
+                    Console.WriteLine("Please enter a correct execution type (import or export)");
+                    return;
+                }
+
+                switch (executionType.ToLower())
+                {
+                    case "import":
+                        await client.Import(dataSetName, version, filePath);
+                        Console.WriteLine("Import into config DB is successful.");
+                        break;
+                    case "export":
+                        await client.Export(dataSetName, version, filePath);
+                        Console.WriteLine($"Export from config DB to {filePath} is successful.");
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                //TODO: Add Windows Form
+                //var form = new frmImportExport(client,  executionType, dataSetName, version, filePath);
+                //form.Show();
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Console.WriteLine($"An error occurred during {executionType} operation: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
         }
     }
-
-    private static IHost RegisterServices()
-    {
-        IHostBuilder builder = Host.CreateDefaultBuilder();
-
-        builder.ConfigureServices(services =>
-        {
-            services.AddTransient<IImportExportClient, ImportExportClient>();
-        });
-
-        return builder.Build();
-    }
-
-    private static async void ConfigImportExport(string executionType, string dataSetName, string version, string filePath)
-    {
-        IHost host = RegisterServices();
-        var executionTypes = host.Services.GetServices<IImportExportClient>();
-        var execution = new ImportExportClient();
-
-        if (executionType == "import")
-        {
-            try
-            {
-                await execution.Import(dataSetName, version, filePath);
-                Console.WriteLine($"Import into config db is successful.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        }
-        else if (executionType == "export")
-        {
-            try
-            {
-                await execution.Export(dataSetName, version, filePath);
-                Console.WriteLine($"Export from config db to {filePath} successful.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        }
-        else
-        {
-            Console.WriteLine("Please enter a correct execution type (import or export)");
-            throw new System.NotImplementedException();
-        }
-    }
-
-    //    private void ValidateImportExportArguments(
-    //        string executionType,
-    //        string dataSetName,
-    //        string version,
-    //        string filePath)
-    //    {
-    //        Validate<InvalidArgumentImportExportCoordinationException>(
-    //            message: "Invalid import export coordination argument(s), please correct the errors and try again.",
-    //            (Rule: IsInvalid(executionType), Parameter: nameof(executionType)),
-    //            (Rule: IsInvalid(dataSetName), Parameter: nameof(dataSetName)),
-    //            (Rule: IsInvalid(version), Parameter: nameof(version)),
-    //            (Rule: IsInvalid(filePath), Parameter: nameof(filePath)));
-    //    }
-
-    //    private static dynamic IsInvalid(string? text) => new
-    //    {
-    //        Condition = String.IsNullOrWhiteSpace(text),
-    //        Message = "Text is required"
-    //    };
-
-    //    private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
-    //        where T : Xeption
-    //    {
-    //        var invalidDataException = (T?)Activator.CreateInstance(typeof(T), message);
-
-    //        foreach ((dynamic rule, string parameter) in validations)
-    //        {
-    //            if (rule.Condition)
-    //            {
-    //                invalidDataException?.UpsertDataList(
-    //                    key: parameter,
-    //                    value: rule.Message);
-    //            }
-    //        }
-
-    //        invalidDataException?.ThrowIfContainsErrors();
-    //    }
 }

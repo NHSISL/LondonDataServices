@@ -8,7 +8,7 @@ namespace LHDS.ConfigImportExportTool.Models.Processings.SpecificationObjects.Ex
 {
     public class SpecificationObjectProcessingDependencyValidationException : Xeption
     {
-        public SpecificationObjectProcessingDependencyValidationException(string message, Xeption? innerException)
+        public SpecificationObjectProcessingDependencyValidationException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

@@ -28,7 +28,7 @@ namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports
                 (Rule: IsInvalid(filePath), Parameter: nameof(filePath)));
         }
 
-        private static dynamic IsInvalid(string? text) => new
+        private static dynamic IsInvalid(string text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
@@ -43,13 +43,13 @@ namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports
             {
                 if (rule.Condition)
                 {
-                    invalidDataException?.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataException?.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

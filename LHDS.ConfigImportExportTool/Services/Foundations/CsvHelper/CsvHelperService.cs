@@ -25,7 +25,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
         public ValueTask<List<T>> MapCsvToObjectAsync<T>(
         string data,
         bool hasHeaderRecord,
-        Dictionary<string, int>? fieldMappings = null) =>
+        Dictionary<string, int> fieldMappings = null) =>
             TryCatch(async () =>
             {
                 ValidateMapCsvToObjectArguments(data);
@@ -36,7 +36,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
         public ValueTask<string> MapObjectToCsvAsync<T>(
             List<T> @object,
             bool addHeaderRecord,
-            Dictionary<string, int>? fieldMappings = null,
+            Dictionary<string, int> fieldMappings = null,
             bool? shouldAddTrailingComma = false) =>
                 TryCatch(async () =>
                 {

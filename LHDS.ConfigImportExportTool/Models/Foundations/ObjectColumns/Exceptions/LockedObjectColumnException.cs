@@ -5,7 +5,7 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns.Exception
 {
     public class LockedObjectColumnException : Xeption
     {
-        public LockedObjectColumnException(string message, Exception? innerException)
+        public LockedObjectColumnException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

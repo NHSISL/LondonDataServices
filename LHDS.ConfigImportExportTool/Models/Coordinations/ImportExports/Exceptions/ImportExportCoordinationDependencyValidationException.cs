@@ -8,7 +8,7 @@ namespace LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Excepti
 {
     public class ImportExportCoordinationDependencyValidationException : Xeption
     {
-        public ImportExportCoordinationDependencyValidationException(string message, Xeption? innerException)
+        public ImportExportCoordinationDependencyValidationException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

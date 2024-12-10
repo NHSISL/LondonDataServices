@@ -5,7 +5,7 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns.Exception
 {
     public class AlreadyExistsObjectColumnException : Xeption
     {
-        public AlreadyExistsObjectColumnException(string message, Exception? innerException)
+        public AlreadyExistsObjectColumnException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

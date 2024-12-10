@@ -5,7 +5,7 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects.Ex
 {
     public class FailedSpecificationObjectServiceException : Xeption
     {
-        public FailedSpecificationObjectServiceException(string message, Exception? innerException)
+        public FailedSpecificationObjectServiceException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

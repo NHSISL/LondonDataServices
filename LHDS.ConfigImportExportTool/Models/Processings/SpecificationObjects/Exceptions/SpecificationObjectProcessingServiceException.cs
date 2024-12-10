@@ -8,7 +8,7 @@ namespace LHDS.ConfigImportExportTool.Models.Processings.SpecificationObjects.Ex
 {
     public class SpecificationObjectProcessingServiceException : Xeption
     {
-        public SpecificationObjectProcessingServiceException(string message, Xeption? innerException)
+        public SpecificationObjectProcessingServiceException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

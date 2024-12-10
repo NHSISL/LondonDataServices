@@ -8,7 +8,7 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.Files.Exceptions
 {
     internal class FileServiceException : Xeption
     {
-        public FileServiceException(string message, Xeption? innerException)
+        public FileServiceException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,21 +20,21 @@ if (!app.Environment.IsDevelopment())
     // Set X-Frame-Options header
     app.Use(async (context, next) =>
     {
-        context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
+        context.Response.Headers.Append("X-Frame-Options", "SAMEORIGIN");
         await next();
     });
 
     // Set X-Content-Type-Options header
     app.Use(async (context, next) =>
     {
-        context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+        context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
         await next();
     });
 
     // Set Content-Security-Policy header
     app.Use(async (context, next) =>
     {
-        context.Response.Headers.Add("Content-Security-Policy", "your-policy-here");
+        context.Response.Headers.Append("Content-Security-Policy", "your-policy-here");
         await next();
     });
 }

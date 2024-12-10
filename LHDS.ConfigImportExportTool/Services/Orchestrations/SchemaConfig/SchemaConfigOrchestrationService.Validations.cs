@@ -41,7 +41,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             }
         }
 
-        private static dynamic IsInvalid(string? text) => new
+        private static dynamic IsInvalid(string text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
@@ -56,13 +56,13 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
             {
                 if (rule.Condition)
                 {
-                    invalidDataException?.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataException?.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

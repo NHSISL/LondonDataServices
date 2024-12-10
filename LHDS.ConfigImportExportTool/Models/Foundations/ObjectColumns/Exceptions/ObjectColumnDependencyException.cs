@@ -4,7 +4,7 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns.Exception
 {
     public class ObjectColumnDependencyException : Xeption
     {
-        public ObjectColumnDependencyException(string message, Xeption? innerException) 
+        public ObjectColumnDependencyException(string message, Xeption innerException) 
             : base(message, innerException)
         { }
     }

@@ -4,7 +4,7 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects.Ex
 {
     public class SpecificationObjectDependencyException : Xeption
     {
-        public SpecificationObjectDependencyException(string message, Xeption? innerException) :
+        public SpecificationObjectDependencyException(string message, Xeption innerException) :
             base(message, innerException)
         { }
     }

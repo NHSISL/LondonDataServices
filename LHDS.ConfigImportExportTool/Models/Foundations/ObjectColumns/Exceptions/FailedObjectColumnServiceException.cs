@@ -5,7 +5,7 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns.Exception
 {
     public class FailedObjectColumnServiceException : Xeption
     {
-        public FailedObjectColumnServiceException(string message, Exception? innerException)
+        public FailedObjectColumnServiceException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

@@ -9,7 +9,7 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.Files.Exceptions
 {
     public class InvalidFileServiceDependencyException : Xeption
     {
-        public InvalidFileServiceDependencyException(string message, Exception? innerException)
+        public InvalidFileServiceDependencyException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

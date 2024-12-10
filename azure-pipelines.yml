@@ -80,9 +80,9 @@ steps:
       script: |
         dotnet --version
         dotnet --list-sdks
-        rm -rf /agent/_work/_tool/dotnet/sdk8.0.404
-        rm -rf /agent/_work/_tool/dotnet/sdk8.0.404.complete
-        ls -R /agent/_work/_tool/dotnet/
+        rm -rf /agent/_work/_tool/dotnet/sdk/8.0.404/
+        rm -rf /agent/_work/_tool/dotnet/sdk/8.0.404.complete/
+        ls /agent/_work/_tool/dotnet/sdk
         dotnet --list-sdks
         dotnet sdk check
     

@@ -44,6 +44,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                     CannonicalSchemaItem cannonicalSchemaItem = new CannonicalSchemaItem
                     {
                         TableName = specificationObject.SupplierObjectName,
+                        TableDescription = specificationObject.ObjectDescription,
                         ColumnName = objectColumn.SupplierColumnName,
                         ColumnDataType = objectColumn.SqlDataType,
                         ColumnDescription = objectColumn.ColumnDescription,
@@ -51,7 +52,6 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                         ColumnOrdinal = objectColumn.OrdinalPosition,
                         LinkedTable = objectColumn.ForeignKeyTableName,
                         LinkedColumn = objectColumn.ForeignKeyColumnName,
-                        DataSetSpecificationId = specificationObject.DataSetSpecificationId,
                         OurObjectName = specificationObject.OurObjectName,
                         InterchangeProtocol = specificationObject.InterchangeProtocol,
                         IsPushedToUs = specificationObject.IsPushedToUs,
@@ -59,7 +59,6 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                         DeletionHandling = specificationObject.DeletionHandling,
                         IsSubmissionHeaderObject = specificationObject.IsSubmissionHeaderObject,
                         IsTransactionLog = specificationObject.IsTransactionLog,
-                        SpecificationObjectId = objectColumn.SpecificationObjectId,
                         OurColumnName = objectColumn.OurColumnName,
                         PopulatedBy = objectColumn.PopulatedBy,
                         FhirDataType = objectColumn.FhirDataType,
@@ -81,7 +80,6 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                         MaskingMethod = objectColumn.MaskingMethod,
                         CodeSystem = objectColumn.CodeSystem,
                         PartitionColumnLevel = objectColumn.PartitionColumnLevel,
-                        DataTypeId = objectColumn.DataTypeId,
                         IsForeignKey = objectColumn.IsForeignKey,
                     };
 

@@ -27,7 +27,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             string inputDataSetName = GetRandomString(10);
             string inputVersion = GetRandomString(10);
             Guid inputDataSetId = Guid.NewGuid();
-            List<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects(inputDataSetId);
+            List<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects();
             List<SpecificationObject> inputSpecificationObjects = new List<SpecificationObject>();
 
             foreach (SpecificationObject specificationObject in randomSpecificationObjects)
@@ -84,7 +84,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             string inputDataSetName = GetRandomString(10);
             string inputVersion = GetRandomString(10);
             Guid inputDataSetId = Guid.NewGuid();
-            List<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects(inputDataSetId);
+            List<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects();
             List<SpecificationObject> inputSpecificationObjects = new List<SpecificationObject>();
 
             foreach (SpecificationObject specificationObject in randomSpecificationObjects)
@@ -139,7 +139,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             string inputDataSetName = GetRandomString(10);
             string inputVersion = GetRandomString(10);
             Guid inputDataSetId = Guid.NewGuid();
-            List<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects(inputDataSetId);
+            List<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects();
             List<SpecificationObject> inputSpecificationObjects = new List<SpecificationObject>();
             var serviceException = new Exception();
 

@@ -21,6 +21,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
         public async Task ShouldImportObjectsAsync()
         {
             // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid inputDataSetId = Guid.NewGuid();
             string randomDataSetName = GetRandomString(150);
             string inputDataSetName = randomDataSetName;
@@ -34,16 +35,19 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
             DataSetSpecification storageDataSetSpecification = randomDataSetSpecification;
             randomDataSet.DataSetSpecifications.Add(randomDataSetSpecification);
-            List<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects(inputDataSetId);
-            List<SpecificationObject> inputSpecificationObjects = new List<SpecificationObject>();
 
+            List<SpecificationObject> randomSpecificationObjects =
+                CreateRandomSpecificationObjects(randomDateTimeOffset);
+
+            List<SpecificationObject> inputSpecificationObjects = new List<SpecificationObject>();
             DataSet storageDataSet = randomDataSet;
-            List<SpecificationObject> specificationObjects = CreateRandomSpecificationObjects(inputDataSetId); 
             List<DataSet> storageDataSets = new List<DataSet> { storageDataSet };
 
             foreach (SpecificationObject specificationObject in randomSpecificationObjects)
             {
-                List<ObjectColumn> newObjectColumns = CreateRandomObjectColumns(specificationObject.Id);
+                List<ObjectColumn> newObjectColumns =
+                    CreateRandomObjectColumns(randomDateTimeOffset, specificationObject.Id);
+
                 specificationObject.ObjectColumns = newObjectColumns;
                 inputSpecificationObjects.Add(specificationObject);
             }
@@ -54,6 +58,14 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
             foreach (SpecificationObject specificationObject in randomSpecificationObjects)
             {
+                this.dateTimeBrokerMock.Setup(broker =>
+                    broker.GetCurrentDateTimeOffsetAsync())
+                        .ReturnsAsync(randomDateTimeOffset);
+
+                this.identifierBrokerMock.Setup(broker =>
+                        broker.GetIdentifierAsync())
+                            .ReturnsAsync(specificationObject.Id);
+
                 specificationObject.DataSetSpecificationId = storageDataSetSpecification.Id;
 
                 this.specificationObjectProcessingServiceMock.Setup(service =>
@@ -62,6 +74,14 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
                 foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
                 {
+                    this.dateTimeBrokerMock.Setup(broker =>
+                    broker.GetCurrentDateTimeOffsetAsync())
+                        .ReturnsAsync(randomDateTimeOffset);
+
+                    this.identifierBrokerMock.Setup(broker =>
+                        broker.GetIdentifierAsync())
+                            .ReturnsAsync(objectColumn.Id);
+
                     objectColumn.SpecificationObjectId = storageDataSetSpecification.Id;
 
                     this.objectColumnProcessingServiceMock.Setup(service =>
@@ -79,6 +99,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                 service.RetrieveAllDataSetsAsync(),
                     Times.Once());
 
+            int invocationCount = 0;
+
             foreach (SpecificationObject specificationObject in randomSpecificationObjects)
             {
                 specificationObject.DataSetSpecificationId = storageDataSetSpecification.Id;
@@ -87,6 +109,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                     service.ReadOrInsertSpecificationObjectAsync(specificationObject),
                         Times.Once());
 
+                invocationCount++;
+
                 foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
                 {
                     objectColumn.SpecificationObjectId = storageDataSetSpecification.Id;
@@ -94,12 +118,24 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                     this.objectColumnProcessingServiceMock.Verify(service =>
                         service.ReadOrInsertObjectColumnAsync(objectColumn),
                             Times.Once());
+
+                    invocationCount++;
                 };
             };
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Exactly(invocationCount));
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifierAsync(),
+                    Times.Exactly(invocationCount));
 
             this.dataSetProcessingServiceMock.VerifyNoOtherCalls();
             this.specificationObjectProcessingServiceMock.VerifyNoOtherCalls();
             this.objectColumnProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

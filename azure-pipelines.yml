@@ -71,7 +71,10 @@ steps:
       version: 9.x
       performMultiLevelLookup: true
       includePreviewVersions: true # Required for preview versions
-
+      
+  - script: 'dotnet --version'
+    displayName: 'Check dotnet version'
+    
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Restore"
     inputs:

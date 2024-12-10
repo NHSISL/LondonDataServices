@@ -14,8 +14,6 @@ internal class Program
 
     private static async Task Main(string[] args)
     {
-        Console.WriteLine("Press any key to continue...");
-        Console.ReadLine();
         string executionType = string.Empty;
         string dataSetName = string.Empty;
         string version = string.Empty;
@@ -24,11 +22,10 @@ internal class Program
         try
         {
             var client = new ImportExportClient();
-            //Try to gracefully assign if args exist
-            executionType = args[0];
-            dataSetName = args[1];
-            version = args[2];
-            filePath = args[3];
+            executionType = args.Length > 0 ? args[0] : string.Empty;
+            dataSetName = args.Length > 1 ? args[1] : string.Empty;
+            version = args.Length > 2 ? args[2] : string.Empty;
+            filePath = args.Length > 3 ? args[3] : string.Empty;
 
             if (args.Length == 4)
             {
@@ -61,7 +58,7 @@ internal class Program
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"An error occurred during {executionType} operation: {ex.Message}");
+            Console.WriteLine($"An error occurred during '{executionType}' operation: {ex.Message}");
             Console.WriteLine(ex.StackTrace);
         }
     }

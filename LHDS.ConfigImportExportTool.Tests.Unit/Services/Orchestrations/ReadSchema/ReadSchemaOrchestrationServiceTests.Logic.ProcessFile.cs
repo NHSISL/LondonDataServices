@@ -48,6 +48,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                     CannonicalSchemaItem cannonicalSchemaItem = new CannonicalSchemaItem
                     {
                         TableName = specificationObject.SupplierObjectName,
+                        TableDescription = specificationObject.ObjectDescription,
                         ColumnName = objectColumn.SupplierColumnName,
                         ColumnDataType = objectColumn.SqlDataType,
                         ColumnDescription = objectColumn.ColumnDescription,

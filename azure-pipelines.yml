@@ -31,6 +31,7 @@ steps:
       targetFiles: |
         LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
         LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
+        LHDS.ConfigImportExportTool.Tests.Acceptance/appsettings.ContinuousIntegration.json
 
   - task: Bash@3
     displayName: "Show AppSettings for CI"
@@ -39,6 +40,7 @@ steps:
       script: |
         cat LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
         cat LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
+        cat LHDS.ConfigImportExportTool.Tests.Acceptance/appsettings.ContinuousIntegration.json
 
 
   - task: AzureCLI@2

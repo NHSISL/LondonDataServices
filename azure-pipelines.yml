@@ -11,13 +11,13 @@ variables:
   - name: solution
     value: '**/*.sln'
   - name: vmImage
-    value: 'windows-latest'
+    value: 'ubuntu-latest'
   - name: webProjectName
     value: 'LHDS.AdminPortal.Web'
   - name: ConnectionStrings.DefaultConnection
     value: 'Server=localhost,1433;Database=LHDS-Acceptance-$(Build.BuildId);User Id=sa;Password=1Password;TrustServerCertificate=true'
 
-#pool: selfhosted-vmss-linux-lds-dev
+pool: selfhosted-vmss-linux-lds-dev
 
 workspace:
   clean: all

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using LHDS.ConfigImportExportTool.Brokers.DateTimes;
+using LHDS.ConfigImportExportTool.Brokers.Identifiers;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
@@ -33,6 +34,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
         private readonly Mock<IDataSetProcessingService> dataSetProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly ISchemaConfigOrchestrationService schemaConfigOrchestrationService;
 
         public SchemaConfigOrchestrationServiceTests()
@@ -41,6 +43,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             this.objectColumnProcessingServiceMock = new Mock<IObjectColumnProcessingService>();
             this.dataSetProcessingServiceMock = new Mock<IDataSetProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
 
             this.schemaConfigOrchestrationService = new SchemaConfigOrchestrationService(
@@ -48,6 +51,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
                 objectColumnProcessingService: this.objectColumnProcessingServiceMock.Object,
                 dataSetProcessingService: this.dataSetProcessingServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
+                identifierBroker: this.identifierBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object);
         }
 
@@ -65,6 +69,13 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
         private static string GetRandomString(int length) =>
            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+        private static List<ObjectColumn> CreateRandomObjectColumns(DateTimeOffset dateTimeOffset, Guid specificationId)
+        {
+            return CreateObjectColumnFiller(dateTimeOffset, specificationId)
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
 
         private static List<ObjectColumn> CreateRandomObjectColumns(Guid specificationId)
         {
@@ -90,15 +101,23 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
             return filler;
         }
 
-        private static List<SpecificationObject> CreateRandomSpecificationObjects(Guid dataSetId)
+        private static List<SpecificationObject> CreateRandomSpecificationObjects(
+            DateTimeOffset dateTimeOffset)
         {
-            return CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset(), dataSetId)
+            return CreateSpecificationObjectFiller(dateTimeOffset)
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static List<SpecificationObject> CreateRandomSpecificationObjects()
+        {
+            return CreateSpecificationObjectFiller(dateTimeOffset:GetRandomDateTimeOffset())
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
 
         private static Filler<SpecificationObject> CreateSpecificationObjectFiller(
-            DateTimeOffset dateTimeOffset, Guid dataSetId)
+            DateTimeOffset dateTimeOffset)
         {
             string user = GetRandomString(255);
             var filler = new Filler<SpecificationObject>();

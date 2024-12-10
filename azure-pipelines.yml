@@ -11,13 +11,13 @@ variables:
   - name: solution
     value: '**/*.sln'
   - name: vmImage
-    value: 'ubuntu-latest'
+    value: 'windows-latest'
   - name: webProjectName
     value: 'LHDS.AdminPortal.Web'
   - name: ConnectionStrings.DefaultConnection
     value: 'Server=localhost,1433;Database=LHDS-Acceptance-$(Build.BuildId);User Id=sa;Password=1Password;TrustServerCertificate=true'
 
-pool: selfhosted-vmss-linux-lds-dev
+#pool: selfhosted-vmss-linux-lds-dev
 
 workspace:
   clean: all
@@ -31,6 +31,7 @@ steps:
       targetFiles: |
         LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
         LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
+        LHDS.ConfigImportExportTool.Tests.Acceptance/appsettings.ContinuousIntegration.json
 
   - task: Bash@3
     displayName: "Show AppSettings for CI"
@@ -39,6 +40,7 @@ steps:
       script: |
         cat LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
         cat LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
+        cat LHDS.ConfigImportExportTool.Tests.Acceptance/appsettings.ContinuousIntegration.json
 
 
   - task: AzureCLI@2
@@ -69,7 +71,21 @@ steps:
       version: 9.x
       performMultiLevelLookup: true
       includePreviewVersions: true # Required for preview versions
-
+      
+ # - task: Bash@3
+ #   enabled: true
+ #   displayName: Remove old sdks
+ #   inputs:
+ #     targetType: inline
+ #     script: |
+ #       dotnet --version
+ #       dotnet --list-sdks
+ #       rm -rf /agent/_work/_tool/dotnet/sdk/8.0.404/
+ #       rm -rf /agent/_work/_tool/dotnet/sdk/8.0.404.complete/
+ #       ls /agent/_work/_tool/dotnet/sdk
+ #       dotnet --list-sdks
+ #       dotnet sdk check
+    
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Restore"
     inputs:

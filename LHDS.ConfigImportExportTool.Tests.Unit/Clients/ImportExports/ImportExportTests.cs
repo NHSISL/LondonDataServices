@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using LHDS.ConfigImportExportTool.Clients;
+using LHDS.ConfigImportExportTool.Clients.ImportExports;
 using LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Exceptions;
 using LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports;
 using Moq;

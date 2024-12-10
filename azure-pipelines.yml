@@ -11,7 +11,7 @@ variables:
   - name: solution
     value: '**/*.sln'
   - name: vmImage
-    value: 'ubuntu-latest'
+    value: 'windows-latest'
   - name: webProjectName
     value: 'LHDS.AdminPortal.Web'
   - name: ConnectionStrings.DefaultConnection
@@ -72,19 +72,19 @@ steps:
       performMultiLevelLookup: true
       includePreviewVersions: true # Required for preview versions
       
-  - task: Bash@3
-    enabled: true
-    displayName: Remove old sdks
-    inputs:
-      targetType: inline
-      script: |
-        dotnet --version
-        dotnet --list-sdks
-        rm -rf /agent/_work/_tool/dotnet/sdk/8.0.404/
-        rm -rf /agent/_work/_tool/dotnet/sdk/8.0.404.complete/
-        ls /agent/_work/_tool/dotnet/sdk
-        dotnet --list-sdks
-        dotnet sdk check
+ # - task: Bash@3
+ #   enabled: true
+ #   displayName: Remove old sdks
+ #   inputs:
+ #     targetType: inline
+ #     script: |
+ #       dotnet --version
+ #       dotnet --list-sdks
+ #       rm -rf /agent/_work/_tool/dotnet/sdk/8.0.404/
+ #       rm -rf /agent/_work/_tool/dotnet/sdk/8.0.404.complete/
+ #       ls /agent/_work/_tool/dotnet/sdk
+ #       dotnet --list-sdks
+ #       dotnet sdk check
     
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Restore"

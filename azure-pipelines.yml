@@ -74,13 +74,14 @@ steps:
       
   - task: Bash@3
     enabled: true
-    displayName: Dotnet Version
+    displayName: Remove old sdks
     inputs:
       targetType: inline
       script: |
         dotnet --version
         dotnet --list-sdks
-        ls /agent/_work/_tool/dotnet/sdk
+        rm -rf 8.0.404
+        rm -rf 8.0.404.complete
     
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Restore"

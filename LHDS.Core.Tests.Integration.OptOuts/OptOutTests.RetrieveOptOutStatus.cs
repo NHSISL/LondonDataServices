@@ -13,8 +13,6 @@ namespace LHDS.Core.Tests.Integration.OptOuts
         public async Task ShouldRetreiveOptOutStatusAsync()
         {
             // GIVEN
-            string encryptedFileContainer = "emislanding";
-
             byte[] fileBytes =
                 File.ReadAllBytes(@"Resources\EmisNDOOExtract_2D2DB402-CD53-4523-9D84-BDC23A562C3D_20230516T144214.csv");
 

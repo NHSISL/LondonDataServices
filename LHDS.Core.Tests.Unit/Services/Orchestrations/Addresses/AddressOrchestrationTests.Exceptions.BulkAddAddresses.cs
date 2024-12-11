@@ -72,7 +72,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             List<Address> randomAddresses = CreateRandomAddresses(count: GetRandomNumber()).ToList();//change to random number
             List<Address> outputAddresses = randomAddresses.DeepClone();
             string stringRecords = string.Join(Environment.NewLine, filteredRecords);
-            bool hasHeaderRecord = false;
             string inputFileName = zipFileName;
             string randomTempPath = Path.GetTempPath();
             string ordinanceTempFolder = Path.Combine(randomTempPath, "OrdinanceData");
@@ -241,7 +240,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
             List<Address> randomAddresses = CreateRandomAddresses(count: GetRandomNumber()).ToList();//change to random number
             List<Address> outputAddresses = randomAddresses.DeepClone();
             string stringRecords = string.Join(Environment.NewLine, filteredRecords);
-            bool hasHeaderRecord = false;
             string inputFileName = zipFileName;
             string randomTempPath = Path.GetTempPath();
             string ordinanceTempFolder = Path.Combine(randomTempPath, "OrdinanceData");

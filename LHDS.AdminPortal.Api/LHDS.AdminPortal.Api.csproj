@@ -4,8 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
-		<NoWarn>CS1998</NoWarn>
-		<NoWarn>CS8632</NoWarn>
+		<NoWarn>CS1998,CS8632</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />

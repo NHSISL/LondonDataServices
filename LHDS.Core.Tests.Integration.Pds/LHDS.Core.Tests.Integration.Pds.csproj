@@ -6,8 +6,7 @@
 	  <ImplicitUsings>disable</ImplicitUsings>
 	  <IsPackable>false</IsPackable>
 	  <Configurations>Debug;Release;Test;Acceptance</Configurations>
-	  <NoWarn>CS8632</NoWarn>
-	  <NoWarn>CS1998</NoWarn>
+	  <NoWarn>CS1998,CS8632</NoWarn>
   </PropertyGroup>
 
 	<ItemGroup>

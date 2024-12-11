@@ -271,13 +271,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             return filler;
         }
 
-        private static Address? CreateRandomAddress(DateTimeOffset dateTimeOffset, string UPRN) =>
+        private static Address CreateRandomAddress(DateTimeOffset dateTimeOffset, string UPRN) =>
              CreateAddressFiller(dateTimeOffset, UPRN).Create();
 
-        private static Filler<Address?> CreateAddressFiller(DateTimeOffset dateTimeOffset, string UPRN)
+        private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset, string UPRN)
         {
             string user = Guid.NewGuid().ToString();
-            var filler = new Filler<Address?>();
+            var filler = new Filler<Address>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)

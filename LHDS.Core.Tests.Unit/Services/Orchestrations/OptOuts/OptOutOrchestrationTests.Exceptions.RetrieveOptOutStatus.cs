@@ -37,7 +37,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset expireDate = randomDateTimeOffset.AddDays(-optOutConfiguration.ExpiredAfterDays);
             List<OptOutIdentifier> randomOptOuts = CreateRandomOptOutIdentifiersList();
             List<OptOutIdentifier> outputOptOuts = randomOptOuts;
-            string inputContainer = "optout";
 
             this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))
@@ -138,7 +137,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset expireDate = randomDateTimeOffset.AddDays(-optOutConfiguration.ExpiredAfterDays);
             List<OptOutIdentifier> randomOptOuts = CreateRandomOptOutIdentifiersList();
             List<OptOutIdentifier> outputOptOuts = randomOptOuts;
-            string inputContainer = "optout";
 
             this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))
@@ -238,7 +236,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset expireDate = randomDateTimeOffset.AddDays(-optOutConfiguration.ExpiredAfterDays);
             List<OptOutIdentifier> randomOptOuts = CreateRandomOptOutIdentifiersList();
             List<OptOutIdentifier> outputOptOuts = randomOptOuts;
-            string inputContainer = "optout";
 
             this.csvHelperBrokerMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))

@@ -10,8 +10,7 @@
 		<SpaProxyServerUrl>https://localhost:44405</SpaProxyServerUrl>
 		<SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
 		<ImplicitUsings>disable</ImplicitUsings>
-		<NoWarn>CS8632</NoWarn>
-		<NoWarn>CS1998</NoWarn>
+		<NoWarn>CS1998,CS8632</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

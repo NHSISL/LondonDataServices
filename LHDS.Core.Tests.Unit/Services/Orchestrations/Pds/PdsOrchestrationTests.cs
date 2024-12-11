@@ -122,7 +122,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             {
                 actualStream.ShouldCompare(expectedStream);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
 

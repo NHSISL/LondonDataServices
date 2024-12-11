@@ -19,11 +19,11 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications
         public string Notes { get; set; } = string.Empty;
         public bool IsMultiAuthorPerBatch { get; set; }
         public string EntityChangeSynchronisation { get; set; } = string.Empty;
-        public DateTimeOffset DateReleased { get; set; }
-        public DateTimeOffset DateImplemented { get; set; }
-        public DateTimeOffset DateSuperseded { get; set; }
-        public Guid SupersededById { get; set; }
-        public Guid PresededById { get; set; }
+        public DateTimeOffset? DateReleased { get; set; }
+        public DateTimeOffset? DateImplemented { get; set; }
+        public DateTimeOffset? DateSuperseded { get; set; }
+        public Guid? SupersededById { get; set; }
+        public Guid? PresededById { get; set; }
         public bool IsPublished { get; set; }
         public bool IsActive { get; set; }
         public DateTimeOffset ActiveFrom { get; set; }

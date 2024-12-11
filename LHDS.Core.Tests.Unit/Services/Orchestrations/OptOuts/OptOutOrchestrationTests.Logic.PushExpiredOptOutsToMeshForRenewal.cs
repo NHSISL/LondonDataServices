@@ -143,7 +143,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Given
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
             DateTimeOffset currentDateTime = randomDate;
-            bool withHeader = false;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             List<OptOut> randomOptOuts = new List<OptOut>();
             List<OptOut> outputOptOuts = randomOptOuts;

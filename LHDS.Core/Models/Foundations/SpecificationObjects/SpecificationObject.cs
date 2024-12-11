@@ -24,6 +24,10 @@ namespace LHDS.Core.Models.Foundations.SpecificationObjects
         public string DeletionHandling { get; set; } = string.Empty;
         public bool IsSubmissionHeaderObject { get; set; }
         public bool IsTransactionLog { get; set; }
+        public bool IsCaseSensitive { get; set; }
+        public bool IsPostcode { get; set; }
+        public bool IsNumerice { get; set; }
+        public string DeleteCondition { get; set; } = string.Empty;
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }

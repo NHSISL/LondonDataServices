@@ -12,7 +12,7 @@ using LHDS.ConfigImportExportTool.Models.Orchestrations.SchemaConfigs.Exceptions
 using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using Xeptions;
 
-namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
+namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchemas
 {
     internal partial class ReadSchemaOrchestrationService
     {

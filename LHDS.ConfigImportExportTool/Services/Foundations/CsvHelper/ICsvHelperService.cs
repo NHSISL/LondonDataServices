@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
+namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelper
 {
     internal interface ICsvHelperService
     {

@@ -36,8 +36,8 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.CsvHelpers
             // when
             ValueTask<List<dynamic>> mapCsvToObjectTask =
                 this.csvHelperService.MapCsvToObjectAsync<dynamic>(
-                    invalidData, 
-                    It.IsAny<bool>(), 
+                    invalidData,
+                    It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>());
 
             CsvHelperValidationException actualException =

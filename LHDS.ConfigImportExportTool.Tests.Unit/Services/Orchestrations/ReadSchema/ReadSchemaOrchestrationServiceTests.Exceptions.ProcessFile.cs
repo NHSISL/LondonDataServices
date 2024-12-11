@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
-using LHDS.ConfigImportExportTool.Models.Orchestrations.SchemaConfigs.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;

@@ -9,7 +9,7 @@ using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.SchemaConfigs.Exceptions;
 using Xeptions;
 
-namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
+namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchemas
 {
     internal partial class ReadSchemaOrchestrationService
     {

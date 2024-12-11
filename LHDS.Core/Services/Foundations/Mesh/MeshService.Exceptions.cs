@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -33,7 +33,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
             {
                 var failedMeshServiceException =
                     new FailedMeshServiceException(
-                        message: "Failed mesh service error occurred, please contact support.", 
+                        message: "Failed mesh service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedMeshServiceException);
@@ -78,7 +78,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
             {
                 var failedMeshServiceException =
                     new FailedMeshServiceException(
-                        message: "Failed mesh service error occurred, please contact support.", 
+                        message: "Failed mesh service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedMeshServiceException);
@@ -103,7 +103,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
             {
                 var failedMeshServiceException =
                     new FailedMeshServiceException(
-                        message: "Failed mesh service error occurred, please contact support.", 
+                        message: "Failed mesh service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedMeshServiceException);
@@ -124,7 +124,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
             {
                 var failedMeshServiceException =
                     new FailedMeshServiceException(
-                        message: "Failed mesh service error occurred, please contact support.", 
+                        message: "Failed mesh service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedMeshServiceException);
@@ -145,7 +145,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
             Xeption exception)
         {
             var meshServiceException = new MeshServiceException(
-                message: "Mesh service error occurred, please contact support.", 
+                message: "Mesh service error occurred, please contact support.",
                 innerException: exception);
 
             this.loggingBroker.LogError(meshServiceException);
@@ -156,7 +156,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
         private MeshServiceDependencyException CreateAndLogDependencyException(Xeption exception)
         {
             var meshServiceDependencyException = new MeshServiceDependencyException(
-                message: "Mesh service dependency error occurred, please contact support.", 
+                message: "Mesh service dependency error occurred, please contact support.",
                 innerException: exception);
 
             this.loggingBroker.LogError(meshServiceDependencyException);
@@ -168,7 +168,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
         {
             var meshServiceDependencyValidationException =
                 new MeshServiceDependencyValidationException(
-                    message: "Mesh service dependency validation occurred, please try again.", 
+                    message: "Mesh service dependency validation occurred, please try again.",
                     innerException: exception);
 
             this.loggingBroker.LogError(meshServiceDependencyValidationException);

@@ -6,9 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using System.Text;
-using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -124,7 +122,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             {
                 actualStream.ShouldCompare(expectedStream);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
 

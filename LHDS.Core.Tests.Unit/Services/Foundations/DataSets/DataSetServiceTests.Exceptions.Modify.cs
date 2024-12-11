@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             DataSet someDataSet = CreateRandomDataSet();

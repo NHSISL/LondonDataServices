@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using Moq;

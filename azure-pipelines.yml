@@ -72,6 +72,18 @@ steps:
       performMultiLevelLookup: true
       includePreviewVersions: true # Required for preview versions
 
+  - task: UseNode@1
+    displayName: "Install Node.js"
+    inputs:
+      version: 22.x
+      checkLatest: true
+
+  - task: Npm@1
+    displayName: NPM Install
+    inputs:
+      workingDir: '$(webProjectName)/ClientApp'
+      command: 'install'
+
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Restore"
     inputs:

@@ -78,12 +78,6 @@ steps:
       version: 22.x
       checkLatest: true
 
-  - task: Npm@1
-    displayName: NPM Install
-    inputs:
-      workingDir: '$(webProjectName)/ClientApp'
-      command: 'install'
-
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Restore"
     inputs:

@@ -12,7 +12,7 @@ using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.SchemaConfigs.Exceptions;
 using LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports;
-using LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema;
+using LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchemas;
 using LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs;
 using Moq;
 using Tynamix.ObjectFiller;

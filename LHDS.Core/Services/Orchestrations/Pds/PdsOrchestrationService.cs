@@ -12,7 +12,6 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.PdsAudits;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Mesh;
@@ -132,33 +131,33 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                             string fileNameOutput =
                                 $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
 
-                        fileNameOutput += Path.GetExtension(filename);
-                        string fileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
+                            fileNameOutput += Path.GetExtension(filename);
+                            string fileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}";
 
-                        using (Stream input = new MemoryStream(message.FileContent))
-                        {
-                            //TODO:  Should we inject the container name into the method to have more control?
-                            await this.documentService.AddDocumentAsync(input, fileName, container: blobContainers.Pds);
-                        }
+                            using (Stream input = new MemoryStream(message.FileContent))
+                            {
+                                //TODO:  Should we inject the container name into the method to have more control?
+                                await this.documentService.AddDocumentAsync(input, fileName, container: blobContainers.Pds);
+                            }
 
-                        var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
-                        DateTimeOffset currentDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                            var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
+                            DateTimeOffset currentDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-                        var pdsAudit = new PdsAudit
-                        {
-                            Id = this.identifierBroker.GetIdentifier(),
-                            CorrelationId = correlationId,
-                            FileName = fileName,
-                            Message = $"Received message from mesh with id {message.MessageId}",
-                            MessageId = message.MessageId,
-                            CreatedDate = currentDate,
-                            UpdatedDate = currentDate,
-                            CreatedBy = "System",
-                            UpdatedBy = "System"
-                        };
+                            var pdsAudit = new PdsAudit
+                            {
+                                Id = this.identifierBroker.GetIdentifier(),
+                                CorrelationId = correlationId,
+                                FileName = fileName,
+                                Message = $"Received message from mesh with id {message.MessageId}",
+                                MessageId = message.MessageId,
+                                CreatedDate = currentDate,
+                                UpdatedDate = currentDate,
+                                CreatedBy = "System",
+                                UpdatedBy = "System"
+                            };
 
                             await this.pdsAuditService.AddPdsAuditAsync(pdsAudit);
-                            
+
                             return pdsAudit;
                         });
 

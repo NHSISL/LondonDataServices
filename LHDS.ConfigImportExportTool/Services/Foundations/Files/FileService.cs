@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using LHDS.ConfigImportExportTool.Brokers.Files;
 using LHDS.ConfigImportExportTool.Models.Foundations.Configurations.Retries;
 

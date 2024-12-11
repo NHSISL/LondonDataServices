@@ -2,9 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
@@ -12,7 +15,6 @@ using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Foundations.Suppliers;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema;
-using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
 {
@@ -25,18 +27,18 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
             Supplier randomSupplier = CreateRandomSupplier();
             DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
 
-            DataSetSpecification randomDataSetSpecification = 
+            DataSetSpecification randomDataSetSpecification =
                 CreateRandomDataSetSpecification(randomDataSet.Id);
 
-            List<DataSetSpecification> dataSetSpecifications = 
+            List<DataSetSpecification> dataSetSpecifications =
                 new List<DataSetSpecification> { randomDataSetSpecification };
 
             dynamic dynamicSchemaItem = CreateRandomDynamicSchemaItem();
 
-            CannonicalSchemaItem expectedCannonicalSchemaItem = 
+            CannonicalSchemaItem expectedCannonicalSchemaItem =
                 CreateCannonicalSchemaItemFromDynamic(dynamicSchemaItem);
 
-            SpecificationObject specificationObject = 
+            SpecificationObject specificationObject =
                 CreateSpecificationObjectFromDynamic(dynamicSchemaItem, randomDataSetSpecification.Id);
 
             ObjectColumn objectColumn =
@@ -66,7 +68,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
             byte[] csvData = await this.fileBroker.ReadFileAsync(outputFilePath);
             string csvString = Encoding.Default.GetString(csvData);
 
-            List<CannonicalSchemaItem> cannonicalSchemaItems = 
+            List<CannonicalSchemaItem> cannonicalSchemaItems =
                 await this.csvHelperBroker.MapCsvToObjectAsync<CannonicalSchemaItem>(csvString, true);
 
             cannonicalSchemaItems.FirstOrDefault().Should().BeEquivalentTo(expectedCannonicalSchemaItem);

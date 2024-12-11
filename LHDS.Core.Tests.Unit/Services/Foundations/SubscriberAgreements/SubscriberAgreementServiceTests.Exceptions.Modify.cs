@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             SubscriberAgreement someSubscriberAgreement = CreateRandomSubscriberAgreement();

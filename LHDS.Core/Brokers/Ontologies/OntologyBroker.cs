@@ -108,8 +108,8 @@ namespace LHDS.Core.Brokers.Ontologies
             {
                 BaseAddress = new Uri(uriString: $"{this.ontologyConfiguration.TerminologyServerBaseUrl}"),
                 Timeout = TimeSpan.FromSeconds(this.ontologyConfiguration.TimeoutInSeconds),
-                
-                MaxResponseContentBufferSize = 
+
+                MaxResponseContentBufferSize =
                     this.ontologyConfiguration.MaxResponseContentBufferSizeInMegaBytes * 1024 * 1024
             };
 

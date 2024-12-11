@@ -64,7 +64,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             Validate((Rule: IsInvalid(terminologyPollId), Parameter: nameof(TerminologyPoll.Id)));
 
         private static void ValidateStorageTerminologyPoll(
-            TerminologyPoll maybeTerminologyPoll, 
+            TerminologyPoll maybeTerminologyPoll,
             Guid terminologyPollId)
         {
             if (maybeTerminologyPoll is null)
@@ -82,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         }
 
         private static void ValidateAgainstStorageTerminologyPollOnModify(
-            TerminologyPoll inputTerminologyPoll, 
+            TerminologyPoll inputTerminologyPoll,
             TerminologyPoll storageTerminologyPoll)
         {
             Validate(

@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             IngestionTracking someIngestionTracking = CreateRandomIngestionTracking();

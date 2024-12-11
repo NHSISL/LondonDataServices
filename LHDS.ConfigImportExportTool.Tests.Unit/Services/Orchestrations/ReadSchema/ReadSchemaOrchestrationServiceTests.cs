@@ -97,9 +97,9 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             }
         }
 
-            private static Filler<SpecificationObject> CreateImportSpecificationObjectFiller(
-            List<ObjectColumn> objectColumns,
-            string tableName)
+        private static Filler<SpecificationObject> CreateImportSpecificationObjectFiller(
+        List<ObjectColumn> objectColumns,
+        string tableName)
         {
             string user = GetRandomString(255);
             var filler = new Filler<SpecificationObject>();
@@ -155,7 +155,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
             else
             {
                 return CreateImportObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                    .Create(count: GetRandomNumber()).ToList();    
+                    .Create(count: GetRandomNumber()).ToList();
             }
         }
 

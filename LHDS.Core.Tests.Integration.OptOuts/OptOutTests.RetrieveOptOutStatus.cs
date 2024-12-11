@@ -4,8 +4,6 @@
 
 using System.IO;
 using System.Threading.Tasks;
-using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 
 namespace LHDS.Core.Tests.Integration.OptOuts
 {

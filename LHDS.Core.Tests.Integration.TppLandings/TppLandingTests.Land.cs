@@ -9,13 +9,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
-using Xunit;
 
 namespace LHDS.Core.Tests.Integration.TppLandings
 {
     public partial class TppLandingTests
     {
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldLandTPPFileAsync()
         {
             // given

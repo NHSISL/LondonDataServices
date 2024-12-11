@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     .Returns(outputTerminologyArtifacts.AsQueryable());
 
             // when
-            TerminologyArtifact? actualTerminologyArtifact =
+            TerminologyArtifact actualTerminologyArtifact =
                 await this.terminologyArtifactProcessingService.GetNonDownloadedArtifactAsync();
 
             // then

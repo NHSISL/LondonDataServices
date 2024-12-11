@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             SpecificationObject someSpecificationObject = CreateRandomSpecificationObject();

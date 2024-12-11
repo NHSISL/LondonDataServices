@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Threading.Tasks;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using Microsoft.Extensions.Configuration;

@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                     .Returns(randomAddresses.AsQueryable());
 
             // when
-            Address? actualAddress =
+            Address actualAddress =
                 await this.addressProcessingService.RetrieveAddressByUPRNAsync(inputUPRN);
 
             // then

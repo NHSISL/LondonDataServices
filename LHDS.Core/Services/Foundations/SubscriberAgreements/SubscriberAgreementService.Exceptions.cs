@@ -1,11 +1,15 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.SubscriberAgreements
@@ -55,14 +59,14 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             {
                 var invalidSubscriberAgreementReferenceException =
                     new InvalidSubscriberAgreementReferenceException(
-                        message: "Invalid subscriberAgreement reference error occurred.", 
+                        message: "Invalid subscriberAgreement reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidSubscriberAgreementReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedSubscriberAgreementException = 
+                var lockedSubscriberAgreementException =
                     new LockedSubscriberAgreementException(
                         message: "Locked subscriberAgreement record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
@@ -82,7 +86,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             {
                 var failedSubscriberAgreementServiceException =
                     new FailedSubscriberAgreementServiceException(
-                        message: "Failed subscriberAgreement service error occurred, please contact support.", 
+                        message: "Failed subscriberAgreement service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedSubscriberAgreementServiceException);
@@ -108,7 +112,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             {
                 var failedSubscriberAgreementServiceException =
                     new FailedSubscriberAgreementServiceException(
-                        message: "Failed subscriberAgreement service error occurred, please contact support.", 
+                        message: "Failed subscriberAgreement service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedSubscriberAgreementServiceException);
@@ -129,10 +133,10 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
         private SubscriberAgreementDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var subscriberAgreementDependencyException = 
+            var subscriberAgreementDependencyException =
                 new SubscriberAgreementDependencyException(
                     message: "SubscriberAgreement dependency error occurred, please contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(subscriberAgreementDependencyException);
 
@@ -154,10 +158,10 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
         private SubscriberAgreementDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var subscriberAgreementDependencyException = 
+            var subscriberAgreementDependencyException =
                 new SubscriberAgreementDependencyException(
                     message: "SubscriberAgreement dependency error occurred, please contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(subscriberAgreementDependencyException);
 
@@ -167,7 +171,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
         private SubscriberAgreementServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var subscriberAgreementServiceException = 
+            var subscriberAgreementServiceException =
                 new SubscriberAgreementServiceException(
                     message: "SubscriberAgreement service error occurred, please contact support.",
                     innerException: exception);

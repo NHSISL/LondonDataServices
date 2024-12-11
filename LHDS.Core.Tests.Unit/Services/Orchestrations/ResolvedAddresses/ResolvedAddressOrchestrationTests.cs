@@ -204,13 +204,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             return filler;
         }
 
-        private static Address? CreateRandomAddress(DateTimeOffset dateTimeOffset) =>
+        private static Address CreateRandomAddress(DateTimeOffset dateTimeOffset) =>
              CreateAddressFiller(dateTimeOffset).Create();
 
-        private static Filler<Address?> CreateAddressFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
-            var filler = new Filler<Address?>();
+            var filler = new Filler<Address>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)

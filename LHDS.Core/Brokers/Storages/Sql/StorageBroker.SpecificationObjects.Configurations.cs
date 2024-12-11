@@ -71,6 +71,26 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<SpecificationObject>()
+                .Property(objectColumn => objectColumn.IsCaseSensitive)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<SpecificationObject>()
+                .Property(objectColumn => objectColumn.IsNumerice)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<SpecificationObject>()
+                .Property(objectColumn => objectColumn.IsPostcode)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<SpecificationObject>()
+                .Property(objectColumn => objectColumn.DeleteCondition)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.CreatedBy)
                 .HasMaxLength(255)
                 .IsRequired();

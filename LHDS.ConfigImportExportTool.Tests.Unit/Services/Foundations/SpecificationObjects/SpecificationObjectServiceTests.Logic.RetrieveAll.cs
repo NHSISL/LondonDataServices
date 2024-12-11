@@ -13,7 +13,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.Specificat
     public partial class SpecificationObjectServiceTests
     {
         [Fact]
-        public async void ShouldReturnSpecificationObjects()
+        public async Task ShouldReturnSpecificationObjects()
         {
             // given
             IQueryable<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects();

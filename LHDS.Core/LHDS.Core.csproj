@@ -6,6 +6,7 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<OutputType>Library</OutputType>
 		<NoWarn>CS1998</NoWarn>
+		<NoWarn>CS8632</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

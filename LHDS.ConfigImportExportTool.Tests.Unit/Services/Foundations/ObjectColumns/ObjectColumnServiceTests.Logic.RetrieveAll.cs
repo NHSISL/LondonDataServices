@@ -13,7 +13,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
     public partial class ObjectColumnServiceTests
     {
         [Fact]
-        public async void ShouldReturnObjectColumns()
+        public async Task ShouldReturnObjectColumns()
         {
             // given
             IQueryable<ObjectColumn> randomObjectColumns = CreateRandomObjectColumns();

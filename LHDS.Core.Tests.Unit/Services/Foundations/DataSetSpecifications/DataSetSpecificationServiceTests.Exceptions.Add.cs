@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             DataSetSpecification someDataSetSpecification = CreateRandomDataSetSpecification();

@@ -20,7 +20,7 @@ namespace LHDS.ConfigImportExportTool.Brokers.CsvHelpers
         public async ValueTask<List<T>> MapCsvToObjectAsync<T>(
             string data,
             bool hasHeaderRecord,
-            Dictionary<string, int>? fieldMappings = null)
+            Dictionary<string, int> fieldMappings = null)
         {
             return await csvClient
                 .MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);

@@ -2,12 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Addresses

@@ -32,9 +32,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             AssignAddress storageAssignAddress = randomAssignAddress;
             string matchedUprn = storageAssignAddress.BestMatch.UPRN.ToString();
 
-            Address? randomAddress = CreateRandomAddress(randomDateTimeOffset);
-            Address? storageAddress = randomAddress;
-            Address? ordananceAddress = storageAddress;
+            Address randomAddress = CreateRandomAddress(randomDateTimeOffset);
+            Address storageAddress = randomAddress;
+            Address ordananceAddress = storageAddress;
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
                service.RetrieveAllResolvedAddresses())
@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             AssignAddress storageAssignAddress = randomAssignAddress;
             AssignAddress nullStorageAssignAddress = null;
 
-            Address? ordananceAddress = null;
+            Address ordananceAddress = null;
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
                service.RetrieveAllResolvedAddresses())
@@ -213,8 +213,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
         private static ResolvedAddress MapOrdananceWithAssign(
             ResolvedAddress processingResolvedAddress,
-            AssignAddress? assignAddress,
-            Address? ordananceAddress)
+            AssignAddress assignAddress,
+            Address ordananceAddress)
         {
             ResolvedAddress newResolvedAddress = processingResolvedAddress;
             newResolvedAddress.UPSN = ordananceAddress?.UPSN ?? null;

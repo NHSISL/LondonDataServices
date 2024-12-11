@@ -2,10 +2,10 @@
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
-		<Nullable>enable</Nullable>
+		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<OutputType>Library</OutputType>
-		<NoWarn>CS1998</NoWarn>
+		<NoWarn>CS1998,CS8632</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

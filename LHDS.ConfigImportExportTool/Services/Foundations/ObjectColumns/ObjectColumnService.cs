@@ -2,12 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.ConfigImportExportTool.Brokers.DateTimes;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
-using LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns;
 
 namespace LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns
 {
@@ -36,7 +37,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns
             });
 
         public ValueTask<IQueryable<ObjectColumn>> RetrieveAllObjectColumnsAsync() =>
-            TryCatch(async() => await this.storageBroker.SelectAllObjectColumnsAsync());
+            TryCatch(async () => await this.storageBroker.SelectAllObjectColumnsAsync());
 
         public ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId) =>
             TryCatch(async () =>
@@ -62,7 +63,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns
                 ValidateStorageObjectColumn(maybeObjectColumn, objectColumn.Id);
 
                 ValidateAgainstStorageObjectColumnOnModify(
-                    inputObjectColumn: objectColumn, 
+                    inputObjectColumn: objectColumn,
                     storageObjectColumn: maybeObjectColumn);
 
                 return await this.storageBroker.UpdateObjectColumnAsync(objectColumn);

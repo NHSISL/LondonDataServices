@@ -71,7 +71,8 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<SpecificationObject>()
-                .Property(objectColumn => objectColumn.FileFormatId);
+                .Property(objectColumn => objectColumn.FileFormatId)
+                .IsRequired(false);
 
             modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.IsCdmMasked)

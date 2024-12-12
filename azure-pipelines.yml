@@ -71,21 +71,13 @@ steps:
       version: 9.x
       performMultiLevelLookup: true
       includePreviewVersions: true # Required for preview versions
-      
- # - task: Bash@3
- #   enabled: true
- #   displayName: Remove old sdks
- #   inputs:
- #     targetType: inline
- #     script: |
- #       dotnet --version
- #       dotnet --list-sdks
- #       rm -rf /agent/_work/_tool/dotnet/sdk/8.0.404/
- #       rm -rf /agent/_work/_tool/dotnet/sdk/8.0.404.complete/
- #       ls /agent/_work/_tool/dotnet/sdk
- #       dotnet --list-sdks
- #       dotnet sdk check
-    
+
+  - task: UseNode@1
+    displayName: "Install Node.js"
+    inputs:
+      version: 22.x
+      checkLatest: true
+
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Restore"
     inputs:

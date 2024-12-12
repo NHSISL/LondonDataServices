@@ -125,7 +125,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             Audit someAudit = CreateRandomAudit();

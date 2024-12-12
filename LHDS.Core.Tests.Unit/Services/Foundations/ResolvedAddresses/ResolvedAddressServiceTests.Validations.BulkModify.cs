@@ -14,12 +14,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 {
     public partial class ResolvedAddressServiceTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnBulkModifyIfResolvedAddressIsInvalidAndLogItAsync(
-            string invalidText)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnBulkModifyIfResolvedAddressIsInvalidAndLogItAsync()
         {
             // given
             List<ResolvedAddress> invalidResolvedAddresses = null;

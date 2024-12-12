@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             TerminologyArtifact someTerminologyArtifact = CreateRandomTerminologyArtifact();

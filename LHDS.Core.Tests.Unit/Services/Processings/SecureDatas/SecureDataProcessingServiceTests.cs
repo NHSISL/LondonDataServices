@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using KellermanSoftware.CompareNetObjects;
-using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.SecureData;
@@ -27,7 +26,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
         private readonly Mock<ISecureDataService> secureDataServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
-        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ISecureDataProcessingService secureDataProcessingService;
         private readonly ICompareLogic compareLogic;
 

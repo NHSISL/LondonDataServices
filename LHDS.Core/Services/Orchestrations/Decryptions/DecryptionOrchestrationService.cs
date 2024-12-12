@@ -67,7 +67,6 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 var ingestionTracking = await this.ingestionTrackingService
                     .RetrieveIngestionTrackingByEncryptedFileNameAsync(encryptedFileName);
 
-                long recordCount = 0;
                 string decryptedFileSha256Hash = string.Empty;
                 long fileSize = 0;
 

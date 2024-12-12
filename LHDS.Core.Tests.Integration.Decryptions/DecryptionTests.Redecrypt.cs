@@ -6,13 +6,12 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Decryptions
 {
     public partial class DecryptionTests
     {
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldRedecryptAsync()
         {
             // given

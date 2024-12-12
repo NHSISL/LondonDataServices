@@ -13,7 +13,6 @@ using Xeptions;
 
 internal class Program
 {
-
     private static async Task Main(string[] args)
     {
         string executionType = string.Empty;

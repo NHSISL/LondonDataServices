@@ -6,7 +6,6 @@ using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-
 namespace LHDS.ConfigImportExportTool
 {
     internal class LhdsContextFactory : IDesignTimeDbContextFactory<StorageBroker>

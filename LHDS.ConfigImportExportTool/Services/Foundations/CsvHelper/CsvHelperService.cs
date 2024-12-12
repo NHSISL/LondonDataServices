@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 

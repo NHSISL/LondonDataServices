@@ -6,13 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using HandlebarsDotNet.MemberAccessors.EnumerableAccessors;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -29,7 +26,6 @@ using LHDS.Core.Services.Processings.ResolvedAddresses;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Moq;
 using Tynamix.ObjectFiller;
 using WireMock.Server;
 using Xunit;
@@ -275,13 +271,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             return filler;
         }
 
-        private static Address? CreateRandomAddress(DateTimeOffset dateTimeOffset, string UPRN) =>
+        private static Address CreateRandomAddress(DateTimeOffset dateTimeOffset, string UPRN) =>
              CreateAddressFiller(dateTimeOffset, UPRN).Create();
 
-        private static Filler<Address?> CreateAddressFiller(DateTimeOffset dateTimeOffset, string UPRN)
+        private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset, string UPRN)
         {
             string user = Guid.NewGuid().ToString();
-            var filler = new Filler<Address?>();
+            var filler = new Filler<Address>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
@@ -403,7 +399,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 { nameof(ResolvedAddress.UnstructuredPostalAddress), 21 }
             };
 
-            return  await this.csvHelperBroker
+            return await this.csvHelperBroker
                .MapObjectToCsvAsync(
                     @object: resolvedAddresses,
                     addHeaderRecord: true,

@@ -1,11 +1,15 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.TerminologyPolls
@@ -55,14 +59,14 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             {
                 var invalidTerminologyPollReferenceException =
                     new InvalidTerminologyPollReferenceException(
-                        message: "Invalid terminologyPoll reference error occurred.", 
+                        message: "Invalid terminologyPoll reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidTerminologyPollReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedTerminologyPollException = 
+                var lockedTerminologyPollException =
                     new LockedTerminologyPollException(
                         message: "Locked terminologyPoll record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
@@ -82,7 +86,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             {
                 var failedTerminologyPollServiceException =
                     new FailedTerminologyPollServiceException(
-                        message: "Failed terminologyPoll service error occurred, please contact support.", 
+                        message: "Failed terminologyPoll service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedTerminologyPollServiceException);
@@ -108,7 +112,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             {
                 var failedTerminologyPollServiceException =
                     new FailedTerminologyPollServiceException(
-                        message: "Failed terminologyPoll service error occurred, please contact support.", 
+                        message: "Failed terminologyPoll service error occurred, please contact support.",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedTerminologyPollServiceException);
@@ -129,10 +133,10 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 
         private TerminologyPollDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var terminologyPollDependencyException = 
+            var terminologyPollDependencyException =
                 new TerminologyPollDependencyException(
                     message: "TerminologyPoll dependency error occurred, please contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(terminologyPollDependencyException);
 
@@ -154,10 +158,10 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         private TerminologyPollDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var terminologyPollDependencyException = 
+            var terminologyPollDependencyException =
                 new TerminologyPollDependencyException(
                     message: "TerminologyPoll dependency error occurred, please contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(terminologyPollDependencyException);
 
@@ -167,7 +171,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         private TerminologyPollServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var terminologyPollServiceException = 
+            var terminologyPollServiceException =
                 new TerminologyPollServiceException(
                     message: "TerminologyPoll service error occurred, please contact support.",
                     innerException: exception);

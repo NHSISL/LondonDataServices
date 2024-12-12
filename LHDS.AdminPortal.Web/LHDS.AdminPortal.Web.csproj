@@ -1,308 +1,309 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>disable</Nullable>
-    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-    <IsPackable>false</IsPackable>
-    <SpaRoot>ClientApp\</SpaRoot>
-    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-    <SpaProxyServerUrl>https://localhost:44405</SpaProxyServerUrl>
-    <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>disable</Nullable>
+		<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+		<IsPackable>false</IsPackable>
+		<SpaRoot>ClientApp\</SpaRoot>
+		<DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+		<SpaProxyServerUrl>https://localhost:44405</SpaProxyServerUrl>
+		<SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<NoWarn>CS1998,CS8632</NoWarn>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants />
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants />
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants />
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DefineConstants />
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="8.0.8" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.7.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="8.0.8" />
+		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.7.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
-  <ItemGroup>
-    <!-- Don't publish the SPA source files, but do show them in the project files list -->
-    <Content Remove="$(SpaRoot)**" />
-    <None Remove="$(SpaRoot)**" />
-    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<!-- Don't publish the SPA source files, but do show them in the project files list -->
+		<Content Remove="$(SpaRoot)**" />
+		<None Remove="$(SpaRoot)**" />
+		<None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Remove="ClientApp\tsconfig.json" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="ClientApp\tsconfig.json" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <TypeScriptCompile Remove="ClientApp\cypress.config.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.documents.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.emislandings.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.features.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackingAudits.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackings.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.optout.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.pds.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.subscriberagreement.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.subscriberCredentials.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.suppliers.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.terminologyArtifacts.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\brokers\toastBroker.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\bases\ingestionTrackingTable.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\BreadCrumb\BreadCrumbBase.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Content\ContentBase.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Footer\FooterBase.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Grid\GridBase.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Header\HeaderBase.Nav.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Header\HeaderBase.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Sidebar\SidebarBase.Nav.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Sidebar\SidebarBase.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetail.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetailCard.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetailCardEdit.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetailCardView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationErrors.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationRow.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationRowView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationValidation.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetail.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetailCard.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetailCardEdit.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetailCardView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetErrors.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetRow.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetRowView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetTable.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetValidation.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationTable.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeErrors.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRow.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowAdd.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowDelete.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowEdit.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowNew.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeTable.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeValidations.tsx" />
-    <TypeScriptCompile Remove="clientapp\src\components\FeatureSwitch.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\HeaderBar.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTrackingAudit\ingestionTrackingAuditRow.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTrackingAudit\ingestionTrackingAuditRowView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetail.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCard.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCardView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingFilter.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRow.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRowView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingTable.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetail.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetailCard.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetailCardEdit.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetailCardView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnErrors.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnRow.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnRowView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnTable.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnValidations.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetail.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCard.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCardView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\optOut\upload\optOutUploadDetail.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\optOut\upload\optOutUploadDetailCard.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\optOut\upload\optOutUploadDetailCardView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsDetail.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsDetailCard.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsDetailCardView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsRow.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsRowView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsTable.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetail.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCard.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCardView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetail.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCard.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCardEdit.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCardView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectErrors.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectRow.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectRowView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectTable.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectValidations.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetail - Copy.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetail.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCard.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCardEdit.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCardView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementErrors.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementRow.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementRowView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementTable.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementValidation.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierErrors.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRow.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowAdd.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowDelete.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowEdit.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowNew.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierTable.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierValidations.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactDetail.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactDetailCard.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactDetailCardView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactRow.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactRowView.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactTable.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\hooks\useValidation.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\hooks\validation.test.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\hooks\validationMessages.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\hooks\validationProcessor.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\models\dataSetSpecifications\dataSetSpecification.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\dataSets\dataSet.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\dataTypes\dataType.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\documents\document.ts" />
-    <TypeScriptCompile Remove="clientapp\src\models\features\feature.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackingAudits\ingestionTrackingAudits.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTracking.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTrackingHomeView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\objectColumns\objectColumn.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\optout\optout.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\pds\pds.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\pds\pdsHomeView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\specificationObjects\specificationObject.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\subscriberAgreements\subscriberAgreementHomeView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\subscriberAgreements\subscriberAgreements.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\subscriberCredentials\subscriberCredentialHomeView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\subscriberCredentials\subscriberCredentials.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\terminologyArtifacts\terminologyArtifact.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\terminologyArtifacts\terminologyArtifactHomeView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSetSpecifications\dataSetSpecificationView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSets\dataSetView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataTypes\dataTypeView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\documents\documentView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTrackingAudit\ingestionTrackingAuditView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTracking\ingestionTrackingView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\lookups\lookupView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\objectColumns\objectColumnView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\optOuts\optOutView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\pds\pdsView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\specificationObjects\specificationObjectView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\subscriberAgreements\subscriberAgreement.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\subscriberCredentials\subscriberCredentialView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\terminologyArtifacts\terminologyArtifactsView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetPage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetsListPage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetSpecificationPage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataTypesPage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\objectColumnPage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\specificationObjectPage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\homeUnAuth.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\ingestionTrackingPage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\OptOutSearch.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\OptOutUpload.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\ownershipsPage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\PdsSearch.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\PdsUpload.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\subscriberAgreementDetailPage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\subscriberAgreementPage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactDetailPage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactPage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\services\foundations\documentService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\foundations\emisLandingService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\foundations\featureService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingAuditService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\foundations\optoutService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\foundations\pdsService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\foundations\subscriberAgreementService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\foundations\subscriberCredentialService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\foundations\terminologyArtifactService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\auditViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\dataSetSpecification\dataSetSpecificationViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\dataSets\dataSetViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\dataTypes\dataTypeViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\documents\DocumentViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingHomeViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\objectColumns\objectColumnViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\optOuts\optoutViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\pds\pdsHomeViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\pds\pdsViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\specificationObjects\specificationObjectViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\subscriberAgreements\subscriberAgreementViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\subscriberCredentials\subscriberCredentialViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\supplierViewService .ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\terminologyArtifacts\terminologyArtifactHomeViewService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\terminologyArtifacts\terminologyArtifactViewService.ts" />
-  </ItemGroup>
+	<ItemGroup>
+		<TypeScriptCompile Remove="ClientApp\cypress.config.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.documents.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.emislandings.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.features.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackingAudits.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackings.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.optout.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.pds.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.subscriberagreement.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.subscriberCredentials.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.suppliers.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.terminologyArtifacts.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\brokers\toastBroker.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\bases\ingestionTrackingTable.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\BreadCrumb\BreadCrumbBase.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Content\ContentBase.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Footer\FooterBase.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Grid\GridBase.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Header\HeaderBase.Nav.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Header\HeaderBase.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Sidebar\SidebarBase.Nav.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Sidebar\SidebarBase.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetail.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetailCard.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetailCardEdit.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetailCardView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationErrors.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationRow.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationRowView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationValidation.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetail.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetailCard.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetailCardEdit.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetailCardView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetErrors.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetRow.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetRowView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetTable.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetValidation.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationTable.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeErrors.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRow.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowAdd.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowDelete.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowEdit.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowNew.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeTable.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeValidations.tsx" />
+		<TypeScriptCompile Remove="clientapp\src\components\FeatureSwitch.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\HeaderBar.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\ingestionTrackingAudit\ingestionTrackingAuditRow.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\ingestionTrackingAudit\ingestionTrackingAuditRowView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetail.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCard.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCardView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingFilter.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRow.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRowView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingTable.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetail.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetailCard.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetailCardEdit.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetailCardView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnErrors.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnRow.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnRowView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnTable.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnValidations.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetail.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCard.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCardView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\optOut\upload\optOutUploadDetail.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\optOut\upload\optOutUploadDetailCard.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\optOut\upload\optOutUploadDetailCardView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsDetail.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsDetailCard.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsDetailCardView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsRow.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsRowView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsTable.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetail.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCard.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCardView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetail.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCard.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCardEdit.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCardView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectErrors.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectRow.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectRowView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectTable.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectValidations.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetail - Copy.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetail.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCard.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCardEdit.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementDetailCardView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementErrors.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementRow.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementRowView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementTable.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\subscriberAgreement\subscriberAgreementValidation.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierErrors.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRow.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowAdd.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowDelete.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowEdit.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowNew.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierTable.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierValidations.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactDetail.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactDetailCard.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactDetailCardView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactRow.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactRowView.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactTable.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\hooks\useValidation.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\hooks\validation.test.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\hooks\validationMessages.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\hooks\validationProcessor.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\index.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\models\dataSetSpecifications\dataSetSpecification.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\dataSets\dataSet.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\dataTypes\dataType.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\documents\document.ts" />
+		<TypeScriptCompile Remove="clientapp\src\models\features\feature.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackingAudits\ingestionTrackingAudits.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTracking.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTrackingHomeView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\objectColumns\objectColumn.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\optout\optout.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\pds\pds.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\pds\pdsHomeView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\specificationObjects\specificationObject.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\subscriberAgreements\subscriberAgreementHomeView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\subscriberAgreements\subscriberAgreements.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\subscriberCredentials\subscriberCredentialHomeView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\subscriberCredentials\subscriberCredentials.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\terminologyArtifacts\terminologyArtifact.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\terminologyArtifacts\terminologyArtifactHomeView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSetSpecifications\dataSetSpecificationView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSets\dataSetView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\dataTypes\dataTypeView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\documents\documentView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTrackingAudit\ingestionTrackingAuditView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTracking\ingestionTrackingView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\lookups\lookupView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\objectColumns\objectColumnView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\optOuts\optOutView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\pds\pdsView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\specificationObjects\specificationObjectView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\subscriberAgreements\subscriberAgreement.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\subscriberCredentials\subscriberCredentialView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\models\views\components\terminologyArtifacts\terminologyArtifactsView.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetsListPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetSpecificationPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataTypesPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\configuration\objectColumnPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\configuration\specificationObjectPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\homeUnAuth.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\ingestionTrackingPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\OptOutSearch.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\OptOutUpload.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\ownershipsPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\PdsSearch.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\PdsUpload.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\subscriberAgreementDetailPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\subscriberAgreementPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactDetailPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactPage.tsx" />
+		<TypeScriptCompile Remove="ClientApp\src\services\foundations\documentService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\foundations\emisLandingService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\foundations\featureService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingAuditService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\foundations\optoutService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\foundations\pdsService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\foundations\subscriberAgreementService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\foundations\subscriberCredentialService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\foundations\terminologyArtifactService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\auditViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\dataSetSpecification\dataSetSpecificationViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\dataSets\dataSetViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\dataTypes\dataTypeViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\documents\DocumentViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingHomeViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\objectColumns\objectColumnViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\optOuts\optoutViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\pds\pdsHomeViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\pds\pdsViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\specificationObjects\specificationObjectViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\subscriberAgreements\subscriberAgreementViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\subscriberCredentials\subscriberCredentialViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\supplierViewService .ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\terminologyArtifacts\terminologyArtifactHomeViewService.ts" />
+		<TypeScriptCompile Remove="ClientApp\src\services\views\terminologyArtifacts\terminologyArtifactViewService.ts" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="ClientApp\tsconfig.json" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="ClientApp\tsconfig.json" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ClientApp\cypress\component\" />
-    <Folder Include="ClientApp\cypress\downloads\" />
-    <Folder Include="ClientApp\cypress\e2e\helpers\" />
-    <Folder Include="ClientApp\cypress\e2e\pages\configuration\" />
-    <Folder Include="ClientApp\cypress\screenshots\" />
-    <Folder Include="ClientApp\cypress\videos\" />
-    <Folder Include="ClientApp\dependencies\guid-typescript\node_modules\%40types\" />
-    <Folder Include="ClientApp\src\components\bases\layouts\Navigation\" />
-    <Folder Include="ClientApp\src\models\features\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="ClientApp\cypress\component\" />
+		<Folder Include="ClientApp\cypress\downloads\" />
+		<Folder Include="ClientApp\cypress\e2e\helpers\" />
+		<Folder Include="ClientApp\cypress\e2e\pages\configuration\" />
+		<Folder Include="ClientApp\cypress\screenshots\" />
+		<Folder Include="ClientApp\cypress\videos\" />
+		<Folder Include="ClientApp\dependencies\guid-typescript\node_modules\%40types\" />
+		<Folder Include="ClientApp\src\components\bases\layouts\Navigation\" />
+		<Folder Include="ClientApp\src\models\features\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
 
-  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
-    <!-- Ensure Node.js is installed -->
-    <Exec Command="node --version" ContinueOnError="true">
-      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
-    </Exec>
-    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
-    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-  </Target>
+	<Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
+		<!-- Ensure Node.js is installed -->
+		<Exec Command="node --version" ContinueOnError="true">
+			<Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+		</Exec>
+		<Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+		<Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
+		<Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+	</Target>
 
-  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
-    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build:$(Configuration)" />
+	<Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+		<!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+		<Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+		<Exec WorkingDirectory="$(SpaRoot)" Command="npm run build:$(Configuration)" />
 
-    <!-- Include the newly-built files in the publish output -->
-	  <ItemGroup>
-		  <DistFiles Include="$(SpaRoot)build\**" />
-		  <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-			  <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
-			  <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-			  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-		  </ResolvedFileToPublish>
-	  </ItemGroup>
-  </Target>
+		<!-- Include the newly-built files in the publish output -->
+		<ItemGroup>
+			<DistFiles Include="$(SpaRoot)build\**" />
+			<ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+				<RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
+				<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+				<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			</ResolvedFileToPublish>
+		</ItemGroup>
+	</Target>
 </Project>

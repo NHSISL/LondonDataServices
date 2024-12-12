@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -30,7 +30,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
         }
 
         private static void ValidateCurrentOptOutListProcessingOnConsolidate(
-            List<OptOut> optOutList, 
+            List<OptOut> optOutList,
             List<string> consentedItemsList)
         {
             Validate(

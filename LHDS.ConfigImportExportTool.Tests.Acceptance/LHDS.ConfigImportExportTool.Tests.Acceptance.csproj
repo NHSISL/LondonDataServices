@@ -4,7 +4,9 @@
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
 		<Configurations>Debug;Release;Test;Acceptance</Configurations>
+		<NoWarn>CS1998,CS8632</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -34,5 +36,28 @@
 	<ItemGroup>
 		<ProjectReference Include="..\LHDS.ConfigImportExportTool\LHDS.ConfigImportExportTool.csproj" />
 	</ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.ContinuousIntegration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.Release.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="local.appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Clients\ImportExport\Test_schema_file.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>

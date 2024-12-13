@@ -118,20 +118,26 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
            DateTimeOffset dateTimeOffset,
            string encryptedFileName,
            string decryptedFileName,
-           Guid supplierId)
+           Guid supplierId,
+           Guid dataSetSpecificationId)
         {
             IngestionTracking ingestionTracking = CreateIngestionTrackingFiller(
                 dateTimeOffset,
                 encryptedFileName,
                 decryptedFileName,
-                supplierId)
+                supplierId,
+                dataSetSpecificationId)
                     .Create();
 
             return ingestionTracking;
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset, string encryptedFileName, string decryptedFileName, Guid supplierId)
+            DateTimeOffset dateTimeOffset, 
+            string encryptedFileName, 
+            string decryptedFileName, 
+            Guid supplierId, 
+            Guid dataSetSpecificationId)
         {
             string user = "System";
             var filler = new Filler<IngestionTracking>();
@@ -142,6 +148,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
+                .OnProperty(ingestionTracking => ingestionTracking.DataSetSpecificationId).Use(dataSetSpecificationId)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 

@@ -46,6 +46,6 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
-        public SpecificationObject? SpecificationObject { get; set; } = null!;
+        public SpecificationObject SpecificationObject { get; set; } = null!;
     }
 }

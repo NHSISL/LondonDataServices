@@ -256,7 +256,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
         private async ValueTask CleanupTask(string fileName)
         {
-            IngestionTracking? maybeIngestionTracking =
+            IngestionTracking maybeIngestionTracking =
                 await this.apiBroker.FindIngestionTrackingByFileNameAsync(fileName);
 
             if (maybeIngestionTracking == null)

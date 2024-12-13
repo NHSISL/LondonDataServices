@@ -8,7 +8,7 @@ namespace LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exception
 {
     public class ReadSchemaOrchestrationDependencyValidationException : Xeption
     {
-        public ReadSchemaOrchestrationDependencyValidationException(string message, Xeption? innerException)
+        public ReadSchemaOrchestrationDependencyValidationException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

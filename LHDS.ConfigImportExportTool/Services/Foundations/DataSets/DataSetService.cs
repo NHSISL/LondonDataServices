@@ -8,7 +8,6 @@ using LHDS.ConfigImportExportTool.Brokers.DateTimes;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Brokers.Storages.Sql;
 using LHDS.ConfigImportExportTool.Models.Foundations.Datasets;
-using LHDS.ConfigImportExportTool.Services.Foundations.DataSets;
 
 namespace LHDS.ConfigImportExportTool.Services.Foundations.DataSets
 {
@@ -29,6 +28,6 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.DataSets
         }
 
         public ValueTask<IQueryable<DataSet>> RetrieveAllDataSetsAsync() =>
-            TryCatch(async() => await this.storageBroker.SelectAllDataSetsAsync());
+            TryCatch(async () => await this.storageBroker.SelectAllDataSetsAsync());
     }
 }

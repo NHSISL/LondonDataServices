@@ -10,10 +10,10 @@ using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema;
-using LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers;
+using LHDS.ConfigImportExportTool.Services.Foundations.CsvHelper;
 using LHDS.ConfigImportExportTool.Services.Foundations.Files;
 
-namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
+namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchemas
 {
     internal partial class ReadSchemaOrchestrationService : IReadSchemaOrchestrationService
     {

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
-using LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema;
+using LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchemas;
 using LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs;
 
 namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports

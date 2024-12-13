@@ -193,12 +193,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                return new X509Certificate2();
+                return null;
             }
 
             byte[] certBytes = Convert.FromBase64String(value);
-
-            return new X509Certificate2(certBytes);
+            return X509CertificateLoader.LoadCertificate(certBytes);
         }
 
         private static string GetRandomString() =>

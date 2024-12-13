@@ -16,7 +16,7 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.DataSets
         private readonly ILoggingBroker loggingBroker;
 
         public DataSetProcessingService(
-            IDataSetService dataSetService, 
+            IDataSetService dataSetService,
             ILoggingBroker loggingBroker)
         {
             this.dataSetService = dataSetService;
@@ -24,6 +24,6 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.DataSets
         }
 
         public ValueTask<IQueryable<DataSet>> RetrieveAllDataSetsAsync() =>
-            TryCatch(async() => await this.dataSetService.RetrieveAllDataSetsAsync());
+            TryCatch(async () => await this.dataSetService.RetrieveAllDataSetsAsync());
     }
 }

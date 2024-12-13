@@ -10,7 +10,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Downloads
 {
     public class Download
     {
-        public Document? Document { get; set; }
-        public SubscriberCredential? SubscriberCredential { get; set; }
+        public Document Document { get; set; }
+        public SubscriberCredential SubscriberCredential { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.ConfigImportExportTool.Brokers.CsvHelpers;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
+using LHDS.ConfigImportExportTool.Services.Foundations.CsvHelper;
 
 namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
 {
@@ -15,7 +16,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
         private readonly ILoggingBroker loggingBroker;
 
         public CsvHelperService(
-            ICsvHelperBroker csvHelperBroker, 
+            ICsvHelperBroker csvHelperBroker,
             ILoggingBroker loggingBroker)
         {
             this.csvHelperBroker = csvHelperBroker;
@@ -25,7 +26,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
         public ValueTask<List<T>> MapCsvToObjectAsync<T>(
         string data,
         bool hasHeaderRecord,
-        Dictionary<string, int>? fieldMappings = null) =>
+        Dictionary<string, int> fieldMappings = null) =>
             TryCatch(async () =>
             {
                 ValidateMapCsvToObjectArguments(data);
@@ -36,16 +37,16 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.CsvHelpers
         public ValueTask<string> MapObjectToCsvAsync<T>(
             List<T> @object,
             bool addHeaderRecord,
-            Dictionary<string, int>? fieldMappings = null,
+            Dictionary<string, int> fieldMappings = null,
             bool? shouldAddTrailingComma = false) =>
                 TryCatch(async () =>
                 {
                     ValidateObjectListIsNotNull<T>(@object);
 
                     return await this.csvHelperBroker.MapObjectToCsvAsync<T>(
-                        @object, 
-                        addHeaderRecord, 
-                        fieldMappings, 
+                        @object,
+                        addHeaderRecord,
+                        fieldMappings,
                         shouldAddTrailingComma);
                 });
     }

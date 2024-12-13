@@ -67,7 +67,7 @@ namespace LHDS.ConfigImportExportTool.Services.Orchestrations.SchemaConfigs
 
                 storageSpecificationObjectQuery = storageSpecificationObjectQuery
                     .Include(specificationObject => specificationObject.ObjectColumns)
-                    .Where(specificationObject => 
+                    .Where(specificationObject =>
                         specificationObject.DataSetSpecificationId == dataSetSpecification.Id);
 
                 return storageSpecificationObjectQuery.ToList();

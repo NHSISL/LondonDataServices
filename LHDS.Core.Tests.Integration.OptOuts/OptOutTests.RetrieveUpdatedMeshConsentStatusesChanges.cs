@@ -65,6 +65,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             //{
             //    Assert.Fail($"{ex.Message} {ex?.InnerException?.Message} {ex.StackTrace}");
             //}
+            await Task.CompletedTask;
         }
 
         private static List<OptOutIdentifier> ConvertToOptOutIdentifierList(string content, bool hasHeader = false)

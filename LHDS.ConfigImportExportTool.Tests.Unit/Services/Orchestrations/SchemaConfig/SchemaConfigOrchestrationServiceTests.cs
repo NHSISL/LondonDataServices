@@ -111,7 +111,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.SchemaC
 
         private static List<SpecificationObject> CreateRandomSpecificationObjects()
         {
-            return CreateSpecificationObjectFiller(dateTimeOffset:GetRandomDateTimeOffset())
+            return CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset())
                 .Create(count: GetRandomNumber())
                     .ToList();
         }

@@ -3,12 +3,17 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using Xunit;
@@ -34,11 +39,26 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             SubscriberCredential generatedSubscriberCredential = await this.subscriberCredentialOrchestration
                 .ModifyOrAddSubscriberCredentialAsync(subscriberCredential, regenerateKeys: true);
 
+            
+
             await this.cryptographyProvider.EncryptAsync(inputStream, encryptedStream, generatedSubscriberCredential);
             string encryptedFileName = CreateRandomFileName(subscriberCredential.Id);
             string decryptedFileName = CreateRandomFileName(subscriberCredential.Id);
             await this.documentService.AddDocumentAsync(encryptedStream, encryptedFileName, blobContainers.EmisLanding);
             await this.supplierService.AddSupplierAsync(randomSupplier);
+
+            DataSet randomDataSet = CreateRandomDataSet(supplierId);
+            DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(randomDataSet.Id);
+            await this.
+            List<SpecificationObject> randomSpecificationObject = CreateRandomSpecificationObjects(randomDataSetSpecification.Id);
+
+            List<ObjectColumn> randomObjectColumns = new List<ObjectColumn>();
+
+            foreach (var item in randomSpecificationObject)
+            {
+
+            }
+
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),

@@ -3,16 +3,23 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -40,6 +47,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private readonly ICryptographyProvider cryptographyProvider;
         private readonly IIngestionTrackingAuditService auditService;
         private readonly ISubscriberCredentialOrchestration subscriberCredentialOrchestration;
+        private readonly IDataSetSpecificationService subscriberCredentialOrchestration;
+        private readonly IDataSetSpecificationService subscriberCredentialOrchestration;
 
         public DecryptionTests(DependencyBroker dependencyBroker)
         {
@@ -81,6 +90,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
+
+        private static string GetRandomString(int length) =>
+           new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
 
         private static int GetRandomNumber(int min = 2, int max = 10) =>
             new IntRange(min, max).GetValue();
@@ -190,6 +205,113 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .OnProperty(supplier => supplier.UpdatedBy).Use(user)
                 .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt()
                 .OnProperty(supplier => supplier.DataSets).IgnoreIt();
+
+            return filler;
+        }
+
+        private static DataSetSpecification CreateRandomDataSetSpecification(Guid dataSetId) =>
+            CreateDataSetSpecificationFiller(dataSetId).Create();
+
+        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(Guid dataSetId)
+        {
+            string user = GetRandomString(255);
+            var filler = new Filler<DataSetSpecification>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.DataSetId).Use(dataSetId)
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static DataSet CreateRandomDataSet(Guid supplierId) =>
+           CreateDataSetFiller(supplierId).Create();
+
+        private static Filler<DataSet> CreateDataSetFiller(Guid supplierId)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<DataSet>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(dataSet => dataSet.SupplierId).Use(supplierId)
+                .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+
+            return filler;
+        }
+
+        private static List<ObjectColumn> CreateRandomObjectColumns(DateTimeOffset dateTimeOffset, Guid specificationId)
+        {
+            return CreateObjectColumnFiller(dateTimeOffset, specificationId)
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static List<ObjectColumn> CreateRandomObjectColumns(Guid specificationId)
+        {
+            return CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset(), specificationId)
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static Filler<ObjectColumn> CreateObjectColumnFiller(
+            DateTimeOffset dateTimeOffset,
+            Guid specificationId)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<ObjectColumn>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(objectColumn => objectColumn.SpecificationObjectId).Use(specificationId)
+                .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
+                .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static List<SpecificationObject> CreateRandomSpecificationObjects(
+            Guid dataSetSpecificationId)
+        {
+            return CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset(), dataSetSpecificationId)
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static Filler<SpecificationObject> CreateSpecificationObjectFiller(
+            DateTimeOffset dateTimeOffset,
+            Guid dataSetSpecificationId)
+        {
+            string user = GetRandomString(255);
+            var filler = new Filler<SpecificationObject>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(specificationObject => specificationObject.DataSetSpecificationId).Use(dataSetSpecificationId)
+                .OnProperty(specificationObject => specificationObject.ObjectColumns).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.DataSetSpecification).IgnoreIt();
 
             return filler;
         }

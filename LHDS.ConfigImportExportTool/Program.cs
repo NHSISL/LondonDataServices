@@ -3,12 +3,12 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using LHDS.ConfigImportExportTool.Clients.ImportExports;
 
 internal class Program
 {
-
     private static async Task Main(string[] args)
     {
         string executionType = string.Empty;

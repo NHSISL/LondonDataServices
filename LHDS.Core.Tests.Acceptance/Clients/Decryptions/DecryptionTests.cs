@@ -19,10 +19,13 @@ using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
+using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.ObjectColumns;
+using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
@@ -47,8 +50,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private readonly ICryptographyProvider cryptographyProvider;
         private readonly IIngestionTrackingAuditService auditService;
         private readonly ISubscriberCredentialOrchestration subscriberCredentialOrchestration;
-        private readonly IDataSetSpecificationService subscriberCredentialOrchestration;
-        private readonly IDataSetSpecificationService subscriberCredentialOrchestration;
+        private readonly IDataSetService dataSetService;
+        private readonly IDataSetSpecificationService dataSetSpecificationService;
+        private readonly ISpecificationObjectService specificationObjectService;
+        private readonly IObjectColumnService objectColumnService;
 
         public DecryptionTests(DependencyBroker dependencyBroker)
         {
@@ -72,6 +77,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.cryptographyProvider = serviceProvider.GetRequiredService<ICryptographyProvider>();
             decryptionClient = serviceProvider.GetService<IDecryptionClient>();
             subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
+            dataSetService = serviceProvider.GetService<IDataSetService>();
+            dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
+            specificationObjectService = serviceProvider.GetService<ISpecificationObjectService>();
+            objectColumnService  = serviceProvider.GetService<IObjectColumnService>();
         }
 
         static byte[] ReadAllBytesFromStream(Stream stream)

@@ -17,7 +17,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 {
     public partial class DecryptionTests
     {
-        [Fact(Skip = "DH to review file paths and setup specification opject for test data")]
+        [Fact]
+        //[Fact(Skip = "DH to review file paths and setup specification opject for test data")]
         public async Task ShouldDecryptNewDocumentsAsync()
         {
             //Given

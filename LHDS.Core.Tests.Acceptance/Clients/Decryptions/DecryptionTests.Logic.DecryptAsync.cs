@@ -39,8 +39,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             SubscriberCredential generatedSubscriberCredential = await this.subscriberCredentialOrchestration
                 .ModifyOrAddSubscriberCredentialAsync(subscriberCredential, regenerateKeys: true);
 
-            
-
             await this.cryptographyProvider.EncryptAsync(inputStream, encryptedStream, generatedSubscriberCredential);
             string encryptedFileName = CreateRandomFileName(subscriberCredential.Id);
             string decryptedFileName = CreateRandomFileName(subscriberCredential.Id);

@@ -51,7 +51,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
                 encryptedFileName,
                 decryptedFileName,
-                supplierId: supplierId);
+                supplierId: supplierId,
+                Guid.NewGuid());
 
             ingestionTracking.IsDownloaded = true;
             ingestionTracking.Decrypted = false;

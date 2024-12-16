@@ -16,6 +16,7 @@ using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
@@ -107,8 +108,24 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             await this.documentService.RemoveDocumentByFileNameAsync(
                 ingestionTracking.DecryptedFileName, blobContainers.Ingress);
 
-            await this.dataSetService.RemoveDataSetByIdAsync(randomDataSet.Id);
+
+            List<SpecificationObject> specificationObjectList = 
+                this.specificationObjectService.RetrieveAllSpecificationObjects()
+                    .Include(specificationObject => specificationObject.ObjectColumns)
+                    .Where(specificationObject => specificationObject.DataSetSpecificationId == randomDataSetSpecification.Id).ToList();
+
+            foreach(var specificationObject in specificationObjectList)
+            {
+                foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
+                {
+                    await this.objectColumnService.RemoveObjectColumnByIdAsync(objectColumn.Id);
+                }
+
+                await this.specificationObjectService.RemoveSpecificationObjectByIdAsync(specificationObject.Id);
+            }
+
             await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
+            await this.dataSetService.RemoveDataSetByIdAsync(randomDataSet.Id);
         }
     }
 }

@@ -2,10 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using LHDS.ConfigImportExportTool.Models.Bases;
 using LHDS.ConfigImportExportTool.Models.Foundations.DatasetSpecifications;
 using LHDS.ConfigImportExportTool.Models.Foundations.Suppliers;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace LHDS.ConfigImportExportTool.Models.Foundations.Datasets
 {
@@ -28,7 +29,7 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.Datasets
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
-        public Supplier? Supplier { get; set; } = null;
+        public Supplier Supplier { get; set; } = null;
         public List<DataSetSpecification> DataSetSpecifications { get; set; } = new List<DataSetSpecification>();
     }
 }

@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             Supplier someSupplier = CreateRandomSupplier();

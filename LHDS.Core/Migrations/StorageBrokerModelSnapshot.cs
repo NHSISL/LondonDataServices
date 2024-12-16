@@ -17,7 +17,7 @@ namespace LHDS.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -124,14 +124,12 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AuditType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("CorrelationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("CreatedDate")
@@ -147,11 +145,9 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("UpdatedDate")
@@ -195,7 +191,6 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("EntityChangeSynchronisation")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -214,7 +209,6 @@ namespace LHDS.Core.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OurSpecificationVersion")
@@ -456,7 +450,6 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Message")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
@@ -487,7 +480,6 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Container")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")
@@ -609,6 +601,11 @@ namespace LHDS.Core.Migrations
                     b.Property<Guid>("DataTypeId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("DeleteCondition")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("FhirDataType")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -629,6 +626,11 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<bool>("IsCaseSensitive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsDeleteFlag")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -639,7 +641,17 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<bool>("IsNumeric")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsPersonConfidentialData")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsPostcode")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
@@ -798,7 +810,6 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("UniqueReference")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
@@ -837,11 +848,9 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Message")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MessageId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
@@ -1010,9 +1019,22 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<Guid?>("FileFormatId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("InterchangeProtocol")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsCdmMasked")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsCdmPcd")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsPulledByUs")
                         .ValueGeneratedOnAdd()
@@ -1166,7 +1188,6 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FriendlyName")

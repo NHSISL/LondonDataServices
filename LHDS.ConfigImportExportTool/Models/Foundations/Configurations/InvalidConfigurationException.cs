@@ -12,8 +12,8 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.Configurations
     {
         public InvalidConfigurationException(
             string message = "",
-            Exception? innerException = null,
-            IDictionary? data = null)
+            Exception innerException = null,
+            IDictionary data = null)
             : base(
                   message: $"Invalid configuration. Please correct the errors and try again.  {message}",
                   innerException,

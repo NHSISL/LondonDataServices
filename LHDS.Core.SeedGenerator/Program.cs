@@ -2,6 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.IO;
+using System.Linq;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
@@ -67,7 +70,7 @@ namespace LHDS.Core.SeedGenerator
             }
             catch (Exception ex)
             {
-                ILoggingBroker? logger = (ILoggingBroker?)serviceProvider.GetService(typeof(ILoggingBroker));
+                ILoggingBroker logger = (ILoggingBroker)serviceProvider.GetService(typeof(ILoggingBroker));
                 logger?.LogError(ex);
                 Console.WriteLine(ex.Message);
             }

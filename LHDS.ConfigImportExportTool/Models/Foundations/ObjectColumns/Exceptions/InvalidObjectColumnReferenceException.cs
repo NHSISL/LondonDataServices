@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using Xeptions;
 
@@ -5,7 +9,7 @@ namespace LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns.Exception
 {
     public class InvalidObjectColumnReferenceException : Xeption
     {
-        public InvalidObjectColumnReferenceException(string message, Exception? innerException)
+        public InvalidObjectColumnReferenceException(string message, Exception innerException)
             : base(message, innerException) { }
     }
 }

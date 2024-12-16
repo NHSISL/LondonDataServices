@@ -10,9 +10,6 @@ using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberAgreements;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SubscriberCredentials;
-using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
-using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 using RESTFulSense.Exceptions;
 using Xunit;
 

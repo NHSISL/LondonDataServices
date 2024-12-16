@@ -38,6 +38,8 @@ namespace LHDS.Core.Tests.Integration.Addresses.Console
             var addressClient =
                 serviceProvider.GetService<IAddressClient>();
 
+            await Task.CompletedTask;
+
             throw new NotImplementedException();
         }
     }

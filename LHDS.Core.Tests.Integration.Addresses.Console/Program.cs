@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Threading.Tasks;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -35,6 +37,8 @@ namespace LHDS.Core.Tests.Integration.Addresses.Console
 
             var addressClient =
                 serviceProvider.GetService<IAddressClient>();
+
+            await Task.CompletedTask;
 
             throw new NotImplementedException();
         }

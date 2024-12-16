@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Linq;
+using System.Threading.Tasks;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects;
@@ -30,7 +32,7 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.SpecificationObjects
                 IQueryable<SpecificationObject> retrievedSpecificationObject =
                     await this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
 
-                SpecificationObject? maybeSpecificationObject =
+                SpecificationObject maybeSpecificationObject =
                     retrievedSpecificationObject.FirstOrDefault(
                         item => item.SupplierObjectName == specificationObject.SupplierObjectName);
 

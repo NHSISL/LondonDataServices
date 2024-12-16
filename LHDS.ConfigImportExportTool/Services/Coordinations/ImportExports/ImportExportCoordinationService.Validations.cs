@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Exceptions;
 using Xeptions;
 
@@ -27,7 +28,7 @@ namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports
                 (Rule: IsInvalid(filePath), Parameter: nameof(filePath)));
         }
 
-        private static dynamic IsInvalid(string? text) => new
+        private static dynamic IsInvalid(string text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
@@ -36,19 +37,19 @@ namespace LHDS.ConfigImportExportTool.Services.Coordinations.ImportExports
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T?)Activator.CreateInstance(typeof(T), message);
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDataException?.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDataException?.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

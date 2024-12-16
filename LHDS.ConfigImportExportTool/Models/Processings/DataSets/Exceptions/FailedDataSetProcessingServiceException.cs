@@ -9,7 +9,7 @@ namespace LHDS.ConfigImportExportTool.Models.Processings.DataSets.Exceptions
 {
     public class FailedDataSetProcessingServiceException : Xeption
     {
-        public FailedDataSetProcessingServiceException(string message, Exception? innerException)
+        public FailedDataSetProcessingServiceException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

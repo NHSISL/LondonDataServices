@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
+using System.Threading.Tasks;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects.Exceptions;
 
@@ -172,7 +174,7 @@ namespace LHDS.ConfigImportExportTool.Services.Foundations.SpecificationObjects
             Message = "Id is required"
         };
 
-        private static dynamic IsInvalid(string? text) => new
+        private static dynamic IsInvalid(string text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"

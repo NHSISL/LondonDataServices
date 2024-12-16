@@ -8,7 +8,7 @@ namespace LHDS.ConfigImportExportTool.Models.Processings.ObjectColumns.Exception
 {
     public class ObjectColumnProcessingDependencyException : Xeption
     {
-        public ObjectColumnProcessingDependencyException(string message, Xeption? innerException)
+        public ObjectColumnProcessingDependencyException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

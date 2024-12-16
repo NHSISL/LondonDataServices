@@ -24,7 +24,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
     public partial class DecryptionTests
     {
         [Fact]
-        //[Fact(Skip = "DH to review file paths and setup specification opject for test data")]
         public async Task ShouldDecryptNewDocumentsAsync()
         {
             //Given
@@ -102,7 +101,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             await this.subscriberCredentialOrchestration
                 .RemoveSubscriberCredentialByIdAsync(subscriberCredentialId: subscriberCredential.Id);
 
-            await this.supplierService.RemoveSupplierByIdAsync(supplierId: supplierId);
             await this.documentService.RemoveDocumentByFileNameAsync(encryptedFileName, blobContainers.EmisLanding);
 
             await this.documentService.RemoveDocumentByFileNameAsync(
@@ -126,6 +124,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(randomDataSet.Id);
+            await this.supplierService.RemoveSupplierByIdAsync(supplierId: supplierId);
         }
     }
 }

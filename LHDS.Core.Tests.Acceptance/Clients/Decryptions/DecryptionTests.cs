@@ -284,7 +284,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
         private static List<ObjectColumn> CreateRandomObjectColumns(Guid specificationId)
         {
-            return CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset(), specificationId)
+            return CreateObjectColumnFiller(dateTimeOffset: DateTimeOffset.Now, specificationId)
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
@@ -309,7 +309,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private static List<SpecificationObject> CreateRandomSpecificationObjects(
             Guid dataSetSpecificationId)
         {
-            return CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset(), dataSetSpecificationId)
+            return CreateSpecificationObjectFiller(dateTimeOffset: DateTimeOffset.Now, dataSetSpecificationId)
                 .Create(count: GetRandomNumber())
                     .ToList();
         }
@@ -325,6 +325,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(specificationObject => specificationObject.DataSetSpecificationId).Use(dataSetSpecificationId)
+                .OnProperty(specificationObject => specificationObject.CreatedBy).Use(user)
+                .OnProperty(specificationObject => specificationObject.UpdatedBy).Use(user)
                 .OnProperty(specificationObject => specificationObject.ObjectColumns).IgnoreIt()
                 .OnProperty(specificationObject => specificationObject.DataSetSpecification).IgnoreIt();
 

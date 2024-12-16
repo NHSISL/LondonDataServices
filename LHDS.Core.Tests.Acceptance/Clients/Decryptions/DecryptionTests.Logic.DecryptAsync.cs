@@ -44,7 +44,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             string decryptedFileName = CreateRandomFileName(subscriberCredential.Id);
             await this.documentService.AddDocumentAsync(encryptedStream, encryptedFileName, blobContainers.EmisLanding);
             await this.supplierService.AddSupplierAsync(randomSupplier);
-
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(randomDataSet.Id);
             await this.dataSetService.AddDataSetAsync(randomDataSet);

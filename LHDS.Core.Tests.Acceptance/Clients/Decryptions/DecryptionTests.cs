@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using FluentAssertions.Common;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -19,6 +20,7 @@ using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
+using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
@@ -66,6 +68,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             });
 
             serviceCollection.AddDecryptionClient(this.dependencyBroker.Configuration);
+            serviceCollection.AddTransient<IDataSetService, DataSetService>();
+            serviceCollection.AddTransient<IDataSetSpecificationService , DataSetSpecificationService>();
+            serviceCollection.AddTransient<ISpecificationObjectService , SpecificationObjectService>();
+            serviceCollection.AddTransient<IObjectColumnService, ObjectColumnService>();
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();
@@ -75,12 +81,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.blobContainers = serviceProvider.GetRequiredService<BlobContainers>();
             this.documentService = serviceProvider.GetService<IDocumentService>();
             this.cryptographyProvider = serviceProvider.GetRequiredService<ICryptographyProvider>();
-            decryptionClient = serviceProvider.GetService<IDecryptionClient>();
-            subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
             this.dataSetService = dataSetService;
             this.dataSetSpecificationService = dataSetSpecificationService;
             this.specificationObjectService = specificationObjectService;
-            this.objectColumnService = objectColumnService;
+            this.objectColumnService  = objectColumnService;
+            decryptionClient = serviceProvider.GetService<IDecryptionClient>();
+            subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
         }
 
         static byte[] ReadAllBytesFromStream(Stream stream)

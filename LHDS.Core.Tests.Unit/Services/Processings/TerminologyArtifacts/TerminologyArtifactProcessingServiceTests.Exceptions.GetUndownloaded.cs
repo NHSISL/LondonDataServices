@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<TerminologyArtifact?> getUndownloadedTask =
+            ValueTask<TerminologyArtifact> getUndownloadedTask =
                 this.terminologyArtifactProcessingService.GetNonDownloadedArtifactAsync();
 
             TerminologyArtifactProcessingDependencyValidationException actualException =

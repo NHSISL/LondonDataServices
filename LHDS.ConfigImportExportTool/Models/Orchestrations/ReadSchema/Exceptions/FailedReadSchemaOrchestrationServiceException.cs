@@ -9,7 +9,7 @@ namespace LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exception
 {
     public class FailedReadSchemaOrchestrationServiceException : Xeption
     {
-        public FailedReadSchemaOrchestrationServiceException(string message, Exception? innerException)
+        public FailedReadSchemaOrchestrationServiceException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

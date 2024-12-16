@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     .ReturnsAsync(outputIngestionTracking);
 
             // when
-            string? actualEncryptedFileName =
+            string actualEncryptedFileName =
                 await this.decryptionOrchestrationService.GetNextItemToBeDecrypted();
 
             // then

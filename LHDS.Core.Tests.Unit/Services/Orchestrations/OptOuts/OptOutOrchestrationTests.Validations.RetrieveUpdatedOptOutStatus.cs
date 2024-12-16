@@ -9,7 +9,6 @@ using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using Moq;
-using Xeptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts

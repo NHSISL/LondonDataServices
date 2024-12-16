@@ -124,7 +124,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             ObjectColumn someObjectColumn = CreateRandomObjectColumn();

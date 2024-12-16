@@ -142,14 +142,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
         [InlineData("")]
         [InlineData(" ")]
         public async Task ShouldThrowAggregateValidationExceptionOnRetrieveIfResourceURLIsInvalidAndLogItAsync(
-            string? invalidString)
+            string invalidString)
         {
             // given
             string resourceType = "CodeSystem";
             string[] resourceTypes = [resourceType];
             List<Exception> exceptions = new List<Exception>();
             DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
-            string? invalidResourceURL = invalidString;
+            string invalidResourceURL = invalidString;
             TerminologyPoll termionologyPoll = CreateRandomTerminologyPoll(resourceType, dateTimeOffset);
             this.ontologyConfiguration.TerminologyServerResourceRelativeUrl = invalidResourceURL;
 

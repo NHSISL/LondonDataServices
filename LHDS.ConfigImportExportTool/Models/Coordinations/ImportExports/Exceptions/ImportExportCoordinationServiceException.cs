@@ -9,7 +9,7 @@ namespace LHDS.ConfigImportExportTool.Models.Coordinations.ImportExports.Excepti
 {
     public class ImportExportCoordinationServiceException : Xeption
     {
-        public ImportExportCoordinationServiceException(string message, Exception? innerException)
+        public ImportExportCoordinationServiceException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

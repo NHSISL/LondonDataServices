@@ -48,15 +48,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(randomDataSet.Id);
             await this.dataSetService.AddDataSetAsync(randomDataSet);
+            await this.dataSetSpecificationService.AddDataSetSpecificationAsync(randomDataSetSpecification);
             List<SpecificationObject> randomSpecificationObject = CreateRandomSpecificationObjects(randomDataSetSpecification.Id);
-
-            List<ObjectColumn> randomObjectColumns = new List<ObjectColumn>();
 
             foreach (var item in randomSpecificationObject)
             {
+                List<ObjectColumn> objectColumns = CreateRandomObjectColumns(item.Id);
+                item.ObjectColumns = objectColumns;
+                await this.specificationObjectService.AddSpecificationObjectAsync(item);
 
+                foreach (ObjectColumn column in item.ObjectColumns)
+                {
+                    await this.objectColumnService.AddObjectColumnAsync(column);
+                }
             }
-
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),

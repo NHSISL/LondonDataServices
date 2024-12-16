@@ -183,7 +183,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                     It.IsAny<List<CannonicalSchemaItem>>(),
                     It.IsAny<bool>(),
                     It.IsAny<Dictionary<string, int>>(),
-                    It.IsAny<bool>()), 
+                    It.IsAny<bool>()),
                         Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

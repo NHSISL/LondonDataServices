@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             Address someAddress = CreateRandomAddress();

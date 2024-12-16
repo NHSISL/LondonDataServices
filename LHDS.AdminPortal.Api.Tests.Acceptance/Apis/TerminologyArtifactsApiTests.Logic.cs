@@ -41,13 +41,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyArtifacts
             List<TerminologyArtifact> expectedTerminologyArtifacts = randomTerminologyArtifacts;
 
             // when
-            List<TerminologyArtifact> actualTerminologyArtifacts = 
+            List<TerminologyArtifact> actualTerminologyArtifacts =
                 await this.apiBroker.GetAllTerminologyArtifactsAsync();
 
             // then
             foreach (TerminologyArtifact expectedTerminologyArtifact in expectedTerminologyArtifacts)
             {
-                TerminologyArtifact actualTerminologyArtifact = actualTerminologyArtifacts.Single(approval => 
+                TerminologyArtifact actualTerminologyArtifact = actualTerminologyArtifacts.Single(approval =>
                     approval.Id == expectedTerminologyArtifact.Id);
 
                 actualTerminologyArtifact.Should().BeEquivalentTo(expectedTerminologyArtifact);

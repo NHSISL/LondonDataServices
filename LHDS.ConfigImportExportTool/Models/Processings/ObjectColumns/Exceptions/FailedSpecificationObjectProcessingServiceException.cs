@@ -9,7 +9,7 @@ namespace LHDS.ConfigImportExportTool.Models.Processings.ObjectColumns.Exception
 {
     public class FailedObjectColumnProcessingServiceException : Xeption
     {
-        public FailedObjectColumnProcessingServiceException(string message, Exception? innerException)
+        public FailedObjectColumnProcessingServiceException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

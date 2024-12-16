@@ -64,12 +64,16 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
             foreach (IngestionTracking expectedIngestionTracking in expectedIngestionTrackings)
             {
                 IngestionTracking actualIngestionTracking =
-                    actualIngestionTrackings.Single(ingestionTracking =>
+                    actualIngestionTrackings.FirstOrDefault(ingestionTracking =>
                         ingestionTracking.Id == expectedIngestionTracking.Id);
 
                 actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
-                await DeleteAuditRecordsAsync(actualIngestionTracking);
-                await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.Id);
+
+                if (actualIngestionTracking != null)
+                {
+                    await DeleteAuditRecordsAsync(actualIngestionTracking);
+                    await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.Id);
+                }
             }
 
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);

@@ -30,11 +30,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             List<IngestionTracking> storageIngestionTrackings = randomIngestionTrackings;
 
-            List<string?> ingestionTrackingObjects = randomIngestionTrackings
+            List<string> ingestionTrackingObjects = randomIngestionTrackings
                 .Select(ingestionTracking => ingestionTracking.ObjectName)
                     .ToList();
 
-            List<string?> expectedIngestionTracking = ingestionTrackingObjects.DeepClone();
+            List<string> expectedIngestionTracking = ingestionTrackingObjects.DeepClone();
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())

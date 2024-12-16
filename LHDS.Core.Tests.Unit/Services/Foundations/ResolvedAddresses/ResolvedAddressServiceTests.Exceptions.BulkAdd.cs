@@ -87,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnBulkAddIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnBulkAddIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             string someFileName = GetRandomString();

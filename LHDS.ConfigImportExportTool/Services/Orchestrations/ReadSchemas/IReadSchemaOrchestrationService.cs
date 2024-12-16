@@ -2,10 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 
-namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchema
+namespace LHDS.ConfigImportExportTool.Services.Orchestrations.ReadSchemas
 {
     internal interface IReadSchemaOrchestrationService
     {

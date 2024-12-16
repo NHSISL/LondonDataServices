@@ -8,7 +8,7 @@ namespace LHDS.ConfigImportExportTool.Models.Processings.ObjectColumns.Exception
 {
     public class ObjectColumnProcessingValidationException : Xeption
     {
-        public ObjectColumnProcessingValidationException(string message, Xeption? innerException)
+        public ObjectColumnProcessingValidationException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

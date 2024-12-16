@@ -8,7 +8,7 @@ namespace LHDS.ConfigImportExportTool.Models.Clients.ImportExports.Exceptions
 {
     public class ImportExportClientDependencyValidationException : Xeption
     {
-        public ImportExportClientDependencyValidationException(string message, Xeption? innerException)
+        public ImportExportClientDependencyValidationException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

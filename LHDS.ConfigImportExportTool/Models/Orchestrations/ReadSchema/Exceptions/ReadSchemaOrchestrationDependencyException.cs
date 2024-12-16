@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using Xeptions;
 
@@ -8,7 +8,7 @@ namespace LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exception
 {
     public class ReadSchemaOrchestrationDependencyException : Xeption
     {
-        public ReadSchemaOrchestrationDependencyException(string message, Xeption? innerException)
+        public ReadSchemaOrchestrationDependencyException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

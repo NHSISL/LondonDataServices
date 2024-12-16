@@ -2,15 +2,15 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using Moq;
 using Xunit;
-using Force.DeepCloner;
 
 namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.ObjectColumns
 {
@@ -68,7 +68,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.ObjectColu
                     .ReturnsAsync(ObjectColumnlist.AsQueryable);
 
             // when
-            ObjectColumn retrievedObjectColumn = 
+            ObjectColumn retrievedObjectColumn =
                 await this.ObjectColumnProcessingService.ReadOrInsertObjectColumnAsync(
                     existingObjectColumn);
 

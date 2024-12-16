@@ -87,6 +87,13 @@ steps:
       includeNuGetOrg: true
 
   - task: DotNetCoreCLI@2
+    displayName: "Dotnet Build with Warnings as Errors"
+    inputs:
+    command: "build"
+    projects: "**/*.csproj"
+    arguments: "--warnaserror"
+
+  - task: DotNetCoreCLI@2
     displayName: C# Unit Tests
     inputs:
       command: 'test'

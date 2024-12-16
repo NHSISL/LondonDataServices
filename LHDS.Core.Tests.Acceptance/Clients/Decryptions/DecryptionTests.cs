@@ -77,10 +77,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.cryptographyProvider = serviceProvider.GetRequiredService<ICryptographyProvider>();
             decryptionClient = serviceProvider.GetService<IDecryptionClient>();
             subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
-            this.dataSetService = serviceProvider.GetService<IDataSetService>();
-            this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
-            this.specificationObjectService = serviceProvider.GetService<ISpecificationObjectService>();
-            this.objectColumnService  = serviceProvider.GetService<IObjectColumnService>();
+            this.dataSetService = dataSetService;
+            this.dataSetSpecificationService = dataSetSpecificationService;
+            this.specificationObjectService = specificationObjectService;
+            this.objectColumnService = objectColumnService;
         }
 
         static byte[] ReadAllBytesFromStream(Stream stream)

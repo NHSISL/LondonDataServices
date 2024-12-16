@@ -107,6 +107,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             await this.documentService.RemoveDocumentByFileNameAsync(
                 ingestionTracking.DecryptedFileName, blobContainers.Ingress);
+
+            await this.dataSetService.RemoveDataSetByIdAsync(randomDataSet.Id);
+            await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
         }
     }
 }

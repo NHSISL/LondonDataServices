@@ -86,7 +86,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         }
 
         [Fact]
-        public async void ShouldThrowValidationExceptionOnBulkModifyIfReferenceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnBulkModifyIfReferenceErrorOccursAndLogItAsync()
         {
             // given
             List<ResolvedAddress> someResolvedAddresses = new List<ResolvedAddress> { CreateRandomResolvedAddress() };

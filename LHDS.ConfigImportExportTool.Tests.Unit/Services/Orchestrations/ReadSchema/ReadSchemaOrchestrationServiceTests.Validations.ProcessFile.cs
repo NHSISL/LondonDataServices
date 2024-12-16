@@ -8,7 +8,6 @@ using FluentAssertions;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Models.Foundations.SpecificationObjects;
 using LHDS.ConfigImportExportTool.Models.Orchestrations.ReadSchema.Exceptions;
-using LHDS.ConfigImportExportTool.Models.Orchestrations.SchemaConfigs.Exceptions;
 using Moq;
 using Xunit;
 
@@ -55,11 +54,11 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Orchestrations.ReadSch
                 service.ReadFromFileAsync(invalidPath),
                     Times.Never);
 
-            this.csvHelperServiceMock.Verify(service => 
+            this.csvHelperServiceMock.Verify(service =>
                 service.MapCsvToObjectAsync<ObjectColumn>(
-                    It.IsAny<string>(), 
-                    It.IsAny<bool>(), 
-                    It.IsAny<Dictionary<string, int>>()), 
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<Dictionary<string, int>>()),
                         Times.Never);
 
             this.fileServiceMock.VerifyNoOtherCalls();

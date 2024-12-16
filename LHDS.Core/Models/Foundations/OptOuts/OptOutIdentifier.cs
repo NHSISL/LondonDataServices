@@ -1,10 +1,9 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using CsvHelper.Configuration.Attributes;
-using CsvHelper.TypeConversion;
 
 namespace LHDS.Core.Models.Foundations.OptOuts
 {

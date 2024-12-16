@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Linq;
+using System.Threading.Tasks;
 using LHDS.ConfigImportExportTool.Brokers.Loggings;
 using LHDS.ConfigImportExportTool.Models.Foundations.ObjectColumns;
 using LHDS.ConfigImportExportTool.Services.Foundations.ObjectColumns;
@@ -30,9 +32,9 @@ namespace LHDS.ConfigImportExportTool.Services.Processings.ObjectColumns
                 IQueryable<ObjectColumn> retrievedObjectColumn =
                     await this.ObjectColumnService.RetrieveAllObjectColumnsAsync();
 
-                ObjectColumn? maybeObjectColumn =
+                ObjectColumn maybeObjectColumn =
                     retrievedObjectColumn.FirstOrDefault(
-                        item => item.SupplierColumnName == ObjectColumn.SupplierColumnName 
+                        item => item.SupplierColumnName == ObjectColumn.SupplierColumnName
                         && item.SpecificationObjectId == ObjectColumn.SpecificationObjectId);
 
                 if (maybeObjectColumn == null)

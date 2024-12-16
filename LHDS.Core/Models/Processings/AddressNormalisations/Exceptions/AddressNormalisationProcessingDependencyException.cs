@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using Xeptions;
 
@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.AddressNormalisations.Exceptions
 {
     public class AddressNormalisationProcessingDependencyException : Xeption
     {
-        public AddressNormalisationProcessingDependencyException(string message, Xeption? innerException) 
+        public AddressNormalisationProcessingDependencyException(string message, Xeption? innerException)
             : base(message, innerException)
         { }
     }

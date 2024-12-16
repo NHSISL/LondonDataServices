@@ -81,10 +81,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.blobContainers = serviceProvider.GetRequiredService<BlobContainers>();
             this.documentService = serviceProvider.GetService<IDocumentService>();
             this.cryptographyProvider = serviceProvider.GetRequiredService<ICryptographyProvider>();
-            this.dataSetService = dataSetService;
-            this.dataSetSpecificationService = dataSetSpecificationService;
-            this.specificationObjectService = specificationObjectService;
-            this.objectColumnService  = objectColumnService;
+            this.dataSetService = serviceProvider.GetRequiredService<IDataSetService>(); ;
+            this.dataSetSpecificationService = serviceProvider.GetRequiredService<IDataSetSpecificationService>(); ;
+            this.specificationObjectService = serviceProvider.GetRequiredService<ISpecificationObjectService>(); ;
+            this.objectColumnService  = serviceProvider.GetRequiredService<IObjectColumnService>(); ;
             decryptionClient = serviceProvider.GetService<IDecryptionClient>();
             subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
         }

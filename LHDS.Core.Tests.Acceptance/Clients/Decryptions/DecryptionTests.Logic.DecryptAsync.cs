@@ -106,7 +106,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             await this.documentService.RemoveDocumentByFileNameAsync(
                 ingestionTracking.DecryptedFileName, blobContainers.Ingress);
 
-
             List<SpecificationObject> specificationObjectList = 
                 this.specificationObjectService.RetrieveAllSpecificationObjects()
                     .Include(specificationObject => specificationObject.ObjectColumns)

@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 {
     public partial class DecryptionTests
     {
-        [Fact(Skip = "Failing on pipeline")]
+        [Fact]
         public async Task ShouldRedecryptDocumentsAsync()
         {
             //Given
@@ -51,7 +51,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
                 encryptedFileName,
                 decryptedFileName,
-                supplierId: supplierId);
+                supplierId: supplierId,
+                Guid.NewGuid());
 
             ingestionTracking.IsDownloaded = true;
             ingestionTracking.Decrypted = false;

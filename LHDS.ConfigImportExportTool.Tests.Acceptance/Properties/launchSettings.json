@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "LHDS.ConfigImportExportTool.Tests.Acceptance": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "ContinuousIntegration"
+      }
+    }
+  }
+}

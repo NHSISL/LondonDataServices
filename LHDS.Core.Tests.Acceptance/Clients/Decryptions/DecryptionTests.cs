@@ -6,8 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using FluentAssertions.Common;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -20,7 +20,6 @@ using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
-using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
@@ -69,9 +68,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             serviceCollection.AddDecryptionClient(this.dependencyBroker.Configuration);
             serviceCollection.AddTransient<IDataSetService, DataSetService>();
-            serviceCollection.AddTransient<IDataSetSpecificationService , DataSetSpecificationService>();
-            serviceCollection.AddTransient<ISpecificationObjectService , SpecificationObjectService>();
+            serviceCollection.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
+            serviceCollection.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
             serviceCollection.AddTransient<IObjectColumnService, ObjectColumnService>();
+            serviceCollection.AddSingleton<IStorageBroker, StorageBroker>();
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();
@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.dataSetService = serviceProvider.GetRequiredService<IDataSetService>(); ;
             this.dataSetSpecificationService = serviceProvider.GetRequiredService<IDataSetSpecificationService>(); ;
             this.specificationObjectService = serviceProvider.GetRequiredService<ISpecificationObjectService>(); ;
-            this.objectColumnService  = serviceProvider.GetRequiredService<IObjectColumnService>(); ;
+            this.objectColumnService = serviceProvider.GetRequiredService<IObjectColumnService>(); ;
             decryptionClient = serviceProvider.GetService<IDecryptionClient>();
             subscriberCredentialOrchestration = serviceProvider.GetService<ISubscriberCredentialOrchestration>();
         }
@@ -163,10 +163,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset, 
-            string encryptedFileName, 
-            string decryptedFileName, 
-            Guid supplierId, 
+            DateTimeOffset dateTimeOffset,
+            string encryptedFileName,
+            string decryptedFileName,
+            Guid supplierId,
             Guid dataSetSpecificationId)
         {
             string user = "System";

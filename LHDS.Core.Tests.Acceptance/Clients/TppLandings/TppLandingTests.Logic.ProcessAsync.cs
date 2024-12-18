@@ -74,7 +74,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 blobContainers.Ingress);
         }
 
-        [Fact(Skip = "Will fix later")]
+        //[Fact(Skip = "Will fix later")]
+        [Fact]
         public async Task ShouldNotProcessExistingDocumentAsync()
         {
             //Given
@@ -136,7 +137,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 blobContainers.Ingress);
         }
 
-        [Fact(Skip = "Will fix later")]
+        //[Fact(Skip = "Will fix later")]
+        [Fact]
         public async Task ShouldProcessExistingDocumentAndUpdateHashAsync()
         {
             //Given

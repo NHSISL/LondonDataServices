@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -89,6 +90,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                     LocalRootFolder = defaultFolderPath
                 }));
 
+            serviceCollection.AddSingleton<IStorageBroker, StorageBroker>();
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();

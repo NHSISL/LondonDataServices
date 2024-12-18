@@ -15,7 +15,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
 {
     public partial class AddressTests
     {
-        //[Fact(Skip = "Failing on pipeline")]
         [Fact]
         public async Task ShouldExportResolvedAddressesAsync()
         {

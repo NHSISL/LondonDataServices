@@ -91,7 +91,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                 }));
 
             serviceCollection.AddSingleton<IStorageBroker, StorageBroker>();
-
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.supplierService = serviceProvider.GetService<ISupplierService>();

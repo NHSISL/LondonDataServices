@@ -147,8 +147,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .Returns(randomDateTime);
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(randomGuid);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(randomGuid);
 
             this.dataSetSpecificationProcessingServiceMock.Setup(service =>
                service.GetActiveDataSetSpecification(randomSupplierId))
@@ -220,7 +220,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Once);
 
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>

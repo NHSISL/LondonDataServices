@@ -74,8 +74,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     .Returns(randomDateTimeOffset);
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(randomId);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(randomId);
 
             TerminologyPoll inputTerminologyPoll = new TerminologyPoll
             {
@@ -111,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     Times.Once());
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Once());
 
             this.terminologyPollServiceMock.Verify(service =>

@@ -116,8 +116,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             assets.AddRange(pageTwoRetrievedOntologyAssets.Assets);
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(randomId);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(randomId);
 
             TerminologyPoll updatedTerminologyPoll = retrievedTerminologyPoll.DeepClone();
             updatedTerminologyPoll.LastPoll = randomDateTimeOffset;
@@ -197,7 +197,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     Times.Exactly(assets.Count + 2));
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Exactly(assets.Count));
 
             this.terminologyPollProcessingServiceMock.Verify(service =>

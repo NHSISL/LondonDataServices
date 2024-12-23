@@ -102,7 +102,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                 .RetrieveOrAddOptOutAsync(
                                     new OptOut
                                     {
-                                        Id = this.identifierBroker.GetIdentifier(),
+                                        Id = await this.identifierBroker.GetIdentifierAsync(),
                                         NhsNumber = optOut.NhsNumber,
                                         Status = string.IsNullOrWhiteSpace(optOut.Status) ? "Unknown" : optOut.Status,
                                         UniqueReference = optOut.UniqueReference,

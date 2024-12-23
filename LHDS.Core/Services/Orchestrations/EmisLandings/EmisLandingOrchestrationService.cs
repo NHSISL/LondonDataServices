@@ -216,7 +216,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 IngestionTracking newIngestionTracking =
                   new IngestionTracking
                   {
-                      Id = this.identifierBroker.GetIdentifier(),
+                      Id = await this.identifierBroker.GetIdentifierAsync(),
                       SupplierId = supplierId,
                       Container = blobContainers.EmisLanding,
                       FileName = filename,

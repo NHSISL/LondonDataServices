@@ -9,7 +9,7 @@ namespace LHDS.Core.Brokers.DateTimes
 {
     public interface IDateTimeBroker
     {
-        DateTimeOffset GetCurrentDateTimeOffset();
+        //DateTimeOffset GetCurrentDateTimeOffset();
         ValueTask<DateTimeOffset> GetCurrentDateTimeOffsetAsync();
     }
 }

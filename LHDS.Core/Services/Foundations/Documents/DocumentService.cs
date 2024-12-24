@@ -56,7 +56,8 @@ namespace LHDS.Core.Services.Foundations.Documents
            TryCatch(async () =>
            {
                ValidateGetDownloadLinkArguments(fileName, container);
-               var expireOn = this.dateTimeBroker.GetCurrentDateTimeOffset().AddMinutes(5);
+               var currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+               var expireOn = currentDateTimeOffset.AddMinutes(5);
 
                return await this.blobStorageBroker.GetDownloadLinkAsync(fileName, container, expireOn);
            });

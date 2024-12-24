@@ -86,7 +86,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                         subscriberCredential);
 
                     decryptedFileSha256Hash =
-                        this.hashBroker.GenerateSha256Hash(decryptedDocument);
+                        await this.hashBroker.GenerateSha256HashAsync(decryptedDocument);
 
                     fileSize = decryptedDocument?.Length ?? 0;
 

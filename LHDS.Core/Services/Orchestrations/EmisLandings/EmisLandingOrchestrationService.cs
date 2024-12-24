@@ -281,7 +281,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     using (FileStream readFtpFileStream =
                         new FileStream(tempEncryptedFilePath, FileMode.Open, FileAccess.ReadWrite))
                     {
-                        string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(readFtpFileStream);
+                        string encryptedFileSha256Hash = await this.hashBroker.GenerateSha256HashAsync(readFtpFileStream);
                         updatedIngestionTracking.EncryptedFileSize = readFtpFileStream.Length;
                         updatedIngestionTracking.EncryptedFileSha256Hash = encryptedFileSha256Hash;
 

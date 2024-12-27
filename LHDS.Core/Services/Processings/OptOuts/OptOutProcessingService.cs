@@ -108,13 +108,10 @@ namespace LHDS.Core.Services.Processings.OptOuts
             TryCatch(async () =>
             {
                 ValidateOlderThanDays(olderThanDays);
-
-                var expirationDate = this.dateTimeBroker.
-                    GetCurrentDateTimeOffset().AddDays(-olderThanDays);
-
-                var lastSentExpirationDate = this.dateTimeBroker.
-                    GetCurrentDateTimeOffset().AddDays(-2);
-
+                var expirationDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                expirationDate.AddDays(-olderThanDays);
+                var lastSentExpirationDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                lastSentExpirationDate.AddDays(-2);
                 IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
 
                 List<OptOut> expiredOptOuts = allOptOuts
@@ -169,7 +166,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     delta.Add(item);
                 }
 
-                var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 item.UpdatedDate = dateTime;
                 item.CacheTime = dateTime;
                 item.LastSentToMesh = dateTime;
@@ -185,7 +182,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     delta.Add(nonConsentedListItem);
                 }
 
-                var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 nonConsentedListItem.UpdatedDate = dateTime;
                 nonConsentedListItem.CacheTime = dateTime;
                 nonConsentedListItem.LastSentToMesh = dateTime;

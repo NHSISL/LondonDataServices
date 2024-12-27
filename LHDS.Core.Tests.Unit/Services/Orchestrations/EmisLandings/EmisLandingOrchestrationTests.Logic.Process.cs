@@ -62,8 +62,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(new List<IngestionTracking>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTime);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTime);
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifier())
@@ -222,7 +222,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Times.Exactly(externalDownloadList.Count + 1));
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(6 * externalDownloadList.Count));
 
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>
@@ -412,8 +412,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(ftpFileList.AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTime);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTime);
 
             // when
             await this.emisLandingOrchestrationService.ProcessAsync(
@@ -430,7 +430,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Times.Exactly(randomFileNames.Count + 1));
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(externalDownloadList.Count));
 
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
@@ -472,8 +472,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             };
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTime);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTime);
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifier())
@@ -508,7 +508,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
             foreach (var ingestionTracking in expiredIngestionTrackings)
             {
                 this.dateTimeBrokerMock.Verify(broker =>
-                    broker.GetCurrentDateTimeOffset(),
+                    broker.GetCurrentDateTimeOffsetAsync(),
                         Times.Exactly(expiredIngestionTrackings.Count + 1));
 
                 ingestionTracking.FileDeleted = true;

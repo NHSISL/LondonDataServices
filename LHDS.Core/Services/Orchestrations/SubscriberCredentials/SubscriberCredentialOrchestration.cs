@@ -81,7 +81,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                 SubscriberAgreement subscriberAgreementWithKeys = MapToSubsciberAgreement(
                     subcriberCredentialsWithSecureData);
 
-                subscriberAgreementWithKeys.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                subscriberAgreementWithKeys.UpdatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 await this.subscriberAgreementProcessingService.ModifyOrAddSubscriberAgreementAsync(
                     subscriberAgreementWithKeys);

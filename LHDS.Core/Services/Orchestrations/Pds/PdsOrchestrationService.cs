@@ -64,7 +64,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             ValidateBlobContainers();
             ValidatePdsArgs(pdsFile, fileName);
 
-            DateTimeOffset timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            DateTimeOffset timeStamp = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             Guid id = this.identifierBroker.GetIdentifier();
             Guid correlationId = this.identifierBroker.GetIdentifier();
 
@@ -141,7 +141,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                             }
 
                             var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
-                            DateTimeOffset currentDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                            DateTimeOffset currentDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                             var pdsAudit = new PdsAudit
                             {

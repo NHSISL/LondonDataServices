@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifier())

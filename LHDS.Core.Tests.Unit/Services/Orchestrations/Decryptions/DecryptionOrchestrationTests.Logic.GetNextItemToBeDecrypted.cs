@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             DateTimeOffset olderThanDateTimeOffset = randomDateTimeOffset.AddMinutes(-15);
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);

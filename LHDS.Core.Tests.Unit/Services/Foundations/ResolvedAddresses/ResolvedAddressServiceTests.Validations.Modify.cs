@@ -157,7 +157,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<ResolvedAddress> modifyResolvedAddressTask =
@@ -213,7 +213,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<ResolvedAddress> modifyResolvedAddressTask =
@@ -268,7 +268,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when 
             ValueTask<ResolvedAddress> modifyResolvedAddressTask =
@@ -332,7 +332,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<ResolvedAddress> modifyResolvedAddressTask =
@@ -394,7 +394,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<ResolvedAddress> modifyResolvedAddressTask =
@@ -453,7 +453,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<ResolvedAddress> modifyResolvedAddressTask =

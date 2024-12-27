@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             var invalidSubscriberAgreementException =
                 new InvalidSubscriberAgreementException(
@@ -217,7 +217,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
@@ -272,7 +272,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
@@ -332,7 +332,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<SubscriberAgreement> addSubscriberAgreementTask =

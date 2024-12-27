@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDate);
+                    .ReturnsAsync(randomDate);
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifier())

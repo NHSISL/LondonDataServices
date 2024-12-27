@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.subscriberAgreementProcessingServiceMock.Setup(service =>
                 service.ModifyOrAddSubscriberAgreementAsync(

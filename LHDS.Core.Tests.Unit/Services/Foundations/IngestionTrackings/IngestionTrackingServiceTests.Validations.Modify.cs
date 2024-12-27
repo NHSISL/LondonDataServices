@@ -173,7 +173,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<IngestionTracking> modifyIngestionTrackingTask =
@@ -228,7 +228,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<IngestionTracking> modifyIngestionTrackingTask =
@@ -283,7 +283,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when 
             ValueTask<IngestionTracking> modifyIngestionTrackingTask =
@@ -346,7 +346,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<IngestionTracking> modifyIngestionTrackingTask =
@@ -407,7 +407,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<IngestionTracking> modifyIngestionTrackingTask =
@@ -465,7 +465,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<IngestionTracking> modifyIngestionTrackingTask =

@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(currentDate);
+                    .ReturnsAsync(currentDate);
 
             this.optOutServiceMock.Setup(service =>
                 service.RetrieveAllOptOuts())
@@ -53,7 +53,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-
         }
     }
 }

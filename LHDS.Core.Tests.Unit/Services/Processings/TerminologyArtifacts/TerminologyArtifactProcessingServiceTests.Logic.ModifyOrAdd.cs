@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             List<TerminologyArtifact> terminologyArtifacts =
                 new List<TerminologyArtifact> { storageTerminologyArtifacts };

@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             foreach (var optOut in outputOptOuts)
             {
                 this.dateTimeBrokerMock.Setup(broker =>
-                    broker.GetCurrentDateTimeOffset())
+                    broker.GetCurrentDateTimeOffsetAsync())
                         .Throws(dependencyValidationException);
 
                 var optOutOrchestrationDependencyValidationException =
@@ -90,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(outputOptOuts.Count));
 
             var optOutOrchestrationDependencyValidationLoggingException =
@@ -145,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             foreach (var optOut in outputOptOuts)
             {
                 this.dateTimeBrokerMock.Setup(broker =>
-                    broker.GetCurrentDateTimeOffset())
+                    broker.GetCurrentDateTimeOffsetAsync())
                         .Throws(dependencyException);
 
                 var optOutOrchestrationDependencyValidationException =
@@ -190,7 +190,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(outputOptOuts.Count));
 
             var optOutOrchestrationDependencyLoggingException =
@@ -254,7 +254,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             foreach (var optOut in outputOptOuts)
             {
                 this.dateTimeBrokerMock.Setup(broker =>
-                    broker.GetCurrentDateTimeOffset())
+                    broker.GetCurrentDateTimeOffsetAsync())
                         .Throws(serviceException);
 
                 exceptions.Add(innerOptOutOrchestrationServiceException);
@@ -293,7 +293,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(outputOptOuts.Count));
 
             this.loggingBrokerMock.Verify(broker =>

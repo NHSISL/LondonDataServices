@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 {
     public partial class IngestionTrackingService
     {
-        private async void ValidateIngestionTrackingOnAddAsync(IngestionTracking ingestionTracking)
+        private async ValueTask ValidateIngestionTrackingOnAddAsync(IngestionTracking ingestionTracking)
         {
             ValidateIngestionTrackingIsNotNull(ingestionTracking);
 
@@ -43,7 +43,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 (Rule: await IsNotRecentAsync(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
         }
 
-        private async void ValidateIngestionTrackingOnModifyAsync(IngestionTracking ingestionTracking)
+        private async ValueTask ValidateIngestionTrackingOnModifyAsync(IngestionTracking ingestionTracking)
         {
             ValidateIngestionTrackingIsNotNull(ingestionTracking);
 

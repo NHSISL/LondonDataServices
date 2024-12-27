@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     innerException: failedSpecificationObjectStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(sqlException);
 
             // when
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 .BeEquivalentTo(expectedSpecificationObjectDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -90,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     innerException: alreadyExistsSpecificationObjectException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(duplicateKeyException);
 
             // when
@@ -106,7 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 .BeEquivalentTo(expectedSpecificationObjectDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -145,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     innerException: invalidSpecificationObjectReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(foreignKeyConstraintConflictException);
 
             // when
@@ -161,7 +161,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 .BeEquivalentTo(expectedSpecificationObjectValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -198,7 +198,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     innerException: failedSpecificationObjectStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(databaseUpdateException);
 
             // when
@@ -214,7 +214,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 .BeEquivalentTo(expectedSpecificationObjectDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -249,7 +249,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     innerException: failedSpecificationObjectServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(serviceException);
 
             // when
@@ -265,7 +265,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 .BeEquivalentTo(expectedSpecificationObjectServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

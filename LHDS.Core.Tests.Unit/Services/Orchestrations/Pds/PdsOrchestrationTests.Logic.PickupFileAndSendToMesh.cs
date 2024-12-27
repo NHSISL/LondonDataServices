@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             PdsAudit outputPdsAudit = inputPdsAudit.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDate);
 
             this.identifierBrokerMock.Setup(broker =>
@@ -94,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
 
             this.dateTimeBrokerMock.Verify(broker =>
-              broker.GetCurrentDateTimeOffset(),
+              broker.GetCurrentDateTimeOffsetAsync(),
                   Times.Once);
 
             this.meshServiceMock.Verify(service =>

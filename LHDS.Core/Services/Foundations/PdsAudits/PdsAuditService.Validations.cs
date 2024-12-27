@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
 {
     public partial class PdsAuditService
     {
-        private async void ValidatePdsAuditOnAddAsync(PdsAudit pdsAudit)
+        private async ValueTask ValidatePdsAuditOnAddAsync(PdsAudit pdsAudit)
         {
             ValidatePdsAuditIsNotNull(pdsAudit);
 
@@ -45,7 +45,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                 (Rule: await IsNotRecentAsync(pdsAudit.CreatedDate), Parameter: nameof(PdsAudit.CreatedDate)));
         }
 
-        private async void ValidatePdsAuditOnModifyAsync(PdsAudit pdsAudit)
+        private async ValueTask ValidatePdsAuditOnModifyAsync(PdsAudit pdsAudit)
         {
             ValidatePdsAuditIsNotNull(pdsAudit);
 

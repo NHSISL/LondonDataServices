@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     dependencyValidationException.InnerException as Xeption);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(dependencyValidationException);
 
             // when
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 expectedOptOutProcessingDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>
@@ -83,7 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     dependencyException.InnerException as Xeption);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(dependencyException);
 
             // when
@@ -99,7 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             actualException.Should().BeEquivalentTo(expectedOptOutProcessingDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>
@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     failedOptOutProcessingServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(serviceException);
 
             // when
@@ -152,7 +152,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             actualException.Should().BeEquivalentTo(expectedOptOutProcessingServiveException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>

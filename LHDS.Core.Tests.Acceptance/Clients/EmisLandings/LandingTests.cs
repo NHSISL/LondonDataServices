@@ -233,7 +233,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
             foreach (var documentSource in documentSources)
             {
                 var item = CreateIngestionTrackingFiller(
-                    this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync(),
                     documentSource,
                     supplierId)
                         .Create();

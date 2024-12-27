@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 {
     public partial class OptOutService
     {
-        private async void ValidateOptOutOnAddAsync(OptOut optOut)
+        private async ValueTask ValidateOptOutOnAddAsync(OptOut optOut)
         {
             ValidateOptOutIsNotNull(optOut);
 

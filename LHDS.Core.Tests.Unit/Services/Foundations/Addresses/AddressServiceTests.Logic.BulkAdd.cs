@@ -51,8 +51,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     .Returns(new List<Address> { randomAddresses.Last() }.AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifier())
@@ -64,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             // then
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(randomAddresses.Count * 2));
 
             this.identifierBrokerMock.Verify(broker =>

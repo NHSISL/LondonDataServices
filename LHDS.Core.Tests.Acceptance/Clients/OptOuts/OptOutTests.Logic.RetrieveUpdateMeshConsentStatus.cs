@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
             List<OptOut> randomOptOutList = CreateRandomOptOutsList(
                 count: GetRandomNumber(),
-                this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync(),
                 batchReference);
 
             var csvOptOutList = new StringBuilder();

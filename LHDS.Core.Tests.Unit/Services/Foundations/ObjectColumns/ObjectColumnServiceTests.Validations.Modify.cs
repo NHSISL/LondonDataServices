@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                         Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -237,7 +237,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     innerException: invalidObjectColumnException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             // when
@@ -253,7 +253,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -292,7 +292,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     innerException: invalidObjectColumnException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             // when
@@ -308,7 +308,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -348,7 +348,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     innerException: invalidObjectColumnException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                 .Returns(randomDateTimeOffset);
 
             // when
@@ -364,7 +364,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 .BeEquivalentTo(expectedObjectColumnValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -403,7 +403,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 .ReturnsAsync(nullObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                 .Returns(randomDateTimeOffset);
 
             // when 
@@ -423,7 +423,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -467,7 +467,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 .ReturnsAsync(storageObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                 .Returns(randomDateTimeOffset);
 
             // when
@@ -487,7 +487,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -529,7 +529,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 .ReturnsAsync(storageObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                 .Returns(randomDateTimeOffset);
 
             // when
@@ -548,7 +548,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -588,7 +588,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 .ReturnsAsync(storageObjectColumn);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             // when
@@ -600,7 +600,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 modifyObjectColumnTask.AsTask);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
 {
     public partial class SpecificationObjectService
     {
-        private async void ValidateSpecificationObjectOnAddAsync(SpecificationObject specificationObject)
+        private async ValueTask ValidateSpecificationObjectOnAddAsync(SpecificationObject specificationObject)
         {
             ValidateSpecificationObjectIsNotNull(specificationObject);
 
@@ -61,7 +61,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                 (Rule: await IsNotRecentAsync(specificationObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)));
         }
 
-        private async void ValidateSpecificationObjectOnModifyAsync(SpecificationObject specificationObject)
+        private async ValueTask ValidateSpecificationObjectOnModifyAsync(SpecificationObject specificationObject)
         {
             ValidateSpecificationObjectIsNotNull(specificationObject);
 

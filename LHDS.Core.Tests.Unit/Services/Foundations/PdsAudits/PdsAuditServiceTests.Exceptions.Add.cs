@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     innerException: failedPdsAuditStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(sqlException);
 
             // when
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 .BeEquivalentTo(expectedPdsAuditDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -90,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     innerException: alreadyExistsPdsAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(duplicateKeyException);
 
             // when
@@ -106,7 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 .BeEquivalentTo(expectedPdsAuditDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -145,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     innerException: invalidPdsAuditReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(foreignKeyConstraintConflictException);
 
             // when
@@ -161,7 +161,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 .BeEquivalentTo(expectedPdsAuditValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -198,7 +198,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     innerException: failedPdsAuditStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(databaseUpdateException);
 
             // when
@@ -214,7 +214,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 .BeEquivalentTo(expectedPdsAuditDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -249,7 +249,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     innerException: failedPdsAuditServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(serviceException);
 
             // when
@@ -265,7 +265,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 .BeEquivalentTo(expectedPdsAuditServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

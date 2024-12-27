@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: failedDataTypeStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(sqlException);
 
             // when
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 .BeEquivalentTo(expectedDataTypeDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -94,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: invalidDataTypeReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(foreignKeyConstraintConflictException);
 
             // when
@@ -110,7 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 .BeEquivalentTo(expectedDataTypeDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -148,7 +148,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: failedDataTypeStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(databaseUpdateException);
 
             // when
@@ -164,7 +164,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 .BeEquivalentTo(expectedDataTypeDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -203,7 +203,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: lockedDataTypeException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(databaseUpdateConcurrencyException);
 
             // when
@@ -219,7 +219,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 .BeEquivalentTo(expectedDataTypeDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -258,7 +258,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: failedDataTypeServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(serviceException);
 
             // when
@@ -274,7 +274,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 .BeEquivalentTo(expectedDataTypeServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

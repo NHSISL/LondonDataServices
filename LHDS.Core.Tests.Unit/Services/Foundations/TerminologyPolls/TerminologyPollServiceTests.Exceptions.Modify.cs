@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     innerException: failedTerminologyPollStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(sqlException);
 
             // when
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -94,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     innerException: invalidTerminologyPollReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(foreignKeyConstraintConflictException);
 
             // when
@@ -110,7 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -148,7 +148,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     innerException: failedTerminologyPollStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(databaseUpdateException);
 
             // when
@@ -164,7 +164,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -203,7 +203,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     innerException: lockedTerminologyPollException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(databaseUpdateConcurrencyException);
 
             // when
@@ -219,7 +219,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -258,7 +258,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     innerException: failedTerminologyPollServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(serviceException);
 
             // when
@@ -274,7 +274,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .Returns(identifier);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             List<OptOut> processedOptOuts = new List<OptOut>();
@@ -142,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     Times.Exactly(outputOptOuts.Count));
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(outputOptOuts.Count));
 
             this.csvHelperBrokerMock.Verify(processings =>

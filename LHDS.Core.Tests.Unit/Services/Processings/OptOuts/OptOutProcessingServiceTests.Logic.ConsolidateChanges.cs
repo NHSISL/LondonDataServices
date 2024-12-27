@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             List<OptOut> delta = new List<OptOut>();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             foreach (var item in consentedList)
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             actualOptOutList.Should().BeEquivalentTo(expectedOptOutList);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(currentOptOutInputList.Count));
 
             foreach (var item in consentedList)
@@ -159,7 +159,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             List<OptOut> delta = new List<OptOut>();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             foreach (var item in consentedList)
@@ -190,7 +190,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             actualOptOutList.Should().BeEquivalentTo(expectedOptOutList);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(currentOptOutInputList.Count));
 
             foreach (var item in consentedList)

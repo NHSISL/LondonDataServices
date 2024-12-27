@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    .Returns(new List<ResolvedAddress>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             ResolvedAddress processingResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().DeepClone();
@@ -109,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                   Times.Exactly(2));
 
             this.dateTimeBrokerMock.Verify(broker =>
-              broker.GetCurrentDateTimeOffset(),
+              broker.GetCurrentDateTimeOffsetAsync(),
                   Times.Once());
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>

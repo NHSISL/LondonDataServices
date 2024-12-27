@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             Guid dataSetId = inputDataSet.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             actualDataSet.Should().BeEquivalentTo(expectedDataSet);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

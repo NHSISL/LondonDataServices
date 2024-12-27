@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertDataTypeAsync(inputDataType))

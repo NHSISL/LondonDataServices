@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             foreach (var item in consentedList)
             {
@@ -160,7 +160,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             foreach (var item in consentedList)
             {

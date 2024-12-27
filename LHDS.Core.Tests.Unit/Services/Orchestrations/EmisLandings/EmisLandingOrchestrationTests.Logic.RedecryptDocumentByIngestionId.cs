@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(currentDateTimeOffset);
+                    .ReturnsAsync(currentDateTimeOffset);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))))

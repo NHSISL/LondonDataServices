@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.GetDownloadLinkAsync(inputFileName, encryptedFileContainer, inputExpireTime))

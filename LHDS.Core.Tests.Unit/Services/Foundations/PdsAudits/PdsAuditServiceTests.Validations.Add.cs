@@ -154,7 +154,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<PdsAudit> addPdsAuditTask =
@@ -208,7 +208,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<PdsAudit> addPdsAuditTask =
@@ -267,7 +267,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<PdsAudit> addPdsAuditTask =
@@ -326,7 +326,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<PdsAudit> addPdsAuditTask =

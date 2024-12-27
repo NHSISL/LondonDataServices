@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertOptOutAsync(inputOptOut))

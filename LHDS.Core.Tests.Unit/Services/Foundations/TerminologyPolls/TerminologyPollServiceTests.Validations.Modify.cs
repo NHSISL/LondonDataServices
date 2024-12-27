@@ -163,7 +163,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -219,7 +219,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -274,7 +274,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when 
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -338,7 +338,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -400,7 +400,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -459,7 +459,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =

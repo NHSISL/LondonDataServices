@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             string relativeUrl = this.ontologyConfiguration.TerminologyServerResourceRelativeUrl;
             relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);

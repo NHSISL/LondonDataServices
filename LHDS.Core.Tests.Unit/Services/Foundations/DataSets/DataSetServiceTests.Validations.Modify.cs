@@ -213,7 +213,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<DataSet> modifyDataSetTask =
@@ -269,7 +269,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<DataSet> modifyDataSetTask =
@@ -325,7 +325,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<DataSet> modifyDataSetTask =
@@ -380,7 +380,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when 
             ValueTask<DataSet> modifyDataSetTask =
@@ -444,7 +444,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<DataSet> modifyDataSetTask =
@@ -506,7 +506,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<DataSet> modifyDataSetTask =
@@ -565,7 +565,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<DataSet> modifyDataSetTask =

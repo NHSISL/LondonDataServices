@@ -162,7 +162,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<Supplier> modifySupplierTask =
@@ -217,7 +217,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<Supplier> modifySupplierTask =
@@ -272,7 +272,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when 
             ValueTask<Supplier> modifySupplierTask =
@@ -335,7 +335,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<Supplier> modifySupplierTask =
@@ -396,7 +396,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                .Returns(randomDateTimeOffset);
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<Supplier> modifySupplierTask =
@@ -454,7 +454,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Returns(randomDateTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<Supplier> modifySupplierTask =

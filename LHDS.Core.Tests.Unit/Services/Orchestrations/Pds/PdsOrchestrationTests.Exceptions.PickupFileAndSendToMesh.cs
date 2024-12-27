@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     dependancyValidationException.InnerException as Xeption);
 
             this.dateTimeBrokerMock.Setup(broker =>
-              broker.GetCurrentDateTimeOffset())
+              broker.GetCurrentDateTimeOffsetAsync())
                     .Throws(dependancyValidationException);
 
             //when
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: dependancyException.InnerException as Xeption);
 
             this.dateTimeBrokerMock.Setup(broker =>
-             broker.GetCurrentDateTimeOffset())
+             broker.GetCurrentDateTimeOffsetAsync())
                    .Throws(dependancyException);
 
             // when
@@ -94,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                 broker.GetCurrentDateTimeOffset(),
+                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -131,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: failedPdsOrchestrationServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-            broker.GetCurrentDateTimeOffset())
+            broker.GetCurrentDateTimeOffsetAsync())
                   .Throws(serviceException);
 
             // when
@@ -146,7 +146,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedPdsOrchestrationServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                  broker.GetCurrentDateTimeOffset(),
+                  broker.GetCurrentDateTimeOffsetAsync(),
                      Times.Once);
 
 

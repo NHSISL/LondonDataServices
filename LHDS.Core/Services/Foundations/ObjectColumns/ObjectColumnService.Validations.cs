@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 {
     public partial class ObjectColumnService
     {
-        private async void ValidateObjectColumnOnAddAsync(ObjectColumn objectColumn)
+        private async ValueTask ValidateObjectColumnOnAddAsync(ObjectColumn objectColumn)
         {
             ValidateObjectColumnIsNotNull(objectColumn);
 
@@ -82,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 (Rule: await IsNotRecentAsync(objectColumn.CreatedDate), Parameter: nameof(ObjectColumn.CreatedDate)));
         }
 
-        private async void ValidateObjectColumnOnModifyAsync(ObjectColumn objectColumn)
+        private async ValueTask ValidateObjectColumnOnModifyAsync(ObjectColumn objectColumn)
         {
             ValidateObjectColumnIsNotNull(objectColumn);
 

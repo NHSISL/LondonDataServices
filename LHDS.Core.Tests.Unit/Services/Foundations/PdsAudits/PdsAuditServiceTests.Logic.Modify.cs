@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             Guid pdsAuditId = inputPdsAudit.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

@@ -173,7 +173,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    .Returns(new List<ResolvedAddress>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
@@ -234,7 +234,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    Times.Exactly(randomResolvedAddresses.Count + 1));
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(1 + randomResolvedAddresses.Count));
 
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
@@ -305,7 +305,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    .Returns(new List<ResolvedAddress>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
@@ -365,7 +365,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    Times.Exactly(randomResolvedAddresses.Count + 1));
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(1 + randomResolvedAddresses.Count));
 
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)
@@ -433,7 +433,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    .Returns(new List<ResolvedAddress>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             var innerFailedResolvedAddressOrchestrationServiceException =
@@ -499,7 +499,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    Times.Exactly(randomResolvedAddresses.Count + 1));
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(1 + randomResolvedAddresses.Count));
 
             foreach (ResolvedAddress unMatchedResolvedAddress in randomResolvedAddresses)

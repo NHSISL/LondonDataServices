@@ -31,7 +31,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         public ValueTask<PdsAudit> AddPdsAuditAsync(PdsAudit pdsAudit) =>
             TryCatch(async () =>
             {
-                ValidatePdsAuditOnAdd(pdsAudit);
+                await ValidatePdsAuditOnAddAsync(pdsAudit);
 
                 return await this.storageBroker.InsertPdsAuditAsync(pdsAudit);
             });
@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         public ValueTask<PdsAudit> ModifyPdsAuditAsync(PdsAudit pdsAudit) =>
             TryCatch(async () =>
             {
-                ValidatePdsAuditOnModify(pdsAudit);
+                await ValidatePdsAuditOnModifyAsync(pdsAudit);
 
                 PdsAudit maybePdsAudit =
                     await this.storageBroker.SelectPdsAuditByIdAsync(pdsAudit.Id);

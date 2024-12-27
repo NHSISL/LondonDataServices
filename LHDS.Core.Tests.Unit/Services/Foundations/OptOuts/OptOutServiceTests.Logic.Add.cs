@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             OptOut expectedOptOut = storageOptOut.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             actualOptOut.Should().BeEquivalentTo(expectedOptOut);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.storageBrokerMock.Verify(broker =>

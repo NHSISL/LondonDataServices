@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
         public ValueTask<DataSet> ModifyDataSetAsync(DataSet dataSet) =>
             TryCatch(async () =>
             {
-                ValidateDataSetOnModify(dataSet);
+                await ValidateDataSetOnModifyAsync(dataSet);
 
                 DataSet maybeDataSet =
                     await this.storageBroker.SelectDataSetByIdAsync(dataSet.Id);

@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 .Returns(ValueTask.CompletedTask);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             TerminologyArtifact downloadedTerminologyArtifact = undownloadedTerminologyArtifact.DeepClone();
@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.terminologyArtifactProcessingServiceMock.Verify(service =>

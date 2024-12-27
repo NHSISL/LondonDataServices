@@ -31,7 +31,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         public ValueTask<TerminologyPoll> AddTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
             TryCatch(async () =>
             {
-                ValidateTerminologyPollOnAdd(terminologyPoll);
+                await ValidateTerminologyPollOnAddAsync(terminologyPoll);
 
                 return await this.storageBroker.InsertTerminologyPollAsync(terminologyPoll);
             });
@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         public ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
             TryCatch(async () =>
             {
-                ValidateTerminologyPollOnModify(terminologyPoll);
+                await ValidateTerminologyPollOnModifyAsync(terminologyPoll);
 
                 TerminologyPoll maybeTerminologyPoll =
                     await this.storageBroker.SelectTerminologyPollByIdAsync(terminologyPoll.Id);

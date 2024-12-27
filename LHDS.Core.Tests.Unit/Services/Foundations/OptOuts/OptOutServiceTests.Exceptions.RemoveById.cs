@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     Times.Never);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

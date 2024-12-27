@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             ResolvedAddress expectedResolvedAddress = storageResolvedAddress.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             actualResolvedAddress.Should().BeEquivalentTo(expectedResolvedAddress);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.storageBrokerMock.Verify(broker =>

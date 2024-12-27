@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             TerminologyArtifact updatedTerminologyArtifacts = modifiedTerminologyArtifact.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             List<TerminologyArtifact> terminologyArtifacts =
@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             // then
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>

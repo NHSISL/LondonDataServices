@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                         Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
@@ -127,7 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 .BeEquivalentTo(expectedOptOutValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -164,7 +164,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             Guid optOutId = inputOptOut.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             var invalidOptOutException = new InvalidOptOutException(
@@ -208,7 +208,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 .BeEquivalentTo(expectedOptOutValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -241,7 +241,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             Guid optOutId = inputOptOut.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             var invalidOptOutException = new InvalidOptOutException(
@@ -269,7 +269,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 .BeEquivalentTo(expectedOptOutValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -307,7 +307,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     innerException: invalidOptOutException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             // when
@@ -323,7 +323,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 .BeEquivalentTo(expectedOptOutValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -362,7 +362,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     innerException: invalidOptOutException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                 .Returns(randomDateTimeOffset);
 
             // when
@@ -378,7 +378,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 .BeEquivalentTo(expectedOptOutValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -417,7 +417,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 .ReturnsAsync(nullOptOut);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                 .Returns(randomDateTimeOffset);
 
             // when 
@@ -437,7 +437,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -480,7 +480,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 .ReturnsAsync(storageOptOut);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                 .Returns(randomDateTimeOffset);
 
             // when
@@ -500,7 +500,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -541,7 +541,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 .ReturnsAsync(storageOptOut);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                 .Returns(randomDateTimeOffset);
 
             // when
@@ -560,7 +560,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -599,7 +599,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 .ReturnsAsync(storageOptOut);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             // when
@@ -611,7 +611,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 modifyOptOutTask.AsTask);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

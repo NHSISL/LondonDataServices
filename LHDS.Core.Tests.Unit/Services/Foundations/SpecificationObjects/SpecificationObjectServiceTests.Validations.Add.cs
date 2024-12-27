@@ -115,7 +115,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 .BeEquivalentTo(expectedSpecificationObjectValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -184,7 +184,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     innerException: invalidSpecificationObjectException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             // when
@@ -199,7 +199,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 .BeEquivalentTo(expectedSpecificationObjectValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -242,7 +242,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     innerException: invalidSpecificationObjectException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             // when
@@ -257,7 +257,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 .BeEquivalentTo(expectedSpecificationObjectValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -297,7 +297,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     innerException: invalidSpecificationObjectException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             // when
@@ -312,7 +312,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 .BeEquivalentTo(expectedSpecificationObjectValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -357,7 +357,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     innerException: invalidSpecificationObjectException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffsetAsync())
                     .Returns(randomDateTimeOffset);
 
             // when
@@ -372,7 +372,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 .BeEquivalentTo(expectedSpecificationObjectValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

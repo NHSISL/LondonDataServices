@@ -31,7 +31,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         public ValueTask<OptOut> AddOptOutAsync(OptOut optOut) =>
             TryCatch(async () =>
             {
-                ValidateOptOutOnAdd(optOut);
+                await ValidateOptOutOnAddAsync(optOut);
 
                 return await this.storageBroker.InsertOptOutAsync(optOut);
             });

@@ -31,7 +31,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         public ValueTask<ObjectColumn> AddObjectColumnAsync(ObjectColumn objectColumn) =>
             TryCatch(async () =>
             {
-                ValidateObjectColumnOnAdd(objectColumn);
+                await ValidateObjectColumnOnAddAsync(objectColumn);
 
                 return await this.storageBroker.InsertObjectColumnAsync(objectColumn);
             });
@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         public ValueTask<ObjectColumn> ModifyObjectColumnAsync(ObjectColumn objectColumn) =>
             TryCatch(async () =>
             {
-                ValidateObjectColumnOnModify(objectColumn);
+                await ValidateObjectColumnOnModifyAsync(objectColumn);
 
                 ObjectColumn maybeObjectColumn =
                     await this.storageBroker.SelectObjectColumnByIdAsync(objectColumn.Id);

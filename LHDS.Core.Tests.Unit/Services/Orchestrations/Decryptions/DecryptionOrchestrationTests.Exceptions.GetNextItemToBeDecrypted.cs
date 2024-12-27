@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.dateTimeBrokerMock.Setup(service =>
-               service.GetCurrentDateTimeOffset())
+               service.GetCurrentDateTimeOffsetAsync())
                    .Throws(dependancyValidationException);
 
             // when
@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                  .BeEquivalentTo(expectedDependencyException);
 
             this.dateTimeBrokerMock.Verify(service =>
-                service.GetCurrentDateTimeOffset(),
+                service.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -68,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     innerException: dependancyException.InnerException as Xeption);
 
             this.dateTimeBrokerMock.Setup(service =>
-               service.GetCurrentDateTimeOffset())
+               service.GetCurrentDateTimeOffsetAsync())
                   .Throws(dependancyException);
 
             // when
@@ -81,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.dateTimeBrokerMock.Verify(service =>
-                service.GetCurrentDateTimeOffset(),
+                service.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -113,7 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     innerException: failedDecryptionOrchestrationServiceException);
 
             this.dateTimeBrokerMock.Setup(service =>
-               service.GetCurrentDateTimeOffset())
+               service.GetCurrentDateTimeOffsetAsync())
                     .Throws(serviceException);
 
             // when
@@ -126,7 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             actualException.Should().BeEquivalentTo(expectedDecryptionOrchestrationServiceException);
 
             this.dateTimeBrokerMock.Verify(service =>
-                service.GetCurrentDateTimeOffset(),
+                service.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

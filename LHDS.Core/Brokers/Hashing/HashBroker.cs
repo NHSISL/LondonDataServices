@@ -5,12 +5,14 @@
 using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace LHDS.Core.Brokers.Hashing
 {
     public class HashBroker : IHashBroker
     {
-        public string GenerateMd5Hash(Stream? data)
+
+        public async ValueTask<string> GenerateMd5HashAsync(Stream? data)
         {
             if (data == null)
             {
@@ -27,7 +29,7 @@ namespace LHDS.Core.Brokers.Hashing
             }
         }
 
-        public string GenerateSha256Hash(Stream? data)
+        public async ValueTask<string> GenerateSha256HashAsync(Stream? data)
         {
             if (data == null)
             {

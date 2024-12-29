@@ -48,7 +48,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: await IsNotRecentAsync(optOut.CreatedDate), Parameter: nameof(OptOut.CreatedDate)));
         }
 
-        private void ValidateOptOutOnModify(OptOut optOut)
+        private async ValueTask ValidateOptOutOnModifyAsync(OptOut optOut)
         {
             ValidateOptOutIsNotNull(optOut);
 
@@ -77,7 +77,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     optOut.UpdatedBy, 255), Parameter: nameof(optOut.UpdatedBy)),
 
 
-                (Rule: IsNotRecentAsync(optOut.UpdatedDate), Parameter: nameof(optOut.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(optOut.UpdatedDate), Parameter: nameof(optOut.UpdatedDate)));
         }
 
         public void ValidateOptOutId(Guid optOutId) =>

@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.Audits
 {
     public partial class AuditService
     {
-        private async ValueTask ValidateAuditOnAdd(Audit audit)
+        private async ValueTask ValidateAuditOnAddAsync(Audit audit)
         {
             ValidateAuditIsNotNull(audit);
 

@@ -171,7 +171,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
         private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecentAsync(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 

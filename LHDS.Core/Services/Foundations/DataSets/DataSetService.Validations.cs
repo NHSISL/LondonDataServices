@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
 {
     public partial class DataSetService
     {
-        private async ValueTask ValidateDataSetOnAdd(DataSet dataSet)
+        private async ValueTask ValidateDataSetOnAddAsync(DataSet dataSet)
         {
             ValidateDataSetIsNotNull(dataSet);
 

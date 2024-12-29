@@ -58,7 +58,7 @@ namespace LHDS.Core.Services.Foundations.Audits
                     UpdatedDate = dateTimeOffset,
                 };
 
-                ValidateAuditOnAdd(audit);
+                await ValidateAuditOnAddAsync(audit);
 
                 return await this.storageBroker.InsertAuditAsync(audit);
             });
@@ -66,7 +66,7 @@ namespace LHDS.Core.Services.Foundations.Audits
         public ValueTask<Audit> AddAuditAsync(Audit audit) =>
             TryCatch(async () =>
             {
-                ValidateAuditOnAdd(audit);
+                await ValidateAuditOnAddAsync(audit);
 
                 return await this.storageBroker.InsertAuditAsync(audit);
             });

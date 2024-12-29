@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         public ValueTask<DataType> ModifyDataTypeAsync(DataType dataType) =>
             TryCatch(async () =>
             {
-                ValidateDataTypeOnModify(dataType);
+                await ValidateDataTypeOnModifyAsync(dataType);
 
                 DataType maybeDataType =
                     await this.storageBroker.SelectDataTypeByIdAsync(dataType.Id);

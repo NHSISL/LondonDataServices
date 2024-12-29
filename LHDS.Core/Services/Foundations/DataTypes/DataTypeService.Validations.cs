@@ -41,7 +41,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                 (Rule: await IsNotRecentAsync(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)));
         }
 
-        private void ValidateDataTypeOnModify(DataType dataType)
+        private async ValueTask ValidateDataTypeOnModifyAsync(DataType dataType)
         {
             ValidateDataTypeIsNotNull(dataType);
 
@@ -62,7 +62,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                     secondDateName: nameof(DataType.CreatedDate)),
                 Parameter: nameof(DataType.UpdatedDate)),
 
-                (Rule: IsNotRecentAsync(dataType.UpdatedDate), Parameter: nameof(dataType.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(dataType.UpdatedDate), Parameter: nameof(dataType.UpdatedDate)));
         }
 
         public void ValidateDataTypeId(Guid dataTypeId) =>

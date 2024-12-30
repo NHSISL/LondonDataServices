@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             string contentType = "text/plain";
             string contentEncoding = string.Empty;
             string accept = "application/json";
-            Guid identifier = this.identifierBroker.GetIdentifier();
+            Guid identifier = await this.identifierBroker.GetIdentifierAsync();
             string mexLocalId = identifier.ToString();
 
             Message message = ComposeMessage.CreateFileMessage(

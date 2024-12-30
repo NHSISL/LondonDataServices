@@ -189,8 +189,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                      .Returns(new List<ResolvedAddress>().AsQueryable());
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(batchReference);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(batchReference);
 
             processingResolvedAddresses.ForEach(processingResolvedAddress =>
             {
@@ -257,7 +257,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Exactly(3));
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Once());
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
@@ -325,8 +325,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Returns(new List<ResolvedAddress>().AsQueryable());
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(batchReference);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(batchReference);
 
             processingResolvedAddresses.ForEach(processingResolvedAddress =>
             {
@@ -392,7 +392,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Exactly(3));
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Once());
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
@@ -459,8 +459,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .Returns(new List<ResolvedAddress>().AsQueryable());
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(batchReference);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(batchReference);
 
             processingResolvedAddresses.ForEach(processingResolvedAddress =>
             {
@@ -531,7 +531,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Exactly(3));
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Once());
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>

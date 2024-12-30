@@ -120,7 +120,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     IngestionTracking newIngestionTracking =
                         new IngestionTracking
                         {
-                            Id = this.identifierBroker.GetIdentifier(),
+                            Id = await this.identifierBroker.GetIdentifierAsync(),
                             SupplierId = supplierId,
                             Container = blobContainers.TppLanding,
                             FileName = filename,

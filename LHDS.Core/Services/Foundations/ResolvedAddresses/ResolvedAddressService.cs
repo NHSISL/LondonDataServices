@@ -221,7 +221,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 try
                 {
                     var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                    resolvedAddress.Id = this.identifierBroker.GetIdentifier();
+                    resolvedAddress.Id = await this.identifierBroker.GetIdentifierAsync();
                     resolvedAddress.CreatedDate = currentDateTime;
                     resolvedAddress.CreatedBy = "System";
                     resolvedAddress.UpdatedDate = resolvedAddress.CreatedDate;

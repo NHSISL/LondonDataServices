@@ -66,8 +66,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(randomDateTime);
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(randomGuid);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(randomGuid);
 
             this.fileBrokerMock.Setup(broker =>
                 broker.GetTempFileName())
@@ -476,8 +476,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .Returns(randomDateTime);
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(randomGuid);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(randomGuid);
 
             this.downloadProcessingServiceMock.Setup(service =>
                 service.RetrieveListOfDownloadsToProcessAsync(It.Is(SameDownloadAs(inputDownload))))

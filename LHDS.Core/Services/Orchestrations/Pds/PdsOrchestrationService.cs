@@ -65,8 +65,8 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             ValidatePdsArgs(pdsFile, fileName);
 
             DateTimeOffset timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            Guid id = this.identifierBroker.GetIdentifier();
-            Guid correlationId = this.identifierBroker.GetIdentifier();
+            Guid id = await this.identifierBroker.GetIdentifierAsync();
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
 
             var meshMessage = await this.meshService.SendMessageAsync(
                    mexTo: this.pdsConfiguration.To,
@@ -145,7 +145,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
 
                             var pdsAudit = new PdsAudit
                             {
-                                Id = this.identifierBroker.GetIdentifier(),
+                                Id = await this.identifierBroker.GetIdentifierAsync(),
                                 CorrelationId = correlationId,
                                 FileName = fileName,
                                 Message = $"Received message from mesh with id {message.MessageId}",

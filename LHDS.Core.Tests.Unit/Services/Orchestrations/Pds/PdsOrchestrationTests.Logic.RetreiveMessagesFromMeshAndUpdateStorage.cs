@@ -36,8 +36,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     .Returns(randomDate);
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(identifier);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(identifier);
 
             this.meshServiceMock.SetupSequence(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
@@ -104,7 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     Times.Exactly(retrievedMessages.Count));
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Exactly(retrievedMessages.Count));
 
             this.meshServiceMock.Verify(service =>

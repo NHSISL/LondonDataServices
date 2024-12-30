@@ -9,7 +9,6 @@ namespace LHDS.Core.Brokers.Identifiers
 {
     public interface IIdentifierBroker
     {
-        //Guid GetIdentifier();
         ValueTask<Guid> GetIdentifierAsync();
     }
 }

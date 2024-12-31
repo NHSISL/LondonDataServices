@@ -259,7 +259,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<Address> modifyAddressTask =

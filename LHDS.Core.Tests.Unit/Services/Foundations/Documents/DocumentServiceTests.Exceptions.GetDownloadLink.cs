@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             this.dateTimeBrokerMock.Setup(broker =>
                  broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(requestFailedException);
+                    .ThrowsAsync(requestFailedException);
 
             // when
             ValueTask<string> downloadLinkTask = this.documentService
@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             this.dateTimeBrokerMock.Setup(broker =>
                  broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<string> downloadLinkTask = this.documentService

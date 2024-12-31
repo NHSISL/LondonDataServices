@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<DataSet> addDataSetTask =
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(duplicateKeyException);
+                    .ThrowsAsync(duplicateKeyException);
 
             // when
             ValueTask<DataSet> addDataSetTask =
@@ -146,7 +146,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(foreignKeyConstraintConflictException);
+                    .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
             ValueTask<DataSet> addDataSetTask =
@@ -199,7 +199,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(databaseUpdateException);
+                    .ThrowsAsync(databaseUpdateException);
 
             // when
             ValueTask<DataSet> addDataSetTask =
@@ -250,7 +250,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<DataSet> addDataSetTask =

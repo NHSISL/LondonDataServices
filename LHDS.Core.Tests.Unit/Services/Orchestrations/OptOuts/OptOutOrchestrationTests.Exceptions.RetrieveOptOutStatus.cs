@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 this.dateTimeBrokerMock.Setup(broker =>
                     broker.GetCurrentDateTimeOffsetAsync())
-                        .Throws(dependencyValidationException);
+                        .ThrowsAsync(dependencyValidationException);
 
                 var optOutOrchestrationDependencyValidationException =
                     new OptOutOrchestrationDependencyValidationException(
@@ -146,7 +146,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 this.dateTimeBrokerMock.Setup(broker =>
                     broker.GetCurrentDateTimeOffsetAsync())
-                        .Throws(dependencyException);
+                        .ThrowsAsync(dependencyException);
 
                 var optOutOrchestrationDependencyValidationException =
                     new OptOutOrchestrationDependencyException(
@@ -255,7 +255,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 this.dateTimeBrokerMock.Setup(broker =>
                     broker.GetCurrentDateTimeOffsetAsync())
-                        .Throws(serviceException);
+                        .ThrowsAsync(serviceException);
 
                 exceptions.Add(innerOptOutOrchestrationServiceException);
             }

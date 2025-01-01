@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -95,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(foreignKeyConstraintConflictException);
+                    .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -149,7 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(databaseUpdateException);
+                    .ThrowsAsync(databaseUpdateException);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -204,7 +204,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(databaseUpdateConcurrencyException);
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -259,7 +259,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =

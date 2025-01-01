@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.dateTimeBrokerMock.Setup(broker =>
               broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(dependancyValidationException);
+                    .ThrowsAsync(dependancyValidationException);
 
             //when
             ValueTask<PdsAudit> actualPdsAudit =
@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.dateTimeBrokerMock.Setup(broker =>
              broker.GetCurrentDateTimeOffsetAsync())
-                   .Throws(dependancyException);
+                   .ThrowsAsync(dependancyException);
 
             // when
             ValueTask<PdsAudit> retrievePdsAudit =
@@ -132,7 +132,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.dateTimeBrokerMock.Setup(broker =>
             broker.GetCurrentDateTimeOffsetAsync())
-                  .Throws(serviceException);
+                  .ThrowsAsync(serviceException);
 
             // when
             ValueTask<PdsAudit> retrievePdsAudit =

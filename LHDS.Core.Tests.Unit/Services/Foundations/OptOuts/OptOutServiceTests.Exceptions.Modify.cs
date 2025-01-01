@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<OptOut> modifyOptOutTask =
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(foreignKeyConstraintConflictException);
+                    .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
             ValueTask<OptOut> modifyOptOutTask =
@@ -143,7 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(databaseUpdateException);
+                    .ThrowsAsync(databaseUpdateException);
 
             // when
             ValueTask<OptOut> modifyOptOutTask =
@@ -196,7 +196,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(databaseUpdateConcurrencyException);
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
             ValueTask<OptOut> modifyOptOutTask =
@@ -249,7 +249,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<OptOut> modifyOptOutTask =

@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<List<OptOut>> retrieveAllExpiredOptOutsTask =
@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<List<OptOut>> optOutRetrieveExpiredTask =
@@ -122,7 +122,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<OptOut>> retrieveExpiretOptOuts =

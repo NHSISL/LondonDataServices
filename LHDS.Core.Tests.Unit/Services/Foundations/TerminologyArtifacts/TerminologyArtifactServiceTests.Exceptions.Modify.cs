@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<TerminologyArtifact> modifyTerminologyArtifactTask =
@@ -95,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(foreignKeyConstraintConflictException);
+                    .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
             ValueTask<TerminologyArtifact> modifyTerminologyArtifactTask =
@@ -149,7 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(databaseUpdateException);
+                    .ThrowsAsync(databaseUpdateException);
 
             // when
             ValueTask<TerminologyArtifact> modifyTerminologyArtifactTask =
@@ -204,7 +204,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(databaseUpdateConcurrencyException);
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
             ValueTask<TerminologyArtifact> modifyTerminologyArtifactTask =
@@ -259,7 +259,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<TerminologyArtifact> modifyTerminologyArtifactTask =

@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<PdsAudit> modifyPdsAuditTask =
@@ -95,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(foreignKeyConstraintConflictException);
+                    .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
             ValueTask<PdsAudit> modifyPdsAuditTask =
@@ -149,7 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(databaseUpdateException);
+                    .ThrowsAsync(databaseUpdateException);
 
             // when
             ValueTask<PdsAudit> modifyPdsAuditTask =
@@ -204,7 +204,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(databaseUpdateConcurrencyException);
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
             ValueTask<PdsAudit> modifyPdsAuditTask =
@@ -259,7 +259,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<PdsAudit> modifyPdsAuditTask =

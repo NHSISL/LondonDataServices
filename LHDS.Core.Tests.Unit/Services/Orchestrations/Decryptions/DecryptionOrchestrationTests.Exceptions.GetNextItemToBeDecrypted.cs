@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             this.dateTimeBrokerMock.Setup(service =>
                service.GetCurrentDateTimeOffsetAsync())
-                   .Throws(dependancyValidationException);
+                   .ThrowsAsync(dependancyValidationException);
 
             // when
             ValueTask<string> decryptTask = this.decryptionOrchestrationService.GetNextItemToBeDecrypted();
@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             this.dateTimeBrokerMock.Setup(service =>
                service.GetCurrentDateTimeOffsetAsync())
-                  .Throws(dependancyException);
+                  .ThrowsAsync(dependancyException);
 
             // when
             ValueTask<string> decryptTask = this.decryptionOrchestrationService.GetNextItemToBeDecrypted();
@@ -114,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             this.dateTimeBrokerMock.Setup(service =>
                service.GetCurrentDateTimeOffsetAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<string> decryptTask = this.decryptionOrchestrationService.GetNextItemToBeDecrypted();

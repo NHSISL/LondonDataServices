@@ -208,7 +208,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 .ToList()).Count > 0)
             {
 
-                Guid batchReference = this.identifierBroker.GetIdentifier();
+                Guid batchReference = await this.identifierBroker.GetIdentifierAsync();
                 batchReferenceIds.Add(batchReference);
 
                 try

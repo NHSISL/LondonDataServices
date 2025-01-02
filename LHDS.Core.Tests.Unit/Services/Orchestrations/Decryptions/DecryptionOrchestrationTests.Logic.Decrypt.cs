@@ -73,8 +73,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 .Returns(ValueTask.CompletedTask);
 
             this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256Hash(It.Is(SameStreamAs(decryptedDocument))))
-                    .Returns(randomHash);
+                broker.GenerateSha256HashAsync(It.Is(SameStreamAs(decryptedDocument))))
+                    .ReturnsAsync(randomHash);
 
             this.documentServiceMock
                 .Setup(service => service.AddDocumentAsync(
@@ -144,7 +144,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                    Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(It.IsAny<Stream>()),
+                broker.GenerateSha256HashAsync(It.IsAny<Stream>()),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>

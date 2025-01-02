@@ -108,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 {
                     var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
-                    address.Id = this.identifierBroker.GetIdentifier();
+                    address.Id = await this.identifierBroker.GetIdentifierAsync();
                     address.CreatedDate = currentDateTime;
                     address.CreatedBy = "System";
                     address.UpdatedDate = address.CreatedDate;

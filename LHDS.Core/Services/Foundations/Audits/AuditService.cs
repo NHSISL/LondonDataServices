@@ -45,7 +45,7 @@ namespace LHDS.Core.Services.Foundations.Audits
 
                 Audit audit = new Audit
                 {
-                    Id = this.identifierBroker.GetIdentifier(),
+                    Id = await this.identifierBroker.GetIdentifierAsync(),
                     AuditType = auditType,
                     Title = title,
                     Message = message,

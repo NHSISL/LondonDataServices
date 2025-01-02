@@ -63,8 +63,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     .ReturnsAsync(randomDate);
 
             this.identifierBrokerMock.Setup(broker =>
-               broker.GetIdentifier())
-                   .Returns(identifier);
+               broker.GetIdentifierAsync())
+                   .ReturnsAsync(identifier);
 
             this.meshServiceMock.Setup(service =>
                 service.SendMessageAsync(
@@ -112,7 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                         Times.Once);
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Exactly(2));
 
             this.pdsAuditServiceMock.Verify(service =>

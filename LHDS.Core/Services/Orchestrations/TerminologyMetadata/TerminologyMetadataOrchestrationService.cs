@@ -146,7 +146,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
 
                 TerminologyArtifact terminologyArtifact = new TerminologyArtifact
                 {
-                    Id = this.identifierBroker.GetIdentifier(),
+                    Id = await this.identifierBroker.GetIdentifierAsync(),
                     FullUrl = asset.FullUrl,
                     ResourceType = asset.ResourceType,
                     Version = asset.Version,

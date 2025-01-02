@@ -21,7 +21,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Acceptance.Clients.ImportExports
 {
     public partial class ImportExportClientTests
     {
-        [Fact(Skip = "Hassan can you fix please")]
+        [Fact]
         public async Task ShouldExportSchemaFileAsync()
         {
             //Given

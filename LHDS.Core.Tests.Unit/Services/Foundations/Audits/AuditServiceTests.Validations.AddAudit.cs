@@ -52,8 +52,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(randomIdentifier);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(randomIdentifier);
 
             // when
             ValueTask<Audit> addAuditTask =
@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     Times.Exactly(2));
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

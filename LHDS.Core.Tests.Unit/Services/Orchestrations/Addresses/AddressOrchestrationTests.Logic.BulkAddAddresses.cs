@@ -95,8 +95,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                     .ReturnsAsync(outputAddresses);
 
             this.identifierBrokerMock.Setup(service =>
-                service.GetIdentifier())
-                    .Returns(randomId);
+                service.GetIdentifierAsync())
+                    .ReturnsAsync(randomId);
 
             // When
             await this.addressOrchestrationService

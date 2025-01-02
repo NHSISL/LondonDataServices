@@ -55,8 +55,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     .ReturnsAsync(randomDateTimeOffset);
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(randomIdentifier);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(randomIdentifier);
 
             // when
             await this.resolvedAddressService
@@ -68,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     Times.Exactly(randomResolvedAddresses.Count * 2));
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Exactly(randomResolvedAddresses.Count));
 
             this.storageBrokerMock.Verify(broker =>

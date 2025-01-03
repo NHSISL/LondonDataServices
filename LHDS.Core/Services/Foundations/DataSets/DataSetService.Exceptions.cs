@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
     public partial class DataSetService
     {
         private delegate ValueTask<DataSet> ReturningDataSetFunction();
-        private delegate IQueryable<DataSet> ReturningDataSetsFunction();
+        private delegate ValueTask<IQueryable<DataSet>> ReturningDataSetsFunction();
 
         private async ValueTask<DataSet> TryCatch(ReturningDataSetFunction returningDataSetFunction)
         {
@@ -93,11 +93,11 @@ namespace LHDS.Core.Services.Foundations.DataSets
             }
         }
 
-        private IQueryable<DataSet> TryCatch(ReturningDataSetsFunction returningDataSetsFunction)
+        private async ValueTask<IQueryable<DataSet>> TryCatch(ReturningDataSetsFunction returningDataSetsFunction)
         {
             try
             {
-                return returningDataSetsFunction();
+                return await  returningDataSetsFunction();
             }
             catch (SqlException sqlException)
             {

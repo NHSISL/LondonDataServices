@@ -21,8 +21,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
             IQueryable<DataSet> expectedDataSets = storageDataSets;
 
             this.dataSetServiceMock.Setup(broker =>
-                broker.RetrieveAllDataSets())
-                    .Returns(storageDataSets);
+                broker.RetrieveAllDataSetsAsync())
+                    .ReturnsAsync(storageDataSets);
 
             // when
             IQueryable<DataSet> actualDataSets =
@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
             actualDataSets.Should().BeEquivalentTo(expectedDataSets);
 
             this.dataSetServiceMock.Verify(broker =>
-                broker.RetrieveAllDataSets(),
+                broker.RetrieveAllDataSetsAsync(),
                     Times.Once);
 
             this.dataSetServiceMock.VerifyNoOtherCalls();

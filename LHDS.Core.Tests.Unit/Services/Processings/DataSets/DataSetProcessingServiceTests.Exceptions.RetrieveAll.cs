@@ -25,8 +25,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             dataSetServiceMock.Setup(service =>
-                service.RetrieveAllDataSets())
-                    .Throws(dependencyValidationException);
+                service.RetrieveAllDataSetsAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             Action dataSetRetrieveAction = () =>
@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
             actualException.Should().BeEquivalentTo(expectedDataSetProcessingDependencyValidationException);
 
             dataSetServiceMock.Verify(service =>
-                service.RetrieveAllDataSets(),
+                service.RetrieveAllDataSetsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
@@ -63,8 +63,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     innerException: dependencyException.InnerException as Xeption);
 
             dataSetServiceMock.Setup(service =>
-                service.RetrieveAllDataSets())
-                    .Throws(dependencyException);
+                service.RetrieveAllDataSetsAsync())
+                    .ThrowsAsync(dependencyException);
 
             // when
             Action dataSetRetrieveAction = () =>
@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
             actualException.Should().BeEquivalentTo(expectedDataSetProcessingDependencyException);
 
             dataSetServiceMock.Verify(service =>
-                service.RetrieveAllDataSets(),
+                service.RetrieveAllDataSetsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
@@ -106,8 +106,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     innerException: failedDataSetProcessingServiceException);
 
             dataSetServiceMock.Setup(service =>
-                service.RetrieveAllDataSets())
-                    .Throws(serviceException);
+                service.RetrieveAllDataSetsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             Action dataSetRetrieveAction = () =>
@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
             actualException.Should().BeEquivalentTo(expectedDataSetProcessingServiveException);
 
             dataSetServiceMock.Verify(service =>
-                service.RetrieveAllDataSets(),
+                service.RetrieveAllDataSetsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>

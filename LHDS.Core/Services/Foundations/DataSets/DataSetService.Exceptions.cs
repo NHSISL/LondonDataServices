@@ -97,7 +97,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
         {
             try
             {
-                return await  returningDataSetsFunction();
+                return await returningDataSetsFunction();
             }
             catch (SqlException sqlException)
             {

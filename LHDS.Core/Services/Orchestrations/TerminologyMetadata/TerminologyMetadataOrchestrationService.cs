@@ -74,13 +74,13 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                                 .ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
 
                             DateTimeOffset currentPollDateTimeOffset =
-                                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                             await ProcessArtifacts(relativeUrl, resourceType);
                             retrievedTerminologyPoll.LastPoll = currentPollDateTimeOffset;
 
                             DateTimeOffset currentDateTimeOffset =
-                                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                             retrievedTerminologyPoll.UpdatedDate = currentDateTimeOffset;
 
@@ -142,7 +142,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
 
             foreach (var asset in retrievedOntologyAssets.Assets)
             {
-                DateTimeOffset newDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                DateTimeOffset newDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 TerminologyArtifact terminologyArtifact = new TerminologyArtifact
                 {

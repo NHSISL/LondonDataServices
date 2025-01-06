@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 
@@ -10,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
 {
     public partial class SpecificationObjectService
     {
-        private void ValidateSpecificationObjectOnAdd(SpecificationObject specificationObject)
+        private async ValueTask ValidateSpecificationObjectOnAddAsync(SpecificationObject specificationObject)
         {
             ValidateSpecificationObjectIsNotNull(specificationObject);
 
@@ -57,10 +58,10 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                     secondName: nameof(SpecificationObject.CreatedBy)),
                 Parameter: nameof(SpecificationObject.UpdatedBy)),
 
-                (Rule: IsNotRecent(specificationObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)));
+                (Rule: await IsNotRecentAsync(specificationObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)));
         }
 
-        private void ValidateSpecificationObjectOnModify(SpecificationObject specificationObject)
+        private async ValueTask ValidateSpecificationObjectOnModifyAsync(SpecificationObject specificationObject)
         {
             ValidateSpecificationObjectIsNotNull(specificationObject);
 
@@ -101,7 +102,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                     secondDateName: nameof(SpecificationObject.CreatedDate)),
                 Parameter: nameof(SpecificationObject.UpdatedDate)),
 
-                (Rule: IsNotRecent(specificationObject.UpdatedDate), Parameter: nameof(specificationObject.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(specificationObject.UpdatedDate), Parameter: nameof(specificationObject.UpdatedDate)));
         }
 
         public void ValidateSpecificationObjectId(Guid specificationObjectId) =>
@@ -205,16 +206,16 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

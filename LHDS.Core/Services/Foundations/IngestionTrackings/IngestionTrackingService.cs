@@ -31,7 +31,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         public ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             TryCatch(async () =>
             {
-                ValidateIngestionTrackingOnAdd(ingestionTracking);
+                await ValidateIngestionTrackingOnAddAsync(ingestionTracking);
 
                 return await this.storageBroker.InsertIngestionTrackingAsync(ingestionTracking);
             });
@@ -79,7 +79,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         public ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             TryCatch(async () =>
             {
-                ValidateIngestionTrackingOnModify(ingestionTracking);
+                await ValidateIngestionTrackingOnModifyAsync(ingestionTracking);
 
                 IngestionTracking maybeIngestionTracking =
                     await this.storageBroker.SelectIngestionTrackingByIdAsync(ingestionTracking.Id);

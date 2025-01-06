@@ -32,8 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             Guid identifier = Guid.NewGuid();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDate);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDate);
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifierAsync())
@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             pdsAuditsList.Count.Should().Be(retrievedMessages.Count);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(retrievedMessages.Count));
 
             this.identifierBrokerMock.Verify(broker =>

@@ -36,8 +36,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     ReturnsAsync(retrievedTerminologyPoll);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             string relativeUrl = this.ontologyConfiguration.TerminologyServerResourceRelativeUrl;
             relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
@@ -193,7 +193,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             }
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(assets.Count + 2));
 
             this.identifierBrokerMock.Verify(broker =>

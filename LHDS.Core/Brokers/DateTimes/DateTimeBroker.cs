@@ -9,9 +9,6 @@ namespace LHDS.Core.Brokers.DateTimes
 {
     public class DateTimeBroker : IDateTimeBroker
     {
-        public DateTimeOffset GetCurrentDateTimeOffset() =>
-            DateTimeOffset.UtcNow;
-
         public async ValueTask<DateTimeOffset> GetCurrentDateTimeOffsetAsync() =>
             DateTimeOffset.UtcNow;
     }

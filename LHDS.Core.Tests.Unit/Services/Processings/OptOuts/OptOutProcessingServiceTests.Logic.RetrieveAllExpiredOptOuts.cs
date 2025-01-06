@@ -23,7 +23,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             int olderThanDays = GetRandomValidExpiryDays(7);
             DateTimeOffset currentDate = GetRandomDateTimeOffset();
             DateTimeOffset expireDate = currentDate.AddDays(-olderThanDays);
-
             IQueryable<OptOut> randomOptOuts = CreateRandomOptOuts(expireDate);
             IQueryable<OptOut> retrievedOptOuts = randomOptOuts.DeepClone();
 
@@ -32,8 +31,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     .ToList();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(currentDate);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(currentDate);
 
             this.optOutServiceMock.Setup(service =>
                 service.RetrieveAllOptOuts())
@@ -53,7 +52,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-
         }
     }
 }

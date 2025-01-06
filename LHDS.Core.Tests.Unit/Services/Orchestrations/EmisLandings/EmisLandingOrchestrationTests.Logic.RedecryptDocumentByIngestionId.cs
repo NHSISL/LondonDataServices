@@ -33,8 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .ReturnsAsync(storageIngestionTracking);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(currentDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(currentDateTimeOffset);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))))
@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-               broker.GetCurrentDateTimeOffset(),
+               broker.GetCurrentDateTimeOffsetAsync(),
                    Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 
@@ -10,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
 {
     public partial class IngestionTrackingAuditService
     {
-        private void ValidateIngestionTrackingAuditOnAdd(IngestionTrackingAudit ingestionTrackingAudit)
+        private async ValueTask ValidateIngestionTrackingAuditOnAddAsync(IngestionTrackingAudit ingestionTrackingAudit)
         {
             ValidateIngestionTrackingAuditIsNotNull(ingestionTrackingAudit);
 
@@ -53,11 +54,11 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
                 (Rule: IsEqualOrSmallerThan(
                     ingestionTrackingAudit.UpdatedBy, 255), Parameter: nameof(ingestionTrackingAudit.UpdatedBy)),
 
-                (Rule: IsNotRecent(ingestionTrackingAudit.CreatedDate),
+                (Rule: await IsNotRecentAsync(ingestionTrackingAudit.CreatedDate),
                     Parameter: nameof(IngestionTrackingAudit.CreatedDate)));
         }
 
-        private void ValidateIngestionTrackingAuditOnModify(IngestionTrackingAudit ingestionTrackingAudit)
+        private async ValueTask ValidateIngestionTrackingAuditOnModifyAsync(IngestionTrackingAudit ingestionTrackingAudit)
         {
             ValidateIngestionTrackingAuditIsNotNull(ingestionTrackingAudit);
 
@@ -94,7 +95,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
                 (Rule: IsEqualOrSmallerThan(
                     ingestionTrackingAudit.UpdatedBy, 255), Parameter: nameof(ingestionTrackingAudit.UpdatedBy)),
 
-                (Rule: IsNotRecent(ingestionTrackingAudit.UpdatedDate),
+                (Rule: await IsNotRecentAsync(ingestionTrackingAudit.UpdatedDate),
                     Parameter: nameof(ingestionTrackingAudit.UpdatedDate)));
         }
 
@@ -213,16 +214,16 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
                      Message = $"Text is not the same as {secondName}"
                  };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

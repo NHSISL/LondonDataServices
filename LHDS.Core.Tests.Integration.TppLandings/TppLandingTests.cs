@@ -115,6 +115,7 @@ namespace LHDS.Core.Tests.Integration.TppLandings
             return supplierService.RetrieveAllSuppliers()
                 .First(s => s.Name == "TPP");
         }
+
         private async ValueTask<DataSet> SetupDataSet(Guid SupplierId)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
@@ -140,8 +141,8 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 CreatedDate = now
             };
 
-            DataSet maybeDataSet = dataSetService.RetrieveAllDataSets()
-                .FirstOrDefault(s => s.Id == dataSet.Id);
+            IQueryable<DataSet> retrievedDataSets = await dataSetService.RetrieveAllDataSetsAsync();
+            DataSet maybeDataSet = retrievedDataSets.FirstOrDefault(s => s.Id == dataSet.Id);
 
             if (maybeDataSet == null)
             {
@@ -189,7 +190,6 @@ namespace LHDS.Core.Tests.Integration.TppLandings
 
             return maybeDataSetSpecification;
         }
-
 
         // Helper method to calculate SHA256 hash from byte array
         private static string CalculateSHA256Hash(byte[] data)

@@ -66,10 +66,14 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     await TryCatch(async () =>
                     {
                         var batch = addresses.Skip(i).Take(batchSize).ToList();
-                        List<Address> validatedAddresses = await ExtractValidAddressesAndAssignIdAndAudit(batch, fileName);
-                        var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
 
-                        var existingUPRNs = this.storageBroker.SelectAllAddresses()
+                        List<Address> validatedAddresses = 
+                            await ExtractValidAddressesAndAssignIdAndAudit(batch, fileName);
+
+                        var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
+                        var allAddresses = await this.storageBroker.SelectAllAddressesAsync();
+
+                        var existingUPRNs = allAddresses
                             .Where(address => batchUPRNs.Contains(address.UPRN))
                             .Select(address => address.UPRN)
                             .ToList();

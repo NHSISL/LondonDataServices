@@ -140,8 +140,8 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 CreatedDate = now
             };
 
-            DataSet maybeDataSet = dataSetService.RetrieveAllDataSets()
-                .FirstOrDefault(s => s.Id == dataSet.Id);
+            IQueryable<DataSet> retrievedDataSets = await dataSetService.RetrieveAllDataSetsAsync();
+            DataSet maybeDataSet = retrievedDataSets.FirstOrDefault(s => s.Id == dataSet.Id);
 
             if (maybeDataSet == null)
             {

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.DataSets;
 using Moq;
@@ -25,8 +26,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     .ReturnsAsync(storageDataSets);
 
             // when
-            IQueryable<DataSet> actualDataSets =
-                this.dataSetProcessingService.RetrieveAllDataSets();
+            ValueTask<IQueryable<DataSet>> actualDataSets =
+                this.dataSetProcessingService.RetrieveAllDataSetsAsync();
 
             // then
             actualDataSets.Should().BeEquivalentTo(expectedDataSets);

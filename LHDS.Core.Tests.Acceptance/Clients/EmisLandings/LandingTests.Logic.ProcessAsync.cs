@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         {
             //Given
             CleanupDownloadFolder();
-            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            DateTimeOffset randomDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             Guid supplierId = Guid.NewGuid();
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
         {
             //Given
             CleanupDownloadFolder();
-            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            DateTimeOffset randomDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             Guid supplierId = Guid.NewGuid();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
             SubscriberCredential randomSubscriberCredential = CreateRandomSubscriberCredential();

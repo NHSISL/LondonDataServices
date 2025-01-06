@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
                 if (maybeIngestionTracking == null)
                 {
-                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                     DataSetSpecification retrievedDataSetSpecification = await
                         this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
@@ -164,7 +164,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     }
                     else
                     {
-                        var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                        var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                         await this.documentProcessingService.AddDocumentAsync(
                             input,

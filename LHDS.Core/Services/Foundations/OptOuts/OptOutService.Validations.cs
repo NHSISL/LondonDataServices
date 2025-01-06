@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 
@@ -10,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 {
     public partial class OptOutService
     {
-        private void ValidateOptOutOnAdd(OptOut optOut)
+        private async ValueTask ValidateOptOutOnAddAsync(OptOut optOut)
         {
             ValidateOptOutIsNotNull(optOut);
 
@@ -44,10 +45,10 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsEqualOrSmallerThan(
                     optOut.UpdatedBy, 255), Parameter: nameof(optOut.UpdatedBy)),
 
-                (Rule: IsNotRecent(optOut.CreatedDate), Parameter: nameof(OptOut.CreatedDate)));
+                (Rule: await IsNotRecentAsync(optOut.CreatedDate), Parameter: nameof(OptOut.CreatedDate)));
         }
 
-        private void ValidateOptOutOnModify(OptOut optOut)
+        private async ValueTask ValidateOptOutOnModifyAsync(OptOut optOut)
         {
             ValidateOptOutIsNotNull(optOut);
 
@@ -76,7 +77,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     optOut.UpdatedBy, 255), Parameter: nameof(optOut.UpdatedBy)),
 
 
-                (Rule: IsNotRecent(optOut.UpdatedDate), Parameter: nameof(optOut.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(optOut.UpdatedDate), Parameter: nameof(optOut.UpdatedDate)));
         }
 
         public void ValidateOptOutId(Guid optOutId) =>
@@ -186,16 +187,16 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 Message = $"Id is not the same as {secondIdName}"
             };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

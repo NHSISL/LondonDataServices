@@ -41,8 +41,8 @@ namespace LHDS.Core.Services.Processings.Addresses
                 return await this.addressService.AddAddressAsync(address);
             });
 
-        public IQueryable<Address> RetrieveAllAddresses() =>
-            TryCatch(() => this.addressService.RetrieveAllAddresses());
+        public ValueTask<IQueryable<Address>> RetrieveAllAddressesAsync() =>
+            TryCatch(async() => await this.addressService.RetrieveAllAddressesAsync());
 
         public ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId) =>
             TryCatch(async () =>

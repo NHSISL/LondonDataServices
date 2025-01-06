@@ -15,7 +15,7 @@ namespace LHDS.Core.Services.Processings.DataSets
     public partial class DataSetProcessingService : IDataSetProcessingService
     {
         private delegate ValueTask<DataSet> ReturningDataSetProcessingFunction();
-        private delegate IQueryable<DataSet> ReturningDataSetsFunction();
+        private delegate ValueTask<IQueryable<DataSet>> ReturningDataSetsFunction();
 
         private async ValueTask<DataSet> TryCatch(ReturningDataSetProcessingFunction returningDataSetProcessingFunction)
         {
@@ -58,11 +58,11 @@ namespace LHDS.Core.Services.Processings.DataSets
             }
         }
 
-        private IQueryable<DataSet> TryCatch(ReturningDataSetsFunction returningDataSetsFunction)
+        private async ValueTask<IQueryable<DataSet>> TryCatch(ReturningDataSetsFunction returningDataSetsFunction)
         {
             try
             {
-                return returningDataSetsFunction();
+                return await returningDataSetsFunction();
             }
             catch (DataSetValidationException dataSetValidationException)
             {
@@ -90,7 +90,6 @@ namespace LHDS.Core.Services.Processings.DataSets
                 throw CreateAndLogServiceException(failedDataSetProcessingServiceException);
             }
         }
-
 
         private DataSetProcessingValidationException CreateAndLogValidationException(Xeption exception)
         {

@@ -146,8 +146,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedPdsOrchestrationServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                  broker.GetCurrentDateTimeOffsetAsync(),
-                     Times.Once);
+                broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
 
 
             this.loggingBrokerMock.Verify(broker =>

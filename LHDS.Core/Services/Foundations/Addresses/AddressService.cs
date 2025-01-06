@@ -145,8 +145,8 @@ namespace LHDS.Core.Services.Foundations.Addresses
             return await ValueTask.FromResult(validatedAddresses);
         }
 
-        public IQueryable<Address> RetrieveAllAddresses() =>
-            TryCatch(() => this.storageBroker.SelectAllAddresses());
+        public ValueTask<IQueryable<Address>> RetrieveAllAddressesAsync() =>
+            TryCatch(async() => await this.storageBroker.SelectAllAddressesAsync());
 
         public ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId) =>
             TryCatch(async () =>

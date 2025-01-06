@@ -132,7 +132,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.dateTimeBrokerMock.Setup(broker =>
             broker.GetCurrentDateTimeOffsetAsync())
-                  .ThrowsAsync(serviceException);
+                .ThrowsAsync(serviceException);
 
             // when
             ValueTask<PdsAudit> retrievePdsAudit =

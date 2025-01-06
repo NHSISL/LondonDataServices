@@ -131,8 +131,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: failedPdsOrchestrationServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-            broker.GetCurrentDateTimeOffsetAsync())
-                .ThrowsAsync(serviceException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<PdsAudit> retrievePdsAudit =

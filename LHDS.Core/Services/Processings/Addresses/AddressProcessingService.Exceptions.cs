@@ -106,7 +106,7 @@ namespace LHDS.Core.Services.Processings.Addresses
         {
             try
             {
-                await returningAddressesFunction();
+                return await returningAddressesFunction();
             }
             catch (AddressValidationException addressValidationException)
             {

@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
     public partial class DataSetProcessingServiceTests
     {
         [Fact]
-        public void ShouldRetrieveAllDataSets()
+        public async Task ShouldRetrieveAllDataSets()
         {
             // given
             IQueryable<DataSet> randomDataSets = CreateRandomDataSets();
@@ -26,8 +26,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     .ReturnsAsync(storageDataSets);
 
             // when
-            ValueTask<IQueryable<DataSet>> actualDataSets =
-                this.dataSetProcessingService.RetrieveAllDataSetsAsync();
+            IQueryable<DataSet> actualDataSets =
+                await this.dataSetProcessingService.RetrieveAllDataSetsAsync();
 
             // then
             actualDataSets.Should().BeEquivalentTo(expectedDataSets);

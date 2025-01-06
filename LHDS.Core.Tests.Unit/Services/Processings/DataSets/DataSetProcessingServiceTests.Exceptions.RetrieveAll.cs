@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Processings.DataSets.Exceptions;
 using Moq;
 using Xeptions;
@@ -15,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public void ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -29,11 +32,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            Action dataSetRetrieveAction = () =>
-                dataSetProcessingService.RetrieveAllDataSetsAsync();
+            ValueTask<IQueryable<DataSet>> dataSetRetrieveAllTask =
+                 dataSetProcessingService.RetrieveAllDataSetsAsync();
 
             DataSetProcessingDependencyValidationException actualException =
-                Assert.Throws<DataSetProcessingDependencyValidationException>(dataSetRetrieveAction);
+               await Assert.ThrowsAsync<DataSetProcessingDependencyValidationException>(
+                   dataSetRetrieveAllTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetProcessingDependencyValidationException);
@@ -53,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public void ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -67,11 +71,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     .ThrowsAsync(dependencyException);
 
             // when
-            Action dataSetRetrieveAction = () =>
+            ValueTask<IQueryable<DataSet>> dataSetRetrieveAllTask =
                 dataSetProcessingService.RetrieveAllDataSetsAsync();
 
             DataSetProcessingDependencyException actualException =
-                Assert.Throws<DataSetProcessingDependencyException>(dataSetRetrieveAction);
+               await Assert.ThrowsAsync<DataSetProcessingDependencyException>(
+                   dataSetRetrieveAllTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetProcessingDependencyException);
@@ -90,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
         {
             // given
             var serviceException = new Exception();
@@ -110,11 +115,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     .ThrowsAsync(serviceException);
 
             // when
-            Action dataSetRetrieveAction = () =>
+            ValueTask<IQueryable<DataSet>> dataSetRetrieveAllTask =
                 dataSetProcessingService.RetrieveAllDataSetsAsync();
 
             DataSetProcessingServiceException actualException =
-                Assert.Throws<DataSetProcessingServiceException>(dataSetRetrieveAction);
+               await Assert.ThrowsAsync<DataSetProcessingServiceException>(
+                   dataSetRetrieveAllTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetProcessingServiveException);

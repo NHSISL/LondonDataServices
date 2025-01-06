@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
             // when
             Action dataSetRetrieveAction = () =>
-                dataSetProcessingService.RetrieveAllDataSets();
+                dataSetProcessingService.RetrieveAllDataSetsAsync();
 
             DataSetProcessingDependencyValidationException actualException =
                 Assert.Throws<DataSetProcessingDependencyValidationException>(dataSetRetrieveAction);
@@ -68,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
             // when
             Action dataSetRetrieveAction = () =>
-                dataSetProcessingService.RetrieveAllDataSets();
+                dataSetProcessingService.RetrieveAllDataSetsAsync();
 
             DataSetProcessingDependencyException actualException =
                 Assert.Throws<DataSetProcessingDependencyException>(dataSetRetrieveAction);
@@ -111,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
             // when
             Action dataSetRetrieveAction = () =>
-                dataSetProcessingService.RetrieveAllDataSets();
+                dataSetProcessingService.RetrieveAllDataSetsAsync();
 
             DataSetProcessingServiceException actualException =
                 Assert.Throws<DataSetProcessingServiceException>(dataSetRetrieveAction);

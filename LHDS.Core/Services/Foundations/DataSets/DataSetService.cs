@@ -36,7 +36,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
                 return await this.storageBroker.InsertDataSetAsync(dataSet);
             });
 
-        public  ValueTask<IQueryable<DataSet>> RetrieveAllDataSetsAsync() =>
+        public ValueTask<IQueryable<DataSet>> RetrieveAllDataSetsAsync() =>
             TryCatch(async() => await this.storageBroker.SelectAllDataSetsAsync());
 
         public ValueTask<DataSet> RetrieveDataSetByIdAsync(Guid dataSetId) =>

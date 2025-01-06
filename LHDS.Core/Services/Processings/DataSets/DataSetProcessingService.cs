@@ -32,8 +32,8 @@ namespace LHDS.Core.Services.Processings.DataSets
                 return await this.dataSetService.AddDataSetAsync(dataSet);
             });
 
-        public IQueryable<DataSet> RetrieveAllDataSets() =>
-            TryCatch(() => this.dataSetService.RetrieveAllDataSets());
+        public ValueTask<IQueryable<DataSet>> RetrieveAllDataSetsAsync() =>
+            TryCatch(async() => await this.dataSetService.RetrieveAllDataSetsAsync());
 
         public ValueTask<DataSet> RetrieveDataSetByIdAsync(Guid dataSetId) =>
             TryCatch(async () =>

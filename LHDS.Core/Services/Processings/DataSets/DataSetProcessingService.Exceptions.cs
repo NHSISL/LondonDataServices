@@ -58,11 +58,11 @@ namespace LHDS.Core.Services.Processings.DataSets
             }
         }
 
-        private ValueTask<IQueryable<DataSet>> TryCatch(ReturningDataSetsFunction returningDataSetsFunction)
+        private async ValueTask<IQueryable<DataSet>> TryCatch(ReturningDataSetsFunction returningDataSetsFunction)
         {
             try
             {
-                return returningDataSetsFunction();
+                return await returningDataSetsFunction();
             }
             catch (DataSetValidationException dataSetValidationException)
             {

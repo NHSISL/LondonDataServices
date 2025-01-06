@@ -192,14 +192,14 @@ namespace LHDS.Core.Services.Foundations.Addresses
             TryCatch(async () =>
             {
                 ValidatePostCode(postCode);
+                IQueryable<Address> allreturnedAddresses = await this.storageBroker.SelectAllAddressesAsync();
 
-                List<Address> returnedAddresses = this.storageBroker
-                    .SelectAllAddresses()
+                List<Address> matchedAddresses = allreturnedAddresses
                     .ToList()
                     .Where(address => address.PostCode.Equals(postCode, StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
-                return await ValueTask.FromResult(returnedAddresses);
+                return matchedAddresses;
             });
     }
 }

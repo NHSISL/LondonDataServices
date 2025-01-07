@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
@@ -21,12 +22,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             IQueryable<IngestionTracking> expectedIngestionTrackings = storageIngestionTrackings;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllIngestionTrackings())
-                    .Returns(storageIngestionTrackings);
+                broker.SelectAllIngestionTrackingsAsync())
+                    .ReturnsAsync(storageIngestionTrackings);
 
             // when
             IQueryable<IngestionTracking> actualIngestionTrackings =
-                this.ingestionTrackingService.RetrieveAllIngestionTrackings();
+                await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
             // then
             actualIngestionTrackings.Should().BeEquivalentTo(expectedIngestionTrackings);

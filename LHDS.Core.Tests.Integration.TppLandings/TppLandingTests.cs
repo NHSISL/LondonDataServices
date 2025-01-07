@@ -180,7 +180,10 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 CreatedDate = now
             };
 
-            DataSetSpecification maybeDataSetSpecification = dataSetSpecificationService.RetrieveAllDataSetSpecifications()
+            IQueryable<DataSetSpecification> allDataSetSpecification =
+                await dataSetSpecificationService.RetrieveAllDataSetSpecificationsAsync();
+
+            DataSetSpecification maybeDataSetSpecification = allDataSetSpecification
                 .FirstOrDefault(s => s.Id == dataSetSpecification.Id);
 
             if (maybeDataSetSpecification == null)

@@ -16,7 +16,6 @@ namespace LHDS.Core.Services.Processings.Addresses
     {
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<T?> ReturningFunction<T>();
-        private delegate ValueTask<IQueryable<Address>> ReturningAddressesFunction();
 
         private async ValueTask TryCatch(
             ReturningNothingFunction returningNothingFunction)
@@ -74,39 +73,6 @@ namespace LHDS.Core.Services.Processings.Addresses
             catch (InvalidArgumentAddressProcessingException invalidArgumentAddressProcessingException)
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressProcessingException);
-            }
-            catch (AddressValidationException addressValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(addressValidationException);
-            }
-            catch (AddressDependencyValidationException addressDependencyValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(addressDependencyValidationException);
-            }
-            catch (AddressDependencyException addressDependencyException)
-            {
-                throw CreateAndLogDependencyException(addressDependencyException);
-            }
-            catch (AddressServiceException addressServiceException)
-            {
-                throw CreateAndLogDependencyException(addressServiceException);
-            }
-            catch (Exception exception)
-            {
-                var failedAddressProcessingServiceException =
-                    new FailedAddressProcessingServiceException(
-                        message: "Failed Address processing service error occurred, please contact support.",
-                        innerException: exception);
-
-                throw CreateAndLogServiceException(failedAddressProcessingServiceException);
-            }
-        }
-
-        private async ValueTask<IQueryable<Address>> TryCatch(ReturningAddressesFunction returningAddressesFunction)
-        {
-            try
-            {
-                return await returningAddressesFunction();
             }
             catch (AddressValidationException addressValidationException)
             {

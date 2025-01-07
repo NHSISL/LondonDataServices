@@ -37,8 +37,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             IQueryable<Address> storageAddresses = allRandomAddresses.AsQueryable();
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllAddresses())
-                    .Returns(storageAddresses);
+                broker.SelectAllAddressesAsync())
+                    .ReturnsAsync(storageAddresses);
 
             // when
             List<Address> actualAddresses = await this.addressService.RetrieveAddressesByPostCodeAsync(inputPostCode);
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllAddresses(),
+                broker.SelectAllAddressesAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

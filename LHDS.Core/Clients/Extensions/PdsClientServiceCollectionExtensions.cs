@@ -175,7 +175,7 @@ namespace LHDS.Core.Clients.Extensions
             {
                 byte[] certBytes = Convert.FromBase64String(value);
 
-                return X509CertificateLoader.LoadCertificate(certBytes);
+                return new X509Certificate2(certBytes);
             }
 
             return null;
@@ -192,7 +192,7 @@ namespace LHDS.Core.Clients.Extensions
                 foreach (string item in values)
                 {
                     byte[] certBytes = Convert.FromBase64String(item);
-                    certificates.Add(X509CertificateLoader.LoadCertificate(certBytes));
+                    certificates.Add(new X509Certificate2(certBytes));
                 }
             }
 

@@ -14,7 +14,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
         ValueTask<TerminologyPoll> InsertTerminologyPollAsync(
             TerminologyPoll terminologyPoll);
 
-        IQueryable<TerminologyPoll> SelectAllTerminologyPolls();
+        IQueryable<TerminologyPoll> SelectAllTerminologyPollsAsync();
         ValueTask<TerminologyPoll> SelectTerminologyPollByIdAsync(Guid terminologyPollId);
 
         ValueTask<TerminologyPoll> UpdateTerminologyPollAsync(

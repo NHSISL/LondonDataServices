@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.dataSetSpecificationServiceMock.Setup(service =>
-                service.RetrieveAllDataSetSpecifications())
-                    .Throws(dependencyValidationException);
+                service.RetrieveAllDataSetSpecificationsAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<DataSetSpecification> dataSetSpecificationGetActiveTask =
@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyValidationException);
 
             this.dataSetSpecificationServiceMock.Verify(service =>
-                service.RetrieveAllDataSetSpecifications(),
+                service.RetrieveAllDataSetSpecificationsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -70,8 +70,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     innerException: dependencyException.InnerException as Xeption);
 
             this.dataSetSpecificationServiceMock.Setup(service =>
-                service.RetrieveAllDataSetSpecifications())
-                    .Throws(dependencyException);
+                service.RetrieveAllDataSetSpecificationsAsync())
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<DataSetSpecification> dataSetSpecificationGetActiveTask =
@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyException);
 
             this.dataSetSpecificationServiceMock.Verify(service =>
-                service.RetrieveAllDataSetSpecifications(),
+                service.RetrieveAllDataSetSpecificationsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -115,8 +115,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     innerException: failedDataSetSpecificationProcessingServiceException);
 
             this.dataSetSpecificationServiceMock.Setup(service =>
-                service.RetrieveAllDataSetSpecifications())
-                    .Throws(serviceException);
+                service.RetrieveAllDataSetSpecificationsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<DataSetSpecification> dataSetSpecificationRetrieveByIdTask =
@@ -129,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingServiveException);
 
             this.dataSetSpecificationServiceMock.Verify(service =>
-                service.RetrieveAllDataSetSpecifications(),
+                service.RetrieveAllDataSetSpecificationsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

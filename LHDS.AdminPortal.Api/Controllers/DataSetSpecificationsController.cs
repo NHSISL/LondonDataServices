@@ -70,12 +70,12 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.DataSetSpecifications, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public ActionResult<IQueryable<DataSetSpecification>> Get()
+        public async ValueTask<ActionResult<IQueryable<DataSetSpecification>>> Get()
         {
             try
             {
                 IQueryable<DataSetSpecification> retrievedDataSetSpecifications =
-                    this.dataSetSpecificationService.RetrieveAllDataSetSpecifications();
+                    await this.dataSetSpecificationService.RetrieveAllDataSetSpecificationsAsync();
 
                 return Ok(retrievedDataSetSpecifications);
             }

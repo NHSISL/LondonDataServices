@@ -36,8 +36,8 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                 return await this.storageBroker.InsertDataTypeAsync(dataType);
             });
 
-        public IQueryable<DataType> RetrieveAllDataTypes() =>
-            TryCatch(() => this.storageBroker.SelectAllDataTypes());
+        public ValueTask<IQueryable<DataType>> RetrieveAllDataTypesAsync() =>
+            TryCatch(async() => await this.storageBroker.SelectAllDataTypesAsync());
 
         public ValueTask<DataType> RetrieveDataTypeByIdAsync(Guid dataTypeId) =>
             TryCatch(async () =>

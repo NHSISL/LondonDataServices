@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
     public partial class DataSetSpecificationProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldRetrieveAllDataSetSpecifications()
+        public async Task ShouldRetrieveAllDataSetSpecificationsAsync()
         {
             // given
             IQueryable<DataSetSpecification> randomDataSetSpecifications = CreateRandomDataSetSpecifications();

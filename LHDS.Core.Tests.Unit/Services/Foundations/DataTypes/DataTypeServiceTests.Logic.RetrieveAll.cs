@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.DataTypes;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
     public partial class DataTypeServiceTests
     {
         [Fact]
-        public void ShouldReturnDataTypes()
+        public async Task ShouldReturnDataTypes()
         {
             // given
             IQueryable<DataType> randomDataTypes = CreateRandomDataTypes();
@@ -21,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             IQueryable<DataType> expectedDataTypes = storageDataTypes;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllDataTypes())
-                    .Returns(storageDataTypes);
+                broker.SelectAllDataTypesAsync())
+                    .ReturnsAsync(storageDataTypes);
 
             // when
             IQueryable<DataType> actualDataTypes =
-                this.dataTypeService.RetrieveAllDataTypes();
+                await this.dataTypeService.RetrieveAllDataTypesAsync();
 
             // then
             actualDataTypes.Should().BeEquivalentTo(expectedDataTypes);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllDataTypes(),
+                broker.SelectAllDataTypesAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

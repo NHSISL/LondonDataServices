@@ -94,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 .BeEquivalentTo(expectedDataTypeServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllDataTypes(),
+                broker.SelectAllDataTypesAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

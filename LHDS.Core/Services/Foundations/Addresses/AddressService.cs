@@ -68,7 +68,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         var batch = addresses.Skip(i).Take(batchSize).ToList();
 
                         List<Address> validatedAddresses = 
-                            await ExtractValidAddressesAndAssignIdAndAudit(batch, fileName);
+                            await ExtractValidAddressesAndAssignIdAndAuditAsync(batch, fileName);
 
                         var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
                         var allAddresses = await this.storageBroker.SelectAllAddressesAsync();
@@ -100,7 +100,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             }
         }
 
-        virtual internal async ValueTask<List<Address>> ExtractValidAddressesAndAssignIdAndAudit(
+        virtual internal async ValueTask<List<Address>> ExtractValidAddressesAndAssignIdAndAuditAsync(
             List<Address> addresses,
             string fileName)
         {

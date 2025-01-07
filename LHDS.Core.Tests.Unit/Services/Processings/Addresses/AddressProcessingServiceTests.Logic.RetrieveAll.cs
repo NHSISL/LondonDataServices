@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
     public partial class AddressProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldRetrieveAllAddresses()
+        public async Task ShouldRetrieveAllAddressesAsync()
         {
             // given
             IQueryable<Address> randomAddresses = CreateRandomAddresses();

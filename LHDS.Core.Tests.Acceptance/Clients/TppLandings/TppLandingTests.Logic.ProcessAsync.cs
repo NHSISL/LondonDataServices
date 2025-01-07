@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         public async Task ShouldProcessNewDocumentAndAddHashAsync()
         {
             //Given
-            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            DateTimeOffset randomDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             Guid supplierId = Guid.NewGuid();
             Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
             DataSet activeDataSet = CreateRandomDataSet(supplierId);
@@ -78,7 +78,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         public async Task ShouldNotProcessExistingDocumentAsync()
         {
             //Given
-            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            DateTimeOffset randomDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             string randomFileName = GetRandomFileName();
             string fileName = randomFileName;
             string randomHash = GetRandomString();
@@ -140,7 +140,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         public async Task ShouldProcessExistingDocumentAndUpdateHashAsync()
         {
             //Given
-            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            DateTimeOffset randomDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             string randomFileName = GetRandomFileName();
             string fileName = randomFileName;
             string randomHash = GetRandomString();

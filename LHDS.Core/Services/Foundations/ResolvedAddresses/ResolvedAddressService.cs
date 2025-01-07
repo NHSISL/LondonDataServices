@@ -41,7 +41,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public ValueTask<ResolvedAddress> AddResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
             TryCatch(async () =>
             {
-                ValidateResolvedAddressOnAdd(resolvedAddress);
+                await ValidateResolvedAddressOnAddAsync(resolvedAddress);
 
                 return await this.storageBroker.InsertResolvedAddressAsync(resolvedAddress);
             });
@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public ValueTask<ResolvedAddress> ModifyResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
             TryCatch(async () =>
             {
-                ValidateResolvedAddressOnModify(resolvedAddress);
+                await ValidateResolvedAddressOnModifyAsync(resolvedAddress);
 
                 ResolvedAddress maybeResolvedAddress =
                     await this.storageBroker.SelectResolvedAddressByIdAsync(resolvedAddress.Id);
@@ -220,13 +220,13 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 try
                 {
-                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                    resolvedAddress.Id = this.identifierBroker.GetIdentifier();
+                    var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    resolvedAddress.Id = await this.identifierBroker.GetIdentifierAsync();
                     resolvedAddress.CreatedDate = currentDateTime;
                     resolvedAddress.CreatedBy = "System";
                     resolvedAddress.UpdatedDate = resolvedAddress.CreatedDate;
                     resolvedAddress.UpdatedBy = resolvedAddress.CreatedBy;
-                    ValidateResolvedAddressOnAdd(resolvedAddress);
+                    await ValidateResolvedAddressOnAddAsync(resolvedAddress);
                     validatedResolvedAddresses.Add(resolvedAddress);
                 }
                 catch (Exception ex)
@@ -263,9 +263,9 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 try
                 {
-                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                     resolvedAddress.UpdatedDate = currentDateTime;
-                    ValidateResolvedAddressOnModify(resolvedAddress);
+                    await ValidateResolvedAddressOnModifyAsync(resolvedAddress);
                     validatedResolvedAddresses.Add(resolvedAddress);
                 }
                 catch (Exception ex)

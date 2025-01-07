@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         public async Task ShouldDecryptNewDocumentsAsync()
         {
             //Given
-            DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             Guid supplierId = Guid.NewGuid();
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
             Stream inputStream = new MemoryStream(documentData);
@@ -63,7 +63,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             }
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
-                dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                dateTimeOffset: await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync(),
                 encryptedFileName,
                 decryptedFileName,
                 supplierId: supplierId,

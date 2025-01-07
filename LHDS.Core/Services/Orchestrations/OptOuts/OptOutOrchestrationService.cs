@@ -95,14 +95,14 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     {
                         OptOut processedOptOut = await TryCatch(async () =>
                         {
-                            DateTimeOffset timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                            DateTimeOffset timeStamp = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                             var expirationDate = timeStamp.AddDays(-optOutConfiguration.ExpiredAfterDays);
 
                             OptOut item = await this.optOutProcessingService
                                 .RetrieveOrAddOptOutAsync(
                                     new OptOut
                                     {
-                                        Id = this.identifierBroker.GetIdentifier(),
+                                        Id = await this.identifierBroker.GetIdentifierAsync(),
                                         NhsNumber = optOut.NhsNumber,
                                         Status = string.IsNullOrWhiteSpace(optOut.Status) ? "Unknown" : optOut.Status,
                                         UniqueReference = optOut.UniqueReference,
@@ -149,7 +149,6 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 return csvFileName;
             });
 
-
         public ValueTask<MeshMessage?> PushExpiredOptOutsToMeshForRenewalAsync() =>
             TryCatch(async () =>
             {
@@ -175,7 +174,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     csvExpiredOptOutIdentifiers.AppendLine($"{item.NhsNumber},");
                 }
 
-                string batchReference = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
+                DateTimeOffset batchReferenceDateTime = 
+                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                string batchReference = batchReferenceDateTime.ToString("yyyyMMddHHmmss");
 
                 MeshMessage message = await this.meshProcessingService.SendMessageAsync(
                     mexTo: this.optOutConfiguration.To,
@@ -191,11 +193,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 foreach (var optOut in expiredOptOuts)
                 {
-                    var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    var dateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                     optOut.LastSentToMesh = dateTime;
                     optOut.UpdatedDate = dateTime;
                     optOut.BatchReference = batchReference;
-
                     await this.optOutProcessingService.AddOrModifyOptOutAsync(optOut);
                 }
 

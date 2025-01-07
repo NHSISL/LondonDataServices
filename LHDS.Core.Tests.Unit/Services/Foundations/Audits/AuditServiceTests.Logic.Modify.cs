@@ -28,8 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Guid auditId = inputAudit.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(auditId))
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             actualAudit.Should().BeEquivalentTo(expectedAudit);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

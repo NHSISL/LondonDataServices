@@ -41,11 +41,11 @@ namespace LHDS.Core.Services.Foundations.Audits
             string? logLevel = "Information") =>
             TryCatch(async () =>
             {
-                DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 Audit audit = new Audit
                 {
-                    Id = this.identifierBroker.GetIdentifier(),
+                    Id = await this.identifierBroker.GetIdentifierAsync(),
                     AuditType = auditType,
                     Title = title,
                     Message = message,
@@ -58,7 +58,7 @@ namespace LHDS.Core.Services.Foundations.Audits
                     UpdatedDate = dateTimeOffset,
                 };
 
-                ValidateAuditOnAdd(audit);
+                await ValidateAuditOnAddAsync(audit);
 
                 return await this.storageBroker.InsertAuditAsync(audit);
             });
@@ -66,7 +66,7 @@ namespace LHDS.Core.Services.Foundations.Audits
         public ValueTask<Audit> AddAuditAsync(Audit audit) =>
             TryCatch(async () =>
             {
-                ValidateAuditOnAdd(audit);
+                await ValidateAuditOnAddAsync(audit);
 
                 return await this.storageBroker.InsertAuditAsync(audit);
             });
@@ -90,7 +90,7 @@ namespace LHDS.Core.Services.Foundations.Audits
         public ValueTask<Audit> ModifyAuditAsync(Audit audit) =>
             TryCatch(async () =>
             {
-                ValidateAuditOnModify(audit);
+                await ValidateAuditOnModifyAsync(audit);
 
                 Audit maybeAudit =
                     await this.storageBroker.SelectAuditByIdAsync(audit.Id);

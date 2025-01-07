@@ -109,16 +109,18 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     }
                 }
 
+                DateTimeOffset fifteenMinsAgo = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                fifteenMinsAgo.AddMinutes(-15);
+
                 List<IngestionTracking> unavailableIngestionTrackings =
                     this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
                         .Where(ingestionTracking =>
-                            ingestionTracking.LastSeen <=
-                                this.dateTimeBroker.GetCurrentDateTimeOffset().AddMinutes(-15)).ToList();
+                            ingestionTracking.LastSeen <= fifteenMinsAgo).ToList();
 
                 foreach (var item in unavailableIngestionTrackings)
                 {
                     item.FileDeleted = true;
-                    item.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    item.UpdatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                     await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(item);
                 }
@@ -173,7 +175,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         ingestionTrackingId);
 
                 retrievedIngestionTracking.Decrypted = false;
-                retrievedIngestionTracking.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                retrievedIngestionTracking.UpdatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 IngestionTracking modifiedIngestionTracking =
                     await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(
@@ -192,7 +194,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
             if (maybeIngestionTracking == null)
             {
-                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 var filename = fileName.StartsWith('/')
                     ? fileName
@@ -216,7 +218,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 IngestionTracking newIngestionTracking =
                   new IngestionTracking
                   {
-                      Id = this.identifierBroker.GetIdentifier(),
+                      Id = await this.identifierBroker.GetIdentifierAsync(),
                       SupplierId = supplierId,
                       Container = blobContainers.EmisLanding,
                       FileName = filename,
@@ -252,7 +254,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
             if (maybeIngestionTracking.IsDownloaded == false && maybeIngestionTracking.RetryCount <= 3)
             {
-                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 maybeIngestionTracking.RetryCount += 1;
                 maybeIngestionTracking.IsDownloaded = false;
                 maybeIngestionTracking.FileDeleted = false;
@@ -281,7 +283,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     using (FileStream readFtpFileStream =
                         new FileStream(tempEncryptedFilePath, FileMode.Open, FileAccess.ReadWrite))
                     {
-                        string encryptedFileSha256Hash = this.hashBroker.GenerateSha256Hash(readFtpFileStream);
+                        string encryptedFileSha256Hash = await this.hashBroker.GenerateSha256HashAsync(readFtpFileStream);
                         updatedIngestionTracking.EncryptedFileSize = readFtpFileStream.Length;
                         updatedIngestionTracking.EncryptedFileSha256Hash = encryptedFileSha256Hash;
 
@@ -303,7 +305,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     await this.fileBroker.DeleteFileAsync(tempEncryptedFilePath);
                 }
 
-                var updatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                var updatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 updatedIngestionTracking.IsDownloaded = true;
                 updatedIngestionTracking.Decrypted = false;
                 updatedIngestionTracking.IsProcessing = false;
@@ -328,7 +330,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             IngestionTracking ingestionTracking,
             string message)
         {
-            var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             IngestionTrackingAudit newAudit =
                 new IngestionTrackingAudit

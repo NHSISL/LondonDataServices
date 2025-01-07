@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 
@@ -10,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 {
     public partial class SubscriberAgreementService
     {
-        private void ValidateSubscriberAgreementOnAdd(SubscriberAgreement subscriberAgreement)
+        private async ValueTask ValidateSubscriberAgreementOnAddAsync(SubscriberAgreement subscriberAgreement)
         {
             ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
 
@@ -46,10 +47,10 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     secondName: nameof(SubscriberAgreement.CreatedBy)),
                 Parameter: nameof(SubscriberAgreement.UpdatedBy)),
 
-                (Rule: IsNotRecent(subscriberAgreement.CreatedDate), Parameter: nameof(SubscriberAgreement.CreatedDate)));
+                (Rule: await IsNotRecentAsync(subscriberAgreement.CreatedDate), Parameter: nameof(SubscriberAgreement.CreatedDate)));
         }
 
-        private void ValidateSubscriberAgreementOnModify(SubscriberAgreement subscriberAgreement)
+        private async ValueTask ValidateSubscriberAgreementOnModifyAsync(SubscriberAgreement subscriberAgreement)
         {
             ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
 
@@ -79,7 +80,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     secondDateName: nameof(SubscriberAgreement.CreatedDate)),
                 Parameter: nameof(SubscriberAgreement.UpdatedDate)),
 
-                (Rule: IsNotRecent(subscriberAgreement.UpdatedDate),
+                (Rule: await IsNotRecentAsync(subscriberAgreement.UpdatedDate),
                     Parameter: nameof(subscriberAgreement.UpdatedDate)));
         }
 
@@ -191,16 +192,16 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

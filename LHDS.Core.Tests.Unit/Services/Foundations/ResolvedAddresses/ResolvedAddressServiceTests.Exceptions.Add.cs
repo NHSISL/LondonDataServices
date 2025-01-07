@@ -35,8 +35,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     innerException: failedResolvedAddressStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(sqlException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<ResolvedAddress> addResolvedAddressTask =
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 .BeEquivalentTo(expectedResolvedAddressDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -90,8 +90,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     innerException: alreadyExistsResolvedAddressException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(duplicateKeyException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(duplicateKeyException);
 
             // when
             ValueTask<ResolvedAddress> addResolvedAddressTask =
@@ -106,7 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 .BeEquivalentTo(expectedResolvedAddressDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -145,8 +145,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     innerException: invalidResolvedAddressReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(foreignKeyConstraintConflictException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
             ValueTask<ResolvedAddress> addResolvedAddressTask =
@@ -161,7 +161,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 .BeEquivalentTo(expectedResolvedAddressValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -198,8 +198,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     innerException: failedResolvedAddressStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(databaseUpdateException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(databaseUpdateException);
 
             // when
             ValueTask<ResolvedAddress> addResolvedAddressTask =
@@ -214,7 +214,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 .BeEquivalentTo(expectedResolvedAddressDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -249,8 +249,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     innerException: failedResolvedAddressServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(serviceException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<ResolvedAddress> addResolvedAddressTask =
@@ -265,7 +265,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 .BeEquivalentTo(expectedResolvedAddressServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

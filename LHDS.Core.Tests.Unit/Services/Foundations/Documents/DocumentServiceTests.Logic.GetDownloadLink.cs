@@ -27,8 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             string expectedSasUrl = randomSasUrl;
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.GetDownloadLinkAsync(inputFileName, encryptedFileContainer, inputExpireTime))
@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualSasUrl.Should().Be(expectedSasUrl);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.blobStorageBrokerMock.Verify(broker =>

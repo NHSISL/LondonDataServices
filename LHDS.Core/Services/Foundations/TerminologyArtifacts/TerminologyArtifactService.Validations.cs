@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 
@@ -10,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 {
     public partial class TerminologyArtifactService
     {
-        private void ValidateTerminologyArtifactOnAdd(TerminologyArtifact terminologyArtifact)
+        private async ValueTask ValidateTerminologyArtifactOnAddAsync(TerminologyArtifact terminologyArtifact)
         {
             ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
 
@@ -35,10 +36,10 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                     secondName: nameof(TerminologyArtifact.CreatedBy)),
                 Parameter: nameof(TerminologyArtifact.UpdatedBy)),
 
-                (Rule: IsNotRecent(terminologyArtifact.CreatedDate), Parameter: nameof(TerminologyArtifact.CreatedDate)));
+                (Rule: await IsNotRecentAsync(terminologyArtifact.CreatedDate), Parameter: nameof(TerminologyArtifact.CreatedDate)));
         }
 
-        private void ValidateTerminologyArtifactOnModify(TerminologyArtifact terminologyArtifact)
+        private async ValueTask ValidateTerminologyArtifactOnModifyAsync(TerminologyArtifact terminologyArtifact)
         {
             ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
 
@@ -57,7 +58,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                     secondDateName: nameof(TerminologyArtifact.CreatedDate)),
                 Parameter: nameof(TerminologyArtifact.UpdatedDate)),
 
-                (Rule: IsNotRecent(terminologyArtifact.UpdatedDate), Parameter: nameof(terminologyArtifact.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(terminologyArtifact.UpdatedDate), Parameter: nameof(terminologyArtifact.UpdatedDate)));
         }
 
         public void ValidateTerminologyArtifactId(Guid terminologyArtifactId) =>
@@ -159,16 +160,16 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

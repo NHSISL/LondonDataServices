@@ -28,8 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             Guid specificationObjectId = inputSpecificationObject.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSpecificationObjectByIdAsync(specificationObjectId))
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             actualSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

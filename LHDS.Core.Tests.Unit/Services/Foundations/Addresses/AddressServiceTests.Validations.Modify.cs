@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                         Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
@@ -127,7 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .BeEquivalentTo(expectedAddressValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -166,8 +166,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     innerException: invalidAddressException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<Address> modifyAddressTask =
@@ -182,7 +182,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .BeEquivalentTo(expectedAddressValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -222,8 +222,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     innerException: invalidAddressException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<Address> modifyAddressTask =
@@ -238,7 +238,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .BeEquivalentTo(expectedAddressValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -277,8 +277,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .ReturnsAsync(nullAddress);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when 
             ValueTask<Address> modifyAddressTask =
@@ -297,7 +297,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -341,8 +341,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .ReturnsAsync(storageAddress);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<Address> modifyAddressTask =
@@ -361,7 +361,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -403,8 +403,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .ReturnsAsync(storageAddress);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<Address> modifyAddressTask =
@@ -422,7 +422,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -462,8 +462,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .ReturnsAsync(storageAddress);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<Address> modifyAddressTask =
@@ -474,7 +474,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 modifyAddressTask.AsTask);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

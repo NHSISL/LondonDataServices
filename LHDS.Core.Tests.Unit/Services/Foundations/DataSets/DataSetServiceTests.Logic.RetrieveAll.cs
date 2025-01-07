@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.DataSets;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
     public partial class DataSetServiceTests
     {
         [Fact]
-        public void ShouldReturnDataSets()
+        public async Task ShouldReturnDataSets()
         {
             // given
             IQueryable<DataSet> randomDataSets = CreateRandomDataSets();
@@ -21,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             IQueryable<DataSet> expectedDataSets = storageDataSets;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllDataSets())
-                    .Returns(storageDataSets);
+                broker.SelectAllDataSetsAsync())
+                    .ReturnsAsync(storageDataSets);
 
             // when
             IQueryable<DataSet> actualDataSets =
-                this.dataSetService.RetrieveAllDataSets();
+                await this.dataSetService.RetrieveAllDataSetsAsync();
 
             // then
             actualDataSets.Should().BeEquivalentTo(expectedDataSets);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllDataSets(),
+                broker.SelectAllDataSetsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

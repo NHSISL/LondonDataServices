@@ -27,8 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             TerminologyArtifact expectedTerminologyArtifact = storageTerminologyArtifact.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertTerminologyArtifactAsync(inputTerminologyArtifact))
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             actualTerminologyArtifact.Should().BeEquivalentTo(expectedTerminologyArtifact);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.storageBrokerMock.Verify(broker =>

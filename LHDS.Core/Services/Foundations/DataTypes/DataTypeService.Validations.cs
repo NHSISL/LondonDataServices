@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 
@@ -10,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 {
     public partial class DataTypeService
     {
-        private void ValidateDataTypeOnAdd(DataType dataType)
+        private async ValueTask ValidateDataTypeOnAddAsync(DataType dataType)
         {
             ValidateDataTypeIsNotNull(dataType);
 
@@ -37,10 +38,10 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                     secondName: nameof(DataType.CreatedBy)),
                 Parameter: nameof(DataType.UpdatedBy)),
 
-                (Rule: IsNotRecent(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)));
+                (Rule: await IsNotRecentAsync(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)));
         }
 
-        private void ValidateDataTypeOnModify(DataType dataType)
+        private async ValueTask ValidateDataTypeOnModifyAsync(DataType dataType)
         {
             ValidateDataTypeIsNotNull(dataType);
 
@@ -61,7 +62,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                     secondDateName: nameof(DataType.CreatedDate)),
                 Parameter: nameof(DataType.UpdatedDate)),
 
-                (Rule: IsNotRecent(dataType.UpdatedDate), Parameter: nameof(dataType.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(dataType.UpdatedDate), Parameter: nameof(dataType.UpdatedDate)));
         }
 
         public void ValidateDataTypeId(Guid dataTypeId) =>
@@ -165,16 +166,16 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

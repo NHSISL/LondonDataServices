@@ -28,8 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             Guid objectColumnId = inputObjectColumn.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectObjectColumnByIdAsync(objectColumnId))
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

@@ -86,7 +86,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                         subscriberCredential);
 
                     decryptedFileSha256Hash =
-                        this.hashBroker.GenerateSha256Hash(decryptedDocument);
+                        await this.hashBroker.GenerateSha256HashAsync(decryptedDocument);
 
                     fileSize = decryptedDocument?.Length ?? 0;
 
@@ -96,7 +96,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                         container: blobContainers.Ingress);
                 }
 
-                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 ingestionTracking.Decrypted = true;
                 ingestionTracking.RecordCount = 0;
                 ingestionTracking.DecryptedFileSize = fileSize;
@@ -116,7 +116,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             TryCatch(async () =>
             {
                 DateTimeOffset olderThanDateTimeOffset =
-                this.dateTimeBroker.GetCurrentDateTimeOffset().AddMinutes(-15);
+                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                olderThanDateTimeOffset.AddMinutes(-15);
 
                 var item = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
                     .FirstOrDefault(ingestionTrackingItem =>
@@ -131,7 +133,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     return null;
                 }
 
-                DateTimeOffset currentDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                DateTimeOffset currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 item.IsProcessing = true;
                 item.RetryCount += 1;

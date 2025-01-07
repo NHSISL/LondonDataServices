@@ -27,8 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Audit expectedAudit = storageAudit.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertAuditAsync(inputAudit))
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             actualAudit.Should().BeEquivalentTo(expectedAudit);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.storageBrokerMock.Verify(broker =>

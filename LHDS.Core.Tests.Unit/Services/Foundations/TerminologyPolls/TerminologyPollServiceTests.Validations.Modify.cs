@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                         Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
@@ -123,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -162,8 +162,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     innerException: invalidTerminologyPollException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -178,7 +178,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -218,8 +218,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     innerException: invalidTerminologyPollException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -234,7 +234,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -273,8 +273,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .ReturnsAsync(nullTerminologyPoll);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when 
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -293,7 +293,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -337,8 +337,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .ReturnsAsync(storageTerminologyPoll);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -357,7 +357,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -399,8 +399,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .ReturnsAsync(storageTerminologyPoll);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -418,7 +418,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -458,8 +458,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .ReturnsAsync(storageTerminologyPoll);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<TerminologyPoll> modifyTerminologyPollTask =
@@ -470,7 +470,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 modifyTerminologyPollTask.AsTask);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

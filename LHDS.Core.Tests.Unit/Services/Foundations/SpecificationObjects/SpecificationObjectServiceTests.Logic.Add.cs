@@ -27,8 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             SpecificationObject expectedSpecificationObject = storageSpecificationObject.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertSpecificationObjectAsync(inputSpecificationObject))
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             actualSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.storageBrokerMock.Verify(broker =>

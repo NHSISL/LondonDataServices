@@ -39,12 +39,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ReturnsAsync(outputOptOuts);
 
             this.identifierBrokerMock.Setup(processing =>
-                processing.GetIdentifier())
-                    .Returns(identifier);
+                processing.GetIdentifierAsync())
+                    .ReturnsAsync(identifier);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             List<OptOut> processedOptOuts = new List<OptOut>();
 
@@ -138,11 +138,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             }
 
             this.identifierBrokerMock.Verify(processing =>
-                processing.GetIdentifier(),
+                processing.GetIdentifierAsync(),
                     Times.Exactly(outputOptOuts.Count));
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(outputOptOuts.Count));
 
             this.csvHelperBrokerMock.Verify(processings =>

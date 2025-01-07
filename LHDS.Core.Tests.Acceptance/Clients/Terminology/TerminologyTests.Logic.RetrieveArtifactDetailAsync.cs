@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
         public async Task ShouldRetrieveArtifactDetailsAsync()
         {
             //Given
-            DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             TerminologyArtifact terminologyArtifact = CreateRandomTerminologyArtifact(dateTimeOffset);
             string baseUrl = $"{ontologyConfiguration.TerminologyServerBaseUrl}";
             string authUri = $"{ontologyConfiguration.TerminologyServerAuthenticationRelativeUrl}";

@@ -123,8 +123,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                     .ReturnsAsync(storageSubscriberCredentialWithGeneratedKeys);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.subscriberAgreementProcessingServiceMock.Setup(service =>
                 service.ModifyOrAddSubscriberAgreementAsync(
@@ -156,7 +156,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                         Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.subscriberAgreementProcessingServiceMock.Verify(service =>

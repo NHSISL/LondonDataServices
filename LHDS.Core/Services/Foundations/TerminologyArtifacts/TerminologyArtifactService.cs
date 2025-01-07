@@ -31,7 +31,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
         public ValueTask<TerminologyArtifact> AddTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact) =>
             TryCatch(async () =>
             {
-                ValidateTerminologyArtifactOnAdd(terminologyArtifact);
+                await ValidateTerminologyArtifactOnAddAsync(terminologyArtifact);
 
                 return await this.storageBroker.InsertTerminologyArtifactAsync(terminologyArtifact);
             });
@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
         public ValueTask<TerminologyArtifact> ModifyTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact) =>
             TryCatch(async () =>
             {
-                ValidateTerminologyArtifactOnModify(terminologyArtifact);
+                await ValidateTerminologyArtifactOnModifyAsync(terminologyArtifact);
 
                 TerminologyArtifact maybeTerminologyArtifact =
                     await this.storageBroker.SelectTerminologyArtifactByIdAsync(terminologyArtifact.Id);

@@ -17,8 +17,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public async ValueTask<IngestionTracking> InsertIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             await InsertAsync(ingestionTracking);
 
-        public async ValueTask<IQueryable<IngestionTracking>> SelectAllIngestionTrackingsAsync() => 
-            await SelectAllAsync<IngestionTracking>();
+        public IQueryable<IngestionTracking> SelectAllIngestionTrackings() => SelectAll<IngestionTracking>();
 
         public async ValueTask<IngestionTracking> SelectIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             await SelectAsync<IngestionTracking>(ingestionTrackingId);

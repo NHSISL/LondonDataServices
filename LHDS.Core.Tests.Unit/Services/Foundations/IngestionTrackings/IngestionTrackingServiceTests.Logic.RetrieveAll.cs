@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
     public partial class IngestionTrackingServiceTests
     {
         [Fact]
-        public void ShouldReturnIngestionTrackings()
+        public async Task ShouldReturnIngestionTrackingsAsync()
         {
             // given
             IQueryable<IngestionTracking> randomIngestionTrackings = CreateRandomIngestionTrackings();
@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackings.Should().BeEquivalentTo(expectedIngestionTrackings);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllIngestionTrackings(),
+                broker.SelectAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

@@ -109,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -137,8 +137,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             invalidSubscriberAgreement.UpdatedBy = invalidSubscriberAgreement.CreatedBy;
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             var invalidSubscriberAgreementException =
                 new InvalidSubscriberAgreementException(
@@ -173,7 +173,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -216,8 +216,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     innerException: invalidSubscriberAgreementException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
@@ -231,7 +231,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -271,8 +271,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     innerException: invalidSubscriberAgreementException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
@@ -286,7 +286,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -331,8 +331,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     innerException: invalidSubscriberAgreementException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
@@ -346,7 +346,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

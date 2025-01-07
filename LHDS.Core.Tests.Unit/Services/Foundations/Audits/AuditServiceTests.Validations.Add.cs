@@ -112,7 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -156,8 +156,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     innerException: invalidAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<Audit> addAuditTask =
@@ -171,7 +171,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -212,8 +212,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     innerException: invalidAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<Audit> addAuditTask =
@@ -227,7 +227,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -273,8 +273,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     innerException: invalidAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<Audit> addAuditTask =
@@ -288,7 +288,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

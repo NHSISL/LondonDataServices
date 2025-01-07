@@ -28,8 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             Guid addressId = inputAddress.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAddressByIdAsync(addressId))
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             actualAddress.Should().BeEquivalentTo(expectedAddress);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

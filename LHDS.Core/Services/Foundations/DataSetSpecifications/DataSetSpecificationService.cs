@@ -31,7 +31,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
         public ValueTask<DataSetSpecification> AddDataSetSpecificationAsync(DataSetSpecification dataSetSpecification) =>
             TryCatch(async () =>
             {
-                ValidateDataSetSpecificationOnAdd(dataSetSpecification);
+                await ValidateDataSetSpecificationOnAddAsync(dataSetSpecification);
 
                 return await this.storageBroker.InsertDataSetSpecificationAsync(dataSetSpecification);
             });
@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
         public ValueTask<DataSetSpecification> ModifyDataSetSpecificationAsync(DataSetSpecification dataSetSpecification) =>
             TryCatch(async () =>
             {
-                ValidateDataSetSpecificationOnModify(dataSetSpecification);
+                await ValidateDataSetSpecificationOnModifyAsync(dataSetSpecification);
 
                 DataSetSpecification maybeDataSetSpecification =
                     await this.storageBroker.SelectDataSetSpecificationByIdAsync(dataSetSpecification.Id);

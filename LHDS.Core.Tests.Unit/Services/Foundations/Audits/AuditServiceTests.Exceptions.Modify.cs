@@ -35,8 +35,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     innerException: failedAuditStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(sqlException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<Audit> modifyAuditTask =
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -95,8 +95,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     innerException: invalidAuditReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(foreignKeyConstraintConflictException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
             ValueTask<Audit> modifyAuditTask =
@@ -111,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -150,8 +150,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     innerException: failedAuditStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(databaseUpdateException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(databaseUpdateException);
 
             // when
             ValueTask<Audit> modifyAuditTask =
@@ -166,7 +166,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -206,8 +206,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     innerException: lockedAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(databaseUpdateConcurrencyException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
             ValueTask<Audit> modifyAuditTask =
@@ -222,7 +222,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -262,8 +262,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     innerException: failedAuditServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(serviceException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<Audit> modifyAuditTask =
@@ -278,7 +278,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .BeEquivalentTo(expectedAuditServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

@@ -102,7 +102,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     {
                         unMatchedResolvedAddress.IsProcessing = true;
                         unMatchedResolvedAddress.RetryCount += 1;
-                        unMatchedResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                        unMatchedResolvedAddress.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                         ResolvedAddress updatedAddress = await resolvedAddressProcessingService.
                             ModifyResolvedAddressAsync(unMatchedResolvedAddress);
@@ -126,7 +126,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                                 foundAssignAddress,
                                 foundOrdananceAddress);
 
-                        newResolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                        newResolvedAddress.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                         newResolvedAddress.IsProcessed = true;
 
                         await resolvedAddressProcessingService
@@ -141,7 +141,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                         .RetrieveResolvedAddressByIdAsync(failedToProcessClean.Id);
 
                     failedToProcess.IsProcessing = false;
-                    failedToProcess.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                    failedToProcess.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                     await resolvedAddressProcessingService
                         .ModifyResolvedAddressAsync(failedToProcess);
@@ -208,7 +208,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 .ToList()).Count > 0)
             {
 
-                Guid batchReference = this.identifierBroker.GetIdentifier();
+                Guid batchReference = await this.identifierBroker.GetIdentifierAsync();
                 batchReferenceIds.Add(batchReference);
 
                 try

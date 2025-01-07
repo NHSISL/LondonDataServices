@@ -35,8 +35,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     innerException: failedSupplierStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(sqlException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<Supplier> addSupplierTask =
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 .BeEquivalentTo(expectedSupplierDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -90,8 +90,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     innerException: alreadyExistsSupplierException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(duplicateKeyException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(duplicateKeyException);
 
             // when
             ValueTask<Supplier> addSupplierTask =
@@ -106,7 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 .BeEquivalentTo(expectedSupplierDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -145,8 +145,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     innerException: invalidSupplierReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(foreignKeyConstraintConflictException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
             ValueTask<Supplier> addSupplierTask =
@@ -161,7 +161,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 .BeEquivalentTo(expectedSupplierValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -198,8 +198,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     innerException: failedSupplierStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(databaseUpdateException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(databaseUpdateException);
 
             // when
             ValueTask<Supplier> addSupplierTask =
@@ -214,7 +214,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 .BeEquivalentTo(expectedSupplierDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -249,8 +249,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     innerException: failedSupplierServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(serviceException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<Supplier> addSupplierTask =
@@ -265,7 +265,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 .BeEquivalentTo(expectedSupplierServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

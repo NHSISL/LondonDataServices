@@ -42,8 +42,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    .Returns(new List<ResolvedAddress>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             ResolvedAddress processingResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().DeepClone();
             ResolvedAddress lockedResolvedAddress = processingResolvedAddress;
@@ -90,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    Times.Exactly(2));
 
             this.dateTimeBrokerMock.Verify(broker =>
-               broker.GetCurrentDateTimeOffset(),
+               broker.GetCurrentDateTimeOffsetAsync(),
                    Times.Exactly(2));
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
@@ -144,8 +144,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    .Returns(new List<ResolvedAddress>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
 
             ResolvedAddress processingResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().DeepClone();
             ResolvedAddress lockedResolvedAddress = processingResolvedAddress;
@@ -186,7 +186,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    Times.Exactly(2));
 
             this.dateTimeBrokerMock.Verify(broker =>
-               broker.GetCurrentDateTimeOffset(),
+               broker.GetCurrentDateTimeOffsetAsync(),
                    Times.Exactly(2));
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>

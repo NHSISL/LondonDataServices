@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                             }
 
                             artifact.IsDownloaded = true;
-                            artifact.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                            artifact.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                             await this.terminologyArtifactProcessingService
                                 .ModifyOrAddTerminologyArtifactAsync(artifact);

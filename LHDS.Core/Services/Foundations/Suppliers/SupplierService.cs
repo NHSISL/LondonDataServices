@@ -31,7 +31,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         public ValueTask<Supplier> AddSupplierAsync(Supplier supplier) =>
             TryCatch(async () =>
             {
-                ValidateSupplierOnAdd(supplier);
+                await ValidateSupplierOnAddAsync(supplier);
 
                 Supplier maybeSupplier =
                    await this.storageBroker.SelectSupplierByIdAsync(supplier.Id);
@@ -63,7 +63,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         public ValueTask<Supplier> ModifySupplierAsync(Supplier supplier) =>
             TryCatch(async () =>
             {
-                ValidateSupplierOnModify(supplier);
+                await ValidateSupplierOnModifyAsync(supplier);
 
                 Supplier maybeSupplier =
                     await this.storageBroker.SelectSupplierByIdAsync(supplier.Id);

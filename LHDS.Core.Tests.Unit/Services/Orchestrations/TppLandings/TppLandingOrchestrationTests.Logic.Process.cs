@@ -50,11 +50,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .Returns(randomIngestionTrackings.AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                   .Returns(randomDateTime);
+                broker.GetCurrentDateTimeOffsetAsync())
+                   .ReturnsAsync(randomDateTime);
 
-            this.hashBrokerMock.Setup(broker => broker.GenerateSha256Hash(inputData))
-                .Returns(randomHash);
+            this.hashBrokerMock.Setup(broker => broker.GenerateSha256HashAsync(inputData))
+                .ReturnsAsync(randomHash);
 
             // when
             ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(
@@ -64,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // then
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(inputData),
+                broker.GenerateSha256HashAsync(inputData),
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
@@ -139,16 +139,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .Returns(new List<IngestionTracking>().AsQueryable());
 
             this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256Hash(inputDataStream))
-                    .Returns(randomHash);
+                broker.GenerateSha256HashAsync(inputDataStream))
+                    .ReturnsAsync(randomHash);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTime);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTime);
 
             this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(randomGuid);
+                broker.GetIdentifierAsync())
+                    .ReturnsAsync(randomGuid);
 
             this.dataSetSpecificationProcessingServiceMock.Setup(service =>
                service.GetActiveDataSetSpecification(randomSupplierId))
@@ -212,15 +212,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                    Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(inputDataStream),
+                broker.GenerateSha256HashAsync(inputDataStream),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
+                broker.GetIdentifierAsync(),
                     Times.Once);
 
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>
@@ -283,12 +283,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     .Returns(randomIngestionTrackings.AsQueryable());
 
             this.hashBrokerMock.Setup(broker =>
-               broker.GenerateSha256Hash(inputStream))
-                   .Returns(randomHash);
+               broker.GenerateSha256HashAsync(inputStream))
+                   .ReturnsAsync(randomHash);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTime);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTime);
 
             this.documentProcessingServiceMock
                 .Setup(service =>
@@ -318,11 +318,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(inputStream),
+                broker.GenerateSha256HashAsync(inputStream),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>

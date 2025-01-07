@@ -27,8 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<OptOut> outputOptOuts = randomOptOuts;
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(currentDateTime);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(currentDateTime);
 
             this.optOutProcessingServiceMock.Setup(processing =>
                 processing.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays))
@@ -125,7 +125,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             }
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Exactly(outputOptOuts.Count + 1));
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();

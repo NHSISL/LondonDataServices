@@ -64,9 +64,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             ValidateBlobContainers();
             ValidatePdsArgs(pdsFile, fileName);
 
-            DateTimeOffset timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            Guid id = this.identifierBroker.GetIdentifier();
-            Guid correlationId = this.identifierBroker.GetIdentifier();
+            DateTimeOffset timeStamp = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            Guid id = await this.identifierBroker.GetIdentifierAsync();
+            Guid correlationId = await this.identifierBroker.GetIdentifierAsync();
 
             var meshMessage = await this.meshService.SendMessageAsync(
                    mexTo: this.pdsConfiguration.To,
@@ -141,11 +141,11 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                             }
 
                             var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
-                            DateTimeOffset currentDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                            DateTimeOffset currentDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                             var pdsAudit = new PdsAudit
                             {
-                                Id = this.identifierBroker.GetIdentifier(),
+                                Id = await this.identifierBroker.GetIdentifierAsync(),
                                 CorrelationId = correlationId,
                                 FileName = fileName,
                                 Message = $"Received message from mesh with id {message.MessageId}",

@@ -84,11 +84,11 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
 
                 if (maybeTerminologyPoll == null)
                 {
-                    DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    DateTimeOffset dateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                     TerminologyPoll terminologyPoll = new TerminologyPoll
                     {
-                        Id = this.identifierBroker.GetIdentifier(),
+                        Id = await this.identifierBroker.GetIdentifierAsync(),
                         ResourceType = resourceType,
                         LastPoll = DateTimeOffset.MinValue.AddMilliseconds(1),
                         CreatedBy = "System",

@@ -35,8 +35,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: failedDataTypeStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(sqlException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<DataType> addDataTypeTask =
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 .BeEquivalentTo(expectedDataTypeDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -90,8 +90,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: alreadyExistsDataTypeException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(duplicateKeyException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(duplicateKeyException);
 
             // when
             ValueTask<DataType> addDataTypeTask =
@@ -106,7 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 .BeEquivalentTo(expectedDataTypeDependencyValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -145,8 +145,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: invalidDataTypeReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(foreignKeyConstraintConflictException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(foreignKeyConstraintConflictException);
 
             // when
             ValueTask<DataType> addDataTypeTask =
@@ -161,7 +161,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 .BeEquivalentTo(expectedDataTypeValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -198,8 +198,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: failedDataTypeStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(databaseUpdateException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(databaseUpdateException);
 
             // when
             ValueTask<DataType> addDataTypeTask =
@@ -214,7 +214,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 .BeEquivalentTo(expectedDataTypeDependencyException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -249,8 +249,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: failedDataTypeServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Throws(serviceException);
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<DataType> addDataTypeTask =
@@ -265,7 +265,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 .BeEquivalentTo(expectedDataTypeServiceException);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

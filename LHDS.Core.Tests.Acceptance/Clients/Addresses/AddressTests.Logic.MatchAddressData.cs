@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         public async Task ShouldMatchAddressDataAsync()
         {
             //Given
-            DateTimeOffset randomDateTimeOffset = dateTimeBroker.GetCurrentDateTimeOffset();
+            DateTimeOffset randomDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             string fileName = GetRandomString();
             int count = GetRandomNumber();
             List<dynamic> dynamicAddresses = GetDynamicRandomAddresses();

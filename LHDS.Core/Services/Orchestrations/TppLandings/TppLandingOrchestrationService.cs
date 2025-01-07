@@ -70,11 +70,11 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
 
                 string decryptedFileSha256Hash =
-                    this.hashBroker.GenerateSha256Hash(data: input);
+                    await this.hashBroker.GenerateSha256HashAsync(data: input);
 
                 if (maybeIngestionTracking == null)
                 {
-                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                     DataSetSpecification retrievedDataSetSpecification = await
                         this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
@@ -120,7 +120,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     IngestionTracking newIngestionTracking =
                         new IngestionTracking
                         {
-                            Id = this.identifierBroker.GetIdentifier(),
+                            Id = await this.identifierBroker.GetIdentifierAsync(),
                             SupplierId = supplierId,
                             Container = blobContainers.TppLanding,
                             FileName = filename,
@@ -164,7 +164,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     }
                     else
                     {
-                        var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                        var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                         await this.documentProcessingService.AddDocumentAsync(
                             input,

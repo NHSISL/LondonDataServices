@@ -31,13 +31,13 @@ namespace LHDS.Core.Services.Foundations.DataSets
         public ValueTask<DataSet> AddDataSetAsync(DataSet dataSet) =>
             TryCatch(async () =>
             {
-                ValidateDataSetOnAdd(dataSet);
+                await ValidateDataSetOnAddAsync(dataSet);
 
                 return await this.storageBroker.InsertDataSetAsync(dataSet);
             });
 
-        public IQueryable<DataSet> RetrieveAllDataSets() =>
-            TryCatch(() => this.storageBroker.SelectAllDataSets());
+        public ValueTask<IQueryable<DataSet>> RetrieveAllDataSetsAsync() =>
+            TryCatch(async() => await this.storageBroker.SelectAllDataSetsAsync());
 
         public ValueTask<DataSet> RetrieveDataSetByIdAsync(Guid dataSetId) =>
             TryCatch(async () =>
@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
         public ValueTask<DataSet> ModifyDataSetAsync(DataSet dataSet) =>
             TryCatch(async () =>
             {
-                ValidateDataSetOnModify(dataSet);
+                await ValidateDataSetOnModifyAsync(dataSet);
 
                 DataSet maybeDataSet =
                     await this.storageBroker.SelectDataSetByIdAsync(dataSet.Id);

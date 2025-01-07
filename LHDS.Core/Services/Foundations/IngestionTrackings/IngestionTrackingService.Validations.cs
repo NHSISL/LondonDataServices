@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 
@@ -10,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 {
     public partial class IngestionTrackingService
     {
-        private void ValidateIngestionTrackingOnAdd(IngestionTracking ingestionTracking)
+        private async ValueTask ValidateIngestionTrackingOnAddAsync(IngestionTracking ingestionTracking)
         {
             ValidateIngestionTrackingIsNotNull(ingestionTracking);
 
@@ -39,10 +40,10 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     secondName: nameof(IngestionTracking.CreatedBy)),
                 Parameter: nameof(IngestionTracking.UpdatedBy)),
 
-                (Rule: IsNotRecent(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
+                (Rule: await IsNotRecentAsync(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
         }
 
-        private void ValidateIngestionTrackingOnModify(IngestionTracking ingestionTracking)
+        private async ValueTask ValidateIngestionTrackingOnModifyAsync(IngestionTracking ingestionTracking)
         {
             ValidateIngestionTrackingIsNotNull(ingestionTracking);
 
@@ -65,7 +66,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     secondDateName: nameof(IngestionTracking.CreatedDate)),
                 Parameter: nameof(IngestionTracking.UpdatedDate)),
 
-                (Rule: IsNotRecent(ingestionTracking.UpdatedDate), Parameter: nameof(ingestionTracking.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(ingestionTracking.UpdatedDate), Parameter: nameof(ingestionTracking.UpdatedDate)));
         }
 
         public void ValidateIngestionTrackingId(Guid ingestionTrackingId) =>
@@ -180,16 +181,16 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

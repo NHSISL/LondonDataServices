@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 
@@ -11,7 +12,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 {
     public partial class ResolvedAddressService
     {
-        private void ValidateResolvedAddressOnAdd(ResolvedAddress resolvedAddress)
+        private async ValueTask ValidateResolvedAddressOnAddAsync(ResolvedAddress resolvedAddress)
         {
             ValidateResolvedAddressIsNotNull(resolvedAddress);
 
@@ -39,7 +40,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                     secondName: nameof(ResolvedAddress.CreatedBy)),
                 Parameter: nameof(ResolvedAddress.UpdatedBy)),
 
-                (Rule: IsNotRecent(resolvedAddress.CreatedDate), Parameter: nameof(ResolvedAddress.CreatedDate)));
+                (Rule: await IsNotRecentAsync(resolvedAddress.CreatedDate), Parameter: nameof(ResolvedAddress.CreatedDate)));
         }
 
         private void ValidateOnBulkAddResolvedAddresses(List<ResolvedAddress> resolvedAddresses, string fileName)
@@ -55,7 +56,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 (Rule: IsInvalid(resolvedAddresses), Parameter: nameof(resolvedAddresses)));
         }
 
-        private void ValidateResolvedAddressOnModify(ResolvedAddress resolvedAddress)
+        private async ValueTask ValidateResolvedAddressOnModifyAsync(ResolvedAddress resolvedAddress)
         {
             ValidateResolvedAddressIsNotNull(resolvedAddress);
 
@@ -77,7 +78,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                     secondDateName: nameof(ResolvedAddress.CreatedDate)),
                 Parameter: nameof(ResolvedAddress.UpdatedDate)),
 
-                (Rule: IsNotRecent(resolvedAddress.UpdatedDate), Parameter: nameof(resolvedAddress.UpdatedDate)));
+                (Rule: await IsNotRecentAsync(resolvedAddress.UpdatedDate), Parameter: nameof(resolvedAddress.UpdatedDate)));
         }
 
         public void ValidateResolvedAddressId(Guid resolvedAddressId) =>
@@ -181,16 +182,16 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                Message = $"Text is not the same as {secondName}"
            };
 
-        private dynamic IsNotRecent(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {
-            Condition = IsDateNotRecent(date),
+            Condition = await IsDateNotRecentAsync(date),
             Message = "Date is not recent"
         };
 
-        private bool IsDateNotRecent(DateTimeOffset date)
+        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
         {
             DateTimeOffset currentDateTime =
-                this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
             TimeSpan timeDifference = currentDateTime.Subtract(date);
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);

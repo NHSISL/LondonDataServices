@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
     {
         private delegate ValueTask<IngestionTracking> ReturningIngestionTrackingProcessingFunction();
         private delegate ValueTask<List<string>> ReturningStringListProcessingFunction();
-        private delegate IQueryable<IngestionTracking> ReturningIngestionTrackingsFunction();
+        private delegate ValueTask<IQueryable<IngestionTracking>> ReturningIngestionTrackingsFunction();
 
         private async ValueTask<IngestionTracking> TryCatch(
             ReturningIngestionTrackingProcessingFunction returningIngestionTrackingProcessingFunction)
@@ -105,12 +105,12 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             }
         }
 
-        private IQueryable<IngestionTracking> TryCatch(ReturningIngestionTrackingsFunction
+        private async ValueTask<IQueryable<IngestionTracking>> TryCatch(ReturningIngestionTrackingsFunction
             returningIngestionTrackingsFunction)
         {
             try
             {
-                return returningIngestionTrackingsFunction();
+                return await returningIngestionTrackingsFunction();
             }
             catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {

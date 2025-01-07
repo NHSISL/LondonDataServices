@@ -18,6 +18,7 @@ using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 
 namespace LHDS.Core.Services.Orchestrations.Decryptions
 {
@@ -119,8 +120,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 olderThanDateTimeOffset.AddMinutes(-15);
+                var allIngestionTrackings = await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
-                var item = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                var item = allIngestionTrackings
                     .FirstOrDefault(ingestionTrackingItem =>
                         ingestionTrackingItem.IsDownloaded == true
                         && ingestionTrackingItem.Decrypted == false

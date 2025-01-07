@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             IQueryable<TerminologyPoll> expectedTerminologyPolls = storageTerminologyPolls;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllTerminologyPolls())
+                broker.SelectAllTerminologyPollsAsync())
                     .Returns(storageTerminologyPolls);
 
             // when
@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             actualTerminologyPolls.Should().BeEquivalentTo(expectedTerminologyPolls);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllTerminologyPolls(),
+                broker.SelectAllTerminologyPollsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

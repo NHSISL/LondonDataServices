@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     innerException: failedTerminologyPollStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllTerminologyPolls())
+                broker.SelectAllTerminologyPollsAsync())
                     .Throws(sqlException);
 
             // when
@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllTerminologyPolls(),
+                broker.SelectAllTerminologyPollsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     innerException: failedTerminologyPollServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllTerminologyPolls())
+                broker.SelectAllTerminologyPollsAsync())
                     .Throws(serviceException);
 
             // when
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllTerminologyPolls(),
+                broker.SelectAllTerminologyPollsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

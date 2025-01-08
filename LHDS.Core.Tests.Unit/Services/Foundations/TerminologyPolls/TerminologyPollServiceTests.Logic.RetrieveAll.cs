@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
     public partial class TerminologyPollServiceTests
     {
         [Fact]
-        public void ShouldReturnTerminologyPolls()
+        public async Task ShouldReturnTerminologyPolls()
         {
             // given
             IQueryable<TerminologyPoll> randomTerminologyPolls = CreateRandomTerminologyPolls();
@@ -22,11 +23,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllTerminologyPollsAsync())
-                    .Returns(storageTerminologyPolls);
+                    .ReturnsAsync(storageTerminologyPolls);
 
             // when
             IQueryable<TerminologyPoll> actualTerminologyPolls =
-                this.terminologyPollService.RetrieveAllTerminologyPolls();
+                await this.terminologyPollService.RetrieveAllTerminologyPollsAsync();
 
             // then
             actualTerminologyPolls.Should().BeEquivalentTo(expectedTerminologyPolls);

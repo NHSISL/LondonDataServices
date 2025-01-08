@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -14,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
     public partial class TerminologyPollServiceTests
     {
         [Fact]
-        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogItAsync()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -34,11 +37,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     .Throws(sqlException);
 
             // when
-            Action retrieveAllTerminologyPollsAction = () =>
-                this.terminologyPollService.RetrieveAllTerminologyPolls();
+            ValueTask<IQueryable<TerminologyPoll>> retrieveAllTerminologyPollsTask =
+                this.terminologyPollService.RetrieveAllTerminologyPollsAsync();
 
             TerminologyPollDependencyException actualTerminologyPollDependencyException =
-                Assert.Throws<TerminologyPollDependencyException>(retrieveAllTerminologyPollsAction);
+                await Assert.ThrowsAsync<TerminologyPollDependencyException>(
+                    testCode: retrieveAllTerminologyPollsTask.AsTask);
 
             // then
             actualTerminologyPollDependencyException.Should()
@@ -59,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string exceptionMessage = GetRandomString();
@@ -80,11 +84,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     .Throws(serviceException);
 
             // when
-            Action retrieveAllTerminologyPollsAction = () =>
-                this.terminologyPollService.RetrieveAllTerminologyPolls();
+            ValueTask<IQueryable<TerminologyPoll>> retrieveAllTerminologyPollsTask =
+                this.terminologyPollService.RetrieveAllTerminologyPollsAsync();
 
             TerminologyPollServiceException actualTerminologyPollServiceException =
-                Assert.Throws<TerminologyPollServiceException>(retrieveAllTerminologyPollsAction);
+                await Assert.ThrowsAsync<TerminologyPollServiceException>(
+                    testCode: retrieveAllTerminologyPollsTask.AsTask);
 
             // then
             actualTerminologyPollServiceException.Should()

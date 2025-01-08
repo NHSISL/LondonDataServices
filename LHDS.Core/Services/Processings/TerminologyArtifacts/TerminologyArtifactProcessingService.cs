@@ -27,11 +27,8 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }
-        public IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifactsAsync() =>
-            TryCatch(() =>
-            {
-                return this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
-            });
+        public ValueTask<IQueryable<TerminologyArtifact>> RetrieveAllTerminologyArtifactsAsync() =>
+            TryCatch(async () => await this.terminologyArtifactService.RetrieveAllTerminologyArtifactsAsync());
 
         public ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid Id) =>
             TryCatch(async () =>
@@ -48,9 +45,11 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                 ValidateTerminologyArtifact(terminologyArtifact);
                 ValidateId(terminologyArtifact.Id);
 
-                var maybeTerminologyArtifact =
-                    this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
-                        .FirstOrDefault(artifact => artifact.FullUrl == terminologyArtifact.FullUrl);
+                var allTerminologyArtifacts =
+                    await this.terminologyArtifactService.RetrieveAllTerminologyArtifactsAsync();
+
+                var maybeTerminologyArtifact = allTerminologyArtifacts
+                    .FirstOrDefault(artifact => artifact.FullUrl == terminologyArtifact.FullUrl);
 
                 if (maybeTerminologyArtifact != null)
                 {
@@ -77,8 +76,11 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
         public ValueTask<TerminologyArtifact?> GetNonDownloadedArtifactAsync() =>
             TryCatch(async () =>
             {
+                IQueryable<TerminologyArtifact> allTerminologyArtifacts =
+                     await this.terminologyArtifactService.RetrieveAllTerminologyArtifactsAsync();
+
                 TerminologyArtifact? nonDownloadedArtifact =
-                     this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
+                    allTerminologyArtifacts
                         .OrderBy(terminologyArtifact => terminologyArtifact.ResourceType)
                         .FirstOrDefault(terminologyArtifact =>
                             terminologyArtifact.IsCore == true

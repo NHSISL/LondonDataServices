@@ -73,12 +73,12 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.TerminologyArtifact, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public ActionResult<IQueryable<TerminologyArtifact>> Get()
+        public async ValueTask<ActionResult<IQueryable<TerminologyArtifact>>> Get()
         {
             try
             {
                 IQueryable<TerminologyArtifact> retrievedTerminologyArtifacts =
-                    this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
+                    await this.terminologyArtifactService.RetrieveAllTerminologyArtifactsAsync();
 
                 return Ok(retrievedTerminologyArtifacts);
             }

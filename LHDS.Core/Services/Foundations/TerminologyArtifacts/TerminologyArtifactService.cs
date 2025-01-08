@@ -36,8 +36,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 return await this.storageBroker.InsertTerminologyArtifactAsync(terminologyArtifact);
             });
 
-        public IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifacts() =>
-            TryCatch(() => this.storageBroker.SelectAllTerminologyArtifacts());
+        public ValueTask<IQueryable<TerminologyArtifact>> RetrieveAllTerminologyArtifactsAsync() =>
+            TryCatch(async () => await this.storageBroker.SelectAllTerminologyArtifactsAsync());
 
         public ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid terminologyArtifactId) =>
             TryCatch(async () =>

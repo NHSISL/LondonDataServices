@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -14,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
     public partial class TerminologyArtifactServiceTests
     {
         [Fact]
-        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -30,22 +33,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     innerException: failedTerminologyArtifactStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllTerminologyArtifacts())
-                    .Throws(sqlException);
+                broker.SelectAllTerminologyArtifactsAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
-            Action retrieveAllTerminologyArtifactsAction = () =>
-                this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
+            ValueTask<IQueryable<TerminologyArtifact>> retrieveAllTerminologyArtifactsTask =
+                this.terminologyArtifactService.RetrieveAllTerminologyArtifactsAsync();
 
             TerminologyArtifactDependencyException actualTerminologyArtifactDependencyException =
-                Assert.Throws<TerminologyArtifactDependencyException>(retrieveAllTerminologyArtifactsAction);
+                await Assert.ThrowsAsync<TerminologyArtifactDependencyException>(
+                    testCode: retrieveAllTerminologyArtifactsTask.AsTask);
 
             // then
             actualTerminologyArtifactDependencyException.Should()
                 .BeEquivalentTo(expectedTerminologyArtifactDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllTerminologyArtifacts(),
+                broker.SelectAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -59,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string exceptionMessage = GetRandomString();
@@ -76,22 +80,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     innerException: failedTerminologyArtifactServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllTerminologyArtifacts())
-                    .Throws(serviceException);
+                broker.SelectAllTerminologyArtifactsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action retrieveAllTerminologyArtifactsAction = () =>
-                this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
+            ValueTask<IQueryable<TerminologyArtifact>> retrieveAllTerminologyArtifactsTask =
+                this.terminologyArtifactService.RetrieveAllTerminologyArtifactsAsync();
 
             TerminologyArtifactServiceException actualTerminologyArtifactServiceException =
-                Assert.Throws<TerminologyArtifactServiceException>(retrieveAllTerminologyArtifactsAction);
+                await Assert.ThrowsAsync<TerminologyArtifactServiceException>(
+                    testCode: retrieveAllTerminologyArtifactsTask.AsTask);
 
             // then
             actualTerminologyArtifactServiceException.Should()
                 .BeEquivalentTo(expectedTerminologyArtifactServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllTerminologyArtifacts(),
+                broker.SelectAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new List<IngestionTracking> { storageIngestionTracking }.AsQueryable();
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllIngestionTrackings())
+                broker.SelectAllIngestionTrackingsAsync())
                     .Returns(storageIngestionTrackings);
 
             // when

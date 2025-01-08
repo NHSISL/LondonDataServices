@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
     public partial class SupplierServiceTests
     {
         [Fact]
-        public async Task ShouldReturnSuppliers()
+        public async Task ShouldReturnSuppliersAsync()
         {
             // given
             IQueryable<Supplier> randomSuppliers = CreateRandomSuppliers();

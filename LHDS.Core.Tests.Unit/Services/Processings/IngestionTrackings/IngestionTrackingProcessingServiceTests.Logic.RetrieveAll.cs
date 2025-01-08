@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
     public partial class IngestionTrackingProcessingServiceTests
     {
         [Fact]
-        public void ShouldRetrieveAllIngestionTrackings()
+        public void ShouldRetrieveAllIngestionTrackingsAsync()
         {
             // given
             List<IngestionTracking> randomIngestionTrackings = CreateRandomIngestionTrackings();
@@ -22,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             IQueryable<IngestionTracking> expectedIngestionTrackings = storageIngestionTrackings.AsQueryable();
 
             this.ingestionTrackingServiceMock.Setup(broker =>
-                broker.RetrieveAllIngestionTrackings())
+                broker.RetrieveAllIngestionTrackingsAsync())
                     .Returns(storageIngestionTrackings.AsQueryable());
 
             // when
             IQueryable<IngestionTracking> actualIngestionTrackings =
-                this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings();
+                this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
 
             // then
             actualIngestionTrackings.Should().BeEquivalentTo(expectedIngestionTrackings);
 
             this.ingestionTrackingServiceMock.Verify(broker =>
-                broker.RetrieveAllIngestionTrackings(),
+                broker.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();

@@ -189,8 +189,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             Guid supplierId,
             string fileName)
         {
-            IngestionTracking? maybeIngestionTracking =
-                this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
+            IQueryable<IngestionTracking> allIngestionTrackings =
+                await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
+
+            IngestionTracking? maybeIngestionTracking = allIngestionTrackings
                     .FirstOrDefault(ingestionTracking =>
                         ingestionTracking.FileName == fileName);
 

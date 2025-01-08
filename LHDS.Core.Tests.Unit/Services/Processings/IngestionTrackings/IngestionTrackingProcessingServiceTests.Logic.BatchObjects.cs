@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
-                    .Returns(storageIngestionTrackings.AsQueryable());
+                    .ReturnsAsync(storageIngestionTrackings.AsQueryable());
 
             // When
             List<string> actualIngestionTracking =

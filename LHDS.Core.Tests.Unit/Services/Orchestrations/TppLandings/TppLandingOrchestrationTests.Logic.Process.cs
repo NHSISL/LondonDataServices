@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
-                    .Returns(randomIngestionTrackings.AsQueryable());
+                    .ReturnsAsync(randomIngestionTrackings.AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
-                    .Returns(new List<IngestionTracking>().AsQueryable());
+                    .ReturnsAsync(new List<IngestionTracking>().AsQueryable());
 
             this.hashBrokerMock.Setup(broker =>
                 broker.GenerateSha256HashAsync(inputDataStream))
@@ -280,7 +280,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
-                    .Returns(randomIngestionTrackings.AsQueryable());
+                    .ReturnsAsync(randomIngestionTrackings.AsQueryable());
 
             this.hashBrokerMock.Setup(broker =>
                broker.GenerateSha256HashAsync(inputStream))

@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
-                    .Returns(new List<IngestionTracking>().AsQueryable());
+                    .ReturnsAsync(new List<IngestionTracking>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -410,7 +410,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
-                    .Returns(ftpFileList.AsQueryable());
+                    .ReturnsAsync(ftpFileList.AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -486,7 +486,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
-                    .Returns(externalIngestionTrackingsFound.AsQueryable());
+                    .ReturnsAsync(externalIngestionTrackingsFound.AsQueryable());
 
             // when
             await this.emisLandingOrchestrationService

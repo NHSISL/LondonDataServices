@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             this.ingestionTrackingServiceMock.Setup(service =>
                service.RetrieveAllIngestionTrackingsAsync())
-                   .Returns(new List<IngestionTracking> { storageIngestionTracking }.AsQueryable());
+                   .ReturnsAsync(new List<IngestionTracking> { storageIngestionTracking }.AsQueryable());
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))))

@@ -33,8 +33,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                 return await this.ingestionTrackingAuditService.AddIngestionTrackingAuditAsync(audit);
             });
 
-        public IQueryable<IngestionTrackingAudit> RetrieveAllIngestionTrackingAudits() =>
-            TryCatch(() => this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits());
+        public ValueTask<IQueryable<IngestionTrackingAudit>> RetrieveAllIngestionTrackingAuditsAsync() =>
+            TryCatch(async() => await this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync());
 
         public ValueTask<IngestionTrackingAudit> RetrieveIngestionTrackingAuditByIdAsync(Guid auditId) =>
             TryCatch(async () =>

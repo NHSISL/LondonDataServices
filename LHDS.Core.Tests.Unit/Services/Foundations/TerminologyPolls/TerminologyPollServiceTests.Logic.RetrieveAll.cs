@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
     public partial class TerminologyPollServiceTests
     {
         [Fact]
-        public async Task ShouldReturnTerminologyPolls()
+        public async Task ShouldReturnTerminologyPollsAsync()
         {
             // given
             IQueryable<TerminologyPoll> randomTerminologyPolls = CreateRandomTerminologyPolls();

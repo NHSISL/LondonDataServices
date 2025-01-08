@@ -79,8 +79,9 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
 
         private async ValueTask<Supplier> GetEmisSupplier()
         {
-            return supplierService.RetrieveAllSuppliers()
-                .First(s => s.Name == "EMIS");
+            IQueryable<Supplier> retrievedSuppliers = await supplierService.RetrieveAllSuppliersAsync();
+
+            return retrievedSuppliers.First(s => s.Name == "EMIS");
         }
     }
 }

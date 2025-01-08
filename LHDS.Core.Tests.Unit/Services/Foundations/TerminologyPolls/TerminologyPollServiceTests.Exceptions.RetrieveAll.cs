@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllTerminologyPollsAsync())
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<IQueryable<TerminologyPoll>> retrieveAllTerminologyPollsTask =
@@ -81,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllTerminologyPollsAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<IQueryable<TerminologyPoll>> retrieveAllTerminologyPollsTask =

@@ -57,12 +57,12 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IQueryable<TerminologyPoll>> GetAllTerminologyPolls()
+        public async ValueTask<ActionResult<IQueryable<TerminologyPoll>>> GetAllTerminologyPolls()
         {
             try
             {
                 IQueryable<TerminologyPoll> retrievedTerminologyPolls =
-                    this.terminologyPollService.RetrieveAllTerminologyPolls();
+                    await this.terminologyPollService.RetrieveAllTerminologyPollsAsync();
 
                 return Ok(retrievedTerminologyPolls);
             }

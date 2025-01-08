@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
@@ -14,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
     public partial class IngestionTrackingProcessingServiceTests
     {
         [Fact]
-        public void ShouldRetrieveAllIngestionTrackingsAsync()
+        public async Task ShouldRetrieveAllIngestionTrackingsAsync()
         {
             // given
             List<IngestionTracking> randomIngestionTrackings = CreateRandomIngestionTrackings();
@@ -23,11 +24,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             this.ingestionTrackingServiceMock.Setup(broker =>
                 broker.RetrieveAllIngestionTrackingsAsync())
-                    .Returns(storageIngestionTrackings.AsQueryable());
+                    .ReturnsAsync(storageIngestionTrackings.AsQueryable());
 
             // when
             IQueryable<IngestionTracking> actualIngestionTrackings =
-                this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
+                await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
 
             // then
             actualIngestionTrackings.Should().BeEquivalentTo(expectedIngestionTrackings);

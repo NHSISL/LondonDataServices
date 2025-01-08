@@ -115,12 +115,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             IQueryable<TerminologyArtifact> retrievedTerminologyArtifacts =
                 await this.terminologyArtifactService.RetrieveAllTerminologyArtifactsAsync();
 
-            List<TerminologyArtifact> mathcedTerminologyArtifacts =
+            List<TerminologyArtifact> maatchedTerminologyArtifacts =
                 retrievedTerminologyArtifacts.Where(artifact => artifact.ResourceType == resourceType).ToList();
 
-            mathcedTerminologyArtifacts.Count().Should().BeGreaterThan(0);
+            maatchedTerminologyArtifacts.Count().Should().BeGreaterThan(0);
 
-            foreach (TerminologyArtifact artifact in mathcedTerminologyArtifacts)
+            foreach (TerminologyArtifact artifact in maatchedTerminologyArtifacts)
             {
                 await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(artifact.Id);
             }

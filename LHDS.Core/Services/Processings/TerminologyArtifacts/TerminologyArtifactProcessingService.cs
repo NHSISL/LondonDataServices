@@ -45,10 +45,10 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                 ValidateTerminologyArtifact(terminologyArtifact);
                 ValidateId(terminologyArtifact.Id);
 
-                var allTerminologyArtifacts =
+                var retrievedTerminologyArtifacts =
                     await this.terminologyArtifactService.RetrieveAllTerminologyArtifactsAsync();
 
-                var maybeTerminologyArtifact = allTerminologyArtifacts
+                var maybeTerminologyArtifact = retrievedTerminologyArtifacts
                     .FirstOrDefault(artifact => artifact.FullUrl == terminologyArtifact.FullUrl);
 
                 if (maybeTerminologyArtifact != null)
@@ -76,11 +76,11 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
         public ValueTask<TerminologyArtifact?> GetNonDownloadedArtifactAsync() =>
             TryCatch(async () =>
             {
-                IQueryable<TerminologyArtifact> allTerminologyArtifacts =
+                IQueryable<TerminologyArtifact> retrievedTerminologyArtifacts =
                      await this.terminologyArtifactService.RetrieveAllTerminologyArtifactsAsync();
 
                 TerminologyArtifact? nonDownloadedArtifact =
-                    allTerminologyArtifacts
+                    retrievedTerminologyArtifacts
                         .OrderBy(terminologyArtifact => terminologyArtifact.ResourceType)
                         .FirstOrDefault(terminologyArtifact =>
                             terminologyArtifact.IsCore == true

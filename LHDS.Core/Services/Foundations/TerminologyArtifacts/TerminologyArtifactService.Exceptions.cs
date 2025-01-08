@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
     public partial class TerminologyArtifactService
     {
         private delegate ValueTask<TerminologyArtifact> ReturningTerminologyArtifactFunction();
-        private delegate IQueryable<TerminologyArtifact> ReturningTerminologyArtifactsFunction();
+        private delegate ValueTask<IQueryable<TerminologyArtifact>> ReturningTerminologyArtifactsFunction();
 
         private async ValueTask<TerminologyArtifact> TryCatch(
             ReturningTerminologyArtifactFunction returningTerminologyArtifactFunction)
@@ -94,12 +94,12 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             }
         }
 
-        private IQueryable<TerminologyArtifact> TryCatch(
+        private async ValueTask<IQueryable<TerminologyArtifact>> TryCatch(
             ReturningTerminologyArtifactsFunction returningTerminologyArtifactsFunction)
         {
             try
             {
-                return returningTerminologyArtifactsFunction();
+                return await returningTerminologyArtifactsFunction();
             }
             catch (SqlException sqlException)
             {

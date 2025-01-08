@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -14,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
     public partial class SupplierServiceTests
     {
         [Fact]
-        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -30,22 +33,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     innerException: failedStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllSuppliers())
-                    .Throws(sqlException);
+                broker.SelectAllSuppliersAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
-            Action retrieveAllSuppliersAction = () =>
-                this.supplierService.RetrieveAllSuppliers();
+            ValueTask<IQueryable<Supplier>> retrieveAllSuppliersAction =
+                this.supplierService.RetrieveAllSuppliersAsync();
 
             SupplierDependencyException actualSupplierDependencyException =
-                Assert.Throws<SupplierDependencyException>(retrieveAllSuppliersAction);
+                await Assert.ThrowsAsync<SupplierDependencyException>(
+                    testCode: retrieveAllSuppliersAction.AsTask);
 
             // then
             actualSupplierDependencyException.Should()
                 .BeEquivalentTo(expectedSupplierDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllSuppliers(),
+                broker.SelectAllSuppliersAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -59,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string exceptionMessage = GetRandomMessage();
@@ -76,22 +80,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     innerException: failedSupplierServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllSuppliers())
+                broker.SelectAllSuppliersAsync())
                     .Throws(serviceException);
 
             // when
-            Action retrieveAllSuppliersAction = () =>
-                this.supplierService.RetrieveAllSuppliers();
+            ValueTask<IQueryable<Supplier>> retrieveAllSuppliersAction =
+                this.supplierService.RetrieveAllSuppliersAsync();
 
             SupplierServiceException actualSupplierServiceException =
-                Assert.Throws<SupplierServiceException>(retrieveAllSuppliersAction);
+                await Assert.ThrowsAsync<SupplierServiceException>(
+                    testCode: retrieveAllSuppliersAction.AsTask);
 
             // then
             actualSupplierServiceException.Should()
                 .BeEquivalentTo(expectedSupplierServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllSuppliers(),
+                broker.SelectAllSuppliersAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

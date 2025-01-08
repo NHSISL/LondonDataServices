@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllIngestionTrackingsAsync())
-                    .Returns(storageIngestionTrackings);
+                    .ReturnsAsync(storageIngestionTrackings);
 
             // when
             IngestionTracking actualIngestionTracking =
@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllIngestionTrackings(),
+                broker.SelectAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

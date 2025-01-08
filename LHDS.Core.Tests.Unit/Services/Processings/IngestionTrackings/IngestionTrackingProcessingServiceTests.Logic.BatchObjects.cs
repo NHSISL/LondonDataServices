@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             List<string> expectedIngestionTracking = ingestionTrackingObjects.DeepClone();
 
             this.ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
+                service.RetrieveAllIngestionTrackingsAsync())
                     .Returns(storageIngestionTrackings.AsQueryable());
 
             // When
@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();

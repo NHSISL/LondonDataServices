@@ -13,7 +13,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
     public partial class IngestionTrackingAuditProcessingServiceTests
     {
         [Fact]
-        public void ShouldRetrieveAllIngestionTrackings()
+        public void ShouldRetrieveAllIngestionTrackingsAsync()
         {
             // given
             IQueryable<IngestionTrackingAudit> randomIngestionTrackings = CreateRandomIngestionTrackingAudits();

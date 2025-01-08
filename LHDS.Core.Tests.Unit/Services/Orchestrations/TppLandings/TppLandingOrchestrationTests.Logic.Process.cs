@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             randomIngestionTracking.FileName = inputFileName;
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
+                service.RetrieveAllIngestionTrackingsAsync())
                     .Returns(randomIngestionTrackings.AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -68,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     Times.Never);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
@@ -135,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
+                service.RetrieveAllIngestionTrackingsAsync())
                     .Returns(new List<IngestionTracking>().AsQueryable());
 
             this.hashBrokerMock.Setup(broker =>
@@ -208,7 +208,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             // then
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-               service.RetrieveAllIngestionTrackings(),
+               service.RetrieveAllIngestionTrackingsAsync(),
                    Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
@@ -279,7 +279,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             updatedIngestionTracking.DecryptedFileSha256Hash = randomHash;
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
+                service.RetrieveAllIngestionTrackingsAsync())
                     .Returns(randomIngestionTrackings.AsQueryable());
 
             this.hashBrokerMock.Setup(broker =>
@@ -314,7 +314,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             // then
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.hashBrokerMock.Verify(broker =>

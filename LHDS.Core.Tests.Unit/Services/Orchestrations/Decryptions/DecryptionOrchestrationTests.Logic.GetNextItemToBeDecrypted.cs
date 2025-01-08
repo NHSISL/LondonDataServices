@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             var outputIngestionTracking = updatedIngestionTracking.DeepClone();
 
             this.ingestionTrackingServiceMock.Setup(service =>
-               service.RetrieveAllIngestionTrackings())
+               service.RetrieveAllIngestionTrackingsAsync())
                    .Returns(new List<IngestionTracking> { storageIngestionTracking }.AsQueryable());
 
             this.ingestionTrackingServiceMock.Setup(service =>
@@ -57,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             actualEncryptedFileName.Should().Be(storageIngestionTracking.EncryptedFileName);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-              service.RetrieveAllIngestionTrackings(),
+              service.RetrieveAllIngestionTrackingsAsync(),
                   Times.Once);
 
             this.ingestionTrackingServiceMock.Verify(service =>

@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Azure.Core.Pipeline;
@@ -178,13 +179,37 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
 
+        public static X509Certificate2 LoadCertificate(byte[] certBytes, string password)
+        {
+            try
+            {
+                // Try to load as PKCS#12
+                return X509CertificateLoader.LoadPkcs12(certBytes, password);
+            }
+            catch (CryptographicException)
+            {
+                // If it fails, try to load as a regular certificate
+                return X509CertificateLoader.LoadCertificate(certBytes);
+            }
+        }
+
         private static X509Certificate2? GetCertificate(string value)
         {
             if (!string.IsNullOrEmpty(value))
             {
-                byte[] certBytes = Convert.FromBase64String(value);
-
-                return X509CertificateLoader.LoadCertificate(certBytes);
+                try
+                {
+                    byte[] certBytes = Convert.FromBase64String(value);
+                    return LoadCertificate(certBytes, string.Empty);
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine($"Invalid Base64 string: {ex.Message}");
+                }
+                catch (CryptographicException ex)
+                {
+                    Console.WriteLine($"Error loading certificate: {ex.Message}");
+                }
             }
 
             return null;
@@ -201,7 +226,7 @@ namespace LHDS.Core.Clients.Extensions
                 foreach (string item in values)
                 {
                     byte[] certBytes = Convert.FromBase64String(item);
-                    certificates.Add(X509CertificateLoader.LoadCertificate(certBytes));
+                    certificates.Add(LoadCertificate(certBytes, string.Empty));
                 }
             }
 

@@ -12,7 +12,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
     public interface IIngestionTrackingAuditService
     {
         ValueTask<IngestionTrackingAudit> AddIngestionTrackingAuditAsync(IngestionTrackingAudit audit);
-        IQueryable<IngestionTrackingAudit> RetrieveAllIngestionTrackingAudits();
+        ValueTask<IQueryable<IngestionTrackingAudit>> RetrieveAllIngestionTrackingAuditsAsync();
         ValueTask<IngestionTrackingAudit> RetrieveIngestionTrackingAuditByIdAsync(Guid auditId);
         ValueTask<IngestionTrackingAudit> ModifyIngestionTrackingAuditAsync(IngestionTrackingAudit audit);
         ValueTask<IngestionTrackingAudit> RemoveIngestionTrackingAuditByIdAsync(Guid auditId);

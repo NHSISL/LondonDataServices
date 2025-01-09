@@ -118,9 +118,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             List<TerminologyArtifact> matchedTerminologyArtifacts =
                 retrievedTerminologyArtifacts.Where(artifact => artifact.ResourceType == resourceType).ToList();
 
-            maatchedTerminologyArtifacts.Count().Should().BeGreaterThan(0);
+            matchedTerminologyArtifacts.Count().Should().BeGreaterThan(0);
 
-            foreach (TerminologyArtifact artifact in maatchedTerminologyArtifacts)
+            foreach (TerminologyArtifact artifact in matchedTerminologyArtifacts)
             {
                 await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(artifact.Id);
             }

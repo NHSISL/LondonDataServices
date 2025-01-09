@@ -61,7 +61,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             }
         }
 
-        private async ValueTask<IQueryable<IngestionTrackingAudit>> TryCatch(ReturningIngestionTrackingAuditsFunction returningIngestionTrackingAuditsFunction)
+        private async ValueTask<IQueryable<IngestionTrackingAudit>> TryCatch(
+            ReturningIngestionTrackingAuditsFunction returningIngestionTrackingAuditsFunction)
         {
             try
             {

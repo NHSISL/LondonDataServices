@@ -21,18 +21,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             IQueryable<IngestionTrackingAudit> expectedIngestionTrackingAudits = storageIngestionTrackingAudits;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllIngestionTrackingAudits())
+                broker.SelectAllIngestionTrackingAuditsAsync())
                     .Returns(storageIngestionTrackingAudits);
 
             // when
             IQueryable<IngestionTrackingAudit> actualIngestionTrackingAudits =
-                this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits();
+                this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync(;
 
             // then
             actualIngestionTrackingAudits.Should().BeEquivalentTo(expectedIngestionTrackingAudits);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllIngestionTrackingAudits(),
+                broker.SelectAllIngestionTrackingAuditsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

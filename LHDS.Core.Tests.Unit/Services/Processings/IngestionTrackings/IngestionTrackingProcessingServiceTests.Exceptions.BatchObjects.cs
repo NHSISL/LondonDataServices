@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<List<string>> retrieveObjectsTask =
@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<List<string>> retrieveObjectsTask =
@@ -118,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<string>> retrieveObjectsTask =

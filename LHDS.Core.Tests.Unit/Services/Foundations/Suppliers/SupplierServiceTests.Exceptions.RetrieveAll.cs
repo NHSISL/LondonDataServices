@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     .Throws(serviceException);
 
             // when
-            ValueTask<IQueryable<Supplier>> retrieveAllSuppliersAction =
+            ValueTask<IQueryable<Supplier>> retrieveAllSuppliersTask =
                 this.supplierService.RetrieveAllSuppliersAsync();
 
             SupplierServiceException actualSupplierServiceException =

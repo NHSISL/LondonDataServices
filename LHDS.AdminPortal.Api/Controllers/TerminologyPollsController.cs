@@ -57,7 +57,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-        public async ValueTask<ActionResult<IQueryable<TerminologyPoll>>> GetAllTerminologyPolls()
+        public async ValueTask<ActionResult<IQueryable<TerminologyPoll>>> GetAllTerminologyPollsAsync()
         {
             try
             {

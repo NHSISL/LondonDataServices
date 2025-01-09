@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
     public partial class TerminologyArtifactServiceTests
     {
         [Fact]
-        public async Task ShouldReturnTerminologyArtifacts()
+        public async Task ShouldReturnTerminologyArtifactsAsync()
         {
             // given
             IQueryable<TerminologyArtifact> randomTerminologyArtifacts = CreateRandomTerminologyArtifacts();

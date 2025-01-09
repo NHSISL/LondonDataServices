@@ -33,9 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask<List<string>> retrieveObjectsTask =
-                this.specificationObjectProcessingService
-                    .RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(someId);
+            ValueTask<List<string>> retrieveObjectsTask = this.specificationObjectProcessingService
+                .RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(someId);
 
             SpecificationObjectProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<SpecificationObjectProcessingDependencyValidationException>(
@@ -75,9 +74,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<List<string>> retrieveObjectsTask =
-                this.specificationObjectProcessingService
-                    .RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(someId);
+            ValueTask<List<string>> retrieveObjectsTask = this.specificationObjectProcessingService
+                .RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(someId);
 
             SpecificationObjectProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<SpecificationObjectProcessingDependencyException>(
@@ -122,9 +120,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<List<string>> addSpecificationObjectTask =
-                this.specificationObjectProcessingService
-                    .RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(someId);
+            ValueTask<List<string>> addSpecificationObjectTask = this.specificationObjectProcessingService
+                .RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(someId);
 
             SpecificationObjectProcessingServiceException actualException =
                 await Assert.ThrowsAsync<SpecificationObjectProcessingServiceException>(

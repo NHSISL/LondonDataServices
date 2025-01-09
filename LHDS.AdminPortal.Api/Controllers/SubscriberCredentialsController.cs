@@ -99,12 +99,12 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-        public ActionResult<IQueryable<SubscriberCredential>> Get()
+        public async ValueTask<ActionResult<IQueryable<SubscriberCredential>>> GetAsync()
         {
             try
             {
                 IQueryable<SubscriberCredential> retrievedSubscriberCredentials =
-                    this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentials();
+                    await this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentialsAsync();
 
                 return Ok(retrievedSubscriberCredentials);
             }

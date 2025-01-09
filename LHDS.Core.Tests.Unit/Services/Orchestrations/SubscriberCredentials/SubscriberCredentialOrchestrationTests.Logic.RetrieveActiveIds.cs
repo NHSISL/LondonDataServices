@@ -33,18 +33,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
             }
 
             this.subscriberAgreementProcessingServiceMock.Setup(service =>
-                service.RetrieveAllSubscriberAgreements())
-                    .Returns(storageSubscriberAgreements.AsQueryable());
+                service.RetrieveAllSubscriberAgreementsAsync())
+                    .ReturnsAsync(storageSubscriberAgreements.AsQueryable());
 
             // When
             List<Guid> actualSubscriberCredentialIds = await this.subscriberCredentialOrchestration
-                .RetrieveAllActiveSubscriberCredentialIds();
+                .RetrieveAllActiveSubscriberCredentialIdsAsync();
 
             // Then
             actualSubscriberCredentialIds.Should().BeEquivalentTo(expectedSubscriberCredentialIds);
 
             this.subscriberAgreementProcessingServiceMock.Verify(service =>
-                service.RetrieveAllSubscriberAgreements(),
+                service.RetrieveAllSubscriberAgreementsAsync(),
                     Times.Once);
 
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();

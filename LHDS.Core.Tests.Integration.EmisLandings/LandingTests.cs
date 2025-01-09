@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
             landingClient = serviceProvider.GetService<IEmisLandingClient>();
         }
 
-        private async ValueTask<Supplier> GetEmisSupplier()
+        private async ValueTask<Supplier> GetEmisSupplierAsync()
         {
             IQueryable<Supplier> retrievedSuppliers = await supplierService.RetrieveAllSuppliersAsync();
 

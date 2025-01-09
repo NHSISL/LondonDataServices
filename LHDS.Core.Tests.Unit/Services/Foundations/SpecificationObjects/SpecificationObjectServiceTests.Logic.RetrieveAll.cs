@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
     public partial class SpecificationObjectServiceTests
     {
         [Fact]
-        public void ShouldReturnSpecificationObjects()
+        public async Task ShouldReturnSpecificationObjectsAsync()
         {
             // given
             IQueryable<SpecificationObject> randomSpecificationObjects = CreateRandomSpecificationObjects();
@@ -21,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             IQueryable<SpecificationObject> expectedSpecificationObjects = storageSpecificationObjects;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllSpecificationObjects())
-                    .Returns(storageSpecificationObjects);
+                broker.SelectAllSpecificationObjectsAsync())
+                    .ReturnsAsync(storageSpecificationObjects);
 
             // when
             IQueryable<SpecificationObject> actualSpecificationObjects =
-                this.specificationObjectService.RetrieveAllSpecificationObjects();
+                await this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
 
             // then
             actualSpecificationObjects.Should().BeEquivalentTo(expectedSpecificationObjects);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllSpecificationObjects(),
+                broker.SelectAllSpecificationObjectsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

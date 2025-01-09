@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             SupplierDependencyException actualSupplierDependencyException =
                 await Assert.ThrowsAsync<SupplierDependencyException>(
-                    testCode: retrieveAllSuppliersAction.AsTask);
+                    testCode: retrieveAllSuppliersTask.AsTask);
 
             // then
             actualSupplierDependencyException.Should()
@@ -81,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllSuppliersAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<IQueryable<Supplier>> retrieveAllSuppliersTask =
@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             SupplierServiceException actualSupplierServiceException =
                 await Assert.ThrowsAsync<SupplierServiceException>(
-                    testCode: retrieveAllSuppliersAction.AsTask);
+                    testCode: retrieveAllSuppliersTask.AsTask);
 
             // then
             actualSupplierServiceException.Should()

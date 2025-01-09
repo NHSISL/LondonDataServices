@@ -3,8 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Processings.IngestionTrackingAudits.Exceptions;
 using Moq;
 using Xeptions;
@@ -30,12 +32,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            Action ingestionTrackingAuditRetrieveAllAction = () =>
-                ingestionTrackingAuditProcessingService.RetrieveAllIngestionTrackingAuditsAsync();
+            ValueTask<IQueryable<IngestionTrackingAudit>> ingestionTrackingAuditRetrieveAllTask =
+                this.ingestionTrackingAuditProcessingService.RetrieveAllIngestionTrackingAuditsAsync();
 
             IngestionTrackingAuditProcessingDependencyValidationException actualException =
-                Assert.Throws<IngestionTrackingAuditProcessingDependencyValidationException>(
-                    ingestionTrackingAuditRetrieveAllAction);
+                await Assert.ThrowsAsync<IngestionTrackingAuditProcessingDependencyValidationException>(
+                    ingestionTrackingAuditRetrieveAllTask.AsTask);
 
             // then
             actualException.Should()
@@ -56,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public void ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -70,11 +72,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
                     .ThrowsAsync(dependencyException);
 
             // when
-            Action ingestionTrackingAuditRetrieveAllAction = () =>
-                ingestionTrackingAuditProcessingService.RetrieveAllIngestionTrackingAuditsAsync();
+            ValueTask<IQueryable<IngestionTrackingAudit>> ingestionTrackingAuditRetrieveAllTask =
+                this.ingestionTrackingAuditProcessingService.RetrieveAllIngestionTrackingAuditsAsync();
 
             IngestionTrackingAuditProcessingDependencyException actualException =
-                Assert.Throws<IngestionTrackingAuditProcessingDependencyException>(ingestionTrackingAuditRetrieveAllAction);
+                await Assert.ThrowsAsync<IngestionTrackingAuditProcessingDependencyException>(
+                    ingestionTrackingAuditRetrieveAllTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingAuditProcessingDependencyException);
@@ -93,7 +96,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
         {
             // given
             var serviceException = new Exception();
@@ -113,12 +116,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
                     .ThrowsAsync(serviceException);
 
             // when
-            Action ingestionTrackingAuditRetrieveAllAction = () =>
-                ingestionTrackingAuditProcessingService.RetrieveAllIngestionTrackingAuditsAsync();
+            ValueTask<IQueryable<IngestionTrackingAudit>> ingestionTrackingAuditRetrieveAllTask =
+                this.ingestionTrackingAuditProcessingService.RetrieveAllIngestionTrackingAuditsAsync();
 
             IngestionTrackingAuditProcessingServiceException actualException =
-                Assert.Throws<IngestionTrackingAuditProcessingServiceException>(
-                    ingestionTrackingAuditRetrieveAllAction);
+                await Assert.ThrowsAsync<IngestionTrackingAuditProcessingServiceException>(
+                    ingestionTrackingAuditRetrieveAllTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingAuditProcessingServiveException);

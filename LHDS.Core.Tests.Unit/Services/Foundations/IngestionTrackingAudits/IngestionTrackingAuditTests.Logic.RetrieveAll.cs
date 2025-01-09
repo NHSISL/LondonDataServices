@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
     public partial class IngestionTrackingAuditTests
     {
         [Fact]
-        public void ShouldReturnAudits()
+        public async Task ShouldReturnAuditsAsync()
         {
             // given
             IQueryable<IngestionTrackingAudit> randomIngestionTrackingAudits = CreateRandomIngestionTrackingAudits();
@@ -22,11 +23,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllIngestionTrackingAuditsAsync())
-                    .Returns(storageIngestionTrackingAudits);
+                    .ReturnsAsync(storageIngestionTrackingAudits);
 
             // when
             IQueryable<IngestionTrackingAudit> actualIngestionTrackingAudits =
-                this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync(;
+                await this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync();
 
             // then
             actualIngestionTrackingAudits.Should().BeEquivalentTo(expectedIngestionTrackingAudits);

@@ -115,7 +115,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             IQueryable<TerminologyArtifact> retrievedTerminologyArtifacts =
                 await this.terminologyArtifactService.RetrieveAllTerminologyArtifactsAsync();
 
-            List<TerminologyArtifact> maatchedTerminologyArtifacts =
+            List<TerminologyArtifact> matchedTerminologyArtifacts =
                 retrievedTerminologyArtifacts.Where(artifact => artifact.ResourceType == resourceType).ToList();
 
             maatchedTerminologyArtifacts.Count().Should().BeGreaterThan(0);

@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.RetrieveAllTerminologyArtifactsAsync())
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<IQueryable<TerminologyArtifact>> retrieveAllTerminologyArtifactsTask =
@@ -68,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.RetrieveAllTerminologyArtifactsAsync())
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<IQueryable<TerminologyArtifact>> retrieveAllTerminologyArtifactsTask =
@@ -112,7 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             this.terminologyArtifactServiceMock.Setup(service =>
                  service.RetrieveAllTerminologyArtifactsAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<IQueryable<TerminologyArtifact>> retrieveAllTerminologyArtifactsTask =

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
     public partial class IngestionTrackingAuditProcessingServiceTests
     {
         [Fact]
-        public void ShouldRetrieveAllIngestionTrackings()
+        public async Task ShouldRetrieveAllIngestionTrackings()
         {
             // given
             IQueryable<IngestionTrackingAudit> randomIngestionTrackings = CreateRandomIngestionTrackingAudits();
@@ -21,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
             IQueryable<IngestionTrackingAudit> expectedIngestionTrackings = storageIngestionTrackings;
 
             this.ingestionTrackingAuditServiceMock.Setup(broker =>
-                broker.RetrieveAllIngestionTrackingAuditsAsync()
-                    .Returns(storageIngestionTrackings);
+                broker.RetrieveAllIngestionTrackingAuditsAsync())
+                    .ReturnsAsync(storageIngestionTrackings);
 
             // when
             IQueryable<IngestionTrackingAudit> actualIngestionTrackingAudits =
-                this.ingestionTrackingAuditProcessingService.RetrieveAllIngestionTrackingAuditsAsync(;
+                await this.ingestionTrackingAuditProcessingService.RetrieveAllIngestionTrackingAuditsAsync();
 
             // then
             actualIngestionTrackingAudits.Should().BeEquivalentTo(expectedIngestionTrackings);
 
             this.ingestionTrackingAuditServiceMock.Verify(broker =>
-                broker.RetrieveAllIngestionTrackingAuditsAsync(,
+                broker.RetrieveAllIngestionTrackingAuditsAsync(),
                     Times.Once);
 
             this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();

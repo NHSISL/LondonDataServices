@@ -15,17 +15,21 @@ namespace LHDS.Core.Tests.Integration.Addresses
         public async Task ShouldMatchAddressDataAsync()
         {
             //Given
-            IQueryable<ResolvedAddress> unprocessedResolvedAddresses =
-                this.resolvedAddressService.RetrieveAllResolvedAddresses().Where(
-                    address => address.IsProcessed == false);
+            IQueryable<ResolvedAddress> retrievedResolvedAddresses =
+                    await this.resolvedAddressService.RetrieveAllResolvedAddressesAsync();
+
+            IQueryable<ResolvedAddress> unprocessedResolvedAddresses = retrievedResolvedAddresses
+                .Where(address => address.IsProcessed == false);
 
             //When
             await this.addressClient.MatchAddressDataAsync();
 
             //Then
-            IQueryable<ResolvedAddress> processedResolvedAddress =
-                this.resolvedAddressService.RetrieveAllResolvedAddresses().Where(
-                    address => address.IsProcessed == true);
+            IQueryable<ResolvedAddress> resultantRetrievedResolvedAddresses =
+                    await this.resolvedAddressService.RetrieveAllResolvedAddressesAsync();
+
+            IQueryable<ResolvedAddress> processedResolvedAddress = resultantRetrievedResolvedAddresses
+                .Where(address => address.IsProcessed == true);
 
             List<ResolvedAddress> unmatchedResolvedAddress =
                 unprocessedResolvedAddresses.Intersect(processedResolvedAddress).ToList();

@@ -58,12 +58,12 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IQueryable<ResolvedAddress>> GetAllResolvedAddresses()
+        public async ValueTask<ActionResult<IQueryable<ResolvedAddress>>> GetAllResolvedAddressesAsync()
         {
             try
             {
                 IQueryable<ResolvedAddress> retrievedResolvedAddresses =
-                    this.resolvedAddressService.RetrieveAllResolvedAddresses();
+                    await this.resolvedAddressService.RetrieveAllResolvedAddressesAsync();
 
                 return Ok(retrievedResolvedAddresses);
             }

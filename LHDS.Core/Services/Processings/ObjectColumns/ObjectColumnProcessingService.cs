@@ -32,7 +32,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
                 return await this.objectColumnService.AddObjectColumnAsync(objectColumn);
             });
 
-        public ValueTask<IQueryable<ObjectColumn>> RetrieveAllObjectColumnsasync() =>
+        public ValueTask<IQueryable<ObjectColumn>> RetrieveAllObjectColumnsAsync() =>
             TryCatch(async () => await this.objectColumnService.RetrieveAllObjectColumnsAsync());
 
         public ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId) =>

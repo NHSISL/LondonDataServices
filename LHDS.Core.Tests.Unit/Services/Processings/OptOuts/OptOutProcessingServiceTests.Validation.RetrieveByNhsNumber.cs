@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 .BeEquivalentTo(expectedOptOutProcessingValidationException);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveAllOptOuts(),
+                service.RetrieveAllOptOutsAsync(),
                     Times.Never());
 
             this.loggingBrokerMock.Verify(broker =>

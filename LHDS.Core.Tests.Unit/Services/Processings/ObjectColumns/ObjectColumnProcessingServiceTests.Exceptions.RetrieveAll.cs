@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Processings.ObjectColumns.Exceptions;
 using Moq;
 using Xeptions;
@@ -15,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public void ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -29,11 +32,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            Action objectColumnRetrieveAction = () =>
+            ValueTask<IQueryable<ObjectColumn>> objectColumnRetrieveTask =
                 objectColumnProcessingService.RetrieveAllObjectColumnsAsync();
 
             ObjectColumnProcessingDependencyValidationException actualException =
-                Assert.Throws<ObjectColumnProcessingDependencyValidationException>(objectColumnRetrieveAction);
+                await Assert.ThrowsAsync<ObjectColumnProcessingDependencyValidationException>(objectColumnRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingDependencyValidationException);
@@ -53,7 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public void ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -67,11 +70,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                     .ThrowsAsync(dependencyException);
 
             // when
-            Action objectColumnRetrieveAction = () =>
+            ValueTask<IQueryable<ObjectColumn>> objectColumnRetrieveTask =
                 objectColumnProcessingService.RetrieveAllObjectColumnsAsync();
 
             ObjectColumnProcessingDependencyException actualException =
-                Assert.Throws<ObjectColumnProcessingDependencyException>(objectColumnRetrieveAction);
+                await Assert.ThrowsAsync<ObjectColumnProcessingDependencyException>(objectColumnRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingDependencyException);
@@ -90,7 +93,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
         {
             // given
             var serviceException = new Exception();
@@ -110,11 +113,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                     .ThrowsAsync(serviceException);
 
             // when
-            Action objectColumnRetrieveAction = () =>
+            ValueTask<IQueryable<ObjectColumn>> objectColumnRetrieveTask =
                 objectColumnProcessingService.RetrieveAllObjectColumnsAsync();
 
             ObjectColumnProcessingServiceException actualException =
-                Assert.Throws<ObjectColumnProcessingServiceException>(objectColumnRetrieveAction);
+                await Assert.ThrowsAsync<ObjectColumnProcessingServiceException>(
+                    objectColumnRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingServiveException);

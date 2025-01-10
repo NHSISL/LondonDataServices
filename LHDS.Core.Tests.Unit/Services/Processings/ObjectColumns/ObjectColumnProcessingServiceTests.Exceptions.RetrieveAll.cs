@@ -74,7 +74,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                 objectColumnProcessingService.RetrieveAllObjectColumnsAsync();
 
             ObjectColumnProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<ObjectColumnProcessingDependencyException>(objectColumnRetrieveTask.AsTask);
+                await Assert.ThrowsAsync<ObjectColumnProcessingDependencyException>(
+                    objectColumnRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingDependencyException);

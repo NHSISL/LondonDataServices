@@ -59,12 +59,12 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             }
         }
 
-        private ValueTask<IQueryable<ObjectColumn>> TryCatch(
+        private async ValueTask<IQueryable<ObjectColumn>> TryCatch(
             ReturningObjectColumnsFunction returningObjectColumnsFunction)
         {
             try
             {
-                return returningObjectColumnsFunction();
+                return await returningObjectColumnsFunction();
             }
             catch (ObjectColumnValidationException objectColumnValidationException)
             {

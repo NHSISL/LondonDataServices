@@ -75,7 +75,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             try
             {
                 IQueryable<ObjectColumn> retrievedObjectColumns =
-                    this.objectColumnService.RetrieveAllObjectColumns();
+                    this.objectColumnService.RetrieveAllObjectColumnsAsync();
 
                 return Ok(retrievedObjectColumns);
             }

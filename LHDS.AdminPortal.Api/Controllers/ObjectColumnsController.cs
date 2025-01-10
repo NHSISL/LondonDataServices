@@ -70,12 +70,12 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.ObjectColumns, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public ActionResult<IQueryable<ObjectColumn>> Get()
+        public async ValueTask<ActionResult<IQueryable<ObjectColumn>>> Get()
         {
             try
             {
                 IQueryable<ObjectColumn> retrievedObjectColumns =
-                    this.objectColumnService.RetrieveAllObjectColumnsAsync();
+                    await this.objectColumnService.RetrieveAllObjectColumnsAsync();
 
                 return Ok(retrievedObjectColumns);
             }

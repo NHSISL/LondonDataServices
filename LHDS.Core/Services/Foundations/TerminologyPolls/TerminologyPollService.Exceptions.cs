@@ -155,7 +155,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             return terminologyPollDependencyValidationException;
         }
 
-        private TerminologyPollDependencyException CreateAndLogDependencyException(
+        private async ValueTask<TerminologyPollDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
             var terminologyPollDependencyException =
@@ -163,7 +163,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                     message: "TerminologyPoll dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(terminologyPollDependencyException);
+            await this.loggingBroker.LogErrorAsync(terminologyPollDependencyException);
 
             return terminologyPollDependencyException;
         }

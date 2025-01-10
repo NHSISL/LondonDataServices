@@ -25,12 +25,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             objectColumnServiceMock.Setup(service =>
-                service.RetrieveAllObjectColumns())
-                    .Throws(dependencyValidationException);
+                service.RetrieveAllObjectColumnsAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             Action objectColumnRetrieveAction = () =>
-                objectColumnProcessingService.RetrieveAllObjectColumns();
+                objectColumnProcessingService.RetrieveAllObjectColumnsAsync();
 
             ObjectColumnProcessingDependencyValidationException actualException =
                 Assert.Throws<ObjectColumnProcessingDependencyValidationException>(objectColumnRetrieveAction);
@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
             actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingDependencyValidationException);
 
             objectColumnServiceMock.Verify(service =>
-                service.RetrieveAllObjectColumns(),
+                service.RetrieveAllObjectColumnsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
@@ -63,12 +63,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                     innerException: dependencyException.InnerException as Xeption);
 
             objectColumnServiceMock.Setup(service =>
-                service.RetrieveAllObjectColumns())
-                    .Throws(dependencyException);
+                service.RetrieveAllObjectColumnsAsync())
+                    .ThrowsAsync(dependencyException);
 
             // when
             Action objectColumnRetrieveAction = () =>
-                objectColumnProcessingService.RetrieveAllObjectColumns();
+                objectColumnProcessingService.RetrieveAllObjectColumnsAsync();
 
             ObjectColumnProcessingDependencyException actualException =
                 Assert.Throws<ObjectColumnProcessingDependencyException>(objectColumnRetrieveAction);
@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
             actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingDependencyException);
 
             objectColumnServiceMock.Verify(service =>
-                service.RetrieveAllObjectColumns(),
+                service.RetrieveAllObjectColumnsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
@@ -106,12 +106,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                     innerException: failedObjectColumnProcessingServiceException);
 
             objectColumnServiceMock.Setup(service =>
-                service.RetrieveAllObjectColumns())
-                    .Throws(serviceException);
+                service.RetrieveAllObjectColumnsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             Action objectColumnRetrieveAction = () =>
-                objectColumnProcessingService.RetrieveAllObjectColumns();
+                objectColumnProcessingService.RetrieveAllObjectColumnsAsync();
 
             ObjectColumnProcessingServiceException actualException =
                 Assert.Throws<ObjectColumnProcessingServiceException>(objectColumnRetrieveAction);
@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
             actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingServiveException);
 
             objectColumnServiceMock.Verify(service =>
-                service.RetrieveAllObjectColumns(),
+                service.RetrieveAllObjectColumnsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>

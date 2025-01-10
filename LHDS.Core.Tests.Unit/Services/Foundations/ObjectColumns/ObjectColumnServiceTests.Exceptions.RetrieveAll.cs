@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -14,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
     public partial class ObjectColumnServiceTests
     {
         [Fact]
-        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -30,22 +33,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     innerException: failedObjectColumnStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllObjectColumns())
-                    .Throws(sqlException);
+                broker.SelectAllObjectColumnsAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
-            Action retrieveAllObjectColumnsAction = () =>
-                this.objectColumnService.RetrieveAllObjectColumns();
+            ValueTask<IQueryable<ObjectColumn>> retrieveAllObjectColumnsTask =
+                this.objectColumnService.RetrieveAllObjectColumnsAsync();
 
             ObjectColumnDependencyException actualObjectColumnDependencyException =
-                Assert.Throws<ObjectColumnDependencyException>(retrieveAllObjectColumnsAction);
+                await Assert.ThrowsAsync<ObjectColumnDependencyException>(retrieveAllObjectColumnsTask.AsTask);
 
             // then
             actualObjectColumnDependencyException.Should()
                 .BeEquivalentTo(expectedObjectColumnDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllObjectColumns(),
+                broker.SelectAllObjectColumnsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -59,7 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string exceptionMessage = GetRandomString();
@@ -76,22 +79,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     innerException: failedObjectColumnServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllObjectColumns())
-                    .Throws(serviceException);
+                broker.SelectAllObjectColumnsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action retrieveAllObjectColumnsAction = () =>
-                this.objectColumnService.RetrieveAllObjectColumns();
+            ValueTask<IQueryable<ObjectColumn>> retrieveAllObjectColumnsTask =
+                this.objectColumnService.RetrieveAllObjectColumnsAsync();
 
-            ObjectColumnServiceException actualObjectColumnServiceException =
-                Assert.Throws<ObjectColumnServiceException>(retrieveAllObjectColumnsAction);
+            ObjectColumnDependencyException actualObjectColumnServiceException =
+                await Assert.ThrowsAsync<ObjectColumnDependencyException>(retrieveAllObjectColumnsTask.AsTask);
 
             // then
             actualObjectColumnServiceException.Should()
                 .BeEquivalentTo(expectedObjectColumnServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllObjectColumns(),
+                broker.SelectAllObjectColumnsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

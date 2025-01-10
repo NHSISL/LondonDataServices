@@ -86,8 +86,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             ValueTask<IQueryable<ObjectColumn>> retrieveAllObjectColumnsTask =
                 this.objectColumnService.RetrieveAllObjectColumnsAsync();
 
-            ObjectColumnDependencyException actualObjectColumnServiceException =
-                await Assert.ThrowsAsync<ObjectColumnDependencyException>(retrieveAllObjectColumnsTask.AsTask);
+            ObjectColumnServiceException actualObjectColumnServiceException =
+                await Assert.ThrowsAsync<ObjectColumnServiceException>(retrieveAllObjectColumnsTask.AsTask);
 
             // then
             actualObjectColumnServiceException.Should()

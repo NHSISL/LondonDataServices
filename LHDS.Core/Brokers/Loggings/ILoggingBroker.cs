@@ -11,11 +11,8 @@ namespace LHDS.Core.Brokers.Loggings
     {
         void LogInformation(string message);
         ValueTask LogInformationAsync(string message);
-        void LogTrace(string message);
         ValueTask LogTraceAsync(string message);
-        void LogDebug(string message);
         ValueTask LogDebugAsync(string message);
-        void LogWarning(string message);
         ValueTask LogWarningAsync(string message);
         void LogError(Exception exception);
         ValueTask LogErrorAsync(Exception exception);

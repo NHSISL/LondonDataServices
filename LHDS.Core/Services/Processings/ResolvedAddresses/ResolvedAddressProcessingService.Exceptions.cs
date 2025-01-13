@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         private delegate ValueTask ReturningNothingProcessingFunction();
         private delegate ValueTask<ResolvedAddress> ReturningResolvedAddressProcessingFunction();
         private delegate ValueTask<bool> ReturningBooleanProcessingFunction();
-        private delegate IQueryable<ResolvedAddress> ReturningResolvedAddressesFunction();
+        private delegate ValueTask<IQueryable<ResolvedAddress>> ReturningResolvedAddressesFunction();
 
         private async ValueTask TryCatch(
             ReturningNothingProcessingFunction returningNothingProcessingFunction)
@@ -141,12 +141,12 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             }
         }
 
-        private IQueryable<ResolvedAddress> TryCatch(
+        private async ValueTask<IQueryable<ResolvedAddress>> TryCatch(
             ReturningResolvedAddressesFunction returningResolvedAddressesFunction)
         {
             try
             {
-                return returningResolvedAddressesFunction();
+                return await returningResolvedAddressesFunction();
             }
             catch (ResolvedAddressValidationException resolvedAddressValidationException)
             {

@@ -12,7 +12,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
     public interface IObjectColumnProcessingService
     {
         ValueTask<ObjectColumn> AddObjectColumnAsync(ObjectColumn objectColumn);
-        IQueryable<ObjectColumn> RetrieveAllObjectColumns();
+        ValueTask<IQueryable<ObjectColumn>> RetrieveAllObjectColumnsAsync();
         ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId);
         ValueTask<ObjectColumn> RetrieveOrAddObjectColumnAsync(ObjectColumn objectColumn);
         ValueTask<ObjectColumn> ModifyOrAddObjectColumnAsync(ObjectColumn objectColumn);

@@ -12,7 +12,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
     public interface ISpecificationObjectService
     {
         ValueTask<SpecificationObject> AddSpecificationObjectAsync(SpecificationObject specificationObject);
-        IQueryable<SpecificationObject> RetrieveAllSpecificationObjects();
+        ValueTask<IQueryable<SpecificationObject>> RetrieveAllSpecificationObjectsAsync();
         ValueTask<SpecificationObject> RetrieveSpecificationObjectByIdAsync(Guid specificationObjectId);
         ValueTask<SpecificationObject> ModifySpecificationObjectAsync(SpecificationObject specificationObject);
         ValueTask<SpecificationObject> RemoveSpecificationObjectByIdAsync(Guid specificationObjectId);

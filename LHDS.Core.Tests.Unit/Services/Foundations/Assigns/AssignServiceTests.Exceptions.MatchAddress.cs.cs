@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Assigns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedAssignAddressServiveException))),
                          Times.Once);
 

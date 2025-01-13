@@ -71,12 +71,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     addressDependencyException))),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressServiceException))),
                         Times.Once);
 
@@ -143,12 +143,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     addressDependencyValidationException))),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualAddressServiceException))),
                         Times.Once);
 
@@ -213,12 +213,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     addressDependencyException))),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressServiceException))),
                         Times.Once);
 
@@ -280,7 +280,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .BeEquivalentTo(expectedAddressServiceException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressServiceException))),
                         Times.Once);
 

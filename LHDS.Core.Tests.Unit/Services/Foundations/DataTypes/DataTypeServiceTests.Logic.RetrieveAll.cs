@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
     public partial class DataTypeServiceTests
     {
         [Fact]
-        public async Task ShouldReturnDataTypes()
+        public async Task ShouldReturnDataTypesAsync()
         {
             // given
             IQueryable<DataType> randomDataTypes = CreateRandomDataTypes();

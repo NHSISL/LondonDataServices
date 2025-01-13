@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 .ReturnsAsync(storageIngestionTracking);
 
             this.specificationObjectProcessingServiceMock.Setup(service =>
-                service.RetrieveSpecificationObjectsByDataSetSpecificationId(datasetSpecificationId))
+                service.RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(datasetSpecificationId))
                     .ReturnsAsync(dataSetSpecificationObjects);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
@@ -55,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     Times.Once);
 
             this.specificationObjectProcessingServiceMock.Verify(service =>
-                service.RetrieveSpecificationObjectsByDataSetSpecificationId(datasetSpecificationId),
+                service.RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(datasetSpecificationId),
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
@@ -108,7 +108,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 .ReturnsAsync(storageIngestionTracking);
 
             this.specificationObjectProcessingServiceMock.Setup(service =>
-                service.RetrieveSpecificationObjectsByDataSetSpecificationId(datasetSpecificationId))
+                service.RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(datasetSpecificationId))
                     .ReturnsAsync(dataSetSpecificationObjects);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     Times.Once);
 
             this.specificationObjectProcessingServiceMock.Verify(service =>
-                service.RetrieveSpecificationObjectsByDataSetSpecificationId(datasetSpecificationId),
+                service.RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(datasetSpecificationId),
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>

@@ -38,7 +38,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.OptOut, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public ActionResult<IQueryable<OptOut>> Get()
+        public async ValueTask<ActionResult<IQueryable<OptOut>>> Get()
         {
             try
             {

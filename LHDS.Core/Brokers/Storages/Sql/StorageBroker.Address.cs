@@ -22,7 +22,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
             await InsertAsync(address);
 
         public async ValueTask<IQueryable<Address>> SelectAllAddressesAsync() => await SelectAllAsync<Address>();
-        //public IQueryable<Address> SelectAllAddresses() => SelectAll<Address>();
 
         public async ValueTask<Address> SelectAddressByIdAsync(Guid addressId) =>
             await SelectAsync<Address>(addressId);

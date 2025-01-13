@@ -110,7 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             addressServiceMock.Setup(service =>
                 service.RetrieveAllAddressesAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<IQueryable<Address>> addressRetrieveTask =

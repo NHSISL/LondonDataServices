@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
     public partial class AddressServiceTests
     {
         [Fact]
-        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogItAsync()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllAddressesAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<IQueryable<Address>> retrieveAllAddressesTask =

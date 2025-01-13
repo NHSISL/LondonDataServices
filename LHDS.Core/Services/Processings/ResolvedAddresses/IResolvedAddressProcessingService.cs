@@ -14,7 +14,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
     {
         ValueTask<ResolvedAddress> AddResolvedAddressAsync(ResolvedAddress resolvedAddress);
         ValueTask BulkAddResolvedAddressesAsync(List<ResolvedAddress> resolvedAddresses, string fileName);
-        IQueryable<ResolvedAddress> RetrieveAllResolvedAddresses();
+        ValueTask<IQueryable<ResolvedAddress>> RetrieveAllResolvedAddressesAsync();
         ValueTask<ResolvedAddress> RetrieveResolvedAddressByIdAsync(Guid resolvedAddressId);
         ValueTask<ResolvedAddress> RetrieveOrAddResolvedAddressAsync(ResolvedAddress resolvedAddress);
         ValueTask<ResolvedAddress> ModifyOrAddResolvedAddressAsync(ResolvedAddress resolvedAddress);

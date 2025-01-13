@@ -195,7 +195,6 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 IQueryable<Address> allreturnedAddresses = await this.storageBroker.SelectAllAddressesAsync();
 
                 List<Address> matchedAddresses = allreturnedAddresses
-                    .ToList()
                     .Where(address => address.PostCode.Equals(postCode, StringComparison.OrdinalIgnoreCase))
                     .ToList();
 

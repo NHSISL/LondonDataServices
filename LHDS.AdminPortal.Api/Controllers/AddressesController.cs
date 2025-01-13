@@ -57,7 +57,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-        public async ValueTask<ActionResult<IQueryable<Address>>> GetAllAddresses()
+        public async ValueTask<ActionResult<IQueryable<Address>>> GetAllAddressesAsync()
         {
             try
             {

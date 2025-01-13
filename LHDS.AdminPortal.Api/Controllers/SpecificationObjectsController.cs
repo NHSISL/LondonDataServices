@@ -73,7 +73,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.SpecificationObjects, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<IQueryable<SpecificationObject>>> GetAsync()
+        public async ValueTask<ActionResult<IQueryable<SpecificationObject>>> Get()
         {
             try
             {

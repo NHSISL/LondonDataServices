@@ -99,7 +99,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-        public async ValueTask<ActionResult<IQueryable<SubscriberCredential>>> GetAsync()
+        public async ValueTask<ActionResult<IQueryable<SubscriberCredential>>> Get()
         {
             try
             {

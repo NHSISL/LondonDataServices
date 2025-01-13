@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -14,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
     public partial class SpecificationObjectServiceTests
     {
         [Fact]
-        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogItAsync()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -30,22 +33,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     innerException: failedSpecificationObjectStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllSpecificationObjects())
-                    .Throws(sqlException);
+                broker.SelectAllSpecificationObjectsAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
-            Action retrieveAllSpecificationObjectsAction = () =>
-                this.specificationObjectService.RetrieveAllSpecificationObjects();
+            ValueTask<IQueryable<SpecificationObject>> retrieveAllSpecificationObjectsTask =
+                this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
 
             SpecificationObjectDependencyException actualSpecificationObjectDependencyException =
-                Assert.Throws<SpecificationObjectDependencyException>(retrieveAllSpecificationObjectsAction);
+                await Assert.ThrowsAsync<SpecificationObjectDependencyException>(
+                    testCode: retrieveAllSpecificationObjectsTask.AsTask);
 
             // then
             actualSpecificationObjectDependencyException.Should()
                 .BeEquivalentTo(expectedSpecificationObjectDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllSpecificationObjects(),
+                broker.SelectAllSpecificationObjectsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -59,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string exceptionMessage = GetRandomString();
@@ -76,22 +80,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     innerException: failedSpecificationObjectServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllSpecificationObjects())
-                    .Throws(serviceException);
+                broker.SelectAllSpecificationObjectsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action retrieveAllSpecificationObjectsAction = () =>
-                this.specificationObjectService.RetrieveAllSpecificationObjects();
+            ValueTask<IQueryable<SpecificationObject>> retrieveAllSpecificationObjectsTask =
+                this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
 
             SpecificationObjectServiceException actualSpecificationObjectServiceException =
-                Assert.Throws<SpecificationObjectServiceException>(retrieveAllSpecificationObjectsAction);
+                await Assert.ThrowsAsync<SpecificationObjectServiceException>(
+                    testCode: retrieveAllSpecificationObjectsTask.AsTask);
 
             // then
             actualSpecificationObjectServiceException.Should()
                 .BeEquivalentTo(expectedSpecificationObjectServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllSpecificationObjects(),
+                broker.SelectAllSpecificationObjectsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

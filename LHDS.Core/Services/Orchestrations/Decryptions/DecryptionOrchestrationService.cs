@@ -123,7 +123,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 IQueryable<IngestionTracking> allIngestionTrackings =
                     await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
-                var item = allIngestionTrackings
+                IngestionTracking item = allIngestionTrackings
                     .FirstOrDefault(ingestionTrackingItem =>
                         ingestionTrackingItem.IsDownloaded == true
                         && ingestionTrackingItem.Decrypted == false

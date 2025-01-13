@@ -15,7 +15,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
     public partial class ObjectColumnProcessingService : IObjectColumnProcessingService
     {
         private delegate ValueTask<ObjectColumn> ReturningObjectColumnProcessingFunction();
-        private delegate IQueryable<ObjectColumn> ReturningObjectColumnsFunction();
+        private delegate ValueTask<IQueryable<ObjectColumn>> ReturningObjectColumnsFunction();
 
         private async ValueTask<ObjectColumn> TryCatch(
             ReturningObjectColumnProcessingFunction returningObjectColumnProcessingFunction)
@@ -59,11 +59,12 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             }
         }
 
-        private IQueryable<ObjectColumn> TryCatch(ReturningObjectColumnsFunction returningObjectColumnsFunction)
+        private async ValueTask<IQueryable<ObjectColumn>> TryCatch(
+            ReturningObjectColumnsFunction returningObjectColumnsFunction)
         {
             try
             {
-                return returningObjectColumnsFunction();
+                return await returningObjectColumnsFunction();
             }
             catch (ObjectColumnValidationException objectColumnValidationException)
             {

@@ -31,19 +31,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
                 .ToList();
 
             this.specificationObjectServiceMock.Setup(service =>
-                service.RetrieveAllSpecificationObjects())
-                    .Returns(storageSpecificationObjects.AsQueryable());
+                service.RetrieveAllSpecificationObjectsAsync())
+                    .ReturnsAsync(storageSpecificationObjects.AsQueryable());
 
             // When
             List<string> actualSpecificationObjects =
                 await this.specificationObjectProcessingService
-                    .RetrieveSpecificationObjectsByDataSetSpecificationId(randomDataSetSpecificationId);
+                    .RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(randomDataSetSpecificationId);
 
             // Then
             actualSpecificationObjects.Should().BeEquivalentTo(expectedSpecificationObjects);
 
             this.specificationObjectServiceMock.Verify(service =>
-                service.RetrieveAllSpecificationObjects(),
+                service.RetrieveAllSpecificationObjectsAsync(),
                     Times.Once);
 
             this.specificationObjectServiceMock.VerifyNoOtherCalls();

@@ -33,10 +33,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             Guid batchReference = Guid.NewGuid();
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
-                service.RetrieveAllResolvedAddresses())
-                    .Returns(storageResolvedAddresses.AsQueryable())
-                    .Returns(storageResolvedAddresses.AsQueryable())
-                    .Returns(new List<ResolvedAddress>().AsQueryable());
+                service.RetrieveAllResolvedAddressesAsync())
+                    .ReturnsAsync(storageResolvedAddresses.AsQueryable())
+                    .ReturnsAsync(storageResolvedAddresses.AsQueryable())
+                    .ReturnsAsync(new List<ResolvedAddress>().AsQueryable());
 
             processingResolvedAddresses.ForEach(pra =>
             {
@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Once());
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>
-                service.RetrieveAllResolvedAddresses(),
+                service.RetrieveAllResolvedAddressesAsync(),
                     Times.Exactly(2));
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>

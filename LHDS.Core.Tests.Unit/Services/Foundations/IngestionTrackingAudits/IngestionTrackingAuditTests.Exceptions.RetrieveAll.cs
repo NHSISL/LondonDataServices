@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllIngestionTrackingAuditsAsync())
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<IQueryable<IngestionTrackingAudit>> retrieveAllIngestionTrackingAuditsTask = 
@@ -81,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllIngestionTrackingAuditsAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<IQueryable<IngestionTrackingAudit>> retrieveAllIngestionTrackingAuditsTask =

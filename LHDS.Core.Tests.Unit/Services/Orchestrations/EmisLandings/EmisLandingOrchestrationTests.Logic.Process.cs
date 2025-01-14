@@ -59,8 +59,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                    .ReturnsAsync(externalDownloadList);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Returns(new List<IngestionTracking>().AsQueryable());
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ReturnsAsync(new List<IngestionTracking>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -219,7 +219,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Exactly(externalDownloadList.Count + 1));
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -409,8 +409,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                    .ReturnsAsync(externalDownloadList);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Returns(ftpFileList.AsQueryable());
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ReturnsAsync(ftpFileList.AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -427,7 +427,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Exactly(randomFileNames.Count + 1));
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -485,8 +485,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     .ReturnsAsync(externalDownloadList);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Returns(externalIngestionTrackingsFound.AsQueryable());
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ReturnsAsync(externalIngestionTrackingsFound.AsQueryable());
 
             // when
             await this.emisLandingOrchestrationService
@@ -503,7 +503,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                 .Where(ingestionTracking => ingestionTracking.LastSeen <= expireTime).ToList();
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             foreach (var ingestionTracking in expiredIngestionTrackings)

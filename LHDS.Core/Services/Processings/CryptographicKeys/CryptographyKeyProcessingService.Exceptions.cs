@@ -24,24 +24,24 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             }
             catch (CryptographyKeyValidationException cryptographyKeyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(cryptographyKeyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(cryptographyKeyValidationException);
             }
             catch (CryptographyKeyDependencyValidationException cryptographyKeyDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(cryptographyKeyDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(cryptographyKeyDependencyValidationException);
             }
             catch (CryptographyKeyDependencyException cryptographyKeyDependencyException)
             {
-                throw CreateAndLogDependencyException(cryptographyKeyDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(cryptographyKeyDependencyException);
             }
             catch (CryptographyKeyServiceException cryptographyKeyServiceException)
             {
-                throw CreateAndLogDependencyException(cryptographyKeyServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(cryptographyKeyServiceException);
             }
             catch (NullSubscriberCredentialCryptographicKeyProcessingException
                 nullSubscriberCredentialCryptographicKeyProcessingException)
             {
-                throw CreateAndLogValidationException(nullSubscriberCredentialCryptographicKeyProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(nullSubscriberCredentialCryptographicKeyProcessingException);
             }
             catch (Exception exception)
             {
@@ -50,24 +50,25 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
                         message: "Failed cryptography key processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedCryptographicKeyProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedCryptographicKeyProcessingServiceException);
             }
         }
 
-        private CryptographicKeyValidationProcessingException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<CryptographicKeyValidationProcessingException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var subscriberCredentialValidationCryptographicKeyProcessingException =
                 new CryptographicKeyValidationProcessingException(
                     message: "Cryptography key processing validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(subscriberCredentialValidationCryptographicKeyProcessingException);
+            await this.loggingBroker.LogErrorAsync(subscriberCredentialValidationCryptographicKeyProcessingException);
 
             return subscriberCredentialValidationCryptographicKeyProcessingException;
         }
 
-        private CryptographicKeyProcessingDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<CryptographicKeyProcessingDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var cryptographicKeyProcessingDependencyValidationException =
                 new CryptographicKeyProcessingDependencyValidationException(
@@ -75,31 +76,33 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
                         "fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(cryptographicKeyProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(cryptographicKeyProcessingDependencyValidationException);
 
             return cryptographicKeyProcessingDependencyValidationException;
         }
 
-        private CryptographicKeyProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<CryptographicKeyProcessingDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var cryptographicKeyProcessingDependencyException =
                 new CryptographicKeyProcessingDependencyException(
                     message: "Cryptographic key processing dependency error occurred, fix the errors and try again.",
                     innerException: exception?.InnerException as Xeption);
 
-            this.loggingBroker.LogError(cryptographicKeyProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(cryptographicKeyProcessingDependencyException);
 
-            throw cryptographicKeyProcessingDependencyException;
+            return cryptographicKeyProcessingDependencyException;
         }
 
-        private CryptographicKeyProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<CryptographicKeyProcessingServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var cryptographicKeyProcessingServiceException = new
                 CryptographicKeyProcessingServiceException(
                     message: "Cryptography key processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(cryptographicKeyProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(cryptographicKeyProcessingServiceException);
 
             return cryptographicKeyProcessingServiceException;
         }

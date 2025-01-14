@@ -12,7 +12,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
     public interface IIngestionTrackingService
     {
         ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking);
-        IQueryable<IngestionTracking> RetrieveAllIngestionTrackings();
+        ValueTask<IQueryable<IngestionTracking>> RetrieveAllIngestionTrackingsAsync();
         ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId);
         ValueTask<IngestionTracking?> RetrieveIngestionTrackingByEncryptedFileNameAsync(string encryptedFileName);
         ValueTask<IngestionTracking?> RetrieveIngestionTrackingByFileNameAsync(string fileName);

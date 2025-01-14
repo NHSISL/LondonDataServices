@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Processings.DataSetSpecifications.Exceptions;
 using Moq;
 using Xeptions;
@@ -15,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public void ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -25,22 +28,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             dataSetSpecificationServiceMock.Setup(service =>
-                service.RetrieveAllDataSetSpecifications())
-                    .Throws(dependencyValidationException);
+                service.RetrieveAllDataSetSpecificationsAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
-            Action dataSetSpecificationRetrieveAction = () =>
-                dataSetSpecificationProcessingService.RetrieveAllDataSetSpecifications();
+            ValueTask<IQueryable<DataSetSpecification>> dataSetSpecificationRetrieveTask =
+                dataSetSpecificationProcessingService.RetrieveAllDataSetSpecificationsAsync();
 
             DataSetSpecificationProcessingDependencyValidationException actualException =
-                Assert.Throws<DataSetSpecificationProcessingDependencyValidationException>(
-                    dataSetSpecificationRetrieveAction);
+                await Assert.ThrowsAsync<DataSetSpecificationProcessingDependencyValidationException>(
+                    dataSetSpecificationRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyValidationException);
 
             dataSetSpecificationServiceMock.Verify(service =>
-                service.RetrieveAllDataSetSpecifications(),
+                service.RetrieveAllDataSetSpecificationsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
@@ -54,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public void ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -64,21 +67,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     innerException: dependencyException.InnerException as Xeption);
 
             dataSetSpecificationServiceMock.Setup(service =>
-                service.RetrieveAllDataSetSpecifications())
-                    .Throws(dependencyException);
+                service.RetrieveAllDataSetSpecificationsAsync())
+                    .ThrowsAsync(dependencyException);
 
             // when
-            Action dataSetSpecificationRetrieveAction = () =>
-                dataSetSpecificationProcessingService.RetrieveAllDataSetSpecifications();
+            ValueTask<IQueryable<DataSetSpecification>> dataSetSpecificationRetrieveTask =
+                 dataSetSpecificationProcessingService.RetrieveAllDataSetSpecificationsAsync();
 
             DataSetSpecificationProcessingDependencyException actualException =
-                Assert.Throws<DataSetSpecificationProcessingDependencyException>(dataSetSpecificationRetrieveAction);
+                await Assert.ThrowsAsync<DataSetSpecificationProcessingDependencyException>(
+                    dataSetSpecificationRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyException);
 
             dataSetSpecificationServiceMock.Verify(service =>
-                service.RetrieveAllDataSetSpecifications(),
+                service.RetrieveAllDataSetSpecificationsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
@@ -91,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
         {
             // given
             var serviceException = new Exception();
@@ -101,32 +105,33 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     message: "Failed DataSetSpecification processing service error occurred, please contact support.",
                     innerException: serviceException);
 
-            var expectedDataSetSpecificationProcessingServiveException =
+            var expectedDataSetSpecificationProcessingServiceException =
                 new DataSetSpecificationProcessingServiceException(
                     message: "DataSetSpecification processing service error occurred, please contact support.",
                     innerException: failedDataSetSpecificationProcessingServiceException);
 
             dataSetSpecificationServiceMock.Setup(service =>
-                service.RetrieveAllDataSetSpecifications())
-                    .Throws(serviceException);
+                service.RetrieveAllDataSetSpecificationsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action dataSetSpecificationRetrieveAction = () =>
-                dataSetSpecificationProcessingService.RetrieveAllDataSetSpecifications();
+            ValueTask<IQueryable<DataSetSpecification>> dataSetSpecificationRetrieveTask =
+                dataSetSpecificationProcessingService.RetrieveAllDataSetSpecificationsAsync();
 
             DataSetSpecificationProcessingServiceException actualException =
-                Assert.Throws<DataSetSpecificationProcessingServiceException>(dataSetSpecificationRetrieveAction);
+                await Assert.ThrowsAsync<DataSetSpecificationProcessingServiceException>(
+                    dataSetSpecificationRetrieveTask.AsTask);
 
             // then
-            actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingServiveException);
+            actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingServiceException);
 
             dataSetSpecificationServiceMock.Verify(service =>
-                service.RetrieveAllDataSetSpecifications(),
+                service.RetrieveAllDataSetSpecificationsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
-                     expectedDataSetSpecificationProcessingServiveException))),
+                     expectedDataSetSpecificationProcessingServiceException))),
                          Times.Once);
 
             dataSetSpecificationServiceMock.VerifyNoOtherCalls();

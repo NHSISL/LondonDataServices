@@ -12,7 +12,7 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
     public interface ISubscriberAgreementProcessingService
     {
         ValueTask<SubscriberAgreement> AddSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement);
-        IQueryable<SubscriberAgreement> RetrieveAllSubscriberAgreements();
+        ValueTask<IQueryable<SubscriberAgreement>> RetrieveAllSubscriberAgreementsAsync();
         ValueTask<SubscriberAgreement> RetrieveSubscriberAgreementByIdAsync(Guid subscriberAgreementId);
         ValueTask<SubscriberAgreement> RetrieveOrAddSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement);
         ValueTask<SubscriberAgreement> ModifyOrAddSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement);

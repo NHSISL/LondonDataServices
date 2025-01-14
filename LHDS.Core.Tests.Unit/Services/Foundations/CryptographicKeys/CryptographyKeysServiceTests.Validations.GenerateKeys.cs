@@ -42,8 +42,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                 comment: randomPublicKeyCommentString);
 
             CryptographyKeyValidationException actualEncryptionValidationException =
-                await Assert.ThrowsAsync<CryptographyKeyValidationException>(async () =>
-                    await CryptographicKeyTask);
+                await Assert.ThrowsAsync<CryptographyKeyValidationException>(
+                    CryptographicKeyTask.AsTask);
 
             // then
             actualEncryptionValidationException.Should()
@@ -79,8 +79,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                 comment: randomPublicKeyCommentString);
 
             CryptographyKeyValidationException actualEncryptionValidationException =
-                await Assert.ThrowsAsync<CryptographyKeyValidationException>(async () =>
-                    await CryptographicKeyTask);
+                await Assert.ThrowsAsync<CryptographyKeyValidationException>(
+                    CryptographicKeyTask.AsTask);
 
             // then
             actualEncryptionValidationException.Should()

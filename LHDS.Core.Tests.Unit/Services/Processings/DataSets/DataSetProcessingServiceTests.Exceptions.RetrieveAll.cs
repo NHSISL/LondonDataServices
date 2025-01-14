@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDataSetProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -86,7 +86,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDataSetProcessingDependencyException))),
                          Times.Once);
 
@@ -130,7 +130,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDataSetProcessingServiveException))),
                          Times.Once);
 

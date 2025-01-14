@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
     public partial class SupplierServiceTests
     {
         [Fact]
-        public void ShouldReturnSuppliers()
+        public async Task ShouldReturnSuppliersAsync()
         {
             // given
             IQueryable<Supplier> randomSuppliers = CreateRandomSuppliers();
@@ -21,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             IQueryable<Supplier> expectedSuppliers = storageSuppliers;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllSuppliers())
-                    .Returns(storageSuppliers);
+                broker.SelectAllSuppliersAsync())
+                    .ReturnsAsync(storageSuppliers);
 
             // when
             IQueryable<Supplier> actualSuppliers =
-                this.supplierService.RetrieveAllSuppliers();
+                await this.supplierService.RetrieveAllSuppliersAsync();
 
             // then
             actualSuppliers.Should().BeEquivalentTo(expectedSuppliers);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllSuppliers(),
+                broker.SelectAllSuppliersAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

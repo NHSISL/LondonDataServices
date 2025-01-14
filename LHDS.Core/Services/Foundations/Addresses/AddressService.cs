@@ -66,10 +66,14 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     await TryCatch(async () =>
                     {
                         var batch = addresses.Skip(i).Take(batchSize).ToList();
-                        List<Address> validatedAddresses = await ExtractValidAddressesAndAssignIdAndAudit(batch, fileName);
-                        var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
 
-                        var existingUPRNs = this.storageBroker.SelectAllAddresses()
+                        List<Address> validatedAddresses = 
+                            await ExtractValidAddressesAndAssignIdAndAuditAsync(batch, fileName);
+
+                        var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
+                        var allAddresses = await this.storageBroker.SelectAllAddressesAsync();
+
+                        var existingUPRNs = allAddresses
                             .Where(address => batchUPRNs.Contains(address.UPRN))
                             .Select(address => address.UPRN)
                             .ToList();
@@ -96,7 +100,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             }
         }
 
-        virtual internal async ValueTask<List<Address>> ExtractValidAddressesAndAssignIdAndAudit(
+        virtual internal async ValueTask<List<Address>> ExtractValidAddressesAndAssignIdAndAuditAsync(
             List<Address> addresses,
             string fileName)
         {
@@ -141,8 +145,8 @@ namespace LHDS.Core.Services.Foundations.Addresses
             return await ValueTask.FromResult(validatedAddresses);
         }
 
-        public IQueryable<Address> RetrieveAllAddresses() =>
-            TryCatch(() => this.storageBroker.SelectAllAddresses());
+        public ValueTask<IQueryable<Address>> RetrieveAllAddressesAsync() =>
+            TryCatch(async() => await this.storageBroker.SelectAllAddressesAsync());
 
         public ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId) =>
             TryCatch(async () =>
@@ -188,14 +192,13 @@ namespace LHDS.Core.Services.Foundations.Addresses
             TryCatch(async () =>
             {
                 ValidatePostCode(postCode);
+                IQueryable<Address> allreturnedAddresses = await this.storageBroker.SelectAllAddressesAsync();
 
-                List<Address> returnedAddresses = this.storageBroker
-                    .SelectAllAddresses()
-                    .ToList()
+                List<Address> matchedAddresses = allreturnedAddresses
                     .Where(address => address.PostCode.Equals(postCode, StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
-                return await ValueTask.FromResult(returnedAddresses);
+                return matchedAddresses;
             });
     }
 }

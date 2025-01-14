@@ -41,8 +41,8 @@ namespace LHDS.Core.Services.Processings.Addresses
                 return await this.addressService.AddAddressAsync(address);
             });
 
-        public IQueryable<Address> RetrieveAllAddresses() =>
-            TryCatch(() => this.addressService.RetrieveAllAddresses());
+        public ValueTask<IQueryable<Address>> RetrieveAllAddressesAsync() =>
+            TryCatch(async () => await this.addressService.RetrieveAllAddressesAsync());
 
         public ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId) =>
             TryCatch(async () =>
@@ -67,10 +67,8 @@ namespace LHDS.Core.Services.Processings.Addresses
             {
                 ValidateAddress(address);
                 ValidateAddressId(address.Id);
-
-                var maybeAddress =
-                    this.addressService.RetrieveAllAddresses()
-                        .FirstOrDefault(storageAddress => storageAddress.Id == address.Id);
+                var allAddresses = await this.addressService.RetrieveAllAddressesAsync();
+                var maybeAddress = allAddresses.FirstOrDefault(storageAddress => storageAddress.Id == address.Id);
 
                 if (maybeAddress != null)
                 {
@@ -110,9 +108,9 @@ namespace LHDS.Core.Services.Processings.Addresses
              TryCatch(async () =>
              {
                  ValidateUPRN(uprn);
+                 var allAddress = await this.addressService.RetrieveAllAddressesAsync();
 
-                 return this.addressService.RetrieveAllAddresses()
-                        .FirstOrDefault(storageAddress => storageAddress.UPRN == uprn);
+                 return allAddress.FirstOrDefault(storageAddress => storageAddress.UPRN == uprn);
              });
     }
 }

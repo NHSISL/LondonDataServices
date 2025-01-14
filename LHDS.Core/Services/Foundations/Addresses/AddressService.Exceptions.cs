@@ -19,7 +19,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
     {
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<Address> ReturningAddressFunction();
-        private delegate IQueryable<Address> ReturningAddressesFunction();
+        private delegate ValueTask<IQueryable<Address>> ReturningAddressesFunction();
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
@@ -179,11 +179,11 @@ namespace LHDS.Core.Services.Foundations.Addresses
             }
         }
 
-        private IQueryable<Address> TryCatch(ReturningAddressesFunction returningAddressesFunction)
+        private async ValueTask<IQueryable<Address>> TryCatch(ReturningAddressesFunction returningAddressesFunction)
         {
             try
             {
-                return returningAddressesFunction();
+                return await returningAddressesFunction();
             }
             catch (SqlException sqlException)
             {

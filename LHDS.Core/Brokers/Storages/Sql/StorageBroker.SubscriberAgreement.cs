@@ -18,7 +18,8 @@ namespace LHDS.Core.Brokers.Storages.Sql
             SubscriberAgreement subscriberAgreement) =>
                 await InsertAsync(subscriberAgreement);
 
-        public IQueryable<SubscriberAgreement> SelectAllSubscriberAgreements() => SelectAll<SubscriberAgreement>();
+        public async ValueTask<IQueryable<SubscriberAgreement>> SelectAllSubscriberAgreementsAsync() =>
+            await SelectAllAsync<SubscriberAgreement>();
 
         public async ValueTask<SubscriberAgreement> SelectSubscriberAgreementByIdAsync(Guid subscriberAgreementId) =>
             await SelectAsync<SubscriberAgreement>(subscriberAgreementId);

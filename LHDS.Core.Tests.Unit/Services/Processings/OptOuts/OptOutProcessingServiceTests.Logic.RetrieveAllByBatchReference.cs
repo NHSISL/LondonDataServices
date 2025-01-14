@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     .ToList();
 
             this.optOutServiceMock.Setup(service =>
-                service.RetrieveAllOptOuts())
-                    .Returns(retrievedOptOuts);
+                service.RetrieveAllOptOutsAsync())
+                    .ReturnsAsync(retrievedOptOuts);
 
             // when
             List<OptOut> actualOptOuts =
@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             actualOptOuts.Should().BeEquivalentTo(expectedOptOuts);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveAllOptOuts(),
+                service.RetrieveAllOptOutsAsync(),
                     Times.Once);
 
             this.optOutServiceMock.VerifyNoOtherCalls();

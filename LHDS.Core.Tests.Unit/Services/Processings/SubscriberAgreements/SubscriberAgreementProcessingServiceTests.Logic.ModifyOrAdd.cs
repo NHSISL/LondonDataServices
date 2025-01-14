@@ -34,8 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             SubscriberAgreement expectedSubscriberAgreement = updatedSubscriberAgreement;
 
             this.subscriberAgreementServiceMock.Setup(service =>
-                service.RetrieveAllSubscriberAgreements())
-                    .Returns(storageSubscriberAgreements.AsQueryable());
+                service.RetrieveAllSubscriberAgreementsAsync())
+                    .ReturnsAsync(storageSubscriberAgreements.AsQueryable());
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.ModifySubscriberAgreementAsync(modifiedSubscriberAgreement))
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             // Then
             this.subscriberAgreementServiceMock.Verify(service =>
-                service.RetrieveAllSubscriberAgreements(),
+                service.RetrieveAllSubscriberAgreementsAsync(),
                     Times.Once);
 
             this.subscriberAgreementServiceMock.Verify(service =>
@@ -74,8 +74,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             List<SubscriberAgreement> storageSubscriberAgreements = randomSubscriberAgreements;
 
             this.subscriberAgreementServiceMock.Setup(service =>
-                service.RetrieveAllSubscriberAgreements())
-                    .Returns(value: storageSubscriberAgreements.AsQueryable());
+                service.RetrieveAllSubscriberAgreementsAsync())
+                    .ReturnsAsync(value: storageSubscriberAgreements.AsQueryable());
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.AddSubscriberAgreementAsync(inputSubscriberAgreement))
@@ -87,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             // Then
             this.subscriberAgreementServiceMock.Verify(service =>
-                service.RetrieveAllSubscriberAgreements(),
+                service.RetrieveAllSubscriberAgreementsAsync(),
                     Times.Once);
 
             this.subscriberAgreementServiceMock.Verify(service =>

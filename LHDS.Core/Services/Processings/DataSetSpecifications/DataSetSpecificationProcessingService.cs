@@ -35,8 +35,8 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
                     return await this.dataSetSpecificationService.AddDataSetSpecificationAsync(dataSetSpecification);
                 });
 
-        public IQueryable<DataSetSpecification> RetrieveAllDataSetSpecifications() =>
-            TryCatch(() => this.dataSetSpecificationService.RetrieveAllDataSetSpecifications());
+        public ValueTask<IQueryable<DataSetSpecification>> RetrieveAllDataSetSpecificationsAsync() =>
+            TryCatch(async() => await this.dataSetSpecificationService.RetrieveAllDataSetSpecificationsAsync());
 
         public ValueTask<DataSetSpecification> RetrieveDataSetSpecificationByIdAsync(Guid dataSetSpecificationId) =>
             TryCatch(async () =>
@@ -98,7 +98,10 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
             {
                 ValidateSupplierId(supplierId);
 
-                List<DataSetSpecification> result = this.dataSetSpecificationService.RetrieveAllDataSetSpecifications()
+                IQueryable<DataSetSpecification> allDataSetSpecifications =
+                    await this.dataSetSpecificationService.RetrieveAllDataSetSpecificationsAsync();
+
+                List<DataSetSpecification> result = allDataSetSpecifications
                     .Include(specification => specification.DataSet)
                     .Where(specification => specification.DataSet.SupplierId == supplierId
                         && specification.DataSet.IsActive == true

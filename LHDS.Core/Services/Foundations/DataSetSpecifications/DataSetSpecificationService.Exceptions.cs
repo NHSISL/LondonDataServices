@@ -17,9 +17,10 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
     public partial class DataSetSpecificationService
     {
         private delegate ValueTask<DataSetSpecification> ReturningDataSetSpecificationFunction();
-        private delegate IQueryable<DataSetSpecification> ReturningDataSetSpecificationsFunction();
+        private delegate ValueTask<IQueryable<DataSetSpecification>> ReturningDataSetSpecificationsFunction();
 
-        private async ValueTask<DataSetSpecification> TryCatch(ReturningDataSetSpecificationFunction returningDataSetSpecificationFunction)
+        private async ValueTask<DataSetSpecification> TryCatch(
+            ReturningDataSetSpecificationFunction returningDataSetSpecificationFunction)
         {
             try
             {
@@ -93,11 +94,12 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             }
         }
 
-        private IQueryable<DataSetSpecification> TryCatch(ReturningDataSetSpecificationsFunction returningDataSetSpecificationsFunction)
+        private async ValueTask<IQueryable<DataSetSpecification>> TryCatch(
+            ReturningDataSetSpecificationsFunction returningDataSetSpecificationsFunction)
         {
             try
             {
-                return returningDataSetSpecificationsFunction();
+                return await returningDataSetSpecificationsFunction();
             }
             catch (SqlException sqlException)
             {

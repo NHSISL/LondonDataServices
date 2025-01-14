@@ -36,8 +36,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 return await this.storageBroker.InsertTerminologyPollAsync(terminologyPoll);
             });
 
-        public IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls() =>
-            TryCatch(() => this.storageBroker.SelectAllTerminologyPolls());
+        public ValueTask<IQueryable<TerminologyPoll>> RetrieveAllTerminologyPollsAsync() =>
+            TryCatch(async () => await this.storageBroker.SelectAllTerminologyPollsAsync());
 
         public ValueTask<TerminologyPoll> RetrieveTerminologyPollByIdAsync(Guid terminologyPollId) =>
             TryCatch(async () =>

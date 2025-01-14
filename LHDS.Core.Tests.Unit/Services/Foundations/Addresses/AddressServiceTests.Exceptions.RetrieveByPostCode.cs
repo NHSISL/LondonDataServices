@@ -34,8 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     innerException: failedAddressStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllAddresses())
-                    .Throws(sqlException);
+                broker.SelectAllAddressesAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<List<Address>> retrieveAddressesByPostCodeTask =
@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .BeEquivalentTo(expectedAddressDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllAddresses(),
+                broker.SelectAllAddressesAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -81,8 +81,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     innerException: failedAddressServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllAddresses())
-                    .Throws(serviceException);
+                broker.SelectAllAddressesAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<Address>> retrieveAddressesByPostCodeTask =
@@ -97,7 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .BeEquivalentTo(expectedAddressServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllAddresses(),
+                broker.SelectAllAddressesAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

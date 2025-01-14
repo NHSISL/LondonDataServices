@@ -23,23 +23,23 @@ namespace LHDS.Core.Services.Processings.Assigns
             }
             catch (InvalidArgumentAssignProcessingException invalidArgumentAssignAssignProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentAssignAssignProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentAssignAssignProcessingException);
             }
             catch (AssignValidationException assignValidationException)
             {
-                throw CreateAndLogDependencyValidationException(assignValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(assignValidationException);
             }
             catch (AssignDependencyValidationException assignDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(assignDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(assignDependencyValidationException);
             }
             catch (AssignDependencyException assignDependencyException)
             {
-                throw CreateAndLogDependencyException(assignDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(assignDependencyException);
             }
             catch (AssignServiceException assignServiceException)
             {
-                throw CreateAndLogDependencyException(assignServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(assignServiceException);
             }
             catch (Exception exception)
             {
@@ -48,58 +48,59 @@ namespace LHDS.Core.Services.Processings.Assigns
                         message: "Failed assign processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedAssignProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAssignProcessingServiceException);
             }
         }
 
-        private AssignProcessingValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<AssignProcessingValidationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var assignProcessingValidationException =
                 new AssignProcessingValidationException(
                     message: "Assign processing validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(assignProcessingValidationException);
+            await this.loggingBroker.LogErrorAsync(assignProcessingValidationException);
 
             return assignProcessingValidationException;
         }
 
-        private AssignProcessingDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<AssignProcessingDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var assignProcessingDependencyValidationException =
                 new AssignProcessingDependencyValidationException(
                     message: "Assign processing dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(assignProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(assignProcessingDependencyValidationException);
 
             return assignProcessingDependencyValidationException;
         }
 
-        private AssignProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<AssignProcessingDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var assignProcessingDependencyException =
                 new AssignProcessingDependencyException(
                     message: "Assign processing dependency error occurred, please try again.",
                     innerException: exception?.InnerException as Xeption);
 
-            this.loggingBroker.LogError(assignProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(assignProcessingDependencyException);
 
-            throw assignProcessingDependencyException;
+            return assignProcessingDependencyException;
         }
 
-        private AssignProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<AssignProcessingServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var assignProcessingServiceException = new
                 AssignProcessingServiceException(
                     message: "Assign processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(assignProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(assignProcessingServiceException);
 
             return assignProcessingServiceException;
         }
-
     }
 }

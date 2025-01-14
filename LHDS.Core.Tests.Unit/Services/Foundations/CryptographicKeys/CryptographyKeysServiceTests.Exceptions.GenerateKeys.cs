@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                         Times.Once);
 
             loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedCryptographyKeyServiceException))),
                         Times.Once);
 

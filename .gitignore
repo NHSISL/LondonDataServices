@@ -374,3 +374,6 @@ local.appsettings.json
 /LHDS.Core/appsettings.json
 /LHDS.Core.Tests.Integration.Addresses/Resources/Ordnance/0040176014-6414006-1.zip
 /LHDS.Core.Tests.Integration.EmisLandings/local.appsettings.json
+/LHDS.Core.Tests.Integration.Pds/local.appsettings.json
+/LHDS.Functions.Pds/local.appsettings.json
+/LHDS.Functions.Pds/local.appsettings.json

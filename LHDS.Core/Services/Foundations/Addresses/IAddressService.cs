@@ -14,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
     {
         ValueTask BulkAddAddressesAsync(List<Address> addresses, string fileName);
         ValueTask<Address> AddAddressAsync(Address address);
-        IQueryable<Address> RetrieveAllAddresses();
+        ValueTask<IQueryable<Address>> RetrieveAllAddressesAsync();
         ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId);
         ValueTask<Address> ModifyAddressAsync(Address address);
         ValueTask<Address> RemoveAddressByIdAsync(Guid addressId);

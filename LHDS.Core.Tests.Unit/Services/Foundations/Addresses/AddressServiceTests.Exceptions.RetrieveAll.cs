@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -14,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
     public partial class AddressServiceTests
     {
         [Fact]
-        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogItAsync()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -30,22 +33,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     innerException: failedAddressStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllAddresses())
-                    .Throws(sqlException);
+                broker.SelectAllAddressesAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
-            Action retrieveAllAddressesAction = () =>
-                this.addressService.RetrieveAllAddresses();
+            ValueTask<IQueryable<Address>> retrieveAllAddressesTask =
+                this.addressService.RetrieveAllAddressesAsync();
 
             AddressDependencyException actualAddressDependencyException =
-                Assert.Throws<AddressDependencyException>(retrieveAllAddressesAction);
+               await Assert.ThrowsAsync<AddressDependencyException>(retrieveAllAddressesTask.AsTask);
 
             // then
             actualAddressDependencyException.Should()
                 .BeEquivalentTo(expectedAddressDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllAddresses(),
+                broker.SelectAllAddressesAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -59,7 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string exceptionMessage = GetRandomString();
@@ -76,22 +79,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     innerException: failedAddressServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllAddresses())
-                    .Throws(serviceException);
+                broker.SelectAllAddressesAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action retrieveAllAddressesAction = () =>
-                this.addressService.RetrieveAllAddresses();
+            ValueTask<IQueryable<Address>> retrieveAllAddressesTask =
+               this.addressService.RetrieveAllAddressesAsync();
 
             AddressServiceException actualAddressServiceException =
-                Assert.Throws<AddressServiceException>(retrieveAllAddressesAction);
+               await Assert.ThrowsAsync<AddressServiceException>(retrieveAllAddressesTask.AsTask);
 
             // then
             actualAddressServiceException.Should()
                 .BeEquivalentTo(expectedAddressServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllAddresses(),
+                broker.SelectAllAddressesAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

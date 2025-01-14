@@ -1,4 +1,4 @@
-                          // ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
@@ -23,11 +23,11 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
             }
             catch (InvalidArgumentCryptographyKeyException invalidArgumentCryptographyKeyException)
             {
-                throw await CreateAndLogValidationExceptionAsync(invalidArgumentCryptographyKeyException);
+                throw CreateAndLogValidationException(invalidArgumentCryptographyKeyException);
             }
             catch (NullBrokerCryptographyKeyException nullBrokerCryptographyKeyException)
             {
-                throw await CreateAndLogValidationExceptionAsync(nullBrokerCryptographyKeyException);
+                throw CreateAndLogValidationException(nullBrokerCryptographyKeyException);
             }
             catch (Exception exception)
             {
@@ -36,30 +36,30 @@ namespace LHDS.Core.Services.Foundations.CryptographicKeys
                         message: "Failed cryptography key service error occurred, please contact support.",
                         innerException: exception);
 
-                throw await CreateAndLogServiceExceptionAsync(failedCryptographyKeyServiceException);
+                throw CreateAndLogServiceException(failedCryptographyKeyServiceException);
             }
         }
 
-        private async ValueTask<CryptographyKeyValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
+        private CryptographyKeyValidationException CreateAndLogValidationException(Xeption exception)
         {
             var cryptographyKeyValidationException =
                 new CryptographyKeyValidationException(
                     message: "Cryptography key validation errors occurred, please try again.",
                     innerException: exception);
 
-            await loggingBroker.LogErrorAsync(cryptographyKeyValidationException);
+            loggingBroker.LogError(cryptographyKeyValidationException);
 
             return cryptographyKeyValidationException;
         }
 
-        private async ValueTask<CryptographyKeyServiceException> CreateAndLogServiceExceptionAsync(
+        private CryptographyKeyServiceException CreateAndLogServiceException(
            Xeption exception)
         {
             var generateKeysServiceException = new CryptographyKeyServiceException(
                 message: "Cryptography key service error occurred, please contact support.",
                 innerException: exception);
 
-            await this.loggingBroker.LogErrorAsync(generateKeysServiceException);
+            this.loggingBroker.LogError(generateKeysServiceException);
 
             return generateKeysServiceException;
         }

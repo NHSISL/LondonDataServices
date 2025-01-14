@@ -33,8 +33,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                 return await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
             });
 
-        public IQueryable<IngestionTracking> RetrieveAllIngestionTrackings() =>
-            TryCatch(() => this.ingestionTrackingService.RetrieveAllIngestionTrackings());
+        public ValueTask<IQueryable<IngestionTracking>> RetrieveAllIngestionTrackingsAsync() =>
+            TryCatch(async() => await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync());
 
         public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             TryCatch(async () =>
@@ -96,7 +96,10 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
 
                 List<string> objectNames = new List<string>();
 
-                List<string?> result = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                IQueryable<IngestionTracking> allingestionTrackings =
+                    await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
+
+                List<string?> result = allingestionTrackings
                     .Where(ingestionTracking => ingestionTracking.Batch == bacthReference)
                     .Select(ingestionTracking => ingestionTracking.ObjectName)
                     .ToList();

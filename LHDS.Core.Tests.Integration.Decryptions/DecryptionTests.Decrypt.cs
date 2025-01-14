@@ -18,7 +18,10 @@ namespace LHDS.Core.Tests.Integration.Decryptions
             // given
             string decryptedFileContainer = "ingress";
 
-            var items = ingestionTrackingService.RetrieveAllIngestionTrackings()
+            IQueryable<IngestionTracking> allIngestionTrackings = 
+                await ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
+
+            var items = allIngestionTrackings
                 .Where(ingestionTrackingService => ingestionTrackingService.Decrypted == false);
 
             // when

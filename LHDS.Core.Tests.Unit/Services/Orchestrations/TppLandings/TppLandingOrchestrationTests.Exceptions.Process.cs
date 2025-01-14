@@ -36,8 +36,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     dependancyValidationException.InnerException as Xeption);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Throws(dependancyValidationException);
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ThrowsAsync(dependancyValidationException);
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService
@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -85,8 +85,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     innerException: dependancyException.InnerException as Xeption);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Throws(dependancyException);
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ThrowsAsync(dependancyException);
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService
@@ -99,7 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -138,8 +138,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                     failedTppOrchestrationServiceException);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Throws(serviceException);
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService
@@ -152,7 +152,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
             actualException.Should().BeEquivalentTo(expectedTppOrchestrationServiceException);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

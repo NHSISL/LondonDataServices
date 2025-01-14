@@ -102,9 +102,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
             await this.terminologyClient.RetrieveArtifactMetadataAsync(resourceTypes);
 
             //Then
-            List<TerminologyPoll> retrievedTerminologyPolls =
-                this.terminologyPollService.RetrieveAllTerminologyPolls().ToList();
+            IQueryable<TerminologyPoll> retrievedTerminologyPollsQueryable =
+                await this.terminologyPollService.RetrieveAllTerminologyPollsAsync();
 
+            List<TerminologyPoll> retrievedTerminologyPolls = retrievedTerminologyPollsQueryable.ToList();
             retrievedTerminologyPolls.Count().Should().BeGreaterThan(0);
 
             foreach (TerminologyPoll poll in retrievedTerminologyPolls)

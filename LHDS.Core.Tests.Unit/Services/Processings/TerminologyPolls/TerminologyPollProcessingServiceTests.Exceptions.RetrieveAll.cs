@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
 using Moq;
 using Xeptions;
@@ -15,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public void ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -25,22 +28,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.terminologyPollServiceMock.Setup(service =>
-                service.RetrieveAllTerminologyPolls())
-                    .Throws(dependencyValidationException);
+                service.RetrieveAllTerminologyPollsAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
-            Action terminologyPollRetrieveAction = () =>
-                this.terminologyPollProcessingService.RetrieveAllTerminologyPolls();
+            ValueTask<IQueryable<TerminologyPoll>> retrieveAllTerminologyPollsTask =
+                this.terminologyPollProcessingService.RetrieveAllTerminologyPollsAsync();
 
             TerminologyPollProcessingDependencyValidationException actualException =
-                Assert.Throws<TerminologyPollProcessingDependencyValidationException>(
-                    terminologyPollRetrieveAction);
+                await Assert.ThrowsAsync<TerminologyPollProcessingDependencyValidationException>(
+                    testCode: retrieveAllTerminologyPollsTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyPollProcessingDependencyValidationException);
 
             this.terminologyPollServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyPolls(),
+                service.RetrieveAllTerminologyPollsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -54,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public void ShouldThrowDependencyExceptionOnetrieveAllIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -64,22 +67,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     innerException: dependencyException.InnerException as Xeption);
 
             this.terminologyPollServiceMock.Setup(service =>
-                 service.RetrieveAllTerminologyPolls())
-                     .Throws(dependencyException);
+                service.RetrieveAllTerminologyPollsAsync())
+                    .ThrowsAsync(dependencyException);
 
             // when
-            Action terminologyPollRetrieveAction = () =>
-                this.terminologyPollProcessingService.RetrieveAllTerminologyPolls();
+            ValueTask<IQueryable<TerminologyPoll>> retrieveAllTerminologyPollsTask =
+                this.terminologyPollProcessingService.RetrieveAllTerminologyPollsAsync();
 
             TerminologyPollProcessingDependencyException actualException =
-                Assert.Throws<TerminologyPollProcessingDependencyException>(
-                    terminologyPollRetrieveAction);
+                await Assert.ThrowsAsync<TerminologyPollProcessingDependencyException>(
+                    testCode: retrieveAllTerminologyPollsTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyPollProcessingDependencyException);
 
             this.terminologyPollServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyPolls(),
+                service.RetrieveAllTerminologyPollsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -92,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnetrieveAllIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnetrieveAllIfServiceErrorOccursAsync()
         {
             // given
             var serviceException = new Exception();
@@ -108,22 +111,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     innerException: failedTerminologyPollProcessingServiceException);
 
             this.terminologyPollServiceMock.Setup(service =>
-                 service.RetrieveAllTerminologyPolls())
-                     .Throws(serviceException);
+                service.RetrieveAllTerminologyPollsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action terminologyPollRetrieveAction = () =>
-                this.terminologyPollProcessingService.RetrieveAllTerminologyPolls();
+            ValueTask<IQueryable<TerminologyPoll>> retrieveAllTerminologyPollsTask =
+                this.terminologyPollProcessingService.RetrieveAllTerminologyPollsAsync();
 
             TerminologyPollProcessingServiceException actualException =
-                Assert.Throws<TerminologyPollProcessingServiceException>(
-                    terminologyPollRetrieveAction);
+                await Assert.ThrowsAsync<TerminologyPollProcessingServiceException>(
+                    testCode: retrieveAllTerminologyPollsTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyPollProcessingServiceException);
 
             this.terminologyPollServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyPolls(),
+                service.RetrieveAllTerminologyPollsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Processings.SubscriberAgreements.Exceptions;
 using Moq;
 using Xeptions;
@@ -15,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public void ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -25,22 +28,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             subscriberAgreementServiceMock.Setup(service =>
-                service.RetrieveAllSubscriberAgreements())
-                    .Throws(dependencyValidationException);
+                service.RetrieveAllSubscriberAgreementsAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
-            Action subscriberAgreementRetrieveAction = () =>
-                subscriberAgreementProcessingService.RetrieveAllSubscriberAgreements();
+            ValueTask<IQueryable<SubscriberAgreement>> subscriberAgreementRetrieveTask =
+                subscriberAgreementProcessingService.RetrieveAllSubscriberAgreementsAsync();
 
             SubscriberAgreementProcessingDependencyValidationException actualException =
-                Assert.Throws<SubscriberAgreementProcessingDependencyValidationException>(
-                    subscriberAgreementRetrieveAction);
+                await Assert.ThrowsAsync<SubscriberAgreementProcessingDependencyValidationException>(
+                    testCode: subscriberAgreementRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingDependencyValidationException);
 
             subscriberAgreementServiceMock.Verify(service =>
-                service.RetrieveAllSubscriberAgreements(),
+                service.RetrieveAllSubscriberAgreementsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
@@ -54,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public void ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -64,21 +67,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     innerException: dependencyException.InnerException as Xeption);
 
             subscriberAgreementServiceMock.Setup(service =>
-                service.RetrieveAllSubscriberAgreements())
-                    .Throws(dependencyException);
+                service.RetrieveAllSubscriberAgreementsAsync())
+                    .ThrowsAsync(dependencyException);
 
             // when
-            Action subscriberAgreementRetrieveAction = () =>
-                subscriberAgreementProcessingService.RetrieveAllSubscriberAgreements();
+            ValueTask<IQueryable<SubscriberAgreement>> subscriberAgreementRetrieveTask =
+                subscriberAgreementProcessingService.RetrieveAllSubscriberAgreementsAsync();
 
             SubscriberAgreementProcessingDependencyException actualException =
-                Assert.Throws<SubscriberAgreementProcessingDependencyException>(subscriberAgreementRetrieveAction);
+                await Assert.ThrowsAsync<SubscriberAgreementProcessingDependencyException>(
+                    testCode: subscriberAgreementRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingDependencyException);
 
             subscriberAgreementServiceMock.Verify(service =>
-                service.RetrieveAllSubscriberAgreements(),
+                service.RetrieveAllSubscriberAgreementsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
@@ -91,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
         {
             // given
             var serviceException = new Exception();
@@ -107,21 +111,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     innerException: failedSubscriberAgreementProcessingServiceException);
 
             subscriberAgreementServiceMock.Setup(service =>
-                service.RetrieveAllSubscriberAgreements())
-                    .Throws(serviceException);
+                service.RetrieveAllSubscriberAgreementsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action subscriberAgreementRetrieveAction = () =>
-                subscriberAgreementProcessingService.RetrieveAllSubscriberAgreements();
+            ValueTask<IQueryable<SubscriberAgreement>> subscriberAgreementRetrieveTask =
+                subscriberAgreementProcessingService.RetrieveAllSubscriberAgreementsAsync();
 
             SubscriberAgreementProcessingServiceException actualException =
-                Assert.Throws<SubscriberAgreementProcessingServiceException>(subscriberAgreementRetrieveAction);
+                await Assert.ThrowsAsync<SubscriberAgreementProcessingServiceException>(
+                    testCode: subscriberAgreementRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingServiveException);
 
             subscriberAgreementServiceMock.Verify(service =>
-                service.RetrieveAllSubscriberAgreements(),
+                service.RetrieveAllSubscriberAgreementsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>

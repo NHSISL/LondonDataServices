@@ -64,12 +64,12 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-        public ActionResult<IQueryable<SubscriberAgreement>> Get()
+        public async ValueTask<ActionResult<IQueryable<SubscriberAgreement>>> Get()
         {
             try
             {
                 IQueryable<SubscriberAgreement> retrievedSubscriberAgreements =
-                    this.subscriberAgreementService.RetrieveAllSubscriberAgreements();
+                    await this.subscriberAgreementService.RetrieveAllSubscriberAgreementsAsync();
 
                 return Ok(retrievedSubscriberAgreements);
             }

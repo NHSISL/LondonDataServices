@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<Exception> exceptions = new List<Exception>();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds())
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync())
                     .ReturnsAsync(randomActiveSubscriberAgreementIds);
 
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingCoordinationServiceException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds(),
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync(),
                     Times.Once);
 
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
@@ -122,7 +122,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<Exception> exceptions = new List<Exception>();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds())
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync())
                     .ReturnsAsync(randomActiveSubscriberAgreementIds);
 
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
@@ -167,7 +167,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingCoordinationServiceException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds(),
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync(),
                     Times.Once);
 
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
@@ -212,7 +212,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<Exception> exceptions = new List<Exception>();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds())
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync())
                     .ReturnsAsync(randomActiveSubscriberAgreementIds);
 
             var innerFailedEmisLandingCoordinationServiceException =
@@ -262,7 +262,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingCoordinationServiceException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds(),
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync(),
                     Times.Once);
 
             foreach (Guid subscriberAgreementId in randomActiveSubscriberAgreementIds)
@@ -302,7 +302,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<string> randomEmisLandingPaths = CreateRandomLandingPaths(number: GetRandomNumber());
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds())
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync())
                     .ThrowsAsync(dependancyValidationException);
 
             var expectedEmisLandingCoordinationDependencyValidationException =
@@ -324,7 +324,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingCoordinationDependencyValidationException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds(),
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -352,7 +352,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<string> randomEmisLandingPaths = CreateRandomLandingPaths(number: GetRandomNumber());
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds())
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync())
                     .ThrowsAsync(dependancyValidationException);
 
             var expectedEmisLandingCoordinationDependencyException =
@@ -373,7 +373,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingCoordinationDependencyException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds(),
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -401,7 +401,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             List<Exception> exceptions = new List<Exception>();
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds())
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync())
                     .ThrowsAsync(serviceException);
 
             var failedEmisLandingCoordinationServiceException =
@@ -427,7 +427,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingCoordinationServiceException);
 
             this.subscriberCredentialOrchestrationMock.Verify(service =>
-                service.RetrieveAllActiveSubscriberCredentialIds(),
+                service.RetrieveAllActiveSubscriberCredentialIdsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

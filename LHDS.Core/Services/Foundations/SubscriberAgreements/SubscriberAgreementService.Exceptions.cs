@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
     public partial class SubscriberAgreementService
     {
         private delegate ValueTask<SubscriberAgreement> ReturningSubscriberAgreementFunction();
-        private delegate IQueryable<SubscriberAgreement> ReturningSubscriberAgreementsFunction();
+        private delegate ValueTask<IQueryable<SubscriberAgreement>> ReturningSubscriberAgreementsFunction();
 
         private async ValueTask<SubscriberAgreement> TryCatch(ReturningSubscriberAgreementFunction returningSubscriberAgreementFunction)
         {
@@ -93,11 +93,12 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             }
         }
 
-        private IQueryable<SubscriberAgreement> TryCatch(ReturningSubscriberAgreementsFunction returningSubscriberAgreementsFunction)
+        private async ValueTask<IQueryable<SubscriberAgreement>>
+            TryCatch(ReturningSubscriberAgreementsFunction returningSubscriberAgreementsFunction)
         {
             try
             {
-                return returningSubscriberAgreementsFunction();
+                return await returningSubscriberAgreementsFunction();
             }
             catch (SqlException sqlException)
             {

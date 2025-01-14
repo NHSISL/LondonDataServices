@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAddressByIdAsync(randomAddress.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<Address> addAddressTask =

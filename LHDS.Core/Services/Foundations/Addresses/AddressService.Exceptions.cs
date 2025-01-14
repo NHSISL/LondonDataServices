@@ -247,7 +247,8 @@ namespace LHDS.Core.Services.Foundations.Addresses
             return addressValidationException;
         }
 
-        private async ValueTask<AddressDependencyException> CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
+        private async ValueTask<AddressDependencyException>
+            CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
         {
             var addressDependencyException =
                 new AddressDependencyException(
@@ -259,7 +260,8 @@ namespace LHDS.Core.Services.Foundations.Addresses
             return addressDependencyException;
         }
 
-        private async ValueTask<AddressDependencyValidationException> CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
+        private async ValueTask<AddressDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var addressDependencyValidationException =
                 new AddressDependencyValidationException(
@@ -271,8 +273,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             return addressDependencyValidationException;
         }
 
-        private async ValueTask<AddressDependencyException> CreateAndLogDependencyExceptionAsync(
-            Xeption exception)
+        private async ValueTask<AddressDependencyException> CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var addressDependencyException =
                 new AddressDependencyException(
@@ -284,8 +285,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             return addressDependencyException;
         }
 
-        private async ValueTask<AddressServiceException> CreateAndLogServiceExceptionAsync(
-            Xeption exception)
+        private async ValueTask<AddressServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var addressServiceException =
                 new AddressServiceException(

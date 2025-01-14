@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
-                    .Throws(dependancyValidationException);
+                    .ThrowsAsync(dependancyValidationException);
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService
@@ -86,7 +86,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
-                    .Throws(dependancyException);
+                    .ThrowsAsync(dependancyException);
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService
@@ -139,7 +139,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingsAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService

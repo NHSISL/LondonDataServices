@@ -54,6 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 { "pdsSettings:pdsFileRequireTrailingComma", "true" },
                 { "pdsSettings:to", GetRandomString() },
                 { "pdsSettings:workflowId", GetRandomString() },
+                { "pdsSettings:returnWorkflowId", GetRandomString() },
                 { "meshConfiguration:mailboxId", GetRandomString() },
                 { "meshConfiguration:password", GetRandomString() },
                 { "meshConfiguration:key", GetRandomString() },
@@ -82,7 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
                 To = inMemoryConfiguration["pdsSettings:inputFolder"],
                 WorkflowId = inMemoryConfiguration["pdsSettings:workflowId"],
-
+                ReturnWorkflowId = inMemoryConfiguration["pdsSettings:returnWorkflowId"],
             };
 
             this.blobContainers = new BlobContainers

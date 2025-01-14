@@ -34,8 +34,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             await this.addressClient.LoadAddressesToResolveAsync(inputStream, "ShouldUploadAddressesSetup.csv");
 
             // Then
-            ResolvedAddress retrievedAddress = this.resolvedAddressService.RetrieveAllResolvedAddresses().
-                Where(resolvedAddress => resolvedAddress.UniqueReference == expectedUniqueRef).FirstOrDefault();
+            IQueryable<ResolvedAddress> retrievedAddresses =
+                await this.resolvedAddressService.RetrieveAllResolvedAddressesAsync();
+
+            ResolvedAddress retrievedAddress = retrievedAddresses
+                .Where(resolvedAddress => resolvedAddress.UniqueReference == expectedUniqueRef).FirstOrDefault();
 
             await this.resolvedAddressService.RemoveResolvedAddressByIdAsync(retrievedAddress.Id);
         }

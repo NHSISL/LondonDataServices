@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
@@ -15,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
     public partial class TerminologyArtifactProcessingServiceTests
     {
         [Fact]
-        public void ShouldRetrieveTerminologyArtifactsByOntologyAsset()
+        public async Task ShouldRetrieveTerminologyArtifactsByOntologyAssetAsync()
         {
             // given
             List<TerminologyArtifact> randomTerminologyArtifacts = CreateRandomTerminologyArtifacts();
@@ -23,18 +24,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             IQueryable<TerminologyArtifact> expectedTerminologyArtifacts = outputTerminologyArtifacts.DeepClone();
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                service.RetrieveAllTerminologyArtifacts())
-                    .Returns(outputTerminologyArtifacts);
+                service.RetrieveAllTerminologyArtifactsAsync())
+                    .ReturnsAsync(outputTerminologyArtifacts);
 
             // when
             IQueryable<TerminologyArtifact> actualTerminologyArtifacts =
-                this.terminologyArtifactProcessingService.RetrieveAllTerminologyArtifactsAsync();
+                await this.terminologyArtifactProcessingService.RetrieveAllTerminologyArtifactsAsync();
 
             // then
             actualTerminologyArtifacts.Should().BeEquivalentTo(expectedTerminologyArtifacts);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyArtifacts(),
+                service.RetrieveAllTerminologyArtifactsAsync(),
                     Times.Once());
 
             this.terminologyArtifactServiceMock.VerifyNoOtherCalls();

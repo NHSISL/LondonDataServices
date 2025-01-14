@@ -31,8 +31,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             DataSetSpecification expectedDataSetSpecification = expectedDataSetSpecifications.First();
 
             this.dataSetSpecificationServiceMock.Setup(broker =>
-                broker.RetrieveAllDataSetSpecifications())
-                    .Returns(storageDataSetSpecifications);
+                broker.RetrieveAllDataSetSpecificationsAsync())
+                    .ReturnsAsync(storageDataSetSpecifications);
 
             // when
             DataSetSpecification actualDataSetSpecification =
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
 
             this.dataSetSpecificationServiceMock.Verify(broker =>
-                broker.RetrieveAllDataSetSpecifications(),
+                broker.RetrieveAllDataSetSpecificationsAsync(),
                     Times.Once);
 
             this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();

@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
     public partial class SpecificationObjectService
     {
         private delegate ValueTask<SpecificationObject> ReturningSpecificationObjectFunction();
-        private delegate IQueryable<SpecificationObject> ReturningSpecificationObjectsFunction();
+        private delegate ValueTask<IQueryable<SpecificationObject>> ReturningSpecificationObjectsFunction();
 
         private async ValueTask<SpecificationObject> TryCatch(ReturningSpecificationObjectFunction returningSpecificationObjectFunction)
         {
@@ -93,11 +93,12 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             }
         }
 
-        private IQueryable<SpecificationObject> TryCatch(ReturningSpecificationObjectsFunction returningSpecificationObjectsFunction)
+        private async ValueTask<IQueryable<SpecificationObject>>
+            TryCatch(ReturningSpecificationObjectsFunction returningSpecificationObjectsFunction)
         {
             try
             {
-                return returningSpecificationObjectsFunction();
+                return await returningSpecificationObjectsFunction();
             }
             catch (SqlException sqlException)
             {

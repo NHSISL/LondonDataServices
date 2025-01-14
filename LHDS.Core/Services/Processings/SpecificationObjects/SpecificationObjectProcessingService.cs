@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
 
 namespace LHDS.Core.Services.Processings.SpecificationObjects
@@ -24,14 +25,16 @@ namespace LHDS.Core.Services.Processings.SpecificationObjects
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<string>> RetrieveSpecificationObjectsByDataSetSpecificationId(
+        public ValueTask<List<string>> RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(
             Guid dataSetSpecificationId) =>
             TryCatch(async () =>
             {
                 ValidateOnRetrieveSpecificationObjectsByDataSetSpecificationId(dataSetSpecificationId);
 
-                return this.specificationObjectService
-                    .RetrieveAllSpecificationObjects()
+                IQueryable<SpecificationObject> retrievedSpecificationObjects =
+                    await this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
+
+                return retrievedSpecificationObjects
                     .Where(specificationObject => specificationObject.DataSetSpecificationId == dataSetSpecificationId)
                     .Select(specificationObject => specificationObject.SupplierObjectName)
                     .ToList();

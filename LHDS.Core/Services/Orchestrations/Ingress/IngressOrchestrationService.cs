@@ -50,7 +50,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             ValidateStorageIngestionTracking(ingestionTracking, ingestionTrackingId);
 
             List<string> specificationObjectIds = await this.specificationObjectProcessingService
-                .RetrieveSpecificationObjectsByDataSetSpecificationId(ingestionTracking.DataSetSpecificationId);
+                .RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(ingestionTracking.DataSetSpecificationId);
 
             bool isBatchComplete = true;
 

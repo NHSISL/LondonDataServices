@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
     public partial class ObjectColumnServiceTests
     {
         [Fact]
-        public void ShouldReturnObjectColumns()
+        public async Task ShouldReturnObjectColumns()
         {
             // given
             IQueryable<ObjectColumn> randomObjectColumns = CreateRandomObjectColumns();
@@ -21,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             IQueryable<ObjectColumn> expectedObjectColumns = storageObjectColumns;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllObjectColumns())
-                    .Returns(storageObjectColumns);
+                broker.SelectAllObjectColumnsAsync())
+                    .ReturnsAsync(storageObjectColumns);
 
             // when
             IQueryable<ObjectColumn> actualObjectColumns =
-                this.objectColumnService.RetrieveAllObjectColumns();
+                await this.objectColumnService.RetrieveAllObjectColumnsAsync();
 
             // then
             actualObjectColumns.Should().BeEquivalentTo(expectedObjectColumns);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllObjectColumns(),
+                broker.SelectAllObjectColumnsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
             {
                 // given
                 string encryptedFileContainer = blobContainers.EmisLanding;
-                Supplier supplier = await GetEmisSupplier();
+                Supplier supplier = await GetEmisSupplierAsync();
 
                 // when
                 List<string> files = await landingClient.ProcessAsync(supplierId: supplier.Id);

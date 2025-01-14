@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 {
     public partial class ResolvedAddressOrchestrationTests
     {
-        [Fact(Skip = "DH, not sure why you excluded this.  We need this to match resolved addresses with Assign")]
+        [Fact]
         public async Task ShouldThrowValidationExceptionOnMatchIfAssignUPRNIsNullAndLogItAsync()
         {
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();

@@ -12,7 +12,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
     public interface ISupplierService
     {
         ValueTask<Supplier> AddSupplierAsync(Supplier supplier);
-        IQueryable<Supplier> RetrieveAllSuppliers();
+        ValueTask<IQueryable<Supplier>> RetrieveAllSuppliersAsync();
         ValueTask<Supplier> RetrieveSupplierByIdAsync(Guid supplierId);
         ValueTask<Supplier> ModifySupplierAsync(Supplier supplier);
         ValueTask<Supplier> RemoveSupplierByIdAsync(Guid supplierId);

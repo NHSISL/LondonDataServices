@@ -70,12 +70,12 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.DataTypes, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public ActionResult<IQueryable<DataType>> Get()
+        public async ValueTask<ActionResult<IQueryable<DataType>>> Get()
         {
             try
             {
                 IQueryable<DataType> retrievedDataTypes =
-                    this.dataTypeService.RetrieveAllDataTypes();
+                    await this.dataTypeService.RetrieveAllDataTypesAsync();
 
                 return Ok(retrievedDataTypes);
             }

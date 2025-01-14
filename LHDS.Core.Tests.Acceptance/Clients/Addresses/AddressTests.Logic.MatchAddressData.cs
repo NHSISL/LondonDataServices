@@ -67,9 +67,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             //Then
             foreach (ResolvedAddress expectedResolvedAddress in expectedResolvedAddresses)
             {
-                ResolvedAddress retrievedResolvedAddress =
-                    this.resolvedAddressService.RetrieveAllResolvedAddresses()
-                        .FirstOrDefault(resolvedAddress => resolvedAddress.Id == expectedResolvedAddress.Id);
+                IQueryable<ResolvedAddress> retrievedResolvedAddresses =
+                    await this.resolvedAddressService.RetrieveAllResolvedAddressesAsync();
+
+                ResolvedAddress retrievedResolvedAddress = retrievedResolvedAddresses
+                    .FirstOrDefault(resolvedAddress => resolvedAddress.Id == expectedResolvedAddress.Id);
 
                 retrievedResolvedAddress.UPRN.Should().Be(expectedResolvedAddress.UPRN);
                 retrievedResolvedAddress.UPSN.Should().Be(expectedResolvedAddress.UPSN);

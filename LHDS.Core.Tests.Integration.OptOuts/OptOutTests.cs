@@ -150,7 +150,9 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 
             foreach (var optOut in setupOptOut)
             {
-                var maybeOptOut = this.optOutService.RetrieveAllOptOuts()
+                var allOptOuts = await this.optOutService.RetrieveAllOptOutsAsync();
+
+                var maybeOptOut = allOptOuts
                     .Where(opt => opt.NhsNumber == optOut.NhsNumber)
                         .FirstOrDefault();
 
@@ -219,7 +221,9 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 
             foreach (var optOut in setupOptOut)
             {
-                var maybeOptOut = this.optOutService.RetrieveAllOptOuts()
+                var allOptOuts = await this.optOutService.RetrieveAllOptOutsAsync();
+
+                var maybeOptOut = allOptOuts
                     .Where(opt => opt.NhsNumber == optOut.NhsNumber)
                         .FirstOrDefault();
 

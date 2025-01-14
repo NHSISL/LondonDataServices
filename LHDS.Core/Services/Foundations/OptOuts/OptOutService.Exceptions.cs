@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
     public partial class OptOutService
     {
         private delegate ValueTask<OptOut> ReturningOptOutFunction();
-        private delegate IQueryable<OptOut> ReturningOptOutsFunction();
+        private delegate ValueTask<IQueryable<OptOut>> ReturningOptOutsFunction();
 
         private async ValueTask<OptOut> TryCatch(ReturningOptOutFunction returningOptOutFunction)
         {
@@ -88,11 +88,11 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             }
         }
 
-        private IQueryable<OptOut> TryCatch(ReturningOptOutsFunction returningOptOutsFunction)
+        private async ValueTask<IQueryable<OptOut>> TryCatch(ReturningOptOutsFunction returningOptOutsFunction)
         {
             try
             {
-                return returningOptOutsFunction();
+                return await returningOptOutsFunction();
             }
             catch (SqlException sqlException)
             {

@@ -268,7 +268,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     message: "Address dependency validation occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(addressDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(addressDependencyValidationException);
 
             return addressDependencyValidationException;
         }

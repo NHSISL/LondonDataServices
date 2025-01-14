@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
     public partial class SupplierService
     {
         private delegate ValueTask<Supplier> ReturningSupplierFunction();
-        private delegate IQueryable<Supplier> ReturningSuppliersFunction();
+        private delegate ValueTask<IQueryable<Supplier>> ReturningSuppliersFunction();
 
         private async ValueTask<Supplier> TryCatch(ReturningSupplierFunction returningSupplierFunction)
         {
@@ -92,11 +92,11 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             }
         }
 
-        private IQueryable<Supplier> TryCatch(ReturningSuppliersFunction returningSuppliersFunction)
+        private async ValueTask<IQueryable<Supplier>> TryCatch(ReturningSuppliersFunction returningSuppliersFunction)
         {
             try
             {
-                return returningSuppliersFunction();
+                return await returningSuppliersFunction();
             }
             catch (SqlException sqlException)
             {

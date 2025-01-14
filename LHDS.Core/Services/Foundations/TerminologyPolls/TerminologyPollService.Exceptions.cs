@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
     public partial class TerminologyPollService
     {
         private delegate ValueTask<TerminologyPoll> ReturningTerminologyPollFunction();
-        private delegate IQueryable<TerminologyPoll> ReturningTerminologyPollsFunction();
+        private delegate ValueTask<IQueryable<TerminologyPoll>> ReturningTerminologyPollsFunction();
 
         private async ValueTask<TerminologyPoll> TryCatch(ReturningTerminologyPollFunction returningTerminologyPollFunction)
         {
@@ -93,11 +93,12 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             }
         }
 
-        private IQueryable<TerminologyPoll> TryCatch(ReturningTerminologyPollsFunction returningTerminologyPollsFunction)
+        private async ValueTask<IQueryable<TerminologyPoll>>
+            TryCatch(ReturningTerminologyPollsFunction returningTerminologyPollsFunction)
         {
             try
             {
-                return returningTerminologyPollsFunction();
+                return await returningTerminologyPollsFunction();
             }
             catch (SqlException sqlException)
             {

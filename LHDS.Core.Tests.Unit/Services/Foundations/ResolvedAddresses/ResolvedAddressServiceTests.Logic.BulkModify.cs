@@ -43,8 +43,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             List<ResolvedAddress> updatedResolvedAddresses = new List<ResolvedAddress> { validatedResolvedAddresses.Last() };
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllResolvedAddresses())
-                    .Returns(new List<ResolvedAddress> { randomResolvedAddresses.Last() }.AsQueryable());
+                broker.SelectAllResolvedAddressesAsync())
+                    .ReturnsAsync(new List<ResolvedAddress> { randomResolvedAddresses.Last() }.AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     Times.Exactly(randomResolvedAddresses.Count * 2));
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllResolvedAddresses(),
+                broker.SelectAllResolvedAddressesAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

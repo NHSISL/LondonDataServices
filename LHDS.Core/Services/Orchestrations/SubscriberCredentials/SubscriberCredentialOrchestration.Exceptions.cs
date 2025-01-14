@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
     public partial class SubscriberCredentialOrchestration
     {
         private delegate ValueTask<SubscriberCredential> ReturningSubscriberCredentialFunction();
-        private delegate IQueryable<SubscriberCredential> ReturningSubscriberCredentialIQueryableFunction();
+        private delegate ValueTask<IQueryable<SubscriberCredential>> ReturningSubscriberCredentialIQueryableFunction();
         private delegate ValueTask<List<Guid>> ReturningGuidListFunction();
         private delegate ValueTask ReturnNothingFunction();
 
@@ -95,12 +95,12 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             }
         }
 
-        private IQueryable<SubscriberCredential> TryCatch(ReturningSubscriberCredentialIQueryableFunction
-            returningSubscriberCredentialIQueryableFunction)
+        private async ValueTask<IQueryable<SubscriberCredential>>
+            TryCatch(ReturningSubscriberCredentialIQueryableFunction returningSubscriberCredentialIQueryableFunction)
         {
             try
             {
-                return returningSubscriberCredentialIQueryableFunction();
+                return await returningSubscriberCredentialIQueryableFunction();
             }
             catch (SubscriberAgreementProcessingValidationException
                 subscriberAgreementProcessingValidationException)

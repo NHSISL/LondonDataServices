@@ -54,8 +54,8 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 await BulkInsertBatch(resolvedAddresses, batchSize, fileName);
             });
 
-        public IQueryable<ResolvedAddress> RetrieveAllResolvedAddresses() =>
-            TryCatch(() => this.storageBroker.SelectAllResolvedAddresses());
+        public ValueTask<IQueryable<ResolvedAddress>> RetrieveAllResolvedAddressesAsync() =>
+            TryCatch(async () => await this.storageBroker.SelectAllResolvedAddressesAsync());
 
         public ValueTask<ResolvedAddress> RetrieveResolvedAddressByIdAsync(Guid resolvedAddressId) =>
             TryCatch(async () =>
@@ -128,7 +128,9 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                             batch.Select(validatedResolvedAddress =>
                                 validatedResolvedAddress.UniqueReference).ToList();
 
-                        var existingUniqueReferencesToExclude = this.storageBroker.SelectAllResolvedAddresses()
+                        var retrievedResolvedAddresses = await this.storageBroker.SelectAllResolvedAddressesAsync();
+
+                        var existingUniqueReferencesToExclude = retrievedResolvedAddresses
                             .Where(resolvedAddress => referencesFromValidatedResolvedAddresses
                                 .Contains(resolvedAddress.UniqueReference))
 
@@ -180,7 +182,9 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                             batch.Select(validatedResolvedAddress =>
                                 validatedResolvedAddress.Id).ToList();
 
-                        var existingIdsInDatabase = this.storageBroker.SelectAllResolvedAddresses()
+                        var retrievedResolvedAddresses = await this.storageBroker.SelectAllResolvedAddressesAsync();
+
+                        var existingIdsInDatabase = retrievedResolvedAddresses
                             .Where(resolvedAddress => idsFromValidatedResolvedAddresses
                                 .Contains(resolvedAddress.Id))
 

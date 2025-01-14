@@ -30,18 +30,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                 CreateSubscriberCredentialsFromDynamic(randomDynamics);
 
             this.subscriberAgreementProcessingServiceMock.Setup(service =>
-                service.RetrieveAllSubscriberAgreements())
-                    .Returns(storageSubscriberAgreements);
+                service.RetrieveAllSubscriberAgreementsAsync())
+                    .ReturnsAsync(storageSubscriberAgreements);
 
             // When
-            IQueryable<SubscriberCredential> actualSubscriberCredentials = this.subscriberCredentialOrchestration
-                .RetrieveAllSubscriberCredentials();
+            IQueryable<SubscriberCredential> actualSubscriberCredentials =
+                await this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentialsAsync();
 
             // Then
             actualSubscriberCredentials.Should().BeEquivalentTo(expectedSubscriberCredentials);
 
             this.subscriberAgreementProcessingServiceMock.Verify(service =>
-                service.RetrieveAllSubscriberAgreements(),
+                service.RetrieveAllSubscriberAgreementsAsync(),
                     Times.Once);
 
             this.subscriberAgreementProcessingServiceMock.VerifyNoOtherCalls();

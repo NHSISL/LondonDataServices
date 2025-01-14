@@ -142,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     Times.Once);
 
             this.specificationObjectProcessingServiceMock.Verify(service =>
-                service.RetrieveSpecificationObjectsByDataSetSpecificationId(
+                service.RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(
                     storageIngestionTracking.DataSetSpecificationId),
                         Times.Once);
 

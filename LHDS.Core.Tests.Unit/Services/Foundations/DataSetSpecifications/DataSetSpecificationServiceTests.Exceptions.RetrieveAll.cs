@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -14,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
     public partial class DataSetSpecificationServiceTests
     {
         [Fact]
-        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -30,22 +33,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     innerException: failedDataSetSpecificationStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllDataSetSpecifications())
-                    .Throws(sqlException);
+                broker.SelectAllDataSetSpecificationsAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
-            Action retrieveAllDataSetSpecificationsAction = () =>
-                this.dataSetSpecificationService.RetrieveAllDataSetSpecifications();
+            ValueTask<IQueryable<DataSetSpecification>> retrieveAllDataSetSpecificationsTask =
+                this.dataSetSpecificationService.RetrieveAllDataSetSpecificationsAsync();
 
             DataSetSpecificationDependencyException actualDataSetSpecificationDependencyException =
-                Assert.Throws<DataSetSpecificationDependencyException>(retrieveAllDataSetSpecificationsAction);
+                await Assert.ThrowsAsync<DataSetSpecificationDependencyException>(
+                    retrieveAllDataSetSpecificationsTask.AsTask);
 
             // then
             actualDataSetSpecificationDependencyException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllDataSetSpecifications(),
+                broker.SelectAllDataSetSpecificationsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -59,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string exceptionMessage = GetRandomString();
@@ -76,22 +80,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     innerException: failedDataSetSpecificationServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllDataSetSpecifications())
-                    .Throws(serviceException);
+                broker.SelectAllDataSetSpecificationsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action retrieveAllDataSetSpecificationsAction = () =>
-                this.dataSetSpecificationService.RetrieveAllDataSetSpecifications();
+            ValueTask<IQueryable<DataSetSpecification>> retrieveAllDataSetSpecificationsTask =
+                 this.dataSetSpecificationService.RetrieveAllDataSetSpecificationsAsync();
 
             DataSetSpecificationServiceException actualDataSetSpecificationServiceException =
-                Assert.Throws<DataSetSpecificationServiceException>(retrieveAllDataSetSpecificationsAction);
+                await Assert.ThrowsAsync<DataSetSpecificationServiceException>(
+                    retrieveAllDataSetSpecificationsTask.AsTask);
 
             // then
             actualDataSetSpecificationServiceException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllDataSetSpecifications(),
+                broker.SelectAllDataSetSpecificationsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

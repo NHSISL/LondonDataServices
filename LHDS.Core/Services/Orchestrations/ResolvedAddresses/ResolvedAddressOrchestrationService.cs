@@ -90,12 +90,22 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             var resolvedAddressAudits = new List<ResolvedAddress>();
             var exceptions = new List<Exception>();
 
-            while ((unMatchedResolvedAddress = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
-                .FirstOrDefault(address =>
-                address.IsProcessed == false &&
-                address.IsProcessing == false &&
-                address.RetryCount < 4)) != null)
+            while (true)
             {
+                var retrievedResolvedAddresses = await resolvedAddressProcessingService
+                    .RetrieveAllResolvedAddressesAsync();
+
+                unMatchedResolvedAddress = retrievedResolvedAddresses
+                    .FirstOrDefault(address =>
+                        address.IsProcessed == false &&
+                        address.IsProcessing == false &&
+                        address.RetryCount < 4);
+
+                if (unMatchedResolvedAddress is null)
+                {
+                    break;
+                }
+
                 try
                 {
                     await TryCatch(async () =>
@@ -199,14 +209,23 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             List<Guid> batchReferenceIds = new List<Guid>();
             var exceptions = new List<Exception>();
 
-            while ((unMatchedResolvedAddresses = resolvedAddressProcessingService.RetrieveAllResolvedAddresses()
-                .Where(address =>
-                    address.IsExported == false &&
-                    address.IsProcessing == false &&
-                    address.RetryCount < 4)
-                .Take(batchCount)
-                .ToList()).Count > 0)
+            while (true)
             {
+                var retrievedResolvedAddresses = await resolvedAddressProcessingService
+                    .RetrieveAllResolvedAddressesAsync();
+
+                unMatchedResolvedAddresses = retrievedResolvedAddresses
+                    .Where(address =>
+                        address.IsExported == false &&
+                        address.IsProcessing == false &&
+                        address.RetryCount < 4)
+                    .Take(batchCount)
+                    .ToList();
+
+                if (unMatchedResolvedAddresses.Count == 0)
+                {
+                    break;
+                }
 
                 Guid batchReference = await this.identifierBroker.GetIdentifierAsync();
                 batchReferenceIds.Add(batchReference);
@@ -288,8 +307,10 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 }
                 catch (Exception ex)
                 {
-                    List<ResolvedAddress> failedToExport = this.resolvedAddressProcessingService
-                        .RetrieveAllResolvedAddresses()
+                    IQueryable<ResolvedAddress> resolvedAddresses =
+                        await resolvedAddressProcessingService.RetrieveAllResolvedAddressesAsync();
+
+                    List<ResolvedAddress> failedToExport = resolvedAddresses
                         .Where(address => address.BatchReference == batchReference)
                         .ToList();
 

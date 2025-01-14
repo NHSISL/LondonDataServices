@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllAddresses(),
+                broker.SelectAllAddressesAsync(),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

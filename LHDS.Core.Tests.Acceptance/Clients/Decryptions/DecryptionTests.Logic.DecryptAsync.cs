@@ -106,12 +106,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             await this.documentService.RemoveDocumentByFileNameAsync(
                 ingestionTracking.DecryptedFileName, blobContainers.Ingress);
 
-            List<SpecificationObject> specificationObjectList = 
-                this.specificationObjectService.RetrieveAllSpecificationObjects()
-                    .Include(specificationObject => specificationObject.ObjectColumns)
-                    .Where(specificationObject => specificationObject.DataSetSpecificationId == randomDataSetSpecification.Id).ToList();
+            IQueryable<SpecificationObject> retrievedSpecificationObjects =
+                await this.specificationObjectService.RetrieveAllSpecificationObjectsAsync();
 
-            foreach(var specificationObject in specificationObjectList)
+            List<SpecificationObject> specificationObjectList = retrievedSpecificationObjects
+                .Include(specificationObject => specificationObject.ObjectColumns)
+                .Where(specificationObject => specificationObject.DataSetSpecificationId == randomDataSetSpecification.Id).ToList();
+
+            foreach (var specificationObject in specificationObjectList)
             {
                 foreach (ObjectColumn objectColumn in specificationObject.ObjectColumns)
                 {

@@ -17,7 +17,8 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public async ValueTask<SpecificationObject> InsertSpecificationObjectAsync(
             SpecificationObject specificationObject) => await InsertAsync(specificationObject);
 
-        public IQueryable<SpecificationObject> SelectAllSpecificationObjects() => SelectAll<SpecificationObject>();
+        public async ValueTask<IQueryable<SpecificationObject>> SelectAllSpecificationObjectsAsync() =>
+            await SelectAllAsync<SpecificationObject>();
 
         public async ValueTask<SpecificationObject> SelectSpecificationObjectByIdAsync(Guid specificationObjectId) =>
             await SelectAsync<SpecificationObject>(specificationObjectId);

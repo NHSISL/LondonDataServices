@@ -15,7 +15,6 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
     public partial class DataSetSpecificationProcessingService : IDataSetSpecificationProcessingService
     {
         private delegate ValueTask<T> ReturningDataSetSpecificationProcessingFunction<T>();
-        private delegate IQueryable<DataSetSpecification> ReturningDataSetSpecificationsFunction();
         private delegate DataSetSpecification ReturningSingleDataSetSpecificationProcessingFunction();
 
         private async ValueTask<T> TryCatch<T>(
@@ -36,40 +35,6 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
             catch (InvalidArgumentDataSetSpecificationProcessingException invalidArgumentDataSetSpecificationProcessingException)
             {
                 throw CreateAndLogValidationException(invalidArgumentDataSetSpecificationProcessingException);
-            }
-            catch (DataSetSpecificationValidationException dataSetSpecificationValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(dataSetSpecificationValidationException);
-            }
-            catch (DataSetSpecificationDependencyValidationException dataSetSpecificationDependencyValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(dataSetSpecificationDependencyValidationException);
-            }
-            catch (DataSetSpecificationDependencyException dataSetSpecificationDependencyException)
-            {
-                throw CreateAndLogDependencyException(dataSetSpecificationDependencyException);
-            }
-            catch (DataSetSpecificationServiceException dataSetSpecificationServiceException)
-            {
-                throw CreateAndLogDependencyException(dataSetSpecificationServiceException);
-            }
-            catch (Exception exception)
-            {
-                var failedDataSetSpecificationProcessingServiceException =
-                    new FailedDataSetSpecificationProcessingServiceException(
-                        message: "Failed DataSetSpecification processing service error occurred, please contact support.",
-                        innerException: exception);
-
-                throw CreateAndLogServiceException(failedDataSetSpecificationProcessingServiceException);
-            }
-        }
-
-        private IQueryable<DataSetSpecification> TryCatch(
-            ReturningDataSetSpecificationsFunction returningDataSetSpecificationsFunction)
-        {
-            try
-            {
-                return returningDataSetSpecificationsFunction();
             }
             catch (DataSetSpecificationValidationException dataSetSpecificationValidationException)
             {

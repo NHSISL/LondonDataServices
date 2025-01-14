@@ -7,6 +7,7 @@ using FluentAssertions;
 using LHDS.Core.Models.Foundations.CryptographicKeys.Exceptions;
 using LHDS.Core.Models.Processings.CryptographicKeys.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
@@ -41,7 +42,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CryptographicKeys
             actualException.Should()
                 .BeEquivalentTo(expectedSubscriberCredentialValidationProcessingException);
 
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
+                   expectedSubscriberCredentialValidationProcessingException))),
+                       Times.Once);
+
             this.cryptographyKeyServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

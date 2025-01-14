@@ -22,11 +22,11 @@ namespace LHDS.Core.Services.Foundations.Assigns
             }
             catch (InvalidArgumentAssignException invalidArgumentAssignAssignException)
             {
-                throw CreateAndLogValidationException(invalidArgumentAssignAssignException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentAssignAssignException);
             }
             catch (AssignServiceException assignServiceException)
             {
-                throw CreateAndLogDependencyException(assignServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(assignServiceException);
             }
             catch (Exception exception)
             {
@@ -35,55 +35,42 @@ namespace LHDS.Core.Services.Foundations.Assigns
                         message: "Failed assign service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedAssignServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAssignServiceException);
             }
         }
 
-        private AssignValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<AssignValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var assignValidationException =
                 new AssignValidationException(
                     message: "Assign validation errors occurred, please try again.",
                     innerException: exception);
 
-            loggingBroker.LogError(assignValidationException);
+            await loggingBroker.LogErrorAsync(assignValidationException);
 
             return assignValidationException;
         }
 
-        private AssignDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
-        {
-            var assignDependencyValidationException =
-                new AssignDependencyValidationException(
-                    message: "Assign dependency validation error occurred, please try again.",
-                    innerException: exception.InnerException as Xeption);
-
-            loggingBroker.LogError(assignDependencyValidationException);
-
-            return assignDependencyValidationException;
-        }
-
-        private AssignDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<AssignDependencyException> CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var assignDependencyException =
                 new AssignDependencyException(
                     message: "Assign dependency error occurred, please try again.",
                     innerException: exception?.InnerException as Xeption);
 
-            loggingBroker.LogError(assignDependencyException);
+            await loggingBroker.LogErrorAsync(assignDependencyException);
 
             throw assignDependencyException;
         }
 
-        private AssignServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<AssignServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var assignServiceException = new
                 AssignServiceException(
                     message: "Assign service error occurred, please contact support.",
                     innerException: exception);
 
-            loggingBroker.LogError(assignServiceException);
+            await loggingBroker.LogErrorAsync(assignServiceException);
 
             return assignServiceException;
         }

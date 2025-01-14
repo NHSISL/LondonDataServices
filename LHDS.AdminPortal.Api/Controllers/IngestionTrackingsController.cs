@@ -76,12 +76,12 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public ActionResult<IQueryable<IngestionTracking>> Get()
+        public async ValueTask<ActionResult<IQueryable<IngestionTracking>>> Get()
         {
             try
             {
                 IQueryable<IngestionTracking> retrievedIngestionTrackings =
-                    this.ingestionTrackingService.RetrieveAllIngestionTrackings();
+                    await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
                 return Ok(retrievedIngestionTrackings);
             }

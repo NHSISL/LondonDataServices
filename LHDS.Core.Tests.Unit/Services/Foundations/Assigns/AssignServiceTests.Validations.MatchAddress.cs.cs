@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Assigns
                 .BeEquivalentTo(expectedAssignValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAssignValidationException))),
                         Times.Once);
 

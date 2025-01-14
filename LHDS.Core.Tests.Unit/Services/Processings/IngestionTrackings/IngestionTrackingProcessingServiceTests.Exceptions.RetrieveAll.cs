@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Processings.IngestionTrackings.Exceptions;
 using Moq;
 using Xeptions;
@@ -15,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public void ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -25,22 +28,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Throws(dependencyValidationException);
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
-            Action ingestionTrackingRetrieveAction = () =>
-                ingestionTrackingProcessingService.RetrieveAllIngestionTrackings();
+            ValueTask<IQueryable<IngestionTracking>> ingestionTrackingRetrieveTask =
+                ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
 
             IngestionTrackingProcessingDependencyValidationException actualException =
-                Assert.Throws<IngestionTrackingProcessingDependencyValidationException>(
-                    ingestionTrackingRetrieveAction);
+                await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyValidationException>(
+                    ingestionTrackingRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingDependencyValidationException);
 
             ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
@@ -54,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public void ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -64,21 +67,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     innerException: dependencyException.InnerException as Xeption);
 
             ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Throws(dependencyException);
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ThrowsAsync(dependencyException);
 
             // when
-            Action ingestionTrackingRetrieveAction = () =>
-                ingestionTrackingProcessingService.RetrieveAllIngestionTrackings();
+            ValueTask<IQueryable<IngestionTracking>> ingestionTrackingRetrieveTask =
+                ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
 
             IngestionTrackingProcessingDependencyException actualException =
-                Assert.Throws<IngestionTrackingProcessingDependencyException>(ingestionTrackingRetrieveAction);
+                await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyException>(ingestionTrackingRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingDependencyException);
 
             ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
@@ -91,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
         {
             // given
             var serviceException = new Exception();
@@ -107,21 +110,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     innerException: failedIngestionTrackingProcessingServiceException);
 
             ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Throws(serviceException);
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action ingestionTrackingRetrieveAction = () =>
-                ingestionTrackingProcessingService.RetrieveAllIngestionTrackings();
+            ValueTask<IQueryable<IngestionTracking>> ingestionTrackingRetrieveTask =
+                ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
 
             IngestionTrackingProcessingServiceException actualException =
-                Assert.Throws<IngestionTrackingProcessingServiceException>(ingestionTrackingRetrieveAction);
+                await Assert.ThrowsAsync<IngestionTrackingProcessingServiceException>(ingestionTrackingRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingServiveException);
 
             ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>

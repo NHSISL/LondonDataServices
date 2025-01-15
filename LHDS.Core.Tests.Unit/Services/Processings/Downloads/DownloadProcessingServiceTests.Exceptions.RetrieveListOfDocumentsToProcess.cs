@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
 
             this.downloadServiceMock.Setup(service =>
                 service.RetrieveListOfDocumentsToProcessAsync(inputDownload))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<List<string>> downloadRetrieveListOfDocumentsTask =
@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDownloadProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
 
             this.downloadServiceMock.Setup(service =>
                 service.RetrieveListOfDocumentsToProcessAsync(inputDownload))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<List<string>> downloadRetrieveListOfDocumentsTask =
@@ -95,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDownloadProcessingDependencyException))),
                          Times.Once);
 
@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
 
             this.downloadServiceMock.Setup(service =>
                 service.RetrieveListOfDocumentsToProcessAsync(inputDownload))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<string>> downloadRetrieveListOfDocumentsTask =
@@ -142,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDownloadProcessingServiveException))),
                          Times.Once);
 

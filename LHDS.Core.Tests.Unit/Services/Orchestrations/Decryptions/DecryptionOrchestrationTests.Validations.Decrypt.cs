@@ -62,7 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 .BeEquivalentTo(expectedDecryptionOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecryptionOrchestrationValidationException))),
                         Times.Once);
 
@@ -109,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 .BeEquivalentTo(expectedDecryptionOrchestrationFileNameValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecryptionOrchestrationFileNameValidationException))),
                         Times.Once);
 
@@ -151,7 +151,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 .BeEquivalentTo(expectedDecryptionOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecryptionOrchestrationValidationException))),
                         Times.Once);
 
@@ -228,7 +228,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecryptionOrchestrationValidationException))),
                         Times.Once);
 

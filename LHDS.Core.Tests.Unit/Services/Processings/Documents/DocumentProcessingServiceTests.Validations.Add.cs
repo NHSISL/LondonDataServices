@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                 .BeEquivalentTo(expectedDocumentProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDocumentProcessingValidationException))),
                         Times.Once);
 

@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 .BeEquivalentTo(expectedAddressValidationOrchestrationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressValidationOrchestrationException))),
                         Times.Once);
 

@@ -457,7 +457,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(invalidAudit.Id))
-                .ReturnsAsync(storageAudit);
+                    .ReturnsAsync(storageAudit);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())

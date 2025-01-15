@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
             this.dataSetServiceMock.Setup(service =>
                 service.ModifyDataSetAsync(inputDataSet))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<DataSet> dataSetModifyTask =
@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDataSetProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
             this.dataSetServiceMock.Setup(service =>
                 service.ModifyDataSetAsync(inputDataSet))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<DataSet> dataSetModifyTask =
@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDataSetProcessingDependencyException))),
                          Times.Once);
 
@@ -118,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
             this.dataSetServiceMock.Setup(service =>
                 service.ModifyDataSetAsync(inputDataSet))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<DataSet> dataSetModifyTask =
@@ -135,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDataSetProcessingServiveException))),
                          Times.Once);
 

@@ -26,6 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             int randomNumber = 1; // GetRandomNumber();
             List<string> randomMessageIds = GetRandomStrings(randomNumber);
             string mexWorkflowId = this.pdsConfiguration.WorkflowId;
+            string mexReturnWorkflowId = this.pdsConfiguration.ReturnWorkflowId;
             List<MeshMessage> retrievedMessages = GetRandomMessages(randomMessageIds, mexWorkflowId);
             string randomContainer = GetRandomString();
             string inputContainer = "pds";
@@ -183,7 +184,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId))
                         .ReturnsAsync(message);
 
-                if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId || 
+                    message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.ReturnWorkflowId)
                 {
                     continue;
                 }
@@ -208,7 +210,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId),
                         Times.Once);
 
-                if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId ||
+                    message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.ReturnWorkflowId)
                 {
                     continue;
                 }

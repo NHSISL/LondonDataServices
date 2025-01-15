@@ -54,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                 .BeEquivalentTo(expectedAddressCoordinationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressCoordinationValidationException))),
                         Times.Once);
 

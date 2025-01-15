@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
     public partial class AuditServiceTests
     {
         [Fact]
-        public async Task ShouldReturnAudits()
+        public async Task ShouldReturnAuditsAsync()
         {
             // given
             IQueryable<Audit> randomAudits = CreateRandomAudits();

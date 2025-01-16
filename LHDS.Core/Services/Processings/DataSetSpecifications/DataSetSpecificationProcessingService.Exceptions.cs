@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
@@ -26,88 +25,92 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
             }
             catch (NullDataSetSpecificationProcessingException nullDataSetSpecificationException)
             {
-                throw CreateAndLogValidationException(nullDataSetSpecificationException);
+                throw await CreateAndLogValidationExceptionAsync(nullDataSetSpecificationException);
             }
             catch (InvalidCountDataSetSpecificationProcessingException invalidCountDataSetSpecificationProcessingException)
             {
-                throw CreateAndLogValidationException(invalidCountDataSetSpecificationProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidCountDataSetSpecificationProcessingException);
             }
             catch (InvalidArgumentDataSetSpecificationProcessingException invalidArgumentDataSetSpecificationProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentDataSetSpecificationProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentDataSetSpecificationProcessingException);
             }
             catch (DataSetSpecificationValidationException dataSetSpecificationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(dataSetSpecificationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(dataSetSpecificationValidationException);
             }
             catch (DataSetSpecificationDependencyValidationException dataSetSpecificationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(dataSetSpecificationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(dataSetSpecificationDependencyValidationException);
             }
             catch (DataSetSpecificationDependencyException dataSetSpecificationDependencyException)
             {
-                throw CreateAndLogDependencyException(dataSetSpecificationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(dataSetSpecificationDependencyException);
             }
             catch (DataSetSpecificationServiceException dataSetSpecificationServiceException)
             {
-                throw CreateAndLogDependencyException(dataSetSpecificationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(dataSetSpecificationServiceException);
             }
             catch (Exception exception)
             {
                 var failedDataSetSpecificationProcessingServiceException =
                     new FailedDataSetSpecificationProcessingServiceException(
-                        message: "Failed DataSetSpecification processing service error occurred, please contact support.",
+                        message: "Failed DataSetSpecification processing service error occurred, " +
+                            "please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDataSetSpecificationProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDataSetSpecificationProcessingServiceException);
             }
         }
 
-        private DataSetSpecificationProcessingValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<DataSetSpecificationProcessingValidationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var dataSetSpecificationProcessingValidationExceptionn =
                 new DataSetSpecificationProcessingValidationException(
                     message: "DataSetSpecification processing validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataSetSpecificationProcessingValidationExceptionn);
+            await this.loggingBroker.LogErrorAsync(dataSetSpecificationProcessingValidationExceptionn);
 
             return dataSetSpecificationProcessingValidationExceptionn;
         }
 
-        private DataSetSpecificationProcessingDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<DataSetSpecificationProcessingDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var dataSetSpecificationProcessingDependencyValidationException =
                 new DataSetSpecificationProcessingDependencyValidationException(
                     message: "DataSetSpecification processing dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(dataSetSpecificationProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(dataSetSpecificationProcessingDependencyValidationException);
 
             return dataSetSpecificationProcessingDependencyValidationException;
         }
 
-        private DataSetSpecificationProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<DataSetSpecificationProcessingDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var dataSetSpecificationProcessingDependencyException =
                 new DataSetSpecificationProcessingDependencyException(
                     message: "DataSetSpecification processing dependency error occurred, please try again.",
                     innerException: exception?.InnerException as Xeption);
 
-            this.loggingBroker.LogError(dataSetSpecificationProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(dataSetSpecificationProcessingDependencyException);
 
-            throw dataSetSpecificationProcessingDependencyException;
+            return dataSetSpecificationProcessingDependencyException;
         }
 
-        private DataSetSpecificationProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<DataSetSpecificationProcessingServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var dataSetSpecificationProcessingServiceException = new
                 DataSetSpecificationProcessingServiceException(
                     message: "DataSetSpecification processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataSetSpecificationProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(dataSetSpecificationProcessingServiceException);
 
             return dataSetSpecificationProcessingServiceException;
         }

@@ -83,8 +83,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId: subscriberCredentialId);
 
             EmisLandingCoordinationDependencyException actualEmisLandingCoordinationDependencyException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(async () =>
-                    await retrieveListOfDocumentsToProcessTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(
+                    retrieveListOfDocumentsToProcessTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationDependencyException.Should()
@@ -132,8 +132,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId: subscriberCredentialId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationServiceException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await retrieveListOfDocumentsToProcessTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(
+                    retrieveListOfDocumentsToProcessTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationServiceException.Should()

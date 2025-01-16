@@ -40,8 +40,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             EmisLandingCoordinationDependencyValidationException
                 actualEmisLandingCoordinationDependencyValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyValidationException>(async () =>
-                    await retrieveDownloadTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyValidationException>(
+                    retrieveDownloadTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationDependencyValidationException.Should()
@@ -86,8 +86,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             EmisLandingCoordinationDependencyException
                 actualEmisLandingCoordinationDependencyException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(async () =>
-                    await retrieveDownloadTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(
+                    retrieveDownloadTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationDependencyException.Should()
@@ -136,8 +136,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             EmisLandingCoordinationServiceException
                 actualEmisLandingCoordinationServiceException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await retrieveDownloadTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(
+                    retrieveDownloadTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationServiceException.Should()

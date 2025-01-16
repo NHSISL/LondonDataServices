@@ -25,67 +25,67 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             }
             catch (InvalidArgumentIngressOrchestrationException invalidArgumentIngressOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentIngressOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentIngressOrchestrationException);
             }
             catch (NotFoundIngressOrchestrationException notFoundIngressOrchestrationException)
             {
-                throw CreateAndLogValidationException(notFoundIngressOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundIngressOrchestrationException);
             }
             catch (NoConfigIngressOrchestrationException noConfigIngressOrchestrationException)
             {
-                throw CreateAndLogValidationException(noConfigIngressOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(noConfigIngressOrchestrationException);
             }
             catch (IngestionTrackingProcessingValidationException ingestionTrackingProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingProcessingValidationException);
             }
             catch (IngestionTrackingProcessingDependencyValidationException
                 ingestionTrackingProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingProcessingDependencyValidationException);
             }
             catch (SpecificationObjectProcessingValidationException specificationObjectProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(specificationObjectProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(specificationObjectProcessingValidationException);
             }
             catch (SpecificationObjectProcessingDependencyValidationException
                 specificationObjectProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(specificationObjectProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(specificationObjectProcessingDependencyValidationException);
             }
             catch (DocumentValidationException documentValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentValidationException);
             }
             catch (DocumentDependencyValidationException documentDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentDependencyValidationException);
             }
             catch (IngestionTrackingProcessingDependencyException ingestionTrackingProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingProcessingDependencyException);
             }
             catch (IngestionTrackingProcessingServiceException
                 ingestionTrackingProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingProcessingServiceException);
             }
             catch (SpecificationObjectProcessingDependencyException specificationObjectProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(specificationObjectProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(specificationObjectProcessingDependencyException);
             }
             catch (SpecificationObjectProcessingServiceException
                 specificationObjectProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(specificationObjectProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(specificationObjectProcessingServiceException);
             }
             catch (DocumentProcessingDependencyException documentProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(documentProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentProcessingDependencyException);
             }
             catch (DocumentProcessingServiceException documentProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(documentProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentProcessingServiceException);
             }
             catch (Exception exception)
             {
@@ -94,59 +94,60 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                         message: "Failed ingress orchestration service error occurred, please contact support.",
                         exception);
 
-                throw CreateAndLogServiceException(failedIngressOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedIngressOrchestrationServiceException);
             }
         }
 
-        private IngressOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<IngressOrchestrationValidationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var ingressOrchestrationValidationException =
                 new IngressOrchestrationValidationException(
                     message: "Ingress orchestration validation errors occurred, please try again.",
                     exception);
 
-            this.loggingBroker.LogError(ingressOrchestrationValidationException);
+            await this.loggingBroker.LogErrorAsync(ingressOrchestrationValidationException);
 
             return ingressOrchestrationValidationException;
         }
 
-        private IngressOrchestrationDependencyValidationException
-            CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<IngressOrchestrationDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var ingressOrchestrationDependencyValidationException =
                 new IngressOrchestrationDependencyValidationException(
                     message: "Ingress orchestration dependency validation error occurred, fix the errors and try again.",
                     exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(ingressOrchestrationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(ingressOrchestrationDependencyValidationException);
 
             return ingressOrchestrationDependencyValidationException;
         }
 
-        private IngressOrchestrationDependencyException
-            CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<IngressOrchestrationDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var ingressOrchestrationDependencyException =
                 new IngressOrchestrationDependencyException(
                     message: "Ingress orchestration dependency error occurred, fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(ingressOrchestrationDependencyException);
+            await this.loggingBroker.LogErrorAsync(ingressOrchestrationDependencyException);
 
-            throw ingressOrchestrationDependencyException;
+            return ingressOrchestrationDependencyException;
         }
 
-        private IngressOrchestrationServiceException
-            CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<IngressOrchestrationServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var ingressOrchestrationServiceException =
                 new IngressOrchestrationServiceException(
                     message: "Ingress orchestration service error occurred, please contact support.",
                     exception);
 
-            this.loggingBroker.LogError(ingressOrchestrationServiceException);
+            await this.loggingBroker.LogErrorAsync(ingressOrchestrationServiceException);
 
-            throw ingressOrchestrationServiceException;
+            return ingressOrchestrationServiceException;
         }
     }
 }

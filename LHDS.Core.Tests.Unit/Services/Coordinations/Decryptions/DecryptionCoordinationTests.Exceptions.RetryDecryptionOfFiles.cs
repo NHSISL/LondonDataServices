@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedDecryptionCoordinationDependencyValidationException))),
                          Times.Once);
 
@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedDecryptionCoordinationDependencyException))),
                          Times.Once);
 
@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedDecryptionCoordinationServiceException))),
                          Times.Once);
 

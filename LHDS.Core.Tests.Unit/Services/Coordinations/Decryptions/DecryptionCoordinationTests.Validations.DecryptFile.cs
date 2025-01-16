@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     Times.Never());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecryptionCoordinationValidationException))),
                         Times.Once);
 

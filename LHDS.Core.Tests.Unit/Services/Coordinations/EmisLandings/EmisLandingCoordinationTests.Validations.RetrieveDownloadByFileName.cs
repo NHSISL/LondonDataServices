@@ -51,8 +51,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     fileName: invalidData);
 
             EmisLandingCoordinationValidationException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(async () =>
-                    await retrieveDownloadByFilenameTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(
+                    retrieveDownloadByFilenameTask.AsTask);
 
             // then
             actualEmisLandingCoordinationValidationException.Should()

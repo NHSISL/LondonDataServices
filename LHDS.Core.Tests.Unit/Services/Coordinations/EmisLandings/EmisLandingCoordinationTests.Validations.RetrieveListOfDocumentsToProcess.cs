@@ -38,8 +38,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 this.emisLandingCoordinationService.RetrieveListOfDocumentsToProcessAsync(invalidSubscriberAgreementId);
 
             EmisLandingCoordinationValidationException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(async () =>
-                    await retrieveListOfDocumentsToProcessAsyncTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(
+                    retrieveListOfDocumentsToProcessAsyncTask.AsTask);
 
             // then
             actualEmisLandingCoordinationValidationException.Should()

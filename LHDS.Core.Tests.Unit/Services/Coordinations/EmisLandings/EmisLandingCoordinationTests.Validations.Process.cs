@@ -38,8 +38,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 this.emisLandingCoordinationService.ProcessAsync(supplierId: invalidSupplierId);
 
             EmisLandingCoordinationValidationException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(
+                    processDataTask.AsTask);
 
             // then
             actualEmisLandingCoordinationValidationException.Should()

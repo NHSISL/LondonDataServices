@@ -68,8 +68,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 supplierId: inputSupplierId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(
+                    processDataTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationValidationException.Should()
@@ -159,8 +159,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .ProcessAsync(supplierId: inputSupplierId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(
+                    processDataTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationValidationException.Should()
@@ -254,8 +254,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .ProcessAsync(supplierId: inputSupplierId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(
+                    processDataTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationValidationException.Should()
@@ -316,8 +316,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
 
             EmisLandingCoordinationDependencyValidationException
                 actualEmisLandingCoordinationDependencyValidationException =
-                    await Assert.ThrowsAsync<EmisLandingCoordinationDependencyValidationException>(async () =>
-                        await processDataTask);
+                    await Assert.ThrowsAsync<EmisLandingCoordinationDependencyValidationException>(
+                        processDataTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationDependencyValidationException.Should()
@@ -365,8 +365,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .ProcessAsync(supplierId: inputSupplierId);
 
             EmisLandingCoordinationDependencyException actualEmisLandingCoordinationDependencyException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(
+                    processDataTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationDependencyException.Should()
@@ -419,8 +419,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .ProcessAsync(supplierId: inputSupplierId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(
+                    processDataTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationValidationException.Should()

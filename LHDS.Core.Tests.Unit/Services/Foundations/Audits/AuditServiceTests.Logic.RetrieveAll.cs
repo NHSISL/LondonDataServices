@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Audits;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
     public partial class AuditServiceTests
     {
         [Fact]
-        public void ShouldReturnAudits()
+        public async Task ShouldReturnAuditsAsync()
         {
             // given
             IQueryable<Audit> randomAudits = CreateRandomAudits();
@@ -21,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             IQueryable<Audit> expectedAudits = storageAudits;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllAudits())
-                    .Returns(storageAudits);
+                broker.SelectAllAuditsAsync())
+                    .ReturnsAsync(storageAudits);
 
             // when
             IQueryable<Audit> actualAudits =
-                this.auditService.RetrieveAllAudits();
+                await this.auditService.RetrieveAllAuditsAsync();
 
             // then
             actualAudits.Should().BeEquivalentTo(expectedAudits);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllAudits(),
+                broker.SelectAllAuditsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

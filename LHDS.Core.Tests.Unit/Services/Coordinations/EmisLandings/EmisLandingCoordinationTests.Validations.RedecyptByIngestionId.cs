@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 .BeEquivalentTo(expectedEmisLandingCoordinationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedEmisLandingCoordinationValidationException))),
                         Times.Once);
 

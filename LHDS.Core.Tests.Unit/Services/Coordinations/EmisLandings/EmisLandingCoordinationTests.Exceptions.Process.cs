@@ -92,12 +92,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      emisLandingCoordinationDependencyValidationLoggingException))),
                          Times.Exactly(randomActiveSubscriberAgreementIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationServiceException))),
                          Times.Once);
 
@@ -183,12 +183,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      emisLandingCoordinationDependencyLoggingException))),
                          Times.Exactly(randomActiveSubscriberAgreementIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationServiceException))),
                          Times.Once);
 
@@ -273,12 +273,12 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
             }
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      innerEmisLandingCoordinationServiceException))),
                          Times.Exactly(randomActiveSubscriberAgreementIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationServiceException))),
                          Times.Once);
 
@@ -328,7 +328,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationDependencyValidationException))),
                          Times.Once);
 
@@ -377,7 +377,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationDependencyException))),
                          Times.Once);
 
@@ -431,7 +431,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationServiceException))),
                          Times.Once);
 

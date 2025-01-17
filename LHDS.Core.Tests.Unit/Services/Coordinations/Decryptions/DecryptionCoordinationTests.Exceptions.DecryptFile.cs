@@ -83,8 +83,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             ValueTask<string> processDataTask = this.decryptionCoordinationService.DecryptAsync(filePath);
 
             DecryptionCoordinationDependencyException actualEmisLandingCoordinationDependencyException =
-                await Assert.ThrowsAsync<DecryptionCoordinationDependencyException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<DecryptionCoordinationDependencyException>(
+                    processDataTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationDependencyException.Should()
@@ -132,8 +132,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             ValueTask<string> processDataTask = this.decryptionCoordinationService.DecryptAsync(encryptedFileName);
 
             DecryptionCoordinationServiceException actualDecryptionCoordinationServiceException =
-                await Assert.ThrowsAsync<DecryptionCoordinationServiceException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<DecryptionCoordinationServiceException>(
+                    processDataTask.AsTask);
 
             // Then
             actualDecryptionCoordinationServiceException.Should()

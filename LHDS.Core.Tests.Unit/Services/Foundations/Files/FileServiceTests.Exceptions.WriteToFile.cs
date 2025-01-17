@@ -94,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Files
         }
 
         [Fact]
-        public async Task ShoudThrowServiceExceptionOnWriteToFileIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnWriteToFileIfServiceErrorOccursAsync()
         {
             // given
             string somePath = GetRandomString();

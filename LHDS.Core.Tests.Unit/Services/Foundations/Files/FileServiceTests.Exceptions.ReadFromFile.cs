@@ -92,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Files
         }
 
         [Fact]
-        public async Task ShoudThrowServiceExceptionOnReadFromFileIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnReadFromFileIfServiceErrorOccursAsync()
         {
             // given
             string somePath = GetRandomString();

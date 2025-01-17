@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedIngestionTrackingProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -85,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedIngestionTrackingProcessingDependencyException))),
                          Times.Once);
 
@@ -128,7 +128,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedIngestionTrackingProcessingServiveException))),
                          Times.Once);
 

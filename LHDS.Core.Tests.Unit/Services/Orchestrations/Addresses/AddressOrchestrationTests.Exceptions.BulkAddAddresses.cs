@@ -169,13 +169,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 addressOrchestrationDependencyValidationLoggingException.AddData("ExtractionError", csvFile);
 
                 this.loggingBrokerMock.Verify(broker =>
-                    broker.LogError(It.Is(SameExceptionAs(
+                    broker.LogErrorAsync(It.Is(SameExceptionAs(
                         addressOrchestrationDependencyValidationLoggingException))),
                             Times.Once);
             }
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualAddressOrchestrationServiceException))),
                         Times.Once);
 
@@ -337,13 +337,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                 addressOrchestrationDependencyLoggingException.AddData("ExtractionError", csvFile);
 
                 this.loggingBrokerMock.Verify(broker =>
-                    broker.LogError(It.Is(SameExceptionAs(
+                    broker.LogErrorAsync(It.Is(SameExceptionAs(
                         addressOrchestrationDependencyLoggingException))),
                             Times.Once);
             }
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualAddressOrchestrationServiceException))),
                         Times.Once);
 
@@ -501,13 +501,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                         Times.Once());
 
                 this.loggingBrokerMock.Verify(broker =>
-                    broker.LogError(It.Is(SameExceptionAs(
+                    broker.LogErrorAsync(It.Is(SameExceptionAs(
                         innerAddressOrchestrationServiceException))),
                             Times.Once);
             }
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualAddressOrchestrationServiceException))),
                         Times.Once);
 
@@ -558,7 +558,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -609,7 +609,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -663,7 +663,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Addresses
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedAddressOrchestrationServiceException))),
                        Times.Once);
 

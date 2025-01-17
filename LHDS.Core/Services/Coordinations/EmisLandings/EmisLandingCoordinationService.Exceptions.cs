@@ -28,48 +28,48 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             }
             catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentEmisLandingCoordinationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentEmisLandingCoordinationException);
             }
             catch (SubscriberCredentialValidationOrchestrationException
                 subscriberCredentialValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationOrchestrationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(subscriberCredentialValidationOrchestrationException);
             }
             catch (SubscriberCredentialOrchestrationDependencyValidationException
                 subscriberCredentialOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     subscriberCredentialOrchestrationDependencyValidationException);
             }
             catch (EmisLandingOrchestrationValidationException
                 emisLandingOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(emisLandingOrchestrationValidationException);
             }
             catch (EmisLandingOrchestrationDependencyValidationException
                 emisLandingOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(emisLandingOrchestrationDependencyValidationException);
             }
             catch (SubscriberCredentialDependencyOrchestrationException
                 subscriberCredentialDependencyOrchestrationException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialDependencyOrchestrationException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialDependencyOrchestrationException);
             }
             catch (SubscriberCredentialOrchestrationServiceException
                 subscriberCredentialOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialOrchestrationServiceException);
             }
             catch (EmisLandingOrchestrationDependencyException
                 emisLandingOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(emisLandingOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(emisLandingOrchestrationDependencyException);
             }
             catch (EmisLandingOrchestrationServiceException
                 emisLandingOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(emisLandingOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(emisLandingOrchestrationServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -78,7 +78,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                         message: "Failed EMIS landing aggregate coordination service error occurred, please contact support.",
                         innerException: aggregateException);
 
-                throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedEmisLandingCoordinationServiceException);
             }
             catch (Exception exception)
             {
@@ -87,7 +87,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                         message: "Failed EMIS landing coordination service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedEmisLandingCoordinationServiceException);
             }
         }
 
@@ -99,48 +99,48 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             }
             catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentEmisLandingCoordinationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentEmisLandingCoordinationException);
             }
             catch (SubscriberCredentialValidationOrchestrationException
                 subscriberCredentialValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationOrchestrationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(subscriberCredentialValidationOrchestrationException);
             }
             catch (SubscriberCredentialOrchestrationDependencyValidationException
                 subscriberCredentialOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     subscriberCredentialOrchestrationDependencyValidationException);
             }
             catch (EmisLandingOrchestrationValidationException
                 emisLandingOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(emisLandingOrchestrationValidationException);
             }
             catch (EmisLandingOrchestrationDependencyValidationException
                 emisLandingOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(emisLandingOrchestrationDependencyValidationException);
             }
             catch (SubscriberCredentialDependencyOrchestrationException
                 subscriberCredentialDependencyOrchestrationException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialDependencyOrchestrationException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialDependencyOrchestrationException);
             }
             catch (SubscriberCredentialOrchestrationServiceException
                 subscriberCredentialOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialOrchestrationServiceException);
             }
             catch (EmisLandingOrchestrationDependencyException
                 emisLandingOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(emisLandingOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(emisLandingOrchestrationDependencyException);
             }
             catch (EmisLandingOrchestrationServiceException
                 emisLandingOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(emisLandingOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(emisLandingOrchestrationServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -149,7 +149,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                         message: "Failed EMIS landing aggregate coordination service error occurred, please contact support.",
                         innerException: aggregateException);
 
-                throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedEmisLandingCoordinationServiceException);
             }
             catch (Exception exception)
             {
@@ -158,7 +158,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                         message: "Failed EMIS landing coordination service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedEmisLandingCoordinationServiceException);
             }
         }
 
@@ -170,48 +170,48 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             }
             catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentEmisLandingCoordinationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentEmisLandingCoordinationException);
             }
             catch (SubscriberCredentialValidationOrchestrationException
                 subscriberCredentialValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationOrchestrationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(subscriberCredentialValidationOrchestrationException);
             }
             catch (SubscriberCredentialOrchestrationDependencyValidationException
                 subscriberCredentialOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     subscriberCredentialOrchestrationDependencyValidationException);
             }
             catch (EmisLandingOrchestrationValidationException
                 emisLandingOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(emisLandingOrchestrationValidationException);
             }
             catch (EmisLandingOrchestrationDependencyValidationException
                 emisLandingOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(emisLandingOrchestrationDependencyValidationException);
             }
             catch (SubscriberCredentialDependencyOrchestrationException
                 subscriberCredentialDependencyOrchestrationException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialDependencyOrchestrationException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialDependencyOrchestrationException);
             }
             catch (SubscriberCredentialOrchestrationServiceException
                 subscriberCredentialOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialOrchestrationServiceException);
             }
             catch (EmisLandingOrchestrationDependencyException
                 emisLandingOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(emisLandingOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(emisLandingOrchestrationDependencyException);
             }
             catch (EmisLandingOrchestrationServiceException
                 emisLandingOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(emisLandingOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(emisLandingOrchestrationServiceException);
             }
             catch (Exception exception)
             {
@@ -220,7 +220,7 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                         message: "Failed EMIS landing coordination service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedEmisLandingCoordinationServiceException);
             }
         }
 
@@ -232,48 +232,48 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
             }
             catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentEmisLandingCoordinationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentEmisLandingCoordinationException);
             }
             catch (SubscriberCredentialValidationOrchestrationException
                 subscriberCredentialValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationOrchestrationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(subscriberCredentialValidationOrchestrationException);
             }
             catch (SubscriberCredentialOrchestrationDependencyValidationException
                 subscriberCredentialOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     subscriberCredentialOrchestrationDependencyValidationException);
             }
             catch (EmisLandingOrchestrationValidationException
                 emisLandingOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(emisLandingOrchestrationValidationException);
             }
             catch (EmisLandingOrchestrationDependencyValidationException
                 emisLandingOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(emisLandingOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(emisLandingOrchestrationDependencyValidationException);
             }
             catch (SubscriberCredentialDependencyOrchestrationException
                 subscriberCredentialDependencyOrchestrationException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialDependencyOrchestrationException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialDependencyOrchestrationException);
             }
             catch (SubscriberCredentialOrchestrationServiceException
                 subscriberCredentialOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialOrchestrationServiceException);
             }
             catch (EmisLandingOrchestrationDependencyException
                 emisLandingOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(emisLandingOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(emisLandingOrchestrationDependencyException);
             }
             catch (EmisLandingOrchestrationServiceException
                 emisLandingOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(emisLandingOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(emisLandingOrchestrationServiceException);
             }
             catch (Exception exception)
             {
@@ -282,55 +282,58 @@ namespace LHDS.Core.Services.Coordinations.EmisLandings
                         message: "Failed EMIS landing coordination service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedEmisLandingCoordinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedEmisLandingCoordinationServiceException);
             }
         }
 
-        private EmisLandingCoordinationValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<EmisLandingCoordinationValidationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var emisLandingCoordinationValidationException =
                 new EmisLandingCoordinationValidationException(
                     message: "Emis Landing coordination validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(emisLandingCoordinationValidationException);
+            await this.loggingBroker.LogErrorAsync(emisLandingCoordinationValidationException);
 
             return emisLandingCoordinationValidationException;
         }
 
-        private EmisLandingCoordinationDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<EmisLandingCoordinationDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var emisLandingCoordinationDependencyValidationException =
                 new EmisLandingCoordinationDependencyValidationException(
                     message: "EMIS landing coordination dependency validation error occurred, please try again.",
                     exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(emisLandingCoordinationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(emisLandingCoordinationDependencyValidationException);
 
             return emisLandingCoordinationDependencyValidationException;
         }
 
-        private EmisLandingCoordinationDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<EmisLandingCoordinationDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var emisLandingCoordinationDependencyException =
                 new EmisLandingCoordinationDependencyException(
                     message: "EMIS landing coordination dependency error occurred, fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(emisLandingCoordinationDependencyException);
+            await this.loggingBroker.LogErrorAsync(emisLandingCoordinationDependencyException);
 
             return emisLandingCoordinationDependencyException;
         }
 
-        private EmisLandingCoordinationServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<EmisLandingCoordinationServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var emisLandingCoordinationServiceException =
                 new EmisLandingCoordinationServiceException(
                     message: "EMIS landing coordination service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(emisLandingCoordinationServiceException);
+            await this.loggingBroker.LogErrorAsync(emisLandingCoordinationServiceException);
 
             return emisLandingCoordinationServiceException;
         }

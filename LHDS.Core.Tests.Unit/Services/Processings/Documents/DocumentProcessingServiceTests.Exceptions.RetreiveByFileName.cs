@@ -17,7 +17,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveIfDependencyValidationErrorOccursAndLogItAsync(
+        public async Task
+            ShouldThrowDependencyValidationExceptionOnRetrieveIfDependencyValidationErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -35,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             this.documentServiceMock.Setup(service =>
                 service.RetrieveDocumentByFileNameAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask retrieveDocumentTask =
@@ -55,7 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDocumentProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -83,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             this.documentServiceMock.Setup(service =>
                 service.RetrieveDocumentByFileNameAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask retrieveDocumentTask =
@@ -103,7 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDocumentProcessingDependencyException))),
                          Times.Once);
 
@@ -135,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             this.documentServiceMock.Setup(service =>
                 service.RetrieveDocumentByFileNameAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask retrieveDocumentTask =
@@ -155,7 +156,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDocumentProcessingServiveException))),
                          Times.Once);
 

@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.Setup(service =>
                 service.AddDataSetSpecificationAsync(inputDataSetSpecification))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<DataSetSpecification> dataSetSpecificationAddTask =
@@ -42,14 +42,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     dataSetSpecificationAddTask.AsTask);
 
             // then
-            actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyValidationException);
+            actualException.Should()
+                .BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyValidationException);
 
             this.dataSetSpecificationServiceMock.Verify(service =>
                 service.AddDataSetSpecificationAsync(inputDataSetSpecification),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDataSetSpecificationProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -59,8 +60,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnAddIfDependencyErrorOccursAndLogItAsync(
-            Xeption dependencyException)
+        public async Task
+            ShouldThrowDependencyExceptionOnAddIfDependencyErrorOccursAndLogItAsync(Xeption dependencyException)
         {
             // given
             DataSetSpecification someDataSetSpecification = CreateRandomDataSetSpecification();
@@ -73,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.Setup(service =>
                 service.AddDataSetSpecificationAsync(inputDataSetSpecification))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<DataSetSpecification> dataSetSpecificationAddTask =
@@ -91,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDataSetSpecificationProcessingDependencyException))),
                          Times.Once);
 
@@ -105,7 +106,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             // given
             DataSetSpecification someDataSetSpecification = CreateRandomDataSetSpecification();
             DataSetSpecification inputDataSetSpecification = someDataSetSpecification;
-
             var serviceException = new Exception();
 
             var failedDataSetSpecificationProcessingServiceException =
@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.Setup(service =>
                 service.AddDataSetSpecificationAsync(inputDataSetSpecification))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<DataSetSpecification> addDataSetSpecificationTask =
@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDataSetSpecificationProcessingServiveException))),
                          Times.Once);
 

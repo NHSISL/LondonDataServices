@@ -38,15 +38,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 this.emisLandingCoordinationService.ProcessAsync(supplierId: invalidSupplierId);
 
             EmisLandingCoordinationValidationException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(
+                    processDataTask.AsTask);
 
             // then
             actualEmisLandingCoordinationValidationException.Should()
                 .BeEquivalentTo(expectedEmisLandingCoordinationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedEmisLandingCoordinationValidationException))),
                         Times.Once);
 

@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 
             this.ingestionTrackingProcessingServiceMock
                 .Setup(service => service.RetrieveIngestionTrackingByIdAsync(someIngestionTrackingId))
-                    .Throws(dependancyValidationException);
+                    .ThrowsAsync(dependancyValidationException);
 
             //when
             ValueTask checkForBatchCompleteTask =
@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 
             this.ingestionTrackingProcessingServiceMock
                 .Setup(service => service.RetrieveIngestionTrackingByIdAsync(someIngestionTrackingId))
-                   .Throws(dependancyException);
+                   .ThrowsAsync(dependancyException);
 
             // when
             ValueTask checkForBatchCompleteTask =
@@ -93,7 +93,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
                         Times.Once);
 
@@ -123,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 
             this.ingestionTrackingProcessingServiceMock
                 .Setup(service => service.RetrieveIngestionTrackingByIdAsync(someIngestionTrackingId))
-                  .Throws(serviceException);
+                  .ThrowsAsync(serviceException);
 
             // when
             ValueTask checkForBatchCompleteTask =
@@ -141,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedIngressOrchestrationServiceException))),
                         Times.Once);
 

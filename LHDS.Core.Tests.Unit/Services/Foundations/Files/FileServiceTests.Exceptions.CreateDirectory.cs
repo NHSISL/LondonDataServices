@@ -93,7 +93,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Files
         }
 
         [Fact]
-        public async Task ShoudThrowServiceExceptionOnCreateDirectoryIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnCreateDirectoryIfServiceErrorOccursAsync()
         {
             // given
             string somePath = GetRandomString();

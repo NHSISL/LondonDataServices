@@ -27,11 +27,11 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             }
             catch (NullTerminologyPollException nullTerminologyPollException)
             {
-                throw CreateAndLogValidationException(nullTerminologyPollException);
+                throw await CreateAndLogValidationExceptionAsync(nullTerminologyPollException);
             }
             catch (InvalidTerminologyPollException invalidTerminologyPollException)
             {
-                throw CreateAndLogValidationException(invalidTerminologyPollException);
+                throw await CreateAndLogValidationExceptionAsync(invalidTerminologyPollException);
             }
             catch (SqlException sqlException)
             {
@@ -40,11 +40,11 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                         message: "Failed terminologyPoll storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedTerminologyPollStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedTerminologyPollStorageException);
             }
             catch (NotFoundTerminologyPollException notFoundTerminologyPollException)
             {
-                throw CreateAndLogValidationException(notFoundTerminologyPollException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundTerminologyPollException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                         message: "TerminologyPoll with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsTerminologyPollException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsTerminologyPollException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -62,7 +62,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                         message: "Invalid terminologyPoll reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidTerminologyPollReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidTerminologyPollReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -71,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                         message: "Locked terminologyPoll record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedTerminologyPollException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedTerminologyPollException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -80,7 +80,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                         message: "Failed terminologyPoll storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedTerminologyPollStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedTerminologyPollStorageException);
             }
             catch (Exception exception)
             {
@@ -89,7 +89,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                         message: "Failed terminologyPoll service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedTerminologyPollServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedTerminologyPollServiceException);
             }
         }
 
@@ -107,7 +107,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                         message: "Failed terminologyPoll storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedTerminologyPollStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedTerminologyPollStorageException);
             }
             catch (Exception exception)
             {
@@ -116,47 +116,23 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                         message: "Failed terminologyPoll service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedTerminologyPollServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedTerminologyPollServiceException);
             }
         }
 
-        private TerminologyPollValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<TerminologyPollValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var terminologyPollValidationException =
                 new TerminologyPollValidationException(
                     message: "TerminologyPoll validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(terminologyPollValidationException);
+            await this.loggingBroker.LogErrorAsync(terminologyPollValidationException);
 
             return terminologyPollValidationException;
         }
 
-        private TerminologyPollDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
-        {
-            var terminologyPollDependencyException =
-                new TerminologyPollDependencyException(
-                    message: "TerminologyPoll dependency error occurred, please contact support.",
-                    innerException: exception);
-
-            this.loggingBroker.LogCritical(terminologyPollDependencyException);
-
-            return terminologyPollDependencyException;
-        }
-
-        private TerminologyPollDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
-        {
-            var terminologyPollDependencyValidationException =
-                new TerminologyPollDependencyValidationException(
-                    message: "TerminologyPoll dependency validation occurred, please try again.",
-                    innerException: exception);
-
-            this.loggingBroker.LogError(terminologyPollDependencyValidationException);
-
-            return terminologyPollDependencyValidationException;
-        }
-
-        private TerminologyPollDependencyException CreateAndLogDependencyException(
+        private async ValueTask<TerminologyPollDependencyException> CreateAndLogCriticalDependencyExceptionAsync(
             Xeption exception)
         {
             var terminologyPollDependencyException =
@@ -164,12 +140,37 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                     message: "TerminologyPoll dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(terminologyPollDependencyException);
+            await this.loggingBroker.LogCriticalAsync(terminologyPollDependencyException);
 
             return terminologyPollDependencyException;
         }
 
-        private TerminologyPollServiceException CreateAndLogServiceException(
+        private async  ValueTask<TerminologyPollDependencyValidationException> CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
+        {
+            var terminologyPollDependencyValidationException =
+                new TerminologyPollDependencyValidationException(
+                    message: "TerminologyPoll dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(terminologyPollDependencyValidationException);
+
+            return terminologyPollDependencyValidationException;
+        }
+
+        private async ValueTask<TerminologyPollDependencyException> CreateAndLogDependencyExceptionAsync(
+            Xeption exception)
+        {
+            var terminologyPollDependencyException =
+                new TerminologyPollDependencyException(
+                    message: "TerminologyPoll dependency error occurred, please contact support.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(terminologyPollDependencyException);
+
+            return terminologyPollDependencyException;
+        }
+
+        private async ValueTask<TerminologyPollServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var terminologyPollServiceException =
@@ -177,7 +178,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                     message: "TerminologyPoll service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(terminologyPollServiceException);
+            await this.loggingBroker.LogErrorAsync(terminologyPollServiceException);
 
             return terminologyPollServiceException;
         }

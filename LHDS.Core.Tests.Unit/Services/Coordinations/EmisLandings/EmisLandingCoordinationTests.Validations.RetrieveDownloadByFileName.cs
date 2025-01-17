@@ -51,15 +51,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     fileName: invalidData);
 
             EmisLandingCoordinationValidationException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(async () =>
-                    await retrieveDownloadByFilenameTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(
+                    retrieveDownloadByFilenameTask.AsTask);
 
             // then
             actualEmisLandingCoordinationValidationException.Should()
                 .BeEquivalentTo(expectedEmisLandingCoordinationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedEmisLandingCoordinationValidationException))),
                         Times.Once);
 

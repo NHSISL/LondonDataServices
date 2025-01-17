@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(randomAudit.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<Audit> addAuditTask =
@@ -54,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedAuditDependencyException))),
                         Times.Once);
 
@@ -112,7 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAuditDependencyValidationException))),
                         Times.Once);
 
@@ -164,7 +164,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedAuditDependencyException))),
                         Times.Once);
 
@@ -212,7 +212,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                         Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAuditServiceException))),
                         Times.Once);
 

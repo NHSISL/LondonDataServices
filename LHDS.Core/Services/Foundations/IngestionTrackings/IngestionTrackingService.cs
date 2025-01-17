@@ -36,8 +36,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 return await this.storageBroker.InsertIngestionTrackingAsync(ingestionTracking);
             });
 
-        public IQueryable<IngestionTracking> RetrieveAllIngestionTrackings() =>
-            TryCatch(() => this.storageBroker.SelectAllIngestionTrackings());
+        public ValueTask<IQueryable<IngestionTracking>> RetrieveAllIngestionTrackingsAsync() =>
+            TryCatch(async() => await this.storageBroker.SelectAllIngestionTrackingsAsync());
 
         public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             TryCatch(async () =>
@@ -57,20 +57,25 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             {
                 ValidateIngestionTrackingFileName(fileName);
 
-                IngestionTracking? maybeIngestionTracking =
-                    this.storageBroker.SelectAllIngestionTrackings()
+                IQueryable<IngestionTracking> allIngestionTrackings =
+                    await this.storageBroker.SelectAllIngestionTrackingsAsync();
+
+                IngestionTracking? maybeIngestionTracking = allIngestionTrackings
                         .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
 
                 return await ValueTask.FromResult(maybeIngestionTracking);
             });
 
-        public ValueTask<IngestionTracking?> RetrieveIngestionTrackingByEncryptedFileNameAsync(string encryptedFileName) =>
+        public ValueTask<IngestionTracking?> RetrieveIngestionTrackingByEncryptedFileNameAsync(
+            string encryptedFileName) =>
             TryCatch(async () =>
             {
                 ValidateIngestionTrackingFileName(encryptedFileName);
 
-                IngestionTracking? maybeIngestionTracking =
-                    this.storageBroker.SelectAllIngestionTrackings()
+                IQueryable<IngestionTracking> allIngestionTrackings =
+                    await this.storageBroker.SelectAllIngestionTrackingsAsync();
+
+                IngestionTracking? maybeIngestionTracking = allIngestionTrackings
                         .FirstOrDefault(ingestionTracking => ingestionTracking.EncryptedFileName == encryptedFileName);
 
                 return await ValueTask.FromResult(maybeIngestionTracking);

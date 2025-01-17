@@ -17,9 +17,10 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
     public partial class DataSetSpecificationService
     {
         private delegate ValueTask<DataSetSpecification> ReturningDataSetSpecificationFunction();
-        private delegate IQueryable<DataSetSpecification> ReturningDataSetSpecificationsFunction();
+        private delegate ValueTask<IQueryable<DataSetSpecification>> ReturningDataSetSpecificationsFunction();
 
-        private async ValueTask<DataSetSpecification> TryCatch(ReturningDataSetSpecificationFunction returningDataSetSpecificationFunction)
+        private async ValueTask<DataSetSpecification> TryCatch(
+            ReturningDataSetSpecificationFunction returningDataSetSpecificationFunction)
         {
             try
             {
@@ -27,11 +28,11 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             }
             catch (NullDataSetSpecificationException nullDataSetSpecificationException)
             {
-                throw CreateAndLogValidationException(nullDataSetSpecificationException);
+                throw await CreateAndLogValidationExceptionAsync(nullDataSetSpecificationException);
             }
             catch (InvalidDataSetSpecificationException invalidDataSetSpecificationException)
             {
-                throw CreateAndLogValidationException(invalidDataSetSpecificationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidDataSetSpecificationException);
             }
             catch (SqlException sqlException)
             {
@@ -40,11 +41,11 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                         message: "Failed dataSetSpecification storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedDataSetSpecificationStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedDataSetSpecificationStorageException);
             }
             catch (NotFoundDataSetSpecificationException notFoundDataSetSpecificationException)
             {
-                throw CreateAndLogValidationException(notFoundDataSetSpecificationException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundDataSetSpecificationException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -53,7 +54,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                         message: "DataSetSpecification with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsDataSetSpecificationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsDataSetSpecificationException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -62,7 +63,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                         message: "Invalid dataSetSpecification reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidDataSetSpecificationReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidDataSetSpecificationReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -71,7 +72,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                         message: "Locked dataSetSpecification record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedDataSetSpecificationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedDataSetSpecificationException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -80,7 +81,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                         message: "Failed dataSetSpecification storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedDataSetSpecificationStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedDataSetSpecificationStorageException);
             }
             catch (Exception exception)
             {
@@ -89,15 +90,16 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                         message: "Failed dataSetSpecification service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDataSetSpecificationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDataSetSpecificationServiceException);
             }
         }
 
-        private IQueryable<DataSetSpecification> TryCatch(ReturningDataSetSpecificationsFunction returningDataSetSpecificationsFunction)
+        private async ValueTask<IQueryable<DataSetSpecification>> TryCatch(
+            ReturningDataSetSpecificationsFunction returningDataSetSpecificationsFunction)
         {
             try
             {
-                return returningDataSetSpecificationsFunction();
+                return await returningDataSetSpecificationsFunction();
             }
             catch (SqlException sqlException)
             {
@@ -106,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                         message: "Failed dataSetSpecification storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedDataSetSpecificationStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedDataSetSpecificationStorageException);
             }
             catch (Exception exception)
             {
@@ -115,47 +117,47 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                         message: "Failed dataSetSpecification service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDataSetSpecificationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDataSetSpecificationServiceException);
             }
         }
 
-        private DataSetSpecificationValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<DataSetSpecificationValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var dataSetSpecificationValidationException =
                 new DataSetSpecificationValidationException(
                     message: "DataSetSpecification validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataSetSpecificationValidationException);
+            await this.loggingBroker.LogErrorAsync(dataSetSpecificationValidationException);
 
             return dataSetSpecificationValidationException;
         }
 
-        private DataSetSpecificationDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        private async ValueTask<DataSetSpecificationDependencyException> CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
         {
             var dataSetSpecificationDependencyException =
                 new DataSetSpecificationDependencyException(
                     message: "DataSetSpecification dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogCritical(dataSetSpecificationDependencyException);
+            await this.loggingBroker.LogCriticalAsync(dataSetSpecificationDependencyException);
 
             return dataSetSpecificationDependencyException;
         }
 
-        private DataSetSpecificationDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<DataSetSpecificationDependencyValidationException> CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var dataSetSpecificationDependencyValidationException =
                 new DataSetSpecificationDependencyValidationException(
                     message: "DataSetSpecification dependency validation occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataSetSpecificationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(dataSetSpecificationDependencyValidationException);
 
             return dataSetSpecificationDependencyValidationException;
         }
 
-        private DataSetSpecificationDependencyException CreateAndLogDependencyException(
+        private async ValueTask<DataSetSpecificationDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
             var dataSetSpecificationDependencyException =
@@ -163,12 +165,12 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                     message: "DataSetSpecification dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataSetSpecificationDependencyException);
+            await this.loggingBroker.LogErrorAsync(dataSetSpecificationDependencyException);
 
             return dataSetSpecificationDependencyException;
         }
 
-        private DataSetSpecificationServiceException CreateAndLogServiceException(
+        private async ValueTask<DataSetSpecificationServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var dataSetSpecificationServiceException =
@@ -176,7 +178,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                     message: "DataSetSpecification service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataSetSpecificationServiceException);
+            await this.loggingBroker.LogErrorAsync(dataSetSpecificationServiceException);
 
             return dataSetSpecificationServiceException;
         }

@@ -22,7 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             // given
             var expectedDependencyException =
                 new DecryptionOrchestrationDependencyValidationException(
-                    message: "Decryption orchestration dependency validation error occurred, fix the errors and try again.",
+                    message: "Decryption orchestration dependency validation error occurred, " +
+                        "fix the errors and try again.",
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.dateTimeBrokerMock.Setup(service =>
@@ -44,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -85,7 +86,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -130,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecryptionOrchestrationServiceException))),
                         Times.Once);
 

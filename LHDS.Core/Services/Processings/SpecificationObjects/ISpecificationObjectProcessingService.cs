@@ -10,6 +10,6 @@ namespace LHDS.Core.Services.Processings.SpecificationObjects
 {
     public interface ISpecificationObjectProcessingService
     {
-        ValueTask<List<string>> RetrieveSpecificationObjectsByDataSetSpecificationId(Guid dataSetSpecificationId);
+        ValueTask<List<string>> RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(Guid dataSetSpecificationId);
     }
 }

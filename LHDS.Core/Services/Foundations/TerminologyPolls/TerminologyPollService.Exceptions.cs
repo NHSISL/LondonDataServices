@@ -93,7 +93,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             }
         }
 
-        private async ValueTask<IQueryable<TerminologyPoll>> TryCatch(ReturningTerminologyPollsFunction returningTerminologyPollsFunction)
+        private async ValueTask<IQueryable<TerminologyPoll>>
+            TryCatch(ReturningTerminologyPollsFunction returningTerminologyPollsFunction)
         {
             try
             {

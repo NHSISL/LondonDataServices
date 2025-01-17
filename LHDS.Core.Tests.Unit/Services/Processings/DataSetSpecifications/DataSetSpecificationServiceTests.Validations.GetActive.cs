@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                 .BeEquivalentTo(expectedDataSetSpecificationProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetSpecificationProcessingValidationException))),
                         Times.Once);
 
@@ -62,8 +62,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
         {
             // given
             this.dataSetSpecificationServiceMock.Setup(broker =>
-                broker.RetrieveAllDataSetSpecifications())
-                    .Returns(items);
+                broker.RetrieveAllDataSetSpecificationsAsync())
+                    .ReturnsAsync(items);
 
             var invalidCountDataSetSpecificationProcessingException =
                 new InvalidCountDataSetSpecificationProcessingException(
@@ -87,11 +87,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                 .BeEquivalentTo(expectedDataSetSpecificationProcessingValidationException);
 
             this.dataSetSpecificationServiceMock.Verify(broker =>
-                broker.RetrieveAllDataSetSpecifications(),
+                broker.RetrieveAllDataSetSpecificationsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetSpecificationProcessingValidationException))),
                         Times.Once);
 

@@ -46,15 +46,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                 this.addressCoordinationService.LoadAddressDataAsync(invalidStream, invalidFilename);
 
             AddressCoordinationValidationException actualAddressCoordinationValidationException =
-                await Assert.ThrowsAsync<AddressCoordinationValidationException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<AddressCoordinationValidationException>(
+                    processDataTask.AsTask);
 
             // then
             actualAddressCoordinationValidationException.Should()
                 .BeEquivalentTo(expectedAddressCoordinationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressCoordinationValidationException))),
                         Times.Once);
 

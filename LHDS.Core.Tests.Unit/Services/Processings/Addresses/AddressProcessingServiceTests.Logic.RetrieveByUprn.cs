@@ -24,8 +24,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             expectedAddress.UPRN = inputUPRN;
 
             this.addressServiceMock.Setup(service =>
-                service.RetrieveAllAddresses())
-                    .Returns(randomAddresses.AsQueryable());
+                service.RetrieveAllAddressesAsync())
+                    .ReturnsAsync(randomAddresses.AsQueryable());
 
             // when
             Address actualAddress =
@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             actualAddress.Should().BeEquivalentTo(expectedAddress);
 
             this.addressServiceMock.Verify(service =>
-                service.RetrieveAllAddresses(),
+                service.RetrieveAllAddressesAsync(),
                     Times.Once);
 
             this.addressServiceMock.VerifyNoOtherCalls();

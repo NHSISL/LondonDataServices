@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
     public partial class DataSetSpecificationProcessingServiceTests
     {
         [Fact]
-        public void ShouldRetrieveAllDataSetSpecifications()
+        public async Task ShouldRetrieveAllDataSetSpecificationsAsync()
         {
             // given
             IQueryable<DataSetSpecification> randomDataSetSpecifications = CreateRandomDataSetSpecifications();
@@ -21,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             IQueryable<DataSetSpecification> expectedDataSetSpecifications = storageDataSetSpecifications;
 
             this.dataSetSpecificationServiceMock.Setup(broker =>
-                broker.RetrieveAllDataSetSpecifications())
-                    .Returns(storageDataSetSpecifications);
+                broker.RetrieveAllDataSetSpecificationsAsync())
+                    .ReturnsAsync(storageDataSetSpecifications);
 
             // when
             IQueryable<DataSetSpecification> actualDataSetSpecifications =
-                this.dataSetSpecificationProcessingService.RetrieveAllDataSetSpecifications();
+                await this.dataSetSpecificationProcessingService.RetrieveAllDataSetSpecificationsAsync();
 
             // then
             actualDataSetSpecifications.Should().BeEquivalentTo(expectedDataSetSpecifications);
 
             this.dataSetSpecificationServiceMock.Verify(broker =>
-                broker.RetrieveAllDataSetSpecifications(),
+                broker.RetrieveAllDataSetSpecificationsAsync(),
                     Times.Once);
 
             this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();

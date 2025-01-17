@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
             // when
             ValueTask<List<string>> RetrieveSpecificationObjectTask =
                 this.specificationObjectProcessingService
-                    .RetrieveSpecificationObjectsByDataSetSpecificationId(invalidId);
+                    .RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(invalidId);
 
             SpecificationObjectProcessingValidationException actualSpecificationObjectProcessingValidationException =
                 await Assert.ThrowsAsync<SpecificationObjectProcessingValidationException>(

@@ -36,8 +36,8 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 return await this.storageBroker.InsertDataSetSpecificationAsync(dataSetSpecification);
             });
 
-        public IQueryable<DataSetSpecification> RetrieveAllDataSetSpecifications() =>
-            TryCatch(() => this.storageBroker.SelectAllDataSetSpecifications());
+        public ValueTask<IQueryable<DataSetSpecification>> RetrieveAllDataSetSpecificationsAsync() =>
+            TryCatch(async() => await this.storageBroker.SelectAllDataSetSpecificationsAsync());
 
         public ValueTask<DataSetSpecification> RetrieveDataSetSpecificationByIdAsync(Guid dataSetSpecificationId) =>
             TryCatch(async () =>

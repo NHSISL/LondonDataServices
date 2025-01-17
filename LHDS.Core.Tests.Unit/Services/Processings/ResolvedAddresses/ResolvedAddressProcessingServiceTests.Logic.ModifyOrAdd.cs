@@ -27,8 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
             List<ResolvedAddress> storageResolvedAddresses = new List<ResolvedAddress> { storageResolvedAddress };
 
             this.resolvedAddressServiceMock.Setup(service =>
-                service.RetrieveAllResolvedAddresses())
-                    .Returns(value: storageResolvedAddresses.AsQueryable());
+                service.RetrieveAllResolvedAddressesAsync())
+                    .ReturnsAsync(value: storageResolvedAddresses.AsQueryable());
 
             this.resolvedAddressServiceMock.Setup(service =>
                 service.ModifyResolvedAddressAsync(modifiedResolvedAddress))
@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             // Then
             this.resolvedAddressServiceMock.Verify(service =>
-                service.RetrieveAllResolvedAddresses(),
+                service.RetrieveAllResolvedAddressesAsync(),
                     Times.Once);
 
             this.resolvedAddressServiceMock.Verify(service =>
@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             // Then
             this.resolvedAddressServiceMock.Verify(service =>
-                service.RetrieveAllResolvedAddresses(),
+                service.RetrieveAllResolvedAddressesAsync(),
                     Times.Once);
 
             this.resolvedAddressServiceMock.Verify(service =>

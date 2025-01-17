@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
     public partial class PdsAuditService
     {
         private delegate ValueTask<PdsAudit> ReturningPdsAuditFunction();
-        private delegate IQueryable<PdsAudit> ReturningPdsAuditsFunction();
+        private delegate ValueTask<IQueryable<PdsAudit>> ReturningPdsAuditsFunction();
 
         private async ValueTask<PdsAudit> TryCatch(ReturningPdsAuditFunction returningPdsAuditFunction)
         {
@@ -92,11 +92,11 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             }
         }
 
-        private IQueryable<PdsAudit> TryCatch(ReturningPdsAuditsFunction returningPdsAuditsFunction)
+        private async ValueTask<IQueryable<PdsAudit>> TryCatch(ReturningPdsAuditsFunction returningPdsAuditsFunction)
         {
             try
             {
-                return returningPdsAuditsFunction();
+                return await returningPdsAuditsFunction();
             }
             catch (SqlException sqlException)
             {

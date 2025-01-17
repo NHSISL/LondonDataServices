@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
     public partial class DataTypeService
     {
         private delegate ValueTask<DataType> ReturningDataTypeFunction();
-        private delegate IQueryable<DataType> ReturningDataTypesFunction();
+        private delegate ValueTask<IQueryable<DataType>> ReturningDataTypesFunction();
 
         private async ValueTask<DataType> TryCatch(ReturningDataTypeFunction returningDataTypeFunction)
         {
@@ -93,11 +93,11 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             }
         }
 
-        private IQueryable<DataType> TryCatch(ReturningDataTypesFunction returningDataTypesFunction)
+        private async ValueTask<IQueryable<DataType>> TryCatch(ReturningDataTypesFunction returningDataTypesFunction)
         {
             try
             {
-                return returningDataTypesFunction();
+                return await returningDataTypesFunction();
             }
             catch (SqlException sqlException)
             {

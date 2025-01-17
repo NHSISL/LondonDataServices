@@ -77,10 +77,11 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
             landingClient = serviceProvider.GetService<IEmisLandingClient>();
         }
 
-        private async ValueTask<Supplier> GetEmisSupplier()
+        private async ValueTask<Supplier> GetEmisSupplierAsync()
         {
-            return supplierService.RetrieveAllSuppliers()
-                .First(s => s.Name == "EMIS");
+            IQueryable<Supplier> retrievedSuppliers = await supplierService.RetrieveAllSuppliersAsync();
+
+            return retrievedSuppliers.First(s => s.Name == "EMIS");
         }
     }
 }

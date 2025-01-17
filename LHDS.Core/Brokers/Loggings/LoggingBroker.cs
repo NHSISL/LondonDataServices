@@ -22,20 +22,11 @@ namespace LHDS.Core.Brokers.Loggings
         public async ValueTask LogInformationAsync(string message) =>
             this.logger.LogInformation(message);
 
-        public void LogTrace(string message) =>
-            this.logger.LogTrace(message);
-
         public async ValueTask LogTraceAsync(string message) =>
             this.logger.LogTrace(message);
 
-        public void LogDebug(string message) =>
-            this.logger.LogDebug(message);
-
         public async ValueTask LogDebugAsync(string message) =>
             this.logger.LogDebug(message);
-
-        public void LogWarning(string message) =>
-            this.logger.LogWarning(message);
 
         public async ValueTask LogWarningAsync(string message) =>
             this.logger.LogWarning(message);

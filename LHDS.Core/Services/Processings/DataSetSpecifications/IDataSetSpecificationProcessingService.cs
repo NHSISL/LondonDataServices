@@ -12,7 +12,7 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
     public interface IDataSetSpecificationProcessingService
     {
         ValueTask<DataSetSpecification> AddDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);
-        IQueryable<DataSetSpecification> RetrieveAllDataSetSpecifications();
+        ValueTask<IQueryable<DataSetSpecification>> RetrieveAllDataSetSpecificationsAsync();
         ValueTask<DataSetSpecification> RetrieveDataSetSpecificationByIdAsync(Guid dataSetSpecificationId);
         ValueTask<DataSetSpecification> RetrieveOrAddDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);
         ValueTask<DataSetSpecification> ModifyOrAddDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);

@@ -99,7 +99,9 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 FriendlyName = "Test Supplier Friendly Name",
             };
 
-            Supplier maybeSupplier = supplierService.RetrieveAllSuppliers()
+            IQueryable<Supplier> retrievedSuppliers = await supplierService.RetrieveAllSuppliersAsync();
+
+            Supplier maybeSupplier = retrievedSuppliers
                 .FirstOrDefault(s => s.Id == supplier.Id);
 
             if (maybeSupplier == null)
@@ -112,8 +114,9 @@ namespace LHDS.Core.Tests.Integration.TppLandings
 
         private async ValueTask<Supplier> GetTppSupplier()
         {
-            return supplierService.RetrieveAllSuppliers()
-                .First(s => s.Name == "TPP");
+            IQueryable<Supplier> retrievedSuppliers = await supplierService.RetrieveAllSuppliersAsync();
+
+            return retrievedSuppliers.First(s => s.Name == "TPP");
         }
 
         private async ValueTask<DataSet> SetupDataSet(Guid SupplierId)
@@ -180,7 +183,10 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 CreatedDate = now
             };
 
-            DataSetSpecification maybeDataSetSpecification = dataSetSpecificationService.RetrieveAllDataSetSpecifications()
+            IQueryable<DataSetSpecification> allDataSetSpecification =
+                await dataSetSpecificationService.RetrieveAllDataSetSpecificationsAsync();
+
+            DataSetSpecification maybeDataSetSpecification = allDataSetSpecification
                 .FirstOrDefault(s => s.Id == dataSetSpecification.Id);
 
             if (maybeDataSetSpecification == null)

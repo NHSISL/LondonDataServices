@@ -52,8 +52,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                 comment: publicKeyComment);
 
             CryptographyKeyServiceException actualCryptographyKeyServiceException =
-                await Assert.ThrowsAsync<CryptographyKeyServiceException>(async () =>
-                    await CryptographicKeyTask);
+                await Assert.ThrowsAsync<CryptographyKeyServiceException>(
+                    CryptographicKeyTask.AsTask);
 
             // then
             actualCryptographyKeyServiceException.Should()
@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CryptographicKeys
                         Times.Once);
 
             loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedCryptographyKeyServiceException))),
                         Times.Once);
 

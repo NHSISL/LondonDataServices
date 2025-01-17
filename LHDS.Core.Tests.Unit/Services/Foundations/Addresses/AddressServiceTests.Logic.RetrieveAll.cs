@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
     public partial class AddressServiceTests
     {
         [Fact]
-        public void ShouldReturnAddresses()
+        public async Task ShouldReturnAddresses()
         {
             // given
             IQueryable<Address> randomAddresses = CreateRandomAddresses();
@@ -21,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             IQueryable<Address> expectedAddresses = storageAddresses;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllAddresses())
-                    .Returns(storageAddresses);
+                broker.SelectAllAddressesAsync())
+                    .ReturnsAsync(storageAddresses);
 
             // when
             IQueryable<Address> actualAddresses =
-                this.addressService.RetrieveAllAddresses();
+                await this.addressService.RetrieveAllAddressesAsync();
 
             // then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllAddresses(),
+                broker.SelectAllAddressesAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

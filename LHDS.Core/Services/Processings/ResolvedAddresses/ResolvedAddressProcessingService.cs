@@ -41,8 +41,8 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                 await this.resolvedAddressService.BulkAddResolvedAddressesAsync(resolvedAddresses, fileName);
             });
 
-        public IQueryable<ResolvedAddress> RetrieveAllResolvedAddresses() =>
-            TryCatch(() => resolvedAddressService.RetrieveAllResolvedAddresses());
+        public ValueTask<IQueryable<ResolvedAddress>> RetrieveAllResolvedAddressesAsync() =>
+            TryCatch(async () => await resolvedAddressService.RetrieveAllResolvedAddressesAsync());
 
         public ValueTask<ResolvedAddress> RetrieveResolvedAddressByIdAsync(Guid resolvedAddressId) =>
             TryCatch(async () =>
@@ -66,8 +66,9 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             {
                 ValidateResolvedAddress(resolvedAddress);
                 ValidateResolvedAddressId(resolvedAddress.Id);
+                var retrievedResolvedAddresses = await resolvedAddressService.RetrieveAllResolvedAddressesAsync();
 
-                var maybeResolvedAddress = resolvedAddressService.RetrieveAllResolvedAddresses()
+                var maybeResolvedAddress = retrievedResolvedAddresses
                     .FirstOrDefault(address => address.UniqueReference == resolvedAddress.UniqueReference);
 
                 if (maybeResolvedAddress != null)

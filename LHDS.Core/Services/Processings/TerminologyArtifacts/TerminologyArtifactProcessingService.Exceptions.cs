@@ -14,15 +14,15 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 {
     public partial class TerminologyArtifactProcessingService
     {
-        private delegate ValueTask<T> ReturningTerminologyArtifactProcessingFunction<T>();
-        private delegate IQueryable<TerminologyArtifact> ReturningTerminologyArtifactsFunction();
+        private delegate ValueTask<TerminologyArtifact> ReturningTerminologyArtifactProcessingFunction();
+        private delegate ValueTask<IQueryable<TerminologyArtifact>> ReturningTerminologyArtifactsProcessingFunction();
 
-        private IQueryable<TerminologyArtifact> TryCatch(
-            ReturningTerminologyArtifactsFunction returningTerminologyArtifactsFunction)
+        private async ValueTask<IQueryable<TerminologyArtifact>> TryCatch(
+            ReturningTerminologyArtifactsProcessingFunction returningTerminologyArtifactsProcessingFunction)
         {
             try
             {
-                return returningTerminologyArtifactsFunction();
+                return await returningTerminologyArtifactsProcessingFunction();
             }
             catch (TerminologyArtifactValidationException terminologyArtifactValidationException)
             {
@@ -51,8 +51,8 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             }
         }
 
-        private async ValueTask<T> TryCatch<T>(
-            ReturningTerminologyArtifactProcessingFunction<T> returningTerminologyArtifactProcessingFunction)
+        private async ValueTask<TerminologyArtifact> TryCatch(
+            ReturningTerminologyArtifactProcessingFunction returningTerminologyArtifactProcessingFunction)
         {
             try
             {

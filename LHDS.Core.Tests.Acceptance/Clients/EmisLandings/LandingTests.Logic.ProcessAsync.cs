@@ -62,7 +62,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             foreach (var actualFile in actualStringList)
             {
-                IngestionTracking ingestionTracking = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                IQueryable<IngestionTracking> allIngestionTrackings = 
+                    await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
+
+                IngestionTracking ingestionTracking = allIngestionTrackings
                     .FirstOrDefault(ingestionTracking => ingestionTracking.DecryptedFileName == actualFile);
 
                 ingestionTracking.Should().NotBeNull();

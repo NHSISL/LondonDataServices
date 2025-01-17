@@ -51,15 +51,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
                     subscriberCredential: nullSubscriberCredential);
 
             CryptographyValidationException actualDecryptionValidationException =
-                await Assert.ThrowsAsync<CryptographyValidationException>(async () =>
-                    await decryptTask);
+                await Assert.ThrowsAsync<CryptographyValidationException>(
+                    decryptTask.AsTask);
 
             // then
             actualDecryptionValidationException.Should()
                 .BeEquivalentTo(expectedDecryptionValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecryptionValidationException))),
                         Times.Once);
 

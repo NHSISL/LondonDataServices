@@ -36,8 +36,8 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                 return await storageBroker.InsertSpecificationObjectAsync(specificationObject);
             });
 
-        public IQueryable<SpecificationObject> RetrieveAllSpecificationObjects() =>
-            TryCatch(() => storageBroker.SelectAllSpecificationObjects());
+        public ValueTask<IQueryable<SpecificationObject>> RetrieveAllSpecificationObjectsAsync() =>
+            TryCatch(async () => await storageBroker.SelectAllSpecificationObjectsAsync());
 
         public ValueTask<SpecificationObject> RetrieveSpecificationObjectByIdAsync(Guid specificationObjectId) =>
             TryCatch(async () =>

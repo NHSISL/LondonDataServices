@@ -24,27 +24,27 @@ namespace LHDS.Core.Services.Processings.Downloads
             }
             catch (NullDownloadProcessingException nullDownloadProcessingException)
             {
-                throw CreateAndLogValidationException(nullDownloadProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(nullDownloadProcessingException);
             }
             catch (InvalidArgumentDownloadProcessingException invalidArgumentDownloadProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentDownloadProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentDownloadProcessingException);
             }
             catch (DownloadValidationException downloadValidationException)
             {
-                throw CreateAndLogDependencyValidationException(downloadValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(downloadValidationException);
             }
             catch (DownloadDependencyValidationException downloadDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(downloadDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(downloadDependencyValidationException);
             }
             catch (DownloadDependencyException downloadDependencyException)
             {
-                throw CreateAndLogDependencyException(downloadDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(downloadDependencyException);
             }
             catch (DownloadServiceException downloadServiceException)
             {
-                throw CreateAndLogDependencyException(downloadServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(downloadServiceException);
             }
             catch (Exception exception)
             {
@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Processings.Downloads
                         message: "Failed Download processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDownloadProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDownloadProcessingServiceException);
             }
         }
 
@@ -65,19 +65,19 @@ namespace LHDS.Core.Services.Processings.Downloads
             }
             catch (DownloadValidationException downloadValidationException)
             {
-                throw CreateAndLogDependencyValidationException(downloadValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(downloadValidationException);
             }
             catch (DownloadDependencyValidationException downloadDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(downloadDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(downloadDependencyValidationException);
             }
             catch (DownloadDependencyException downloadDependencyException)
             {
-                throw CreateAndLogDependencyException(downloadDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(downloadDependencyException);
             }
             catch (DownloadServiceException downloadServiceException)
             {
-                throw CreateAndLogDependencyException(downloadServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(downloadServiceException);
             }
             catch (Exception exception)
             {
@@ -86,54 +86,57 @@ namespace LHDS.Core.Services.Processings.Downloads
                         message: "Failed Download processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDownloadProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDownloadProcessingServiceException);
             }
         }
 
-        private DownloadProcessingValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<DownloadProcessingValidationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var downloadValidationException = new DownloadProcessingValidationException(
                 message: "Download validation errors occurred, please try again.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(downloadValidationException);
+            await this.loggingBroker.LogErrorAsync(downloadValidationException);
 
             return downloadValidationException;
         }
 
-        private DownloadProcessingDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<DownloadProcessingDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var downloadProcessingDependencyValidationException =
                 new DownloadProcessingDependencyValidationException(
                     message: "Download processing dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(downloadProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(downloadProcessingDependencyValidationException);
 
             return downloadProcessingDependencyValidationException;
         }
 
-        private DownloadProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<DownloadProcessingDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var downloadProcessingDependencyException =
                 new DownloadProcessingDependencyException(
                     message: "Download processing dependency error occurred, please try again.",
                     innerException: exception?.InnerException as Xeption);
 
-            this.loggingBroker.LogError(downloadProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(downloadProcessingDependencyException);
 
-            throw downloadProcessingDependencyException;
+            return downloadProcessingDependencyException;
         }
 
-        private DownloadProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<DownloadProcessingServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var downloadProcessingServiceException = new
                 DownloadProcessingServiceException(
                     message: "Download processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(downloadProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(downloadProcessingServiceException);
 
             return downloadProcessingServiceException;
         }

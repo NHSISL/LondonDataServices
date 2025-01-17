@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -85,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -129,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressCoordinationServiceException))),
                         Times.Once);
 

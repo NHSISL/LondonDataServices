@@ -29,46 +29,46 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             }
             catch (InvalidArgumentAddressCoordinationException invalidArgumentAddressCoordinationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentAddressCoordinationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentAddressCoordinationException);
             }
             catch (AddressValidationOrchestrationException addressValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(addressValidationOrchestrationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(addressValidationOrchestrationException);
             }
             catch (AddressOrchestrationDependencyValidationException
                 addressOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     addressOrchestrationDependencyValidationException);
             }
             catch (ResolvedAddressOrchestrationValidationException
                 resolvedAddressOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(resolvedAddressOrchestrationValidationException);
             }
             catch (ResolvedAddressOrchestrationDependencyValidationException
                 resolvedAddressOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     resolvedAddressOrchestrationDependencyValidationException);
             }
             catch (AddressOrchestrationServiceException addressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(addressOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(addressOrchestrationServiceException);
             }
             catch (AddressOrchestrationDependencyException
                 addressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(addressOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(addressOrchestrationDependencyException);
             }
             catch (ResolvedAddressOrchestrationServiceException resolvedAddressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressOrchestrationServiceException);
             }
             catch (ResolvedAddressOrchestrationDependencyException
                 resolvedAddressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressOrchestrationDependencyException);
             }
             catch (Exception exception)
             {
@@ -77,7 +77,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                         message: "Failed address coordination service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDecryptServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDecryptServiceException);
             }
         }
 
@@ -90,46 +90,46 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             }
             catch (InvalidArgumentAddressCoordinationException invalidArgumentAddressCoordinationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentAddressCoordinationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentAddressCoordinationException);
             }
             catch (AddressValidationOrchestrationException addressValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(addressValidationOrchestrationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(addressValidationOrchestrationException);
             }
             catch (AddressOrchestrationDependencyValidationException
                 addressOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     addressOrchestrationDependencyValidationException);
             }
             catch (ResolvedAddressOrchestrationValidationException
                 resolvedAddressOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(resolvedAddressOrchestrationValidationException);
             }
             catch (ResolvedAddressOrchestrationDependencyValidationException
                 resolvedAddressOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     resolvedAddressOrchestrationDependencyValidationException);
             }
             catch (AddressOrchestrationServiceException addressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(addressOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(addressOrchestrationServiceException);
             }
             catch (AddressOrchestrationDependencyException
                 addressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(addressOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(addressOrchestrationDependencyException);
             }
             catch (ResolvedAddressOrchestrationServiceException resolvedAddressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressOrchestrationServiceException);
             }
             catch (ResolvedAddressOrchestrationDependencyException
                 resolvedAddressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressOrchestrationDependencyException);
             }
             catch (AggregateException aggregateException)
             {
@@ -139,7 +139,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                             "please contact support.",
                         innerException: aggregateException);
 
-                throw CreateAndLogServiceException(failedAddressCoordinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAddressCoordinationServiceException);
             }
             catch (Exception exception)
             {
@@ -148,7 +148,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                         message: "Failed address coordination service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDecryptServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDecryptServiceException);
             }
         }
 
@@ -161,46 +161,46 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             }
             catch (InvalidArgumentAddressCoordinationException invalidArgumentAddressCoordinationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentAddressCoordinationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentAddressCoordinationException);
             }
             catch (AddressValidationOrchestrationException addressValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(addressValidationOrchestrationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(addressValidationOrchestrationException);
             }
             catch (AddressOrchestrationDependencyValidationException
                 addressOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     addressOrchestrationDependencyValidationException);
             }
             catch (ResolvedAddressOrchestrationValidationException
                 resolvedAddressOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(resolvedAddressOrchestrationValidationException);
             }
             catch (ResolvedAddressOrchestrationDependencyValidationException
                 resolvedAddressOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     resolvedAddressOrchestrationDependencyValidationException);
             }
             catch (AddressOrchestrationServiceException addressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(addressOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(addressOrchestrationServiceException);
             }
             catch (AddressOrchestrationDependencyException
                 addressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(addressOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(addressOrchestrationDependencyException);
             }
             catch (ResolvedAddressOrchestrationServiceException resolvedAddressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressOrchestrationServiceException);
             }
             catch (ResolvedAddressOrchestrationDependencyException
                 resolvedAddressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressOrchestrationDependencyException);
             }
             catch (AggregateException aggregateException)
             {
@@ -210,7 +210,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                             "please contact support.",
                         innerException: aggregateException);
 
-                throw CreateAndLogServiceException(failedAddressCoordinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAddressCoordinationServiceException);
             }
             catch (Exception exception)
             {
@@ -219,7 +219,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                         message: "Failed address coordination service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedAddressCoordinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAddressCoordinationServiceException);
             }
         }
 
@@ -231,46 +231,46 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             }
             catch (InvalidArgumentAddressCoordinationException invalidArgumentAddressCoordinationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentAddressCoordinationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentAddressCoordinationException);
             }
             catch (AddressValidationOrchestrationException addressValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(addressValidationOrchestrationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(addressValidationOrchestrationException);
             }
             catch (AddressOrchestrationDependencyValidationException
                 addressOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     addressOrchestrationDependencyValidationException);
             }
             catch (ResolvedAddressOrchestrationValidationException
                 resolvedAddressOrchestrationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(resolvedAddressOrchestrationValidationException);
             }
             catch (ResolvedAddressOrchestrationDependencyValidationException
                 resolvedAddressOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     resolvedAddressOrchestrationDependencyValidationException);
             }
             catch (AddressOrchestrationServiceException addressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(addressOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(addressOrchestrationServiceException);
             }
             catch (AddressOrchestrationDependencyException
                 addressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(addressOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(addressOrchestrationDependencyException);
             }
             catch (ResolvedAddressOrchestrationServiceException resolvedAddressOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressOrchestrationServiceException);
             }
             catch (ResolvedAddressOrchestrationDependencyException
                 resolvedAddressOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressOrchestrationDependencyException);
             }
             catch (Exception exception)
             {
@@ -279,55 +279,58 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                         message: "Failed address coordination service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedAddressCoordinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAddressCoordinationServiceException);
             }
         }
 
-        private AddressCoordinationValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<AddressCoordinationValidationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var addressCoordinationValidationException =
                 new AddressCoordinationValidationException(
                     message: "Address coordination validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(addressCoordinationValidationException);
+            await this.loggingBroker.LogErrorAsync(addressCoordinationValidationException);
 
             return addressCoordinationValidationException;
         }
 
-        private AddressCoordinationDependencyValidationException
-            CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<AddressCoordinationDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var addressCoordinationDependencyValidationException =
                 new AddressCoordinationDependencyValidationException(
                     message: "Address coordination dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(addressCoordinationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(addressCoordinationDependencyValidationException);
 
             return addressCoordinationDependencyValidationException;
         }
 
-        private AddressCoordinationDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<AddressCoordinationDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var addressCoordinationDependencyException =
                 new AddressCoordinationDependencyException(
                     message: "Address coordination dependency error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(addressCoordinationDependencyException);
+            await this.loggingBroker.LogErrorAsync(addressCoordinationDependencyException);
 
             return addressCoordinationDependencyException;
         }
 
-        private AddressCoordinationServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<AddressCoordinationServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var addressCoordinationServiceException =
                 new AddressCoordinationServiceException(
                     message: "Address coordination service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(addressCoordinationServiceException);
+            await this.loggingBroker.LogErrorAsync(addressCoordinationServiceException);
 
             return addressCoordinationServiceException;
         }

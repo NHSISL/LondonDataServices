@@ -36,8 +36,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 this.emisLandingCoordinationService.RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
 
             EmisLandingCoordinationDependencyValidationException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyValidationException>(async () =>
-                    await redecryptTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyValidationException>(
+                    redecryptTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationValidationException.Should()
@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationDependencyValidationException))),
                          Times.Once);
 
@@ -79,8 +79,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 this.emisLandingCoordinationService.RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
 
             EmisLandingCoordinationDependencyException actualEmisLandingCoordinationDependencyException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(async () =>
-                    await redecryptTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(
+                    redecryptTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationDependencyException.Should()
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationDependencyException))),
                          Times.Once);
 
@@ -126,8 +126,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 this.emisLandingCoordinationService.RedecryptDocumentByIngestionIdAsync(ingestionTrackingId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await redecryptTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(
+                    redecryptTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationValidationException.Should()
@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationServiceException))),
                          Times.Once);
 

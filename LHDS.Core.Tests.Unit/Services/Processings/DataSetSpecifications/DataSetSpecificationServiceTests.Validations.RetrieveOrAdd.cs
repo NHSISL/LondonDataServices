@@ -14,7 +14,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
     public partial class DataSetSpecificationProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionsOnRetrieveOrAddIfDataSetSpecificationProcessingIsNullAndLogItAsync()
+        public async Task
+            ShouldThrowValidationExceptionsOnRetrieveOrAddIfDataSetSpecificationProcessingIsNullAndLogItAsync()
         {
             // given
             DataSetSpecification nullDataSetSpecification = null;
@@ -41,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                 .BeEquivalentTo(expectedDataSetSpecificationProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetSpecificationProcessingValidationException))),
                         Times.Once);
 
@@ -82,7 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                 .BeEquivalentTo(expectedDataSetSpecificationProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetSpecificationProcessingValidationException))),
                         Times.Once);
 

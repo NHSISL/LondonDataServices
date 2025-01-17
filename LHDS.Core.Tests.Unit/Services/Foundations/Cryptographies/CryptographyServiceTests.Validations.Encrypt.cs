@@ -50,15 +50,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
                 subscriberCredential: nullSubscriberCredential);
 
             CryptographyValidationException actualEncryptionValidationException =
-                await Assert.ThrowsAsync<CryptographyValidationException>(async () =>
-                    await encryptTask);
+                await Assert.ThrowsAsync<CryptographyValidationException>(
+                    encryptTask.AsTask);
 
             // then
             actualEncryptionValidationException.Should()
                 .BeEquivalentTo(expectedEncryptionValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedEncryptionValidationException))),
                         Times.Once);
 

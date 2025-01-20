@@ -129,49 +129,51 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             return supplierValidationException;
         }
 
-        private SupplierDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        private async ValueTask<SupplierDependencyException> 
+            CreateAndLogCriticalDependencyException(Xeption exception)
         {
             var supplierDependencyException = new SupplierDependencyException(
                 message: "Supplier dependency error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogCritical(supplierDependencyException);
+            await this.loggingBroker.LogCriticalAsync(supplierDependencyException);
 
             return supplierDependencyException;
         }
 
-        private SupplierDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<SupplierDependencyValidationException> 
+            CreateAndLogDependencyValidationException(Xeption exception)
         {
             var supplierDependencyValidationException =
                 new SupplierDependencyValidationException(
                     message: "Supplier dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(supplierDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(supplierDependencyValidationException);
 
             return supplierDependencyValidationException;
         }
 
-        private SupplierDependencyException CreateAndLogDependencyException(
+        private async ValueTask<SupplierDependencyException> CreateAndLogDependencyException(
             Xeption exception)
         {
             var supplierDependencyException = new SupplierDependencyException(
                 message: "Supplier dependency error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(supplierDependencyException);
+            await this.loggingBroker.LogErrorAsync(supplierDependencyException);
 
             return supplierDependencyException;
         }
 
-        private SupplierServiceException CreateAndLogServiceException(
+        private async ValueTask<SupplierServiceException> CreateAndLogServiceException(
             Xeption exception)
         {
             var supplierServiceException = new SupplierServiceException(
                 message: "Supplier service error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(supplierServiceException);
+            await this.loggingBroker.LogErrorAsync(supplierServiceException);
 
             return supplierServiceException;
         }

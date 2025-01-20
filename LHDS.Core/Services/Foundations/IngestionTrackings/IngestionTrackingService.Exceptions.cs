@@ -27,11 +27,11 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             }
             catch (NullIngestionTrackingException nullIngestionTrackingException)
             {
-                throw CreateAndLogValidationException(nullIngestionTrackingException);
+                throw await CreateAndLogValidationExceptionAsync(nullIngestionTrackingException);
             }
             catch (InvalidIngestionTrackingException invalidIngestionTrackingException)
             {
-                throw CreateAndLogValidationException(invalidIngestionTrackingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidIngestionTrackingException);
             }
             catch (SqlException sqlException)
             {
@@ -40,11 +40,11 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                         message: "Failed ingestion tracking storage error occurred, please contact support.",
                         sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedIngestionTrackingStorageException);
             }
             catch (NotFoundIngestionTrackingException notFoundIngestionTrackingException)
             {
-                throw CreateAndLogValidationException(notFoundIngestionTrackingException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundIngestionTrackingException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                         message: "Ingestion tracking with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsIngestionTrackingException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsIngestionTrackingException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -62,7 +62,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                         message: "Invalid ingestion tracking reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidIngestionTrackingReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidIngestionTrackingReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -70,7 +70,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     message: "Locked ingestion tracking record exception, please try again later",
                     innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedIngestionTrackingException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedIngestionTrackingException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -79,7 +79,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                         message: "Failed ingestion tracking storage error occurred, please contact support.",
                         databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedIngestionTrackingStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedIngestionTrackingStorageException);
             }
             catch (Exception exception)
             {
@@ -88,11 +88,11 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                         message: "Failed ingestion tracking service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedIngestionTrackingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedIngestionTrackingServiceException);
             }
         }
 
-        private IQueryable<IngestionTracking> TryCatch(ReturningIngestionTrackingsFunction returningIngestionTrackingsFunction)
+        private async Task<IQueryable<IngestionTracking>> TryCatch(ReturningIngestionTrackingsFunction returningIngestionTrackingsFunction)
         {
             try
             {
@@ -105,7 +105,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                         message: "Failed ingestion tracking storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedIngestionTrackingStorageException);
             }
             catch (Exception exception)
             {
@@ -114,65 +114,65 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                         message: "Failed ingestion tracking service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedIngestionTrackingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedIngestionTrackingServiceException);
             }
         }
 
-        private IngestionTrackingValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<IngestionTrackingValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var ingestionTrackingValidationException =
                 new IngestionTrackingValidationException(
                     message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(ingestionTrackingValidationException);
+            await this.loggingBroker.LogErrorAsync(ingestionTrackingValidationException);
 
             return ingestionTrackingValidationException;
         }
 
-        private IngestionTrackingDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        private async ValueTask<IngestionTrackingDependencyException> CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
         {
             var ingestionTrackingDependencyException = new IngestionTrackingDependencyException(
                 message: "Failed ingestion tracking storage error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogCritical(ingestionTrackingDependencyException);
+            await this.loggingBroker.LogCriticalAsync(ingestionTrackingDependencyException);
 
             return ingestionTrackingDependencyException;
         }
 
-        private IngestionTrackingDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<IngestionTrackingDependencyValidationException> CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var ingestionTrackingDependencyValidationException =
                 new IngestionTrackingDependencyValidationException(
                     message: "Ingestion tracking dependency validation occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(ingestionTrackingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(ingestionTrackingDependencyValidationException);
 
             return ingestionTrackingDependencyValidationException;
         }
 
-        private IngestionTrackingDependencyException CreateAndLogDependencyException(
+        private async ValueTask<IngestionTrackingDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
             var ingestionTrackingDependencyException = new IngestionTrackingDependencyException(
                 message: "Failed ingestion tracking storage error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(ingestionTrackingDependencyException);
+            await this.loggingBroker.LogErrorAsync(ingestionTrackingDependencyException);
 
             return ingestionTrackingDependencyException;
         }
 
-        private IngestionTrackingServiceException CreateAndLogServiceException(
+        private async ValueTask<IngestionTrackingServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var ingestionTrackingServiceException = new IngestionTrackingServiceException(
                 message: "Ingestion tracking service error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(ingestionTrackingServiceException);
+            await this.loggingBroker.LogErrorAsync(ingestionTrackingServiceException);
 
             return ingestionTrackingServiceException;
         }

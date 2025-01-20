@@ -73,12 +73,12 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public ActionResult<IQueryable<Supplier>> Get()
+        public async ValueTask<ActionResult<IQueryable<Supplier>>> Get()
         {
             try
             {
                 IQueryable<Supplier> retrievedSuppliers =
-                    this.supplierService.RetrieveAllSuppliers();
+                    await this.supplierService.RetrieveAllSuppliersAsync();
 
                 return Ok(retrievedSuppliers);
             }

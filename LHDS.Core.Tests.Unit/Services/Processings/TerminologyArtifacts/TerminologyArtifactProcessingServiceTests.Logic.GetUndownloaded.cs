@@ -27,8 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             List<TerminologyArtifact> outputTerminologyArtifacts = artifactsList;
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                service.RetrieveAllTerminologyArtifacts())
-                    .Returns(outputTerminologyArtifacts.AsQueryable());
+                service.RetrieveAllTerminologyArtifactsAsync())
+                    .ReturnsAsync(outputTerminologyArtifacts.AsQueryable());
 
             // when
             TerminologyArtifact actualTerminologyArtifact =
@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             actualTerminologyArtifact.Should().BeEquivalentTo(expectedTerminologyArtifact);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyArtifacts(),
+                service.RetrieveAllTerminologyArtifactsAsync(),
                     Times.Once());
 
             this.terminologyArtifactServiceMock.VerifyNoOtherCalls();

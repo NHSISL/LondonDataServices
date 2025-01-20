@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 {
     public interface ITerminologyArtifactProcessingService
     {
-        IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifactsAsync();
+        ValueTask<IQueryable<TerminologyArtifact>> RetrieveAllTerminologyArtifactsAsync();
         ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid Id);
         ValueTask<TerminologyArtifact> ModifyOrAddTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact);
         ValueTask<TerminologyArtifact> RemoveTerminologyArtifactByIdAsync(Guid Id);

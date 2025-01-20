@@ -95,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Files
         }
 
         [Fact]
-        public async Task ShoudThrowServiceExceptionOnDeleteDirectoryIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnDeleteDirectoryIfServiceErrorOccursAsync()
         {
             // given
             string somePath = GetRandomString();

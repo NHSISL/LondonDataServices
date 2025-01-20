@@ -17,7 +17,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public async ValueTask<DataType> InsertDataTypeAsync(DataType dataType) =>
             await InsertAsync(dataType);
 
-        public IQueryable<DataType> SelectAllDataTypes() => SelectAll<DataType>();
+        public async ValueTask<IQueryable<DataType>> SelectAllDataTypesAsync() => await SelectAllAsync<DataType>();
 
         public async ValueTask<DataType> SelectDataTypeByIdAsync(Guid dataTypeId) =>
             await SelectAsync<DataType>(dataTypeId);

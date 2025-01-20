@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.RetrieveSubscriberAgreementByIdAsync(someId))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<SubscriberAgreement> subscriberAgreementRetrieveByIdTask =
@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.RetrieveSubscriberAgreementByIdAsync(someId))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<SubscriberAgreement> subscriberAgreementRetrieveByIdTask =
@@ -117,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.RetrieveSubscriberAgreementByIdAsync(someId))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<SubscriberAgreement> subscriberAgreementRetrieveByIdTask =

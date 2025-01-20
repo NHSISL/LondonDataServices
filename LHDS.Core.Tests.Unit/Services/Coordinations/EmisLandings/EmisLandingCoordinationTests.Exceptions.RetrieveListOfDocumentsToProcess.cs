@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationDependencyValidationException))),
                          Times.Once);
 
@@ -83,8 +83,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId: subscriberCredentialId);
 
             EmisLandingCoordinationDependencyException actualEmisLandingCoordinationDependencyException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(async () =>
-                    await retrieveListOfDocumentsToProcessTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationDependencyException>(
+                    retrieveListOfDocumentsToProcessTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationDependencyException.Should()
@@ -95,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationDependencyException))),
                          Times.Once);
 
@@ -132,8 +132,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     .RetrieveListOfDocumentsToProcessAsync(subscriberAgreementId: subscriberCredentialId);
 
             EmisLandingCoordinationServiceException actualEmisLandingCoordinationServiceException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(async () =>
-                    await retrieveListOfDocumentsToProcessTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationServiceException>(
+                    retrieveListOfDocumentsToProcessTask.AsTask);
 
             // Then
             actualEmisLandingCoordinationServiceException.Should()
@@ -144,7 +144,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(IsSameExceptionAs(
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
                      expectedEmisLandingCoordinationServiceException))),
                          Times.Once);
 

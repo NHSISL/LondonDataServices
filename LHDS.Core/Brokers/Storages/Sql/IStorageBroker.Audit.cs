@@ -12,7 +12,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
     public partial interface IStorageBroker
     {
         ValueTask<Audit> InsertAuditAsync(Audit audit);
-        IQueryable<Audit> SelectAllAudits();
+        ValueTask<IQueryable<Audit>> SelectAllAuditsAsync();
         ValueTask<Audit> SelectAuditByIdAsync(Guid auditId);
         ValueTask<Audit> UpdateAuditAsync(Audit audit);
         ValueTask<Audit> DeleteAuditAsync(Audit audit);

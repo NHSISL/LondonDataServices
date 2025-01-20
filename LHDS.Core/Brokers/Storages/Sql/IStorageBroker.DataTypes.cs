@@ -12,7 +12,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
     public partial interface IStorageBroker
     {
         ValueTask<DataType> InsertDataTypeAsync(DataType dataType);
-        IQueryable<DataType> SelectAllDataTypes();
+        ValueTask<IQueryable<DataType>> SelectAllDataTypesAsync();
         ValueTask<DataType> SelectDataTypeByIdAsync(Guid dataTypeId);
         ValueTask<DataType> UpdateDataTypeAsync(DataType dataType);
         ValueTask<DataType> DeleteDataTypeAsync(DataType dataType);

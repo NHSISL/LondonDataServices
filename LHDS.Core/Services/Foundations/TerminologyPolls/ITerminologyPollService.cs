@@ -12,7 +12,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
     public interface ITerminologyPollService
     {
         ValueTask<TerminologyPoll> AddTerminologyPollAsync(TerminologyPoll terminologyPoll);
-        IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls();
+        ValueTask<IQueryable<TerminologyPoll>> RetrieveAllTerminologyPollsAsync();
         ValueTask<TerminologyPoll> RetrieveTerminologyPollByIdAsync(Guid terminologyPollId);
         ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll);
         ValueTask<TerminologyPoll> RemoveTerminologyPollByIdAsync(Guid terminologyPollId);

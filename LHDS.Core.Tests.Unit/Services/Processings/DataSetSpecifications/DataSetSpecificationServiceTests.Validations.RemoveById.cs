@@ -38,14 +38,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                 this.dataSetSpecificationProcessingService.RemoveDataSetSpecificationByIdAsync(invalidId);
 
             DataSetSpecificationProcessingValidationException actualDataSetSpecificationProcessingValidationException =
-                await Assert.ThrowsAsync<DataSetSpecificationProcessingValidationException>(RetrieveDataSetSpecificationTask.AsTask);
+                await Assert.ThrowsAsync<DataSetSpecificationProcessingValidationException>(
+                    RetrieveDataSetSpecificationTask.AsTask);
 
             //then
             actualDataSetSpecificationProcessingValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetSpecificationProcessingValidationException))),
                         Times.Once);
 

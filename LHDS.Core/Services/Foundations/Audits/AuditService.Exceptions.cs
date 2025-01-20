@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.Audits
     public partial class AuditService
     {
         private delegate ValueTask<Audit> ReturningAuditFunction();
-        private delegate IQueryable<Audit> ReturningAuditsFunction();
+        private delegate ValueTask<IQueryable<Audit>> ReturningAuditsFunction();
 
         private async ValueTask<Audit> TryCatch(ReturningAuditFunction returningAuditFunction)
         {
@@ -27,11 +27,11 @@ namespace LHDS.Core.Services.Foundations.Audits
             }
             catch (NullAuditException nullAuditException)
             {
-                throw CreateAndLogValidationException(nullAuditException);
+                throw await CreateAndLogValidationExceptionAsync(nullAuditException);
             }
             catch (InvalidAuditException invalidAuditException)
             {
-                throw CreateAndLogValidationException(invalidAuditException);
+                throw await CreateAndLogValidationExceptionAsync(invalidAuditException);
             }
             catch (SqlException sqlException)
             {
@@ -40,11 +40,11 @@ namespace LHDS.Core.Services.Foundations.Audits
                         message: "Failed audit storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedAuditStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedAuditStorageException);
             }
             catch (NotFoundAuditException notFoundAuditException)
             {
-                throw CreateAndLogValidationException(notFoundAuditException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundAuditException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.Audits
                         message: "Audit with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsAuditException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsAuditException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -62,7 +62,7 @@ namespace LHDS.Core.Services.Foundations.Audits
                         message: "Invalid audit reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidAuditReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidAuditReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -71,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.Audits
                         message: "Locked audit record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedAuditException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedAuditException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -80,7 +80,7 @@ namespace LHDS.Core.Services.Foundations.Audits
                         message: "Failed audit storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedAuditStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedAuditStorageException);
             }
             catch (Exception exception)
             {
@@ -89,15 +89,15 @@ namespace LHDS.Core.Services.Foundations.Audits
                         message: "Failed audit service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedAuditServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAuditServiceException);
             }
         }
 
-        private IQueryable<Audit> TryCatch(ReturningAuditsFunction returningAuditsFunction)
+        private async ValueTask<IQueryable<Audit>> TryCatch(ReturningAuditsFunction returningAuditsFunction)
         {
             try
             {
-                return returningAuditsFunction();
+                return await returningAuditsFunction();
             }
             catch (SqlException sqlException)
             {
@@ -106,7 +106,7 @@ namespace LHDS.Core.Services.Foundations.Audits
                         message: "Failed audit storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedAuditStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedAuditStorageException);
             }
             catch (Exception exception)
             {
@@ -115,47 +115,47 @@ namespace LHDS.Core.Services.Foundations.Audits
                         message: "Failed audit service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedAuditServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAuditServiceException);
             }
         }
 
-        private AuditValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<AuditValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var auditValidationException =
                 new AuditValidationException(
                     message: "Audit validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(auditValidationException);
+            await this.loggingBroker.LogErrorAsync(auditValidationException);
 
             return auditValidationException;
         }
 
-        private AuditDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        private async ValueTask<AuditDependencyException> CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
         {
             var auditDependencyException =
                 new AuditDependencyException(
                     message: "Audit dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogCritical(auditDependencyException);
+            await this.loggingBroker.LogCriticalAsync(auditDependencyException);
 
             return auditDependencyException;
         }
 
-        private AuditDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<AuditDependencyValidationException> CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var auditDependencyValidationException =
                 new AuditDependencyValidationException(
                     message: "Audit dependency validation occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(auditDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(auditDependencyValidationException);
 
             return auditDependencyValidationException;
         }
 
-        private AuditDependencyException CreateAndLogDependencyException(
+        private async ValueTask<AuditDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
             var auditDependencyException =
@@ -163,12 +163,12 @@ namespace LHDS.Core.Services.Foundations.Audits
                     message: "Audit dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(auditDependencyException);
+            await this.loggingBroker.LogErrorAsync(auditDependencyException);
 
             return auditDependencyException;
         }
 
-        private AuditServiceException CreateAndLogServiceException(
+        private async ValueTask<AuditServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var auditServiceException =
@@ -176,7 +176,7 @@ namespace LHDS.Core.Services.Foundations.Audits
                     message: "Audit service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(auditServiceException);
+            await this.loggingBroker.LogErrorAsync(auditServiceException);
 
             return auditServiceException;
         }

@@ -35,8 +35,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                 new List<TerminologyArtifact> { storageTerminologyArtifacts };
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                service.RetrieveAllTerminologyArtifacts())
-                    .Returns(value: terminologyArtifacts.AsQueryable());
+                service.RetrieveAllTerminologyArtifactsAsync())
+                    .ReturnsAsync(value: terminologyArtifacts.AsQueryable());
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.ModifyTerminologyArtifactAsync(modifiedTerminologyArtifact))
@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyArtifacts(),
+                service.RetrieveAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>
@@ -78,8 +78,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             List<TerminologyArtifact> terminologyArtifacts = new List<TerminologyArtifact>();
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                service.RetrieveAllTerminologyArtifacts())
-                    .Returns(value: terminologyArtifacts.AsQueryable());
+                service.RetrieveAllTerminologyArtifactsAsync())
+                    .ReturnsAsync(value: terminologyArtifacts.AsQueryable());
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.AddTerminologyArtifactAsync(inputTerminologyArtifact))
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             // Then
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyArtifacts(),
+                service.RetrieveAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.OptOuts;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
     public partial class OptOutServiceTests
     {
         [Fact]
-        public void ShouldReturnOptOuts()
+        public async Task ShouldReturnOptOutsAsync()
         {
             // given
             IQueryable<OptOut> randomOptOuts = CreateRandomOptOuts();
@@ -21,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             IQueryable<OptOut> expectedOptOuts = storageOptOuts;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllOptOuts())
-                    .Returns(storageOptOuts);
+                broker.SelectAllOptOutsAsync())
+                    .ReturnsAsync(storageOptOuts);
 
             // when
             IQueryable<OptOut> actualOptOuts =
-                this.optOutService.RetrieveAllOptOuts();
+                await this.optOutService.RetrieveAllOptOutsAsync();
 
             // then
             actualOptOuts.Should().BeEquivalentTo(expectedOptOuts);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllOptOuts(),
+                broker.SelectAllOptOutsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

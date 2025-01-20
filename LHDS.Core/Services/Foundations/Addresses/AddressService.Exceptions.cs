@@ -19,7 +19,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
     {
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<Address> ReturningAddressFunction();
-        private delegate IQueryable<Address> ReturningAddressesFunction();
+        private delegate ValueTask<IQueryable<Address>> ReturningAddressesFunction();
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
@@ -30,11 +30,11 @@ namespace LHDS.Core.Services.Foundations.Addresses
             }
             catch (NullAddressException nullAddressException)
             {
-                throw CreateAndLogValidationException(nullAddressException);
+                throw await CreateAndLogValidationExceptionAsync(nullAddressException);
             }
             catch (InvalidAddressException invalidAddressException)
             {
-                throw CreateAndLogValidationException(invalidAddressException);
+                throw await CreateAndLogValidationExceptionAsync(invalidAddressException);
             }
             catch (SqlException sqlException)
             {
@@ -43,11 +43,11 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Failed address storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedAddressStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedAddressStorageException);
             }
             catch (NotFoundAddressException notFoundAddressException)
             {
-                throw CreateAndLogValidationException(notFoundAddressException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundAddressException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -56,7 +56,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Address with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsAddressException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsAddressException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -65,7 +65,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Invalid address reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidAddressReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidAddressReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Locked address record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedAddressException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedAddressException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -83,7 +83,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Failed address storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedAddressStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedAddressStorageException);
             }
             catch (AggregateException aggregateException)
             {
@@ -92,7 +92,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Failed aggregate address service error occurred, please contact support.",
                         innerException: aggregateException);
 
-                throw CreateAndLogServiceException(failedAddressServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAddressServiceException);
             }
             catch (Exception exception)
             {
@@ -101,7 +101,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Failed address service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedAddressServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAddressServiceException);
             }
         }
 
@@ -113,11 +113,11 @@ namespace LHDS.Core.Services.Foundations.Addresses
             }
             catch (NullAddressException nullAddressException)
             {
-                throw CreateAndLogValidationException(nullAddressException);
+                throw await CreateAndLogValidationExceptionAsync(nullAddressException);
             }
             catch (InvalidAddressException invalidAddressException)
             {
-                throw CreateAndLogValidationException(invalidAddressException);
+                throw await CreateAndLogValidationExceptionAsync(invalidAddressException);
             }
             catch (SqlException sqlException)
             {
@@ -126,11 +126,11 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Failed address storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedAddressStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedAddressStorageException);
             }
             catch (NotFoundAddressException notFoundAddressException)
             {
-                throw CreateAndLogValidationException(notFoundAddressException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundAddressException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -139,7 +139,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Address with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsAddressException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsAddressException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -148,7 +148,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Invalid address reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidAddressReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidAddressReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -157,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Locked address record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedAddressException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedAddressException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -166,7 +166,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Failed address storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedAddressStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedAddressStorageException);
             }
             catch (Exception exception)
             {
@@ -175,15 +175,15 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Failed address service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedAddressServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAddressServiceException);
             }
         }
 
-        private IQueryable<Address> TryCatch(ReturningAddressesFunction returningAddressesFunction)
+        private async ValueTask<IQueryable<Address>> TryCatch(ReturningAddressesFunction returningAddressesFunction)
         {
             try
             {
-                return returningAddressesFunction();
+                return await returningAddressesFunction();
             }
             catch (SqlException sqlException)
             {
@@ -192,7 +192,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Failed address storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedAddressStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedAddressStorageException);
             }
             catch (Exception exception)
             {
@@ -201,7 +201,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Failed address service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedAddressServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAddressServiceException);
             }
         }
 
@@ -213,7 +213,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             }
             catch (InvalidAddressException invalidAddressException)
             {
-                throw CreateAndLogValidationException(invalidAddressException);
+                throw await CreateAndLogValidationExceptionAsync(invalidAddressException);
             }
             catch (SqlException sqlException)
             {
@@ -222,7 +222,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Failed address storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedAddressStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedAddressStorageException);
             }
             catch (Exception exception)
             {
@@ -231,68 +231,68 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         message: "Failed address service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedAddressServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAddressServiceException);
             }
         }
 
-        private AddressValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<AddressValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var addressValidationException =
                 new AddressValidationException(
                     message: "Address validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(addressValidationException);
+            await this.loggingBroker.LogErrorAsync(addressValidationException);
 
             return addressValidationException;
         }
 
-        private AddressDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        private async ValueTask<AddressDependencyException>
+            CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
         {
             var addressDependencyException =
                 new AddressDependencyException(
                     message: "Address dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogCritical(addressDependencyException);
+            await this.loggingBroker.LogCriticalAsync(addressDependencyException);
 
             return addressDependencyException;
         }
 
-        private AddressDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<AddressDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var addressDependencyValidationException =
                 new AddressDependencyValidationException(
                     message: "Address dependency validation occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(addressDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(addressDependencyValidationException);
 
             return addressDependencyValidationException;
         }
 
-        private AddressDependencyException CreateAndLogDependencyException(
-            Xeption exception)
+        private async ValueTask<AddressDependencyException> CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var addressDependencyException =
                 new AddressDependencyException(
                     message: "Address dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(addressDependencyException);
+            await this.loggingBroker.LogErrorAsync(addressDependencyException);
 
             return addressDependencyException;
         }
 
-        private AddressServiceException CreateAndLogServiceException(
-            Xeption exception)
+        private async ValueTask<AddressServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var addressServiceException =
                 new AddressServiceException(
                     message: "Address service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(addressServiceException);
+            await this.loggingBroker.LogErrorAsync(addressServiceException);
 
             return addressServiceException;
         }

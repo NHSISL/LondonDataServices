@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
     public partial class TerminologyArtifactService
     {
         private delegate ValueTask<TerminologyArtifact> ReturningTerminologyArtifactFunction();
-        private delegate IQueryable<TerminologyArtifact> ReturningTerminologyArtifactsFunction();
+        private delegate ValueTask<IQueryable<TerminologyArtifact>> ReturningTerminologyArtifactsFunction();
 
         private async ValueTask<TerminologyArtifact> TryCatch(
             ReturningTerminologyArtifactFunction returningTerminologyArtifactFunction)
@@ -28,11 +28,11 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             }
             catch (NullTerminologyArtifactException nullTerminologyArtifactException)
             {
-                throw CreateAndLogValidationException(nullTerminologyArtifactException);
+                throw await  CreateAndLogValidationExceptionAsync(nullTerminologyArtifactException);
             }
             catch (InvalidTerminologyArtifactException invalidTerminologyArtifactException)
             {
-                throw CreateAndLogValidationException(invalidTerminologyArtifactException);
+                throw await  CreateAndLogValidationExceptionAsync(invalidTerminologyArtifactException);
             }
             catch (SqlException sqlException)
             {
@@ -41,11 +41,11 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                         message: "Failed terminologyArtifact storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedTerminologyArtifactStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedTerminologyArtifactStorageException);
             }
             catch (NotFoundTerminologyArtifactException notFoundTerminologyArtifactException)
             {
-                throw CreateAndLogValidationException(notFoundTerminologyArtifactException);
+                throw await  CreateAndLogValidationExceptionAsync(notFoundTerminologyArtifactException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -54,7 +54,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                         message: "TerminologyArtifact with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsTerminologyArtifactException);
+                throw await  CreateAndLogDependencyValidationExceptionAsync(alreadyExistsTerminologyArtifactException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -63,7 +63,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                         message: "Invalid terminologyArtifact reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidTerminologyArtifactReferenceException);
+                throw await  CreateAndLogDependencyValidationExceptionAsync(invalidTerminologyArtifactReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -72,7 +72,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                         message: "Locked terminologyArtifact record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedTerminologyArtifactException);
+                throw await  CreateAndLogDependencyValidationExceptionAsync(lockedTerminologyArtifactException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -81,7 +81,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                         message: "Failed terminologyArtifact storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedTerminologyArtifactStorageException);
+                throw await  CreateAndLogDependencyExceptionAsync(failedTerminologyArtifactStorageException);
             }
             catch (Exception exception)
             {
@@ -90,16 +90,16 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                         message: "Failed terminologyArtifact service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedTerminologyArtifactServiceException);
+                throw await  CreateAndLogServiceExceptionAsync(failedTerminologyArtifactServiceException);
             }
         }
 
-        private IQueryable<TerminologyArtifact> TryCatch(
+        private async ValueTask<IQueryable<TerminologyArtifact>> TryCatch(
             ReturningTerminologyArtifactsFunction returningTerminologyArtifactsFunction)
         {
             try
             {
-                return returningTerminologyArtifactsFunction();
+                return await returningTerminologyArtifactsFunction();
             }
             catch (SqlException sqlException)
             {
@@ -108,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                         message: "Failed terminologyArtifact storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedTerminologyArtifactStorageException);
+                throw await  CreateAndLogCriticalDependencyExceptionAsync(failedTerminologyArtifactStorageException);
             }
             catch (Exception exception)
             {
@@ -117,48 +117,50 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                         message: "Failed terminologyArtifact service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedTerminologyArtifactServiceException);
+                throw await  CreateAndLogServiceExceptionAsync(failedTerminologyArtifactServiceException);
             }
         }
 
-        private TerminologyArtifactValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<TerminologyArtifactValidationException> 
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var terminologyArtifactValidationException =
                 new TerminologyArtifactValidationException(
                     message: "TerminologyArtifact validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(terminologyArtifactValidationException);
+            await this.loggingBroker.LogErrorAsync(terminologyArtifactValidationException);
 
             return terminologyArtifactValidationException;
         }
 
-        private TerminologyArtifactDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        private async ValueTask<TerminologyArtifactDependencyException> CreateAndLogCriticalDependencyExceptionAsync(
+            Xeption exception)
         {
             var terminologyArtifactDependencyException =
                 new TerminologyArtifactDependencyException(
                     message: "TerminologyArtifact dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogCritical(terminologyArtifactDependencyException);
+            await this.loggingBroker.LogCriticalAsync(terminologyArtifactDependencyException);
 
             return terminologyArtifactDependencyException;
         }
 
-        private TerminologyArtifactDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<TerminologyArtifactDependencyValidationException> 
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var terminologyArtifactDependencyValidationException =
                 new TerminologyArtifactDependencyValidationException(
                     message: "TerminologyArtifact dependency validation occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(terminologyArtifactDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(terminologyArtifactDependencyValidationException);
 
             return terminologyArtifactDependencyValidationException;
         }
 
-        private TerminologyArtifactDependencyException CreateAndLogDependencyException(
+        private async ValueTask<TerminologyArtifactDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
             var terminologyArtifactDependencyException =
@@ -166,12 +168,12 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                     message: "TerminologyArtifact dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(terminologyArtifactDependencyException);
+            await this.loggingBroker.LogErrorAsync(terminologyArtifactDependencyException);
 
             return terminologyArtifactDependencyException;
         }
 
-        private TerminologyArtifactServiceException CreateAndLogServiceException(
+        private async ValueTask<TerminologyArtifactServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var terminologyArtifactServiceException =
@@ -179,7 +181,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                     message: "TerminologyArtifact service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(terminologyArtifactServiceException);
+            await this.loggingBroker.LogErrorAsync(terminologyArtifactServiceException);
 
             return terminologyArtifactServiceException;
         }

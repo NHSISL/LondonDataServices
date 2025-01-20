@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
     public partial class SubscriberAgreementServiceTests
     {
         [Fact]
-        public void ShouldReturnSubscriberAgreements()
+        public async Task ShouldReturnSubscriberAgreementsAsync()
         {
             // given
             IQueryable<SubscriberAgreement> randomSubscriberAgreements = CreateRandomSubscriberAgreements();
@@ -21,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             IQueryable<SubscriberAgreement> expectedSubscriberAgreements = storageSubscriberAgreements;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllSubscriberAgreements())
-                    .Returns(storageSubscriberAgreements);
+                broker.SelectAllSubscriberAgreementsAsync())
+                    .ReturnsAsync(storageSubscriberAgreements);
 
             // when
             IQueryable<SubscriberAgreement> actualSubscriberAgreements =
-                this.subscriberAgreementService.RetrieveAllSubscriberAgreements();
+                await this.subscriberAgreementService.RetrieveAllSubscriberAgreementsAsync();
 
             // then
             actualSubscriberAgreements.Should().BeEquivalentTo(expectedSubscriberAgreements);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllSubscriberAgreements(),
+                broker.SelectAllSubscriberAgreementsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

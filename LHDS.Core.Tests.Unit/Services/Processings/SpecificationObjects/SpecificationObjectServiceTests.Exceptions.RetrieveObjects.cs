@@ -29,12 +29,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.specificationObjectServiceMock.Setup(service =>
-                service.RetrieveAllSpecificationObjects())
-                    .Throws(dependencyValidationException);
+                service.RetrieveAllSpecificationObjectsAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask<List<string>> retrieveObjectsTask =
-                this.specificationObjectProcessingService.RetrieveSpecificationObjectsByDataSetSpecificationId(someId);
+            ValueTask<List<string>> retrieveObjectsTask = this.specificationObjectProcessingService
+                .RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(someId);
 
             SpecificationObjectProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<SpecificationObjectProcessingDependencyValidationException>(
@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
             actualException.Should().BeEquivalentTo(expectedException);
 
             this.specificationObjectServiceMock.Verify(service =>
-                service.RetrieveAllSpecificationObjects(),
+                service.RetrieveAllSpecificationObjectsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -70,13 +70,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
                     innerException: dependencyException.InnerException as Xeption);
 
             this.specificationObjectServiceMock.Setup(service =>
-                service.RetrieveAllSpecificationObjects())
-                    .Throws(dependencyException);
+                service.RetrieveAllSpecificationObjectsAsync())
+                    .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<List<string>> retrieveObjectsTask =
-                this.specificationObjectProcessingService
-                    .RetrieveSpecificationObjectsByDataSetSpecificationId(someId);
+            ValueTask<List<string>> retrieveObjectsTask = this.specificationObjectProcessingService
+                .RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(someId);
 
             SpecificationObjectProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<SpecificationObjectProcessingDependencyException>(
@@ -86,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
             actualException.Should().BeEquivalentTo(expectedException);
 
             this.specificationObjectServiceMock.Verify(service =>
-                service.RetrieveAllSpecificationObjects(),
+                service.RetrieveAllSpecificationObjectsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -117,13 +116,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
                     innerException: failedSpecificationObjectProcessingServiceException);
 
             this.specificationObjectServiceMock.Setup(service =>
-                service.RetrieveAllSpecificationObjects())
-                    .Throws(serviceException);
+                service.RetrieveAllSpecificationObjectsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<List<string>> addSpecificationObjectTask =
-                this.specificationObjectProcessingService
-                    .RetrieveSpecificationObjectsByDataSetSpecificationId(someId);
+            ValueTask<List<string>> addSpecificationObjectTask = this.specificationObjectProcessingService
+                .RetrieveSpecificationObjectsByDataSetSpecificationIdAsync(someId);
 
             SpecificationObjectProcessingServiceException actualException =
                 await Assert.ThrowsAsync<SpecificationObjectProcessingServiceException>(
@@ -133,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
             actualException.Should().BeEquivalentTo(expectedException);
 
             this.specificationObjectServiceMock.Verify(service =>
-                service.RetrieveAllSpecificationObjects(),
+                service.RetrieveAllSpecificationObjectsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

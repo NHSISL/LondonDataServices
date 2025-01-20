@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllIngestionTrackings(),
+                broker.SelectAllIngestionTrackingsAsync(),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

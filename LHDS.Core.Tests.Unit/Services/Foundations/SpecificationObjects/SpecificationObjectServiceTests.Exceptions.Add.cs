@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCriticalAsync((It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedSpecificationObjectDependencyException))),
                         Times.Once);
 

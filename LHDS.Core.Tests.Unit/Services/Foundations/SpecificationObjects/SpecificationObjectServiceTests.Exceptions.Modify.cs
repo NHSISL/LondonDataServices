@@ -118,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(expectedSpecificationObjectDependencyValidationException))),
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedSpecificationObjectDependencyValidationException))),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -172,7 +172,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSpecificationObjectDependencyException))),
                         Times.Once);
 
@@ -227,7 +227,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSpecificationObjectDependencyValidationException))),
                         Times.Once);
 
@@ -282,7 +282,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSpecificationObjectServiceException))),
                         Times.Once);
 

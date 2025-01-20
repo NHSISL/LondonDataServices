@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -14,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
     public partial class DataTypeServiceTests
     {
         [Fact]
-        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogItAsync()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -30,26 +33,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: failedDataTypeStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllDataTypes())
-                    .Throws(sqlException);
+                broker.SelectAllDataTypesAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
-            Action retrieveAllDataTypesAction = () =>
-                this.dataTypeService.RetrieveAllDataTypes();
+            ValueTask<IQueryable<DataType>> retrieveAllDataTypesTask =
+                this.dataTypeService.RetrieveAllDataTypesAsync();
 
             DataTypeDependencyException actualDataTypeDependencyException =
-                Assert.Throws<DataTypeDependencyException>(retrieveAllDataTypesAction);
+                await Assert.ThrowsAsync<DataTypeDependencyException>(retrieveAllDataTypesTask.AsTask);
 
             // then
             actualDataTypeDependencyException.Should()
                 .BeEquivalentTo(expectedDataTypeDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllDataTypes(),
+                broker.SelectAllDataTypesAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedDataTypeDependencyException))),
                         Times.Once);
 
@@ -59,7 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string exceptionMessage = GetRandomString();
@@ -76,26 +79,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: failedDataTypeServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllDataTypes())
-                    .Throws(serviceException);
+                broker.SelectAllDataTypesAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action retrieveAllDataTypesAction = () =>
-                this.dataTypeService.RetrieveAllDataTypes();
+            ValueTask<IQueryable<DataType>> retrieveAllDataTypesTask =
+                this.dataTypeService.RetrieveAllDataTypesAsync();
 
             DataTypeServiceException actualDataTypeServiceException =
-                Assert.Throws<DataTypeServiceException>(retrieveAllDataTypesAction);
+                await Assert.ThrowsAsync<DataTypeServiceException>(retrieveAllDataTypesTask.AsTask);
 
             // then
             actualDataTypeServiceException.Should()
                 .BeEquivalentTo(expectedDataTypeServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllDataTypes(),
+                broker.SelectAllDataTypesAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataTypeServiceException))),
                         Times.Once);
 

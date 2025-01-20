@@ -25,51 +25,51 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
             catch (InvalidArgumentAddressOrchestrationException
                 invalidArgumentAddressOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentAddressOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentAddressOrchestrationException);
             }
             catch (AddressValidationException addressValidationException)
             {
-                throw CreateAndLogDependencyValidationException(addressValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(addressValidationException);
             }
             catch (AddressDependencyValidationException addressDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(addressDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(addressDependencyValidationException);
             }
             catch (AssignValidationException assignValidationException)
             {
-                throw CreateAndLogDependencyValidationException(assignValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(assignValidationException);
             }
             catch (AssignDependencyValidationException assignDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(assignDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(assignDependencyValidationException);
             }
             catch (CsvHelperClientValidationException csvHelperClientValidationException)
             {
-                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(csvHelperClientValidationException);
             }
             catch (AddressDependencyException addressDependencyException)
             {
-                throw CreateAndLogDependencyException(addressDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(addressDependencyException);
             }
             catch (AddressServiceException addressServiceException)
             {
-                throw CreateAndLogDependencyException(addressServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(addressServiceException);
             }
             catch (AssignDependencyException assignDependencyException)
             {
-                throw CreateAndLogDependencyException(assignDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(assignDependencyException);
             }
             catch (AssignServiceException assignServiceException)
             {
-                throw CreateAndLogDependencyException(assignServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(assignServiceException);
             }
             catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
             {
-                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(csvHelperClientDependencyException);
             }
             catch (CsvHelperClientServiceException csvHelperClientServiceException)
             {
-                throw CreateAndLogDependencyException(csvHelperClientServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(csvHelperClientServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -79,7 +79,7 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                             "please contact support.",
                         innerException: aggregateException);
 
-                throw CreateAndLogServiceException(failedAddressOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAddressOrchestrationServiceException);
             }
             catch (Exception exception)
             {
@@ -89,24 +89,25 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                             "please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedAddressOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAddressOrchestrationServiceException);
             }
         }
 
-        private AddressValidationOrchestrationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<AddressValidationOrchestrationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var addressValidationOrchestrationException =
                 new AddressValidationOrchestrationException(
                     message: "Address orchestration validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(addressValidationOrchestrationException);
+            await this.loggingBroker.LogErrorAsync(addressValidationOrchestrationException);
 
             return addressValidationOrchestrationException;
         }
 
-        private AddressOrchestrationDependencyValidationException
-            CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<AddressOrchestrationDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var addressOrchestrationDependencyValidationException =
                 new AddressOrchestrationDependencyValidationException(
@@ -114,13 +115,13 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     "fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(addressOrchestrationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(addressOrchestrationDependencyValidationException);
 
             return addressOrchestrationDependencyValidationException;
         }
 
-        private AddressOrchestrationDependencyException
-            CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<AddressOrchestrationDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var addressOrchestrationDependencyException =
                 new AddressOrchestrationDependencyException(
@@ -128,19 +129,20 @@ namespace LHDS.Core.Services.Orchestrations.Addresses
                     "fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(addressOrchestrationDependencyException);
+            await this.loggingBroker.LogErrorAsync(addressOrchestrationDependencyException);
 
             return addressOrchestrationDependencyException;
         }
 
-        private AddressOrchestrationServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<AddressOrchestrationServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var addressOrchestrationServiceException =
                 new AddressOrchestrationServiceException(
                     message: "Address orchestration service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(addressOrchestrationServiceException);
+            await this.loggingBroker.LogErrorAsync(addressOrchestrationServiceException);
 
             return addressOrchestrationServiceException;
         }

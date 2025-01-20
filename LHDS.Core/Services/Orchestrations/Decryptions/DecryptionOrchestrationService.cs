@@ -120,7 +120,10 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 olderThanDateTimeOffset.AddMinutes(-15);
 
-                var item = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                IQueryable<IngestionTracking> allIngestionTrackings =
+                    await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
+
+                IngestionTracking item = allIngestionTrackings
                     .FirstOrDefault(ingestionTrackingItem =>
                         ingestionTrackingItem.IsDownloaded == true
                         && ingestionTrackingItem.Decrypted == false

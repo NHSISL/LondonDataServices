@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 "ShouldProcessZipFileWithZippedCsvAddressesData.zip");
 
             // Then
-            IQueryable<Address> retrievedListAddresses = this.addressService.RetrieveAllAddresses();
+            IQueryable<Address> retrievedListAddresses = await this.addressService.RetrieveAllAddressesAsync();
 
             foreach (Address expectedAddress in expectedListAddresses)
             {

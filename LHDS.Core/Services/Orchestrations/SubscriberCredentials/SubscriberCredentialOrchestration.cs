@@ -94,11 +94,11 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                     externalUse);
             });
 
-        public IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials() =>
-            TryCatch(() =>
+        public ValueTask<IQueryable<SubscriberCredential>> RetrieveAllSubscriberCredentialsAsync() =>
+            TryCatch(async () =>
             {
                 IQueryable<SubscriberAgreement> retrievedSubscriberAgreements =
-                    this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreements();
+                    await this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreementsAsync();
 
                 List<SubscriberCredential> subscriberCredentials = new List<SubscriberCredential>();
 
@@ -132,13 +132,15 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                 return subscriberCredentials.AsQueryable();
             });
 
-        public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds() =>
+        public ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIdsAsync() =>
             TryCatch(async () =>
             {
-                List<Guid> retrievedActiveIds =
-                    this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreements()
-                        .Where(SubscriberAgreement => SubscriberAgreement.IsActive)
-                            .Select(SubscriberAgreement => SubscriberAgreement.Id).ToList();
+                IQueryable<SubscriberAgreement> retrievedSubscriberAgreements =
+                    await this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreementsAsync();
+
+                List<Guid> retrievedActiveIds = retrievedSubscriberAgreements
+                    .Where(SubscriberAgreement => SubscriberAgreement.IsActive)
+                    .Select(SubscriberAgreement => SubscriberAgreement.Id).ToList();
 
                 return await ValueTask.FromResult(retrievedActiveIds);
             });

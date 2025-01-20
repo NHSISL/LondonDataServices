@@ -15,7 +15,7 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
     public partial class SubscriberAgreementProcessingService : ISubscriberAgreementProcessingService
     {
         private delegate ValueTask<SubscriberAgreement> ReturningSubscriberAgreementProcessingFunction();
-        private delegate IQueryable<SubscriberAgreement> ReturningSubscriberAgreementsFunction();
+        private delegate ValueTask<IQueryable<SubscriberAgreement>> ReturningSubscriberAgreementsFunction();
 
         private async ValueTask<SubscriberAgreement> TryCatch(
             ReturningSubscriberAgreementProcessingFunction returningSubscriberAgreementProcessingFunction)
@@ -61,12 +61,12 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
             }
         }
 
-        private IQueryable<SubscriberAgreement> TryCatch(
+        private async ValueTask<IQueryable<SubscriberAgreement>> TryCatch(
             ReturningSubscriberAgreementsFunction returningSubscriberAgreementsFunction)
         {
             try
             {
-                return returningSubscriberAgreementsFunction();
+                return await returningSubscriberAgreementsFunction();
             }
             catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
             {

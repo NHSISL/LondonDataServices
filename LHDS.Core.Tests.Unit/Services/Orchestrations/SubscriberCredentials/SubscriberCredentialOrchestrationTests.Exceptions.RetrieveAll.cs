@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
@@ -38,23 +39,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.subscriberAgreementProcessingServiceMock.Setup(service =>
-                service.RetrieveAllSubscriberAgreements())
-                    .Throws(dependencyValidationException);
+                service.RetrieveAllSubscriberAgreementsAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
-            Action retrieveAllSubscriberCredentialsAction = () =>
-                this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentials();
+            ValueTask<IQueryable<SubscriberCredential>> retrieveAllSubscriberCredentialsTask =
+                this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentialsAsync();
 
             SubscriberCredentialOrchestrationDependencyValidationException actualDependencyValidationException =
-                Assert.Throws<SubscriberCredentialOrchestrationDependencyValidationException>(
-                    retrieveAllSubscriberCredentialsAction);
+                await Assert.ThrowsAsync<SubscriberCredentialOrchestrationDependencyValidationException>(
+                    testCode: retrieveAllSubscriberCredentialsTask.AsTask);
 
             // then
             actualDependencyValidationException.Should()
                  .BeEquivalentTo(expectedDependencyValidationException);
 
             this.subscriberAgreementProcessingServiceMock.Verify(service =>
-             service.RetrieveAllSubscriberAgreements(),
+             service.RetrieveAllSubscriberAgreementsAsync(),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -91,23 +92,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                     innerException: dependencyException.InnerException as Xeption);
 
             this.subscriberAgreementProcessingServiceMock.Setup(service =>
-                service.RetrieveAllSubscriberAgreements())
-                    .Throws(dependencyException);
+                service.RetrieveAllSubscriberAgreementsAsync())
+                    .ThrowsAsync(dependencyException);
 
             // when
-            Action retrieveAllSubscriberCredentialsAction = () =>
-                this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentials();
+            ValueTask<IQueryable<SubscriberCredential>> retrieveAllSubscriberCredentialsTask =
+                this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentialsAsync();
 
             SubscriberCredentialDependencyOrchestrationException actualDependencyVException =
-                Assert.Throws<SubscriberCredentialDependencyOrchestrationException>(
-                    retrieveAllSubscriberCredentialsAction);
+                await Assert.ThrowsAsync<SubscriberCredentialDependencyOrchestrationException>(
+                    testCode: retrieveAllSubscriberCredentialsTask.AsTask);
 
             // then
             actualDependencyVException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
             this.subscriberAgreementProcessingServiceMock.Verify(service =>
-             service.RetrieveAllSubscriberAgreements(),
+             service.RetrieveAllSubscriberAgreementsAsync(),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -149,24 +150,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.SubscriberCredentials
                     innerException: failedSubscriberCredentialOrchestrationServiceException);
 
             this.subscriberAgreementProcessingServiceMock.Setup(service =>
-               service.RetrieveAllSubscriberAgreements())
-                   .Throws(serviceException);
+               service.RetrieveAllSubscriberAgreementsAsync())
+                   .ThrowsAsync(serviceException);
 
             // when
-            Action retrieveAllSubscriberCredentialsAction = () =>
-                this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentials();
+            ValueTask<IQueryable<SubscriberCredential>> retrieveAllSubscriberCredentialsTask =
+                this.subscriberCredentialOrchestration.RetrieveAllSubscriberCredentialsAsync();
 
             SubscriberCredentialOrchestrationServiceException actualServiceException =
-                Assert.Throws<SubscriberCredentialOrchestrationServiceException>(
-                    retrieveAllSubscriberCredentialsAction);
+                await Assert.ThrowsAsync<SubscriberCredentialOrchestrationServiceException>(
+                    testCode: retrieveAllSubscriberCredentialsTask.AsTask);
 
             // then
             actualServiceException.Should()
                  .BeEquivalentTo(expectedSerivceException);
 
             this.subscriberAgreementProcessingServiceMock.Verify(service =>
-             service.RetrieveAllSubscriberAgreements(),
-                 Times.Once);
+                service.RetrieveAllSubscriberAgreementsAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(

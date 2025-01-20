@@ -37,15 +37,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.EmisLandings
                 this.emisLandingCoordinationService.RedecryptDocumentByIngestionIdAsync(invalidId);
 
             EmisLandingCoordinationValidationException actualEmisLandingCoordinationValidationException =
-                await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(async () =>
-                    await redecryptTask);
+                await Assert.ThrowsAsync<EmisLandingCoordinationValidationException>(
+                    redecryptTask.AsTask);
 
             // then
             actualEmisLandingCoordinationValidationException.Should()
                 .BeEquivalentTo(expectedEmisLandingCoordinationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedEmisLandingCoordinationValidationException))),
                         Times.Once);
 

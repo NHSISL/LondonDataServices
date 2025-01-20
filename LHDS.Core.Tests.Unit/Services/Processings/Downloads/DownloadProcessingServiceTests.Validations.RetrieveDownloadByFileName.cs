@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                 .BeEquivalentTo(expectedDownloadProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDownloadProcessingValidationException))),
                         Times.Once);
 

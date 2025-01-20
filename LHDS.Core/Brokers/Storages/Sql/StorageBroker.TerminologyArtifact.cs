@@ -18,7 +18,8 @@ namespace LHDS.Core.Brokers.Storages.Sql
             TerminologyArtifact terminologyArtifact) =>
                 await InsertAsync(terminologyArtifact);
 
-        public IQueryable<TerminologyArtifact> SelectAllTerminologyArtifacts() => SelectAll<TerminologyArtifact>();
+        public async ValueTask<IQueryable<TerminologyArtifact>> SelectAllTerminologyArtifactsAsync() =>
+            await SelectAllAsync<TerminologyArtifact>();
 
         public async ValueTask<TerminologyArtifact> SelectTerminologyArtifactByIdAsync(
             Guid terminologyArtifactId) =>

@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             List<Address> storageAddresses = new List<Address> { storageAddress };
 
             this.addressServiceMock.Setup(service =>
-                service.RetrieveAllAddresses())
-                    .Returns(value: storageAddresses.AsQueryable());
+                service.RetrieveAllAddressesAsync())
+                    .ReturnsAsync(value: storageAddresses.AsQueryable());
 
             this.addressServiceMock.Setup(service =>
                 service.ModifyAddressAsync(modifiedAddress))
@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             actualAddress.Should().BeEquivalentTo(expectedAddress);
 
             this.addressServiceMock.Verify(service =>
-                service.RetrieveAllAddresses(),
+                service.RetrieveAllAddressesAsync(),
                     Times.Once);
 
             this.addressServiceMock.Verify(service =>
@@ -70,8 +70,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             List<Address> emptyList = new List<Address>();
 
             this.addressServiceMock.Setup(service =>
-                service.RetrieveAllAddresses())
-                    .Returns(value: emptyList.AsQueryable());
+                service.RetrieveAllAddressesAsync())
+                    .ReturnsAsync(value: emptyList.AsQueryable());
 
             this.addressServiceMock.Setup(service =>
                 service.AddAddressAsync(inputAddress))
@@ -82,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             // Then
             this.addressServiceMock.Verify(service =>
-                service.RetrieveAllAddresses(),
+                service.RetrieveAllAddressesAsync(),
                     Times.Once);
 
             this.addressServiceMock.Verify(service =>

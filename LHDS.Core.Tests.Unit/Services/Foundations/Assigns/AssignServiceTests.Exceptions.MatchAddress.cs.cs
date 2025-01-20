@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Assigns
 
             this.assignBrokerMock.Setup(service =>
                 service.MatchAddressAsync(It.IsAny<string>()))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<AssignAddress> addAssignAddressTask =
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Assigns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedAssignAddressServiveException))),
                          Times.Once);
 

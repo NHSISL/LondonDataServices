@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
     public partial class ObjectColumnService
     {
         private delegate ValueTask<ObjectColumn> ReturningObjectColumnFunction();
-        private delegate IQueryable<ObjectColumn> ReturningObjectColumnsFunction();
+        private delegate ValueTask<IQueryable<ObjectColumn>> ReturningObjectColumnsFunction();
 
         private async ValueTask<ObjectColumn> TryCatch(ReturningObjectColumnFunction returningObjectColumnFunction)
         {
@@ -93,11 +93,12 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             }
         }
 
-        private IQueryable<ObjectColumn> TryCatch(ReturningObjectColumnsFunction returningObjectColumnsFunction)
+        private async ValueTask<IQueryable<ObjectColumn>> TryCatch(
+            ReturningObjectColumnsFunction returningObjectColumnsFunction)
         {
             try
             {
-                return returningObjectColumnsFunction();
+                return await returningObjectColumnsFunction();
             }
             catch (SqlException sqlException)
             {

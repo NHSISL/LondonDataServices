@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingByIdAsync(inputIngestionTracking.Id))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<IngestionTracking> ingestionTrackingRetrieveOrAddTask =
@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedIngestionTrackingProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingByIdAsync(inputIngestionTracking.Id))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<IngestionTracking> ingestionTrackingRetrieveOrAddTask =
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedIngestionTrackingProcessingDependencyException))),
                          Times.Once);
 
@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingByIdAsync(inputIngestionTracking.Id))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<IngestionTracking> ingestionTrackingRetrieveOrAddTask =
@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedIngestionTrackingProcessingServiveException))),
                          Times.Once);
 

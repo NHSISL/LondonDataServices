@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
     public partial class SubscriberAgreementProcessingServiceTests
     {
         [Fact]
-        public void ShouldRetrieveAllSubscriberAgreements()
+        public async Task ShouldRetrieveAllSubscriberAgreementsAsync()
         {
             // given
             IQueryable<SubscriberAgreement> randomSubscriberAgreements = CreateRandomSubscriberAgreements();
@@ -21,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
             IQueryable<SubscriberAgreement> expectedSubscriberAgreements = storageSubscriberAgreements;
 
             this.subscriberAgreementServiceMock.Setup(broker =>
-                broker.RetrieveAllSubscriberAgreements())
-                    .Returns(storageSubscriberAgreements);
+                broker.RetrieveAllSubscriberAgreementsAsync())
+                    .ReturnsAsync(storageSubscriberAgreements);
 
             // when
             IQueryable<SubscriberAgreement> actualSubscriberAgreements =
-                this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreements();
+                await this.subscriberAgreementProcessingService.RetrieveAllSubscriberAgreementsAsync();
 
             // then
             actualSubscriberAgreements.Should().BeEquivalentTo(expectedSubscriberAgreements);
 
             this.subscriberAgreementServiceMock.Verify(broker =>
-                broker.RetrieveAllSubscriberAgreements(),
+                broker.RetrieveAllSubscriberAgreementsAsync(),
                     Times.Once);
 
             this.subscriberAgreementServiceMock.VerifyNoOtherCalls();

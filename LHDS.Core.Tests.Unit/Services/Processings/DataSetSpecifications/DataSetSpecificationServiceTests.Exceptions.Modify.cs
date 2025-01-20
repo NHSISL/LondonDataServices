@@ -31,24 +31,26 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.Setup(service =>
                 service.ModifyDataSetSpecificationAsync(inputDataSetSpecification))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<DataSetSpecification> dataSetSpecificationAddTask =
                 this.dataSetSpecificationProcessingService.ModifyDataSetSpecificationAsync(inputDataSetSpecification);
 
             DataSetSpecificationProcessingDependencyValidationException actualException =
-                await Assert.ThrowsAsync<DataSetSpecificationProcessingDependencyValidationException>(dataSetSpecificationAddTask.AsTask);
+                await Assert.ThrowsAsync<DataSetSpecificationProcessingDependencyValidationException>(
+                    dataSetSpecificationAddTask.AsTask);
 
             // then
-            actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyValidationException);
+            actualException.Should()
+                .BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyValidationException);
 
             this.dataSetSpecificationServiceMock.Verify(service =>
                 service.ModifyDataSetSpecificationAsync(inputDataSetSpecification),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDataSetSpecificationProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -72,14 +74,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.Setup(service =>
                 service.ModifyDataSetSpecificationAsync(inputDataSetSpecification))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<DataSetSpecification> dataSetSpecificationAddTask =
                 this.dataSetSpecificationProcessingService.ModifyDataSetSpecificationAsync(inputDataSetSpecification);
 
             DataSetSpecificationProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<DataSetSpecificationProcessingDependencyException>(dataSetSpecificationAddTask.AsTask);
+                await Assert.ThrowsAsync<DataSetSpecificationProcessingDependencyException>(
+                    dataSetSpecificationAddTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyException);
@@ -89,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDataSetSpecificationProcessingDependencyException))),
                          Times.Once);
 
@@ -103,7 +106,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             // given
             DataSetSpecification someDataSetSpecification = CreateRandomDataSetSpecification();
             DataSetSpecification inputDataSetSpecification = someDataSetSpecification;
-
             var serviceException = new Exception();
 
             var failedDataSetSpecificationProcessingServiceException =
@@ -118,14 +120,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.Setup(service =>
                 service.ModifyDataSetSpecificationAsync(inputDataSetSpecification))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<DataSetSpecification> addDataSetSpecificationTask =
                 this.dataSetSpecificationProcessingService.ModifyDataSetSpecificationAsync(inputDataSetSpecification);
 
             DataSetSpecificationProcessingServiceException actualException =
-                await Assert.ThrowsAsync<DataSetSpecificationProcessingServiceException>(addDataSetSpecificationTask.AsTask);
+                await Assert.ThrowsAsync<DataSetSpecificationProcessingServiceException>(
+                    addDataSetSpecificationTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingServiveException);
@@ -135,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDataSetSpecificationProcessingServiveException))),
                          Times.Once);
 

@@ -28,8 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new List<IngestionTracking> { storageIngestionTracking }.AsQueryable();
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllIngestionTrackings())
-                    .Returns(storageIngestionTrackings);
+                broker.SelectAllIngestionTrackingsAsync())
+                    .ReturnsAsync(storageIngestionTrackings);
 
             // when
             IngestionTracking actualIngestionTracking =
@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllIngestionTrackings(),
+                broker.SelectAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

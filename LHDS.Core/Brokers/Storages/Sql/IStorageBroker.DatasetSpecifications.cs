@@ -12,7 +12,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
     public partial interface IStorageBroker
     {
         ValueTask<DataSetSpecification> InsertDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);
-        IQueryable<DataSetSpecification> SelectAllDataSetSpecifications();
+        ValueTask<IQueryable<DataSetSpecification>> SelectAllDataSetSpecificationsAsync();
         ValueTask<DataSetSpecification> SelectDataSetSpecificationByIdAsync(Guid dataSetSpecificationId);
         ValueTask<DataSetSpecification> UpdateDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);
         ValueTask<DataSetSpecification> DeleteDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);

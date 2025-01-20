@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Throws(dependencyValidationException);
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<List<string>> retrieveObjectsTask =
@@ -45,11 +45,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingDependencyValidationException);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedIngestionTrackingProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -71,8 +71,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     innerException: dependencyException.InnerException as Xeption);
 
             this.ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Throws(dependencyException);
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<List<string>> retrieveObjectsTask =
@@ -87,11 +87,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingDependencyException);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedIngestionTrackingProcessingDependencyException))),
                          Times.Once);
 
@@ -117,8 +117,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     innerException: failedIngestionTrackingProcessingServiceException);
 
             this.ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Throws(serviceException);
+                service.RetrieveAllIngestionTrackingsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<string>> retrieveObjectsTask =
@@ -133,11 +133,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingServiveException);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
+                service.RetrieveAllIngestionTrackingsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedIngestionTrackingProcessingServiveException))),
                          Times.Once);
 

@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedDataSetDependencyException))),
                         Times.Once);
 
@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
         }
 
         [Fact]
-        public async Task ShouldThrowDependencyValidationExceptionOnAddIfDataSetAlreadyExsitsAndLogItAsync()
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfDataSetAlreadyExistsAndLogItAsync()
         {
             // given
             DataSet randomDataSet = CreateRandomDataSet();
@@ -114,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetDependencyValidationException))),
                         Times.Once);
 
@@ -165,7 +165,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetValidationException))),
                         Times.Once);
 
@@ -222,7 +222,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetDependencyException))),
                         Times.Once);
 
@@ -273,7 +273,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetServiceException))),
                         Times.Once);
 

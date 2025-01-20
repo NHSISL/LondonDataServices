@@ -18,7 +18,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllExpiredOptOutsIfDependencyValidationErrorOccursAndLogItAsync(
+        public async Task
+            ShouldThrowDependencyValidationExceptionOnRetrieveAllExpiredOptOutsIfDependencyValidationErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -48,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveAllOptOuts(),
+                service.RetrieveAllOptOutsAsync(),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -91,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveAllOptOuts(),
+                service.RetrieveAllOptOutsAsync(),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -139,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveAllOptOuts(),
+                service.RetrieveAllOptOutsAsync(),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>

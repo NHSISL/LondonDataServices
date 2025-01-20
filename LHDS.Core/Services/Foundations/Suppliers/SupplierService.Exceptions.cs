@@ -27,11 +27,11 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             }
             catch (NullSupplierException nullSupplierException)
             {
-                throw await CreateAndLogValidationException(nullSupplierException);
+                throw await CreateAndLogValidationExceptionAsync(nullSupplierException);
             }
             catch (InvalidSupplierException invalidSupplierException)
             {
-                throw await CreateAndLogValidationException(invalidSupplierException);
+                throw await CreateAndLogValidationExceptionAsync(invalidSupplierException);
             }
             catch (SqlException sqlException)
             {
@@ -40,11 +40,11 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                         message: "Failed supplier storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw await CreateAndLogCriticalDependencyException(failedSupplierStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedSupplierStorageException);
             }
             catch (NotFoundSupplierException notFoundSupplierException)
             {
-                throw await CreateAndLogValidationException(notFoundSupplierException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundSupplierException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                         message: "Supplier with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw await CreateAndLogDependencyValidationException(alreadyExistsSupplierException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsSupplierException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -62,7 +62,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                         message: "Invalid supplier reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw await CreateAndLogDependencyValidationException(invalidSupplierReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidSupplierReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -70,7 +70,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                     message: "Locked supplier record exception, please try again later",
                     innerException: dbUpdateConcurrencyException);
 
-                throw await CreateAndLogDependencyValidationException(lockedSupplierException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedSupplierException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -79,7 +79,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                         message: "Failed supplier storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw await CreateAndLogDependencyException(failedSupplierStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedSupplierStorageException);
             }
             catch (Exception exception)
             {
@@ -88,7 +88,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                         message: "Failed supplier service error occurred, please contact support.",
                         innerException: exception);
 
-                throw await CreateAndLogServiceException(failedSupplierServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSupplierServiceException);
             }
         }
 
@@ -105,7 +105,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                         message: "Failed supplier storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw await CreateAndLogCriticalDependencyException(failedSupplierStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedSupplierStorageException);
             }
             catch (Exception exception)
             {
@@ -114,11 +114,11 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                         message: "Failed supplier service error occurred, please contact support.",
                         innerException: exception);
 
-                throw await CreateAndLogServiceException(failedSupplierServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSupplierServiceException);
             }
         }
 
-        private async ValueTask<SupplierValidationException> CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<SupplierValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var supplierValidationException = new SupplierValidationException(
                 message: "Supplier validation errors occurred, please try again.",
@@ -130,7 +130,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         }
 
         private async ValueTask<SupplierDependencyException> 
-            CreateAndLogCriticalDependencyException(Xeption exception)
+            CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
         {
             var supplierDependencyException = new SupplierDependencyException(
                 message: "Supplier dependency error occurred, please contact support.",
@@ -142,7 +142,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         }
 
         private async ValueTask<SupplierDependencyValidationException> 
-            CreateAndLogDependencyValidationException(Xeption exception)
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var supplierDependencyValidationException =
                 new SupplierDependencyValidationException(
@@ -154,7 +154,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             return supplierDependencyValidationException;
         }
 
-        private async ValueTask<SupplierDependencyException> CreateAndLogDependencyException(
+        private async ValueTask<SupplierDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
             var supplierDependencyException = new SupplierDependencyException(
@@ -166,7 +166,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             return supplierDependencyException;
         }
 
-        private async ValueTask<SupplierServiceException> CreateAndLogServiceException(
+        private async ValueTask<SupplierServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var supplierServiceException = new SupplierServiceException(

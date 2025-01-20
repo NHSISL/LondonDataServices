@@ -22,7 +22,6 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
             IQueryable<Address> randomAddresses = CreateRandomAddresses();
             IQueryable<Address> storageAddresses = randomAddresses.DeepClone();
             IQueryable<Address> expectedAddresses = storageAddresses.DeepClone();
-
             var expectedObjectResult = new OkObjectResult(expectedAddresses);
 
             var expectedActionResult =

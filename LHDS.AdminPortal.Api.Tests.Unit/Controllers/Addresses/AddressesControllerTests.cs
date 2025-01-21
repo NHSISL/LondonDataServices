@@ -50,6 +50,9 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
                     .AsQueryable();
         }
 
+        private static Address CreateRandomAddress() =>
+            CreateAddressFiller().Create();
+
         private static Filler<Address> CreateAddressFiller()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Attrify.Attributes;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Controllers;
 using Microsoft.AspNetCore.Authorization;
@@ -56,6 +57,30 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
                 .ToList();
 
             actualAttributeValues.Should().BeEquivalentTo(expectedAttributeValues);
+        }
+
+        [Fact]
+        public void PostShouldHaveInvisibleApiAttribute()
+        {
+            // Given
+
+            var controllerType = typeof(TerminologyPollsController);
+            var methodInfo = controllerType.GetMethod("PostTerminologyPollAsync");
+            Type attributeType = typeof(InvisibleApiAttribute);
+
+            // When
+            var methodAttribute = methodInfo?
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var controllerAttribute = controllerType
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var attribute = methodAttribute ?? controllerAttribute;
+
+            // Then
+            attribute.Should().NotBeNull();
         }
     }
 }

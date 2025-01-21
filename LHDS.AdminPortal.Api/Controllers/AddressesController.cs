@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Services.Foundations.Addresses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AddressesController : RESTFulController

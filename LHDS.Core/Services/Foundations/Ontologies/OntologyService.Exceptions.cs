@@ -23,7 +23,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             }
             catch (InvalidArgumentOntologyException invalidArgumentOntologyException)
             {
-                throw CreateAndLogValidationException(invalidArgumentOntologyException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentOntologyException);
             }
             catch (Exception exception)
             {
@@ -32,7 +32,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
                         message: "Failed ontology service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedOntologyServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedOntologyServiceException);
             }
         }
 
@@ -44,7 +44,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             }
             catch (InvalidArgumentOntologyException invalidArgumentOntologyException)
             {
-                throw CreateAndLogValidationException(invalidArgumentOntologyException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentOntologyException);
             }
             catch (Exception exception)
             {
@@ -53,28 +53,28 @@ namespace LHDS.Core.Services.Foundations.Ontologies
                         message: "Failed ontology service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedOntologyServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedOntologyServiceException);
             }
         }
 
-        private OntologyValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<OntologyValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var ontologyValidationException = new OntologyValidationException(
                 message: "Ontology validation error occurred, please try again.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(ontologyValidationException);
+            await this.loggingBroker.LogErrorAsync(ontologyValidationException);
 
             return ontologyValidationException;
         }
 
-        private OntologyServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<OntologyServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var ontologyServiceException = new OntologyServiceException(
                 message: "Ontology service error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(ontologyServiceException);
+            await this.loggingBroker.LogErrorAsync(ontologyServiceException);
 
             return ontologyServiceException;
         }

@@ -24,7 +24,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public TerminologyPollsController(ITerminologyPollService terminologyPollService) =>
             this.terminologyPollService = terminologyPollService;
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations")]
         [InvisibleApi]
         [HttpPost]
         public async ValueTask<ActionResult<TerminologyPoll>> PostTerminologyPollAsync(TerminologyPoll terminologyPoll)
@@ -60,7 +60,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations")]
         [HttpGet]
         public async ValueTask<ActionResult<IQueryable<TerminologyPoll>>> GetAllTerminologyPollsAsync()
         {
@@ -81,7 +81,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations")]
         [HttpGet("{terminologyPollId}")]
         public async ValueTask<ActionResult<TerminologyPoll>> GetTerminologyPollByIdAsync(Guid terminologyPollId)
         {

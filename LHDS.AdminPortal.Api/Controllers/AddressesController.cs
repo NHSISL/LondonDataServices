@@ -109,6 +109,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators")]
         [HttpPut]
         public async ValueTask<ActionResult<Address>> PutAddressAsync(Address address)
         {

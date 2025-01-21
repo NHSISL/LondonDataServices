@@ -9,6 +9,7 @@ using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 using Xunit;
 
@@ -79,6 +80,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
             this.addressServiceMock.Setup(service =>
                 service.ModifyAddressAsync(It.IsAny<Address>()))
                     .ThrowsAsync(addressValidationException);
+
+            // when
+            ActionResult<Address> actualActionResult =
+                await this.addressesController.PutAddressAsync(someAddress);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.addressServiceMock.Verify(service =>
+                service.ModifyAddressAsync(It.IsAny<Address>()),
+                    Times.Once);
+
+            this.addressServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnFailedDependencyOnPutIfInvalidAddressReferenceAsync()
+        {
+            // given
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+            Address someAddress = CreateRandomAddress();
+
+            var alreadyExistsAddressException =
+                new InvalidAddressReferenceException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var addressDependencyValidationException =
+                new AddressDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsAddressException);
+
+            FailedDependencyObjectResult expectedBadRequestObjectResult =
+                FailedDependency(addressDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<Address>(expectedBadRequestObjectResult);
+
+            this.addressServiceMock.Setup(service =>
+                service.ModifyAddressAsync(It.IsAny<Address>()))
+                    .ThrowsAsync(addressDependencyValidationException);
 
             // when
             ActionResult<Address> actualActionResult =

@@ -25,58 +25,58 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
             catch (InvalidArgumentTerminologyMetaDataOrchestrationException
                 invalidArgumentTerminologyMetaDataOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentTerminologyMetaDataOrchestrationException);
+                throw await CreateAndLogValidationException(invalidArgumentTerminologyMetaDataOrchestrationException);
             }
             catch (TerminologyPollProcessingValidationException terminologyPollProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(terminologyPollProcessingValidationException);
+                throw await CreateAndLogDependencyValidationException(terminologyPollProcessingValidationException);
             }
             catch (TerminologyPollProcessingDependencyValidationException
                 terminologyPollProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(terminologyPollProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationException(terminologyPollProcessingDependencyValidationException);
             }
             catch (TerminologyArtifactProcessingValidationException terminologyArtifactProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(terminologyArtifactProcessingValidationException);
+                throw await CreateAndLogDependencyValidationException(terminologyArtifactProcessingValidationException);
             }
             catch (TerminologyArtifactProcessingDependencyValidationException
                 terminologyArtifactProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationException(
                     terminologyArtifactProcessingDependencyValidationException);
             }
             catch (OntologyProcessingValidationException ontologyProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ontologyProcessingValidationException);
+                throw await CreateAndLogDependencyValidationException(ontologyProcessingValidationException);
             }
             catch (OntologyProcessingDependencyValidationException ontologyProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ontologyProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationException(ontologyProcessingDependencyValidationException);
             }
             catch (TerminologyPollProcessingDependencyException terminologyPollProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(terminologyPollProcessingDependencyException);
+                throw await CreateAndLogDependencyException(terminologyPollProcessingDependencyException);
             }
             catch (TerminologyPollProcessingServiceException terminologyPollProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(terminologyPollProcessingServiceException);
+                throw await CreateAndLogDependencyException(terminologyPollProcessingServiceException);
             }
             catch (TerminologyArtifactProcessingDependencyException terminologyArtifactProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(terminologyArtifactProcessingDependencyException);
+                throw await CreateAndLogDependencyException(terminologyArtifactProcessingDependencyException);
             }
             catch (TerminologyArtifactProcessingServiceException terminologyArtifactProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(terminologyArtifactProcessingServiceException);
+                throw await CreateAndLogDependencyException(terminologyArtifactProcessingServiceException);
             }
             catch (OntologyProcessingDependencyException ontologyProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(ontologyProcessingDependencyException);
+                throw await CreateAndLogDependencyException(ontologyProcessingDependencyException);
             }
             catch (OntologyProcessingServiceException ontologyProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(ontologyProcessingServiceException);
+                throw await CreateAndLogDependencyException(ontologyProcessingServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -85,7 +85,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                         message: "Failed terminology metadata orchestration aggregate service error occurred, please contact support.",
                         innerException: aggregateException);
 
-                throw CreateAndLogServiceException(failedAddressCoordinationServiceException);
+                throw await CreateAndLogServiceException(failedAddressCoordinationServiceException);
             }
             catch (Exception exception)
             {
@@ -94,7 +94,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                         message: "Failed terminology metadata orchestration service error occurred, please contact support.",
                         exception);
 
-                throw CreateAndLogServiceException(FailedTerminologyMetadataOrchestrationServiceException);
+                throw await CreateAndLogServiceException(FailedTerminologyMetadataOrchestrationServiceException);
             }
         }
 
@@ -105,7 +105,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                     message: "Terminology metadata orchestration validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(terminologyMetadataOrchestrationValidationException);
+            await this.loggingBroker.LogError(terminologyMetadataOrchestrationValidationException);
 
             return terminologyMetadataOrchestrationValidationException;
         }
@@ -120,7 +120,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                         "fix the errors and try again.",
                     exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(terminologyMetadataOrchestrationDependencyValidationException);
+            await this.loggingBroker.LogError(terminologyMetadataOrchestrationDependencyValidationException);
 
             return terminologyMetadataOrchestrationDependencyValidationException;
         }
@@ -134,7 +134,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                     "fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(terminologyMetadataOrchestrationDependencyException);
+            await this.loggingBroker.LogError(terminologyMetadataOrchestrationDependencyException);
 
             throw terminologyMetadataOrchestrationDependencyException;
         }
@@ -147,7 +147,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                     message: "Terminology metadata orchestration service error occurred, please contact support.",
                     exception);
 
-            this.loggingBroker.LogError(terminologyMetadataOrchestrationServiceException);
+            await this.loggingBroker.LogError(terminologyMetadataOrchestrationServiceException);
 
             throw terminologyMetadataOrchestrationServiceException;
         }

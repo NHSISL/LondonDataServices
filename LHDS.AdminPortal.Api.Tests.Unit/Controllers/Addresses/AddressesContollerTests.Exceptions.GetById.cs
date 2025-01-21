@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
@@ -60,27 +59,27 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
         public async Task ShouldReturnInternalServerErrorOnGetByIdIfServerErrorOccurredAsync(Xeption serverException)
         {
             // given 
-            IQueryable<Address> someAddresses = CreateRandomAddresses();
+            Guid someId = Guid.NewGuid();
 
             InternalServerErrorObjectResult expectedInternalServerErrorObjectResult =
                 InternalServerError(serverException);
 
             var expectedActionResult =
-                new ActionResult<IQueryable<Address>>(expectedInternalServerErrorObjectResult);
+                new ActionResult<Address>(expectedInternalServerErrorObjectResult);
 
             this.addressServiceMock.Setup(service =>
-                service.RetrieveAllAddressesAsync())
+                service.RetrieveAddressByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(serverException);
 
             // when
-            ActionResult<IQueryable<Address>> actualActionResult =
-                await this.addressesController.GetAllAddressesAsync();
+            ActionResult<Address> actualActionResult =
+                await this.addressesController.GetAddressByIdAsync(someId);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.addressServiceMock.Verify(service =>
-                service.RetrieveAllAddressesAsync(),
+                service.RetrieveAddressByIdAsync(It.IsAny<Guid>()),
                     Times.Once());
 
             this.addressServiceMock.VerifyNoOtherCalls();

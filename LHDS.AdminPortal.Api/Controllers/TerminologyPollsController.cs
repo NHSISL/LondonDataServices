@@ -23,6 +23,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public TerminologyPollsController(ITerminologyPollService terminologyPollService) =>
             this.terminologyPollService = terminologyPollService;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators")]
         [HttpPost]
         public async ValueTask<ActionResult<TerminologyPoll>> PostTerminologyPollAsync(TerminologyPoll terminologyPoll)
         {

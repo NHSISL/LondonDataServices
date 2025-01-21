@@ -111,6 +111,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations")]
+        [InvisibleApi]
         [HttpPut]
         public async ValueTask<ActionResult<TerminologyPoll>> PutTerminologyPollAsync(TerminologyPoll terminologyPoll)
         {

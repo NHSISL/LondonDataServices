@@ -78,6 +78,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
         [HttpGet("{terminologyPollId}")]
         public async ValueTask<ActionResult<TerminologyPoll>> GetTerminologyPollByIdAsync(Guid terminologyPollId)
         {

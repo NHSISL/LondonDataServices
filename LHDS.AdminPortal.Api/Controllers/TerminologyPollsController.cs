@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Attrify.Attributes;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
@@ -24,6 +25,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.terminologyPollService = terminologyPollService;
 
         [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators")]
+        [InvisibleApi]
         [HttpPost]
         public async ValueTask<ActionResult<TerminologyPoll>> PostTerminologyPollAsync(TerminologyPoll terminologyPoll)
         {

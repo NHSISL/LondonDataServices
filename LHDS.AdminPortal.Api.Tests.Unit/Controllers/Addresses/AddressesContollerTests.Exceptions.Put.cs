@@ -178,5 +178,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
 
             this.addressServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnPutIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            Address someAddress = CreateRandomAddress();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
+
+            var expectedActionResult =
+                new ActionResult<Address>(expectedBadRequestObjectResult);
+
+            this.addressServiceMock.Setup(service =>
+                service.ModifyAddressAsync(It.IsAny<Address>()))
+                    .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<Address> actualActionResult =
+                await this.addressesController.PutAddressAsync(someAddress);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.addressServiceMock.Verify(service =>
+                service.ModifyAddressAsync(It.IsAny<Address>()),
+                    Times.Once);
+
+            this.addressServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

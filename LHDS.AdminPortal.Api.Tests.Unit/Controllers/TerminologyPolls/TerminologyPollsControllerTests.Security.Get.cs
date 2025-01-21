@@ -26,7 +26,10 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
-            List<string> expectedAttributeValues = new List<string>();
+            List<string> expectedAttributeValues = new List<string>
+            {
+                "ISL.LDS.AdminSpa.Configurations","ISL.LDS.AdminSpa.Administrators"
+            };
 
             // When
             var methodAttribute = methodInfo?

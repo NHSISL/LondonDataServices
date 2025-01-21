@@ -19,7 +19,8 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
         private delegate ValueTask<SubscriberAgreement> ReturningSubscriberAgreementFunction();
         private delegate ValueTask<IQueryable<SubscriberAgreement>> ReturningSubscriberAgreementsFunction();
 
-        private async ValueTask<SubscriberAgreement> TryCatch(ReturningSubscriberAgreementFunction returningSubscriberAgreementFunction)
+        private async ValueTask<SubscriberAgreement> TryCatch(
+            ReturningSubscriberAgreementFunction returningSubscriberAgreementFunction)
         {
             try
             {
@@ -27,11 +28,11 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             }
             catch (NullSubscriberAgreementException nullSubscriberAgreementException)
             {
-                throw CreateAndLogValidationException(nullSubscriberAgreementException);
+                throw await CreateAndLogValidationExceptionAsync(nullSubscriberAgreementException);
             }
             catch (InvalidSubscriberAgreementException invalidSubscriberAgreementException)
             {
-                throw CreateAndLogValidationException(invalidSubscriberAgreementException);
+                throw await CreateAndLogValidationExceptionAsync(invalidSubscriberAgreementException);
             }
             catch (SqlException sqlException)
             {
@@ -40,11 +41,11 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                         message: "Failed subscriberAgreement storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedSubscriberAgreementStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedSubscriberAgreementStorageException);
             }
             catch (NotFoundSubscriberAgreementException notFoundSubscriberAgreementException)
             {
-                throw CreateAndLogValidationException(notFoundSubscriberAgreementException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundSubscriberAgreementException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -53,7 +54,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                         message: "SubscriberAgreement with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsSubscriberAgreementException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsSubscriberAgreementException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -62,7 +63,8 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                         message: "Invalid subscriberAgreement reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidSubscriberAgreementReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    invalidSubscriberAgreementReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -71,7 +73,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                         message: "Locked subscriberAgreement record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedSubscriberAgreementException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedSubscriberAgreementException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -80,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                         message: "Failed subscriberAgreement storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedSubscriberAgreementStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedSubscriberAgreementStorageException);
             }
             catch (Exception exception)
             {
@@ -89,7 +91,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                         message: "Failed subscriberAgreement service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSubscriberAgreementServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSubscriberAgreementServiceException);
             }
         }
 
@@ -107,7 +109,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                         message: "Failed subscriberAgreement storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedSubscriberAgreementStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedSubscriberAgreementStorageException);
             }
             catch (Exception exception)
             {
@@ -116,47 +118,50 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                         message: "Failed subscriberAgreement service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSubscriberAgreementServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSubscriberAgreementServiceException);
             }
         }
 
-        private SubscriberAgreementValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<SubscriberAgreementValidationException> 
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var subscriberAgreementValidationException =
                 new SubscriberAgreementValidationException(
                     message: "SubscriberAgreement validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(subscriberAgreementValidationException);
+            await this.loggingBroker.LogErrorAsync(subscriberAgreementValidationException);
 
             return subscriberAgreementValidationException;
         }
 
-        private SubscriberAgreementDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        private async ValueTask<SubscriberAgreementDependencyException> 
+            CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
         {
             var subscriberAgreementDependencyException =
                 new SubscriberAgreementDependencyException(
                     message: "SubscriberAgreement dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogCritical(subscriberAgreementDependencyException);
+            await this.loggingBroker.LogCriticalAsync(subscriberAgreementDependencyException);
 
             return subscriberAgreementDependencyException;
         }
 
-        private SubscriberAgreementDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<SubscriberAgreementDependencyValidationException> 
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var subscriberAgreementDependencyValidationException =
                 new SubscriberAgreementDependencyValidationException(
                     message: "SubscriberAgreement dependency validation occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(subscriberAgreementDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(subscriberAgreementDependencyValidationException);
 
             return subscriberAgreementDependencyValidationException;
         }
 
-        private SubscriberAgreementDependencyException CreateAndLogDependencyException(
+        private async ValueTask<SubscriberAgreementDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
             var subscriberAgreementDependencyException =
@@ -164,12 +169,12 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     message: "SubscriberAgreement dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(subscriberAgreementDependencyException);
+            await this.loggingBroker.LogErrorAsync(subscriberAgreementDependencyException);
 
             return subscriberAgreementDependencyException;
         }
 
-        private SubscriberAgreementServiceException CreateAndLogServiceException(
+        private async ValueTask<SubscriberAgreementServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var subscriberAgreementServiceException =
@@ -177,7 +182,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     message: "SubscriberAgreement service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(subscriberAgreementServiceException);
+            await this.loggingBroker.LogErrorAsync(subscriberAgreementServiceException);
 
             return subscriberAgreementServiceException;
         }

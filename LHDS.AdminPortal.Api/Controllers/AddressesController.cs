@@ -58,6 +58,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet]
         public async ValueTask<ActionResult<IQueryable<Address>>> GetAllAddressesAsync()
         {
@@ -78,6 +79,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{addressId}")]
         public async ValueTask<ActionResult<Address>> GetAddressByIdAsync(Guid addressId)
         {

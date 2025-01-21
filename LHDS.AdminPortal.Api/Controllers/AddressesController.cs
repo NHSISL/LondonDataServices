@@ -149,6 +149,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators")]
         [HttpDelete("{addressId}")]
         public async ValueTask<ActionResult<Address>> DeleteAddressByIdAsync(Guid addressId)
         {

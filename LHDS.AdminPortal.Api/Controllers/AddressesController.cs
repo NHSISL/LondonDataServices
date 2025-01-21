@@ -24,6 +24,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public AddressesController(IAddressService addressService) =>
             this.addressService = addressService;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators")]
         [HttpPost]
         public async ValueTask<ActionResult<Address>> PostAddressAsync(Address address)
         {

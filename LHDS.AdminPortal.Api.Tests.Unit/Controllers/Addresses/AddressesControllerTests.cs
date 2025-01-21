@@ -84,5 +84,18 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
                     innerException: someInnerException)
             };
         }
+
+        public static TheoryData<Xeption> ValidationExceptions()
+        {
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+
+            return new TheoryData<Xeption>
+            {
+                new AddressValidationException(
+                    message: someMessage,
+                    innerException: someInnerException)
+            };
+        }
     }
 }

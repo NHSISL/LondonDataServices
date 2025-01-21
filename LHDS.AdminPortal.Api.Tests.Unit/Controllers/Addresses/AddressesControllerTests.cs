@@ -50,6 +50,9 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
                     .AsQueryable();
         }
 
+        private static Address CreateRandomAddress() =>
+            CreateAddressFiller().Create();
+
         private static Filler<Address> CreateAddressFiller()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
@@ -77,6 +80,23 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
                     innerException: someInnerException),
 
                 new AddressServiceException(
+                    message: someMessage,
+                    innerException: someInnerException)
+            };
+        }
+
+        public static TheoryData<Xeption> ValidationExceptions()
+        {
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+
+            return new TheoryData<Xeption>
+            {
+                new AddressValidationException(
+                    message: someMessage,
+                    innerException: someInnerException),
+
+                new AddressDependencyValidationException(
                     message: someMessage,
                     innerException: someInnerException)
             };

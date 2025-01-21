@@ -56,5 +56,29 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
 
             actualAttributeValues.Should().BeEquivalentTo(expectedAttributeValues);
         }
+
+        [Fact]
+        public void GetAllShouldNotHaveInvisibleApiAttribute()
+        {
+            // Given
+
+            var controllerType = typeof(TerminologyPollsController);
+            var methodInfo = controllerType.GetMethod("Get");
+            Type attributeType = typeof(InvisibleApiAttribute);
+
+            // When
+            var methodAttribute = methodInfo?
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var controllerAttribute = controllerType
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var attribute = methodAttribute ?? controllerAttribute;
+
+            // Then
+            attribute.Should().BeNull();
+        }
     }
 }

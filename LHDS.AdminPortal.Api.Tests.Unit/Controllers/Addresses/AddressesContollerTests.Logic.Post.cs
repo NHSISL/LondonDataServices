@@ -16,7 +16,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
     public partial class AddressesControllerTests
     {
         [Fact]
-        public async Task ShouldReturnOkOnPostAsync()
+        public async Task ShouldReturnCreatedOnPostAsync()
         {
             // given
             Address randomAddress = CreateRandomAddress();

@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 .BeEquivalentTo(expectedSupplierValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSupplierValidationException))),
                         Times.Once);
 
@@ -115,7 +115,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSupplierValidationException))),
                         Times.Once);
 
@@ -172,7 +172,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSupplierValidationException))),
                         Times.Once);
 
@@ -226,7 +226,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSupplierValidationException))),
                         Times.Once);
 
@@ -285,7 +285,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSupplierValidationException))),
                         Times.Once);
 

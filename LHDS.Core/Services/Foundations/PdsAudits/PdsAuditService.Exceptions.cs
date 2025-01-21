@@ -27,11 +27,11 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             }
             catch (NullPdsAuditException nullPdsAuditException)
             {
-                throw CreateAndLogValidationException(nullPdsAuditException);
+                throw await CreateAndLogValidationExceptionAsync(nullPdsAuditException);
             }
             catch (InvalidPdsAuditException invalidPdsAuditException)
             {
-                throw CreateAndLogValidationException(invalidPdsAuditException);
+                throw await CreateAndLogValidationExceptionAsync(invalidPdsAuditException);
             }
             catch (SqlException sqlException)
             {
@@ -40,11 +40,11 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                         message: "Failed pdsAudit service error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedPdsAuditStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedPdsAuditStorageException);
             }
             catch (NotFoundPdsAuditException notFoundPdsAuditException)
             {
-                throw CreateAndLogValidationException(notFoundPdsAuditException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundPdsAuditException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                         message: "PdsAudit with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsPdsAuditException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsPdsAuditException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -62,7 +62,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                         message: "Invalid pdsAudit reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidPdsAuditReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidPdsAuditReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -70,7 +70,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                     message: "Locked pdsAudit record exception, please try again later",
                     innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedPdsAuditException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedPdsAuditException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -79,7 +79,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                         message: "Failed pdsAudit service error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedPdsAuditStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedPdsAuditStorageException);
             }
             catch (Exception exception)
             {
@@ -88,7 +88,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                         message: "Failed pdsAudit service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedPdsAuditServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedPdsAuditServiceException);
             }
         }
 
@@ -105,7 +105,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                         message: "Failed pdsAudit service error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedPdsAuditStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedPdsAuditStorageException);
             }
             catch (Exception exception)
             {
@@ -114,65 +114,67 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                         message: "Failed pdsAudit service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedPdsAuditServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedPdsAuditServiceException);
             }
         }
 
-        private PdsAuditValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<PdsAuditValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var pdsAuditValidationException =
                 new PdsAuditValidationException(
                     message: "PdsAudit validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(pdsAuditValidationException);
+            await this.loggingBroker.LogErrorAsync(pdsAuditValidationException);
 
             return pdsAuditValidationException;
         }
 
-        private PdsAuditDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        private async ValueTask<PdsAuditDependencyException> 
+            CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
         {
             var pdsAuditDependencyException = new PdsAuditDependencyException(
                 message: "PdsAudit dependency error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogCritical(pdsAuditDependencyException);
+            await this.loggingBroker.LogCriticalAsync(pdsAuditDependencyException);
 
             return pdsAuditDependencyException;
         }
 
-        private PdsAuditDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<PdsAuditDependencyValidationException> 
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var pdsAuditDependencyValidationException =
                 new PdsAuditDependencyValidationException(
                     message: "PdsAudit dependency validation occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(pdsAuditDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(pdsAuditDependencyValidationException);
 
             return pdsAuditDependencyValidationException;
         }
 
-        private PdsAuditDependencyException CreateAndLogDependencyException(
+        private async ValueTask<PdsAuditDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
             var pdsAuditDependencyException = new PdsAuditDependencyException(
                 message: "PdsAudit dependency error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(pdsAuditDependencyException);
+            await this.loggingBroker.LogErrorAsync(pdsAuditDependencyException);
 
             return pdsAuditDependencyException;
         }
 
-        private PdsAuditServiceException CreateAndLogServiceException(
+        private async ValueTask<PdsAuditServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var pdsAuditServiceException = new PdsAuditServiceException(
                 message: "PdsAudit service error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(pdsAuditServiceException);
+            await this.loggingBroker.LogErrorAsync(pdsAuditServiceException);
 
             return pdsAuditServiceException;
         }

@@ -152,6 +152,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations")]
+        [InvisibleApi]
         [HttpDelete("{terminologyPollId}")]
         public async ValueTask<ActionResult<TerminologyPoll>> DeleteTerminologyPollByIdAsync(Guid terminologyPollId)
         {

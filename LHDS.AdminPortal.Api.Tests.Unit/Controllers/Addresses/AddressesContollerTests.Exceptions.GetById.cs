@@ -18,22 +18,28 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
 {
     public partial class AddressesControllerTests
     {
-        [Theory]
-        [MemberData(nameof(ValidationExceptions))]
-        public async Task ShouldReturnBadRequestOnGetByIdIfValidationErrorOccurredAsync(Xeption validationException)
+        [Fact]
+        public async Task ShouldReturnBadRequestOnGetByIdIfValidationErrorOccurredAsync()
         {
             // given
             Guid someId = Guid.NewGuid();
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+
+            var addressValidationException =
+                new AddressValidationException(
+                    message: someMessage,
+                    innerException: someInnerException);
 
             BadRequestObjectResult expectedBadRequestObjectResult =
-                BadRequest(validationException.InnerException);
+                BadRequest(addressValidationException.InnerException);
 
             var expectedActionResult =
                 new ActionResult<Address>(expectedBadRequestObjectResult);
 
             this.addressServiceMock.Setup(service =>
                 service.RetrieveAddressByIdAsync(someId))
-                    .ThrowsAsync(validationException);
+                    .ThrowsAsync(addressValidationException);
 
             // when
             ActionResult<Address> actualActionResult =

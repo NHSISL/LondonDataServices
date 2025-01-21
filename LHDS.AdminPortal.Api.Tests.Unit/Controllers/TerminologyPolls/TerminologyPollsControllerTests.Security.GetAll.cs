@@ -5,10 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Attrify.Attributes;
 using FluentAssertions;
+using LHDS.AdminPortal.Api.Controllers;
 using Microsoft.AspNetCore.Authorization;
+using Xunit;
 
-namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.AccessAudits
+namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
 {
     public partial class TerminologyPollsControllerTests
     {
@@ -17,12 +20,15 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.AccessAudit
         {
             // Given
 
-            var controllerType = typeof(AccessAuditsController);
-            var methodInfo = controllerType.GetMethod("Get");
+            var controllerType = typeof(TerminologyPollsController);
+            var methodInfo = controllerType.GetMethod("GetAllTerminologyPollsAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
-            List<string> expectedAttributeValues = new List<string>();
+            List<string> expectedAttributeValues = new List<string>
+            {
+                "ISL.LDS.AdminSpa.Configurations","ISL.LDS.AdminSpa.Administrators"
+            };
 
             // When
             var methodAttribute = methodInfo?
@@ -49,30 +55,6 @@ namespace ISL.ReIdentification.Portals.Server.Tests.Unit.Controllers.AccessAudit
                 .ToList();
 
             actualAttributeValues.Should().BeEquivalentTo(expectedAttributeValues);
-        }
-
-        [Fact]
-        public void GetAllShouldNotHaveInvisibleApiAttribute()
-        {
-            // Given
-
-            var controllerType = typeof(AccessAuditsController);
-            var methodInfo = controllerType.GetMethod("Get");
-            Type attributeType = typeof(InvisibleApiAttribute);
-
-            // When
-            var methodAttribute = methodInfo?
-                .GetCustomAttributes(attributeType, inherit: true)
-                .FirstOrDefault();
-
-            var controllerAttribute = controllerType
-                .GetCustomAttributes(attributeType, inherit: true)
-                .FirstOrDefault();
-
-            var attribute = methodAttribute ?? controllerAttribute;
-
-            // Then
-            attribute.Should().BeNull();
         }
     }
 }

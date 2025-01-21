@@ -8,7 +8,6 @@ using LHDS.Core.Models.Foundations.Addresses;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
-using RESTFulSense.Models;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
@@ -16,33 +15,33 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
     public partial class AddressesControllerTests
     {
         [Fact]
-        public async Task ShouldReturnOkOnPostAsync()
+        public async Task ShouldReturnOkOnPutAsync()
         {
             // given
             Address randomAddress = CreateRandomAddress();
             Address inputAddress = randomAddress;
-            Address addedAddress = inputAddress.DeepClone();
-            Address expectedAddress = addedAddress.DeepClone();
+            Address storageAddress = inputAddress.DeepClone();
+            Address expectedAddress = storageAddress.DeepClone();
 
             var expectedObjectResult =
-                new CreatedObjectResult(expectedAddress);
+                new OkObjectResult(expectedAddress);
 
             var expectedActionResult =
                 new ActionResult<Address>(expectedObjectResult);
 
             this.addressServiceMock.Setup(service =>
-                service.AddAddressAsync(inputAddress))
-                    .ReturnsAsync(addedAddress);
+                service.ModifyAddressAsync(inputAddress))
+                    .ReturnsAsync(storageAddress);
 
             // when
             ActionResult<Address> actualActionResult =
-                await this.addressesController.PostAddressAsync(inputAddress);
+                await this.addressesController.PutAddressAsync(inputAddress);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.addressServiceMock.Verify(service =>
-                service.AddAddressAsync(inputAddress),
+                service.ModifyAddressAsync(inputAddress),
                    Times.Once);
 
             this.addressServiceMock.VerifyNoOtherCalls();

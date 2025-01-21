@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedSubscriberAgreementDependencyException))),
                         Times.Once);
 
@@ -118,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(expectedSubscriberAgreementDependencyValidationException))),
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedSubscriberAgreementDependencyValidationException))),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -172,7 +172,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSubscriberAgreementDependencyException))),
                         Times.Once);
 
@@ -227,7 +227,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSubscriberAgreementDependencyValidationException))),
                         Times.Once);
 
@@ -282,7 +282,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSubscriberAgreementServiceException))),
                         Times.Once);
 

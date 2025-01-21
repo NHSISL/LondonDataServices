@@ -28,11 +28,11 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             }
             catch (NullResolvedAddressException nullResolvedAddressException)
             {
-                throw CreateAndLogValidationExceptionAsync(nullResolvedAddressException);
+                throw await CreateAndLogValidationExceptionAsync(nullResolvedAddressException);
             }
             catch (InvalidResolvedAddressException invalidResolvedAddressException)
             {
-                throw CreateAndLogValidationExceptionAsync(invalidResolvedAddressException);
+                throw await CreateAndLogValidationExceptionAsync(invalidResolvedAddressException);
             }
             catch (SqlException sqlException)
             {
@@ -41,11 +41,11 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                         message: "Failed resolved address storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyExceptionAsync(failedResolvedAddressStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedResolvedAddressStorageException);
             }
             catch (NotFoundResolvedAddressException notFoundResolvedAddressException)
             {
-                throw CreateAndLogValidationExceptionAsync(notFoundResolvedAddressException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundResolvedAddressException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -54,7 +54,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                         message: "Resolved address with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationExceptionAsync(alreadyExistsResolvedAddressException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsResolvedAddressException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -63,7 +63,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                         message: "Invalid resolved address reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationExceptionAsync(invalidResolvedAddressReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidResolvedAddressReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -72,7 +72,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                         message: "Locked resolved address record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationExceptionAsync(lockedResolvedAddressException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedResolvedAddressException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -81,7 +81,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                         message: "Failed resolved address storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyExceptionAsync(failedResolvedAddressStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedResolvedAddressStorageException);
             }
             catch (Exception exception)
             {
@@ -90,7 +90,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                         message: "Failed resolved address service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceExceptionAsync(failedResolvedAddressServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedResolvedAddressServiceException);
             }
         }
 
@@ -204,7 +204,8 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             }
         }
 
-        private ResolvedAddressValidationException CreateAndLogValidationExceptionAsync(Xeption exception)
+        private async ValueTask<ResolvedAddressValidationException> 
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var resolvedAddressValidationException =
                 new ResolvedAddressValidationException(
@@ -216,7 +217,8 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             return resolvedAddressValidationException;
         }
 
-        private ResolvedAddressDependencyException CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
+        private async ValueTask<ResolvedAddressDependencyException> 
+            CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
         {
             var resolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
@@ -228,7 +230,8 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             return resolvedAddressDependencyException;
         }
 
-        private ResolvedAddressDependencyValidationException CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
+        private async ValueTask<ResolvedAddressDependencyValidationException> 
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var resolvedAddressDependencyValidationException =
                 new ResolvedAddressDependencyValidationException(
@@ -240,7 +243,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             return resolvedAddressDependencyValidationException;
         }
 
-        private ResolvedAddressDependencyException CreateAndLogDependencyExceptionAsync(
+        private async ValueTask<ResolvedAddressDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
             var resolvedAddressDependencyException =
@@ -253,7 +256,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             return resolvedAddressDependencyException;
         }
 
-        private ResolvedAddressServiceException CreateAndLogServiceExceptionAsync(
+        private async ValueTask<ResolvedAddressServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var resolvedAddressServiceException =

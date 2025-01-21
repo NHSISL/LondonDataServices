@@ -28,7 +28,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
 
             List<string> expectedAttributeValues = new List<string>
             {
-                "ISL.Reidentification.Portal.Administrators"
+                "ISL.LDS.AdminSpa.Configurations"
             };
 
             // When

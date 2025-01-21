@@ -151,7 +151,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
             modelBuilder.Entity<ObjectColumn>()
                 .Property(objectColumn => objectColumn.DeleteCondition)
                 .HasMaxLength(255)
-                .IsRequired(true);
+                .IsRequired(false);
 
             modelBuilder.Entity<ObjectColumn>()
                 .Property(objectColumn => objectColumn.IsNumeric)

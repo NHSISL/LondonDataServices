@@ -171,7 +171,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
             catch (AddressDependencyValidationException addressDependencyValidationException)
             {
-                return BadRequest(addressDependencyValidationException);
+                return BadRequest(addressDependencyValidationException.InnerException);
             }
             catch (AddressDependencyException addressDependencyException)
             {

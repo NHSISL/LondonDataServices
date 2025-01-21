@@ -94,6 +94,10 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
             {
                 new AddressValidationException(
                     message: someMessage,
+                    innerException: someInnerException),
+
+                new AddressDependencyValidationException(
+                    message: someMessage,
                     innerException: someInnerException)
             };
         }

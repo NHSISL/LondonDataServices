@@ -5,7 +5,7 @@
 using Attrify.InvisibleApi.Models;
 using Microsoft.AspNetCore.Authentication;
 
-namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance
+namespace LHDS.AdminPortal.Api.Tests.Acceptance
 {
     public class CustomAuthenticationSchemeOptions : AuthenticationSchemeOptions
     {

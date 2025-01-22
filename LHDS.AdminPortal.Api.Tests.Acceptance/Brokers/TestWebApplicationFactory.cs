@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 {
     public class TestWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {

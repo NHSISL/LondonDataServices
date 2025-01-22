@@ -159,6 +159,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
         [HttpDelete("{dataSetId}")]
         public async ValueTask<ActionResult<DataSet>> DeleteDataSetByIdAsync(Guid dataSetId)
         {

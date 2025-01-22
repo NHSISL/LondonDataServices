@@ -21,7 +21,6 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
         public void PostShouldHaveInvisibleApiAttribute()
         {
             // Given
-
             var controllerType = typeof(TerminologyPollsController);
             var methodInfo = controllerType.GetMethod("PostTerminologyPollAsync");
             Type attributeType = typeof(InvisibleApiAttribute);

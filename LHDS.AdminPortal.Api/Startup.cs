@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
+using Attrify.Extensions;
+using Attrify.InvisibleApi.Models;
 using Azure.Core.Extensions;
 using Azure.Core.Pipeline;
 using Azure.Identity;
@@ -85,6 +87,8 @@ namespace LHDS.AdminPortal.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var invisibleApiKey = new InvisibleApiKey();
+            services.AddSingleton(invisibleApiKey);
             services.AddRazorPages();
             services.AddLogging();
 
@@ -158,7 +162,7 @@ namespace LHDS.AdminPortal.Api
             services.AddApplicationInsightsTelemetry();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, InvisibleApiKey invisibleApiKey)
         {
             if (env.IsDevelopment())
             {
@@ -182,6 +186,7 @@ namespace LHDS.AdminPortal.Api
             app.UseAuthentication();
             app.UseForwardedHeaders();
             app.UseAuthorization();
+            app.UseInvisibleApiMiddleware(invisibleApiKey);
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -140,6 +140,7 @@ namespace LHDS.AdminPortal.Api
                 DictionaryKeyPolicy = jsonNamingPolicy,
             });
 
+            builder.Services.AddSingleton(invisibleApiKey);
             builder.Services.AddDbContext<StorageBroker>();
             AddProviders(builder.Services, builder.Configuration);
             AddBrokers(builder.Services, builder.Configuration);

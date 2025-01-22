@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 .BeEquivalentTo(expectedPdsAuditValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsAuditValidationException))),
                         Times.Once);
 
@@ -127,7 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsAuditValidationException))),
                         Times.Once());
 
@@ -181,7 +181,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsAuditValidationException))),
                         Times.Once);
 
@@ -236,7 +236,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsAuditValidatonException))),
                         Times.Once);
 
@@ -295,7 +295,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsAuditValidationException))),
                         Times.Once);
 
@@ -358,7 +358,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedPdsAuditValidationException))),
                        Times.Once);
 
@@ -418,7 +418,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedPdsAuditValidationException))),
                        Times.Once);
 
@@ -469,7 +469,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsAuditValidationException))),
                         Times.Once);
 
@@ -529,7 +529,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsAuditValidationException))),
                         Times.Once);
 

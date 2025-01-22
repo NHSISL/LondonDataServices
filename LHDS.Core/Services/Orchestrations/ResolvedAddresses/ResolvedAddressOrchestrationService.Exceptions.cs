@@ -27,56 +27,59 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             catch (InvalidArgumentResolvedAddressOrchestrationException
                 invalidArgumentResolvedAddressOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentResolvedAddressOrchestrationException);
+                throw await CreateAndLogValidationException(invalidArgumentResolvedAddressOrchestrationException);
             }
             catch (NullUPRNResolvedAddressOrchestrationException nullUPRNResolvedAddressOrchestrationException)
             {
-                throw CreateAndLogValidationException(nullUPRNResolvedAddressOrchestrationException);
+                throw await CreateAndLogValidationException(nullUPRNResolvedAddressOrchestrationException);
             }
             catch (DocumentProcessingValidationException documentProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentProcessingValidationException);
             }
             catch (DocumentProcessingDependencyValidationException documentProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    documentProcessingDependencyValidationException);
             }
             catch (ResolvedAddressProcessingValidationException resolvedAddressProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    resolvedAddressProcessingValidationException);
             }
             catch (ResolvedAddressProcessingDependencyValidationException
                 resolvedAddressProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    resolvedAddressProcessingDependencyValidationException);
             }
             catch (CsvHelperClientValidationException csvHelperClientValidationException)
             {
-                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(csvHelperClientValidationException);
             }
             catch (DocumentProcessingDependencyException documentProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(documentProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentProcessingDependencyException);
             }
             catch (DocumentProcessingServiceException documentProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(documentProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentProcessingServiceException);
             }
             catch (ResolvedAddressProcessingDependencyException resolvedAddressProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressProcessingDependencyException);
             }
             catch (ResolvedAddressProcessingServiceException resolvedAddressProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressProcessingServiceException);
             }
             catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
             {
-                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(csvHelperClientDependencyException);
             }
             catch (CsvHelperClientServiceException csvHelperClientServiceException)
             {
-                throw CreateAndLogDependencyException(csvHelperClientServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(csvHelperClientServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -86,7 +89,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             "please contact support.",
                         innerException: aggregateException);
 
-                throw CreateAndLogServiceException(failedResolvedAddressOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedResolvedAddressOrchestrationServiceException);
             }
             catch (Exception exception)
             {
@@ -96,7 +99,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             "please contact support.",
                         exception);
 
-                throw CreateAndLogServiceException(failedResolvedAddressOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedResolvedAddressOrchestrationServiceException);
             }
         }
 
@@ -109,52 +112,54 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             catch (InvalidArgumentResolvedAddressOrchestrationException
                 invalidArgumentResolvedAddressOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentResolvedAddressOrchestrationException);
+                throw await CreateAndLogValidationException(invalidArgumentResolvedAddressOrchestrationException);
             }
             catch (DocumentProcessingValidationException documentProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentProcessingValidationException);
             }
             catch (DocumentProcessingDependencyValidationException documentProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    documentProcessingDependencyValidationException);
             }
             catch (ResolvedAddressProcessingValidationException resolvedAddressProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(resolvedAddressProcessingValidationException);
             }
             catch (ResolvedAddressProcessingDependencyValidationException
                 resolvedAddressProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    resolvedAddressProcessingDependencyValidationException);
             }
             catch (CsvHelperClientValidationException csvHelperClientValidationException)
             {
-                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(csvHelperClientValidationException);
             }
             catch (DocumentProcessingDependencyException documentProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(documentProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentProcessingDependencyException);
             }
             catch (DocumentProcessingServiceException documentProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(documentProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentProcessingServiceException);
             }
             catch (ResolvedAddressProcessingDependencyException resolvedAddressProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressProcessingDependencyException);
             }
             catch (ResolvedAddressProcessingServiceException resolvedAddressProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressProcessingServiceException);
             }
             catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
             {
-                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(csvHelperClientDependencyException);
             }
             catch (CsvHelperClientServiceException csvHelperClientServiceException)
             {
-                throw CreateAndLogDependencyException(csvHelperClientServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(csvHelperClientServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -164,7 +169,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             "please contact support.",
                         innerException: aggregateException);
 
-                throw CreateAndLogServiceException(failedFailedResolvedAddressOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedFailedResolvedAddressOrchestrationServiceException);
             }
             catch (Exception exception)
             {
@@ -174,56 +179,58 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                             "please contact support.",
                         exception);
 
-                throw CreateAndLogServiceException(failedResolvedAddressOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedResolvedAddressOrchestrationServiceException);
             }
         }
 
-        private ResolvedAddressOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<ResolvedAddressOrchestrationValidationException> 
+            CreateAndLogValidationException(Xeption exception)
         {
             var resolvedAddressOrchestrationValidationException =
                 new ResolvedAddressOrchestrationValidationException(
                     message: "Resolved address validation errors occured, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(resolvedAddressOrchestrationValidationException);
+            await this.loggingBroker.LogErrorAsync(resolvedAddressOrchestrationValidationException);
 
             return resolvedAddressOrchestrationValidationException;
         }
 
-        private ResolvedAddressOrchestrationDependencyValidationException
-            CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<ResolvedAddressOrchestrationDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var resolvedAddressOrchestrationDependencyValidationException =
                 new ResolvedAddressOrchestrationDependencyValidationException(
                     message: "Resolved address orchestration dependency validation errors occurred, please try again.",
                     exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(resolvedAddressOrchestrationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(resolvedAddressOrchestrationDependencyValidationException);
 
             return resolvedAddressOrchestrationDependencyValidationException;
         }
 
-        private ResolvedAddressOrchestrationDependencyException
-           CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<ResolvedAddressOrchestrationDependencyException>
+           CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var resolvedAddressOrchestrationDependencyException =
                 new ResolvedAddressOrchestrationDependencyException(
                     message: "Resolved address orchestration dependency errors occurred, please contact support.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(resolvedAddressOrchestrationDependencyException);
+            await this.loggingBroker.LogErrorAsync(resolvedAddressOrchestrationDependencyException);
 
             return resolvedAddressOrchestrationDependencyException;
         }
 
-        private ResolvedAddressOrchestrationServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<ResolvedAddressOrchestrationServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var resolvedAddressOrchestrationServiceException =
                 new ResolvedAddressOrchestrationServiceException(
                     message: "Resolved address orchestration service error occurred, please contact support.",
                     exception);
 
-            this.loggingBroker.LogError(resolvedAddressOrchestrationServiceException);
+            await this.loggingBroker.LogErrorAsync(resolvedAddressOrchestrationServiceException);
 
             return resolvedAddressOrchestrationServiceException;
         }

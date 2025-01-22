@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedOptOutDependencyException))),
                         Times.Once);
 
@@ -107,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutDependencyValidationException))),
                         Times.Once);
 
@@ -156,7 +156,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedOptOutDependencyException))),
                         Times.Once);
 
@@ -201,7 +201,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                         Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutServiceException))),
                         Times.Once);
 

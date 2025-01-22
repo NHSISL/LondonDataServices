@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Net.Http;
+using ISL.ReIdentification.Configurations.Server.Tests.Acceptance.Brokers;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Foundations.Documents;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +14,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {
-        private readonly AcceptanceTestApplicationFactory<Startup> acceptanceTestApplicationFactory;
+        private readonly TestWebApplicationFactory<Startup> acceptanceTestApplicationFactory;
         private readonly HttpClient httpClient;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
         internal readonly IDocumentService documentService;
@@ -22,7 +23,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
         public ApiBroker()
         {
-            this.acceptanceTestApplicationFactory = new AcceptanceTestApplicationFactory<Startup>();
+            this.acceptanceTestApplicationFactory = new TestWebApplicationFactory<Startup>();
             this.httpClient = this.acceptanceTestApplicationFactory.CreateClient();
             this.apiFactoryClient = new RESTFulApiFactoryClient(this.httpClient);
             this.configuration = this.acceptanceTestApplicationFactory.Services.GetService<IConfiguration>();

@@ -21,7 +21,6 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
         public void GetShouldHaveRoleAttributeWithRoles()
         {
             // Given
-
             var controllerType = typeof(TerminologyPollsController);
             var methodInfo = controllerType.GetMethod("GetTerminologyPollByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
@@ -29,7 +28,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
 
             List<string> expectedAttributeValues = new List<string>
             {
-                "ISL.LDS.AdminSpa.Configurations"
+                "ISL.LDS.AdminSpa.Configurations","ISL.LDS.AdminSpa.Administrators"
             };
 
             // When

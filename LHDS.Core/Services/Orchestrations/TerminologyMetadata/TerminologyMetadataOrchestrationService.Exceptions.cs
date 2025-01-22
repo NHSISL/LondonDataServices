@@ -25,129 +25,137 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
             catch (InvalidArgumentTerminologyMetaDataOrchestrationException
                 invalidArgumentTerminologyMetaDataOrchestrationException)
             {
-                throw await CreateAndLogValidationException(invalidArgumentTerminologyMetaDataOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(
+                    invalidArgumentTerminologyMetaDataOrchestrationException);
             }
             catch (TerminologyPollProcessingValidationException terminologyPollProcessingValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(terminologyPollProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    terminologyPollProcessingValidationException);
             }
             catch (TerminologyPollProcessingDependencyValidationException
                 terminologyPollProcessingDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(terminologyPollProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    terminologyPollProcessingDependencyValidationException);
             }
             catch (TerminologyArtifactProcessingValidationException terminologyArtifactProcessingValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(terminologyArtifactProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    terminologyArtifactProcessingValidationException);
             }
             catch (TerminologyArtifactProcessingDependencyValidationException
                 terminologyArtifactProcessingDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     terminologyArtifactProcessingDependencyValidationException);
             }
             catch (OntologyProcessingValidationException ontologyProcessingValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(ontologyProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ontologyProcessingValidationException);
             }
             catch (OntologyProcessingDependencyValidationException ontologyProcessingDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(ontologyProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    ontologyProcessingDependencyValidationException);
             }
             catch (TerminologyPollProcessingDependencyException terminologyPollProcessingDependencyException)
             {
-                throw await CreateAndLogDependencyException(terminologyPollProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(terminologyPollProcessingDependencyException);
             }
             catch (TerminologyPollProcessingServiceException terminologyPollProcessingServiceException)
             {
-                throw await CreateAndLogDependencyException(terminologyPollProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(terminologyPollProcessingServiceException);
             }
             catch (TerminologyArtifactProcessingDependencyException terminologyArtifactProcessingDependencyException)
             {
-                throw await CreateAndLogDependencyException(terminologyArtifactProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(terminologyArtifactProcessingDependencyException);
             }
             catch (TerminologyArtifactProcessingServiceException terminologyArtifactProcessingServiceException)
             {
-                throw await CreateAndLogDependencyException(terminologyArtifactProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(terminologyArtifactProcessingServiceException);
             }
             catch (OntologyProcessingDependencyException ontologyProcessingDependencyException)
             {
-                throw await CreateAndLogDependencyException(ontologyProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ontologyProcessingDependencyException);
             }
             catch (OntologyProcessingServiceException ontologyProcessingServiceException)
             {
-                throw await CreateAndLogDependencyException(ontologyProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ontologyProcessingServiceException);
             }
             catch (AggregateException aggregateException)
             {
                 var failedAddressCoordinationServiceException =
                     new FailedTerminologyMetadataOrchestrationServiceException(
-                        message: "Failed terminology metadata orchestration aggregate service error occurred, please contact support.",
+                        message: "Failed terminology metadata orchestration aggregate service error occurred, " +
+                            "please contact support.",
                         innerException: aggregateException);
 
-                throw await CreateAndLogServiceException(failedAddressCoordinationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAddressCoordinationServiceException);
             }
             catch (Exception exception)
             {
                 var FailedTerminologyMetadataOrchestrationServiceException =
                     new FailedTerminologyMetadataOrchestrationServiceException(
-                        message: "Failed terminology metadata orchestration service error occurred, please contact support.",
+                        message: "Failed terminology metadata orchestration service error occurred, " +
+                            "please contact support.",
                         exception);
 
-                throw await CreateAndLogServiceException(FailedTerminologyMetadataOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(FailedTerminologyMetadataOrchestrationServiceException);
             }
         }
 
-        private TerminologyMetadataOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<TerminologyMetadataOrchestrationValidationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var terminologyMetadataOrchestrationValidationException =
                 new TerminologyMetadataOrchestrationValidationException(
                     message: "Terminology metadata orchestration validation errors occurred, please try again.",
                     innerException: exception);
 
-            await this.loggingBroker.LogError(terminologyMetadataOrchestrationValidationException);
+            await this.loggingBroker.LogErrorAsync(terminologyMetadataOrchestrationValidationException);
 
             return terminologyMetadataOrchestrationValidationException;
         }
 
-        private TerminologyMetadataOrchestrationDependencyValidationException
-            CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<TerminologyMetadataOrchestrationDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var terminologyMetadataOrchestrationDependencyValidationException =
                 new TerminologyMetadataOrchestrationDependencyValidationException(
                     message:
                         "Terminology metadata orchestration dependency validation error occurred, " +
-                        "fix the errors and try again.",
+                            "fix the errors and try again.",
                     exception.InnerException as Xeption);
 
-            await this.loggingBroker.LogError(terminologyMetadataOrchestrationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(terminologyMetadataOrchestrationDependencyValidationException);
 
             return terminologyMetadataOrchestrationDependencyValidationException;
         }
 
-        private TerminologyMetadataOrchestrationDependencyException
-            CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<TerminologyMetadataOrchestrationDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var terminologyMetadataOrchestrationDependencyException =
                 new TerminologyMetadataOrchestrationDependencyException(
                     message: "Terminology metadata orchestration dependency error occurred, " +
-                    "fix the errors and try again.",
+                        "fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            await this.loggingBroker.LogError(terminologyMetadataOrchestrationDependencyException);
+            await this.loggingBroker.LogErrorAsync(terminologyMetadataOrchestrationDependencyException);
 
             throw terminologyMetadataOrchestrationDependencyException;
         }
 
-        private TerminologyMetadataOrchestrationServiceException
-            CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<TerminologyMetadataOrchestrationServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var terminologyMetadataOrchestrationServiceException =
                 new TerminologyMetadataOrchestrationServiceException(
                     message: "Terminology metadata orchestration service error occurred, please contact support.",
                     exception);
 
-            await this.loggingBroker.LogError(terminologyMetadataOrchestrationServiceException);
+            await this.loggingBroker.LogErrorAsync(terminologyMetadataOrchestrationServiceException);
 
             throw terminologyMetadataOrchestrationServiceException;
         }

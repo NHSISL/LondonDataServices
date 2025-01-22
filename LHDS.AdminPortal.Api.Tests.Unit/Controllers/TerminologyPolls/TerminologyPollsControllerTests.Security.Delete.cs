@@ -21,7 +21,6 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
         public void DeleteShouldHaveInvisibleApiAttribute()
         {
             // Given
-
             var controllerType = typeof(TerminologyPollsController);
             var methodInfo = controllerType.GetMethod("DeleteTerminologyPollByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);

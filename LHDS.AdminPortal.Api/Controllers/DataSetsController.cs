@@ -92,6 +92,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{dataSetId}")]
         public async ValueTask<ActionResult<DataSet>> GetDataSetByIdAsync(Guid dataSetId)
         {

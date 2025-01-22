@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDependencyException))),
                        Times.Once);
 
@@ -98,7 +98,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
                         Times.Once);
 
@@ -151,7 +151,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsOrchestrationServiceException))),
                         Times.Once);
 

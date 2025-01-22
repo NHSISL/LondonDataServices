@@ -92,12 +92,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     pdsOrchestrationDependencyValidationLoggingException))),
                         Times.Exactly(randomMessageIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualPdsOrchestrationServiceException))),
                         Times.Once);
 
@@ -185,12 +185,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: dependencyException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     pdsOrchestrationDependencyLoggingException))),
                         Times.Exactly(randomMessageIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualPdsOrchestrationServiceException))),
                         Times.Once);
 
@@ -274,12 +274,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             }
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     innerPdsOrchestrationServiceException))),
                         Times.Exactly(randomMessageIds.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsOrchestrationServiceException))),
                         Times.Once);
 
@@ -322,7 +322,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
                         Times.Once);
 
@@ -365,7 +365,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
                         Times.Once);
 
@@ -413,7 +413,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPdsOrchestrationServiceException))),
                         Times.Once);
 

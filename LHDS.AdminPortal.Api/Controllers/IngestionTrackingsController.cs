@@ -123,9 +123,6 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("byfilename/{filename}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
-#endif
         public async ValueTask<ActionResult<IngestionTracking>> GetIngestionTrackingByFileNameAsync(string fileName)
         {
             try

@@ -125,6 +125,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
         [HttpPut]
         public async ValueTask<ActionResult<TerminologyArtifact>> PutTerminologyArtifactAsync(
             TerminologyArtifact terminologyArtifact)

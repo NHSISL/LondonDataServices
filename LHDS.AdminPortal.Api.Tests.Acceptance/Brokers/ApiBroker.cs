@@ -14,7 +14,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {
-        private readonly AcceptanceTestApplicationFactory<Startup> acceptanceTestApplicationFactory;
+        private readonly AcceptanceTestApplicationFactory<Program> acceptanceTestApplicationFactory;
         private readonly HttpClient httpClient;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
         internal readonly IDocumentService documentService;
@@ -24,7 +24,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
         public ApiBroker()
         {
-            this.acceptanceTestApplicationFactory = new AcceptanceTestApplicationFactory<Startup>();
+            this.acceptanceTestApplicationFactory = new AcceptanceTestApplicationFactory<Program>();
             this.invisibleApiKey = this.acceptanceTestApplicationFactory.Services.GetService<InvisibleApiKey>();
             this.httpClient = this.acceptanceTestApplicationFactory.CreateClient();
             this.httpClient.DefaultRequestHeaders.Add(this.invisibleApiKey.Key, this.invisibleApiKey.Value);

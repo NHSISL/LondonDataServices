@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using LHDS.Core.Services.Foundations.DataTypes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class DataTypesController : RESTFulController
@@ -26,6 +28,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public DataTypesController(IDataTypeService dataTypeService) =>
             this.dataTypeService = dataTypeService;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
         [HttpPost]
         public async ValueTask<ActionResult<DataType>> PostDataTypeAsync(DataType dataType)
         {

@@ -19,7 +19,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ObjectColumns
         public void GetByIdShouldHaveRoleAttributeWithRoles()
         {
             // given 
-            var controllerType = typeof(ObjectColumnsController);
+            var controllerType = typeof(ObjectColumnsControllerTests);
             var methodInfo = controllerType.GetMethod("GetObjectColumnByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";

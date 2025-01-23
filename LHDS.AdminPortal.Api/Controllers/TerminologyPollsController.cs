@@ -17,7 +17,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
+    [Authorize]
     public class TerminologyPollsController : RESTFulController
     {
         private readonly ITerminologyPollService terminologyPollService;
@@ -60,6 +60,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet]
         public async ValueTask<ActionResult<IQueryable<TerminologyPoll>>> GetAllTerminologyPollsAsync()
         {
@@ -80,6 +81,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpGet("{terminologyPollId}")]
         public async ValueTask<ActionResult<TerminologyPoll>> GetTerminologyPollByIdAsync(Guid terminologyPollId)
         {

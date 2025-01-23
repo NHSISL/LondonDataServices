@@ -18,7 +18,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
         public void PostShouldHaveRoleAttributeWithRoles()
         {
             // given
-            var controllerType = typeof(DataTypesController);
+            var controllerType = typeof(IngestionTrackingsController);
             var methodInfo = controllerType.GetMethod("PostIngestionTrackingAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
@@ -26,7 +26,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
             List<string> expectedAttributeValues = new List<string>
             {
                 "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.IngestionTrackings"
+                "ISL.LDS.AdminSpa.IngestionTracking"
             };
 
             // when

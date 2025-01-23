@@ -162,6 +162,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators")]
         [HttpDelete("{objectColumnId}")]
         public async ValueTask<ActionResult<ObjectColumn>> DeleteObjectColumnByIdAsync(Guid objectColumnId)
         {

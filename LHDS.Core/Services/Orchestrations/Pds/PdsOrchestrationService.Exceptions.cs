@@ -27,63 +27,63 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             }
             catch (NullConfigPdsOrchestrationException nullConfigPdsOrchestrationException)
             {
-                throw await CreateAndLogValidationException(nullConfigPdsOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullConfigPdsOrchestrationException);
             }
             catch (NullBlobContainersPdsOrchestrationException nullBlobContainersPdsOrchestrationException)
             {
-                throw await CreateAndLogValidationException(nullBlobContainersPdsOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullBlobContainersPdsOrchestrationException);
             }
             catch (InvalidArgumentPdsException invalidArgumentPdsException)
             {
-                throw await CreateAndLogValidationException(invalidArgumentPdsException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentPdsException);
             }
             catch (PdsOrchestrationValidationException pdsOrchestrationValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(pdsOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(pdsOrchestrationValidationException);
             }
             catch (PdsOrchestrationDependencyValidationException pdsOrchestrationDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(pdsOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(pdsOrchestrationDependencyValidationException);
             }
             catch (DocumentValidationException meshValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(meshValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshValidationException);
             }
             catch (DocumentDependencyValidationException meshDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(meshDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshDependencyValidationException);
             }
             catch (MeshValidationException meshValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(meshValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshValidationException);
             }
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(meshDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshDependencyValidationException);
             }
             catch (PdsOrchestrationDependencyException pdsOrchestrationDependencyException)
             {
-                throw await CreateAndLogDependencyException(pdsOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(pdsOrchestrationDependencyException);
             }
             catch (PdsOrchestrationServiceException pdsOrchestrationServiceException)
             {
-                throw await CreateAndLogDependencyException(pdsOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(pdsOrchestrationServiceException);
             }
             catch (DocumentDependencyException documentDependencyException)
             {
-                throw await CreateAndLogDependencyException(documentDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentDependencyException);
             }
             catch (DocumentServiceException documentServiceException)
             {
-                throw await CreateAndLogDependencyException(documentServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
             }
             catch (MeshDependencyException meshDependencyException)
             {
-                throw await CreateAndLogDependencyException(meshDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(meshDependencyException);
             }
             catch (MeshServiceException meshServiceException)
             {
-                throw await CreateAndLogDependencyException(meshServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(meshServiceException);
             }
             catch (Exception exception)
             {
@@ -92,7 +92,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                         message: "Failed PDS orchestration service error occurred, please contact support.",
                         innerException: exception);
 
-                throw await CreateAndLogServiceException(failedPdsServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedPdsServiceException);
             }
         }
 
@@ -104,63 +104,63 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             }
             catch (NullConfigPdsOrchestrationException nullConfigPdsOrchestrationException)
             {
-                throw await CreateAndLogValidationException(nullConfigPdsOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullConfigPdsOrchestrationException);
             }
             catch (NullBlobContainersPdsOrchestrationException nullBlobContainersPdsOrchestrationException)
             {
-                throw await CreateAndLogValidationException(nullBlobContainersPdsOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullBlobContainersPdsOrchestrationException);
             }
             catch (InvalidArgumentPdsException invalidArgumentPdsException)
             {
-                throw await CreateAndLogValidationException(invalidArgumentPdsException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentPdsException);
             }
             catch (PdsOrchestrationValidationException pdsOrchestrationValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(pdsOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(pdsOrchestrationValidationException);
             }
             catch (PdsOrchestrationDependencyValidationException pdsOrchestrationDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(pdsOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(pdsOrchestrationDependencyValidationException);
             }
             catch (DocumentValidationException meshValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(meshValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshValidationException);
             }
             catch (DocumentDependencyValidationException meshDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(meshDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshDependencyValidationException);
             }
             catch (MeshValidationException meshValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(meshValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshValidationException);
             }
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(meshDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshDependencyValidationException);
             }
             catch (PdsOrchestrationDependencyException pdsOrchestrationDependencyException)
             {
-                throw await CreateAndLogDependencyException(pdsOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(pdsOrchestrationDependencyException);
             }
             catch (PdsOrchestrationServiceException pdsOrchestrationServiceException)
             {
-                throw await CreateAndLogDependencyException(pdsOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(pdsOrchestrationServiceException);
             }
             catch (DocumentDependencyException documentDependencyException)
             {
-                throw await CreateAndLogDependencyException(documentDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentDependencyException);
             }
             catch (DocumentServiceException documentServiceException)
             {
-                throw await CreateAndLogDependencyException(documentServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
             }
             catch (MeshDependencyException meshDependencyException)
             {
-                throw await CreateAndLogDependencyException(meshDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(meshDependencyException);
             }
             catch (MeshServiceException meshServiceException)
             {
-                throw await CreateAndLogDependencyException(meshServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(meshServiceException);
             }
             catch (Exception exception)
             {
@@ -169,7 +169,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                         message: "Failed PDS orchestration service error occurred, please contact support.",
                         innerException: exception);
 
-                throw await CreateAndLogServiceException(failedPdsServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedPdsServiceException);
             }
         }
 
@@ -181,55 +181,55 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             }
             catch (PdsOrchestrationValidationException pdsOrchestrationValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(pdsOrchestrationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(pdsOrchestrationValidationException);
             }
             catch (PdsOrchestrationDependencyValidationException pdsOrchestrationDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(pdsOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(pdsOrchestrationDependencyValidationException);
             }
             catch (NullBlobContainersPdsOrchestrationException nullBlobContainersPdsOrchestrationException)
             {
-                throw await CreateAndLogValidationException(nullBlobContainersPdsOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullBlobContainersPdsOrchestrationException);
             }
             catch (DocumentValidationException meshValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(meshValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshValidationException);
             }
             catch (DocumentDependencyValidationException meshDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(meshDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshDependencyValidationException);
             }
             catch (MeshValidationException meshValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(meshValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshValidationException);
             }
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(meshDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshDependencyValidationException);
             }
             catch (PdsOrchestrationDependencyException pdsOrchestrationDependencyException)
             {
-                throw await CreateAndLogDependencyException(pdsOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(pdsOrchestrationDependencyException);
             }
             catch (PdsOrchestrationServiceException pdsOrchestrationServiceException)
             {
-                throw await CreateAndLogDependencyException(pdsOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(pdsOrchestrationServiceException);
             }
             catch (DocumentDependencyException documentDependencyException)
             {
-                throw await CreateAndLogDependencyException(documentDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentDependencyException);
             }
             catch (DocumentServiceException documentServiceException)
             {
-                throw await CreateAndLogDependencyException(documentServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
             }
             catch (MeshDependencyException meshDependencyException)
             {
-                throw await CreateAndLogDependencyException(meshDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(meshDependencyException);
             }
             catch (MeshServiceException meshServiceException)
             {
-                throw await CreateAndLogDependencyException(meshServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(meshServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -239,7 +239,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                             "please contact support.",
                         innerException: aggregateException);
 
-                throw await CreateAndLogServiceException(failedPdsOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedPdsOrchestrationServiceException);
             }
             catch (Exception exception)
             {
@@ -248,11 +248,12 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                         message: "Failed PDS orchestration service error occurred, please contact support.",
                         innerException: exception);
 
-                throw await CreateAndLogServiceException(failedPdsServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedPdsServiceException);
             }
         }
 
-        private async ValueTask<PdsOrchestrationValidationException> CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<PdsOrchestrationValidationException> 
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var pdsValidationException =
                 new PdsOrchestrationValidationException(
@@ -265,7 +266,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         }
 
         private async ValueTask<PdsOrchestrationDependencyValidationException>
-           CreateAndLogDependencyValidationException(Xeption exception)
+           CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var pdsOrchestrationDependencyValidationException =
                 new PdsOrchestrationDependencyValidationException(
@@ -278,7 +279,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         }
 
         private async ValueTask<PdsOrchestrationDependencyException>
-           CreateAndLogDependencyException(Xeption exception)
+           CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var pdsOrchestrationDependencyException =
                 new PdsOrchestrationDependencyException(
@@ -291,7 +292,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         }
 
         private async ValueTask<PdsOrchestrationServiceException>
-            CreateAndLogServiceException(Xeption exception)
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var pdsOrchestrationServiceException =
                 new PdsOrchestrationServiceException(

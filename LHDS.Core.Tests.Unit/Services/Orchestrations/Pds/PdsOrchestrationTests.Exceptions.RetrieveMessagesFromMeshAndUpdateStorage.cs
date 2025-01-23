@@ -63,12 +63,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: failedPdsOrchestrationServiceException);
 
             // When
-            ValueTask<List<PdsAudit>> actualPdsAudits =
+            ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
-                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(async () =>
-                    await actualPdsAudits);
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(
+                    retreiveMessagesFromMeshAndUpdateStorageTask.AsTask);
 
             // Then
             actualPdsOrchestrationServiceException.Should()
@@ -156,12 +156,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: failedPdsOrchestrationServiceException);
 
             // When
-            ValueTask<List<PdsAudit>> actualPdsAudits =
+            ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
-                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(async () =>
-                    await actualPdsAudits);
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(
+                    retreiveMessagesFromMeshAndUpdateStorageTask.AsTask);
 
             // Then
             actualPdsOrchestrationServiceException.Should()
@@ -251,12 +251,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException: failedPdsOrchestrationServiceException);
 
             // When
-            ValueTask<List<PdsAudit>> actualPdsAudits =
+            ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
                  this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             PdsOrchestrationServiceException actualPdsOrchestrationServiceException =
-                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(async () =>
-                    await actualPdsAudits);
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(
+                    retreiveMessagesFromMeshAndUpdateStorageTask.AsTask);
 
             // Then
             actualPdsOrchestrationServiceException.Should()
@@ -306,12 +306,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .Throws(dependancyValidationException);
 
             //when
-            ValueTask<List<PdsAudit>> actualPdsAudits =
+            ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             PdsOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationDependencyValidationException>(
-                    actualPdsAudits.AsTask);
+                    retreiveMessagesFromMeshAndUpdateStorageTask.AsTask);
 
             // then
             actualException.Should()
@@ -350,11 +350,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     .Throws(dependancyException);
 
             // when
-            ValueTask<List<PdsAudit>> retrievePdsAudits =
+            ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             PdsOrchestrationDependencyException actualException =
-                await Assert.ThrowsAsync<PdsOrchestrationDependencyException>(retrievePdsAudits.AsTask);
+                await Assert.ThrowsAsync<PdsOrchestrationDependencyException>(
+                    retreiveMessagesFromMeshAndUpdateStorageTask.AsTask);
 
             // then
             actualException.Should()
@@ -398,11 +399,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     .Throws(serviceException);
 
             // when
-            ValueTask<List<PdsAudit>> retrievePdsAudits =
+            ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             PdsOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(retrievePdsAudits.AsTask);
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(
+                    retreiveMessagesFromMeshAndUpdateStorageTask.AsTask);
 
             // then
             actualException.Should()

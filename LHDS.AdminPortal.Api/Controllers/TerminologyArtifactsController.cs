@@ -94,6 +94,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
         [HttpGet("{terminologyArtifactId}")]
         public async ValueTask<ActionResult<TerminologyArtifact>> GetTerminologyArtifactByIdAsync(
             Guid terminologyArtifactId)

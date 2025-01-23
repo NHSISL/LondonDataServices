@@ -26,8 +26,8 @@ namespace LHDS.AdminPortal.Api.Controllers
         public IngestionTrackingsController(IIngestionTrackingService ingestionTrackingService) =>
             this.ingestionTrackingService = ingestionTrackingService;
 
-        [HttpPost]
         [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking")]
+        [HttpPost]
         public async ValueTask<ActionResult<IngestionTracking>> PostIngestionTrackingAsync(
             IngestionTracking ingestionTracking)
         {
@@ -91,10 +91,9 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles =
+            "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{ingestionTrackingId}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
-#endif
         public async ValueTask<ActionResult<IngestionTracking>> GetIngestionTrackingByIdAsync(Guid ingestionTrackingId)
         {
             try

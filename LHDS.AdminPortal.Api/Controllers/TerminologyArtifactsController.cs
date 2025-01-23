@@ -169,6 +169,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
         [HttpDelete("{terminologyArtifactId}")]
         public async ValueTask<ActionResult<TerminologyArtifact>> DeleteTerminologyArtifactByIdAsync(
             Guid terminologyArtifactId)

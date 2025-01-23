@@ -21,7 +21,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.OptOuts
         {
             // given 
             var controllerType = typeof(OptOutsController);
-            var methodInfo = controllerType.GetMethod("PostAddressAsync");
+            var methodInfo = controllerType.GetMethod("PostOptOutAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 

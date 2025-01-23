@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [ApiController]
+    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
     [Route("api/[controller]")]
     public class TerminologyArtifactsController : RESTFulController
     {
@@ -72,9 +72,6 @@ namespace LHDS.AdminPortal.Api.Controllers
 #endif
 #if DEBUG
         [EnableQuery(PageSize = 50)]
-#endif
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.TerminologyArtifact, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public async ValueTask<ActionResult<IQueryable<TerminologyArtifact>>> Get()
         {

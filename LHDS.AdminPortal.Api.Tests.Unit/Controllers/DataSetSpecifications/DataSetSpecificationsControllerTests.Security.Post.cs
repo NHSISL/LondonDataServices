@@ -18,8 +18,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
         public void PostShouldHaveRoleAttributeWithRoles()
         {
             // given
-            var controllerType = typeof(DataSetsController);
-            var methodInfo = controllerType.GetMethod("PostDataSetAsync");
+            var controllerType = typeof(DataSetSpecificationsController);
+            var methodInfo = controllerType.GetMethod("PostDataSetSpecificationAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 

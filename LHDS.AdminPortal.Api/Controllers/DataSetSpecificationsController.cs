@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class DataSetSpecificationsController : RESTFulController
@@ -26,8 +28,10 @@ namespace LHDS.AdminPortal.Api.Controllers
         public DataSetSpecificationsController(IDataSetSpecificationService dataSetSpecificationService) =>
             this.dataSetSpecificationService = dataSetSpecificationService;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
         [HttpPost]
-        public async ValueTask<ActionResult<DataSetSpecification>> PostDataSetSpecificationAsync(DataSetSpecification dataSetSpecification)
+        public async ValueTask<ActionResult<DataSetSpecification>>
+            PostDataSetSpecificationAsync(DataSetSpecification dataSetSpecification)
         {
             try
             {

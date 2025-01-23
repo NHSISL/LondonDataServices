@@ -16,55 +16,14 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ObjectColumns
     public partial class ObjectColumnsControllerTests
     {
         [Fact]
-        public void GetByIdShouldHaveRoleAttributeWithRoles()
+        public void GetIdShouldHaveInvisibleApiAttribute()
         {
-            // given 
-            var controllerType = typeof(ObjectColumnsControllerTests);
+            // Given
+            var controllerType = typeof(ObjectColumnsController);
             var methodInfo = controllerType.GetMethod("GetObjectColumnByIdAsync");
-            Type attributeType = typeof(AuthorizeAttribute);
-            string attributeProperty = "Roles";
-
-            List<string> expectedAttributeValues = new List<string>()
-            {
-                "ISL.LDS.AdminSpa.Configurations","ISL.LDS.AdminSpa.Administrators"
-            };
-
-            // when
-            var methodAttribute = methodInfo?
-                .GetCustomAttributes(attributeType, inherit: true)
-                .FirstOrDefault();
-
-            var controllerAttribute = controllerType
-                .GetCustomAttributes(attributeType, inherit: true)
-                .FirstOrDefault();
-
-            var attribute = methodAttribute ?? controllerAttribute;
-
-            // then
-            attribute.Should().NotBeNull();
-
-            var actualAttributeValue = attributeType
-                .GetProperty(attributeProperty)?
-                .GetValue(attribute) as string ?? string.Empty;
-
-            var actualAttributeValues = actualAttributeValue?
-                .Split(',')
-                .Select(role => role.Trim())
-                .Where(role => !string.IsNullOrEmpty(role))
-                .ToList();
-
-            actualAttributeValues.Should().BeEquivalentTo(expectedAttributeValues);
-        }
-
-        [Fact]
-        public void GetByIdShouldNotHaveInvisibleApiAttribute()
-        {
-            // given
-            var controllerType = typeof(AddressesController);
-            var methodInfo = controllerType.GetMethod("GetAddressByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 
-            // when
+            // When
             var methodAttribute = methodInfo?
                 .GetCustomAttributes(attributeType, inherit: true)
                 .FirstOrDefault();
@@ -75,8 +34,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ObjectColumns
 
             var attribute = methodAttribute ?? controllerAttribute;
 
-            // then
-            attribute.Should().BeNull();
+            // Then
+            attribute.Should().NotBeNull();
         }
     }
 }

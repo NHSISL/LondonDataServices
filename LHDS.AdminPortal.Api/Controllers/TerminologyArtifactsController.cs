@@ -27,6 +27,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public TerminologyArtifactsController(ITerminologyArtifactService terminologyArtifactService) =>
             this.terminologyArtifactService = terminologyArtifactService;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
         [HttpPost]
         public async ValueTask<ActionResult<TerminologyArtifact>> PostTerminologyArtifactAsync(
             TerminologyArtifact terminologyArtifact)

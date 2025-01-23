@@ -74,12 +74,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 Times.Exactly(resourceTypes.Length));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     terminologyMetadataOrchestrationDependencyValidationException))),
                         Times.Exactly(resourceTypes.Length));
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedTerminologyMetadataOrchestrationServiceException))),
                        Times.Once);
 
@@ -148,12 +148,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     Times.Exactly(resourceTypes.Length));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     terminologyMetadataOrchestrationDependencyException))),
                         Times.Exactly(resourceTypes.Length));
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedTerminologyMetadataOrchestrationServiceException))),
                        Times.Once);
 
@@ -224,12 +224,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     Times.Exactly(resourceTypes.Length));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     innerTerminologyMetadataOrchestrationServiceException))),
                         Times.Exactly(resourceTypes.Length));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyMetadataOrchestrationServiceException))),
                         Times.Once);
 

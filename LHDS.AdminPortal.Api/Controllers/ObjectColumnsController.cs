@@ -28,6 +28,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public ObjectColumnsController(IObjectColumnService objectColumnService) =>
             this.objectColumnService = objectColumnService;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
         [HttpPost]
         public async ValueTask<ActionResult<ObjectColumn>> PostObjectColumnAsync(ObjectColumn objectColumn)
         {

@@ -122,6 +122,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles =
+            "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("byfilename/{filename}")]
         public async ValueTask<ActionResult<IngestionTracking>> GetIngestionTrackingByFileNameAsync(string fileName)
         {

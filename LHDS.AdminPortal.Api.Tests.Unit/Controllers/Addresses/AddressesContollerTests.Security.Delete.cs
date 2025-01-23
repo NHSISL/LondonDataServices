@@ -16,19 +16,18 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
     public partial class AddressesControllerTests
     {
         [Fact]
-        public void GetAllShouldHaveRoleAttributeWithRoles()
+        public void DeleteShouldHaveRoleAttributeWithRoles()
         {
             // given 
             var controllerType = typeof(AddressesController);
-            var methodInfo = controllerType.GetMethod("GetAllAddressesAsync");
+            var methodInfo = controllerType.GetMethod("DeleteAddressByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
             List<string> expectedAttributeValues = new List<string>()
             {
                 "ISL.LDS.AdminSpa.Addresses",
-                "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.ReadOnly"
+                "ISL.LDS.AdminSpa.Administrators"
             };
 
             // when
@@ -59,11 +58,11 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Addresses
         }
 
         [Fact]
-        public void GetAllShouldNotHaveInvisibleApiAttribute()
+        public void DeleteShouldNotHaveInvisibleApiAttribute()
         {
             // given
             var controllerType = typeof(AddressesController);
-            var methodInfo = controllerType.GetMethod("GetAllAddressesAsync");
+            var methodInfo = controllerType.GetMethod("DeleteAddressByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 
             // when

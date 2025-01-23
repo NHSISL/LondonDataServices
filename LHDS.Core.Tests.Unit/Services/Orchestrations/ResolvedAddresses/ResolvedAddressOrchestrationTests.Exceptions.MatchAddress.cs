@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         [MemberData(nameof(DependencyValidationExceptions))]
         public async Task
             ShouldThrowDependencyValidationExceptionOnMatchIfDependencyValidationErrorOccursAndLogItAsync(
-            Xeption dependencyValidationException)
+                Xeption dependencyValidationException)
         {
             // given
             var expectedResolvedAddressOrchestrationDependencyValidationException =
@@ -30,8 +30,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     message: "Resolved address orchestration dependency validation errors occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.resolvedAddressProcessingServiceMock.Setup(service =>
-                service.RetrieveAllResolvedAddressesAsync())
+            this.resolvedAddressProcessingServiceMock
+                .Setup(service => service.RetrieveAllResolvedAddressesAsync())
                     .ThrowsAsync(dependencyValidationException);
 
             // when
@@ -67,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
         public async Task ShouldThrowDependencyExceptionOnMatchIfDependencyErrorOccursAndLogItAsync(
-          Xeption dependencyException)
+            Xeption dependencyException)
         {
             // given
             var expectedResolvedAddressOrchestrationDependencyException =
@@ -159,8 +159,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
         public async Task
-           ShouldThrowAggregateDependencyValidationExceptionOnMatchErrorsInLoopAndLogItAsync(
-           Xeption dependencyValidationException)
+            ShouldThrowAggregateDependencyValidationExceptionOnMatchErrorsInLoopAndLogItAsync(
+                Xeption dependencyValidationException)
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
@@ -290,8 +290,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
         public async Task
-           ShouldThrowAggregateDependencyExceptionOnMatchErrorsInLoopAndLogItAsync(
-           Xeption dependencyException)
+            ShouldThrowAggregateDependencyExceptionOnMatchErrorsInLoopAndLogItAsync(
+                Xeption dependencyException)
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();

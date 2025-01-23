@@ -156,10 +156,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking")]
         [HttpPut]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.IngestionTracking")]
-#endif
         public async ValueTask<ActionResult<IngestionTracking>> PutIngestionTrackingAsync(
             IngestionTracking ingestionTracking)
         {

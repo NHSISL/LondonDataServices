@@ -20,7 +20,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ObjectColumns
         public void PutShouldHaveRoleAttributeWithRoles()
         {
             // given 
-            var controllerType = typeof(AddressesController);
+            var controllerType = typeof(ObjectColumnsController);
             var methodInfo = controllerType.GetMethod("PutObjectColumnAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";

@@ -20,7 +20,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.OptOuts
         public void GetAllShouldHaveRoleAttributeWithRoles()
         {
             // given 
-            var controllerType = typeof(AddressesController);
+            var controllerType = typeof(OptOutsController);
             var methodInfo = controllerType.GetMethod("Get");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";

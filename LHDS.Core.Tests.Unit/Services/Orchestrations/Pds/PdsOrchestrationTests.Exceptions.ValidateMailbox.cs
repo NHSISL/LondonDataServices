@@ -118,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Setup(service =>
                 service.ValidateMailboxAccessAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<bool> validateMailboxAccessTask =

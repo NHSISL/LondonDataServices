@@ -54,5 +54,28 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.OptOuts
 
             actualAttributeValues.Should().BeEquivalentTo(expectedAttributeValues);
         }
+
+        [Fact]
+        public void GetByIdShouldNotHaveInvisibleApiAttribute()
+        {
+            // given
+            var controllerType = typeof(OptOutsController);
+            var methodInfo = controllerType.GetMethod("GetOptOutByNhsNumberAsync");
+            Type attributeType = typeof(InvisibleApiAttribute);
+
+            // when
+            var methodAttribute = methodInfo?
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var controllerAttribute = controllerType
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var attribute = methodAttribute ?? controllerAttribute;
+
+            // then
+            attribute.Should().BeNull();
+        }
     }
 }

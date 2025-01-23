@@ -120,7 +120,8 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             }
             catch (PdsOrchestrationDependencyValidationException pdsOrchestrationDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationExceptionAsync(pdsOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    pdsOrchestrationDependencyValidationException);
             }
             catch (DocumentValidationException meshValidationException)
             {

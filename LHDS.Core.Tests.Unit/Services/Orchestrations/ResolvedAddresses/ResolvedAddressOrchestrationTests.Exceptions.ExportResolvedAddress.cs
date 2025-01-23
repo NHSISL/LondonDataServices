@@ -36,12 +36,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask<List<Guid>> exportAction =
+            ValueTask<List<Guid>> exportResolvedAddressesTask =
                 this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyValidationException>(
-                    exportAction.AsTask);
+                    exportResolvedAddressesTask.AsTask);
 
             // then
             actualException.Should().
@@ -82,12 +82,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<List<Guid>> exportAction =
+            ValueTask<List<Guid>> exportResolvedAddressesTask =
                this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyException>(
-                    exportAction.AsTask);
+                    exportResolvedAddressesTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationDependencyException);
@@ -132,11 +132,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<List<Guid>> exportAction =
+            ValueTask<List<Guid>> exportResolvedAddressesTask =
                 this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(exportAction.AsTask);
+                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(
+                    exportResolvedAddressesTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationServiveException);
@@ -241,12 +242,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask<List<Guid>> exportAction =
+            ValueTask<List<Guid>> exportResolvedAddressesTask =
                 this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
-               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                   await exportAction);
+               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(
+                   exportResolvedAddressesTask.AsTask);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()
@@ -376,12 +377,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask<List<Guid>> exportAction =
+            ValueTask<List<Guid>> exportResolvedAddressesTask =
                 this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
-                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                    await exportAction);
+                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(
+                    exportResolvedAddressesTask.AsTask);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()
@@ -515,12 +516,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask<List<Guid>> exportAction =
+            ValueTask<List<Guid>> exportResolvedAddressesTask =
                 this.resolvedAddressOrchestrationService.ExportResolvedAddressesAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
-               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                   await exportAction);
+               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(
+                   exportResolvedAddressesTask.AsTask);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()

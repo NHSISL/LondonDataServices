@@ -64,7 +64,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance
                 }
             }
 
-            // Remove existing authentication and authorization
             var authenticationDescriptor = services
                 .FirstOrDefault(d => d.ServiceType == typeof(IAuthenticationSchemeProvider));
 
@@ -73,7 +72,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance
                 services.Remove(authenticationDescriptor);
             }
 
-            // Override authentication and authorization
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = "TestScheme";

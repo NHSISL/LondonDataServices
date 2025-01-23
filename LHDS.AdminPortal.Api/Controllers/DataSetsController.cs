@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class DataSetsController : RESTFulController

@@ -22,7 +22,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
     public class OptOutsController : RESTFulController
     {
         private readonly IOptOutProcessingService optOutProcessingService;

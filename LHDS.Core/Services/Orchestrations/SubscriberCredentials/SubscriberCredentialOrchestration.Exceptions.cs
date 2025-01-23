@@ -31,17 +31,17 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             catch (InvalidArgumentSubscriberCredentialOrchestrationException
                 invalidArgumentSubscriberCredentialOrchestrationException)
             {
-                throw await CreateAndLogValidationException(invalidArgumentSubscriberCredentialOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentSubscriberCredentialOrchestrationException);
             }
             catch (InvalidSubscriberCredentialOrchestrationException
                 invalidSubscriberCredentialOrchestrationException)
             {
-                throw await CreateAndLogValidationException(invalidSubscriberCredentialOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidSubscriberCredentialOrchestrationException);
             }
             catch (InvalidSubscriberAgreementOrchestrationException
                 invalidSubscriberAgreementOrchestrationException)
             {
-                throw await CreateAndLogValidationException(invalidSubscriberAgreementOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidSubscriberAgreementOrchestrationException);
             }
             catch (SubscriberAgreementProcessingValidationException
                 subscriberAgreementProcessingValidationException)
@@ -230,7 +230,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             catch (InvalidArgumentSubscriberCredentialOrchestrationException
                 invalidArgumentSubscriberCredentialOrchestrationException)
             {
-                throw await CreateAndLogValidationException(invalidArgumentSubscriberCredentialOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentSubscriberCredentialOrchestrationException);
             }
             catch (SubscriberAgreementProcessingValidationException
                 subscriberAgreementProcessingValidationException)
@@ -288,7 +288,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         }
 
         private async ValueTask<SubscriberCredentialValidationOrchestrationException> 
-            CreateAndLogValidationException(Xeption exception)
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var subscriberCredentialValidationOrchestrationException =
                 new SubscriberCredentialValidationOrchestrationException(

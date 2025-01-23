@@ -62,7 +62,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
         public void GetByIdShouldNotHaveInvisibleApiAttribute()
         {
             // given
-            var controllerType = typeof(AddressesController);
+            var controllerType = typeof(DataSetsController);
             var methodInfo = controllerType.GetMethod("GetDataSetByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 

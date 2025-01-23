@@ -61,7 +61,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
         public void PostShouldNotHaveInvisibleApiAttribute()
         {
             // given
-            var controllerType = typeof(AddressesController);
+            var controllerType = typeof(DataSetsController);
             var methodInfo = controllerType.GetMethod("PostDataSetAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 

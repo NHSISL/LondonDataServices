@@ -61,7 +61,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
         public void DeleteShouldNotHaveInvisibleApiAttribute()
         {
             // given
-            var controllerType = typeof(AddressesController);
+            var controllerType = typeof(DataSetsController);
             var methodInfo = controllerType.GetMethod("DeleteDataSetByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 

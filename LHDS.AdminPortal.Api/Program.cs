@@ -118,8 +118,8 @@ namespace LHDS.AdminPortal.Api
             });
 
             JsonNamingPolicy jsonNamingPolicy = JsonNamingPolicy.CamelCase;
-
             builder.Services.AddODataQueryFilter();
+
             builder.Services.AddControllers()
                .AddOData(options =>
                {

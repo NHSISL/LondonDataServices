@@ -121,6 +121,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
         [HttpPut]
         public async ValueTask<ActionResult<ObjectColumn>> PutObjectColumnAsync(ObjectColumn objectColumn)
         {

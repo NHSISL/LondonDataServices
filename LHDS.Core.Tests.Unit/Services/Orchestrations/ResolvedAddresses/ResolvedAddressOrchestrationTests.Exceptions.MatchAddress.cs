@@ -35,11 +35,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask matchAddressDataTask = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
             ResolvedAddressOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyValidationException>(
-                    action.AsTask);
+                    matchAddressDataTask.AsTask);
 
             // then
             actualException.Should().
@@ -80,11 +80,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask matchAddressDataTask = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
             ResolvedAddressOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyException>(
-                    action.AsTask);
+                    matchAddressDataTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationDependencyException);
@@ -129,10 +129,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask matchAddressDataTask = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
             ResolvedAddressOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(action.AsTask);
+                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(matchAddressDataTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationServiveException);
@@ -219,11 +219,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask matchAddressDataTask = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
-               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                   await action);
+               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(matchAddressDataTask.AsTask);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()
@@ -350,11 +349,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask matchAddressDataTask = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
-               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                   await action);
+               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(matchAddressDataTask.AsTask);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()
@@ -484,11 +482,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask matchAddressDataTask = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
-                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                    await action);
+                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(matchAddressDataTask.AsTask);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()

@@ -91,6 +91,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
         [HttpGet("{objectColumnId}")]
         public async ValueTask<ActionResult<ObjectColumn>> GetObjectColumnByIdAsync(Guid objectColumnId)
         {

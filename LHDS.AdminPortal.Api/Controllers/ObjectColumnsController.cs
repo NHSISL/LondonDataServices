@@ -62,6 +62,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
         [HttpGet]
 #if !DEBUG
         [EnableQuery(PageSize = 50)]

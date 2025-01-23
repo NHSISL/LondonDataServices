@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Attrify.Attributes;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Controllers;
 using Microsoft.AspNetCore.Authorization;
@@ -55,6 +56,29 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ObjectColumns
                 .ToList();
 
             actualAttributeValues.Should().BeEquivalentTo(expectedAttributeValues);
+        }
+
+        [Fact]
+        public void PostShouldNotHaveInvisibleApiAttribute()
+        {
+            // given
+            var controllerType = typeof(ObjectColumnsController);
+            var methodInfo = controllerType.GetMethod("PostObjectColumnAsync");
+            Type attributeType = typeof(InvisibleApiAttribute);
+
+            // when
+            var methodAttribute = methodInfo?
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var controllerAttribute = controllerType
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var attribute = methodAttribute ?? controllerAttribute;
+
+            // then
+            attribute.Should().BeNull();
         }
     }
 }

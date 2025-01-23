@@ -196,6 +196,12 @@ namespace LHDS.AdminPortal.Api
             app.UseForwardedHeaders();
             app.UseAuthorization();
             app.UseInvisibleApiMiddleware(invisibleApiKey);
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapRazorPages();
+            });
         }
 
         private static void AddProviders(IServiceCollection services, IConfiguration configuration)

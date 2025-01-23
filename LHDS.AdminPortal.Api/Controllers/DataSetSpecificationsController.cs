@@ -91,12 +91,15 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{dataSetSpecificationId}")]
-        public async ValueTask<ActionResult<DataSetSpecification>> GetDataSetSpecificationByIdAsync(Guid dataSetSpecificationId)
+        public async ValueTask<ActionResult<DataSetSpecification>>
+            GetDataSetSpecificationByIdAsync(Guid dataSetSpecificationId)
         {
             try
             {
-                DataSetSpecification dataSetSpecification = await this.dataSetSpecificationService.RetrieveDataSetSpecificationByIdAsync(dataSetSpecificationId);
+                DataSetSpecification dataSetSpecification = await this.dataSetSpecificationService
+                    .RetrieveDataSetSpecificationByIdAsync(dataSetSpecificationId);
 
                 return Ok(dataSetSpecification);
             }

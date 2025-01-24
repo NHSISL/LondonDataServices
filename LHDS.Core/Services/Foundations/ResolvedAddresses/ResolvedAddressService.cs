@@ -241,7 +241,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
                         if (indexOfInvalidItem != -1)
                         {
-                            await this.auditBroker.LogWarning(
+                            await this.auditBroker.LogWarningAsync(
                                 auditType: "ResolvedAddress",
                                 title: "Invalid resolved address parts found",
                                 message: $"Invalid address parts found in line item: {indexOfInvalidItem + 1} " +
@@ -280,7 +280,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
                         if (indexOfInvalidItem != -1)
                         {
-                            await this.auditBroker.LogWarning(
+                            await this.auditBroker.LogWarningAsync(
                                 auditType: "ResolvedAddress",
                                 title: $"Invalid resolved address parts found for Id: {resolvedAddress.Id}",
                                 message: $"Invalid address parts found for Id: {resolvedAddress.Id} ",

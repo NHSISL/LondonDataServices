@@ -27,8 +27,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
             List<string> expectedAttributeValues = new List<string>
             {
                 "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.EmisLanding",
-                "ISL.LDS.AdminSpa.ReadOnly"
+                "ISL.LDS.AdminSpa.EmisLanding"
             };
 
             // when
@@ -59,7 +58,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
         }
 
         [Fact]
-        public void GetAllShouldNotHaveInvisibleApiAttribute()
+        public void GetAllShouldHaveInvisibleApiAttribute()
         {
             // given
             var controllerType = typeof(EmisLandingsController);
@@ -78,7 +77,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
             var attribute = methodAttribute ?? controllerAttribute;
 
             // then
-            attribute.Should().BeNull();
+            attribute.Should().NotBeNull();
         }
     }
 }

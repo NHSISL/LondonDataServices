@@ -58,11 +58,11 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
         }
 
         [Fact]
-        public void PostShouldNotHaveInvisibleApiAttribute()
+        public void PostShouldHaveInvisibleApiAttribute()
         {
             // given
             var controllerType = typeof(IngestionTrackingsController);
-            var methodInfo = controllerType.GetMethod("PostDataTypeAsync");
+            var methodInfo = controllerType.GetMethod("PostIngestionTrackingAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 
             // when
@@ -77,7 +77,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
             var attribute = methodAttribute ?? controllerAttribute;
 
             // then
-            attribute.Should().BeNull();
+            attribute.Should().NotBeNull();
         }
     }
 }

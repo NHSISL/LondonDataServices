@@ -58,7 +58,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
         }
 
         [Fact]
-        public void DeleteShouldNotHaveInvisibleApiAttribute()
+        public void DeleteShouldHaveInvisibleApiAttribute()
         {
             // given
             var controllerType = typeof(IngestionTrackingsController);
@@ -77,7 +77,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
             var attribute = methodAttribute ?? controllerAttribute;
 
             // then
-            attribute.Should().BeNull();
+            attribute.Should().NotBeNull();
         }
     }
 }

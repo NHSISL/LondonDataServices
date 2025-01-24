@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             List<OptOut> optOutlist = CreateRandomOptOuts(string.Empty).ToList();
 
             this.optOutServiceMock.Setup(service =>
-                service.RetrieveAllOptOuts())
-                    .Returns(optOutlist.AsQueryable);
+                service.RetrieveAllOptOutsAsync())
+                    .ReturnsAsync(optOutlist.AsQueryable);
 
             this.optOutServiceMock.Setup(service =>
                 service.AddOptOutAsync(inputOptOut))
@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             // then
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveAllOptOuts(),
+                service.RetrieveAllOptOutsAsync(),
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>
@@ -64,8 +64,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             optOutlist.Add(storageOptOut);
 
             this.optOutServiceMock.Setup(processings =>
-                processings.RetrieveAllOptOuts())
-                    .Returns(optOutlist.AsQueryable);
+                processings.RetrieveAllOptOutsAsync())
+                    .ReturnsAsync(optOutlist.AsQueryable);
 
             // when
             OptOut retrievedOptOut = await this.optOutProcessingService.RetrieveOrAddOptOutAsync(existingOptOut);
@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             retrievedOptOut.Should().BeEquivalentTo(existingOptOutFound);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveAllOptOuts(),
+                service.RetrieveAllOptOutsAsync(),
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>

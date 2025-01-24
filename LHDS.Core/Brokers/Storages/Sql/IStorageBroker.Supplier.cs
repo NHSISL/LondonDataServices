@@ -12,7 +12,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
     public partial interface IStorageBroker
     {
         ValueTask<Supplier> InsertSupplierAsync(Supplier supplier);
-        IQueryable<Supplier> SelectAllSuppliers();
+        ValueTask<IQueryable<Supplier>> SelectAllSuppliersAsync();
         ValueTask<Supplier> SelectSupplierByIdAsync(Guid supplierId);
         ValueTask<Supplier> UpdateSupplierAsync(Supplier supplier);
         ValueTask<Supplier> DeleteSupplierAsync(Supplier supplier);

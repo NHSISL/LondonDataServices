@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
     public partial class DataTypeService
     {
         private delegate ValueTask<DataType> ReturningDataTypeFunction();
-        private delegate IQueryable<DataType> ReturningDataTypesFunction();
+        private delegate ValueTask<IQueryable<DataType>> ReturningDataTypesFunction();
 
         private async ValueTask<DataType> TryCatch(ReturningDataTypeFunction returningDataTypeFunction)
         {
@@ -27,11 +27,11 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             }
             catch (NullDataTypeException nullDataTypeException)
             {
-                throw CreateAndLogValidationException(nullDataTypeException);
+                throw await CreateAndLogValidationExceptionAsync(nullDataTypeException);
             }
             catch (InvalidDataTypeException invalidDataTypeException)
             {
-                throw CreateAndLogValidationException(invalidDataTypeException);
+                throw await CreateAndLogValidationExceptionAsync(invalidDataTypeException);
             }
             catch (SqlException sqlException)
             {
@@ -40,11 +40,11 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                         message: "Failed dataType storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedDataTypeStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedDataTypeStorageException);
             }
             catch (NotFoundDataTypeException notFoundDataTypeException)
             {
-                throw CreateAndLogValidationException(notFoundDataTypeException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundDataTypeException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                         message: "DataType with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsDataTypeException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsDataTypeException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -62,7 +62,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                         message: "Invalid dataType reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidDataTypeReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidDataTypeReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -71,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                         message: "Locked dataType record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedDataTypeException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedDataTypeException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -80,7 +80,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                         message: "Failed dataType storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedDataTypeStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedDataTypeStorageException);
             }
             catch (Exception exception)
             {
@@ -89,15 +89,15 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                         message: "Failed dataType service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDataTypeServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDataTypeServiceException);
             }
         }
 
-        private IQueryable<DataType> TryCatch(ReturningDataTypesFunction returningDataTypesFunction)
+        private async ValueTask<IQueryable<DataType>> TryCatch(ReturningDataTypesFunction returningDataTypesFunction)
         {
             try
             {
-                return returningDataTypesFunction();
+                return await returningDataTypesFunction();
             }
             catch (SqlException sqlException)
             {
@@ -106,7 +106,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                         message: "Failed dataType storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedDataTypeStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedDataTypeStorageException);
             }
             catch (Exception exception)
             {
@@ -115,47 +115,47 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                         message: "Failed dataType service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDataTypeServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDataTypeServiceException);
             }
         }
 
-        private DataTypeValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<DataTypeValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var dataTypeValidationException =
                 new DataTypeValidationException(
                     message: "DataType validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataTypeValidationException);
+            await this.loggingBroker.LogErrorAsync(dataTypeValidationException);
 
             return dataTypeValidationException;
         }
 
-        private DataTypeDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        private async ValueTask<DataTypeDependencyException> CreateAndLogCriticalDependencyExceptionAsync(Xeption exception)
         {
             var dataTypeDependencyException =
                 new DataTypeDependencyException(
                     message: "DataType dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogCritical(dataTypeDependencyException);
+            await this.loggingBroker.LogCriticalAsync(dataTypeDependencyException);
 
             return dataTypeDependencyException;
         }
 
-        private DataTypeDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<DataTypeDependencyValidationException> CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var dataTypeDependencyValidationException =
                 new DataTypeDependencyValidationException(
                     message: "DataType dependency validation occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataTypeDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(dataTypeDependencyValidationException);
 
             return dataTypeDependencyValidationException;
         }
 
-        private DataTypeDependencyException CreateAndLogDependencyException(
+        private async ValueTask<DataTypeDependencyException> CreateAndLogDependencyExceptionAsync(
             Xeption exception)
         {
             var dataTypeDependencyException =
@@ -163,12 +163,12 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                     message: "DataType dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataTypeDependencyException);
+            await this.loggingBroker.LogErrorAsync(dataTypeDependencyException);
 
             return dataTypeDependencyException;
         }
 
-        private DataTypeServiceException CreateAndLogServiceException(
+        private async ValueTask<DataTypeServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var dataTypeServiceException =
@@ -176,7 +176,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                     message: "DataType service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataTypeServiceException);
+            await this.loggingBroker.LogErrorAsync(dataTypeServiceException);
 
             return dataTypeServiceException;
         }

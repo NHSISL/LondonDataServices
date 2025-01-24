@@ -22,8 +22,8 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
         ValueTask<SubscriberCredential> ModifyOrAddSubscriberCredentialAsync(
             SubscriberCredential subscriberCredential, bool regenerateKeys = false, bool externalUse = true);
 
-        IQueryable<SubscriberCredential> RetrieveAllSubscriberCredentials();
-        ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIds();
+        ValueTask<IQueryable<SubscriberCredential>> RetrieveAllSubscriberCredentialsAsync();
+        ValueTask<List<Guid>> RetrieveAllActiveSubscriberCredentialIdsAsync();
 
         /// <summary>
         /// Method to retrieve a subscriber credential by its id

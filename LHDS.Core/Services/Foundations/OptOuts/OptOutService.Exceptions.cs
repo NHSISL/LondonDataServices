@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
     public partial class OptOutService
     {
         private delegate ValueTask<OptOut> ReturningOptOutFunction();
-        private delegate IQueryable<OptOut> ReturningOptOutsFunction();
+        private delegate ValueTask<IQueryable<OptOut>> ReturningOptOutsFunction();
 
         private async ValueTask<OptOut> TryCatch(ReturningOptOutFunction returningOptOutFunction)
         {
@@ -27,11 +27,11 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             }
             catch (NullOptOutException nullOptOutException)
             {
-                throw CreateAndLogValidationException(nullOptOutException);
+                throw await CreateAndLogValidationExceptionAsync(nullOptOutException);
             }
             catch (InvalidOptOutException invalidOptOutException)
             {
-                throw CreateAndLogValidationException(invalidOptOutException);
+                throw await CreateAndLogValidationExceptionAsync(invalidOptOutException);
             }
             catch (SqlException sqlException)
             {
@@ -39,11 +39,11 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     message: "Failed optOut storage error occurred, please contact support.",
                     innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedOptOutStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedOptOutStorageException);
             }
             catch (NotFoundOptOutException notFoundOptOutException)
             {
-                throw CreateAndLogValidationException(notFoundOptOutException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundOptOutException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -52,7 +52,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                         message: "OptOut with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsOptOutException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsOptOutException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -60,7 +60,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     message: "Invalid optOut reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidOptOutReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidOptOutReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -68,7 +68,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     message: "Locked optOut record exception, please try again later",
                     innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedOptOutException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedOptOutException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -76,7 +76,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     message: "Failed optOut storage error occurred, please contact support.",
                     innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedOptOutStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedOptOutStorageException);
             }
             catch (Exception exception)
             {
@@ -84,15 +84,15 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     message: "Failed optOut service error occurred, please contact support.",
                     innerException: exception);
 
-                throw CreateAndLogServiceException(failedOptOutServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedOptOutServiceException);
             }
         }
 
-        private IQueryable<OptOut> TryCatch(ReturningOptOutsFunction returningOptOutsFunction)
+        private async ValueTask<IQueryable<OptOut>> TryCatch(ReturningOptOutsFunction returningOptOutsFunction)
         {
             try
             {
-                return returningOptOutsFunction();
+                return await returningOptOutsFunction();
             }
             catch (SqlException sqlException)
             {
@@ -100,7 +100,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     message: "Failed optOut storage error occurred, please contact support.",
                     innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedOptOutStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedOptOutStorageException);
             }
             catch (Exception exception)
             {
@@ -108,63 +108,65 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     message: "Failed optOut service error occurred, please contact support.",
                     innerException: exception);
 
-                throw CreateAndLogServiceException(failedOptOutServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedOptOutServiceException);
             }
         }
 
-        private OptOutValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<OptOutValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var optOutValidationException = new OptOutValidationException(
                 message: "OptOut validation errors occurred, please try again.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(optOutValidationException);
+            await this.loggingBroker.LogErrorAsync(optOutValidationException);
 
             return optOutValidationException;
         }
 
-        private OptOutDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
-        {
-            var optOutDependencyException = new OptOutDependencyException(
-                message: "OptOut dependency error occurred, please contact support.",
-                innerException: exception);
-
-            this.loggingBroker.LogCritical(optOutDependencyException);
-
-            return optOutDependencyException;
-        }
-
-        private OptOutDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
-        {
-            var optOutDependencyValidationException = new OptOutDependencyValidationException(
-                message: "OptOut dependency validation occurred, please try again.",
-                innerException: exception);
-
-            this.loggingBroker.LogError(optOutDependencyValidationException);
-
-            return optOutDependencyValidationException;
-        }
-
-        private OptOutDependencyException CreateAndLogDependencyException(
+        private async ValueTask<OptOutDependencyException> CreateAndLogCriticalDependencyExceptionAsync(
             Xeption exception)
         {
             var optOutDependencyException = new OptOutDependencyException(
                 message: "OptOut dependency error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(optOutDependencyException);
+            await this.loggingBroker.LogCriticalAsync(optOutDependencyException);
 
             return optOutDependencyException;
         }
 
-        private OptOutServiceException CreateAndLogServiceException(
+        private async ValueTask<OptOutDependencyValidationException> CreateAndLogDependencyValidationExceptionAsync(
+            Xeption exception)
+        {
+            var optOutDependencyValidationException = new OptOutDependencyValidationException(
+                message: "OptOut dependency validation occurred, please try again.",
+                innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(optOutDependencyValidationException);
+
+            return optOutDependencyValidationException;
+        }
+
+        private async ValueTask<OptOutDependencyException> CreateAndLogDependencyExceptionAsync(
+            Xeption exception)
+        {
+            var optOutDependencyException = new OptOutDependencyException(
+                message: "OptOut dependency error occurred, please contact support.",
+                innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(optOutDependencyException);
+
+            return optOutDependencyException;
+        }
+
+        private async ValueTask<OptOutServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var optOutServiceException = new OptOutServiceException(
                 message: "OptOut service error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(optOutServiceException);
+            await this.loggingBroker.LogErrorAsync(optOutServiceException);
 
             return optOutServiceException;
         }

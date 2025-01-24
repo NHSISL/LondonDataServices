@@ -112,8 +112,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 DateTimeOffset fifteenMinsAgo = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                 fifteenMinsAgo.AddMinutes(-15);
 
-                List<IngestionTracking> unavailableIngestionTrackings =
-                    this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
+                IQueryable<IngestionTracking> allIngestionTrackings =
+                    await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
+
+                List<IngestionTracking> unavailableIngestionTrackings = allIngestionTrackings
                         .Where(ingestionTracking =>
                             ingestionTracking.LastSeen <= fifteenMinsAgo).ToList();
 
@@ -187,8 +189,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             Guid supplierId,
             string fileName)
         {
-            IngestionTracking? maybeIngestionTracking =
-                this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
+            IQueryable<IngestionTracking> allIngestionTrackings =
+                await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
+
+            IngestionTracking? maybeIngestionTracking = allIngestionTrackings
                     .FirstOrDefault(ingestionTracking =>
                         ingestionTracking.FileName == fileName);
 

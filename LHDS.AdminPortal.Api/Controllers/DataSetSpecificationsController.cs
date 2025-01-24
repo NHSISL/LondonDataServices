@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class DataSetSpecificationsController : RESTFulController
@@ -26,8 +28,10 @@ namespace LHDS.AdminPortal.Api.Controllers
         public DataSetSpecificationsController(IDataSetSpecificationService dataSetSpecificationService) =>
             this.dataSetSpecificationService = dataSetSpecificationService;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
         [HttpPost]
-        public async ValueTask<ActionResult<DataSetSpecification>> PostDataSetSpecificationAsync(DataSetSpecification dataSetSpecification)
+        public async ValueTask<ActionResult<DataSetSpecification>> PostDataSetSpecificationAsync(
+            DataSetSpecification dataSetSpecification)
         {
             try
             {
@@ -41,12 +45,14 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return BadRequest(dataSetSpecificationValidationException.InnerException);
             }
             catch (DataSetSpecificationDependencyValidationException dataSetSpecificationValidationException)
-                when (dataSetSpecificationValidationException.InnerException is InvalidDataSetSpecificationReferenceException)
+                when (dataSetSpecificationValidationException.InnerException
+                    is InvalidDataSetSpecificationReferenceException)
             {
                 return FailedDependency(dataSetSpecificationValidationException.InnerException);
             }
             catch (DataSetSpecificationDependencyValidationException dataSetSpecificationDependencyValidationException)
-               when (dataSetSpecificationDependencyValidationException.InnerException is AlreadyExistsDataSetSpecificationException)
+                when (dataSetSpecificationDependencyValidationException.InnerException
+                    is AlreadyExistsDataSetSpecificationException)
             {
                 return Conflict(dataSetSpecificationDependencyValidationException.InnerException);
             }
@@ -67,15 +73,13 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.DataSetSpecifications, ISL.LDS.AdminApi.ReadOnly")]
-#endif
-        public ActionResult<IQueryable<DataSetSpecification>> Get()
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
+        public async ValueTask<ActionResult<IQueryable<DataSetSpecification>>> Get()
         {
             try
             {
-                IQueryable<DataSetSpecification> retrievedDataSetSpecifications =
-                    this.dataSetSpecificationService.RetrieveAllDataSetSpecifications();
+                IQueryable<DataSetSpecification> retrievedDataSetSpecifications = await this.dataSetSpecificationService
+                    .RetrieveAllDataSetSpecificationsAsync();
 
                 return Ok(retrievedDataSetSpecifications);
             }
@@ -89,12 +93,15 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{dataSetSpecificationId}")]
-        public async ValueTask<ActionResult<DataSetSpecification>> GetDataSetSpecificationByIdAsync(Guid dataSetSpecificationId)
+        public async ValueTask<ActionResult<DataSetSpecification>> GetDataSetSpecificationByIdAsync(
+            Guid dataSetSpecificationId)
         {
             try
             {
-                DataSetSpecification dataSetSpecification = await this.dataSetSpecificationService.RetrieveDataSetSpecificationByIdAsync(dataSetSpecificationId);
+                DataSetSpecification dataSetSpecification = await this.dataSetSpecificationService
+                    .RetrieveDataSetSpecificationByIdAsync(dataSetSpecificationId);
 
                 return Ok(dataSetSpecification);
             }
@@ -117,8 +124,10 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
         [HttpPut]
-        public async ValueTask<ActionResult<DataSetSpecification>> PutDataSetSpecificationAsync(DataSetSpecification dataSetSpecification)
+        public async ValueTask<ActionResult<DataSetSpecification>> PutDataSetSpecificationAsync(
+            DataSetSpecification dataSetSpecification)
         {
             try
             {
@@ -128,7 +137,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return Ok(modifiedDataSetSpecification);
             }
             catch (DataSetSpecificationValidationException dataSetSpecificationValidationException)
-                when (dataSetSpecificationValidationException.InnerException is NotFoundDataSetSpecificationException)
+                when (dataSetSpecificationValidationException.InnerException
+                    is NotFoundDataSetSpecificationException)
             {
                 return NotFound(dataSetSpecificationValidationException.InnerException);
             }
@@ -137,12 +147,14 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return BadRequest(dataSetSpecificationValidationException.InnerException);
             }
             catch (DataSetSpecificationDependencyValidationException dataSetSpecificationValidationException)
-                when (dataSetSpecificationValidationException.InnerException is InvalidDataSetSpecificationReferenceException)
+                when (dataSetSpecificationValidationException.InnerException
+                    is InvalidDataSetSpecificationReferenceException)
             {
                 return FailedDependency(dataSetSpecificationValidationException.InnerException);
             }
             catch (DataSetSpecificationDependencyValidationException dataSetSpecificationDependencyValidationException)
-               when (dataSetSpecificationDependencyValidationException.InnerException is AlreadyExistsDataSetSpecificationException)
+               when (dataSetSpecificationDependencyValidationException.InnerException is
+                    AlreadyExistsDataSetSpecificationException)
             {
                 return Conflict(dataSetSpecificationDependencyValidationException.InnerException);
             }
@@ -156,13 +168,15 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
         [HttpDelete("{dataSetSpecificationId}")]
-        public async ValueTask<ActionResult<DataSetSpecification>> DeleteDataSetSpecificationByIdAsync(Guid dataSetSpecificationId)
+        public async ValueTask<ActionResult<DataSetSpecification>> DeleteDataSetSpecificationByIdAsync(
+            Guid dataSetSpecificationId)
         {
             try
             {
-                DataSetSpecification deletedDataSetSpecification =
-                    await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(dataSetSpecificationId);
+                DataSetSpecification deletedDataSetSpecification = await this.dataSetSpecificationService
+                    .RemoveDataSetSpecificationByIdAsync(dataSetSpecificationId);
 
                 return Ok(deletedDataSetSpecification);
             }
@@ -176,7 +190,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return BadRequest(dataSetSpecificationValidationException.InnerException);
             }
             catch (DataSetSpecificationDependencyValidationException dataSetSpecificationDependencyValidationException)
-                when (dataSetSpecificationDependencyValidationException.InnerException is LockedDataSetSpecificationException)
+                when (dataSetSpecificationDependencyValidationException.InnerException
+                    is LockedDataSetSpecificationException)
             {
                 return Locked(dataSetSpecificationDependencyValidationException.InnerException);
             }

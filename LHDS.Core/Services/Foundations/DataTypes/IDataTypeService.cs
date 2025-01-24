@@ -12,7 +12,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
     public interface IDataTypeService
     {
         ValueTask<DataType> AddDataTypeAsync(DataType dataType);
-        IQueryable<DataType> RetrieveAllDataTypes();
+        ValueTask<IQueryable<DataType>> RetrieveAllDataTypesAsync();
         ValueTask<DataType> RetrieveDataTypeByIdAsync(Guid dataTypeId);
         ValueTask<DataType> ModifyDataTypeAsync(DataType dataType);
         ValueTask<DataType> RemoveDataTypeByIdAsync(Guid dataTypeId);

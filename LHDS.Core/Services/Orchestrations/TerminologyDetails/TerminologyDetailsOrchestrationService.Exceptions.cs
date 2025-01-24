@@ -24,53 +24,53 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
             }
             catch (DocumentProcessingValidationException documentProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentProcessingValidationException);
             }
             catch (DocumentProcessingDependencyValidationException documentProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentProcessingDependencyValidationException);
             }
             catch (TerminologyArtifactProcessingValidationException terminologyArtifactProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(terminologyArtifactProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(terminologyArtifactProcessingValidationException);
             }
             catch (TerminologyArtifactProcessingDependencyValidationException
                 terminologyArtifactProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     terminologyArtifactProcessingDependencyValidationException);
             }
             catch (OntologyProcessingValidationException ontologyProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ontologyProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ontologyProcessingValidationException);
             }
             catch (OntologyProcessingDependencyValidationException ontologyProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ontologyProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ontologyProcessingDependencyValidationException);
             }
             catch (DocumentProcessingDependencyException documentProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(documentProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentProcessingDependencyException);
             }
             catch (DocumentProcessingServiceException documentProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(documentProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentProcessingServiceException);
             }
             catch (TerminologyArtifactProcessingDependencyException terminologyArtifactProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(terminologyArtifactProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(terminologyArtifactProcessingDependencyException);
             }
             catch (TerminologyArtifactProcessingServiceException terminologyArtifactProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(terminologyArtifactProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(terminologyArtifactProcessingServiceException);
             }
             catch (OntologyProcessingDependencyException ontologyProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(ontologyProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ontologyProcessingDependencyException);
             }
             catch (OntologyProcessingServiceException ontologyProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(ontologyProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ontologyProcessingServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -80,7 +80,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                             "please contact support.",
                         innerException: aggregateException);
 
-                throw CreateAndLogServiceException(failedTerminologyDetailOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedTerminologyDetailOrchestrationServiceException);
             }
             catch (Exception exception)
             {
@@ -90,12 +90,12 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                             "please contact support.",
                         exception);
 
-                throw CreateAndLogServiceException(FailedTerminologyDetailOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(FailedTerminologyDetailOrchestrationServiceException);
             }
         }
 
-        private TerminologyDetailOrchestrationDependencyValidationException
-            CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<TerminologyDetailOrchestrationDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var terminologyDetailOrchestrationDependencyValidationException =
                 new TerminologyDetailOrchestrationDependencyValidationException(
@@ -103,13 +103,13 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                         "fix the errors and try again.",
                     exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(terminologyDetailOrchestrationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(terminologyDetailOrchestrationDependencyValidationException);
 
             return terminologyDetailOrchestrationDependencyValidationException;
         }
 
-        private TerminologyDetailOrchestrationDependencyException
-            CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<TerminologyDetailOrchestrationDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var terminologyDetailOrchestrationDependencyException =
                 new TerminologyDetailOrchestrationDependencyException(
@@ -117,20 +117,20 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                         "fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(terminologyDetailOrchestrationDependencyException);
+            await this.loggingBroker.LogErrorAsync(terminologyDetailOrchestrationDependencyException);
 
             throw terminologyDetailOrchestrationDependencyException;
         }
 
-        private TerminologyDetailOrchestrationServiceException
-            CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<TerminologyDetailOrchestrationServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var terminologyDetailOrchestrationServiceException =
                 new TerminologyDetailOrchestrationServiceException(
                     message: "Terminology detail orchestration service error occurred, please contact support.",
                     exception);
 
-            this.loggingBroker.LogError(terminologyDetailOrchestrationServiceException);
+            await this.loggingBroker.LogErrorAsync(terminologyDetailOrchestrationServiceException);
 
             throw terminologyDetailOrchestrationServiceException;
         }

@@ -15,7 +15,7 @@ using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [ApiController]
+    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
     [Route("api/[controller]")]
     public class SubscriberAgreementsController : RESTFulController
     {
@@ -24,7 +24,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public SubscriberAgreementsController(ISubscriberAgreementService subscriberAgreementService) =>
             this.subscriberAgreementService = subscriberAgreementService;
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
         [HttpPost]
         public async ValueTask<ActionResult<SubscriberAgreement>> PostSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement)
         {
@@ -59,7 +59,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations, ISL.LDS.AdminSpa.ReadOnly")]  
         [HttpGet]
 #if !DEBUG
                 [EnableQuery(PageSize = 50)]
@@ -86,27 +86,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        //[HttpGet]
-        //public ActionResult<IQueryable<SubscriberAgreement>> GetAllSubscriberAgreements()
-        //{
-        //    try
-        //    {
-        //        IQueryable<SubscriberAgreement> retrievedSubscriberAgreements =
-        //            this.subscriberAgreementService.RetrieveAllSubscriberAgreements();
-
-        //        return Ok(retrievedSubscriberAgreements);
-        //    }
-        //    catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
-        //    {
-        //        return InternalServerError(subscriberAgreementDependencyException);
-        //    }
-        //    catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
-        //    {
-        //        return InternalServerError(subscriberAgreementServiceException);
-        //    }
-        //}
-
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations, ISL.LDS.AdminSpa.ReadOnly")]  
         [HttpGet("{subscriberAgreementId}")]
         public async ValueTask<ActionResult<SubscriberAgreement>> GetSubscriberAgreementByIdAsync(Guid subscriberAgreementId)
         {
@@ -135,7 +115,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
         [HttpPut]
         public async ValueTask<ActionResult<SubscriberAgreement>> PutSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement)
         {
@@ -175,7 +155,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
         [HttpDelete("{subscriberAgreementId}")]
         public async ValueTask<ActionResult<SubscriberAgreement>> DeleteSubscriberAgreementByIdAsync(Guid subscriberAgreementId)
         {

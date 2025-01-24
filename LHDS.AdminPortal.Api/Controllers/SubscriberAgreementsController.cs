@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using LHDS.Core.Services.Foundations.SubscriberAgreements;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
@@ -57,6 +58,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet]
 #if !DEBUG
                 [EnableQuery(PageSize = 50)]

@@ -24,6 +24,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public SubscriberAgreementsController(ISubscriberAgreementService subscriberAgreementService) =>
             this.subscriberAgreementService = subscriberAgreementService;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators")]
         [HttpPost]
         public async ValueTask<ActionResult<SubscriberAgreement>> PostSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement)
         {

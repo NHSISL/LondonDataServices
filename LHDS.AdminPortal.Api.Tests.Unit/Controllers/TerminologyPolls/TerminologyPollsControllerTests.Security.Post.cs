@@ -18,6 +18,30 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
     public partial class TerminologyPollsControllerTests
     {
         [Fact]
+        public void PostShouldNotHaveRoleAttribute()
+        {
+            // given 
+            var controllerType = typeof(TerminologyPollsController);
+            var methodInfo = controllerType.GetMethod("PostTerminologyPollAsync");
+
+            Type attributeType = typeof(AuthorizeAttribute);
+
+            // when
+            var methodAttribute = methodInfo?
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var controllerAttribute = controllerType
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var attribute = methodAttribute ?? controllerAttribute;
+
+            // then
+            attribute.Should().BeNull();
+        }
+
+        [Fact]
         public void PostShouldHaveInvisibleApiAttribute()
         {
             // Given

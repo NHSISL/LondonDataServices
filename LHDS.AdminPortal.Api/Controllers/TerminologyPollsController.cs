@@ -17,7 +17,6 @@ namespace LHDS.AdminPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class TerminologyPollsController : RESTFulController
     {
         private readonly ITerminologyPollService terminologyPollService;

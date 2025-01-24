@@ -94,7 +94,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-
+        [InvisibleApi]
         [HttpGet("{ingestionTrackingAuditId}")]
         public async ValueTask<ActionResult<IngestionTrackingAudit>> GetAuditByIdAsync(Guid ingestionTrackingAuditId)
         {

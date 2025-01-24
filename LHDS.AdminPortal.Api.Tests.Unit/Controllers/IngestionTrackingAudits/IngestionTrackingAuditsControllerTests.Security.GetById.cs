@@ -27,8 +27,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
             List<string> expectedAttributeValues = new List<string>
             {
                 "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.IngestionTrackingAudit",
-                "ISL.LDS.AdminSpa.ReadOnly"
+                "ISL.LDS.AdminSpa.IngestionTrackingAudit"
             };
 
             // when
@@ -59,7 +58,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
         }
 
         [Fact]
-        public void GetByIdShouldNotHaveInvisibleApiAttribute()
+        public void GetByIdShouldHaveInvisibleApiAttribute()
         {
             // given
             var controllerType = typeof(IngestionTrackingAuditsController);
@@ -78,7 +77,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
             var attribute = methodAttribute ?? controllerAttribute;
 
             // then
-            attribute.Should().BeNull();
+            attribute.Should().NotBeNull();
         }
     }
 }

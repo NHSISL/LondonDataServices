@@ -89,7 +89,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
                         message: "Failed ObjectColumn processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceExceptionAsync(failedObjectColumnProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedObjectColumnProcessingServiceException);
             }
         }
 

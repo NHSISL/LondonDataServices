@@ -26,27 +26,27 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             }
             catch (NullObjectColumnProcessingException nullObjectColumnException)
             {
-                throw CreateAndLogValidationException(nullObjectColumnException);
+                throw await CreateAndLogValidationExceptionAsync(nullObjectColumnException);
             }
             catch (InvalidArgumentObjectColumnProcessingException invalidArgumentObjectColumnProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentObjectColumnProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentObjectColumnProcessingException);
             }
             catch (ObjectColumnValidationException objectColumnValidationException)
             {
-                throw CreateAndLogDependencyValidationException(objectColumnValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(objectColumnValidationException);
             }
             catch (ObjectColumnDependencyValidationException objectColumnDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(objectColumnDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(objectColumnDependencyValidationException);
             }
             catch (ObjectColumnDependencyException objectColumnDependencyException)
             {
-                throw CreateAndLogDependencyException(objectColumnDependencyException);
+                throw await CreateAndLogServiceExceptionAsync(objectColumnDependencyException);
             }
             catch (ObjectColumnServiceException objectColumnServiceException)
             {
-                throw CreateAndLogDependencyException(objectColumnServiceException);
+                throw await CreateAndLogServiceExceptionAsync(objectColumnServiceException);
             }
             catch (Exception exception)
             {
@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
                         message: "Failed ObjectColumn processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedObjectColumnProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedObjectColumnProcessingServiceException);
             }
         }
 
@@ -68,19 +68,19 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             }
             catch (ObjectColumnValidationException objectColumnValidationException)
             {
-                throw CreateAndLogDependencyValidationException(objectColumnValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(objectColumnValidationException);
             }
             catch (ObjectColumnDependencyValidationException objectColumnDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(objectColumnDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(objectColumnDependencyValidationException);
             }
             catch (ObjectColumnDependencyException objectColumnDependencyException)
             {
-                throw CreateAndLogDependencyException(objectColumnDependencyException);
+                throw await CreateAndLogServiceExceptionAsync(objectColumnDependencyException);
             }
             catch (ObjectColumnServiceException objectColumnServiceException)
             {
-                throw CreateAndLogDependencyException(objectColumnServiceException);
+                throw await CreateAndLogServiceExceptionAsync(objectColumnServiceException);
             }
             catch (Exception exception)
             {
@@ -89,55 +89,58 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
                         message: "Failed ObjectColumn processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedObjectColumnProcessingServiceException);
+                throw CreateAndLogServiceExceptionAsync(failedObjectColumnProcessingServiceException);
             }
         }
 
-        private ObjectColumnProcessingValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<ObjectColumnProcessingValidationException> 
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var objectColumnProcessingValidationExceptionn =
                 new ObjectColumnProcessingValidationException(
                     message: "ObjectColumn processing validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(objectColumnProcessingValidationExceptionn);
+            await this.loggingBroker.LogErrorAsync(objectColumnProcessingValidationExceptionn);
 
             return objectColumnProcessingValidationExceptionn;
         }
 
-        private ObjectColumnProcessingDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<ObjectColumnProcessingDependencyValidationException> 
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var objectColumnProcessingDependencyValidationException =
                 new ObjectColumnProcessingDependencyValidationException(
                     message: "ObjectColumn processing dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(objectColumnProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(objectColumnProcessingDependencyValidationException);
 
             return objectColumnProcessingDependencyValidationException;
         }
 
-        private ObjectColumnProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<ObjectColumnProcessingDependencyException> 
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var objectColumnProcessingDependencyException =
                 new ObjectColumnProcessingDependencyException(
                     message: "ObjectColumn processing dependency error occurred, please try again.",
                     innerException: exception?.InnerException as Xeption);
 
-            this.loggingBroker.LogError(objectColumnProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(objectColumnProcessingDependencyException);
 
             throw objectColumnProcessingDependencyException;
         }
 
-        private ObjectColumnProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<ObjectColumnProcessingServiceException> 
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var objectColumnProcessingServiceException = new
                 ObjectColumnProcessingServiceException(
                     message: "ObjectColumn processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(objectColumnProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(objectColumnProcessingServiceException);
 
             return objectColumnProcessingServiceException;
         }

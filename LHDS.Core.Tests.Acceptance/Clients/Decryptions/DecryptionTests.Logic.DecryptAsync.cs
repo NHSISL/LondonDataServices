@@ -49,7 +49,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(randomDataSet.Id);
             await this.dataSetService.AddDataSetAsync(randomDataSet);
             await this.dataSetSpecificationService.AddDataSetSpecificationAsync(randomDataSetSpecification);
-            List<SpecificationObject> randomSpecificationObject = CreateRandomSpecificationObjects(randomDataSetSpecification.Id);
+            
+            List<SpecificationObject> randomSpecificationObject = 
+                CreateRandomSpecificationObjects(randomDataSetSpecification.Id);
 
             foreach (var item in randomSpecificationObject)
             {

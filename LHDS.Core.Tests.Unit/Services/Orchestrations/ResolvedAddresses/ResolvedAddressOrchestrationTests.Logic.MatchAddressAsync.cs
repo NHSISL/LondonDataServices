@@ -37,9 +37,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             Address ordananceAddress = storageAddress;
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
-               service.RetrieveAllResolvedAddresses())
-                   .Returns(unmatchedResolvedAddresses.AsQueryable())
-                   .Returns(new List<ResolvedAddress>().AsQueryable());
+               service.RetrieveAllResolvedAddressesAsync())
+                   .ReturnsAsync(unmatchedResolvedAddresses.AsQueryable())
+                   .ReturnsAsync(new List<ResolvedAddress>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -86,7 +86,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             //Then
             this.resolvedAddressProcessingServiceMock.Verify(service =>
-               service.RetrieveAllResolvedAddresses(),
+               service.RetrieveAllResolvedAddressesAsync(),
                    Times.Exactly(2));
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -139,9 +139,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             Address ordananceAddress = null;
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
-               service.RetrieveAllResolvedAddresses())
-                   .Returns(unmatchedResolvedAddresses.AsQueryable())
-                   .Returns(new List<ResolvedAddress>().AsQueryable());
+               service.RetrieveAllResolvedAddressesAsync())
+                   .ReturnsAsync(unmatchedResolvedAddresses.AsQueryable())
+                   .ReturnsAsync(new List<ResolvedAddress>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -182,7 +182,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             //Then
             this.resolvedAddressProcessingServiceMock.Verify(service =>
-               service.RetrieveAllResolvedAddresses(),
+               service.RetrieveAllResolvedAddressesAsync(),
                    Times.Exactly(2));
 
             this.dateTimeBrokerMock.Verify(broker =>

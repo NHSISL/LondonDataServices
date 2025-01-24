@@ -6,18 +6,18 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Attrify.Attributes;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
-#if RELEASE
-using Microsoft.AspNetCore.Authorization;
-#endif
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking")]
     [ApiController]
     [Route("api/[controller]")]
     public class IngestionTrackingsController : RESTFulController
@@ -27,10 +27,8 @@ namespace LHDS.AdminPortal.Api.Controllers
         public IngestionTrackingsController(IIngestionTrackingService ingestionTrackingService) =>
             this.ingestionTrackingService = ingestionTrackingService;
 
+        [InvisibleApi]
         [HttpPost]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.IngestionTracking")]
-#endif
         public async ValueTask<ActionResult<IngestionTracking>> PostIngestionTrackingAsync(
             IngestionTracking ingestionTracking)
         {
@@ -73,15 +71,14 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 25)]
 #endif
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
-#endif
-        public ActionResult<IQueryable<IngestionTracking>> Get()
+        [Authorize(Roles =
+            "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking,ISL.LDS.AdminSpa.ReadOnly")]
+        public async ValueTask<ActionResult<IQueryable<IngestionTracking>>> Get()
         {
             try
             {
                 IQueryable<IngestionTracking> retrievedIngestionTrackings =
-                    this.ingestionTrackingService.RetrieveAllIngestionTrackings();
+                    await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
                 return Ok(retrievedIngestionTrackings);
             }
@@ -95,10 +92,9 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles =
+            "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{ingestionTrackingId}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
-#endif
         public async ValueTask<ActionResult<IngestionTracking>> GetIngestionTrackingByIdAsync(Guid ingestionTrackingId)
         {
             try
@@ -127,10 +123,9 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles =
+            "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("byfilename/{filename}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
-#endif
         public async ValueTask<ActionResult<IngestionTracking>> GetIngestionTrackingByFileNameAsync(string fileName)
         {
             try
@@ -161,10 +156,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking")]
         [HttpPut]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.IngestionTracking")]
-#endif
         public async ValueTask<ActionResult<IngestionTracking>> PutIngestionTrackingAsync(
             IngestionTracking ingestionTracking)
         {
@@ -185,7 +178,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return BadRequest(ingestionTrackingValidationException.InnerException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingValidationException)
-                when (ingestionTrackingValidationException.InnerException is InvalidIngestionTrackingReferenceException)
+                when (ingestionTrackingValidationException.InnerException
+                    is InvalidIngestionTrackingReferenceException)
             {
                 return FailedDependency(ingestionTrackingValidationException.InnerException);
             }
@@ -205,10 +199,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpDelete("{ingestionTrackingId}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.IngestionTracking")]
-#endif
         public async ValueTask<ActionResult<IngestionTracking>> DeleteIngestionTrackingByIdAsync(
             Guid ingestionTrackingId)
         {
@@ -229,7 +221,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return BadRequest(ingestionTrackingValidationException.InnerException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
-                when (ingestionTrackingDependencyValidationException.InnerException is LockedIngestionTrackingException)
+                when (ingestionTrackingDependencyValidationException.InnerException
+                    is LockedIngestionTrackingException)
             {
                 return Locked(ingestionTrackingDependencyValidationException.InnerException);
             }

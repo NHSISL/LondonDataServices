@@ -12,5 +12,6 @@ namespace LHDS.Core.Models.Orchestrations.Pds
         public bool PdsFileRequireTrailingComma { get; set; }
         public string To { get; set; }
         public string WorkflowId { get; set; }
+        public string ReturnWorkflowId { get; set; }
     }
 }

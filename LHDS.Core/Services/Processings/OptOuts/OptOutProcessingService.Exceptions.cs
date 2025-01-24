@@ -15,11 +15,11 @@ namespace LHDS.Core.Services.Processings.OptOuts
 {
     public partial class OptOutProcessingService
     {
-        private delegate ValueTask<T> ReturningOptOutFunction<T>();
+        private delegate ValueTask<OptOut> ReturningOptOutFunction();
         private delegate ValueTask<List<OptOut>> ReturningOptOutListFunction();
-        private delegate IQueryable<OptOut> ReturningOptOutListsFunction();
+        private delegate ValueTask<IQueryable<OptOut>> ReturningOptOutListsFunction();
 
-        private async ValueTask<T> TryCatch<T>(ReturningOptOutFunction<T> returningOptOutFunction)
+        private async ValueTask<OptOut> TryCatch(ReturningOptOutFunction returningOptOutFunction)
         {
             try
             {
@@ -60,11 +60,52 @@ namespace LHDS.Core.Services.Processings.OptOuts
             }
         }
 
-        private IQueryable<OptOut> TryCatch(ReturningOptOutListsFunction returningOptOutListsFunction)
+        private async ValueTask<List<OptOut>> TryCatch(ReturningOptOutListFunction returningOptOutListFunction)
         {
             try
             {
-                return returningOptOutListsFunction();
+                return await returningOptOutListFunction();
+            }
+            catch (NullOptOutProcessingException nullOptOutProcessingException)
+            {
+                throw CreateAndLogValidationException(nullOptOutProcessingException);
+            }
+            catch (InvalidArgumentOptOutProcessingException invalidArgumentOptOutProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentOptOutProcessingException);
+            }
+            catch (OptOutValidationException optOutValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(optOutValidationException);
+            }
+            catch (OptOutDependencyValidationException optOutDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(optOutDependencyValidationException);
+            }
+            catch (OptOutDependencyException optOutDependencyException)
+            {
+                throw CreateAndLogDependencyException(optOutDependencyException);
+            }
+            catch (OptOutServiceException optOutServiceException)
+            {
+                throw CreateAndLogDependencyException(optOutServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedOptOutProcessingServiceException =
+                    new FailedOptOutProcessingServiceException(
+                        message: "Failed opt out processing service error occurred, please contact support.",
+                        exception);
+
+                throw CreateAndLogServiceException(failedOptOutProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<IQueryable<OptOut>> TryCatch(ReturningOptOutListsFunction returningOptOutListsFunction)
+        {
+            try
+            {
+                return await returningOptOutListsFunction();
             }
             catch (InvalidArgumentOptOutProcessingException invalidArgumentOptOutProcessingException)
             {

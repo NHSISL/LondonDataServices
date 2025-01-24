@@ -34,9 +34,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             storageAssignAddress.BestMatch.UPRN = "";
 
             this.resolvedAddressProcessingServiceMock.SetupSequence(service =>
-               service.RetrieveAllResolvedAddresses())
-                   .Returns(unmatchedResolvedAddresses.AsQueryable())
-                   .Returns(new List<ResolvedAddress>().AsQueryable());
+               service.RetrieveAllResolvedAddressesAsync())
+                   .ReturnsAsync(unmatchedResolvedAddresses.AsQueryable())
+                   .ReturnsAsync(new List<ResolvedAddress>().AsQueryable());
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
@@ -105,7 +105,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 .BeEquivalentTo(expectedResolvedAddressOrchestrationServiceException);
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>
-              service.RetrieveAllResolvedAddresses(),
+              service.RetrieveAllResolvedAddressesAsync(),
                   Times.Exactly(2));
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -121,12 +121,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     resolvedAddressOrchestrationValidationException))),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedResolvedAddressOrchestrationServiceException))),
                         Times.Once);
 

@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 .BeEquivalentTo(expectedIngestionTrackingProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedIngestionTrackingProcessingValidationException))),
                         Times.Once);
 

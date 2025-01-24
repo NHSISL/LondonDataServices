@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
     public partial class SubscriberCredentialOrchestration
     {
         private delegate ValueTask<SubscriberCredential> ReturningSubscriberCredentialFunction();
-        private delegate IQueryable<SubscriberCredential> ReturningSubscriberCredentialIQueryableFunction();
+        private delegate ValueTask<IQueryable<SubscriberCredential>> ReturningSubscriberCredentialIQueryableFunction();
         private delegate ValueTask<List<Guid>> ReturningGuidListFunction();
         private delegate ValueTask ReturnNothingFunction();
 
@@ -31,126 +31,132 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             catch (InvalidArgumentSubscriberCredentialOrchestrationException
                 invalidArgumentSubscriberCredentialOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentSubscriberCredentialOrchestrationException);
             }
             catch (InvalidSubscriberCredentialOrchestrationException
                 invalidSubscriberCredentialOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidSubscriberCredentialOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidSubscriberCredentialOrchestrationException);
             }
             catch (InvalidSubscriberAgreementOrchestrationException
                 invalidSubscriberAgreementOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidSubscriberAgreementOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidSubscriberAgreementOrchestrationException);
             }
             catch (SubscriberAgreementProcessingValidationException
                 subscriberAgreementProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberAgreementProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    subscriberAgreementProcessingValidationException);
             }
             catch (SubscriberAgreementProcessingDependencyValidationException
                 subscriberAgreementProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberAgreementProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    subscriberAgreementProcessingDependencyValidationException);
             }
             catch (SubscriberCredentialValidationException
                 subscriberCredentialValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(subscriberCredentialValidationException);
             }
             catch (SubscriberCredentialProcessingDependencyValidationException
                 subscriberCredentialProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     subscriberCredentialProcessingDependencyValidationException);
             }
             catch (SubscriberAgreementProcessingDependencyException
                 subscriberAgreementProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(subscriberAgreementProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberAgreementProcessingDependencyException);
             }
             catch (SubscriberAgreementProcessingServiceException
                 subscriberAgreementProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberAgreementProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberAgreementProcessingServiceException);
             }
             catch (SubscriberCredentialProcessingDependencyException
                 subscriberCredentialProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialProcessingDependencyException);
             }
             catch (SubscriberCredentialProcessingServiceException
                 subscriberCredentialProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialProcessingServiceException);
             }
             catch (Exception exception)
             {
                 var failedSubscriberCredentialOrchestrationServiceException =
                     new FailedSubscriberCredentialOrchestrationServiceException(
-                        message: "Failed subscriber credential orchestration service error occurred, please contact support.",
+                        message: "Failed subscriber credential orchestration service error occurred, " +
+                            "please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSubscriberCredentialOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSubscriberCredentialOrchestrationServiceException);
             }
         }
 
-        private IQueryable<SubscriberCredential> TryCatch(ReturningSubscriberCredentialIQueryableFunction
-            returningSubscriberCredentialIQueryableFunction)
+        private async ValueTask<IQueryable<SubscriberCredential>>
+            TryCatch(ReturningSubscriberCredentialIQueryableFunction returningSubscriberCredentialIQueryableFunction)
         {
             try
             {
-                return returningSubscriberCredentialIQueryableFunction();
+                return await returningSubscriberCredentialIQueryableFunction();
             }
             catch (SubscriberAgreementProcessingValidationException
                 subscriberAgreementProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberAgreementProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    subscriberAgreementProcessingValidationException);
             }
             catch (SubscriberAgreementProcessingDependencyValidationException
                 subscriberAgreementProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberAgreementProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    subscriberAgreementProcessingDependencyValidationException);
             }
             catch (SubscriberCredentialValidationException
                 subscriberCredentialValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(subscriberCredentialValidationException);
             }
             catch (SubscriberCredentialProcessingDependencyValidationException
                 subscriberCredentialProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     subscriberCredentialProcessingDependencyValidationException);
             }
             catch (SubscriberAgreementProcessingDependencyException
                 subscriberAgreementProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(subscriberAgreementProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberAgreementProcessingDependencyException);
             }
             catch (SubscriberAgreementProcessingServiceException
                 subscriberAgreementProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberAgreementProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberAgreementProcessingServiceException);
             }
             catch (SubscriberCredentialProcessingDependencyException
                 subscriberCredentialProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialProcessingDependencyException);
             }
             catch (SubscriberCredentialProcessingServiceException
                 subscriberCredentialProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialProcessingServiceException);
             }
             catch (Exception exception)
             {
                 var failedSubscriberCredentialOrchestrationServiceException =
                     new FailedSubscriberCredentialOrchestrationServiceException(
-                        message: "Failed subscriber credential orchestration service error occurred, please contact support.",
+                        message: "Failed subscriber credential orchestration service error occurred, " +
+                            "please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSubscriberCredentialOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSubscriberCredentialOrchestrationServiceException);
             }
         }
 
@@ -163,52 +169,55 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             catch (SubscriberAgreementProcessingValidationException
                 subscriberAgreementProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberAgreementProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    subscriberAgreementProcessingValidationException);
             }
             catch (SubscriberAgreementProcessingDependencyValidationException
                 subscriberAgreementProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberAgreementProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    subscriberAgreementProcessingDependencyValidationException);
             }
             catch (SubscriberCredentialValidationException
                 subscriberCredentialValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(subscriberCredentialValidationException);
             }
             catch (SubscriberCredentialProcessingDependencyValidationException
                 subscriberCredentialProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     subscriberCredentialProcessingDependencyValidationException);
             }
             catch (SubscriberAgreementProcessingDependencyException
                 subscriberAgreementProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(subscriberAgreementProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberAgreementProcessingDependencyException);
             }
             catch (SubscriberAgreementProcessingServiceException
                 subscriberAgreementProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberAgreementProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberAgreementProcessingServiceException);
             }
             catch (SubscriberCredentialProcessingDependencyException
                 subscriberCredentialProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialProcessingDependencyException);
             }
             catch (SubscriberCredentialProcessingServiceException
                 subscriberCredentialProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialProcessingServiceException);
             }
             catch (Exception exception)
             {
                 var failedSubscriberCredentialOrchestrationServiceException =
                     new FailedSubscriberCredentialOrchestrationServiceException(
-                        message: "Failed subscriber credential orchestration service error occurred, please contact support.",
+                        message: "Failed subscriber credential orchestration service error occurred, " +
+                            "please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSubscriberCredentialOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSubscriberCredentialOrchestrationServiceException);
             }
         }
 
@@ -221,49 +230,50 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
             catch (InvalidArgumentSubscriberCredentialOrchestrationException
                 invalidArgumentSubscriberCredentialOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentSubscriberCredentialOrchestrationException);
             }
             catch (SubscriberAgreementProcessingValidationException
                 subscriberAgreementProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberAgreementProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    subscriberAgreementProcessingValidationException);
             }
             catch (SubscriberAgreementProcessingDependencyValidationException
                 subscriberAgreementProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     subscriberAgreementProcessingDependencyValidationException);
             }
             catch (SubscriberCredentialValidationException
                 subscriberCredentialValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberCredentialValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(subscriberCredentialValidationException);
             }
             catch (SubscriberCredentialProcessingDependencyValidationException
                 subscriberCredentialProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(
+                throw await CreateAndLogDependencyValidationExceptionAsync(
                     subscriberCredentialProcessingDependencyValidationException);
             }
             catch (SubscriberAgreementProcessingDependencyException
                 subscriberAgreementProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(subscriberAgreementProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberAgreementProcessingDependencyException);
             }
             catch (SubscriberAgreementProcessingServiceException
                 subscriberAgreementProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberAgreementProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberAgreementProcessingServiceException);
             }
             catch (SubscriberCredentialProcessingDependencyException
                 subscriberCredentialProcessingDependencyException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialProcessingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialProcessingDependencyException);
             }
             catch (SubscriberCredentialProcessingServiceException
                 subscriberCredentialProcessingServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberCredentialProcessingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberCredentialProcessingServiceException);
             }
             catch (Exception exception)
             {
@@ -273,58 +283,61 @@ namespace LHDS.Core.Services.Orchestrations.SubscriberCredentials
                             "please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSubscriberCredentialOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSubscriberCredentialOrchestrationServiceException);
             }
         }
 
-        private SubscriberCredentialValidationOrchestrationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<SubscriberCredentialValidationOrchestrationException> 
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var subscriberCredentialValidationOrchestrationException =
                 new SubscriberCredentialValidationOrchestrationException(
                     message: "Subscriber credential orchestration validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(subscriberCredentialValidationOrchestrationException);
+            await this.loggingBroker.LogErrorAsync(subscriberCredentialValidationOrchestrationException);
 
             return subscriberCredentialValidationOrchestrationException;
         }
 
-        private SubscriberCredentialOrchestrationDependencyValidationException
-           CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<SubscriberCredentialOrchestrationDependencyValidationException>
+           CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var subscriberCredentialOrchestrationDependencyValidationException =
                 new SubscriberCredentialOrchestrationDependencyValidationException(
-                    message: "Subscriber credential orchestration dependency validation error occurred, fix the errors and try again.",
+                    message: "Subscriber credential orchestration dependency validation error occurred, " +
+                        "fix the errors and try again.",
                     exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(subscriberCredentialOrchestrationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(subscriberCredentialOrchestrationDependencyValidationException);
 
             return subscriberCredentialOrchestrationDependencyValidationException;
         }
 
-        private SubscriberCredentialDependencyOrchestrationException
-           CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<SubscriberCredentialDependencyOrchestrationException>
+           CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var subscriberCredentialDependencyOrchestrationException =
                 new SubscriberCredentialDependencyOrchestrationException(
                     message: "Subscriber credential orchestration dependency error occurred, " +
-                    "fix the errors and try again.",
+                        "fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(subscriberCredentialDependencyOrchestrationException);
+            await this.loggingBroker.LogErrorAsync(subscriberCredentialDependencyOrchestrationException);
 
             throw subscriberCredentialDependencyOrchestrationException;
         }
 
-        private SubscriberCredentialOrchestrationServiceException
-            CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<SubscriberCredentialOrchestrationServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var subscriberCredentialOrchestrationServiceException =
                 new SubscriberCredentialOrchestrationServiceException(
-                    message: "Subscriber credential orchestration service error occurred, fix the errors and try again.",
+                    message: "Subscriber credential orchestration service error occurred, " +
+                        "fix the errors and try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(subscriberCredentialOrchestrationServiceException);
+            await this.loggingBroker.LogErrorAsync(subscriberCredentialOrchestrationServiceException);
 
             throw subscriberCredentialOrchestrationServiceException;
         }

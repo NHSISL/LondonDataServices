@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                 .BeEquivalentTo(expectedDataSetProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetProcessingValidationException))),
                         Times.Once);
 

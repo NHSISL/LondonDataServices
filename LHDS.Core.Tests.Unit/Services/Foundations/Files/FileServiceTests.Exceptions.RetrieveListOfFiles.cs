@@ -96,7 +96,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Files
         }
 
         [Fact]
-        public async Task ShoudThrowServiceExceptionOnRetrieveListOfFilesIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveListOfFilesIfServiceErrorOccursAsync()
         {
             // given
             string somePath = GetRandomString();

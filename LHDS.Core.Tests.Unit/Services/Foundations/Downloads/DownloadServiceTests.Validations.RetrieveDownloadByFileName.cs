@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
                 .BeEquivalentTo(expectedDownloadValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDownloadValidationException))),
                         Times.Once);
 
@@ -87,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
                 .BeEquivalentTo(expectedDownloadValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDownloadValidationException))),
                         Times.Once);
 
@@ -132,7 +132,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
                 .BeEquivalentTo(expectedDownloadValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDownloadValidationException))),
                         Times.Once);
 
@@ -189,7 +189,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
                 .BeEquivalentTo(expectedDownloadValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDownloadValidationException))),
                         Times.Once);
 

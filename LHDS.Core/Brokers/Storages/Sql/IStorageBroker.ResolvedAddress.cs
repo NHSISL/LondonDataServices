@@ -14,7 +14,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
     {
         ValueTask<ResolvedAddress> InsertResolvedAddressAsync(ResolvedAddress resolvedAddress);
         ValueTask BulkInsertResolvedAddressesAsync(List<ResolvedAddress> resolvedAddresses);
-        IQueryable<ResolvedAddress> SelectAllResolvedAddresses();
+        ValueTask<IQueryable<ResolvedAddress>> SelectAllResolvedAddressesAsync();
         ValueTask<ResolvedAddress> SelectResolvedAddressByIdAsync(Guid resolvedAddressId);
         ValueTask<ResolvedAddress> UpdateResolvedAddressAsync(ResolvedAddress resolvedAddress);
         ValueTask BulkUpdateResolvedAddressesAsync(List<ResolvedAddress> resolvedAddresses);

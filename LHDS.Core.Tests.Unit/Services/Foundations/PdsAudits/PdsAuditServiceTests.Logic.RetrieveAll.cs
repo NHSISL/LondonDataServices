@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
     public partial class PdsAuditServiceTests
     {
         [Fact]
-        public void ShouldReturnPdsAudits()
+        public async Task ShouldReturnPdsAuditsAsync()
         {
             // given
             IQueryable<PdsAudit> randomPdsAudits = CreateRandomPdsAudits();
@@ -21,18 +22,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             IQueryable<PdsAudit> expectedPdsAudits = storagePdsAudits;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllPdsAudits())
-                    .Returns(storagePdsAudits);
+                broker.SelectAllPdsAuditsAsync())
+                    .ReturnsAsync(storagePdsAudits);
 
             // when
             IQueryable<PdsAudit> actualPdsAudits =
-                this.pdsAuditService.RetrieveAllPdsAudits();
+                await this.pdsAuditService.RetrieveAllPdsAuditsAsync();
 
             // then
             actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllPdsAudits(),
+                broker.SelectAllPdsAuditsAsync(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

@@ -27,8 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                service.RetrieveAllTerminologyArtifacts())
-                    .Throws(dependencyValidationException);
+                service.RetrieveAllTerminologyArtifactsAsync())
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<TerminologyArtifact> getUndownloadedTask =
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingDependencyValidationException);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyArtifacts(),
+                service.RetrieveAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -66,8 +66,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     innerException: dependencyException.InnerException as Xeption);
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                service.RetrieveAllTerminologyArtifacts())
-                    .Throws(dependencyException);
+                service.RetrieveAllTerminologyArtifactsAsync())
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<TerminologyArtifact> getUndownloadedTask =
@@ -81,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingDependencyException);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyArtifacts(),
+                service.RetrieveAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -110,8 +110,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     innerException: failedTerminologyArtifactProcessingServiceException);
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                 service.RetrieveAllTerminologyArtifacts())
-                    .Throws(serviceException);
+                 service.RetrieveAllTerminologyArtifactsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<TerminologyArtifact?> getUndownloadedTask =
@@ -125,7 +125,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingServiceException);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyArtifacts(),
+                service.RetrieveAllTerminologyArtifactsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

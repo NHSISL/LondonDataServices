@@ -32,8 +32,8 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
                 return await this.subscriberAgreementService.AddSubscriberAgreementAsync(subscriberAgreement);
             });
 
-        public IQueryable<SubscriberAgreement> RetrieveAllSubscriberAgreements() =>
-            TryCatch(() => this.subscriberAgreementService.RetrieveAllSubscriberAgreements());
+        public ValueTask<IQueryable<SubscriberAgreement>> RetrieveAllSubscriberAgreementsAsync() =>
+            TryCatch(async () => await this.subscriberAgreementService.RetrieveAllSubscriberAgreementsAsync());
 
         public ValueTask<SubscriberAgreement> RetrieveSubscriberAgreementByIdAsync(Guid subscriberAgreementId) =>
             TryCatch(async () =>
@@ -58,9 +58,11 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
                 ValidateSubscriberAgreement(subscriberAgreement);
                 ValidateSubscriberAgreementId(subscriberAgreement.Id);
 
-                var maybeSubscriberAgreement = this.subscriberAgreementService
-                    .RetrieveAllSubscriberAgreements().FirstOrDefault(
-                        agreement => agreement.Id == subscriberAgreement.Id);
+                IQueryable<SubscriberAgreement> retrievedSubscriberAgreements =
+                    await this.subscriberAgreementService.RetrieveAllSubscriberAgreementsAsync();
+
+                SubscriberAgreement? maybeSubscriberAgreement = retrievedSubscriberAgreements
+                    .FirstOrDefault(agreement => agreement.Id == subscriberAgreement.Id);
 
                 if (maybeSubscriberAgreement != null)
                 {

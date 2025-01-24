@@ -28,7 +28,9 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyArtifacts
 
             List<string> expectedAttributeValues = new List<string>()
             {
-                "ISL.LDS.AdminSpa.TerminologyArtifact","ISL.LDS.AdminSpa.Administrators","ISL.LDS.AdminSpa.ReadOnly"
+                "ISL.LDS.AdminSpa.TerminologyArtifact",
+                "ISL.LDS.AdminSpa.Administrators",
+                "ISL.LDS.AdminSpa.ReadOnly"
             };
 
             // when

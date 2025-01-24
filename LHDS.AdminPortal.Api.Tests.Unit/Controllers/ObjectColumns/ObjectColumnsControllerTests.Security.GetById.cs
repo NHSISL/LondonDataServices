@@ -16,18 +16,13 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ObjectColumns
     public partial class ObjectColumnsControllerTests
     {
         [Fact]
-        public void GetByIdShouldHaveRoleAttributeWithRoles()
+        public void GetByIdShouldNotHaveRoleAttribute()
         {
             // given 
             var controllerType = typeof(ObjectColumnsController);
             var methodInfo = controllerType.GetMethod("GetObjectColumnByIdAsync");
-            Type attributeType = typeof(AuthorizeAttribute);
-            string attributeProperty = "Roles";
 
-            List<string> expectedAttributeValues = new List<string>()
-            {
-                "ISL.LDS.AdminSpa.Administrators", "ISL.LDS.AdminSpa.Configurations"
-            };
+            Type attributeType = typeof(AuthorizeAttribute);
 
             // when
             var methodAttribute = methodInfo?
@@ -41,19 +36,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ObjectColumns
             var attribute = methodAttribute ?? controllerAttribute;
 
             // then
-            attribute.Should().NotBeNull();
-
-            var actualAttributeValue = attributeType
-                .GetProperty(attributeProperty)?
-                .GetValue(attribute) as string ?? string.Empty;
-
-            var actualAttributeValues = actualAttributeValue?
-                .Split(',')
-                .Select(role => role.Trim())
-                .Where(role => !string.IsNullOrEmpty(role))
-                .ToList();
-
-            actualAttributeValues.Should().BeEquivalentTo(expectedAttributeValues);
+            attribute.Should().BeNull();
         }
 
         [Fact]

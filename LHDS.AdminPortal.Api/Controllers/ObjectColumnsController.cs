@@ -21,7 +21,6 @@ namespace LHDS.AdminPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
     public class ObjectColumnsController : RESTFulController
     {
         private readonly IObjectColumnService objectColumnService;
@@ -72,9 +71,6 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.ObjectColumns, ISL.LDS.AdminApi.ReadOnly")]
-#endif
         public async ValueTask<ActionResult<IQueryable<ObjectColumn>>> Get()
         {
             try
@@ -94,7 +90,6 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.Administrators")]
         [InvisibleApi]
         [HttpGet("{objectColumnId}")]
         public async ValueTask<ActionResult<ObjectColumn>> GetObjectColumnByIdAsync(Guid objectColumnId)

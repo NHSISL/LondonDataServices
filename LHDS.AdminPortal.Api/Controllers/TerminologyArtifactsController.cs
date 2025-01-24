@@ -65,7 +65,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.TerminologyArtifact,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.TerminologyArtifact, ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet]
 #if !DEBUG
         [EnableQuery(PageSize = 50)]
@@ -92,7 +92,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.Configurations,ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations, ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{terminologyArtifactId}")]
         public async ValueTask<ActionResult<TerminologyArtifact>> GetTerminologyArtifactByIdAsync(
             Guid terminologyArtifactId)

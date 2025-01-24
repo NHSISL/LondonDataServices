@@ -92,12 +92,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: invalidMeshMessageOrchestrationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutOrchestrationValidationLoggingException))),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutOrchestrationServiceException))),
                         Times.Once);
 

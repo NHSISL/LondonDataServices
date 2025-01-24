@@ -28,7 +28,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreement
 
             List<string> expectedAttributeValues = new List<string>()
             {
-                "ISL.LDS.AdminSpa.Administrators"
+                "ISL.LDS.AdminSpa.Administrators",
+                "ISL.LDS.AdminSpa.Configurations"
             };
 
             // when

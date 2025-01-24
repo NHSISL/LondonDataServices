@@ -59,7 +59,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [InvisibleApi]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations, ISL.LDS.AdminSpa.Administrators")]
         [HttpGet]
         public async ValueTask<ActionResult<IQueryable<TerminologyPoll>>> GetAllTerminologyPollsAsync()
         {
@@ -80,7 +80,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [InvisibleApi]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations, ISL.LDS.AdminSpa.Administrators")]
         [HttpGet("{terminologyPollId}")]
         public async ValueTask<ActionResult<TerminologyPoll>> GetTerminologyPollByIdAsync(Guid terminologyPollId)
         {

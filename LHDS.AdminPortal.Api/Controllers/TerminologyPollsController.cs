@@ -60,7 +60,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations, ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations, ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet]
         public async ValueTask<ActionResult<IQueryable<TerminologyPoll>>> GetAllTerminologyPollsAsync()
         {
@@ -81,7 +81,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations, ISL.LDS.AdminSpa.Administrators")]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations, ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{terminologyPollId}")]
         public async ValueTask<ActionResult<TerminologyPoll>> GetTerminologyPollByIdAsync(Guid terminologyPollId)
         {

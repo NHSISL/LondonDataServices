@@ -28,7 +28,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.OptOuts
 
             List<string> expectedAttributeValues = new List<string>()
             {
-                "ISL.LDS.AdminSpa.OptOut", "ISL.LDS.AdminSpa.Administrators"
+                "ISL.LDS.AdminSpa.OptOut", 
+                "ISL.LDS.AdminSpa.Administrators"
             };
 
             // when

@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 .BeEquivalentTo(expectedOptOutProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutProcessingValidationException))),
                         Times.Once);
 

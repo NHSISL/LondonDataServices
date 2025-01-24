@@ -15,7 +15,7 @@ using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
-    [ApiController]
+    [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations, ISL.LDS.AdminSpa.Administrators")]
     [Route("api/[controller]")]
     public class TerminologyPollsController : RESTFulController
     {

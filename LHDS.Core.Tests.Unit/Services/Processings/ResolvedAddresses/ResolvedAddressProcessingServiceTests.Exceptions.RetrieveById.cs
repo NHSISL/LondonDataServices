@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedResolvedAddressProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedResolvedAddressProcessingDependencyException))),
                          Times.Once);
 
@@ -133,7 +133,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedResolvedAddressProcessingServiveException))),
                          Times.Once);
 

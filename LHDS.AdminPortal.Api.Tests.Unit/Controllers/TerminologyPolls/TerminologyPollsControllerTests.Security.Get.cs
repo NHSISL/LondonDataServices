@@ -18,13 +18,54 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
     public partial class TerminologyPollsControllerTests
     {
         [Fact]
-        public void GetByIdShouldNotHaveRoleAttribute()
+        public void GetByIdShouldHaveRoleAttributeWithRoles()
         {
             // given 
             var controllerType = typeof(TerminologyPollsController);
-            var methodInfo = controllerType.GetMethod("GetTerminologyPollByIdAsync");
-
+            var methodInfo = controllerType.GetMethod("GetAllTerminologyPollsAsync");
             Type attributeType = typeof(AuthorizeAttribute);
+            string attributeProperty = "Roles";
+
+            List<string> expectedAttributeValues = new List<string>()
+            {
+                "ISL.LDS.AdminSpa.Configurations",
+                "ISL.LDS.AdminSpa.Administrators"
+            };
+
+            // when
+            var methodAttribute = methodInfo?
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var controllerAttribute = controllerType
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var attribute = methodAttribute ?? controllerAttribute;
+
+            // then
+            attribute.Should().NotBeNull();
+
+            var actualAttributeValue = attributeType
+                .GetProperty(attributeProperty)?
+                .GetValue(attribute) as string ?? string.Empty;
+
+            var actualAttributeValues = actualAttributeValue?
+                .Split(',')
+                .Select(role => role.Trim())
+                .Where(role => !string.IsNullOrEmpty(role))
+                .ToList();
+
+            actualAttributeValues.Should().BeEquivalentTo(expectedAttributeValues);
+        }
+
+        [Fact]
+        public void GetByIdShouldNotHaveInvisibleApiAttribute()
+        {
+            // given
+            var controllerType = typeof(TerminologyPollsController);
+            var methodInfo = controllerType.GetMethod("GetAllTerminologyPollsAsync");
+            Type attributeType = typeof(InvisibleApiAttribute);
 
             // when
             var methodAttribute = methodInfo?
@@ -39,29 +80,6 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
 
             // then
             attribute.Should().BeNull();
-        }
-
-        [Fact]
-        public void GetAllShouldHaveInvisibleApiAttribute()
-        {
-            // Given
-            var controllerType = typeof(TerminologyPollsController);
-            var methodInfo = controllerType.GetMethod("GetAllTerminologyPollsAsync");
-            Type attributeType = typeof(InvisibleApiAttribute);
-
-            // When
-            var methodAttribute = methodInfo?
-                .GetCustomAttributes(attributeType, inherit: true)
-                .FirstOrDefault();
-
-            var controllerAttribute = controllerType
-                .GetCustomAttributes(attributeType, inherit: true)
-                .FirstOrDefault();
-
-            var attribute = methodAttribute ?? controllerAttribute;
-
-            // Then
-            attribute.Should().NotBeNull();
         }
     }
 }

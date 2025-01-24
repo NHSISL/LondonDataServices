@@ -29,86 +29,86 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             }
             catch (InvalidArgumentEmisLandingOrchestrationException invalidArgumentEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentEmisLandingOrchestrationException);
             }
             catch (NullLandingConfigurationEmisLandingOrchestrationException
                 nullLandingConfigurationEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(nullLandingConfigurationEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullLandingConfigurationEmisLandingOrchestrationException);
             }
             catch (NullSubscriberCredentialEmisLandingOrchestrationException
                 nullSubscriberCredentialEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(nullSubscriberCredentialEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullSubscriberCredentialEmisLandingOrchestrationException);
             }
             catch (NullBlobContainersEmisLandingOrchestrationException
                 nullBlobContainersEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(nullBlobContainersEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullBlobContainersEmisLandingOrchestrationException);
             }
             catch (DocumentValidationException documentValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentValidationException);
             }
             catch (DocumentDependencyValidationException documentDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentDependencyValidationException);
             }
             catch (DownloadValidationException downloadValidationException)
             {
-                throw CreateAndLogDependencyValidationException(downloadValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(downloadValidationException);
             }
             catch (DownloadDependencyValidationException downloadDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(downloadDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(downloadDependencyValidationException);
             }
             catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingValidationException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingDependencyValidationException);
             }
             catch (IngestionTrackingAuditValidationException auditValidationException)
             {
-                throw CreateAndLogDependencyValidationException(auditValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(auditValidationException);
             }
             catch (IngestionTrackingAuditDependencyValidationException auditDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(auditDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(auditDependencyValidationException);
             }
             catch (DocumentDependencyException documentDependencyException)
             {
-                throw CreateAndLogDependencyException(documentDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentDependencyException);
             }
             catch (DocumentServiceException documentServiceException)
             {
-                throw CreateAndLogDependencyException(documentServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
             }
             catch (DownloadDependencyException downloadDependencyException)
             {
-                throw CreateAndLogDependencyException(downloadDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(downloadDependencyException);
             }
             catch (DownloadServiceException downloadServiceException)
             {
-                throw CreateAndLogDependencyException(downloadServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(downloadServiceException);
             }
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingDependencyException);
             }
             catch (IngestionTrackingServiceException ingestionTrackingServiceException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingServiceException);
             }
             catch (IngestionTrackingAuditDependencyException auditDependencyException)
             {
-                throw CreateAndLogDependencyException(auditDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(auditDependencyException);
             }
             catch (IngestionTrackingAuditServiceException auditServiceException)
             {
-                throw CreateAndLogDependencyException(auditServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(auditServiceException);
             }
             catch (Exception exception)
             {
@@ -117,7 +117,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         message: "Failed EMIS landing orchestration service error occurred, please contact support.",
                         exception);
 
-                throw CreateAndLogServiceException(failedDownloadServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedDownloadServiceException);
             }
         }
 
@@ -129,89 +129,89 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             }
             catch (InvalidArgumentEmisLandingOrchestrationException invalidArgumentEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentEmisLandingOrchestrationException);
             }
             catch (NullLandingConfigurationEmisLandingOrchestrationException
                 nullLandingConfigurationEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(nullLandingConfigurationEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullLandingConfigurationEmisLandingOrchestrationException);
             }
             catch (NullSubscriberCredentialEmisLandingOrchestrationException
                 nullSubscriberCredentialEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(nullSubscriberCredentialEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullSubscriberCredentialEmisLandingOrchestrationException);
             }
             catch (NullBlobContainersEmisLandingOrchestrationException nullBlobContainersEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(nullBlobContainersEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullBlobContainersEmisLandingOrchestrationException);
             }
             catch (NotFoundEmisLandingOrchestrationException notFoundEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(notFoundEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundEmisLandingOrchestrationException);
             }
             catch (DocumentValidationException documentValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentValidationException);
             }
             catch (DocumentDependencyValidationException documentDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentDependencyValidationException);
             }
             catch (DownloadValidationException downloadValidationException)
             {
-                throw CreateAndLogDependencyValidationException(downloadValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(downloadValidationException);
             }
             catch (DownloadDependencyValidationException downloadDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(downloadDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(downloadDependencyValidationException);
             }
             catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingValidationException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingDependencyValidationException);
             }
             catch (IngestionTrackingAuditValidationException auditValidationException)
             {
-                throw CreateAndLogDependencyValidationException(auditValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(auditValidationException);
             }
             catch (IngestionTrackingAuditDependencyValidationException auditDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(auditDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(auditDependencyValidationException);
             }
             catch (DocumentDependencyException documentDependencyException)
             {
-                throw CreateAndLogDependencyException(documentDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentDependencyException);
             }
             catch (DocumentServiceException documentServiceException)
             {
-                throw CreateAndLogDependencyException(documentServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
             }
             catch (DownloadDependencyException downloadDependencyException)
             {
-                throw CreateAndLogDependencyException(downloadDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(downloadDependencyException);
             }
             catch (DownloadServiceException downloadServiceException)
             {
-                throw CreateAndLogDependencyException(downloadServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(downloadServiceException);
             }
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingDependencyException);
             }
             catch (IngestionTrackingServiceException ingestionTrackingServiceException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingServiceException);
             }
             catch (IngestionTrackingAuditDependencyException auditDependencyException)
             {
-                throw CreateAndLogDependencyException(auditDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(auditDependencyException);
             }
             catch (IngestionTrackingAuditServiceException auditServiceException)
             {
-                throw CreateAndLogDependencyException(auditServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(auditServiceException);
             }
             catch (Exception exception)
             {
@@ -220,7 +220,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         message: "Failed EMIS landing orchestration service error occurred, please contact support.",
                         exception);
 
-                throw CreateAndLogServiceException(failedEmisLandingOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedEmisLandingOrchestrationServiceException);
             }
         }
 
@@ -232,89 +232,89 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             }
             catch (InvalidArgumentEmisLandingOrchestrationException invalidArgumentEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentEmisLandingOrchestrationException);
             }
             catch (NullLandingConfigurationEmisLandingOrchestrationException
                 nullLandingConfigurationEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(nullLandingConfigurationEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullLandingConfigurationEmisLandingOrchestrationException);
             }
             catch (NullSubscriberCredentialEmisLandingOrchestrationException
                 nullSubscriberCredentialEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(nullSubscriberCredentialEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullSubscriberCredentialEmisLandingOrchestrationException);
             }
             catch (NullBlobContainersEmisLandingOrchestrationException nullBlobContainersEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(nullBlobContainersEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullBlobContainersEmisLandingOrchestrationException);
             }
             catch (NotFoundEmisLandingOrchestrationException notFoundEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(notFoundEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundEmisLandingOrchestrationException);
             }
             catch (DocumentValidationException documentValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentValidationException);
             }
             catch (DocumentDependencyValidationException documentDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentDependencyValidationException);
             }
             catch (DownloadValidationException downloadValidationException)
             {
-                throw CreateAndLogDependencyValidationException(downloadValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(downloadValidationException);
             }
             catch (DownloadDependencyValidationException downloadDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(downloadDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(downloadDependencyValidationException);
             }
             catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingValidationException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingDependencyValidationException);
             }
             catch (IngestionTrackingAuditValidationException auditValidationException)
             {
-                throw CreateAndLogDependencyValidationException(auditValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(auditValidationException);
             }
             catch (IngestionTrackingAuditDependencyValidationException auditDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(auditDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(auditDependencyValidationException);
             }
             catch (DocumentDependencyException documentDependencyException)
             {
-                throw CreateAndLogDependencyException(documentDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentDependencyException);
             }
             catch (DocumentServiceException documentServiceException)
             {
-                throw CreateAndLogDependencyException(documentServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
             }
             catch (DownloadDependencyException downloadDependencyException)
             {
-                throw CreateAndLogDependencyException(downloadDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(downloadDependencyException);
             }
             catch (DownloadServiceException downloadServiceException)
             {
-                throw CreateAndLogDependencyException(downloadServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(downloadServiceException);
             }
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingDependencyException);
             }
             catch (IngestionTrackingServiceException ingestionTrackingServiceException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingServiceException);
             }
             catch (IngestionTrackingAuditDependencyException auditDependencyException)
             {
-                throw CreateAndLogDependencyException(auditDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(auditDependencyException);
             }
             catch (IngestionTrackingAuditServiceException auditServiceException)
             {
-                throw CreateAndLogDependencyException(auditServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(auditServiceException);
             }
             catch (Exception exception)
             {
@@ -323,7 +323,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         message: "Failed EMIS landing orchestration service error occurred, please contact support.",
                         exception);
 
-                throw CreateAndLogServiceException(failedEmisLandingOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedEmisLandingOrchestrationServiceException);
             }
         }
 
@@ -335,71 +335,71 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             }
             catch (InvalidArgumentEmisLandingOrchestrationException invalidArgumentEmisLandingOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentEmisLandingOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentEmisLandingOrchestrationException);
             }
             catch (DocumentValidationException documentValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentValidationException);
             }
             catch (DocumentDependencyValidationException documentDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(documentDependencyValidationException);
             }
             catch (DownloadValidationException downloadValidationException)
             {
-                throw CreateAndLogDependencyValidationException(downloadValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(downloadValidationException);
             }
             catch (DownloadDependencyValidationException downloadDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(downloadDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(downloadDependencyValidationException);
             }
             catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingValidationException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ingestionTrackingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingDependencyValidationException);
             }
             catch (IngestionTrackingAuditValidationException auditValidationException)
             {
-                throw CreateAndLogDependencyValidationException(auditValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(auditValidationException);
             }
             catch (IngestionTrackingAuditDependencyValidationException auditDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(auditDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(auditDependencyValidationException);
             }
             catch (DocumentDependencyException documentDependencyException)
             {
-                throw CreateAndLogDependencyException(documentDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(documentDependencyException);
             }
             catch (DocumentServiceException documentServiceException)
             {
-                throw CreateAndLogDependencyException(documentServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(documentServiceException);
             }
             catch (DownloadDependencyException downloadDependencyException)
             {
-                throw CreateAndLogDependencyException(downloadDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(downloadDependencyException);
             }
             catch (DownloadServiceException downloadServiceException)
             {
-                throw CreateAndLogDependencyException(downloadServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(downloadServiceException);
             }
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingDependencyException);
             }
             catch (IngestionTrackingServiceException ingestionTrackingServiceException)
             {
-                throw CreateAndLogDependencyException(ingestionTrackingServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ingestionTrackingServiceException);
             }
             catch (IngestionTrackingAuditDependencyException auditDependencyException)
             {
-                throw CreateAndLogDependencyException(auditDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(auditDependencyException);
             }
             catch (IngestionTrackingAuditServiceException auditServiceException)
             {
-                throw CreateAndLogDependencyException(auditServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(auditServiceException);
             }
             catch (Exception exception)
             {
@@ -408,59 +408,60 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         message: "Failed EMIS landing orchestration service error occurred, please contact support.",
                         exception);
 
-                throw CreateAndLogServiceException(failedEmisLandingOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedEmisLandingOrchestrationServiceException);
             }
         }
 
-        private EmisLandingOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<EmisLandingOrchestrationValidationException>
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var emisLandingOrchestrationValidationException =
                 new EmisLandingOrchestrationValidationException(
                     message: "EMIS landing orchestration validation errors occurred, please try again.",
                     exception);
 
-            this.loggingBroker.LogError(emisLandingOrchestrationValidationException);
+            await this.loggingBroker.LogErrorAsync(emisLandingOrchestrationValidationException);
 
             return emisLandingOrchestrationValidationException;
         }
 
-        private EmisLandingOrchestrationDependencyValidationException
-            CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<EmisLandingOrchestrationDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var emisLandingOrchestrationDependencyValidationException =
                 new EmisLandingOrchestrationDependencyValidationException(
                     message: "EMIS landing orchestration dependency validation error occurred, fix the errors and try again.",
                     exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(emisLandingOrchestrationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(emisLandingOrchestrationDependencyValidationException);
 
             return emisLandingOrchestrationDependencyValidationException;
         }
 
-        private EmisLandingOrchestrationDependencyException
-            CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<EmisLandingOrchestrationDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var emisLandingOrchestrationDependencyException =
                 new EmisLandingOrchestrationDependencyException(
                     message: "EMIS landing orchestration dependency error occurred, fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(emisLandingOrchestrationDependencyException);
+            await this.loggingBroker.LogErrorAsync(emisLandingOrchestrationDependencyException);
 
-            throw emisLandingOrchestrationDependencyException;
+            return emisLandingOrchestrationDependencyException;
         }
 
-        private EmisLandingOrchestrationServiceException
-            CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<EmisLandingOrchestrationServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var emisLandingOrchestrationServiceException =
                 new EmisLandingOrchestrationServiceException(
                     message: "EMIS landing orchestration service error occurred, please contact support.",
                     exception);
 
-            this.loggingBroker.LogError(emisLandingOrchestrationServiceException);
+            await this.loggingBroker.LogErrorAsync(emisLandingOrchestrationServiceException);
 
-            throw emisLandingOrchestrationServiceException;
+            return emisLandingOrchestrationServiceException;
         }
     }
 }

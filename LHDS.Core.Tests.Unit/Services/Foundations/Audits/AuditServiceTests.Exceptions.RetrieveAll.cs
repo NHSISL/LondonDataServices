@@ -3,7 +3,10 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -14,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
     public partial class AuditServiceTests
     {
         [Fact]
-        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogIt()
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveAllWhenSqlExceptionOccursAndLogItAsync()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -30,26 +33,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     innerException: failedAuditStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllAudits())
-                    .Throws(sqlException);
+                broker.SelectAllAuditsAsync())
+                    .ThrowsAsync(sqlException);
 
             // when
-            Action retrieveAllAuditsAction = () =>
-                this.auditService.RetrieveAllAudits();
+            ValueTask<IQueryable<Audit>> retrieveAllAuditsTask =
+                this.auditService.RetrieveAllAuditsAsync();
 
             AuditDependencyException actualAuditDependencyException =
-                Assert.Throws<AuditDependencyException>(retrieveAllAuditsAction);
+                await Assert.ThrowsAsync<AuditDependencyException>(
+                    testCode: retrieveAllAuditsTask.AsTask);
 
             // then
             actualAuditDependencyException.Should()
                 .BeEquivalentTo(expectedAuditDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllAudits(),
+                broker.SelectAllAuditsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(
+                broker.LogCriticalAsync(It.Is(SameExceptionAs(
                     expectedAuditDependencyException))),
                         Times.Once);
 
@@ -60,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string exceptionMessage = GetRandomString();
@@ -77,26 +81,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     innerException: failedAuditServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllAudits())
-                    .Throws(serviceException);
+                broker.SelectAllAuditsAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
-            Action retrieveAllAuditsAction = () =>
-                this.auditService.RetrieveAllAudits();
+            ValueTask<IQueryable<Audit>> retrieveAllAuditsTask =
+                this.auditService.RetrieveAllAuditsAsync();
 
             AuditServiceException actualAuditServiceException =
-                Assert.Throws<AuditServiceException>(retrieveAllAuditsAction);
+                await Assert.ThrowsAsync<AuditServiceException>(
+                    testCode: retrieveAllAuditsTask.AsTask);
 
             // then
             actualAuditServiceException.Should()
                 .BeEquivalentTo(expectedAuditServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllAudits(),
+                broker.SelectAllAuditsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAuditServiceException))),
                         Times.Once);
 

@@ -45,8 +45,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
                 subscriberCredential: someSubscriberCredential);
 
             CryptographyServiceException actualDecryptionServiceException =
-                await Assert.ThrowsAsync<CryptographyServiceException>(async () =>
-                    await decryptTask);
+                await Assert.ThrowsAsync<CryptographyServiceException>(
+                    decryptTask.AsTask);
 
             // then
             actualDecryptionServiceException.Should()
@@ -57,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedDecryptionServiceException))),
                         Times.Once);
 

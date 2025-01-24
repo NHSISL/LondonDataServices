@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Guid randomIdentifier = Guid.NewGuid();
             string randomAuditType = invalidText;
             string randomAuditTitle = invalidText;
-            string randomMesssage = invalidText;
+            string randomMessage = invalidText;
             string randomFileName = invalidText;
             string randomLogLevel = invalidText;
             Guid? randomCorrelationId = null;
@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 this.auditService.AddAuditAsync(
                     auditType: randomAuditType,
                     title: randomAuditTitle,
-                    message: randomMesssage,
+                    message: randomMessage,
                     fileName: randomFileName,
                     correlationId: randomCorrelationId,
                     logLevel: randomLogLevel);
@@ -81,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAuditValidationException))),
                         Times.Once);
 

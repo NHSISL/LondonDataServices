@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 .BeEquivalentTo(expectedIngresOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedIngresOrchestrationValidationException))),
                         Times.Once);
 
@@ -94,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedIngresOrchestrationValidationException))),
                         Times.Once);
 
@@ -147,7 +147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedIngresOrchestrationValidationException))),
                         Times.Once);
 

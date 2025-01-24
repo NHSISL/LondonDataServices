@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             actualSecureDataValidationException.Should().BeEquivalentTo(expectedSecureDataValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(expectedSecureDataValidationException))),
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedSecureDataValidationException))),
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -82,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                 .BeEquivalentTo(expectedSecureDataValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSecureDataValidationException))),
                         Times.Once);
 

@@ -37,8 +37,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 this.decryptionCoordinationService.DecryptAsync(invalidData);
 
             DecryptionCoordinationValidationException actualDecryptionCoordinationValidationException =
-                await Assert.ThrowsAsync<DecryptionCoordinationValidationException>(async () =>
-                    await processDataTask);
+                await Assert.ThrowsAsync<DecryptionCoordinationValidationException>(
+                    processDataTask.AsTask);
 
             // then
             actualDecryptionCoordinationValidationException.Should()
@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     Times.Never());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDecryptionCoordinationValidationException))),
                         Times.Once);
 

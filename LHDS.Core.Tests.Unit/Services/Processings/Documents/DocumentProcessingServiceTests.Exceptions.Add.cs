@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             this.documentServiceMock.Setup(service =>
                 service.AddDocumentAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask documentAddTask =
@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDocumentProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -93,7 +93,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             this.documentServiceMock.Setup(service =>
                 service.AddDocumentAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask documentAddTask =
@@ -113,7 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDocumentProcessingDependencyException))),
                          Times.Once);
 
@@ -150,7 +150,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             this.documentServiceMock.Setup(service =>
                 service.AddDocumentAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask documentAddTask =
@@ -170,7 +170,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDocumentProcessingServiveException))),
                          Times.Once);
 

@@ -21,11 +21,11 @@ namespace LHDS.Core.Services.Foundations.Cryptographies
             }
             catch (InvalidArgumentCryptographyException nullCryptographyException)
             {
-                throw CreateAndLogValidationException(nullCryptographyException);
+                throw await CreateAndLogValidationExceptionAsync(nullCryptographyException);
             }
             catch (NullSubscriberCredentialCryptographyException nullSubscriberCredentialCryptographyException)
             {
-                throw CreateAndLogValidationException(nullSubscriberCredentialCryptographyException);
+                throw await CreateAndLogValidationExceptionAsync(nullSubscriberCredentialCryptographyException);
             }
             catch (Exception exception)
             {
@@ -34,30 +34,30 @@ namespace LHDS.Core.Services.Foundations.Cryptographies
                         message: "Failed cryptography service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedCryptographyServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedCryptographyServiceException);
             }
         }
 
-        private CryptographyValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<CryptographyValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var CryptographyValidationException =
                 new CryptographyValidationException(
                     message: "Cryptography validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(CryptographyValidationException);
+            await this.loggingBroker.LogErrorAsync(CryptographyValidationException);
 
             return CryptographyValidationException;
         }
 
-        private CryptographyServiceException CreateAndLogServiceException(
+        private async ValueTask<CryptographyServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var decryptionServiceException = new CryptographyServiceException(
                 message: "Cryptography service error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(decryptionServiceException);
+            await this.loggingBroker.LogErrorAsync(decryptionServiceException);
 
             return decryptionServiceException;
         }

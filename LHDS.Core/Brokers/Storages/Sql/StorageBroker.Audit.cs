@@ -17,7 +17,8 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public async ValueTask<Audit> InsertAuditAsync(Audit audit) =>
             await InsertAsync(audit);
 
-        public IQueryable<Audit> SelectAllAudits() => SelectAll<Audit>();
+        public async ValueTask<IQueryable<Audit>> SelectAllAuditsAsync() => 
+            await SelectAllAsync<Audit>();
 
         public async ValueTask<Audit> SelectAuditByIdAsync(Guid auditId) =>
             await SelectAsync<Audit>(auditId);

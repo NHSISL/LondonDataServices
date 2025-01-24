@@ -62,7 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                .BeEquivalentTo(expectedTppLandingCoordinationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTppLandingCoordinationValidationException))),
                         Times.Once);
 

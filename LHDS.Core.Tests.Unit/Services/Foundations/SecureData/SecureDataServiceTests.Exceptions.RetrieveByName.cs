@@ -55,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSecureDataDependencyException))),
                         Times.Once);
 
@@ -102,7 +102,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSecureDataServiceException))),
                         Times.Once);
 

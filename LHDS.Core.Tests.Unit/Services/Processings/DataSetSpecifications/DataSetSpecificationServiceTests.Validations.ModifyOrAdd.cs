@@ -14,7 +14,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
     public partial class DataSetSpecificationProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionsOnModifyOrAddIfDataSetSpecificationProcessingIsNullAndLogItAsync()
+        public async Task
+            ShouldThrowValidationExceptionsOnModifyOrAddIfDataSetSpecificationProcessingIsNullAndLogItAsync()
         {
             // given
             DataSetSpecification nullDataSetSpecification = null;
@@ -29,17 +30,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             // when
             ValueTask<DataSetSpecification> AddDataSetSpecificationTask =
-                this.dataSetSpecificationProcessingService.ModifyOrAddDataSetSpecificationAsync(nullDataSetSpecification);
+                this.dataSetSpecificationProcessingService
+                    .ModifyOrAddDataSetSpecificationAsync(nullDataSetSpecification);
 
             DataSetSpecificationProcessingValidationException actualDataSetSpecificationProcessingValidationException =
-                await Assert.ThrowsAsync<DataSetSpecificationProcessingValidationException>(AddDataSetSpecificationTask.AsTask);
+                await Assert.ThrowsAsync<DataSetSpecificationProcessingValidationException>(
+                    AddDataSetSpecificationTask.AsTask);
 
             //then
             actualDataSetSpecificationProcessingValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetSpecificationProcessingValidationException))),
                         Times.Once);
 
@@ -68,17 +71,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             // when
             ValueTask<DataSetSpecification> RetrieveDataSetSpecificationTask =
-                this.dataSetSpecificationProcessingService.ModifyOrAddDataSetSpecificationAsync(invalidDataSetSpecification);
+                this.dataSetSpecificationProcessingService
+                    .ModifyOrAddDataSetSpecificationAsync(invalidDataSetSpecification);
 
             DataSetSpecificationProcessingValidationException actualDataSetSpecificationProcessingValidationException =
-                await Assert.ThrowsAsync<DataSetSpecificationProcessingValidationException>(RetrieveDataSetSpecificationTask.AsTask);
+                await Assert.ThrowsAsync<DataSetSpecificationProcessingValidationException>(
+                    RetrieveDataSetSpecificationTask.AsTask);
 
             //then
             actualDataSetSpecificationProcessingValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDataSetSpecificationProcessingValidationException))),
                         Times.Once);
 

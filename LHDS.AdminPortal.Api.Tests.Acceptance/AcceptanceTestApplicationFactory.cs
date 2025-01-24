@@ -64,13 +64,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance
                 }
             }
 
-            //List<Claim> claims = new List<Claim>
-            //{
-            //    new Claim(ClaimTypes.Name, "TestUser"),
-            //    new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Administrators"),
-            //    new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Configurations")
-            //};
-
             var authenticationDescriptor = services
                 .FirstOrDefault(d => d.ServiceType == typeof(IAuthenticationSchemeProvider));
 

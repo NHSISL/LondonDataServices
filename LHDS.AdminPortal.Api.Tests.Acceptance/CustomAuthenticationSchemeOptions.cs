@@ -10,6 +10,5 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance
     public class CustomAuthenticationSchemeOptions : AuthenticationSchemeOptions
     {
         public InvisibleApiKey InvisibleApiKey { get; set; }
-        //public IEnumerable<Claim> Claims { get; set; }
     }
 }

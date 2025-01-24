@@ -74,12 +74,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: failedOptOutOrchestrationServiceException);
 
             // When
-            ValueTask<string> actualOptOutStatus =
+            ValueTask<string> retrieveOptOutStatusTask =
                 this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputStream, randomRecieveName);
 
             OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(async () =>
-                    await actualOptOutStatus);
+                    await retrieveOptOutStatusTask);
 
             // Then
             actualOptOutOrchestrationServiceException.Should()
@@ -174,12 +174,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: failedOptOutOrchestrationServiceException);
 
             // When
-            ValueTask<string> actualOptOutStatus =
+            ValueTask<string> retrieveOptOutStatusTask =
                 this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputStream, randomRecieveName);
 
             OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
-                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(async () =>
-                    await actualOptOutStatus);
+                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(retrieveOptOutStatusTask.AsTask);
 
             // Then
             actualOptOutOrchestrationServiceException.Should()
@@ -277,12 +276,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: failedOptOutOrchestrationServiceException);
 
             // When
-            ValueTask<string> actualOptOutStatus =
+            ValueTask<string> retrieveOptOutStatusTask =
                 this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputStream, randomRecieveName);
 
             OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
-                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(async () =>
-                    await actualOptOutStatus);
+                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(retrieveOptOutStatusTask.AsTask);
 
             // Then
             actualOptOutOrchestrationServiceException.Should()

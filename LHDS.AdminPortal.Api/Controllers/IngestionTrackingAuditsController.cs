@@ -169,10 +169,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpDelete("{ingestionTrackingAuditId}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking")]
-#endif
         public async ValueTask<ActionResult<IngestionTrackingAudit>> DeleteAuditByIdAsync(Guid ingestionTrackingAuditId)
         {
             try

@@ -26,7 +26,9 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ObjectColumns
 
             List<string> expectedAttributeValues = new List<string>()
             {
-                "ISL.LDS.AdminSpa.Configurations","ISL.LDS.AdminSpa.Administrators","ISL.LDS.AdminSpa.ReadOnly"
+                "ISL.LDS.AdminSpa.Configurations",
+                "ISL.LDS.AdminSpa.Administrators",
+                "ISL.LDS.AdminSpa.ReadOnly"
             };
 
             // when

@@ -18,13 +18,19 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
     public partial class TerminologyPollsControllerTests
     {
         [Fact]
-        public void DeleteShouldNotHaveRoleAttribute()
+        public void DeleteShouldHaveRoleAttributeWithRoles()
         {
-            // given 
+            // given
             var controllerType = typeof(TerminologyPollsController);
             var methodInfo = controllerType.GetMethod("DeleteTerminologyPollByIdAsync");
-
             Type attributeType = typeof(AuthorizeAttribute);
+            string attributeProperty = "Roles";
+
+            List<string> expectedAttributeValues = new List<string>()
+            {
+                "ISL.LDS.AdminSpa.Configurations",
+                "ISL.LDS.AdminSpa.Administrators"
+            };
 
             // when
             var methodAttribute = methodInfo?
@@ -38,7 +44,19 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
             var attribute = methodAttribute ?? controllerAttribute;
 
             // then
-            attribute.Should().BeNull();
+            attribute.Should().NotBeNull();
+
+            var actualAttributeValue = attributeType
+                .GetProperty(attributeProperty)?
+                .GetValue(attribute) as string ?? string.Empty;
+
+            var actualAttributeValues = actualAttributeValue?
+                .Split(',')
+                .Select(role => role.Trim())
+                .Where(role => !string.IsNullOrEmpty(role))
+                .ToList();
+
+            actualAttributeValues.Should().BeEquivalentTo(expectedAttributeValues);
         }
 
         [Fact]

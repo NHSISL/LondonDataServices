@@ -62,7 +62,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
         {
             // given
             var controllerType = typeof(IngestionTrackingsController);
-            var methodInfo = controllerType.GetMethod("PutDataTypeAsync");
+            var methodInfo = controllerType.GetMethod("PutIngestionTrackingAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 
             // when

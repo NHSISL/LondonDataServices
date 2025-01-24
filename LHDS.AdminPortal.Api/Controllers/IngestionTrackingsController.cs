@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Attrify.Attributes;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -26,7 +27,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public IngestionTrackingsController(IIngestionTrackingService ingestionTrackingService) =>
             this.ingestionTrackingService = ingestionTrackingService;
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking")]
+        [InvisibleApi]
         [HttpPost]
         public async ValueTask<ActionResult<IngestionTracking>> PostIngestionTrackingAsync(
             IngestionTracking ingestionTracking)
@@ -177,7 +178,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return BadRequest(ingestionTrackingValidationException.InnerException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingValidationException)
-                when (ingestionTrackingValidationException.InnerException is InvalidIngestionTrackingReferenceException)
+                when (ingestionTrackingValidationException.InnerException
+                    is InvalidIngestionTrackingReferenceException)
             {
                 return FailedDependency(ingestionTrackingValidationException.InnerException);
             }
@@ -197,7 +199,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTracking")]
+        [InvisibleApi]
         [HttpDelete("{ingestionTrackingId}")]
         public async ValueTask<ActionResult<IngestionTracking>> DeleteIngestionTrackingByIdAsync(
             Guid ingestionTrackingId)
@@ -219,7 +221,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return BadRequest(ingestionTrackingValidationException.InnerException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
-                when (ingestionTrackingDependencyValidationException.InnerException is LockedIngestionTrackingException)
+                when (ingestionTrackingDependencyValidationException.InnerException
+                    is LockedIngestionTrackingException)
             {
                 return Locked(ingestionTrackingDependencyValidationException.InnerException);
             }

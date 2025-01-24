@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Attrify.Attributes;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Controllers;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +20,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
         {
             // given
             var controllerType = typeof(IngestionTrackingAuditsController);
-            var methodInfo = controllerType.GetMethod("PostIngestionTrackingAsync");
+            var methodInfo = controllerType.GetMethod("PostAuditAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
@@ -54,6 +55,29 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
                 .ToList();
 
             actualAttributeValues.Should().BeEquivalentTo(expectedAttributeValues);
+        }
+
+        [Fact]
+        public void PostShouldHaveInvisibleApiAttribute()
+        {
+            // given
+            var controllerType = typeof(IngestionTrackingAuditsController);
+            var methodInfo = controllerType.GetMethod("PostAuditAsync");
+            Type attributeType = typeof(InvisibleApiAttribute);
+
+            // when
+            var methodAttribute = methodInfo?
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var controllerAttribute = controllerType
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var attribute = methodAttribute ?? controllerAttribute;
+
+            // then
+            attribute.Should().NotBeNull();
         }
     }
 }

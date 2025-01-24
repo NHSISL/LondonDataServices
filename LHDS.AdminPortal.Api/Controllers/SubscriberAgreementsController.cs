@@ -175,6 +175,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators")]
         [HttpDelete("{subscriberAgreementId}")]
         public async ValueTask<ActionResult<SubscriberAgreement>> DeleteSubscriberAgreementByIdAsync(Guid subscriberAgreementId)
         {

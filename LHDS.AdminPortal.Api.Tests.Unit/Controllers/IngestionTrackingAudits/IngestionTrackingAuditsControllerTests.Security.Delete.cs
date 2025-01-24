@@ -16,11 +16,11 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
     public partial class IngestionTrackingAuditsControllerTests
     {
         [Fact]
-        public void PutShouldHaveRoleAttributeWithRoles()
+        public void DeleteShouldHaveRoleAttributeWithRoles()
         {
             // given
             var controllerType = typeof(IngestionTrackingAuditsController);
-            var methodInfo = controllerType.GetMethod("PutAuditAsync");
+            var methodInfo = controllerType.GetMethod("DeleteAuditByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
@@ -58,11 +58,11 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
         }
 
         [Fact]
-        public void PutShouldHaveInvisibleApiAttribute()
+        public void DeleteShouldHaveInvisibleApiAttribute()
         {
             // given
             var controllerType = typeof(IngestionTrackingAuditsController);
-            var methodInfo = controllerType.GetMethod("PutAuditAsync");
+            var methodInfo = controllerType.GetMethod("DeleteAuditByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 
             // when

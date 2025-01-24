@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         [MemberData(nameof(DependencyValidationExceptions))]
         public async Task
             ShouldThrowDependencyValidationExceptionOnMatchIfDependencyValidationErrorOccursAndLogItAsync(
-            Xeption dependencyValidationException)
+                Xeption dependencyValidationException)
         {
             // given
             var expectedResolvedAddressOrchestrationDependencyValidationException =
@@ -30,16 +30,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     message: "Resolved address orchestration dependency validation errors occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.resolvedAddressProcessingServiceMock.Setup(service =>
-                service.RetrieveAllResolvedAddressesAsync())
+            this.resolvedAddressProcessingServiceMock
+                .Setup(service => service.RetrieveAllResolvedAddressesAsync())
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask matchAddressDataTask = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
             ResolvedAddressOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyValidationException>(
-                    action.AsTask);
+                    matchAddressDataTask.AsTask);
 
             // then
             actualException.Should().
@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedResolvedAddressOrchestrationDependencyValidationException))),
                          Times.Once);
 
@@ -67,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
         public async Task ShouldThrowDependencyExceptionOnMatchIfDependencyErrorOccursAndLogItAsync(
-          Xeption dependencyException)
+            Xeption dependencyException)
         {
             // given
             var expectedResolvedAddressOrchestrationDependencyException =
@@ -80,11 +80,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask matchAddressDataTask = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
             ResolvedAddressOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyException>(
-                    action.AsTask);
+                    matchAddressDataTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationDependencyException);
@@ -94,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedResolvedAddressOrchestrationDependencyException))),
                          Times.Once);
 
@@ -129,10 +129,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask matchAddressDataTask = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
             ResolvedAddressOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(action.AsTask);
+                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(matchAddressDataTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressOrchestrationServiveException);
@@ -142,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     Times.Once);
 
             loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedResolvedAddressOrchestrationServiveException))),
                          Times.Once);
 
@@ -159,8 +159,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
         public async Task
-           ShouldThrowAggregateDependencyValidationExceptionOnMatchErrorsInLoopAndLogItAsync(
-           Xeption dependencyValidationException)
+            ShouldThrowAggregateDependencyValidationExceptionOnMatchErrorsInLoopAndLogItAsync(
+                Xeption dependencyValidationException)
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
@@ -219,11 +219,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask matchAddressDataTask = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
-               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                   await action);
+               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(matchAddressDataTask.AsTask);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()
@@ -269,12 +268,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     resolvedAddressOrchestrationDependencyValidationLoggingException))),
                         Times.Exactly(randomResolvedAddresses.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualResolvedAddressOrchestrationServiceException))),
                         Times.Once);
 
@@ -291,8 +290,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
         public async Task
-           ShouldThrowAggregateDependencyExceptionOnMatchErrorsInLoopAndLogItAsync(
-           Xeption dependencyException)
+            ShouldThrowAggregateDependencyExceptionOnMatchErrorsInLoopAndLogItAsync(
+                Xeption dependencyException)
         {
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
@@ -350,11 +349,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask matchAddressDataTask = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
-               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                   await action);
+               await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(matchAddressDataTask.AsTask);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()
@@ -399,12 +397,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                    innerException: dependencyException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     resolvedAddressOrchestrationDependencyLoggingException))),
                         Times.Exactly(randomResolvedAddresses.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualResolvedAddressOrchestrationServiceException))),
                         Times.Once);
 
@@ -484,11 +482,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     innerException: failedResolvedAddressOrchestrationServiceException);
 
             // When
-            ValueTask action = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
+            ValueTask matchAddressDataTask = this.resolvedAddressOrchestrationService.MatchAddressDataAsync();
 
             ResolvedAddressOrchestrationServiceException actualResolvedAddressOrchestrationServiceException =
-                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                    await action);
+                await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(matchAddressDataTask.AsTask);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()
@@ -530,12 +527,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             };
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     innerResolvedAddressOrchestrationServiceException))),
                         Times.Exactly(randomResolvedAddresses.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualResolvedAddressOrchestrationServiceException))),
                         Times.Once);
 

@@ -5,9 +5,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Attrify.Attributes;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
@@ -17,6 +19,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTrackingAudit")]
     [ApiController]
     [Route("api/[controller]")]
     public class IngestionTrackingAuditsController : RESTFulController
@@ -26,10 +29,8 @@ namespace LHDS.AdminPortal.Api.Controllers
         public IngestionTrackingAuditsController(IIngestionTrackingAuditService ingestionTrackingAuditService) =>
             this.ingestionTrackingAuditService = ingestionTrackingAuditService;
 
+        [InvisibleApi]
         [HttpPost]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking")]
-#endif
         public async ValueTask<ActionResult<IngestionTrackingAudit>> PostAuditAsync(IngestionTrackingAudit audit)
         {
             try

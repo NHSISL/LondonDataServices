@@ -94,10 +94,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+
         [HttpGet("{ingestionTrackingAuditId}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
-#endif
         public async ValueTask<ActionResult<IngestionTrackingAudit>> GetAuditByIdAsync(Guid ingestionTrackingAuditId)
         {
             try

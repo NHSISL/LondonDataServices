@@ -105,6 +105,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         //    }
         //}
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{subscriberAgreementId}")]
         public async ValueTask<ActionResult<SubscriberAgreement>> GetSubscriberAgreementByIdAsync(Guid subscriberAgreementId)
         {

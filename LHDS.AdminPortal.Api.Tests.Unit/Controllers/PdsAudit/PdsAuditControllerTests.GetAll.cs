@@ -29,7 +29,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudit
             {
                 "ISL.LDS.AdminSpa.Administrators",
                 "ISL.LDS.AdminSpa.ReadOnly",
-                "ISL.LDS.AdminSpa.Suppliers"
+                "ISL.LDS.AdminSpa.Pds"
             };
 
             // when

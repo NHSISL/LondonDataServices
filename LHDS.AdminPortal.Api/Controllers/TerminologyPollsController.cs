@@ -46,7 +46,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return FailedDependency(terminologyPollValidationException.InnerException);
             }
             catch (TerminologyPollDependencyValidationException terminologyPollDependencyValidationException)
-               when (terminologyPollDependencyValidationException.InnerException is AlreadyExistsTerminologyPollException)
+                when (terminologyPollDependencyValidationException.InnerException 
+                    is AlreadyExistsTerminologyPollException)
             {
                 return Conflict(terminologyPollDependencyValidationException.InnerException);
             }
@@ -87,7 +88,8 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                TerminologyPoll terminologyPoll = await this.terminologyPollService.RetrieveTerminologyPollByIdAsync(terminologyPollId);
+                TerminologyPoll terminologyPoll = await this.terminologyPollService
+                    .RetrieveTerminologyPollByIdAsync(terminologyPollId);
 
                 return Ok(terminologyPoll);
             }
@@ -136,7 +138,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return FailedDependency(terminologyPollValidationException.InnerException);
             }
             catch (TerminologyPollDependencyValidationException terminologyPollDependencyValidationException)
-               when (terminologyPollDependencyValidationException.InnerException is AlreadyExistsTerminologyPollException)
+                when (terminologyPollDependencyValidationException.InnerException 
+                    is AlreadyExistsTerminologyPollException)
             {
                 return Conflict(terminologyPollDependencyValidationException.InnerException);
             }

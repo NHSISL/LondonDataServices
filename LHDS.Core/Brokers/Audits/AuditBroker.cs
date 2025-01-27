@@ -15,7 +15,7 @@ namespace LHDS.Core.Brokers.Audits
         public AuditBroker(IAuditClient auditClient) =>
             this.auditClient = auditClient;
 
-        public async ValueTask<Audit> Log(
+        public async ValueTask<Audit> LogAsync(
             string auditType,
             string title,
             string? message,
@@ -26,7 +26,7 @@ namespace LHDS.Core.Brokers.Audits
             return await auditClient.LogAudit(auditType, title, message, fileName, correlationId, logLevel);
         }
 
-        public async ValueTask<Audit> LogInformation(
+        public async ValueTask<Audit> LogInformationAsync(
             string auditType,
             string title,
             string? message,
@@ -36,7 +36,7 @@ namespace LHDS.Core.Brokers.Audits
             return await auditClient.LogAudit(auditType, title, message, fileName, correlationId, "Information");
         }
 
-        public async ValueTask<Audit> LogWarning(
+        public async ValueTask<Audit> LogWarningAsync(
             string auditType,
             string title,
             string? message,
@@ -46,7 +46,7 @@ namespace LHDS.Core.Brokers.Audits
             return await auditClient.LogAudit(auditType, title, message, fileName, correlationId, "Warning");
         }
 
-        public async ValueTask<Audit> LogError(
+        public async ValueTask<Audit> LogErrorAsync(
             string auditType,
             string title,
             string? message,
@@ -56,7 +56,7 @@ namespace LHDS.Core.Brokers.Audits
             return await auditClient.LogAudit(auditType, title, message, fileName, correlationId, "Error");
         }
 
-        public async ValueTask<Audit> LogCritical(
+        public async ValueTask<Audit> LogCriticalAsync(
             string auditType,
             string title,
             string? message,

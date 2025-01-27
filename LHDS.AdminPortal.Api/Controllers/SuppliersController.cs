@@ -120,9 +120,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPut]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers")]
-#endif
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Suppliers")]
         public async ValueTask<ActionResult<Supplier>> PutSupplierAsync(Supplier supplier)
         {
             try

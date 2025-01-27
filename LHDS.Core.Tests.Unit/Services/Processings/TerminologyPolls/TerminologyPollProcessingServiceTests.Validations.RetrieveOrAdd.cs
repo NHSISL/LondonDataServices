@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollProcessingValidationException))),
                         Times.Once);
 

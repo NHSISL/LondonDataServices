@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.ModifySubscriberAgreementAsync(inputSubscriberAgreement))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<SubscriberAgreement> subscriberAgreementModifyTask =
@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberAgreementProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.ModifySubscriberAgreementAsync(inputSubscriberAgreement))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<SubscriberAgreement> subscriberAgreementModifyTask =
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberAgreementProcessingDependencyException))),
                          Times.Once);
 
@@ -120,15 +120,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.ModifySubscriberAgreementAsync(inputSubscriberAgreement))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
+            ValueTask<SubscriberAgreement> subscriberAgreementModifyTask =
                 this.subscriberAgreementProcessingService.ModifySubscriberAgreementAsync(inputSubscriberAgreement);
 
             SubscriberAgreementProcessingServiceException actualException =
                 await Assert.ThrowsAsync<SubscriberAgreementProcessingServiceException>(
-                    addSubscriberAgreementTask.AsTask);
+                    subscriberAgreementModifyTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingServiveException);
@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberAgreementProcessingServiveException))),
                          Times.Once);
 

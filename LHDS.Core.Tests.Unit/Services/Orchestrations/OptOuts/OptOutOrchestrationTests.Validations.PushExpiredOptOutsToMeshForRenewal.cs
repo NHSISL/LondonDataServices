@@ -49,7 +49,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationValidationException actualException =
-                await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(pushExpOptOutsToMeshIfExpiredTask.AsTask);
+                await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(
+                    pushExpOptOutsToMeshIfExpiredTask.AsTask);
 
             // Then
             actualException.Should()

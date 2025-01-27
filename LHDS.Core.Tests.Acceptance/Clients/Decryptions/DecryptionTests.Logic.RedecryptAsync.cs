@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
@@ -77,7 +78,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             decryptedIngestionTracking.Decrypted.Should().BeTrue();
 
-            var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
+            IQueryable<IngestionTrackingAudit> allAudits =
+                await this.auditService.RetrieveAllIngestionTrackingAuditsAsync();
+
+            var audits = allAudits
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
 
             foreach (var audit in audits)

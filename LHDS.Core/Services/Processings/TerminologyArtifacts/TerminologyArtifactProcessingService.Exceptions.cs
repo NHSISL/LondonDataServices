@@ -45,7 +45,8 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             {
                 var failedTerminologyArtifactProcessingServiceException =
                     new FailedTerminologyArtifactProcessingServiceException(
-                        message: "Failed terminology artifact processing service error occurred, " +
+                        message: 
+                            "Failed terminology artifact processing service error occurred, " +
                             "please contact support.",
                         innerException: exception);
 
@@ -91,7 +92,8 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             {
                 var failedTerminologyArtifactProcessingServiceException =
                     new FailedTerminologyArtifactProcessingServiceException(
-                        message: "Failed terminology artifact processing service error occurred, " +
+                        message: 
+                            "Failed terminology artifact processing service error occurred, " +
                             "please contact support.",
                         innerException: exception);
 

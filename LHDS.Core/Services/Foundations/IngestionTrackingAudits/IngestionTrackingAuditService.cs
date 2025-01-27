@@ -36,8 +36,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
                 return await this.storageBroker.InsertIngestionTrackingAuditAsync(audit);
             });
 
-        public IQueryable<IngestionTrackingAudit> RetrieveAllIngestionTrackingAudits() =>
-            TryCatch(() => this.storageBroker.SelectAllIngestionTrackingAudits());
+        public ValueTask<IQueryable<IngestionTrackingAudit>> RetrieveAllIngestionTrackingAuditsAsync() =>
+            TryCatch(async() => await this.storageBroker.SelectAllIngestionTrackingAuditsAsync());
 
         public ValueTask<IngestionTrackingAudit> RetrieveIngestionTrackingAuditByIdAsync(Guid auditId) =>
             TryCatch(async () =>

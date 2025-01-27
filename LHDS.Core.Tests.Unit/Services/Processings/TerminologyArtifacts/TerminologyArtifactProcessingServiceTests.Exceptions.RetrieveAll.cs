@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyArtifactProcessingDependencyValidationException))),
                         Times.Once);
 
@@ -86,7 +86,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyArtifactProcessingDependencyException))),
                         Times.Once);
 
@@ -130,13 +130,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedTerminologyArtifactProcessingServiceException))),
                         Times.Once);
 
             this.terminologyArtifactServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
-
     }
 }

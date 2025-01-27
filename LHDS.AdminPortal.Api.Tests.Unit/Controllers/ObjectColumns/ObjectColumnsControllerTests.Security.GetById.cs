@@ -27,7 +27,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ObjectColumns
             List<string> expectedAttributeValues = new List<string>()
             {
                 "ISL.LDS.AdminSpa.Configurations",
-                "ISL.LDS.AdminSpa.Administrators"
+                "ISL.LDS.AdminSpa.Administrators",
+                "ISL.LDS.AdminSpa.ReadOnly"
             };
 
             // when
@@ -58,14 +59,14 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ObjectColumns
         }
 
         [Fact]
-        public void GetIdShouldHaveInvisibleApiAttribute()
+        public void GetIdShouldNotHaveInvisibleApiAttribute()
         {
             // Given
             var controllerType = typeof(ObjectColumnsController);
             var methodInfo = controllerType.GetMethod("GetObjectColumnByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 
-            // When
+            // when
             var methodAttribute = methodInfo?
                 .GetCustomAttributes(attributeType, inherit: true)
                 .FirstOrDefault();
@@ -76,8 +77,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ObjectColumns
 
             var attribute = methodAttribute ?? controllerAttribute;
 
-            // Then
-            attribute.Should().NotBeNull();
+            // then
+            attribute.Should().BeNull();
         }
     }
 }

@@ -3,9 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using LHDS.Core.Models.Processings.SpecificationObjects.Exceptions;
 using Xeptions;
@@ -15,8 +13,6 @@ namespace LHDS.Core.Services.Processings.SpecificationObjects
     public partial class SpecificationObjectProcessingService
     {
         private delegate ValueTask<T> ReturningSpecificationObjectProcessingFunction<T>();
-        private delegate IQueryable<SpecificationObject> ReturningSpecificationObjectsFunction();
-        private delegate SpecificationObject ReturningSingleSpecificationObjectProcessingFunction();
 
         private async ValueTask<T> TryCatch<T>(
             ReturningSpecificationObjectProcessingFunction<T> returningSpecificationObjectProcessingFunction)
@@ -27,114 +23,86 @@ namespace LHDS.Core.Services.Processings.SpecificationObjects
             }
             catch (InvalidArgumentSpecificationObjectProcessingException invalidArgumentSpecificationObjectProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentSpecificationObjectProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentSpecificationObjectProcessingException);
             }
             catch (SpecificationObjectValidationException dataSetSpecificationValidationException)
             {
-                throw CreateAndLogDependencyValidationException(dataSetSpecificationValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(dataSetSpecificationValidationException);
             }
             catch (SpecificationObjectDependencyValidationException dataSetSpecificationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(dataSetSpecificationDependencyValidationException);
+                throw await
+                    CreateAndLogDependencyValidationExceptionAsync(dataSetSpecificationDependencyValidationException);
             }
             catch (SpecificationObjectDependencyException dataSetSpecificationDependencyException)
             {
-                throw CreateAndLogDependencyException(dataSetSpecificationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(dataSetSpecificationDependencyException);
             }
             catch (SpecificationObjectServiceException dataSetSpecificationServiceException)
             {
-                throw CreateAndLogDependencyException(dataSetSpecificationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(dataSetSpecificationServiceException);
             }
             catch (Exception exception)
             {
                 var failedSpecificationObjectProcessingServiceException =
                     new FailedSpecificationObjectProcessingServiceException(
-                        message: "Failed SpecificationObject processing service error occurred, please contact support.",
+                        message:
+                            "Failed SpecificationObject processing service error occurred, " +
+                            "please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSpecificationObjectProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSpecificationObjectProcessingServiceException);
             }
         }
 
-        private IQueryable<SpecificationObject> TryCatch(
-            ReturningSpecificationObjectsFunction returningSpecificationObjectsFunction)
-        {
-            try
-            {
-                return returningSpecificationObjectsFunction();
-            }
-            catch (SpecificationObjectValidationException dataSetSpecificationValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(dataSetSpecificationValidationException);
-            }
-            catch (SpecificationObjectDependencyValidationException dataSetSpecificationDependencyValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(dataSetSpecificationDependencyValidationException);
-            }
-            catch (SpecificationObjectDependencyException dataSetSpecificationDependencyException)
-            {
-                throw CreateAndLogDependencyException(dataSetSpecificationDependencyException);
-            }
-            catch (SpecificationObjectServiceException dataSetSpecificationServiceException)
-            {
-                throw CreateAndLogDependencyException(dataSetSpecificationServiceException);
-            }
-            catch (Exception exception)
-            {
-                var failedSpecificationObjectProcessingServiceException =
-                    new FailedSpecificationObjectProcessingServiceException(
-                        message: "Failed SpecificationObject processing service error occurred, please contact support.",
-                        innerException: exception);
-
-                throw CreateAndLogServiceException(failedSpecificationObjectProcessingServiceException);
-            }
-        }
-
-        private SpecificationObjectProcessingValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<SpecificationObjectProcessingValidationException> CreateAndLogValidationExceptionAsync(
+            Xeption exception)
         {
             var dataSetSpecificationProcessingValidationExceptionn =
                 new SpecificationObjectProcessingValidationException(
                     message: "SpecificationObject processing validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataSetSpecificationProcessingValidationExceptionn);
+            await this.loggingBroker.LogErrorAsync(dataSetSpecificationProcessingValidationExceptionn);
 
             return dataSetSpecificationProcessingValidationExceptionn;
         }
 
-        private SpecificationObjectProcessingDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<SpecificationObjectProcessingDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var dataSetSpecificationProcessingDependencyValidationException =
                 new SpecificationObjectProcessingDependencyValidationException(
                     message: "SpecificationObject processing dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(dataSetSpecificationProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(dataSetSpecificationProcessingDependencyValidationException);
 
             return dataSetSpecificationProcessingDependencyValidationException;
         }
 
-        private SpecificationObjectProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<SpecificationObjectProcessingDependencyException> CreateAndLogDependencyExceptionAsync(
+            Xeption exception)
         {
             var dataSetSpecificationProcessingDependencyException =
                 new SpecificationObjectProcessingDependencyException(
                     message: "SpecificationObject processing dependency error occurred, please try again.",
                     innerException: exception?.InnerException as Xeption);
 
-            this.loggingBroker.LogError(dataSetSpecificationProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(dataSetSpecificationProcessingDependencyException);
 
-            throw dataSetSpecificationProcessingDependencyException;
+            return dataSetSpecificationProcessingDependencyException;
         }
 
-        private SpecificationObjectProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<SpecificationObjectProcessingServiceException> CreateAndLogServiceExceptionAsync(
+            Xeption exception)
         {
             var dataSetSpecificationProcessingServiceException = new
                 SpecificationObjectProcessingServiceException(
                     message: "SpecificationObject processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(dataSetSpecificationProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(dataSetSpecificationProcessingServiceException);
 
             return dataSetSpecificationProcessingServiceException;
         }

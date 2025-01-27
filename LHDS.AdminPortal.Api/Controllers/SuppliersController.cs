@@ -93,9 +93,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{supplierId}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers, ISL.LDS.AdminApi.ReadOnly")]
-#endif
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Suppliers, ISL.LDS.AdminSpa.ReadOnly")]
         public async ValueTask<ActionResult<Supplier>> GetSupplierByIdAsync(Guid supplierId)
         {
             try

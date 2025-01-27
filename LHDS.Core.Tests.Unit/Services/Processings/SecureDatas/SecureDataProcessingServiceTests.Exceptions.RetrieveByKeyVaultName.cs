@@ -91,12 +91,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      secureDataProcessingDependencyValidationException))),
                          Times.Exactly(keyTypes.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberCredentialProcessingServiceException))),
                          Times.Once);
 
@@ -157,12 +157,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     innerException: failedSubscriberCredentialProcessingServiceException);
 
             // when
-            ValueTask<SubscriberCredential> secureDataAddTask =
+            ValueTask<SubscriberCredential> secureDataRetrieveTask =
                 this.secureDataProcessingService.RetrieveSecretsByKeyVaultKeyNameAsync(inputSubscriberCredential);
 
             SubscriberCredentialProcessingServiceException actualException =
                 await Assert.ThrowsAsync<SubscriberCredentialProcessingServiceException>(
-                    secureDataAddTask.AsTask);
+                    secureDataRetrieveTask.AsTask);
 
             // Then
             actualException.Should()
@@ -179,12 +179,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     innerException: dependencyException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      secureDataProcessingDependencyException))),
                          Times.Exactly(keyTypes.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberCredentialProcessingServiceException))),
                          Times.Once);
 
@@ -248,12 +248,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     innerException: failedSubscriberCredentialProcessingServiceException);
 
             // when
-            ValueTask<SubscriberCredential> secureDataAddTask =
+            ValueTask<SubscriberCredential> secureDataRetrieveTask =
                this.secureDataProcessingService.RetrieveSecretsByKeyVaultKeyNameAsync(inputSubscriberCredential);
 
             SubscriberCredentialProcessingServiceException actualException =
                 await Assert.ThrowsAsync<SubscriberCredentialProcessingServiceException>(
-                    secureDataAddTask.AsTask);
+                    secureDataRetrieveTask.AsTask);
 
             // Then
             actualException.Should()
@@ -264,12 +264,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     Times.Exactly(keyTypes.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      innerSubscriberCredentialProcessingServiceException))),
                          Times.Exactly(keyTypes.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberCredentialProcessingServiceException))),
                          Times.Once);
 

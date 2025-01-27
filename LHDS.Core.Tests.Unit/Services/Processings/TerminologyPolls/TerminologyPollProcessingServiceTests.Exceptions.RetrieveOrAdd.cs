@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedTerminologyPollProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedTerminologyPollProcessingDependencyException))),
                          Times.Once);
 
@@ -138,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedTerminologyPollProcessingServiceException))),
                          Times.Once);
 

@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyArtifactProcessingDependencyValidationException))),
                         Times.Once);
 
@@ -71,14 +71,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.RetrieveTerminologyArtifactByIdAsync(someId))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<TerminologyArtifact> terminologyArtifactRetrieveByIdTask =
                 this.terminologyArtifactProcessingService.RetrieveTerminologyArtifactByIdAsync(someId);
 
             TerminologyArtifactProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<TerminologyArtifactProcessingDependencyException>(terminologyArtifactRetrieveByIdTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyArtifactProcessingDependencyException>(
+                    terminologyArtifactRetrieveByIdTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingDependencyException);
@@ -88,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedTerminologyArtifactProcessingDependencyException))),
                          Times.Once);
 
@@ -105,9 +106,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             var serviceException = new Exception();
 
             var failedTerminologyArtifactProcessingServiceException =
-               new FailedTerminologyArtifactProcessingServiceException(
+                new FailedTerminologyArtifactProcessingServiceException(
                     message: "Failed terminology artifact processing service error occurred, please contact support.",
-                   innerException: serviceException);
+                    innerException: serviceException);
 
             var expectedTerminologyArtifactProcessingServiveException =
                 new TerminologyArtifactProcessingServiceException(
@@ -116,14 +117,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.RetrieveTerminologyArtifactByIdAsync(someId))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<TerminologyArtifact> addTerminologyArtifactTask =
+            ValueTask<TerminologyArtifact> terminologyArtifactRetrieveByIdTask =
                 this.terminologyArtifactProcessingService.RetrieveTerminologyArtifactByIdAsync(someId);
 
             TerminologyArtifactProcessingServiceException actualException =
-                await Assert.ThrowsAsync<TerminologyArtifactProcessingServiceException>(addTerminologyArtifactTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyArtifactProcessingServiceException>(
+                    terminologyArtifactRetrieveByIdTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingServiveException);
@@ -133,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyArtifactProcessingServiveException))),
                         Times.Once);
 

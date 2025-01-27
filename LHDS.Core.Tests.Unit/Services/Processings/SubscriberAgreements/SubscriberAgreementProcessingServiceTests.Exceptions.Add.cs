@@ -31,14 +31,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.AddSubscriberAgreementAsync(inputSubscriberAgreement))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<SubscriberAgreement> subscriberAgreementAddTask =
                 this.subscriberAgreementProcessingService.AddSubscriberAgreementAsync(inputSubscriberAgreement);
 
             SubscriberAgreementProcessingDependencyValidationException actualException =
-                await Assert.ThrowsAsync<SubscriberAgreementProcessingDependencyValidationException>(subscriberAgreementAddTask.AsTask);
+                await Assert.ThrowsAsync<SubscriberAgreementProcessingDependencyValidationException>(
+                    subscriberAgreementAddTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingDependencyValidationException);
@@ -48,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberAgreementProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -72,14 +73,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.AddSubscriberAgreementAsync(inputSubscriberAgreement))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<SubscriberAgreement> subscriberAgreementAddTask =
                 this.subscriberAgreementProcessingService.AddSubscriberAgreementAsync(inputSubscriberAgreement);
 
             SubscriberAgreementProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<SubscriberAgreementProcessingDependencyException>(subscriberAgreementAddTask.AsTask);
+                await Assert.ThrowsAsync<SubscriberAgreementProcessingDependencyException>(
+                    subscriberAgreementAddTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingDependencyException);
@@ -89,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberAgreementProcessingDependencyException))),
                          Times.Once);
 
@@ -118,14 +120,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
 
             this.subscriberAgreementServiceMock.Setup(service =>
                 service.AddSubscriberAgreementAsync(inputSubscriberAgreement))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
                 this.subscriberAgreementProcessingService.AddSubscriberAgreementAsync(inputSubscriberAgreement);
 
             SubscriberAgreementProcessingServiceException actualException =
-                await Assert.ThrowsAsync<SubscriberAgreementProcessingServiceException>(addSubscriberAgreementTask.AsTask);
+                await Assert.ThrowsAsync<SubscriberAgreementProcessingServiceException>(
+                    addSubscriberAgreementTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedSubscriberAgreementProcessingServiveException);
@@ -135,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberAgreementProcessingServiveException))),
                          Times.Once);
 

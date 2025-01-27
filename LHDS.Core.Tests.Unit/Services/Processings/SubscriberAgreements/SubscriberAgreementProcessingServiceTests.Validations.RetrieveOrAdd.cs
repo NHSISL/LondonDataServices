@@ -14,7 +14,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
     public partial class SubscriberAgreementProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionsOnRetrieveOrAddIfSubscriberAgreementProcessingIsNullAndLogItAsync()
+        public async Task
+            ShouldThrowValidationExceptionsOnRetrieveOrAddIfSubscriberAgreementProcessingIsNullAndLogItAsync()
         {
             // given
             SubscriberAgreement nullSubscriberAgreement = null;
@@ -28,20 +29,20 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     innerException: nullSubscriberAgreementProcessingException);
 
             // when
-            ValueTask<SubscriberAgreement> AddSubscriberAgreementTask =
+            ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
                 this.subscriberAgreementProcessingService
                     .RetrieveOrAddSubscriberAgreementAsync(nullSubscriberAgreement);
 
             SubscriberAgreementProcessingValidationException actualSubscriberAgreementProcessingValidationException =
                 await Assert.ThrowsAsync<SubscriberAgreementProcessingValidationException>(
-                    AddSubscriberAgreementTask.AsTask);
+                    addSubscriberAgreementTask.AsTask);
 
             //then
             actualSubscriberAgreementProcessingValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberAgreementProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSubscriberAgreementProcessingValidationException))),
                         Times.Once);
 

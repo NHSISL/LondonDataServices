@@ -160,9 +160,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{supplierId}")]
-#if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers")]
-#endif
         public async ValueTask<ActionResult<Supplier>> DeleteSupplierByIdAsync(Guid supplierId)
         {
             try

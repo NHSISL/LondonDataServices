@@ -64,24 +64,29 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             List<string> ingestiontrackingObject = await this.ingestionTrackingProcessingService
                 .RetrieveObjectsInBatchByBatchReference(ingestionTracking.Batch);
 
+            List<string> missingSpecificationObjectIds = new List<string>();
+
             foreach (string specificationObjectId in specificationObjectIds)
             {
                 if (!ingestiontrackingObject.Contains(specificationObjectId))
                 {
                     isBatchComplete = false;
+                    missingSpecificationObjectIds.Add(specificationObjectId);
                     break;
                 }
             }
 
+            string batchCompleteFileName =
+                $"{ingestionTracking.BatchReadyFolderPath}/BatchReady.txt"
+                .Replace("\\", "/");
+
             if (isBatchComplete)
             {
-                string batchCompleteFileName =
-                    $"{ingestionTracking.BatchReadyFolderPath}/BatchReady.txt"
-                    .Replace("\\", "/");
-
                 string batchComplete =
-                    $"All specification object files present for dataset specification id: " +
-                    $"{ingestionTracking.DataSetSpecificationId}";
+                    $"All specification object files present for batch '{ingestionTracking.Batch}' " +
+                    $"as defined in Dataset Specification Id: '{ingestionTracking.DataSetSpecificationId}'." +
+                    Environment.NewLine +
+                    $"Generate batch complete file: '{batchCompleteFileName}'";
 
                 Stream data = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(batchComplete));
 
@@ -89,6 +94,31 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     input: data,
                     fileName: batchCompleteFileName,
                     container: ingestionTracking.Container);
+
+                await this.auditBroker.LogInformationAsync(
+                    auditType: "BatchComplete",
+                    title: "BatchReady.txt generated",
+                    message: batchComplete,
+                    fileName: batchCompleteFileName,
+                    correlationId: null);
+            }
+            else
+            {
+                string batchIncomplete =
+                    $"Unable to generate '{batchCompleteFileName}' for batch: {ingestionTracking.Batch}.  " +
+                    Environment.NewLine +
+                    $"We are missing {missingSpecificationObjectIds.Count}/{specificationObjectIds.Count} files.  " +
+                    Environment.NewLine +
+                    $"Missing specification object Id's: {string.Join(", ", missingSpecificationObjectIds)} " +
+                    Environment.NewLine +
+                    $"as defined by Dataset Specification Id: {ingestionTracking.DataSetSpecificationId}";
+
+                await this.auditBroker.LogInformationAsync(
+                    auditType: "BatchComplete",
+                    title: "Unable to generate BatchReady.txt",
+                    message: batchIncomplete,
+                    fileName: batchCompleteFileName,
+                    correlationId: null);
             }
         });
     }

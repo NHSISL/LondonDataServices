@@ -18,7 +18,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         {
             // given
             TerminologyPoll nullTerminologyPoll = null;
-            var nullTerminologyPollProcessingException = new NullTerminologyPollProcessingException(message: "Terminology poll is null.");
+            var nullTerminologyPollProcessingException =
+                new NullTerminologyPollProcessingException(message: "Terminology poll is null.");
 
             var expectedTerminologyPollProcessingValidationException =
                 new TerminologyPollProcessingValidationException(
@@ -38,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollProcessingValidationException))),
                         Times.Once);
 
@@ -46,8 +47,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                 service.ModifyTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
                     Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

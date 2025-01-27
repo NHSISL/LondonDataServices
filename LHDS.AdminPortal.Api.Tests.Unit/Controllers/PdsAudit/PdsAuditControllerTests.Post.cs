@@ -58,5 +58,28 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudit
 
             actualAttributeValues.Should().BeEquivalentTo(expectedAttributeValues);
         }
+
+        [Fact]
+        public void PostShouldNotHaveInvisibleApiAttribute()
+        {
+            // given
+            var controllerType = typeof(PdsAuditsController);
+            var methodInfo = controllerType.GetMethod("PostPdsAuditAsync");
+            Type attributeType = typeof(InvisibleApiAttribute);
+
+            // when
+            var methodAttribute = methodInfo?
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var controllerAttribute = controllerType
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var attribute = methodAttribute ?? controllerAttribute;
+
+            // then
+            attribute.Should().BeNull();
+        }
     }
 }

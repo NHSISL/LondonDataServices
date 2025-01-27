@@ -60,7 +60,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudit
         }
 
         [Fact]
-        public void PostShouldNotHaveInvisibleApiAttribute()
+        public void DeleteShouldNotHaveInvisibleApiAttribute()
         {
             // given
             var controllerType = typeof(PdsAuditsController);

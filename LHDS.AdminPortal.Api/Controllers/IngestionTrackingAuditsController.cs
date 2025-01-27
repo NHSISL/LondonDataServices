@@ -80,7 +80,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             try
             {
                 IQueryable<IngestionTrackingAudit> retrievedIngestionTrackingAudits =
-                    this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits();
+                    await this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync();
 
                 return Ok(retrievedIngestionTrackingAudits);
             }

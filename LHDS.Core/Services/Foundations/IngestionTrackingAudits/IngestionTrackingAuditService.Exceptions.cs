@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
     public partial class IngestionTrackingAuditService
     {
         private delegate ValueTask<IngestionTrackingAudit> ReturningIngestionTrackingAuditFunction();
-        private delegate IQueryable<IngestionTrackingAudit> ReturningIngestionTrackingAuditsFunction();
+        private delegate ValueTask<IQueryable<IngestionTrackingAudit>> ReturningIngestionTrackingAuditsFunction();
 
         private async ValueTask<IngestionTrackingAudit> TryCatch(
             ReturningIngestionTrackingAuditFunction returningAuditFunction)
@@ -93,12 +93,12 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             }
         }
 
-        private IQueryable<IngestionTrackingAudit> TryCatch(
+        private async ValueTask<IQueryable<IngestionTrackingAudit>> TryCatch(
             ReturningIngestionTrackingAuditsFunction returningAuditsFunction)
         {
             try
             {
-                return returningAuditsFunction();
+                return await returningAuditsFunction();
             }
             catch (SqlException sqlException)
             {

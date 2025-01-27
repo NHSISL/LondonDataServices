@@ -92,9 +92,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{pdsAuditId}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Pds, ISL.LDS.AdminApi.ReadOnly")]
-#endif
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Pds, ISL.LDS.AdminSpa.ReadOnly")]
         public async ValueTask<ActionResult<PdsAudit>> GetPdsAuditByIdAsync(Guid pdsAuditId)
         {
             try

@@ -14,13 +14,13 @@ using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudit
 {
-    public partial class PdsAuditController
+    public partial class PdsAuditControllerTests
     {
         [Fact]
         public void GetByIdShouldHaveRoleAttributeWithRoles()
         {
             // given
-            var controllerType = typeof(PdsAuditController);
+            var controllerType = typeof(PdsAuditsController);
             var methodInfo = controllerType.GetMethod("GetPdsAuditByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
@@ -28,7 +28,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudit
             List<string> expectedAttributeValues = new List<string>
             {
                 "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.Suppliers",
+                "ISL.LDS.AdminSpa.Pds",
                 "ISL.LDS.AdminSpa.ReadOnly"
             };
 

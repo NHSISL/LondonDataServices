@@ -3,12 +3,11 @@
 // ---------------------------------------------------------
 
 using LHDS.AdminPortal.Api.Controllers;
-using LHDS.Core.Services.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.SubscriberAgreements;
 using Moq;
 using RESTFulSense.Controllers;
 
-namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataTypes
+namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreement
 {
     public partial class SubscriberAgreementControllerTests : RESTFulController
     {
@@ -18,7 +17,9 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataTypes
         public SubscriberAgreementControllerTests()
         {
             this.subscriberAgreementsServiceMock = new Mock<ISubscriberAgreementService>();
-            this.subscriberAgreementsController = new SubscriberAgreementsController(this.subscriberAgreementsServiceMock.Object);
+
+            this.subscriberAgreementsController = new SubscriberAgreementsController(
+                this.subscriberAgreementsServiceMock.Object);
         }
     }
 }

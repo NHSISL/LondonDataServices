@@ -128,7 +128,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
                         if (indexOfInvalidItem != -1)
                         {
-                            await this.auditBroker.LogWarning(
+                            await this.auditBroker.LogWarningAsync(
                                 auditType: "Address",
                                 title: "Invalid address parts found",
                                 message: $"Invalid address parts found in line item: {indexOfInvalidItem + 1} " +

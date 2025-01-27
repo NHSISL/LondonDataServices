@@ -24,23 +24,23 @@ namespace LHDS.Core.Services.Processings.Ontologies
             }
             catch (InvalidArgumentOntologyProcessingException invalidArgumentOntologyProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentOntologyProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentOntologyProcessingException);
             }
             catch (OntologyValidationException ontologyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ontologyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ontologyValidationException);
             }
             catch (OntologyDependencyValidationException ontologyDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ontologyDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ontologyDependencyValidationException);
             }
             catch (OntologyDependencyException ontologyDependencyException)
             {
-                throw CreateAndLogDependencyException(ontologyDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ontologyDependencyException);
             }
             catch (OntologyServiceException ontologyServiceException)
             {
-                throw CreateAndLogDependencyException(ontologyServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ontologyServiceException);
             }
             catch (Exception exception)
             {
@@ -49,7 +49,7 @@ namespace LHDS.Core.Services.Processings.Ontologies
                         message: "Failed ontology processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedOntologyProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedOntologyProcessingServiceException);
             }
         }
 
@@ -61,23 +61,23 @@ namespace LHDS.Core.Services.Processings.Ontologies
             }
             catch (InvalidArgumentOntologyProcessingException invalidArgumentOntologyProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentOntologyProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentOntologyProcessingException);
             }
             catch (OntologyValidationException ontologyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ontologyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ontologyValidationException);
             }
             catch (OntologyDependencyValidationException ontologyDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(ontologyDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(ontologyDependencyValidationException);
             }
             catch (OntologyDependencyException ontologyDependencyException)
             {
-                throw CreateAndLogDependencyException(ontologyDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(ontologyDependencyException);
             }
             catch (OntologyServiceException ontologyServiceException)
             {
-                throw CreateAndLogDependencyException(ontologyServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(ontologyServiceException);
             }
             catch (Exception exception)
             {
@@ -86,35 +86,36 @@ namespace LHDS.Core.Services.Processings.Ontologies
                         message: "Failed ontology processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedOntologyProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedOntologyProcessingServiceException);
             }
         }
 
-        private OntologyProcessingValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<OntologyProcessingValidationException> CreateAndLogValidationExceptionAsync(
+            Xeption exception)
         {
             var ontologyProcessingValidationException = new OntologyProcessingValidationException(
                 message: "Ontology processing validation error occurred, please try again.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(ontologyProcessingValidationException);
+            await this.loggingBroker.LogErrorAsync(ontologyProcessingValidationException);
 
             return ontologyProcessingValidationException;
         }
 
-        private OntologyProcessingDependencyValidationException CreateAndLogDependencyValidationException(
-           Xeption exception)
+        private async ValueTask<OntologyProcessingDependencyValidationException> 
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var ontologyProcessingDependencyValidationException =
                 new OntologyProcessingDependencyValidationException(
                     message: "Ontology processing dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(ontologyProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(ontologyProcessingDependencyValidationException);
 
             return ontologyProcessingDependencyValidationException;
         }
 
-        private OntologyProcessingDependencyException CreateAndLogDependencyException(
+        private async ValueTask<OntologyProcessingDependencyException> CreateAndLogDependencyExceptionAsync(
            Xeption exception)
         {
             var ontologyProcessingDependencyException =
@@ -122,19 +123,19 @@ namespace LHDS.Core.Services.Processings.Ontologies
                     message: "Ontology processing dependency error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(ontologyProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(ontologyProcessingDependencyException);
 
             return ontologyProcessingDependencyException;
         }
 
-        private OntologyProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<OntologyProcessingServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var ontologyProcessingServiceException = new
                 OntologyProcessingServiceException(
                     message: "Ontology processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(ontologyProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(ontologyProcessingServiceException);
 
             return ontologyProcessingServiceException;
         }

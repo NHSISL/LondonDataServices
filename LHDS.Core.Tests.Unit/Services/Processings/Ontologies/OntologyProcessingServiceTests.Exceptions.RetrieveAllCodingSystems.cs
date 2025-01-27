@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedOntologyProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedOntologyProcessingDependencyException))),
                          Times.Once);
 
@@ -134,7 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedOntologyProcessingServiceException))),
                          Times.Once);
 

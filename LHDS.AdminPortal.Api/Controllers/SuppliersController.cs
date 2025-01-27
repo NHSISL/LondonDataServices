@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using LHDS.Core.Services.Foundations.Suppliers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
     [ApiController]
     [Route("api/[controller]")]
     public class SuppliersController : RESTFulController
@@ -70,9 +72,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers, ISL.LDS.AdminApi.ReadOnly")]
-#endif
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Suppliers, ISL.LDS.AdminSpa.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<Supplier>>> Get()
         {
             try

@@ -20,7 +20,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Suppliers
         public void GetAllShouldHaveRoleAttributeWithRoles()
         {
             // given
-            var controllerType = typeof(DataTypesController);
+            var controllerType = typeof(SuppliersController);
             var methodInfo = controllerType.GetMethod("Get");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
@@ -28,7 +28,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Suppliers
             List<string> expectedAttributeValues = new List<string>
             {
                 "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.Configurations",
+                "ISL.LDS.AdminSpa.ReadOnly",
                 "ISL.LDS.AdminSpa.Suppliers"
             };
 

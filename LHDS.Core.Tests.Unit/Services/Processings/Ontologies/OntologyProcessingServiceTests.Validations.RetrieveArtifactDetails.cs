@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
                 .BeEquivalentTo(expectedOntologyValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOntologyValidationException))),
                         Times.Once);
 

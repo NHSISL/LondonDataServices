@@ -33,12 +33,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask<TerminologyPoll> terminologyRetrieveTask =
+            ValueTask<TerminologyPoll> terminologyRemoveTask =
                 this.terminologyPollProcessingService.RemoveTerminologyPollByIdAsync(terminologyPollId);
 
             TerminologyPollProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<TerminologyPollProcessingDependencyValidationException>(
-                    terminologyRetrieveTask.AsTask);
+                    terminologyRemoveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyPollProcessingDependencyValidationException);
@@ -48,12 +48,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedTerminologyPollProcessingDependencyValidationException))),
                          Times.Once);
 
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -74,12 +76,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                      .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<TerminologyPoll> terminologyRetrieveTask =
+            ValueTask<TerminologyPoll> terminologyRemoveTask =
                 this.terminologyPollProcessingService.RemoveTerminologyPollByIdAsync(terminologyPollId);
 
             TerminologyPollProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<TerminologyPollProcessingDependencyException>(
-                    terminologyRetrieveTask.AsTask);
+                    terminologyRemoveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyPollProcessingDependencyException);
@@ -89,12 +91,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedTerminologyPollProcessingDependencyException))),
                          Times.Once);
 
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -119,12 +123,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                      .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<TerminologyPoll> terminologyRetrieveTask =
+            ValueTask<TerminologyPoll> terminologyRemoveTask =
                 this.terminologyPollProcessingService.RemoveTerminologyPollByIdAsync(terminologyPollId);
 
             TerminologyPollProcessingServiceException actualException =
                 await Assert.ThrowsAsync<TerminologyPollProcessingServiceException>(
-                    terminologyRetrieveTask.AsTask);
+                    terminologyRemoveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyPollProcessingServiceException);
@@ -134,12 +138,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedTerminologyPollProcessingServiceException))),
                          Times.Once);
 
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

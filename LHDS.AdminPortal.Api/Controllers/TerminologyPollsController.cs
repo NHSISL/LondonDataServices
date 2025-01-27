@@ -5,14 +5,17 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Attrify.Attributes;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations, ISL.LDS.AdminSpa.Administrators")]
     [ApiController]
     [Route("api/[controller]")]
     public class TerminologyPollsController : RESTFulController
@@ -22,6 +25,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public TerminologyPollsController(ITerminologyPollService terminologyPollService) =>
             this.terminologyPollService = terminologyPollService;
 
+        [InvisibleApi]
         [HttpPost]
         public async ValueTask<ActionResult<TerminologyPoll>> PostTerminologyPollAsync(TerminologyPoll terminologyPoll)
         {
@@ -42,7 +46,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return FailedDependency(terminologyPollValidationException.InnerException);
             }
             catch (TerminologyPollDependencyValidationException terminologyPollDependencyValidationException)
-               when (terminologyPollDependencyValidationException.InnerException is AlreadyExistsTerminologyPollException)
+                when (terminologyPollDependencyValidationException.InnerException 
+                    is AlreadyExistsTerminologyPollException)
             {
                 return Conflict(terminologyPollDependencyValidationException.InnerException);
             }
@@ -56,6 +61,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations, ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet]
         public async ValueTask<ActionResult<IQueryable<TerminologyPoll>>> GetAllTerminologyPollsAsync()
         {
@@ -76,12 +82,14 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Configurations, ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{terminologyPollId}")]
         public async ValueTask<ActionResult<TerminologyPoll>> GetTerminologyPollByIdAsync(Guid terminologyPollId)
         {
             try
             {
-                TerminologyPoll terminologyPoll = await this.terminologyPollService.RetrieveTerminologyPollByIdAsync(terminologyPollId);
+                TerminologyPoll terminologyPoll = await this.terminologyPollService
+                    .RetrieveTerminologyPollByIdAsync(terminologyPollId);
 
                 return Ok(terminologyPoll);
             }
@@ -104,6 +112,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpPut]
         public async ValueTask<ActionResult<TerminologyPoll>> PutTerminologyPollAsync(TerminologyPoll terminologyPoll)
         {
@@ -129,7 +138,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return FailedDependency(terminologyPollValidationException.InnerException);
             }
             catch (TerminologyPollDependencyValidationException terminologyPollDependencyValidationException)
-               when (terminologyPollDependencyValidationException.InnerException is AlreadyExistsTerminologyPollException)
+                when (terminologyPollDependencyValidationException.InnerException 
+                    is AlreadyExistsTerminologyPollException)
             {
                 return Conflict(terminologyPollDependencyValidationException.InnerException);
             }
@@ -143,6 +153,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [InvisibleApi]
         [HttpDelete("{terminologyPollId}")]
         public async ValueTask<ActionResult<TerminologyPoll>> DeleteTerminologyPollByIdAsync(Guid terminologyPollId)
         {

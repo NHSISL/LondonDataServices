@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberAgreementProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberAgreementProcessingDependencyException))),
                          Times.Once);
 
@@ -102,7 +102,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
         {
             // given
             Guid someId = Guid.NewGuid();
-
             var serviceException = new Exception();
 
             var failedSubscriberAgreementProcessingServiceException =
@@ -135,7 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedSubscriberAgreementProcessingServiveException))),
                          Times.Once);
 

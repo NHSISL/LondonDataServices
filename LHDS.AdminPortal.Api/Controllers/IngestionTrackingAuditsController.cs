@@ -75,7 +75,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #endif
         [Authorize(Roles =
             "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTrackingAudit,ISL.LDS.AdminSpa.ReadOnly")]
-        public ActionResult<IQueryable<IngestionTrackingAudit>> Get()
+        public async ValueTask<ActionResult<IQueryable<IngestionTrackingAudit>>> Get()
         {
             try
             {

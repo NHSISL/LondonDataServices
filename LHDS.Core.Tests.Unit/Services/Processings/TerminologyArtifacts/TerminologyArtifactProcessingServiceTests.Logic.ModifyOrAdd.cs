@@ -95,8 +95,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-            service.AddTerminologyArtifactAsync(inputTerminologyArtifact),
-            Times.Once);
+                service.AddTerminologyArtifactAsync(inputTerminologyArtifact),
+                    Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>
                 service.ModifyTerminologyArtifactAsync(inputTerminologyArtifact),

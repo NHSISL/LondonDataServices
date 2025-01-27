@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Force.DeepCloner;
@@ -26,13 +27,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             Guid ingestionTrackingId = randomIngestionTracking.Id;
             string batchReference = randomIngestionTracking.Batch;
             Guid datasetSpecificationId = randomIngestionTracking.DataSetSpecificationId;
-            List<string> ingestionTrackingObjects = GetRandomStringList();
             List<string> dataSetSpecificationObjects = GetRandomStringList();
+            List<string> ingestionTrackingObjects = dataSetSpecificationObjects.DeepClone();
+            ingestionTrackingObjects.Remove(dataSetSpecificationObjects.First());
+            List<string> missingSpecificationObjectIds = new List<string> { dataSetSpecificationObjects.First() };
 
-            Stream batchReadyStream =
-                new MemoryStream(Encoding.UTF8.GetBytes(
-                    $"All specification object files present for dataset specification id: " +
-                    $"{randomIngestionTracking.DataSetSpecificationId}"));
+            string batchReadyFileName =
+                $"{randomIngestionTracking.BatchReadyFolderPath}/BatchReady.txt";
+
+            string message =
+                    $"Unable to generate '{batchReadyFileName}' for batch: {randomIngestionTracking.Batch}.  " +
+                    Environment.NewLine +
+                    $"We are missing {missingSpecificationObjectIds.Count}/{dataSetSpecificationObjects.Count} files.  " +
+                    Environment.NewLine +
+                    $"Missing specification object Id's: {string.Join(", ", missingSpecificationObjectIds)} " +
+                    Environment.NewLine +
+                    $"as defined by Dataset Specification Id: {randomIngestionTracking.DataSetSpecificationId}"; ;
 
             this.ingestionTrackingProcessingServiceMock
                 .Setup(service => service.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId))
@@ -69,6 +79,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 It.IsAny<string>()),
                     Times.Never);
 
+            this.auditBrokerMock.Verify(service => service.LogInformationAsync(
+                "BatchComplete",
+                "Unable to generate BatchReady.txt",
+                message,
+                batchReadyFileName,
+                null),
+                    Times.Once);
+
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.specificationObjectProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
@@ -94,10 +112,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             List<string> ingestionTrackingObjects = randomObjects.DeepClone();
             List<string> dataSetSpecificationObjects = randomObjects.DeepClone();
 
+            string message =
+                $"All specification object files present for batch '{randomIngestionTracking.Batch}' " +
+                $"as defined in Dataset Specification Id: '{randomIngestionTracking.DataSetSpecificationId}'." +
+                Environment.NewLine +
+                $"Generate batch complete file: '{batchReadyFileName}'";
+
             Stream batchReadyStream =
-                new MemoryStream(Encoding.UTF8.GetBytes(
-                    $"All specification object files present for dataset specification id: " +
-                    $"{randomIngestionTracking.DataSetSpecificationId}"));
+                new MemoryStream(Encoding.UTF8.GetBytes(message));
 
             Stream expectedStream = batchReadyStream.DeepClone();
 
@@ -149,6 +171,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     batchReadyFileName,
                     storageIngestionTracking.Container),
                         Times.Once);
+
+            this.auditBrokerMock.Verify(service => service.LogInformationAsync(
+                "BatchComplete",
+                "BatchReady.txt generated",
+                message,
+                batchReadyFileName,
+                null),
+                    Times.Once);
 
             Assert.True(IsSameStream(expectedStream, actualStream));
 

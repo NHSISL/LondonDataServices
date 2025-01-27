@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
@@ -74,7 +75,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
                     filename: ingestionTracking.EncryptedFileName,
                     container: blobContainers.EmisLanding);
 
-                var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                IQueryable<IngestionTrackingAudit> allIngestionTrackingAudits = 
+                    await this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync();
+
+                var audits = allIngestionTrackingAudits
                     .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
 
                 foreach (var audit in audits)
@@ -145,7 +149,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.EmisLandings
 
             foreach (var tracking in ingestionTrackings)
             {
-                var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                IQueryable<IngestionTrackingAudit> allIngestionTrackingAudits =
+                    await this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync();
+
+                var audits = allIngestionTrackingAudits
                     .Where(audit => audit.IngestionTrackingId == tracking.Id).ToList();
 
                 foreach (var audit in audits)

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
@@ -48,7 +49,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(randomDataSet.Id);
             await this.dataSetService.AddDataSetAsync(randomDataSet);
             await this.dataSetSpecificationService.AddDataSetSpecificationAsync(randomDataSetSpecification);
-            List<SpecificationObject> randomSpecificationObject = CreateRandomSpecificationObjects(randomDataSetSpecification.Id);
+            
+            List<SpecificationObject> randomSpecificationObject = 
+                CreateRandomSpecificationObjects(randomDataSetSpecification.Id);
 
             foreach (var item in randomSpecificationObject)
             {
@@ -88,7 +91,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             IngestionTracking decryptedIngestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-            var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
+            IQueryable<IngestionTrackingAudit> allAudits = 
+                await this.auditService.RetrieveAllIngestionTrackingAuditsAsync();
+
+            var audits = allAudits
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
 
             foreach (var audit in audits)

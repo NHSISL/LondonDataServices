@@ -32,12 +32,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask<string> ontologyRetrieveArtifactDetailsAction =
+            ValueTask<string> ontologyRetrieveArtifactDetailsTask =
                 this.ontologyProcessingService.RetrieveArtifactDetailsAsync(relativeUrl);
 
             OntologyProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<OntologyProcessingDependencyValidationException>(
-                    ontologyRetrieveArtifactDetailsAction.AsTask);
+                    ontologyRetrieveArtifactDetailsTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedOntologyProcessingDependencyValidationException);
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedOntologyProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -73,12 +73,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<string> ontologyRetrieveArtifactDetailsAction =
+            ValueTask<string> ontologyRetrieveArtifactDetailsTask =
                 this.ontologyProcessingService.RetrieveArtifactDetailsAsync(relativeUrl);
 
             OntologyProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<OntologyProcessingDependencyException>(
-                    ontologyRetrieveArtifactDetailsAction.AsTask);
+                    ontologyRetrieveArtifactDetailsTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedOntologyProcessingDependencyException);
@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedOntologyProcessingDependencyException))),
                          Times.Once);
 
@@ -118,12 +118,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<string> ontologyRetrieveArtifactDetailsAction =
+            ValueTask<string> ontologyRetrieveArtifactDetailsTask =
                 this.ontologyProcessingService.RetrieveArtifactDetailsAsync(relativeUrl);
 
             OntologyProcessingServiceException actualException =
                 await Assert.ThrowsAsync<OntologyProcessingServiceException>(
-                    ontologyRetrieveArtifactDetailsAction.AsTask);
+                    ontologyRetrieveArtifactDetailsTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedOntologyProcessingServiceException);
@@ -133,7 +133,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedOntologyProcessingServiceException))),
                          Times.Once);
 

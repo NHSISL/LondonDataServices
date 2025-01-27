@@ -30,18 +30,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     innerException: nullSubscriberCredentialException);
 
             // when
-            ValueTask<SubscriberCredential> addSubscriberCredentialTask =
+            ValueTask<SubscriberCredential> secureDataAddOrModifyTask =
                 this.secureDataProcessingService.AddOrModifySecureDataAsync(nullSubscriberCredential);
 
             SubscriberCredentialValidationException actualSubscriberCredentialValidationException =
-                await Assert.ThrowsAsync<SubscriberCredentialValidationException>(addSubscriberCredentialTask.AsTask);
+                await Assert.ThrowsAsync<SubscriberCredentialValidationException>(
+                    secureDataAddOrModifyTask.AsTask);
 
             // then
             actualSubscriberCredentialValidationException.Should().BeEquivalentTo(
                 expectedSubscriberCredentialValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(expectedSubscriberCredentialValidationException))),
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedSubscriberCredentialValidationException))),
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -83,18 +84,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     innerException: invalidArgumentSubscriberCredentialProcessingException);
 
             // when
-            ValueTask<SubscriberCredential> addSubscriberCredentialTask =
+            ValueTask<SubscriberCredential> secureDataAddOrModifyTask =
                 secureDataProcessingServiceMock.Object.AddOrModifySecureDataAsync(inputSubscriberCredential);
 
             SubscriberCredentialValidationException actualSubscriberCredentialValidationException =
-                await Assert.ThrowsAsync<SubscriberCredentialValidationException>(addSubscriberCredentialTask.AsTask);
+                await Assert.ThrowsAsync<SubscriberCredentialValidationException>(
+                    secureDataAddOrModifyTask.AsTask);
 
             // then
             actualSubscriberCredentialValidationException.Should().BeEquivalentTo(
                 expectedSubscriberCredentialValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(expectedSubscriberCredentialValidationException))),
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedSubscriberCredentialValidationException))),
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

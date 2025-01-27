@@ -25,36 +25,37 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             }
             catch (InvalidSecureDataException invalidSecureDataException)
             {
-                throw CreateAndLogValidationException(invalidSecureDataException);
+                throw await CreateAndLogValidationExceptionAsync(invalidSecureDataException);
             }
             catch (SecureDataDependencyValidationException secureDataDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(secureDataDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(secureDataDependencyValidationException);
             }
             catch (SecureDataValidationException secureDataValidationException)
             {
-                throw CreateAndLogDependencyValidationException(secureDataValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(secureDataValidationException);
             }
             catch (NullSubscriberCredentialException nullSubscriberCredentialException)
             {
-                throw CreateAndLogValidationException(nullSubscriberCredentialException);
+                throw await CreateAndLogValidationExceptionAsync(nullSubscriberCredentialException);
             }
             catch (InvalidSubscriberCredentialException invalidSubscriberCredentialException)
             {
-                throw CreateAndLogValidationException(invalidSubscriberCredentialException);
+                throw await CreateAndLogValidationExceptionAsync(invalidSubscriberCredentialException);
             }
             catch (InvalidArgumentSubscriberCredentialProcessingException
                 invalidArgumentSubscriberCredentialProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(
+                    invalidArgumentSubscriberCredentialProcessingException);
             }
             catch (SecureDataDependencyException secureDataDependencyException)
             {
-                throw CreateAndLogDependencyException(secureDataDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(secureDataDependencyException);
             }
             catch (SecureDataServiceException secureDataServiceException)
             {
-                throw CreateAndLogDependencyException(secureDataServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(secureDataServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -64,16 +65,18 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                         "contact support.",
                         innerException: aggregateException);
 
-                throw CreateAndLogServiceException(failedSubscriberCredentialProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSubscriberCredentialProcessingServiceException);
             }
             catch (Exception exception)
             {
                 var failedSubscriberCredentialProcessingServiceException =
                     new FailedSubscriberCredentialProcessingServiceException(
-                        message: "Failed subscriber credential processing service error occurred, please contact support.",
+                        message:
+                            "Failed subscriber credential processing service error occurred, " +
+                            "please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSubscriberCredentialProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSubscriberCredentialProcessingServiceException);
             }
         }
 
@@ -85,32 +88,32 @@ namespace LHDS.Core.Services.Processings.SecureDatas
             }
             catch (NullSubscriberCredentialException nullSubscriberCredentialException)
             {
-                throw CreateAndLogValidationException(nullSubscriberCredentialException);
+                throw await CreateAndLogValidationExceptionAsync(nullSubscriberCredentialException);
             }
             catch (InvalidSubscriberCredentialException invalidSubscriberCredentialException)
             {
-                throw CreateAndLogValidationException(invalidSubscriberCredentialException);
+                throw await CreateAndLogValidationExceptionAsync(invalidSubscriberCredentialException);
             }
             catch (InvalidArgumentSubscriberCredentialProcessingException
                 invalidArgumentSubscriberCredentialProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentSubscriberCredentialProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentSubscriberCredentialProcessingException);
             }
             catch (SecureDataDependencyValidationException secureDataDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(secureDataDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(secureDataDependencyValidationException);
             }
             catch (SecureDataValidationException secureDataValidationException)
             {
-                throw CreateAndLogDependencyValidationException(secureDataValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(secureDataValidationException);
             }
             catch (SecureDataDependencyException secureDataDependencyException)
             {
-                throw CreateAndLogDependencyException(secureDataDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(secureDataDependencyException);
             }
             catch (SecureDataServiceException secureDataServiceException)
             {
-                throw CreateAndLogDependencyException(secureDataServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(secureDataServiceException);
             }
             catch (AggregateException aggregateException)
             {
@@ -120,63 +123,70 @@ namespace LHDS.Core.Services.Processings.SecureDatas
                         "contact support.",
                         innerException: aggregateException);
 
-                throw CreateAndLogServiceException(failedSubscriberCredentialProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSubscriberCredentialProcessingServiceException);
             }
             catch (Exception exception)
             {
                 var failedSubscriberCredentialProcessingServiceException =
                     new FailedSubscriberCredentialProcessingServiceException(
-                        message: "Failed subscriber credential processing service error occurred, please contact support.",
+                        message:
+                            "Failed subscriber credential processing service error occurred, " +
+                            "please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSubscriberCredentialProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSubscriberCredentialProcessingServiceException);
             }
         }
 
-        private SubscriberCredentialValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<SubscriberCredentialValidationException> CreateAndLogValidationExceptionAsync(
+            Xeption exception)
         {
             var subscriberCredentialValidationException = new SubscriberCredentialValidationException(
                 message: "Subscriber credential validation errors occurred, please try again.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(subscriberCredentialValidationException);
+            await this.loggingBroker.LogErrorAsync(subscriberCredentialValidationException);
 
             return subscriberCredentialValidationException;
         }
 
-        private SubscriberCredentialProcessingDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<SubscriberCredentialProcessingDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var subscriberCredentialProcessingDependencyValidationException =
                 new SubscriberCredentialProcessingDependencyValidationException(
-                    message: "Subscriber credential processing dependency validation error occurred, please try again.",
+                    message:
+                        "Subscriber credential processing dependency validation error occurred, " +
+                        "please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(subscriberCredentialProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(subscriberCredentialProcessingDependencyValidationException);
 
             return subscriberCredentialProcessingDependencyValidationException;
         }
 
-        private SubscriberCredentialProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<SubscriberCredentialProcessingDependencyException> CreateAndLogDependencyExceptionAsync(
+            Xeption exception)
         {
             var subscriberCredentialProcessingDependencyException =
                 new SubscriberCredentialProcessingDependencyException(
                     message: "Subscriber credential processing dependency error occurred, please try again.",
                     innerException: exception?.InnerException as Xeption);
 
-            this.loggingBroker.LogError(subscriberCredentialProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(subscriberCredentialProcessingDependencyException);
 
             return subscriberCredentialProcessingDependencyException;
         }
 
-        private SubscriberCredentialProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<SubscriberCredentialProcessingServiceException> CreateAndLogServiceExceptionAsync(
+            Xeption exception)
         {
             var subscriberCredentialProcessingServiceException = new
                 SubscriberCredentialProcessingServiceException(
                     message: "Subscriber credential processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(subscriberCredentialProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(subscriberCredentialProcessingServiceException);
 
             return subscriberCredentialProcessingServiceException;
         }

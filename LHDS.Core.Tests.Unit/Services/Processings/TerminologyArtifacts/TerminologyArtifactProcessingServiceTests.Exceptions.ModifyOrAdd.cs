@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyArtifactProcessingDependencyValidationException))),
                         Times.Once);
 
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedTerminologyArtifactProcessingDependencyException))),
                         Times.Once);
 
@@ -123,11 +123,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<TerminologyArtifact> addTerminologyArtifactTask =
+            ValueTask<TerminologyArtifact> terminologyArtifactModifyOrAddTask =
                 this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(inputTerminologyArtifact);
 
             TerminologyArtifactProcessingServiceException actualException =
-                await Assert.ThrowsAsync<TerminologyArtifactProcessingServiceException>(addTerminologyArtifactTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyArtifactProcessingServiceException>(
+                    terminologyArtifactModifyOrAddTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingServiveException);
@@ -137,7 +138,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyArtifactProcessingServiveException))),
                         Times.Once);
 

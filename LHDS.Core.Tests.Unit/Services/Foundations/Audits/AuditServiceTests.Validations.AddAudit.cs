@@ -62,7 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     title: randomAuditTitle,
                     message: randomMessage,
                     fileName: randomFileName,
-                    correlationId: randomCorrelationId,
+                    correlationId: randomCorrelationId.ToString(),
                     logLevel: randomLogLevel);
 
             AuditValidationException actualAuditValidationException =

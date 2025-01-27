@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyArtifactProcessingDependencyValidationException))),
                         Times.Once);
 
@@ -71,14 +71,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.RemoveTerminologyArtifactByIdAsync(someId))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<TerminologyArtifact> terminologyArtifactRemoveByIdTask =
                 this.terminologyArtifactProcessingService.RemoveTerminologyArtifactByIdAsync(someId);
 
             TerminologyArtifactProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<TerminologyArtifactProcessingDependencyException>(terminologyArtifactRemoveByIdTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyArtifactProcessingDependencyException>(
+                    terminologyArtifactRemoveByIdTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingDependencyException);
@@ -88,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedTerminologyArtifactProcessingDependencyException))),
                          Times.Once);
 
@@ -116,14 +117,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.RemoveTerminologyArtifactByIdAsync(someId))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<TerminologyArtifact> removeTerminologyArtifactTask =
                 this.terminologyArtifactProcessingService.RemoveTerminologyArtifactByIdAsync(someId);
 
             TerminologyArtifactProcessingServiceException actualException =
-                await Assert.ThrowsAsync<TerminologyArtifactProcessingServiceException>(removeTerminologyArtifactTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyArtifactProcessingServiceException>(
+                    removeTerminologyArtifactTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingServiveException);
@@ -133,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyArtifactProcessingServiveException))),
                         Times.Once);
 

@@ -26,9 +26,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     .ReturnsAsync(storageTerminologyArtifacts);
 
             // When
-            TerminologyArtifact actualTerminologyArtifact =
-                await this.terminologyArtifactProcessingService
-                    .RemoveTerminologyArtifactByIdAsync(randomTerminologyArtifacts.Id);
+            TerminologyArtifact actualTerminologyArtifact = await this.terminologyArtifactProcessingService
+                .RemoveTerminologyArtifactByIdAsync(randomTerminologyArtifacts.Id);
 
             // Then
             actualTerminologyArtifact.Should().BeEquivalentTo(expectedTerminologyArtifact);

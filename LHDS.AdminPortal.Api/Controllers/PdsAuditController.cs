@@ -29,9 +29,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.pdsAuditService = pdsAuditService;
 
         [HttpPost]
-#if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Pds")]
-#endif
         public async ValueTask<ActionResult<PdsAudit>> PostPdsAuditAsync(PdsAudit pdsAudit)
         {
             try

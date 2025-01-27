@@ -23,6 +23,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.OptOuts
             var methodInfo = controllerType.GetMethod("GetOptOutByNhsNumberAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
+            
             List<string> expectedAttributeValues = new List<string>()
             {
                 "ISL.LDS.AdminSpa.OptOut", 

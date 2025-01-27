@@ -10,7 +10,7 @@ namespace LHDS.Core.Brokers.Audits
 {
     public interface IAuditBroker
     {
-        ValueTask<Audit> Log(
+        ValueTask<Audit> LogAsync(
             string auditType,
             string title,
             string? message,
@@ -18,28 +18,28 @@ namespace LHDS.Core.Brokers.Audits
             Guid? correlationId,
             string? logLevel = "Information");
 
-        ValueTask<Audit> LogInformation(
+        ValueTask<Audit> LogInformationAsync(
             string auditType,
             string title,
             string? message,
             string? fileName,
             Guid? correlationId);
 
-        ValueTask<Audit> LogWarning(
+        ValueTask<Audit> LogWarningAsync(
             string auditType,
             string title,
             string? message,
             string? fileName,
             Guid? correlationId);
 
-        ValueTask<Audit> LogError(
+        ValueTask<Audit> LogErrorAsync(
             string auditType,
             string title,
             string? message,
             string? fileName,
             Guid? correlationId);
 
-        ValueTask<Audit> LogCritical(
+        ValueTask<Audit> LogCriticalAsync(
             string auditType,
             string title,
             string? message,

@@ -26,28 +26,29 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
             }
             catch (NullSubscriberAgreementProcessingException nullSubscriberAgreementException)
             {
-                throw CreateAndLogValidationException(nullSubscriberAgreementException);
+                throw await CreateAndLogValidationExceptionAsync(nullSubscriberAgreementException);
             }
             catch (InvalidArgumentSubscriberAgreementProcessingException
                 invalidArgumentSubscriberAgreementProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentSubscriberAgreementProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentSubscriberAgreementProcessingException);
             }
             catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberAgreementValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(subscriberAgreementValidationException);
             }
             catch (SubscriberAgreementDependencyValidationException subscriberAgreementDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberAgreementDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    subscriberAgreementDependencyValidationException);
             }
             catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
             {
-                throw CreateAndLogDependencyException(subscriberAgreementDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberAgreementDependencyException);
             }
             catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberAgreementServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberAgreementServiceException);
             }
             catch (Exception exception)
             {
@@ -57,7 +58,7 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
                             "please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSubscriberAgreementProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSubscriberAgreementProcessingServiceException);
             }
         }
 
@@ -70,77 +71,81 @@ namespace LHDS.Core.Services.Processings.SubscriberAgreements
             }
             catch (SubscriberAgreementValidationException subscriberAgreementValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberAgreementValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(subscriberAgreementValidationException);
             }
             catch (SubscriberAgreementDependencyValidationException subscriberAgreementDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(subscriberAgreementDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    subscriberAgreementDependencyValidationException);
             }
             catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
             {
-                throw CreateAndLogDependencyException(subscriberAgreementDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberAgreementDependencyException);
             }
             catch (SubscriberAgreementServiceException subscriberAgreementServiceException)
             {
-                throw CreateAndLogDependencyException(subscriberAgreementServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(subscriberAgreementServiceException);
             }
             catch (Exception exception)
             {
                 var failedSubscriberAgreementProcessingServiceException =
                     new FailedSubscriberAgreementProcessingServiceException(
-                        message: "Failed subscriber agreement processing service error occurred, please contact support.",
+                        message: "Failed subscriber agreement processing service error occurred, " +
+                            "please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedSubscriberAgreementProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSubscriberAgreementProcessingServiceException);
             }
         }
 
-
-        private SubscriberAgreementProcessingValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<SubscriberAgreementProcessingValidationException> CreateAndLogValidationExceptionAsync(
+            Xeption exception)
         {
             var subscriberAgreementProcessingValidationException =
                 new SubscriberAgreementProcessingValidationException(
                     message: "Subscriber agreement processing validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(subscriberAgreementProcessingValidationException);
+            await this.loggingBroker.LogErrorAsync(subscriberAgreementProcessingValidationException);
 
             return subscriberAgreementProcessingValidationException;
         }
 
-        private SubscriberAgreementProcessingDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<SubscriberAgreementProcessingDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var dataSetProcessingDependencyValidationException =
                 new SubscriberAgreementProcessingDependencyValidationException(
                     message: "Subscriber agreement processing dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(dataSetProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(dataSetProcessingDependencyValidationException);
 
             return dataSetProcessingDependencyValidationException;
         }
 
-        private SubscriberAgreementProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<SubscriberAgreementProcessingDependencyException> CreateAndLogDependencyExceptionAsync(
+            Xeption exception)
         {
             var subscriberAgreementProcessingDependencyException =
                 new SubscriberAgreementProcessingDependencyException(
                     message: "Subscriber agreement processing dependency error occurred, please try again.",
                     innerException: exception?.InnerException as Xeption);
 
-            this.loggingBroker.LogError(subscriberAgreementProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(subscriberAgreementProcessingDependencyException);
 
-            throw subscriberAgreementProcessingDependencyException;
+            return subscriberAgreementProcessingDependencyException;
         }
 
-        private SubscriberAgreementProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<SubscriberAgreementProcessingServiceException> CreateAndLogServiceExceptionAsync(
+            Xeption exception)
         {
             var subscriberAgreementProcessingServiceException = new
                 SubscriberAgreementProcessingServiceException(
                     message: "Subscriber agreement processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(subscriberAgreementProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(subscriberAgreementProcessingServiceException);
 
             return subscriberAgreementProcessingServiceException;
         }

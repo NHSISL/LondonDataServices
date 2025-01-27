@@ -10,6 +10,7 @@ using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 using LHDS.Core.Services.Processings.OptOuts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
@@ -21,6 +22,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
     public class OptOutsController : RESTFulController
     {
         private readonly IOptOutProcessingService optOutProcessingService;
@@ -28,15 +30,13 @@ namespace LHDS.AdminPortal.Api.Controllers
         public OptOutsController(IOptOutProcessingService optOutProcessingService) =>
             this.optOutProcessingService = optOutProcessingService;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.OptOut,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet]
 #if !DEBUG
         [EnableQuery(PageSize = 50)]
 #endif
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
-#endif
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.OptOut, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public async ValueTask<ActionResult<IQueryable<OptOut>>> Get()
         {
@@ -57,10 +57,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
         [HttpPost]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
-#endif
         public async ValueTask<ActionResult<OptOut>> PostOptOutAsync(
             OptOut optOut)
         {
@@ -95,10 +93,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.OptOut,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{nhsNumber}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut, ISL.LDS.AdminApi.ReadOnly")]
-#endif
         public async ValueTask<ActionResult<OptOut>> GetOptOutByNhsNumberAsync(string nhsNumber)
         {
             try
@@ -127,10 +123,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
         [HttpPut]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
-#endif
         public async ValueTask<ActionResult<OptOut>> PutOptOutAsync(OptOut optOut)
         {
             try
@@ -169,10 +163,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
         [HttpDelete("{optOutId}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
-#endif
         public async ValueTask<ActionResult<PdsAudit>> DeleteOptOutByIdAsync(Guid optOutId)
         {
             try

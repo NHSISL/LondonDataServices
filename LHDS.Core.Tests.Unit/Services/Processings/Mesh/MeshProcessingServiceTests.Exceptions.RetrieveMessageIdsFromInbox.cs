@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             this.meshServiceMock.Setup(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<List<string>> retrieveMessageByIdsTask =
@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             this.meshServiceMock.Setup(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<List<string>> retrieveMessageByIdsTask =
@@ -109,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             this.meshServiceMock.Setup(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<string>> retrievRetrieveMessageIdsFromInboxTask =

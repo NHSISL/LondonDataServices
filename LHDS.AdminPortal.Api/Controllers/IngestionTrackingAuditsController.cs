@@ -94,7 +94,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [InvisibleApi]
+        [Authorize(Roles =
+            "ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.IngestionTrackingAudit,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{ingestionTrackingAuditId}")]
         public async ValueTask<ActionResult<IngestionTrackingAudit>> GetAuditByIdAsync(Guid ingestionTrackingAuditId)
         {

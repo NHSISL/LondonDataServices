@@ -26,6 +26,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public SubscriberCredentialsController(ISubscriberCredentialOrchestration subscriberCredentialOrchestration) =>
             this.subscriberCredentialOrchestration = subscriberCredentialOrchestration;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SubscriberCredentials")]
         [HttpPost]
         public async ValueTask<ActionResult<SubscriberCredential>> PostSubscriberCredentialAsync(
             [FromBody] SubscriberCredential subscriberCredential)

@@ -136,6 +136,8 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                                 foundAssignAddress,
                                 foundOrdananceAddress);
 
+                        ValidateAddressUPRN(newResolvedAddress.UPRN);
+
                         newResolvedAddress.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                         newResolvedAddress.IsProcessed = true;
 

@@ -18,7 +18,7 @@ namespace LHDS.Core.Clients
         public AuditClient(IAuditService auditService) =>
             this.auditService = auditService;
 
-        public async ValueTask<Audit> LogAudit(
+        public async ValueTask<Audit> LogAuditAsync(
             string auditType,
             string title,
             string? message,

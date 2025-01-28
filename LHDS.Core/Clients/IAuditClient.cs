@@ -9,7 +9,7 @@ namespace LHDS.Core.Clients
 {
     public interface IAuditClient
     {
-        ValueTask<Audit> LogAudit(
+        ValueTask<Audit> LogAuditAsync(
             string auditType,
             string title,
             string? message,

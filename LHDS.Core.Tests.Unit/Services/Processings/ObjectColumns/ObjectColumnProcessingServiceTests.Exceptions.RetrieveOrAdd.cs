@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
 
             this.objectColumnServiceMock.Setup(service =>
                 service.RetrieveObjectColumnByIdAsync(inputObjectColumn.Id))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<ObjectColumn> objectColumnRetrieveOrAddTask =
@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
 
             this.objectColumnServiceMock.Setup(service =>
                 service.RetrieveObjectColumnByIdAsync(inputObjectColumn.Id))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<ObjectColumn> objectColumnRetrieveOrAddTask =
@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
 
             this.objectColumnServiceMock.Setup(service =>
                 service.RetrieveObjectColumnByIdAsync(inputObjectColumn.Id))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<ObjectColumn> addObjectColumnTask =

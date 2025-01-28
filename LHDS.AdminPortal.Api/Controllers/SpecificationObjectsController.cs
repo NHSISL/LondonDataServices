@@ -28,6 +28,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public SpecificationObjectsController(ISpecificationObjectService specificationObjectService) =>
             this.specificationObjectService = specificationObjectService;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SpecificationObjects")]
         [HttpPost]
         public async ValueTask<ActionResult<SpecificationObject>> PostSpecificationObjectAsync(
             SpecificationObject specificationObject)

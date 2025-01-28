@@ -159,6 +159,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SubscriberCredentials")]
         [HttpPut]
         public async ValueTask<ActionResult<SubscriberCredential>> PutSubscriberCredentialAsync(
             [FromBody] SubscriberCredential subscriberCredential)

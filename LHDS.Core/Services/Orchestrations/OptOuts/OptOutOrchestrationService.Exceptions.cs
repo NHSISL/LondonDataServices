@@ -256,7 +256,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     message: "Opt Out orchestration validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogErrorAsync(decryptionOrchestrationValidationException);
+            await this.loggingBroker.LogErrorAsync(decryptionOrchestrationValidationException);
 
             return decryptionOrchestrationValidationException;
         }

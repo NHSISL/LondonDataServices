@@ -123,5 +123,28 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberCredentials
             // then
             attribute.Should().BeNull();
         }
+
+        [Fact]
+        public void PutKeysShouldNotHaveInvisibleApiAttribute()
+        {
+            // given
+            var controllerType = typeof(SubscriberCredentialsController);
+            var methodInfo = controllerType.GetMethod("PutSubscriberCredentialAndRegenerateKeysAsync");
+            Type attributeType = typeof(InvisibleApiAttribute);
+
+            // when
+            var methodAttribute = methodInfo?
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var controllerAttribute = controllerType
+                .GetCustomAttributes(attributeType, inherit: true)
+                .FirstOrDefault();
+
+            var attribute = methodAttribute ?? controllerAttribute;
+
+            // then
+            attribute.Should().BeNull();
+        }
     }
 }

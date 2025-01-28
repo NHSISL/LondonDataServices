@@ -72,9 +72,8 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.SpecificationObjects, ISL.LDS.AdminApi.ReadOnly")]
-#endif
+
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SpecificationObjects, ISL.LDS.AdminSpa.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<SpecificationObject>>> Get()
         {
             try

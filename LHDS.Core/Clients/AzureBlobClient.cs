@@ -27,7 +27,7 @@ namespace LHDS.Core.Clients
 
         public async ValueTask DownloadFileAsync(Stream output, string fileName, string container)
         {
-            loggingBroker.LogInformation(fileName);
+            loggingBroker.LogInformationAsync(fileName);
 
             var blobClient = blobServiceClient
                 .GetBlobContainerClient(container).GetBlobClient(fileName);
@@ -39,7 +39,7 @@ namespace LHDS.Core.Clients
         {
             try
             {
-                loggingBroker.LogInformation($"file:{fileName}, size:{input.Length}, container:{container}");
+                await loggingBroker.LogInformationAsync($"file:{fileName}, size:{input.Length}, container:{container}");
                 input.Position = 0;
                 var blobClient = blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
                 var streamLength = input.Length;
@@ -62,7 +62,7 @@ namespace LHDS.Core.Clients
             }
             catch (Exception ex)
             {
-                loggingBroker.LogError(ex);
+                await loggingBroker.LogErrorAsync(ex);
                 Console.WriteLine($"Unable to write blob: {fileName}");
                 throw;
             }
@@ -70,14 +70,14 @@ namespace LHDS.Core.Clients
 
         public async ValueTask DeleteFileAsync(string fileName, string container)
         {
-            loggingBroker.LogInformation(fileName);
+            await loggingBroker.LogInformationAsync(fileName);
             var blobClient = blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
             await blobClient.DeleteAsync(DeleteSnapshotsOption.None);
         }
 
         public async ValueTask<Uri> GetDownloadUriAsync(string fileName, string container, DateTimeOffset expiresOn)
         {
-            loggingBroker.LogInformation(fileName);
+            await loggingBroker.LogInformationAsync(fileName);
             var blobClient = this.blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
             var userDelegationKey = blobServiceClient.GetUserDelegationKey(DateTimeOffset.UtcNow, expiresOn);
 

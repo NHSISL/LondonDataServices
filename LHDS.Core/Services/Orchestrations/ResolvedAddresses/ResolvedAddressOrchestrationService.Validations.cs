@@ -41,7 +41,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
 
         private static void ValidateAddressUPRN(string maybeUPRN)
         {
-            if (maybeUPRN == null)
+            if (string.IsNullOrWhiteSpace(maybeUPRN))
             {
                 var nullUPRNResolvedAddressOrchestrationException =
                     new NullUPRNResolvedAddressOrchestrationException(

@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             this.resolvedAddressServiceMock.Setup(service =>
                 service.RemoveResolvedAddressByIdAsync(someId))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<ResolvedAddress> resolvedAddressRemoveByIdTask =
@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             this.resolvedAddressServiceMock.Setup(service =>
                 service.RemoveResolvedAddressByIdAsync(someId))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<ResolvedAddress> resolvedAddressRemoveByIdTask =
@@ -117,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             this.resolvedAddressServiceMock.Setup(service =>
                 service.RemoveResolvedAddressByIdAsync(someId))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<ResolvedAddress> addResolvedAddressTask =

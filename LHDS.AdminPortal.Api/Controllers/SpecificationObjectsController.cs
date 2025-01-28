@@ -162,6 +162,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SpecificationObjects")]
         [HttpDelete("{specificationObjectId}")]
         public async ValueTask<ActionResult<SpecificationObject>> DeleteSpecificationObjectByIdAsync(Guid specificationObjectId)
         {

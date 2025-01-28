@@ -40,13 +40,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                 .BeEquivalentTo(expectedTerminologyPollProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyPollProcessingValidationException))),
                         Times.Once);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
-
     }
 }

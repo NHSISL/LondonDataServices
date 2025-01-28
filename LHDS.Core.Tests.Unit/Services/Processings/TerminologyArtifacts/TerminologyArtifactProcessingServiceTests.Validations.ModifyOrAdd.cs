@@ -14,7 +14,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
     public partial class TerminologyArtifactProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionsOnModifyOrAddIfTerminologyArtifactProcessingIsNullAndLogItAsync()
+        public async Task
+            ShouldThrowValidationExceptionsOnModifyOrAddIfTerminologyArtifactProcessingIsNullAndLogItAsync()
         {
             // given
             TerminologyArtifact nullTerminologyArtifact = null;
@@ -28,19 +29,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     innerException: nullTerminologyArtifactProcessingException);
 
             // when
-            ValueTask<TerminologyArtifact> AddTerminologyArtifactTask =
+            ValueTask<TerminologyArtifact> addTerminologyArtifactTask =
                 this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(nullTerminologyArtifact);
 
             TerminologyArtifactProcessingValidationException actualTerminologyArtifactProcessingValidationException =
                 await Assert.ThrowsAsync<TerminologyArtifactProcessingValidationException>(
-                    AddTerminologyArtifactTask.AsTask);
+                    addTerminologyArtifactTask.AsTask);
 
             //then
             actualTerminologyArtifactProcessingValidationException.Should()
                 .BeEquivalentTo(expectedTerminologyArtifactProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyArtifactProcessingValidationException))),
                         Times.Once);
 
@@ -68,18 +69,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     innerException: invalidArgumentTerminologyArtifactProcessingException);
 
             // when
-            ValueTask<TerminologyArtifact> AddTerminologyArtifactTask =
+            ValueTask<TerminologyArtifact> addTerminologyArtifactTask =
                 this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(emptyTerminologyArtifact);
 
             TerminologyArtifactProcessingValidationException actualTerminologyArtifactProcessingValidationException =
-                await Assert.ThrowsAsync<TerminologyArtifactProcessingValidationException>(AddTerminologyArtifactTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyArtifactProcessingValidationException>(
+                    addTerminologyArtifactTask.AsTask);
 
             //then
             actualTerminologyArtifactProcessingValidationException.Should()
                 .BeEquivalentTo(expectedTerminologyArtifactProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyArtifactProcessingValidationException))),
                         Times.Once);
 

@@ -34,19 +34,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     innerException: invalidArgumentTerminologyArtifactProcessingException);
 
             // when
-            ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactTask =
+            ValueTask<TerminologyArtifact> retrieveTerminologyArtifactTask =
                 this.terminologyArtifactProcessingService.RetrieveTerminologyArtifactByIdAsync(invalidId);
 
             TerminologyArtifactProcessingValidationException actualTerminologyArtifactProcessingValidationException =
                 await Assert.ThrowsAsync<TerminologyArtifactProcessingValidationException>(
-                    RetrieveTerminologyArtifactTask.AsTask);
+                    retrieveTerminologyArtifactTask.AsTask);
 
             //then
             actualTerminologyArtifactProcessingValidationException.Should()
                 .BeEquivalentTo(expectedTerminologyArtifactProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedTerminologyArtifactProcessingValidationException))),
                         Times.Once);
 

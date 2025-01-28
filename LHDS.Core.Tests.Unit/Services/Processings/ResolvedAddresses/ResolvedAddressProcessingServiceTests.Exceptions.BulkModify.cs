@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             this.resolvedAddressServiceMock.Setup(service =>
                 service.BulkModifyResolvedAddressesAsync(inputResolvedAddresses))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask bulkModifyTask = this.resolvedAddressProcessingService
@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             this.resolvedAddressServiceMock.Setup(service =>
                 service.BulkModifyResolvedAddressesAsync(inputResolvedAddresses))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask bulkModifyTask = this.resolvedAddressProcessingService
@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             this.resolvedAddressServiceMock.Setup(service =>
                 service.BulkModifyResolvedAddressesAsync(inputResolvedAddresses))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask bulkModifyTask = this.resolvedAddressProcessingService

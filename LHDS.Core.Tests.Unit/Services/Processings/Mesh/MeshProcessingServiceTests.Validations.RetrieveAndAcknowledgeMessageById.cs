@@ -33,9 +33,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 values: "Text is required");
 
             var expectedMeshProcessingValidationException =
-            new MeshProcessingValidationException(
-                message: "Mesh processing validation errors occured, please try again",
-                innerException: invalidMeshProcessingArgumentException);
+                new MeshProcessingValidationException(
+                    message: "Mesh processing validation errors occured, please try again",
+                    innerException: invalidMeshProcessingArgumentException);
 
             // when
             ValueTask<MeshMessage> retrieveMessageIdsFromInboxTask =

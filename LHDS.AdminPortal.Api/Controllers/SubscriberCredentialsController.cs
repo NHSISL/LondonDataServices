@@ -237,6 +237,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SubscriberCredentials")]
         [HttpDelete("{subscriberCredentialId}")]
         public async ValueTask<ActionResult<SubscriberCredential>> DeleteSubscriberCredentialByIdAsync(
             Guid subscriberCredentialId)

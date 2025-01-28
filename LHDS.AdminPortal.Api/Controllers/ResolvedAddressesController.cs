@@ -59,6 +59,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ResolvedAddress, ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet]
         public async ValueTask<ActionResult<IQueryable<ResolvedAddress>>> GetAllResolvedAddressesAsync()
         {

@@ -21,7 +21,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
         {
             // given
             var controllerType = typeof(ResolvedAddressesController);
-            var methodInfo = controllerType.GetMethod("PutSupplierAsync");
+            var methodInfo = controllerType.GetMethod("PutResolvedAddressAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 

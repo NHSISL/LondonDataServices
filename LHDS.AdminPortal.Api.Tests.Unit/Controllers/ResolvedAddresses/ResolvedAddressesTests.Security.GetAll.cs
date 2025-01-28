@@ -20,7 +20,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
         public void GetAllShouldHaveRoleAttributeWithRoles()
         {
             // given
-            var controllerType = typeof(SuppliersController);
+            var controllerType = typeof(ResolvedAddressesController);
             var methodInfo = controllerType.GetMethod("GetAllResolvedAddressesAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";

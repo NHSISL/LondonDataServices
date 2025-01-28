@@ -49,14 +49,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationValidationException actualException =
-                await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(pushExpOptOutsToMeshIfExpiredTask.AsTask);
+                await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(
+                    pushExpOptOutsToMeshIfExpiredTask.AsTask);
 
             // Then
             actualException.Should()
                 .BeEquivalentTo(expectedPushExpiredOptOutsToMeshIfExpiredOrchestrationOptOutFileValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPushExpiredOptOutsToMeshIfExpiredOrchestrationOptOutFileValidationException))),
                         Times.Once);
 
@@ -110,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedOptOutOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutOrchestrationValidationException))),
                         Times.Once);
 
@@ -191,7 +192,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedPushExpiredOptOutsToMeshIfExpiredOrchestrationOptOutFileValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedPushExpiredOptOutsToMeshIfExpiredOrchestrationOptOutFileValidationException))),
                         Times.Once);
 

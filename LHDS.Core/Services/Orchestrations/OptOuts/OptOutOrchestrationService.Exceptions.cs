@@ -26,96 +26,96 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             }
             catch (NullBlobContainersOptOutOrchestrationException nullBlobContainersOptOutOrchestrationException)
             {
-                throw CreateAndLogValidationException(nullBlobContainersOptOutOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullBlobContainersOptOutOrchestrationException);
             }
             catch (NullConfigOptOutOrchestrationException nullConfigOptOutOrchestrationException)
             {
-                throw CreateAndLogValidationException(nullConfigOptOutOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullConfigOptOutOrchestrationException);
             }
             catch (InvalidConfigOptOutOrchestrationException invalidConfigOptOutOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidConfigOptOutOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidConfigOptOutOrchestrationException);
             }
             catch (InvalidArgumentOptOutOrchestrationException invalidArgumentRetieveOptOutStatusOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentRetieveOptOutStatusOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentRetieveOptOutStatusOrchestrationException);
             }
             catch (OptOutOrchestrationDependencyValidationException optOutOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(optOutOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(optOutOrchestrationDependencyValidationException);
             }
             catch (OptOutProcessingValidationException csvMapperProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(csvMapperProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(csvMapperProcessingValidationException);
             }
             catch (OptOutProcessingDependencyValidationException csvMapperProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(csvMapperProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(csvMapperProcessingDependencyValidationException);
             }
             catch (MeshProcessingValidationException meshProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshProcessingValidationException);
             }
             catch (MeshProcessingDependencyValidationException meshProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshProcessingDependencyValidationException);
             }
             catch (DocumentProcessingValidationException meshProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshProcessingValidationException);
             }
             catch (DocumentProcessingDependencyValidationException meshProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshProcessingDependencyValidationException);
             }
             catch (CsvHelperClientValidationException csvHelperClientValidationException)
             {
-                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(csvHelperClientValidationException);
             }
             catch (OptOutOrchestrationDependencyException optOutOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationDependencyException);
             }
             catch (OptOutOrchestrationServiceException optOutOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationServiceException);
             }
             catch (OptOutProcessingDependencyException optOutOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationDependencyException);
             }
             catch (OptOutProcessingServiceException optOutOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationServiceException);
             }
             catch (MeshProcessingDependencyException optOutOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationDependencyException);
             }
             catch (MeshProcessingServiceException optOutOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationServiceException);
             }
             catch (DocumentProcessingDependencyException optOutOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationDependencyException);
             }
             catch (DocumentProcessingServiceException optOutOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationServiceException);
             }
             catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
             {
-                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(csvHelperClientDependencyException);
             }
             catch (CsvHelperClientServiceException csvHelperClientServiceException)
             {
-                throw CreateAndLogDependencyException(csvHelperClientServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(csvHelperClientServiceException);
             }
 
             catch (InvalidMeshMessageOrchestrationException invalidMeshMessageOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidMeshMessageOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidMeshMessageOrchestrationException);
             }
             catch (AggregateException aggregateException)
             {
@@ -125,7 +125,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                             "please contact support.",
                         innerException: aggregateException);
 
-                throw CreateAndLogServiceException(failedOptOutOrchestrationServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedOptOutOrchestrationServiceException);
             }
             catch (Exception exception)
             {
@@ -134,7 +134,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         message: "Failed opt out orchestration service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedOptOutServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedOptOutServiceException);
             }
         }
 
@@ -146,96 +146,96 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             }
             catch (NullBlobContainersOptOutOrchestrationException nullBlobContainersOptOutOrchestrationException)
             {
-                throw CreateAndLogValidationException(nullBlobContainersOptOutOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullBlobContainersOptOutOrchestrationException);
             }
             catch (NullConfigOptOutOrchestrationException nullConfigOptOutOrchestrationException)
             {
-                throw CreateAndLogValidationException(nullConfigOptOutOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullConfigOptOutOrchestrationException);
             }
             catch (InvalidConfigOptOutOrchestrationException invalidConfigOptOutOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidConfigOptOutOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidConfigOptOutOrchestrationException);
             }
             catch (InvalidArgumentOptOutOrchestrationException invalidArgumentRetieveOptOutStatusOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidArgumentRetieveOptOutStatusOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentRetieveOptOutStatusOrchestrationException);
             }
             catch (OptOutOrchestrationDependencyValidationException optOutOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(optOutOrchestrationDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(optOutOrchestrationDependencyValidationException);
             }
             catch (OptOutProcessingValidationException csvMapperProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(csvMapperProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(csvMapperProcessingValidationException);
             }
             catch (OptOutProcessingDependencyValidationException csvMapperProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(csvMapperProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(csvMapperProcessingDependencyValidationException);
             }
             catch (MeshProcessingValidationException meshProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshProcessingValidationException);
             }
             catch (MeshProcessingDependencyValidationException meshProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshProcessingDependencyValidationException);
             }
             catch (DocumentProcessingValidationException meshProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshProcessingValidationException);
             }
             catch (DocumentProcessingDependencyValidationException meshProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(meshProcessingDependencyValidationException);
             }
             catch (CsvHelperClientValidationException csvHelperClientValidationException)
             {
-                throw CreateAndLogDependencyValidationException(csvHelperClientValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(csvHelperClientValidationException);
             }
             catch (OptOutOrchestrationDependencyException optOutOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationDependencyException);
             }
             catch (OptOutOrchestrationServiceException optOutOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationServiceException);
             }
             catch (OptOutProcessingDependencyException optOutOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationDependencyException);
             }
             catch (OptOutProcessingServiceException optOutOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationServiceException);
             }
             catch (MeshProcessingDependencyException optOutOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationDependencyException);
             }
             catch (MeshProcessingServiceException optOutOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationServiceException);
             }
             catch (DocumentProcessingDependencyException optOutOrchestrationDependencyException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationDependencyException);
             }
             catch (DocumentProcessingServiceException optOutOrchestrationServiceException)
             {
-                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(optOutOrchestrationServiceException);
             }
             catch (CsvHelperClientDependencyException csvHelperClientDependencyException)
             {
-                throw CreateAndLogDependencyException(csvHelperClientDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(csvHelperClientDependencyException);
             }
             catch (CsvHelperClientServiceException csvHelperClientServiceException)
             {
-                throw CreateAndLogDependencyException(csvHelperClientServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(csvHelperClientServiceException);
             }
 
             catch (InvalidMeshMessageOrchestrationException invalidMeshMessageOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidMeshMessageOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(invalidMeshMessageOrchestrationException);
             }
             catch (Exception exception)
             {
@@ -244,57 +244,58 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         message: "Failed opt out orchestration service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedOptOutServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedOptOutServiceException);
             }
         }
 
-        private OptOutOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<OptOutOrchestrationValidationException> 
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var decryptionOrchestrationValidationException =
                 new OptOutOrchestrationValidationException(
                     message: "Opt Out orchestration validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(decryptionOrchestrationValidationException);
+            await this.loggingBroker.LogErrorAsync(decryptionOrchestrationValidationException);
 
             return decryptionOrchestrationValidationException;
         }
 
-        private OptOutOrchestrationDependencyValidationException
-            CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<OptOutOrchestrationDependencyValidationException>
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var retrieveOptOutStatusOrchestrationDependencyValidationException =
                 new OptOutOrchestrationDependencyValidationException(
                     message: "Opt Out orchestration dependency validation errors occurred, fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(retrieveOptOutStatusOrchestrationDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(retrieveOptOutStatusOrchestrationDependencyValidationException);
 
             return retrieveOptOutStatusOrchestrationDependencyValidationException;
         }
 
-        private OptOutOrchestrationDependencyException
-            CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<OptOutOrchestrationDependencyException>
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var optOutOrchestrationDependencyException =
                 new OptOutOrchestrationDependencyException(
                     message: "Opt Out orchestration dependency error occurred, fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(optOutOrchestrationDependencyException);
+            await this.loggingBroker.LogErrorAsync(optOutOrchestrationDependencyException);
 
             throw optOutOrchestrationDependencyException;
         }
 
-        private OptOutOrchestrationServiceException
-            CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<OptOutOrchestrationServiceException>
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var optOutOrchestrationServiceException =
                 new OptOutOrchestrationServiceException(
                     message: "Opt Out orchestration service error occurred, please contact support.",
                     exception);
 
-            this.loggingBroker.LogError(optOutOrchestrationServiceException);
+            await this.loggingBroker.LogErrorAsync(optOutOrchestrationServiceException);
 
             throw optOutOrchestrationServiceException;
         }

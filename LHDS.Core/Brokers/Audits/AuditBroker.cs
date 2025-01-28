@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using LHDS.Core.Clients;
 using LHDS.Core.Models.Foundations.Audits;
@@ -21,10 +20,10 @@ namespace LHDS.Core.Brokers.Audits
             string title,
             string? message,
             string? fileName,
-            Guid? correlationId,
+            string? correlationId,
             string? logLevel = "Information")
         {
-            return await auditClient.LogAudit(auditType, title, message, fileName, correlationId, logLevel);
+            return await auditClient.LogAuditAsync(auditType, title, message, fileName, correlationId, logLevel);
         }
 
         public async ValueTask<Audit> LogInformationAsync(
@@ -32,9 +31,9 @@ namespace LHDS.Core.Brokers.Audits
             string title,
             string? message,
             string? fileName,
-            Guid? correlationId)
+            string? correlationId)
         {
-            return await auditClient.LogAudit(auditType, title, message, fileName, correlationId, "Information");
+            return await auditClient.LogAuditAsync(auditType, title, message, fileName, correlationId, "Information");
         }
 
         public async ValueTask<Audit> LogWarningAsync(
@@ -42,9 +41,9 @@ namespace LHDS.Core.Brokers.Audits
             string title,
             string? message,
             string? fileName,
-            Guid? correlationId)
+            string? correlationId)
         {
-            return await auditClient.LogAudit(auditType, title, message, fileName, correlationId, "Warning");
+            return await auditClient.LogAuditAsync(auditType, title, message, fileName, correlationId, "Warning");
         }
 
         public async ValueTask<Audit> LogErrorAsync(
@@ -52,9 +51,9 @@ namespace LHDS.Core.Brokers.Audits
             string title,
             string? message,
             string? fileName,
-            Guid? correlationId)
+            string? correlationId)
         {
-            return await auditClient.LogAudit(auditType, title, message, fileName, correlationId, "Error");
+            return await auditClient.LogAuditAsync(auditType, title, message, fileName, correlationId, "Error");
         }
 
         public async ValueTask<Audit> LogCriticalAsync(
@@ -62,9 +61,9 @@ namespace LHDS.Core.Brokers.Audits
             string title,
             string? message,
             string? fileName,
-            Guid? correlationId)
+            string? correlationId)
         {
-            return await auditClient.LogAudit(auditType, title, message, fileName, correlationId, "Critical");
+            return await auditClient.LogAuditAsync(auditType, title, message, fileName, correlationId, "Critical");
         }
     }
 }

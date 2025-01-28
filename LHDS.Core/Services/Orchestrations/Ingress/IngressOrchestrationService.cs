@@ -100,7 +100,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     title: "BatchReady.txt generated",
                     message: batchComplete,
                     fileName: batchCompleteFileName,
-                    correlationId: null);
+                    correlationId: ingestionTracking.Batch);
             }
             else
             {
@@ -118,7 +118,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     title: "Unable to generate BatchReady.txt",
                     message: batchIncomplete,
                     fileName: batchCompleteFileName,
-                    correlationId: null);
+                    correlationId: ingestionTracking.Batch);
             }
         });
     }

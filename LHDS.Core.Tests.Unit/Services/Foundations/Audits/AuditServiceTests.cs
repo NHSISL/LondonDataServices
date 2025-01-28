@@ -112,8 +112,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 .OnProperty(audit => audit.CreatedBy).Use(user)
                 .OnProperty(audit => audit.UpdatedBy).Use(user);
 
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
-
             return filler;
         }
     }

@@ -34,7 +34,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             }
             catch (ObjectColumnValidationException objectColumnValidationException)
             {
-                throw await CreateAndLogValidationExceptionAsync(objectColumnValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(objectColumnValidationException);
             }
             catch (ObjectColumnDependencyValidationException objectColumnDependencyValidationException)
             {

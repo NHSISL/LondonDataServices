@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 AuditType = randomAuditType,
                 Title = randomAuditTitle,
                 Message = randomMesssage,
-                CorrelationId = randomIdentifier,
+                CorrelationId = randomIdentifier.ToString(),
                 FileName = randomFileName,
                 LogLevel = randomLogLevel,
                 CreatedBy = "System",
@@ -64,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     title: randomAuditTitle,
                     message: randomMesssage,
                     fileName: randomFileName,
-                    correlationId: randomIdentifier,
+                    correlationId: randomIdentifier.ToString(),
                     logLevel: randomLogLevel);
 
             // then

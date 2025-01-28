@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using STX.EFCore.Client.Clients;
 
@@ -32,6 +33,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
         private static void AddConfigurations(ModelBuilder modelBuilder)
         {
+            AddAuditConfigurations(modelBuilder);
             AddAddressConfigurations(modelBuilder);
             AddDataSetConfigurations(modelBuilder);
             AddDataSetSpecificationConfigurations(modelBuilder);

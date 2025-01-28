@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<Guid>(),
+                    It.IsAny<string>(),
                     It.IsAny<string>());
 
             AuditDependencyException actualAuditDependencyException =
@@ -105,7 +105,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<Guid>(),
+                    It.IsAny<string>(),
                     It.IsAny<string>());
 
             // then
@@ -167,7 +167,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<Guid>(),
+                    It.IsAny<string>(),
                     It.IsAny<string>());
 
             // then
@@ -227,7 +227,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<Guid>(),
+                    It.IsAny<string>(),
                     It.IsAny<string>());
 
             AuditDependencyException actualAuditDependencyException =
@@ -285,7 +285,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<Guid>(),
+                    It.IsAny<string>(),
                     It.IsAny<string>());
 
             AuditServiceException actualAuditServiceException =

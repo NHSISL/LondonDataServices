@@ -20,6 +20,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<Audit>()
                 .Property(audit => audit.CorrelationId)
+                .HasMaxLength(255)
                 .IsRequired();
 
             modelBuilder.Entity<Audit>()
@@ -62,6 +63,15 @@ namespace LHDS.Core.Brokers.Storages.Sql
             modelBuilder.Entity<Audit>()
                 .Property(audit => audit.UpdatedDate)
                 .IsRequired();
+
+            modelBuilder.Entity<Audit>()
+                .HasIndex(audit => audit.CorrelationId);
+
+            modelBuilder.Entity<Audit>()
+                .HasIndex(audit => audit.AuditType);
+
+            modelBuilder.Entity<Audit>()
+                .HasIndex(audit => audit.LogLevel);
         }
     }
 }

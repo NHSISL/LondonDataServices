@@ -16,7 +16,7 @@ namespace LHDS.Core.Services.Foundations.Audits
             string title,
             string? message,
             string? fileName,
-            Guid? correlationId,
+            string? correlationId,
             string? logLevel = "Information");
 
         ValueTask<Audit> AddAuditAsync(Audit audit);

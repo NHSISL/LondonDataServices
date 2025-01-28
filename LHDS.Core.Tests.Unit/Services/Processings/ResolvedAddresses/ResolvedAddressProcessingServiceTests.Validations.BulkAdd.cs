@@ -55,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                 .BeEquivalentTo(expectedResolvedAddressProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedResolvedAddressProcessingValidationException))),
                         Times.Once);
 

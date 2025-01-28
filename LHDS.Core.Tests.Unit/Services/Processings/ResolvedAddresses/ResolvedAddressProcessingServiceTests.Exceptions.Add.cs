@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             this.resolvedAddressServiceMock.Setup(service =>
                 service.AddResolvedAddressAsync(inputResolvedAddress))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<ResolvedAddress> resolvedAddressAddTask =
@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedResolvedAddressProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             this.resolvedAddressServiceMock.Setup(service =>
                 service.AddResolvedAddressAsync(inputResolvedAddress))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<ResolvedAddress> resolvedAddressAddTask =
@@ -90,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedResolvedAddressProcessingDependencyException))),
                          Times.Once);
 
@@ -119,7 +119,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             this.resolvedAddressServiceMock.Setup(service =>
                 service.AddResolvedAddressAsync(inputResolvedAddress))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<ResolvedAddress> addResolvedAddressTask =
@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedResolvedAddressProcessingServiveException))),
                          Times.Once);
 

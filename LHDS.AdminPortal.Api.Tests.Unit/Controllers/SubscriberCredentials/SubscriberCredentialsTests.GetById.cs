@@ -21,7 +21,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberCredentials
         {
             // given
             var controllerType = typeof(SubscriberCredentialsController);
-            var methodInfo = controllerType.GetMethod("Get");
+            var methodInfo = controllerType.GetMethod("GetSubscriberCredentialByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 

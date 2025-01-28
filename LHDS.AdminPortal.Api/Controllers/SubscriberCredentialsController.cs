@@ -123,6 +123,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SubscriberCredentials, ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{subscriberCredentialId}")]
         public async ValueTask<ActionResult<SubscriberCredential>> GetSubscriberCredentialByIdAsync(
             Guid subscriberCredentialId)

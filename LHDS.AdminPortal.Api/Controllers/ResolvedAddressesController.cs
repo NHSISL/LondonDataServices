@@ -24,6 +24,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public ResolvedAddressesController(IResolvedAddressService resolvedAddressService) =>
             this.resolvedAddressService = resolvedAddressService;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ResolvedAddress")]
         [HttpPost]
         public async ValueTask<ActionResult<ResolvedAddress>> PostResolvedAddressAsync(ResolvedAddress resolvedAddress)
         {

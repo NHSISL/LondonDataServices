@@ -21,7 +21,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
         {
             // given
             var controllerType = typeof(SpecificationObjectsController);
-            var methodInfo = controllerType.GetMethod("GetSpecificationObjectByIdAsync");
+            var methodInfo = controllerType.GetMethod("PutSpecificationObjectAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 

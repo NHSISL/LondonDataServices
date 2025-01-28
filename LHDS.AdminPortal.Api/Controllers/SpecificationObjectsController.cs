@@ -121,6 +121,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SpecificationObjects")]
         [HttpPut]
         public async ValueTask<ActionResult<SpecificationObject>> PutSpecificationObjectAsync(SpecificationObject specificationObject)
         {

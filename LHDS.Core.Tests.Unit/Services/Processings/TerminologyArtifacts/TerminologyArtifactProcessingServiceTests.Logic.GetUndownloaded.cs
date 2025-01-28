@@ -15,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
     public partial class TerminologyArtifactProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldGetNonDownloadedTerminologyArtifact()
+        public async Task ShouldGetNonDownloadedTerminologyArtifactAsync()
         {
             // given
             List<TerminologyArtifact> randomTerminologyArtifacts = CreateRandomTerminologyArtifacts();

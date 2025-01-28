@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
                 .BeEquivalentTo(expectedSpecificationObjectProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSpecificationObjectProcessingValidationException))),
                         Times.Once);
 

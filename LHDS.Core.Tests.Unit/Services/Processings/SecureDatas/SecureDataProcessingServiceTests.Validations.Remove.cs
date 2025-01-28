@@ -33,19 +33,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
                     innerException: invalidArgumentSubscriberCredentialProcessingException);
 
             // when
-            ValueTask removeSubscriberCredentialTask =
+            ValueTask secureDataRemoveTask =
                 this.secureDataProcessingService.RemoveSecureDataByIdAsync(invalidSubscriberCredentialId);
 
             SubscriberCredentialValidationException actualSubscriberCredentialValidationException =
                 await Assert.ThrowsAsync<SubscriberCredentialValidationException>(
-                    removeSubscriberCredentialTask.AsTask);
+                    secureDataRemoveTask.AsTask);
 
             // then
             actualSubscriberCredentialValidationException.Should().BeEquivalentTo(
                 expectedSubscriberCredentialValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(expectedSubscriberCredentialValidationException))),
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedSubscriberCredentialValidationException))),
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

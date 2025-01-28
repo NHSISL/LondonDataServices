@@ -86,7 +86,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                         Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedMeshProcessingValidationException))),
                         Times.Once);
 
@@ -161,7 +161,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                         Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedMeshProcessingValidationException))),
                         Times.Once);
 
@@ -266,7 +266,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedMeshProcessingValidationException))),
                         Times.Once);
 

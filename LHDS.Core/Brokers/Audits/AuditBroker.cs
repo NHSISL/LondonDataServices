@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using LHDS.Core.Clients;
 using LHDS.Core.Models.Foundations.Audits;
@@ -21,7 +20,7 @@ namespace LHDS.Core.Brokers.Audits
             string title,
             string? message,
             string? fileName,
-            Guid? correlationId,
+            string? correlationId,
             string? logLevel = "Information")
         {
             return await auditClient.LogAudit(auditType, title, message, fileName, correlationId, logLevel);
@@ -32,7 +31,7 @@ namespace LHDS.Core.Brokers.Audits
             string title,
             string? message,
             string? fileName,
-            Guid? correlationId)
+            string? correlationId)
         {
             return await auditClient.LogAudit(auditType, title, message, fileName, correlationId, "Information");
         }
@@ -42,7 +41,7 @@ namespace LHDS.Core.Brokers.Audits
             string title,
             string? message,
             string? fileName,
-            Guid? correlationId)
+            string? correlationId)
         {
             return await auditClient.LogAudit(auditType, title, message, fileName, correlationId, "Warning");
         }
@@ -52,7 +51,7 @@ namespace LHDS.Core.Brokers.Audits
             string title,
             string? message,
             string? fileName,
-            Guid? correlationId)
+            string? correlationId)
         {
             return await auditClient.LogAudit(auditType, title, message, fileName, correlationId, "Error");
         }
@@ -62,7 +61,7 @@ namespace LHDS.Core.Brokers.Audits
             string title,
             string? message,
             string? fileName,
-            Guid? correlationId)
+            string? correlationId)
         {
             return await auditClient.LogAudit(auditType, title, message, fileName, correlationId, "Critical");
         }

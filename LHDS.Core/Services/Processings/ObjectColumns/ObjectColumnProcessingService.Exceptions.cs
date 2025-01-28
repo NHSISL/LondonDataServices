@@ -34,7 +34,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             }
             catch (ObjectColumnValidationException objectColumnValidationException)
             {
-                throw await CreateAndLogDependencyValidationExceptionAsync(objectColumnValidationException);
+                throw await CreateAndLogValidationExceptionAsync(objectColumnValidationException);
             }
             catch (ObjectColumnDependencyValidationException objectColumnDependencyValidationException)
             {
@@ -46,7 +46,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             }
             catch (ObjectColumnServiceException objectColumnServiceException)
             {
-                throw await CreateAndLogServiceExceptionAsync(objectColumnServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(objectColumnServiceException);
             }
             catch (Exception exception)
             {
@@ -80,7 +80,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             }
             catch (ObjectColumnServiceException objectColumnServiceException)
             {
-                throw await CreateAndLogServiceExceptionAsync(objectColumnServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(objectColumnServiceException);
             }
             catch (Exception exception)
             {

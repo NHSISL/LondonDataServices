@@ -285,7 +285,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                                 title: $"Invalid resolved address parts found for Id: {resolvedAddress.Id}",
                                 message: $"Invalid address parts found for Id: {resolvedAddress.Id} ",
                                 fileName: null,
-                                correlationId: resolvedAddress.Id);
+                                correlationId: resolvedAddress.Id.ToString());
                         }
                     }
 

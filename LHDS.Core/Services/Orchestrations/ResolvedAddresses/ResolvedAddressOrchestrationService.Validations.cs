@@ -39,6 +39,23 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
+        private static void ValidateAddressUPRN(string maybeUPRN)
+        {
+            if (maybeUPRN == null)
+            {
+                var nullUPRNResolvedAddressOrchestrationException =
+                    new NullUPRNResolvedAddressOrchestrationException(
+                        message: "Null UPRN Resolved Address orchestration exception, " +
+                            "please correct the errors and try again.");
+
+                nullUPRNResolvedAddressOrchestrationException.AddData(
+                    key: "UPRN",
+                    values: "UPRN is required");
+
+                throw nullUPRNResolvedAddressOrchestrationException;
+            }
+        }
+
         private static dynamic IsInvalidInputStream(Stream? stream) => new
         {
             Condition = stream is null || stream.Length == 0,

@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         public async Task ShouldThrowValidationExceptionOnMatchIfAssignUPRNIsNullAndLogItAsync()
         {
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: GetRandomNumber());
+            List<ResolvedAddress> randomResolvedAddresses = CreateRandomUnmatchedAddresses(count: 1);
             List<ResolvedAddress> unmatchedResolvedAddresses = randomResolvedAddresses;
             List<Exception> exceptions = new List<Exception>();
 
@@ -43,15 +43,26 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .ReturnsAsync(randomDateTimeOffset);
 
             ResolvedAddress processingResolvedAddress = unmatchedResolvedAddresses.FirstOrDefault().DeepClone();
-            ResolvedAddress lockedResolvedAddress = processingResolvedAddress;
+            ResolvedAddress lockedResolvedAddress = processingResolvedAddress.DeepClone();
             lockedResolvedAddress.IsProcessing = true;
             lockedResolvedAddress.RetryCount += 1;
             lockedResolvedAddress.UpdatedDate = randomDateTimeOffset;
-            ResolvedAddress finalUpdate = lockedResolvedAddress.DeepClone();
+            ResolvedAddress updatedResolvedAddress = lockedResolvedAddress.DeepClone();
+            ResolvedAddress mappedResolvedAddress = updatedResolvedAddress.DeepClone();
+            mappedResolvedAddress.UPRN = null;
+            mappedResolvedAddress.UpdatedDate = randomDateTimeOffset;
+            mappedResolvedAddress.IsProcessed = true;
+            ResolvedAddress failedToProcessResolvedAddress = updatedResolvedAddress.DeepClone();
+            failedToProcessResolvedAddress.IsProcessing = false;
+            failedToProcessResolvedAddress.UpdatedDate = randomDateTimeOffset;
 
             this.resolvedAddressProcessingServiceMock.Setup(processing =>
-                processing.ModifyResolvedAddressAsync(lockedResolvedAddress))
-                    .ReturnsAsync(lockedResolvedAddress);
+                processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(lockedResolvedAddress))))
+                    .ReturnsAsync(updatedResolvedAddress);
+
+            this.resolvedAddressProcessingServiceMock.Setup(processing =>
+                processing.RetrieveResolvedAddressByIdAsync(updatedResolvedAddress.Id))
+                    .ReturnsAsync(failedToProcessResolvedAddress);
 
             this.assignProcessingServiceMock.Setup(processing =>
                 processing.MatchAddressAsync(inputResolvedAddress))
@@ -110,7 +121,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             this.dateTimeBrokerMock.Verify(broker =>
               broker.GetCurrentDateTimeOffsetAsync(),
-                  Times.Once());
+                  Times.Exactly(2));
 
             this.resolvedAddressProcessingServiceMock.Verify(processing =>
                 processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(lockedResolvedAddress))),
@@ -119,6 +130,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             this.assignProcessingServiceMock.Verify(processing =>
                 processing.MatchAddressAsync(inputResolvedAddress),
                     Times.Once);
+
+            this.resolvedAddressProcessingServiceMock.Verify(processing =>
+                processing.RetrieveResolvedAddressByIdAsync(updatedResolvedAddress.Id),
+                    Times.Once);
+
+            this.resolvedAddressProcessingServiceMock.Verify(processing =>
+                processing.ModifyResolvedAddressAsync(It.Is(SameResolvedAddressAs(failedToProcessResolvedAddress))),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

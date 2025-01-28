@@ -92,6 +92,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SpecificationObjects, ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{specificationObjectId}")]
         public async ValueTask<ActionResult<SpecificationObject>> GetSpecificationObjectByIdAsync(Guid specificationObjectId)
         {

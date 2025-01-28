@@ -101,6 +101,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
 #endif
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.SubscriberCredentials, ISL.LDS.AdminSpa.ReadOnly")]
         public async ValueTask<ActionResult<IQueryable<SubscriberCredential>>> Get()
         {
             try

@@ -29,7 +29,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.supplierService = supplierService;
 
         [HttpPost]
-        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Suppliers, ISL.LDS.AdminSpa.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Suppliers")]
         public async ValueTask<ActionResult<Supplier>> PostSupplierAsync(Supplier supplier)
         {
             try

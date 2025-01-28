@@ -30,7 +30,6 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Suppliers
             {
                 "ISL.LDS.AdminSpa.Administrators",
                 "ISL.LDS.AdminSpa.Suppliers",
-                "ISL.LDS.AdminSpa.ReadOnly"
             };
 
             // when

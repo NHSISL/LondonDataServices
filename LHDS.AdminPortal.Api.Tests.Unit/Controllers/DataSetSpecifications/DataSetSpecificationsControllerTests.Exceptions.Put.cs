@@ -181,5 +181,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
 
             this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnPutIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            DataSetSpecification dataSetSpecification = CreateRandomDataSetSpecification();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
+
+            var expectedActionResult =
+                new ActionResult<DataSetSpecification>(expectedBadRequestObjectResult);
+
+            this.DataSetSpecificationServiceMock.Setup(service =>
+                service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()))
+                    .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<DataSetSpecification> actualActionResult =
+                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.DataSetSpecificationServiceMock.Verify(service =>
+                service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
+                    Times.Once);
+
+            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

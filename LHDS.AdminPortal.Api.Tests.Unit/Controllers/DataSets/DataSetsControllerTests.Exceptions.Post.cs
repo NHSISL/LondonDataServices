@@ -88,5 +88,47 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
 
             this.dataSetServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnConflictOnPostIfAlreadyExistsDataSetErrorOccurredAsync()
+        {
+            // given
+            DataSet someDataSet = CreateRandomDataSet();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var alreadyExistsDataSetException =
+                new AlreadyExistsDataSetException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var DataSetDependencyValidationException =
+                new DataSetDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsDataSetException);
+
+            ConflictObjectResult expectedConflictObjectResult =
+                Conflict(alreadyExistsDataSetException);
+
+            var expectedActionResult =
+                new ActionResult<DataSet>(expectedConflictObjectResult);
+
+            this.dataSetServiceMock.Setup(service =>
+                service.AddDataSetAsync(It.IsAny<DataSet>()))
+                    .ThrowsAsync(DataSetDependencyValidationException);
+
+            // when
+            ActionResult<DataSet> actualActionResult =
+                await this.dataSetsController.PostDataSetAsync(someDataSet);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.dataSetServiceMock.Verify(service =>
+                service.AddDataSetAsync(It.IsAny<DataSet>()),
+                    Times.Once);
+
+            this.dataSetServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

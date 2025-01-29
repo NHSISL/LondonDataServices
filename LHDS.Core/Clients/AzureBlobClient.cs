@@ -27,7 +27,7 @@ namespace LHDS.Core.Clients
 
         public async ValueTask DownloadFileAsync(Stream output, string fileName, string container)
         {
-            loggingBroker.LogInformationAsync(fileName);
+            await loggingBroker.LogInformationAsync(fileName);
 
             var blobClient = blobServiceClient
                 .GetBlobContainerClient(container).GetBlobClient(fileName);

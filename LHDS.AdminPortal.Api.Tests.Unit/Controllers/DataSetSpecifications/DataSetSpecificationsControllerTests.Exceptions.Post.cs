@@ -88,5 +88,89 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
 
             this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnConflictOnPostIfAlreadyExistsDataSetErrorOccurredAsync()
+        {
+            // given
+            DataSetSpecification someDataSetSpecification = CreateRandomDataSetSpecification();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var alreadyExistsDataSetSpecificationException =
+                new AlreadyExistsDataSetSpecificationException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var DataSetSpecificationDependencyValidationException =
+                new DataSetSpecificationDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsDataSetSpecificationException);
+
+            ConflictObjectResult expectedConflictObjectResult =
+                Conflict(alreadyExistsDataSetSpecificationException);
+
+            var expectedActionResult =
+                new ActionResult<DataSetSpecification>(expectedConflictObjectResult);
+
+            this.DataSetSpecificationServiceMock.Setup(service =>
+                service.AddDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()))
+                    .ThrowsAsync(DataSetSpecificationDependencyValidationException);
+
+            // when
+            ActionResult<DataSetSpecification> actualActionResult =
+                await this.DataSetSpecificationController.PostDataSetSpecificationAsync(someDataSetSpecification);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.DataSetSpecificationServiceMock.Verify(service =>
+                service.AddDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
+                    Times.Once);
+
+            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnFailedDependencyOnPostIfInvalidDataSetReferenceAsync()
+        {
+            // given
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+            DataSetSpecification someDataSetSpecification = CreateRandomDataSetSpecification();
+
+            var alreadyExistsDataSetSpecificationException =
+                new InvalidDataSetSpecificationReferenceException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var DataSetSpecificationDependencyValidationException =
+                new DataSetSpecificationDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsDataSetSpecificationException);
+
+            FailedDependencyObjectResult expectedBadRequestObjectResult =
+                FailedDependency(DataSetSpecificationDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<DataSetSpecification>(expectedBadRequestObjectResult);
+
+            this.DataSetSpecificationServiceMock.Setup(service =>
+                service.AddDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()))
+                    .ThrowsAsync(DataSetSpecificationDependencyValidationException);
+
+            // when
+            ActionResult<DataSetSpecification> actualActionResult =
+                await this.DataSetSpecificationController.PostDataSetSpecificationAsync(someDataSetSpecification);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.DataSetSpecificationServiceMock.Verify(service =>
+                service.AddDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
+                    Times.Once);
+
+            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

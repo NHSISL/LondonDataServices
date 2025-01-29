@@ -87,5 +87,45 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
 
             this.dataSetServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnNotFoundOnGetByIdIfItemDoesNotExistAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            string someMessage = GetRandomString();
+
+            var notFoundDataSetException =
+                new NotFoundDataSetException(
+                    dataSetId: someId);
+
+            var DataSetValidationException =
+                new DataSetValidationException(
+                    message: someMessage,
+                    innerException: notFoundDataSetException);
+
+            NotFoundObjectResult expectedNotFoundObjectResult =
+                NotFound(notFoundDataSetException);
+
+            var expectedActionResult =
+                new ActionResult<DataSet>(expectedNotFoundObjectResult);
+
+            this.dataSetServiceMock.Setup(service =>
+                service.RetrieveDataSetByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(DataSetValidationException);
+
+            // when
+            ActionResult<DataSet> actualActionResult =
+                await this.dataSetsController.GetDataSetByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.dataSetServiceMock.Verify(service =>
+                service.RetrieveDataSetByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.dataSetServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

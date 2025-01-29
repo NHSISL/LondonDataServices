@@ -136,7 +136,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                                 foundAssignAddress,
                                 foundOrdananceAddress);
 
-                        ValidateAddressUPRN(newResolvedAddress.UPRN);
+                        ValidateNewResolvedAddress(newResolvedAddress);
                         newResolvedAddress.UpdatedDate = await dateTimeBroker.GetCurrentDateTimeOffsetAsync();
                         newResolvedAddress.IsProcessed = true;
 
@@ -169,7 +169,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             }
         });
 
-        public static ResolvedAddress MapOrdananceWithAssign(
+        virtual internal ResolvedAddress MapOrdananceWithAssign(
             ResolvedAddress unMatchedResolvedAddress,
             AssignAddress? foundAssignAddress,
             Address? foundOrdananceAddress)

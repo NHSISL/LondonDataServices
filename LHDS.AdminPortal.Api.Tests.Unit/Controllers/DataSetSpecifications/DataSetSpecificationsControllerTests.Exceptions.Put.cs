@@ -55,5 +55,46 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
 
             this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnNotFoundOnPutIfItemDoesNotExistAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            string someMessage = GetRandomString();
+            DataSetSpecification someDataSet = CreateRandomDataSetSpecification();
+
+            var notFoundDataSetSpecificationException =
+                new NotFoundDataSetSpecificationException(
+                    dataSetSpecificationId: someId);
+
+            var DataSetValidationException =
+                new DataSetSpecificationValidationException(
+                    message: someMessage,
+                    innerException: notFoundDataSetSpecificationException);
+
+            NotFoundObjectResult expectedNotFoundObjectResult =
+                NotFound(notFoundDataSetSpecificationException);
+
+            var expectedActionResult =
+                new ActionResult<DataSetSpecification>(expectedNotFoundObjectResult);
+
+            this.DataSetSpecificationServiceMock.Setup(service =>
+                service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()))
+                    .ThrowsAsync(DataSetValidationException);
+
+            // when
+            ActionResult<DataSetSpecification> actualActionResult =
+                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(someDataSet);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.DataSetSpecificationServiceMock.Verify(service =>
+                service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
+                    Times.Once);
+
+            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

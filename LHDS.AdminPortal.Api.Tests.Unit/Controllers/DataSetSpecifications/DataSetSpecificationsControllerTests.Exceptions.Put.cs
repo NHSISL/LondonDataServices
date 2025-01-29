@@ -12,6 +12,7 @@ using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 using Xunit;
 
@@ -82,6 +83,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             this.DataSetSpecificationServiceMock.Setup(service =>
                 service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()))
                     .ThrowsAsync(DataSetValidationException);
+
+            // when
+            ActionResult<DataSetSpecification> actualActionResult =
+                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(someDataSet);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.DataSetSpecificationServiceMock.Verify(service =>
+                service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
+                    Times.Once);
+
+            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnFailedDependencyOnPutIfInvalidDataSetReferenceAsync()
+        {
+            // given
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+            DataSetSpecification someDataSet = CreateRandomDataSetSpecification();
+
+            var alreadyExistsDataSetSpecificationException =
+                new InvalidDataSetSpecificationReferenceException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var DataSetDependencyValidationException =
+                new DataSetSpecificationDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsDataSetSpecificationException);
+
+            FailedDependencyObjectResult expectedBadRequestObjectResult =
+                FailedDependency(DataSetDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<DataSetSpecification>(expectedBadRequestObjectResult);
+
+            this.DataSetSpecificationServiceMock.Setup(service =>
+                service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()))
+                    .ThrowsAsync(DataSetDependencyValidationException);
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =

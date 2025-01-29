@@ -95,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(expectedDependencyValidationException))),
+               broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDependencyValidationException))),
                    Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -176,7 +176,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(expectedDependencyException))),
+               broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDependencyException))),
                    Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -257,7 +257,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(expectedClientServiceException))),
+               broker.LogErrorAsync(It.Is(SameExceptionAs(expectedClientServiceException))),
                    Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -342,7 +342,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedMeshServiceException))),
                        Times.Once);
 

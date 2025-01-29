@@ -130,5 +130,47 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
 
             this.dataSetServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnFailedDependencyOnPostIfInvalidDataSetReferenceAsync()
+        {
+            // given
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+            DataSet someDataSet = CreateRandomDataSet();
+
+            var alreadyExistsDataSetException =
+                new InvalidDataSetReferenceException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var DataSetDependencyValidationException =
+                new DataSetDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsDataSetException);
+
+            FailedDependencyObjectResult expectedBadRequestObjectResult =
+                FailedDependency(DataSetDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<DataSet>(expectedBadRequestObjectResult);
+
+            this.dataSetServiceMock.Setup(service =>
+                service.AddDataSetAsync(It.IsAny<DataSet>()))
+                    .ThrowsAsync(DataSetDependencyValidationException);
+
+            // when
+            ActionResult<DataSet> actualActionResult =
+                await this.dataSetsController.PostDataSetAsync(someDataSet);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.dataSetServiceMock.Verify(service =>
+                service.AddDataSetAsync(It.IsAny<DataSet>()),
+                    Times.Once);
+
+            this.dataSetServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

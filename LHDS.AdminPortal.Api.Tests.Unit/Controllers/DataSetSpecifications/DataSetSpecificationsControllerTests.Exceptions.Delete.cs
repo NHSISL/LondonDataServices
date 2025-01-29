@@ -9,8 +9,11 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 using Xunit;
 
@@ -41,6 +44,88 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
 
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);
+
+            this.DataSetSpecificationServiceMock.Verify(service =>
+                service.RemoveDataSetSpecificationByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnNotFoundOnDeleteIfItemDoesNotExistAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            string someMessage = GetRandomString();
+
+            var notFoundDataSetSpecificationException =
+                new NotFoundDataSetSpecificationException(
+                    dataSetSpecificationId: someId);
+
+            var DataSetSpecificationValidationException =
+                new DataSetSpecificationValidationException(
+                    message: someMessage,
+                    innerException: notFoundDataSetSpecificationException);
+
+            NotFoundObjectResult expectedNotFoundObjectResult =
+                NotFound(notFoundDataSetSpecificationException);
+
+            var expectedActionResult =
+                new ActionResult<DataSetSpecification>(expectedNotFoundObjectResult);
+
+            this.DataSetSpecificationServiceMock.Setup(service =>
+                service.RemoveDataSetSpecificationByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(DataSetSpecificationValidationException);
+
+            // when
+            ActionResult<DataSetSpecification> actualActionResult =
+                await this.DataSetSpecificationController.DeleteDataSetSpecificationByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.DataSetSpecificationServiceMock.Verify(service =>
+                service.RemoveDataSetSpecificationByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnLockedOnDeleteIfLockedDataSetAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+
+            var lockedDataSetException =
+                new LockedDataSetSpecificationException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var DataSetDependencyValidationException =
+                new DataSetSpecificationDependencyValidationException(
+                    message: someMessage,
+                    innerException: lockedDataSetException);
+
+            LockedObjectResult expectedBadRequestObjectResult =
+                Locked(DataSetDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<DataSetSpecification>(expectedBadRequestObjectResult);
+
+            this.DataSetSpecificationServiceMock.Setup(service =>
+                service.RemoveDataSetSpecificationByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(DataSetDependencyValidationException);
+
+            // when
+            ActionResult<DataSetSpecification> actualActionResult =
+                await this.DataSetSpecificationController.DeleteDataSetSpecificationByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.DataSetSpecificationServiceMock.Verify(service =>
                 service.RemoveDataSetSpecificationByIdAsync(It.IsAny<Guid>()),

@@ -6,43 +6,44 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using LHDS.Core.Models.Foundations.DataSets;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.DataSets;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
-using FluentAssertions;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
 {
     public partial class DataSetsControllerTests
     {
         [Fact]
-        public async Task ShouldReturnDataSetsOnGetAsync()
+        public async Task ShouldReturnDataSetOnGetByIdAsync()
         {
             // given 
-            IQueryable<DataSet> randomDataSet = CreateRandomDataSets();
-            IQueryable<DataSet> storageDataSet = randomDataSet.DeepClone();
-            IQueryable<DataSet> expectedDataSet = storageDataSet.DeepClone();
+            DataSet randomDataSet = CreateRandomDataSet();
+            Guid inputId = randomDataSet.Id;
+            DataSet storageDataSet = randomDataSet.DeepClone();
+            DataSet expectedDataSet = storageDataSet.DeepClone();
             var expectedObjectResult = new OkObjectResult(expectedDataSet);
 
             var expectedActionResult =
-                new ActionResult<IQueryable<DataSet>>(expectedObjectResult);
+                new ActionResult<DataSet>(expectedObjectResult);
 
             this.dataSetServiceMock.Setup(service =>
-                service.RetrieveAllDataSetsAsync())
+                service.RetrieveDataSetByIdAsync(inputId))
                     .ReturnsAsync(expectedDataSet);
 
             // when
-            ActionResult<IQueryable<DataSet>> actualActionResult =
-                await this.dataSetsController.Get();
+            ActionResult<DataSet> actualActionResult =
+                await this.dataSetsController.GetDataSetByIdAsync(inputId);
 
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);
 
             this.dataSetServiceMock.Verify(service =>
-                service.RetrieveAllDataSetsAsync(),
+                service.RetrieveDataSetByIdAsync(inputId),
                     Times.Once());
 
             this.dataSetServiceMock.VerifyNoOtherCalls();

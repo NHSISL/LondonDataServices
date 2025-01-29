@@ -5,11 +5,15 @@
 using System;
 using System.Linq;
 using LHDS.AdminPortal.Api.Controllers;
+using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using LHDS.Core.Services.Foundations.DataSets;
 using Moq;
 using RESTFulSense.Controllers;
 using Tynamix.ObjectFiller;
+using Xeptions;
+using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
 {
@@ -23,6 +27,9 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
             this.dataSetServiceMock = new Mock<IDataSetService>();
             this.dataSetsController = new DataSetsController(this.dataSetServiceMock.Object);
         }
+
+        private static string GetRandomString() =>
+            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
         private static int GetRandomNumber() =>
            new IntRange(min: 2, max: 10).GetValue();
@@ -50,6 +57,23 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
                 .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        public static TheoryData<Xeption> ServerExceptions()
+        {
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+
+            return new TheoryData<Xeption>
+            {
+                new DataSetDependencyException(
+                    message: someMessage,
+                    innerException: someInnerException),
+
+                new DataSetServiceException(
+                    message: someMessage,
+                    innerException: someInnerException)
+            };
         }
     }
 }

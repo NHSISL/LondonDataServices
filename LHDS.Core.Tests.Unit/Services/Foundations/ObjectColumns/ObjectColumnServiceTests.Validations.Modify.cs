@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once);
 
@@ -142,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once());
 
@@ -257,7 +257,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once());
 
@@ -312,7 +312,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once);
 
@@ -368,7 +368,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidatonException))),
                         Times.Once);
 
@@ -427,7 +427,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once);
 
@@ -491,7 +491,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedObjectColumnValidationException))),
                        Times.Once);
 
@@ -552,7 +552,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
+               broker.LogErrorAsync(It.Is(SameExceptionAs(
                    expectedObjectColumnValidationException))),
                        Times.Once);
 
@@ -604,7 +604,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnValidationException))),
                         Times.Once);
 

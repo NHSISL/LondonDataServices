@@ -132,5 +132,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
 
             this.dataSetServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnDeleteIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
+
+            var expectedActionResult =
+                new ActionResult<DataSet>(expectedBadRequestObjectResult);
+
+            this.dataSetServiceMock.Setup(service =>
+                service.RemoveDataSetByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<DataSet> actualActionResult =
+                await this.dataSetsController.DeleteDataSetByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.dataSetServiceMock.Verify(service =>
+                service.RemoveDataSetByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.dataSetServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

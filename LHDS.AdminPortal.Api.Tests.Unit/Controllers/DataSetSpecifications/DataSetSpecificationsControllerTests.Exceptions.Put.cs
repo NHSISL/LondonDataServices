@@ -26,7 +26,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             // given
             var someInnerException = new Xeption();
             string someMessage = GetRandomString();
-            DataSetSpecification someDataSet = CreateRandomDataSetSpecification();
+            DataSetSpecification dataSetSpecification = CreateRandomDataSetSpecification();
 
             var DataSetValidationException =
                 new DataSetSpecificationValidationException(
@@ -45,7 +45,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(someDataSet);
+                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
@@ -63,7 +63,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             // given
             Guid someId = Guid.NewGuid();
             string someMessage = GetRandomString();
-            DataSetSpecification someDataSet = CreateRandomDataSetSpecification();
+            DataSetSpecification dataSetSpecification = CreateRandomDataSetSpecification();
 
             var notFoundDataSetSpecificationException =
                 new NotFoundDataSetSpecificationException(
@@ -86,7 +86,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(someDataSet);
+                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
@@ -104,7 +104,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             // given
             var someInnerException = new Xeption();
             string someMessage = GetRandomString();
-            DataSetSpecification someDataSet = CreateRandomDataSetSpecification();
+            DataSetSpecification dataSetSpecification = CreateRandomDataSetSpecification();
 
             var alreadyExistsDataSetSpecificationException =
                 new InvalidDataSetSpecificationReferenceException(
@@ -128,7 +128,49 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(someDataSet);
+                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.DataSetSpecificationServiceMock.Verify(service =>
+                service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
+                    Times.Once);
+
+            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnConflictOnPutIfAlreadyExistsDataSetErrorOccurredAsync()
+        {
+            // given
+            DataSetSpecification dataSetSpecification = CreateRandomDataSetSpecification();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var alreadyExistsDataSetSpecificationException =
+                new AlreadyExistsDataSetSpecificationException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var DataSetSpecificationDependencyValidationException =
+                new DataSetSpecificationDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsDataSetSpecificationException);
+
+            ConflictObjectResult expectedConflictObjectResult =
+                Conflict(alreadyExistsDataSetSpecificationException);
+
+            var expectedActionResult =
+                new ActionResult<DataSetSpecification>(expectedConflictObjectResult);
+
+            this.DataSetSpecificationServiceMock.Setup(service =>
+                service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()))
+                    .ThrowsAsync(DataSetSpecificationDependencyValidationException);
+
+            // when
+            ActionResult<DataSetSpecification> actualActionResult =
+                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);

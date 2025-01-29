@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +29,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
             Guid someId = Guid.NewGuid();
 
             BadRequestObjectResult expectedBadRequestObjectResult =
-                BadRequest(validationException.InnerException);
+                BadRequest(validationException.InnerException ?? validationException);
 
             var expectedActionResult =
                 new ActionResult<DataSet>(expectedBadRequestObjectResult);
@@ -42,7 +43,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
                 await this.dataSetsController.DeleteDataSetByIdAsync(someId);
 
             // then
-            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+            actualActionResult.Should().BeEquivalentTo(expectedActionResult);
 
             this.dataSetServiceMock.Verify(service =>
                 service.RemoveDataSetByIdAsync(It.IsAny<Guid>()),

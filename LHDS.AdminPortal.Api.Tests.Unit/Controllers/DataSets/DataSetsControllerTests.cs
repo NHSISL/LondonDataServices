@@ -75,5 +75,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
                     innerException: someInnerException)
             };
         }
+
+        public static TheoryData<Xeption> ValidationExceptions()
+        {
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+
+            return new TheoryData<Xeption>
+            {
+                new DataSetValidationException(
+                    message: someMessage,
+                    innerException: someInnerException),
+
+                new DataSetDependencyValidationException(
+                    message: someMessage,
+                    innerException: someInnerException)
+            };
+        }
     }
 }

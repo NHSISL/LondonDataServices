@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using Xeptions;
 
@@ -39,20 +40,16 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
-        private static void ValidateAddressUPRN(string maybeUPRN)
+        private static void ValidateNewResolvedAddress(ResolvedAddress maybeResolvedAddress)
         {
-            if (string.IsNullOrWhiteSpace(maybeUPRN))
+            if (maybeResolvedAddress is null)
             {
-                var nullUPRNResolvedAddressOrchestrationException =
-                    new NullUPRNResolvedAddressOrchestrationException(
-                        message: "Null UPRN Resolved Address orchestration exception, " +
+                var nullResolvedAddressOrchestrationException =
+                    new NullResolvedAddressOrchestrationException(
+                        message: "Null Resolved Address orchestration exception, " +
                             "please correct the errors and try again.");
 
-                nullUPRNResolvedAddressOrchestrationException.AddData(
-                    key: "UPRN",
-                    values: "UPRN is required");
-
-                throw nullUPRNResolvedAddressOrchestrationException;
+                throw nullResolvedAddressOrchestrationException;
             }
         }
 

@@ -12,6 +12,7 @@ using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 using Xunit;
 
@@ -75,6 +76,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
             this.dataSetServiceMock.Setup(service =>
                 service.RemoveDataSetByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(DataSetValidationException);
+
+            // when
+            ActionResult<DataSet> actualActionResult =
+                await this.dataSetsController.DeleteDataSetByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.dataSetServiceMock.Verify(service =>
+                service.RemoveDataSetByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.dataSetServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnLockedOnDeleteIfLockedDataSetAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+
+            var lockedDataSetException =
+                new LockedDataSetException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var DataSetDependencyValidationException =
+                new DataSetDependencyValidationException(
+                    message: someMessage,
+                    innerException: lockedDataSetException);
+
+            LockedObjectResult expectedBadRequestObjectResult =
+                Locked(DataSetDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<DataSet>(expectedBadRequestObjectResult);
+
+            this.dataSetServiceMock.Setup(service =>
+                service.RemoveDataSetByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(DataSetDependencyValidationException);
 
             // when
             ActionResult<DataSet> actualActionResult =

@@ -68,8 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
             IngestionTrackingAudit noIngestionTrackingAudit = null;
 
             var notFoundAuditException =
-                new NotFoundIngestionTrackingAuditException(
-                    message: $"Couldn't find IngestionTrackingAudit with Id: {someIngestionTrackingAuditId}.");
+                new NotFoundIngestionTrackingAuditException(someIngestionTrackingAuditId);
 
             var expectedIngestionTrackingAuditValidationException =
                 new IngestionTrackingAuditValidationException(

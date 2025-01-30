@@ -33,7 +33,7 @@ public partial class DataSetSpecificationsControllerTests
             new ActionResult<DataSetSpecification>(expectedObjectResult);
 
         this.DataSetSpecificationServiceMock.Setup(service =>
-            service.RemoveDataSetSpecificationByIdAsync(It.IsAny<Guid>()))
+            service.RemoveDataSetSpecificationByIdAsync(inputId))
                 .ReturnsAsync(storageDataSetSpecification);
 
         // when
@@ -44,7 +44,7 @@ public partial class DataSetSpecificationsControllerTests
         actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
         this.DataSetSpecificationServiceMock.Verify(service =>
-            service.RemoveDataSetSpecificationByIdAsync(It.IsAny<Guid>()),
+            service.RemoveDataSetSpecificationByIdAsync(inputId),
                Times.Once);
 
         this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();

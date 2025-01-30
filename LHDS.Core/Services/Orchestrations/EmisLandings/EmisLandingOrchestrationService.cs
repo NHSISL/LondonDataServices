@@ -123,7 +123,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 {
                     item.FileDeleted = true;
                     item.UpdatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
                     await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(item);
                 }
 

@@ -181,5 +181,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataTypes
 
             this.dataTypeServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnPutIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            DataType someDataType = CreateRandomDataType();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
+
+            var expectedActionResult =
+                new ActionResult<DataType>(expectedBadRequestObjectResult);
+
+            this.dataTypeServiceMock.Setup(service =>
+                service.ModifyDataTypeAsync(It.IsAny<DataType>()))
+                    .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<DataType> actualActionResult =
+                await this.dataTypesController.PutDataTypeAsync(someDataType);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.dataTypeServiceMock.Verify(service =>
+                service.ModifyDataTypeAsync(It.IsAny<DataType>()),
+                    Times.Once);
+
+            this.dataTypeServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

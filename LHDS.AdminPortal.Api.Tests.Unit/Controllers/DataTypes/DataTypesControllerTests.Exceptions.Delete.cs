@@ -13,6 +13,7 @@ using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 using Xunit;
 
@@ -76,6 +77,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataTypes
             this.dataTypeServiceMock.Setup(service =>
                 service.RemoveDataTypeByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(DataTypeValidationException);
+
+            // when
+            ActionResult<DataType> actualActionResult =
+                await this.dataTypesController.DeleteDataTypeByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.dataTypeServiceMock.Verify(service =>
+                service.RemoveDataTypeByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.dataTypeServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnLockedOnDeleteIfLockedDataTypeAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+
+            var lockedDataTypeException =
+                new LockedDataTypeException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var DataTypeDependencyValidationException =
+                new DataTypeDependencyValidationException(
+                    message: someMessage,
+                    innerException: lockedDataTypeException);
+
+            LockedObjectResult expectedBadRequestObjectResult =
+                Locked(DataTypeDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<DataType>(expectedBadRequestObjectResult);
+
+            this.dataTypeServiceMock.Setup(service =>
+                service.RemoveDataTypeByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(DataTypeDependencyValidationException);
 
             // when
             ActionResult<DataType> actualActionResult =

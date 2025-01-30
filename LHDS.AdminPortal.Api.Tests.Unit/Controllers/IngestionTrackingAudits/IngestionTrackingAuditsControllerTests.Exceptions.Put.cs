@@ -181,5 +181,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
 
             this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnPutIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            IngestionTrackingAudit someIngestionTrackingAudit = CreateRandomIngestionTrackingAudit();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
+
+            var expectedActionResult =
+                new ActionResult<IngestionTrackingAudit>(expectedBadRequestObjectResult);
+
+            this.ingestionTrackingAuditServiceMock.Setup(service =>
+                service.ModifyIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()))
+                    .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<IngestionTrackingAudit> actualActionResult =
+                await this.ingestionTrackingAuditsController.PutAuditAsync(someIngestionTrackingAudit);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.ingestionTrackingAuditServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
+                    Times.Once);
+
+            this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

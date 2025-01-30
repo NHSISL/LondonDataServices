@@ -29,9 +29,9 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             {
                 throw await CreateAndLogValidationExceptionAsync(invalidArgumentResolvedAddressOrchestrationException);
             }
-            catch (NullUPRNResolvedAddressOrchestrationException nullUPRNResolvedAddressOrchestrationException)
+            catch (NullResolvedAddressOrchestrationException nullResolvedAddressOrchestrationException)
             {
-                throw await CreateAndLogValidationExceptionAsync(nullUPRNResolvedAddressOrchestrationException);
+                throw await CreateAndLogValidationExceptionAsync(nullResolvedAddressOrchestrationException);
             }
             catch (DocumentProcessingValidationException documentProcessingValidationException)
             {
@@ -183,7 +183,7 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
             }
         }
 
-        private async ValueTask<ResolvedAddressOrchestrationValidationException> 
+        private async ValueTask<ResolvedAddressOrchestrationValidationException>
             CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var resolvedAddressOrchestrationValidationException =

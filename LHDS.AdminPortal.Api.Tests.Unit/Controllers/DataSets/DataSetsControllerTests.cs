@@ -34,12 +34,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
         private static int GetRandomNumber() =>
            new IntRange(min: 2, max: 10).GetValue();
 
-        private static IQueryable<DataSet> CreateRandomDataSets()
-        {
-            return CreateDataSetFiller()
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
-        }
+        private static IQueryable<DataSet> CreateRandomDataSets() =>
+            CreateDataSetFiller().Create(count: GetRandomNumber()).AsQueryable();
 
         private static DataSet CreateRandomDataSet() =>
             CreateDataSetFiller().Create();

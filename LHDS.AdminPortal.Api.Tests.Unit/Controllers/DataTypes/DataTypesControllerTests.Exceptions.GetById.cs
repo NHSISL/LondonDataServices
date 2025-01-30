@@ -12,6 +12,7 @@ using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 using Xunit;
 
@@ -52,6 +53,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataTypes
             this.dataTypeServiceMock.Verify(service =>
                 service.RetrieveDataTypeByIdAsync(someId),
                     Times.Once);
+
+            this.dataTypeServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnGetByIdIfServerErrorOccurredAsync(Xeption serverException)
+        {
+            // given 
+            Guid someId = Guid.NewGuid();
+
+            InternalServerErrorObjectResult expectedInternalServerErrorObjectResult =
+                InternalServerError(serverException);
+
+            var expectedActionResult =
+                new ActionResult<DataType>(expectedInternalServerErrorObjectResult);
+
+            this.dataTypeServiceMock.Setup(service =>
+                service.RetrieveDataTypeByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serverException);
+
+            // when
+            ActionResult<DataType> actualActionResult =
+                await this.dataTypesController.GetDataTypeByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.dataTypeServiceMock.Verify(service =>
+                service.RetrieveDataTypeByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
 
             this.dataTypeServiceMock.VerifyNoOtherCalls();
         }

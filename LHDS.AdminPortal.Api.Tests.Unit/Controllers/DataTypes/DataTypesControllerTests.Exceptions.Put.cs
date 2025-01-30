@@ -139,5 +139,47 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataTypes
 
             this.dataTypeServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnConflictOnPutIfAlreadyExistsDataTypeErrorOccurredAsync()
+        {
+            // given
+            DataType someDataType = CreateRandomDataType();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var alreadyExistsDataTypeException =
+                new AlreadyExistsDataTypeException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var DataTypeDependencyValidationException =
+                new DataTypeDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsDataTypeException);
+
+            ConflictObjectResult expectedConflictObjectResult =
+                Conflict(alreadyExistsDataTypeException);
+
+            var expectedActionResult =
+                new ActionResult<DataType>(expectedConflictObjectResult);
+
+            this.dataTypeServiceMock.Setup(service =>
+                service.ModifyDataTypeAsync(It.IsAny<DataType>()))
+                    .ThrowsAsync(DataTypeDependencyValidationException);
+
+            // when
+            ActionResult<DataType> actualActionResult =
+                await this.dataTypesController.PutDataTypeAsync(someDataType);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.dataTypeServiceMock.Verify(service =>
+                service.ModifyDataTypeAsync(It.IsAny<DataType>()),
+                    Times.Once);
+
+            this.dataTypeServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -12,6 +12,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 using Xunit;
 
@@ -52,6 +53,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
             this.ingestionTrackingAuditServiceMock.Verify(service =>
                 service.RetrieveIngestionTrackingAuditByIdAsync(someId),
                     Times.Once);
+
+            this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnGetByIdIfServerErrorOccurredAsync(Xeption serverException)
+        {
+            // given 
+            Guid someId = Guid.NewGuid();
+
+            InternalServerErrorObjectResult expectedInternalServerErrorObjectResult =
+                InternalServerError(serverException);
+
+            var expectedActionResult =
+                new ActionResult<IngestionTrackingAudit>(expectedInternalServerErrorObjectResult);
+
+            this.ingestionTrackingAuditServiceMock.Setup(service =>
+                service.RetrieveIngestionTrackingAuditByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serverException);
+
+            // when
+            ActionResult<IngestionTrackingAudit> actualActionResult =
+                await this.ingestionTrackingAuditsController.GetAuditByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.ingestionTrackingAuditServiceMock.Verify(service =>
+                service.RetrieveIngestionTrackingAuditByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
 
             this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();
         }

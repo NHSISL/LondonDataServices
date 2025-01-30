@@ -158,7 +158,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                             };
 
                             await this.pdsAuditService.AddPdsAuditAsync(pdsAudit);
-                            await this.meshService.AcknowledgeMessageByIdAsync(id);
+                            await this.meshService.AcknowledgeMessageByIdAsync(message.MessageId);
 
                             return pdsAudit;
                         });

@@ -74,12 +74,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: failedOptOutOrchestrationServiceException);
 
             // When
-            ValueTask<string> actualOptOutStatus =
+            ValueTask<string> retrieveOptOutStatusTask =
                 this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputStream, randomRecieveName);
 
             OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
-                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(async () =>
-                    await actualOptOutStatus);
+                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(retrieveOptOutStatusTask.AsTask);
 
             // Then
             actualOptOutOrchestrationServiceException.Should()
@@ -100,12 +99,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     optOutOrchestrationDependencyValidationLoggingException))),
                         Times.Exactly(outputOptOuts.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualOptOutOrchestrationServiceException))),
                         Times.Once);
 
@@ -174,12 +173,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: failedOptOutOrchestrationServiceException);
 
             // When
-            ValueTask<string> actualOptOutStatus =
+            ValueTask<string> retrieveOptOutStatusTask =
                 this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputStream, randomRecieveName);
 
             OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
-                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(async () =>
-                    await actualOptOutStatus);
+                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(retrieveOptOutStatusTask.AsTask);
 
             // Then
             actualOptOutOrchestrationServiceException.Should()
@@ -200,12 +198,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: dependencyException.InnerException as Xeption);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     optOutOrchestrationDependencyLoggingException))),
                         Times.Exactly(outputOptOuts.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     actualOptOutOrchestrationServiceException))),
                         Times.Once);
 
@@ -277,12 +275,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: failedOptOutOrchestrationServiceException);
 
             // When
-            ValueTask<string> actualOptOutStatus =
+            ValueTask<string> retrieveOptOutStatusTask =
                 this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputStream, randomRecieveName);
 
             OptOutOrchestrationServiceException actualOptOutOrchestrationServiceException =
-                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(async () =>
-                    await actualOptOutStatus);
+                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(retrieveOptOutStatusTask.AsTask);
 
             // Then
             actualOptOutOrchestrationServiceException.Should()
@@ -297,12 +294,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     Times.Exactly(outputOptOuts.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     innerOptOutOrchestrationServiceException))),
                         Times.Exactly(outputOptOuts.Count));
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutOrchestrationServiceException))),
                         Times.Once);
 
@@ -352,7 +349,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
                         Times.Once);
 
@@ -407,7 +404,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedDependencyException))),
                         Times.Once);
 
@@ -466,7 +463,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOrchestrationServiceException))),
                         Times.Once);
 

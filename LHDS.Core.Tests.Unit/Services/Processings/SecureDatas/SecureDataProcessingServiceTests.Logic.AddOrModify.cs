@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SecureDatas
     public partial class SecureDataProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldAddOrModifySecureData()
+        public async Task ShouldAddOrModifySecureDataAsync()
         {
             // given
             dynamic randomCredential = CreateRandomDynamicSharingAgreementCredential();

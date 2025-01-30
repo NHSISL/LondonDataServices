@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.Configurations")]
     [ApiController]
     [Route("api/[controller]")]
     public class ResolvedAddressesController : RESTFulController
@@ -22,6 +24,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public ResolvedAddressesController(IResolvedAddressService resolvedAddressService) =>
             this.resolvedAddressService = resolvedAddressService;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ResolvedAddress")]
         [HttpPost]
         public async ValueTask<ActionResult<ResolvedAddress>> PostResolvedAddressAsync(ResolvedAddress resolvedAddress)
         {
@@ -57,6 +60,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ResolvedAddress, ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet]
         public async ValueTask<ActionResult<IQueryable<ResolvedAddress>>> GetAllResolvedAddressesAsync()
         {
@@ -77,6 +81,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ResolvedAddress, ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{resolvedAddressId}")]
         public async ValueTask<ActionResult<ResolvedAddress>> GetResolvedAddressByIdAsync(Guid resolvedAddressId)
         {
@@ -106,6 +111,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ResolvedAddress")]
         [HttpPut]
         public async ValueTask<ActionResult<ResolvedAddress>> PutResolvedAddressAsync(ResolvedAddress resolvedAddress)
         {
@@ -146,6 +152,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.ResolvedAddress")]
         [HttpDelete("{resolvedAddressId}")]
         public async ValueTask<ActionResult<ResolvedAddress>> DeleteResolvedAddressByIdAsync(Guid resolvedAddressId)
         {

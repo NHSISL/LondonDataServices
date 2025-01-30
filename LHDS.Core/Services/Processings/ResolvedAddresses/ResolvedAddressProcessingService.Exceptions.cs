@@ -28,27 +28,27 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             }
             catch (NullResolvedAddressProcessingException nullResolvedAddressException)
             {
-                throw CreateAndLogValidationException(nullResolvedAddressException);
+                throw await CreateAndLogValidationExceptionAsync(nullResolvedAddressException);
             }
             catch (InvalidArgumentResolvedAddressProcessingException invalidArgumentResolvedAddressProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentResolvedAddressProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentResolvedAddressProcessingException);
             }
             catch (ResolvedAddressValidationException resolvedAddressValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(resolvedAddressValidationException);
             }
             catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(resolvedAddressDependencyValidationException);
             }
             catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressDependencyException);
             }
             catch (ResolvedAddressServiceException resolvedAddressServiceException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressServiceException);
             }
             catch (Exception exception)
             {
@@ -57,7 +57,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                         message: "Failed resolved address processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedResolvedAddressProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedResolvedAddressProcessingServiceException);
             }
         }
 
@@ -70,27 +70,27 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             }
             catch (NullResolvedAddressProcessingException nullResolvedAddressException)
             {
-                throw CreateAndLogValidationException(nullResolvedAddressException);
+                throw await CreateAndLogValidationExceptionAsync(nullResolvedAddressException);
             }
             catch (InvalidArgumentResolvedAddressProcessingException invalidArgumentResolvedAddressProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentResolvedAddressProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentResolvedAddressProcessingException);
             }
             catch (ResolvedAddressValidationException resolvedAddressValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(resolvedAddressValidationException);
             }
             catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(resolvedAddressDependencyValidationException);
             }
             catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressDependencyException);
             }
             catch (ResolvedAddressServiceException resolvedAddressServiceException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressServiceException);
             }
             catch (Exception exception)
             {
@@ -99,7 +99,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                         message: "Failed resolved address processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedResolvedAddressProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedResolvedAddressProcessingServiceException);
             }
         }
 
@@ -112,23 +112,23 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             }
             catch (InvalidArgumentResolvedAddressProcessingException invalidArgumentResolvedAddressProcessingException)
             {
-                throw CreateAndLogValidationException(invalidArgumentResolvedAddressProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentResolvedAddressProcessingException);
             }
             catch (ResolvedAddressValidationException resolvedAddressValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(resolvedAddressValidationException);
             }
             catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(resolvedAddressDependencyValidationException);
             }
             catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressDependencyException);
             }
             catch (ResolvedAddressServiceException resolvedAddressServiceException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressServiceException);
             }
             catch (Exception exception)
             {
@@ -137,7 +137,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                         message: "Failed resolved address processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedResolvedAddressProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedResolvedAddressProcessingServiceException);
             }
         }
 
@@ -150,19 +150,19 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             }
             catch (ResolvedAddressValidationException resolvedAddressValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(resolvedAddressValidationException);
             }
             catch (ResolvedAddressDependencyValidationException resolvedAddressDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(resolvedAddressDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(resolvedAddressDependencyValidationException);
             }
             catch (ResolvedAddressDependencyException resolvedAddressDependencyException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressDependencyException);
             }
             catch (ResolvedAddressServiceException resolvedAddressServiceException)
             {
-                throw CreateAndLogDependencyException(resolvedAddressServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(resolvedAddressServiceException);
             }
             catch (Exception exception)
             {
@@ -171,56 +171,59 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                         message: "Failed resolved address processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedResolvedAddressProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedResolvedAddressProcessingServiceException);
             }
         }
 
 
-        private ResolvedAddressProcessingValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<ResolvedAddressProcessingValidationException> CreateAndLogValidationExceptionAsync(
+            Xeption exception)
         {
             var resolvedAddressProcessingValidationExceptionn =
                 new ResolvedAddressProcessingValidationException(
                     message: "Resolved address processing validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(resolvedAddressProcessingValidationExceptionn);
+            await this.loggingBroker.LogErrorAsync(resolvedAddressProcessingValidationExceptionn);
 
             return resolvedAddressProcessingValidationExceptionn;
         }
 
-        private ResolvedAddressProcessingDependencyValidationException CreateAndLogDependencyValidationException(
-            Xeption exception)
+        private async ValueTask<ResolvedAddressProcessingDependencyValidationException> 
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var resolvedAddressProcessingDependencyValidationException =
                 new ResolvedAddressProcessingDependencyValidationException(
                     message: "Resolved address processing dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(resolvedAddressProcessingDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(resolvedAddressProcessingDependencyValidationException);
 
             return resolvedAddressProcessingDependencyValidationException;
         }
 
-        private ResolvedAddressProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<ResolvedAddressProcessingDependencyException> CreateAndLogDependencyExceptionAsync(
+            Xeption exception)
         {
             var resolvedAddressProcessingDependencyException =
                 new ResolvedAddressProcessingDependencyException(
                     message: "Resolved address processing dependency error occurred, please contact support.",
                     innerException: exception?.InnerException as Xeption);
 
-            this.loggingBroker.LogError(resolvedAddressProcessingDependencyException);
+            await this.loggingBroker.LogErrorAsync(resolvedAddressProcessingDependencyException);
 
             throw resolvedAddressProcessingDependencyException;
         }
 
-        private ResolvedAddressProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<ResolvedAddressProcessingServiceException> CreateAndLogServiceExceptionAsync(
+            Xeption exception)
         {
             var resolvedAddressProcessingServiceException = new
                 ResolvedAddressProcessingServiceException(
                     message: "Resolved address processing service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(resolvedAddressProcessingServiceException);
+            await this.loggingBroker.LogErrorAsync(resolvedAddressProcessingServiceException);
 
             return resolvedAddressProcessingServiceException;
         }

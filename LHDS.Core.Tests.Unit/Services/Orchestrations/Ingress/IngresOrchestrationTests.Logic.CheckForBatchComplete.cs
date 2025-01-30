@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 "Unable to generate BatchReady.txt",
                 message,
                 batchReadyFileName,
-                null),
+                randomIngestionTracking.Batch),
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
@@ -177,7 +177,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 "BatchReady.txt generated",
                 message,
                 batchReadyFileName,
-                null),
+                randomIngestionTracking.Batch),
                     Times.Once);
 
             Assert.True(IsSameStream(expectedStream, actualStream));

@@ -108,9 +108,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
         {
             if (maybeIngestionTrackingAudit is null)
             {
-                throw new NotFoundIngestionTrackingAuditException(
-                    message: $"Couldn't find IngestionTrackingAudit with Id: " +
-                        $"{ingestionTrackingAuditId}.");
+                throw new NotFoundIngestionTrackingAuditException(ingestionTrackingAuditId);
             }
         }
 

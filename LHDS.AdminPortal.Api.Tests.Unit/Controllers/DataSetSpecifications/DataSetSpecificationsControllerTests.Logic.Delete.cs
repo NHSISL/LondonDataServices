@@ -32,21 +32,21 @@ public partial class DataSetSpecificationsControllerTests
         var expectedActionResult =
             new ActionResult<DataSetSpecification>(expectedObjectResult);
 
-        this.DataSetSpecificationServiceMock.Setup(service =>
+        this.dataSetSpecificationServiceMock.Setup(service =>
             service.RemoveDataSetSpecificationByIdAsync(inputId))
                 .ReturnsAsync(storageDataSetSpecification);
 
         // when
         ActionResult<DataSetSpecification> actualActionResult =
-            await this.DataSetSpecificationController.DeleteDataSetSpecificationByIdAsync(inputId);
+            await this.dataSetSpecificationController.DeleteDataSetSpecificationByIdAsync(inputId);
 
         // then
         actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-        this.DataSetSpecificationServiceMock.Verify(service =>
+        this.dataSetSpecificationServiceMock.Verify(service =>
             service.RemoveDataSetSpecificationByIdAsync(inputId),
                Times.Once);
 
-        this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+        this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
     }
 }

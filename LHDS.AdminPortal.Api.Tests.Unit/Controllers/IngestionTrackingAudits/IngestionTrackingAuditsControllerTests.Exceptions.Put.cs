@@ -55,5 +55,46 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
 
             this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnNotFoundOnPutIfItemDoesNotExistAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            string someMessage = GetRandomString();
+            IngestionTrackingAudit someIngestionTrackingAudit = CreateRandomIngestionTrackingAudit();
+
+            var notFoundIngestionTrackingAuditException =
+                new NotFoundIngestionTrackingAuditException(
+                    ingestionTrackingAuditId: someId);
+
+            var IngestionTrackingAuditValidationException =
+                new IngestionTrackingAuditValidationException(
+                    message: someMessage,
+                    innerException: notFoundIngestionTrackingAuditException);
+
+            NotFoundObjectResult expectedNotFoundObjectResult =
+                NotFound(notFoundIngestionTrackingAuditException);
+
+            var expectedActionResult =
+                new ActionResult<IngestionTrackingAudit>(expectedNotFoundObjectResult);
+
+            this.ingestionTrackingAuditServiceMock.Setup(service =>
+                service.ModifyIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()))
+                    .ThrowsAsync(IngestionTrackingAuditValidationException);
+
+            // when
+            ActionResult<IngestionTrackingAudit> actualActionResult =
+                await this.ingestionTrackingAuditsController.PutAuditAsync(someIngestionTrackingAudit);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.ingestionTrackingAuditServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
+                    Times.Once);
+
+            this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

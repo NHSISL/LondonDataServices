@@ -12,6 +12,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 using Xunit;
 
@@ -82,6 +83,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
             this.ingestionTrackingAuditServiceMock.Setup(service =>
                 service.ModifyIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()))
                     .ThrowsAsync(IngestionTrackingAuditValidationException);
+
+            // when
+            ActionResult<IngestionTrackingAudit> actualActionResult =
+                await this.ingestionTrackingAuditsController.PutAuditAsync(someIngestionTrackingAudit);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.ingestionTrackingAuditServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
+                    Times.Once);
+
+            this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnFailedDependencyOnPutIfInvalidIngestionTrackingAuditReferenceAsync()
+        {
+            // given
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+            IngestionTrackingAudit someIngestionTrackingAudit = CreateRandomIngestionTrackingAudit();
+
+            var alreadyExistsIngestionTrackingAuditException =
+                new InvalidIngestionTrackingAuditReferenceException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var IngestionTrackingAuditDependencyValidationException =
+                new IngestionTrackingAuditDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsIngestionTrackingAuditException);
+
+            FailedDependencyObjectResult expectedBadRequestObjectResult =
+                FailedDependency(IngestionTrackingAuditDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<IngestionTrackingAudit>(expectedBadRequestObjectResult);
+
+            this.ingestionTrackingAuditServiceMock.Setup(service =>
+                service.ModifyIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()))
+                    .ThrowsAsync(IngestionTrackingAuditDependencyValidationException);
 
             // when
             ActionResult<IngestionTrackingAudit> actualActionResult =

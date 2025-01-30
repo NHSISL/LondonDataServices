@@ -34,7 +34,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
                 new ActionResult<IngestionTrackingAudit>(expectedObjectResult);
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
-                service.RemoveIngestionTrackingAuditByIdAsync(It.IsAny<Guid>()))
+                service.RemoveIngestionTrackingAuditByIdAsync(inputId))
                     .ReturnsAsync(storageIngestionTrackingAudit);
 
             // when
@@ -45,7 +45,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.ingestionTrackingAuditServiceMock.Verify(service =>
-                service.RemoveIngestionTrackingAuditByIdAsync(It.IsAny<Guid>()),
+                service.RemoveIngestionTrackingAuditByIdAsync(inputId),
                    Times.Once);
 
             this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();

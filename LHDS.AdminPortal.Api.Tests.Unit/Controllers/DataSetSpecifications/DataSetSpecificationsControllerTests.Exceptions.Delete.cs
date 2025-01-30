@@ -34,22 +34,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             var expectedActionResult =
                 new ActionResult<DataSetSpecification>(expectedBadRequestObjectResult);
 
-            this.DataSetSpecificationServiceMock.Setup(service =>
+            this.dataSetSpecificationServiceMock.Setup(service =>
                 service.AddDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()))
                     .ThrowsAsync(validationException);
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.DeleteDataSetSpecificationByIdAsync(someId);
+                await this.dataSetSpecificationController.DeleteDataSetSpecificationByIdAsync(someId);
 
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);
 
-            this.DataSetSpecificationServiceMock.Verify(service =>
+            this.dataSetSpecificationServiceMock.Verify(service =>
                 service.RemoveDataSetSpecificationByIdAsync(It.IsAny<Guid>()),
                     Times.Once);
 
-            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -74,22 +74,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             var expectedActionResult =
                 new ActionResult<DataSetSpecification>(expectedNotFoundObjectResult);
 
-            this.DataSetSpecificationServiceMock.Setup(service =>
+            this.dataSetSpecificationServiceMock.Setup(service =>
                 service.RemoveDataSetSpecificationByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(DataSetSpecificationValidationException);
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.DeleteDataSetSpecificationByIdAsync(someId);
+                await this.dataSetSpecificationController.DeleteDataSetSpecificationByIdAsync(someId);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.DataSetSpecificationServiceMock.Verify(service =>
+            this.dataSetSpecificationServiceMock.Verify(service =>
                 service.RemoveDataSetSpecificationByIdAsync(It.IsAny<Guid>()),
                     Times.Once);
 
-            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -116,22 +116,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             var expectedActionResult =
                 new ActionResult<DataSetSpecification>(expectedBadRequestObjectResult);
 
-            this.DataSetSpecificationServiceMock.Setup(service =>
+            this.dataSetSpecificationServiceMock.Setup(service =>
                 service.RemoveDataSetSpecificationByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(DataSetDependencyValidationException);
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.DeleteDataSetSpecificationByIdAsync(someId);
+                await this.dataSetSpecificationController.DeleteDataSetSpecificationByIdAsync(someId);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.DataSetSpecificationServiceMock.Verify(service =>
+            this.dataSetSpecificationServiceMock.Verify(service =>
                 service.RemoveDataSetSpecificationByIdAsync(It.IsAny<Guid>()),
                     Times.Once);
 
-            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -148,22 +148,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             var expectedActionResult =
                 new ActionResult<DataSetSpecification>(expectedBadRequestObjectResult);
 
-            this.DataSetSpecificationServiceMock.Setup(service =>
+            this.dataSetSpecificationServiceMock.Setup(service =>
                 service.RemoveDataSetSpecificationByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(validationException);
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.DeleteDataSetSpecificationByIdAsync(someId);
+                await this.dataSetSpecificationController.DeleteDataSetSpecificationByIdAsync(someId);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.DataSetSpecificationServiceMock.Verify(service =>
+            this.dataSetSpecificationServiceMock.Verify(service =>
                 service.RemoveDataSetSpecificationByIdAsync(It.IsAny<Guid>()),
                     Times.Once);
 
-            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

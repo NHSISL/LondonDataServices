@@ -34,22 +34,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             var expectedActionResult =
                 new ActionResult<DataSetSpecification>(expectedObjectResult);
 
-            this.DataSetSpecificationServiceMock.Setup(service =>
+            this.dataSetSpecificationServiceMock.Setup(service =>
                 service.AddDataSetSpecificationAsync(inputDataSetSpecification))
                     .ReturnsAsync(addedDataSetSpecification);
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.PostDataSetSpecificationAsync(inputDataSetSpecification);
+                await this.dataSetSpecificationController.PostDataSetSpecificationAsync(inputDataSetSpecification);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.DataSetSpecificationServiceMock.Verify(service =>
+            this.dataSetSpecificationServiceMock.Verify(service =>
                 service.AddDataSetSpecificationAsync(inputDataSetSpecification),
                    Times.Once);
 
-            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -39,22 +39,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             var expectedActionResult =
                 new ActionResult<DataSetSpecification>(expectedBadRequestObjectResult);
 
-            this.DataSetSpecificationServiceMock.Setup(service =>
+            this.dataSetSpecificationServiceMock.Setup(service =>
                 service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()))
                     .ThrowsAsync(DataSetValidationException);
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
+                await this.dataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.DataSetSpecificationServiceMock.Verify(service =>
+            this.dataSetSpecificationServiceMock.Verify(service =>
                 service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
                     Times.Once);
 
-            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -80,22 +80,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             var expectedActionResult =
                 new ActionResult<DataSetSpecification>(expectedNotFoundObjectResult);
 
-            this.DataSetSpecificationServiceMock.Setup(service =>
+            this.dataSetSpecificationServiceMock.Setup(service =>
                 service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()))
                     .ThrowsAsync(DataSetValidationException);
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
+                await this.dataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.DataSetSpecificationServiceMock.Verify(service =>
+            this.dataSetSpecificationServiceMock.Verify(service =>
                 service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
                     Times.Once);
 
-            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -122,22 +122,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             var expectedActionResult =
                 new ActionResult<DataSetSpecification>(expectedBadRequestObjectResult);
 
-            this.DataSetSpecificationServiceMock.Setup(service =>
+            this.dataSetSpecificationServiceMock.Setup(service =>
                 service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()))
                     .ThrowsAsync(DataSetDependencyValidationException);
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
+                await this.dataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.DataSetSpecificationServiceMock.Verify(service =>
+            this.dataSetSpecificationServiceMock.Verify(service =>
                 service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
                     Times.Once);
 
-            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -164,22 +164,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             var expectedActionResult =
                 new ActionResult<DataSetSpecification>(expectedConflictObjectResult);
 
-            this.DataSetSpecificationServiceMock.Setup(service =>
+            this.dataSetSpecificationServiceMock.Setup(service =>
                 service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()))
                     .ThrowsAsync(DataSetSpecificationDependencyValidationException);
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
+                await this.dataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.DataSetSpecificationServiceMock.Verify(service =>
+            this.dataSetSpecificationServiceMock.Verify(service =>
                 service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
                     Times.Once);
 
-            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -196,22 +196,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             var expectedActionResult =
                 new ActionResult<DataSetSpecification>(expectedBadRequestObjectResult);
 
-            this.DataSetSpecificationServiceMock.Setup(service =>
+            this.dataSetSpecificationServiceMock.Setup(service =>
                 service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()))
                     .ThrowsAsync(validationException);
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
+                await this.dataSetSpecificationController.PutDataSetSpecificationAsync(dataSetSpecification);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.DataSetSpecificationServiceMock.Verify(service =>
+            this.dataSetSpecificationServiceMock.Verify(service =>
                 service.ModifyDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
                     Times.Once);
 
-            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

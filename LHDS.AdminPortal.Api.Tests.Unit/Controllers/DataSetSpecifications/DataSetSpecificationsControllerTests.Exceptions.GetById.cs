@@ -39,22 +39,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             var expectedActionResult =
                 new ActionResult<DataSetSpecification>(expectedBadRequestObjectResult);
 
-            this.DataSetSpecificationServiceMock.Setup(service =>
+            this.dataSetSpecificationServiceMock.Setup(service =>
                 service.RetrieveDataSetSpecificationByIdAsync(someId))
                     .ThrowsAsync(DataSetSpecificationValidationException);
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.GetDataSetSpecificationByIdAsync(someId);
+                await this.dataSetSpecificationController.GetDataSetSpecificationByIdAsync(someId);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.DataSetSpecificationServiceMock.Verify(service =>
+            this.dataSetSpecificationServiceMock.Verify(service =>
                 service.RetrieveDataSetSpecificationByIdAsync(someId),
                     Times.Once);
 
-            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -70,22 +70,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             var expectedActionResult =
                 new ActionResult<DataSetSpecification>(expectedInternalServerErrorObjectResult);
 
-            this.DataSetSpecificationServiceMock.Setup(service =>
+            this.dataSetSpecificationServiceMock.Setup(service =>
                 service.RetrieveDataSetSpecificationByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(serverException);
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.GetDataSetSpecificationByIdAsync(someId);
+                await this.dataSetSpecificationController.GetDataSetSpecificationByIdAsync(someId);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.DataSetSpecificationServiceMock.Verify(service =>
+            this.dataSetSpecificationServiceMock.Verify(service =>
                 service.RetrieveDataSetSpecificationByIdAsync(It.IsAny<Guid>()),
                     Times.Once());
 
-            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -110,22 +110,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             var expectedActionResult =
                 new ActionResult<DataSetSpecification>(expectedNotFoundObjectResult);
 
-            this.DataSetSpecificationServiceMock.Setup(service =>
+            this.dataSetSpecificationServiceMock.Setup(service =>
                 service.RetrieveDataSetSpecificationByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(DataSetSpecificationValidationException);
 
             // when
             ActionResult<DataSetSpecification> actualActionResult =
-                await this.DataSetSpecificationController.GetDataSetSpecificationByIdAsync(someId);
+                await this.dataSetSpecificationController.GetDataSetSpecificationByIdAsync(someId);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.DataSetSpecificationServiceMock.Verify(service =>
+            this.dataSetSpecificationServiceMock.Verify(service =>
                 service.RetrieveDataSetSpecificationByIdAsync(It.IsAny<Guid>()),
                     Times.Once);
 
-            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -88,5 +88,89 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataTypes
 
             this.dataTypeServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnConflictOnPostIfAlreadyExistsDataTypeErrorOccurredAsync()
+        {
+            // given
+            DataType someDataType = CreateRandomDataType();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var alreadyExistsDataTypeException =
+                new AlreadyExistsDataTypeException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var DataTypeDependencyValidationException =
+                new DataTypeDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsDataTypeException);
+
+            ConflictObjectResult expectedConflictObjectResult =
+                Conflict(alreadyExistsDataTypeException);
+
+            var expectedActionResult =
+                new ActionResult<DataType>(expectedConflictObjectResult);
+
+            this.dataTypeServiceMock.Setup(service =>
+                service.AddDataTypeAsync(It.IsAny<DataType>()))
+                    .ThrowsAsync(DataTypeDependencyValidationException);
+
+            // when
+            ActionResult<DataType> actualActionResult =
+                await this.dataTypesController.PostDataTypeAsync(someDataType);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.dataTypeServiceMock.Verify(service =>
+                service.AddDataTypeAsync(It.IsAny<DataType>()),
+                    Times.Once);
+
+            this.dataTypeServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnFailedDependencyOnPostIfInvalidDataTypeReferenceAsync()
+        {
+            // given
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+            DataType someDataType = CreateRandomDataType();
+
+            var alreadyExistsDataTypeException =
+                new InvalidDataTypeReferenceException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var DataTypeDependencyValidationException =
+                new DataTypeDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsDataTypeException);
+
+            FailedDependencyObjectResult expectedBadRequestObjectResult =
+                FailedDependency(DataTypeDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<DataType>(expectedBadRequestObjectResult);
+
+            this.dataTypeServiceMock.Setup(service =>
+                service.AddDataTypeAsync(It.IsAny<DataType>()))
+                    .ThrowsAsync(DataTypeDependencyValidationException);
+
+            // when
+            ActionResult<DataType> actualActionResult =
+                await this.dataTypesController.PostDataTypeAsync(someDataType);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.dataTypeServiceMock.Verify(service =>
+                service.AddDataTypeAsync(It.IsAny<DataType>()),
+                    Times.Once);
+
+            this.dataTypeServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

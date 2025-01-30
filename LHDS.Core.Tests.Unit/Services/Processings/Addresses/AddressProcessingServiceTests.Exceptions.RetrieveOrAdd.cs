@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             this.addressServiceMock.Setup(service =>
                 service.RetrieveAddressByIdAsync(inputAddress.Id))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<Address> addressRetrieveOrAddTask =
@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             this.addressServiceMock.Setup(service =>
                 service.RetrieveAddressByIdAsync(inputAddress.Id))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<Address> addressRetrieveOrAddTask =
@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             this.addressServiceMock.Setup(service =>
                 service.RetrieveAddressByIdAsync(inputAddress.Id))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<Address> addAddressTask =

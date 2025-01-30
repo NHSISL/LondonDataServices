@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             this.addressServiceMock.Setup(service =>
                 service.BulkAddAddressesAsync(inputAddresses, someFileName))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask addressAddTask = this.addressProcessingService
@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             this.addressServiceMock.Setup(service =>
                 service.BulkAddAddressesAsync(inputAddresses, someFileName))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask addressAddTask = this.addressProcessingService
@@ -123,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             this.addressServiceMock.Setup(service =>
                 service.BulkAddAddressesAsync(inputAddresses, someFileName))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask addressAddTask = this.addressProcessingService

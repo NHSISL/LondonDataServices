@@ -133,5 +133,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataTypes
 
             this.dataTypeServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnDeleteIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
+
+            var expectedActionResult =
+                new ActionResult<DataType>(expectedBadRequestObjectResult);
+
+            this.dataTypeServiceMock.Setup(service =>
+                service.RemoveDataTypeByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<DataType> actualActionResult =
+                await this.dataTypesController.DeleteDataTypeByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.dataTypeServiceMock.Verify(service =>
+                service.RemoveDataTypeByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.dataTypeServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

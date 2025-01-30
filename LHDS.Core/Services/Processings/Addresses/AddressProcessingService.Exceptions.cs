@@ -26,27 +26,27 @@ namespace LHDS.Core.Services.Processings.Addresses
             }
             catch (NullAddressProcessingException nullAddressException)
             {
-                throw await CreateAndLogValidationException(nullAddressException);
+                throw await CreateAndLogValidationExceptionAsync(nullAddressException);
             }
             catch (InvalidArgumentAddressProcessingException invalidArgumentAddressProcessingException)
             {
-                throw await CreateAndLogValidationException(invalidArgumentAddressProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentAddressProcessingException);
             }
             catch (AddressValidationException addressValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(addressValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(addressValidationException);
             }
             catch (AddressDependencyValidationException addressDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(addressDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(addressDependencyValidationException);
             }
             catch (AddressDependencyException addressDependencyException)
             {
-                throw await CreateAndLogDependencyException(addressDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(addressDependencyException);
             }
             catch (AddressServiceException addressServiceException)
             {
-                throw await CreateAndLogDependencyException(addressServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(addressServiceException);
             }
             catch (Exception exception)
             {
@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Processings.Addresses
                         message: "Failed Address processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw await CreateAndLogServiceException(failedAddressProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAddressProcessingServiceException);
             }
         }
 
@@ -68,27 +68,27 @@ namespace LHDS.Core.Services.Processings.Addresses
             }
             catch (NullAddressProcessingException nullAddressException)
             {
-                throw await CreateAndLogValidationException(nullAddressException);
+                throw await CreateAndLogValidationExceptionAsync(nullAddressException);
             }
             catch (InvalidArgumentAddressProcessingException invalidArgumentAddressProcessingException)
             {
-                throw await CreateAndLogValidationException(invalidArgumentAddressProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentAddressProcessingException);
             }
             catch (AddressValidationException addressValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(addressValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(addressValidationException);
             }
             catch (AddressDependencyValidationException addressDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationException(addressDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(addressDependencyValidationException);
             }
             catch (AddressDependencyException addressDependencyException)
             {
-                throw await CreateAndLogDependencyException(addressDependencyException);
+                throw await CreateAndLogDependencyExceptionAsync(addressDependencyException);
             }
             catch (AddressServiceException addressServiceException)
             {
-                throw await CreateAndLogDependencyException(addressServiceException);
+                throw await CreateAndLogDependencyExceptionAsync(addressServiceException);
             }
             catch (Exception exception)
             {
@@ -97,11 +97,11 @@ namespace LHDS.Core.Services.Processings.Addresses
                         message: "Failed Address processing service error occurred, please contact support.",
                         innerException: exception);
 
-                throw await CreateAndLogServiceException(failedAddressProcessingServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedAddressProcessingServiceException);
             }
         }
 
-        private async ValueTask<AddressProcessingValidationException> CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<AddressProcessingValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var addressProcessingValidationExceptionn =
                 new AddressProcessingValidationException(
@@ -113,7 +113,7 @@ namespace LHDS.Core.Services.Processings.Addresses
             return addressProcessingValidationExceptionn;
         }
 
-        private async ValueTask<AddressProcessingDependencyValidationException> CreateAndLogDependencyValidationException(
+        private async ValueTask<AddressProcessingDependencyValidationException> CreateAndLogDependencyValidationExceptionAsync(
             Xeption exception)
         {
             var addressProcessingDependencyValidationException =
@@ -126,7 +126,7 @@ namespace LHDS.Core.Services.Processings.Addresses
             return addressProcessingDependencyValidationException;
         }
 
-        private async ValueTask<AddressProcessingDependencyException> CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<AddressProcessingDependencyException> CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var addressProcessingDependencyException =
                 new AddressProcessingDependencyException(
@@ -138,7 +138,7 @@ namespace LHDS.Core.Services.Processings.Addresses
             throw addressProcessingDependencyException;
         }
 
-        private async ValueTask<AddressProcessingServiceException> CreateAndLogServiceException(Xeption exception)
+        private async ValueTask<AddressProcessingServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var addressProcessingServiceException = new
                 AddressProcessingServiceException(

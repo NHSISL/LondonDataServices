@@ -87,5 +87,45 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataTypes
 
             this.dataTypeServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnNotFoundOnGetByIdIfItemDoesNotExistAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            string someMessage = GetRandomString();
+
+            var notFoundDataTypeException =
+                new NotFoundDataTypeException(
+                    dataTypeId: someId);
+
+            var DataTypeValidationException =
+                new DataTypeValidationException(
+                    message: someMessage,
+                    innerException: notFoundDataTypeException);
+
+            NotFoundObjectResult expectedNotFoundObjectResult =
+                NotFound(notFoundDataTypeException);
+
+            var expectedActionResult =
+                new ActionResult<DataType>(expectedNotFoundObjectResult);
+
+            this.dataTypeServiceMock.Setup(service =>
+                service.RetrieveDataTypeByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(DataTypeValidationException);
+
+            // when
+            ActionResult<DataType> actualActionResult =
+                await this.dataTypesController.GetDataTypeByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.dataTypeServiceMock.Verify(service =>
+                service.RetrieveDataTypeByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.dataTypeServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

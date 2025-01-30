@@ -32,22 +32,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
             var expectedActionResult =
                 new ActionResult<IQueryable<DataSetSpecification>>(expectedInternalServerErrorObjectResult);
 
-            this.DataSetSpecificationServiceMock.Setup(service =>
+            this.dataSetSpecificationServiceMock.Setup(service =>
                 service.RetrieveAllDataSetSpecificationsAsync())
                     .ThrowsAsync(serverException);
 
             // when
             ActionResult<IQueryable<DataSetSpecification>> actualActionResult =
-                await this.DataSetSpecificationController.Get();
+                await this.dataSetSpecificationController.Get();
 
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);
 
-            this.DataSetSpecificationServiceMock.Verify(service =>
+            this.dataSetSpecificationServiceMock.Verify(service =>
                 service.RetrieveAllDataSetSpecificationsAsync(),
                     Times.Once());
 
-            this.DataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

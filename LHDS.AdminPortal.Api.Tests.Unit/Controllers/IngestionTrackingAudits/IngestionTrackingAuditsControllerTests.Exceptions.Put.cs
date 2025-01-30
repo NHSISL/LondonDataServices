@@ -213,5 +213,47 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
 
             this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnConflictOnPutIfAlreadyExistsIngestionTrackingAuditErrorOccurredAsync()
+        {
+            // given
+            IngestionTrackingAudit someIngestionTrackingAudit = CreateRandomIngestionTrackingAudit();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var alreadyExistsIngestionTrackingAuditException =
+                new AlreadyExistsIngestionTrackingAuditException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var IngestionTrackingAuditDependencyValidationException =
+                new IngestionTrackingAuditDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsIngestionTrackingAuditException);
+
+            ConflictObjectResult expectedConflictObjectResult =
+                Conflict(alreadyExistsIngestionTrackingAuditException);
+
+            var expectedActionResult =
+                new ActionResult<IngestionTrackingAudit>(expectedConflictObjectResult);
+
+            this.ingestionTrackingAuditServiceMock.Setup(service =>
+                service.ModifyIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()))
+                    .ThrowsAsync(IngestionTrackingAuditDependencyValidationException);
+
+            // when
+            ActionResult<IngestionTrackingAudit> actualActionResult =
+                await this.ingestionTrackingAuditsController.PutAuditAsync(someIngestionTrackingAudit);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.ingestionTrackingAuditServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
+                    Times.Once);
+
+            this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

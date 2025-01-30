@@ -18,15 +18,15 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
 {
     public partial class DataSetSpecificationsControllerTests : RESTFulController
     {
-        private readonly Mock<IDataSetSpecificationService> DataSetSpecificationServiceMock;
-        private readonly DataSetSpecificationsController DataSetSpecificationController;
+        private readonly Mock<IDataSetSpecificationService> dataSetSpecificationServiceMock;
+        private readonly DataSetSpecificationsController dataSetSpecificationController;
 
         public DataSetSpecificationsControllerTests()
         {
-            this.DataSetSpecificationServiceMock = new Mock<IDataSetSpecificationService>();
+            this.dataSetSpecificationServiceMock = new Mock<IDataSetSpecificationService>();
 
-            this.DataSetSpecificationController = new DataSetSpecificationsController(
-                this.DataSetSpecificationServiceMock.Object);
+            this.dataSetSpecificationController = new DataSetSpecificationsController(
+                this.dataSetSpecificationServiceMock.Object);
         }
 
         private static string GetRandomString() =>

@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                 .BeEquivalentTo(expectedObjectColumnProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedObjectColumnProcessingValidationException))),
                         Times.Once);
 

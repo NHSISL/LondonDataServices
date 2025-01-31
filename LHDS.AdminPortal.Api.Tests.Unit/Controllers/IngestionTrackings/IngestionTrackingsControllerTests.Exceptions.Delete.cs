@@ -15,6 +15,7 @@ using Moq;
 using RESTFulSense.Clients.Extensions;
 using Xeptions;
 using Xunit;
+using RESTFulSense.Models;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
 {
@@ -76,6 +77,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RemoveIngestionTrackingByIdAsync(someId))
                     .ThrowsAsync(IngestionTrackingValidationException);
+
+            // when
+            ActionResult<IngestionTracking> actualActionResult =
+                await this.ingestionTrackingsController.DeleteIngestionTrackingByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RemoveIngestionTrackingByIdAsync(someId),
+                    Times.Once);
+
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnLockedOnDeleteIfLockedIngestionTrackingAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+
+            var lockedIngestionTrackingException =
+                new LockedIngestionTrackingException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var IngestionTrackingDependencyValidationException =
+                new IngestionTrackingDependencyValidationException(
+                    message: someMessage,
+                    innerException: lockedIngestionTrackingException);
+
+            LockedObjectResult expectedBadRequestObjectResult =
+                Locked(IngestionTrackingDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<IngestionTracking>(expectedBadRequestObjectResult);
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RemoveIngestionTrackingByIdAsync(someId))
+                    .ThrowsAsync(IngestionTrackingDependencyValidationException);
 
             // when
             ActionResult<IngestionTracking> actualActionResult =

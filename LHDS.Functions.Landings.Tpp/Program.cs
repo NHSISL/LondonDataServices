@@ -4,6 +4,9 @@
 
 using System;
 using System.IO;
+using Azure.Core;
+using Azure.Identity;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Clients.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +31,12 @@ var host = new HostBuilder()
     })
     .ConfigureServices((context, services) =>
     {
+        var credential = new DefaultAzureCredential();
+        var tokenRequestContext = new TokenRequestContext(new[] { "https://graph.microsoft.com/.default" });
+        AccessToken accessToken = credential.GetTokenAsync(tokenRequestContext).Result;
+        SecurityBroker securityBroker = new SecurityBroker(accessToken.Token);
+        services.AddTransient<ISecurityBroker>(broker => securityBroker);
+
         services
             .AddLogging(setup =>
             {

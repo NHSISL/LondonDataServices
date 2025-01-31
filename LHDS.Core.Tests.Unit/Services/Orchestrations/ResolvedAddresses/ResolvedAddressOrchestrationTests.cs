@@ -100,6 +100,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                     .AreEqual;
         }
 
+        private Expression<Func<AssignAddress, bool>> SameAssignAddressAs(
+           AssignAddress expectedAssignAddress)
+        {
+            return actualAssignAddress =>
+                this.compareLogic.Compare(expectedAssignAddress, actualAssignAddress)
+                    .AreEqual;
+        }
+
         private Expression<Func<List<ResolvedAddress>, bool>> SameResolvedAddressListAs(
            List<ResolvedAddress> expectedResolvedAddressList)
         {

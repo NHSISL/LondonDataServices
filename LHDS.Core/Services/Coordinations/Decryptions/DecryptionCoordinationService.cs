@@ -55,7 +55,7 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                     }
                     catch (Exception exception)
                     {
-                        this.loggingBroker.LogError(exception);
+                        await this.loggingBroker.LogErrorAsync(exception);
                     }
                 }
             });

@@ -15,6 +15,8 @@ using Moq;
 using RESTFulSense.Clients.Extensions;
 using Xeptions;
 using Xunit;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using RESTFulSense.Models;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
 {
@@ -93,6 +95,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
 
             this.ingestionTrackingServiceMock.Verify(service =>
                 service.ModifyIngestionTrackingAsync(someIngestionTracking),
+                    Times.Once);
+
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnFailedDependencyOnPutIfInvalidIngestionTrackingReferenceAsync()
+        {
+            // given
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+            IngestionTracking someIngestionTracking = CreateRandomIngestionTracking();
+
+            var alreadyExistsIngestionTrackingException =
+                new InvalidIngestionTrackingReferenceException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var IngestionTrackingDependencyValidationException =
+                new IngestionTrackingDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsIngestionTrackingException);
+
+            FailedDependencyObjectResult expectedBadRequestObjectResult =
+                FailedDependency(IngestionTrackingDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<IngestionTracking>(expectedBadRequestObjectResult);
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()))
+                    .ThrowsAsync(IngestionTrackingDependencyValidationException);
+
+            // when
+            ActionResult<IngestionTracking> actualActionResult =
+                await this.ingestionTrackingsController.PutIngestionTrackingAsync(someIngestionTracking);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
                     Times.Once);
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();

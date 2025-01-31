@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingAuditByIdAsync(inputIngestionTrackingAudit.Id))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<IngestionTrackingAudit> ingestionTrackingAuditModifyOrAddTask =
@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingAuditByIdAsync(inputIngestionTrackingAudit.Id))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<IngestionTrackingAudit> ingestionTrackingAuditModifyOrAddTask =
@@ -122,7 +122,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingAuditByIdAsync(inputIngestionTrackingAudit.Id))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<IngestionTrackingAudit> modifyOrAddIngestionTrackingAuditTask =

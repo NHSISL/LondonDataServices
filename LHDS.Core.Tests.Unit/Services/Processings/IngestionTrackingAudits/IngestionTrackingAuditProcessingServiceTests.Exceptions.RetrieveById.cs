@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingAuditByIdAsync(someId))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<IngestionTrackingAudit> ingestionTrackingAuditRetrieveByIdTask =
@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingAuditByIdAsync(someId))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<IngestionTrackingAudit> ingestionTrackingAuditRetrieveByIdTask =
@@ -117,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingAuditByIdAsync(someId))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<IngestionTrackingAudit> ingestionTrackingAuditRetrieveByIdTask =

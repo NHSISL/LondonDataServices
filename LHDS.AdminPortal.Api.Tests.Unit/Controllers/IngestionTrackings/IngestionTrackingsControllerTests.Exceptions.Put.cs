@@ -17,6 +17,7 @@ using Xeptions;
 using Xunit;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using RESTFulSense.Models;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
 {
@@ -123,6 +124,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
 
             var expectedActionResult =
                 new ActionResult<IngestionTracking>(expectedBadRequestObjectResult);
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()))
+                    .ThrowsAsync(IngestionTrackingDependencyValidationException);
+
+            // when
+            ActionResult<IngestionTracking> actualActionResult =
+                await this.ingestionTrackingsController.PutIngestionTrackingAsync(someIngestionTracking);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                    Times.Once);
+
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnConflictOnPutIfAlreadyExistsIngestionTrackingErrorOccurredAsync()
+        {
+            // given
+            IngestionTracking someIngestionTracking = CreateRandomIngestionTracking();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var alreadyExistsIngestionTrackingException =
+                new AlreadyExistsIngestionTrackingException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var IngestionTrackingDependencyValidationException =
+                new IngestionTrackingDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsIngestionTrackingException);
+
+            ConflictObjectResult expectedConflictObjectResult =
+                Conflict(alreadyExistsIngestionTrackingException);
+
+            var expectedActionResult =
+                new ActionResult<IngestionTracking>(expectedConflictObjectResult);
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()))

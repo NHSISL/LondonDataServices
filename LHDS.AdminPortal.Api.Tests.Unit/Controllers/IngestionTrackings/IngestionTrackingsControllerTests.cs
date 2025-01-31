@@ -2,9 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Linq;
 using System;
+using System.Linq;
 using LHDS.AdminPortal.Api.Controllers;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Moq;
@@ -12,7 +13,6 @@ using RESTFulSense.Controllers;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
 {

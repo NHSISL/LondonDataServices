@@ -133,5 +133,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
 
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnDeleteIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
+
+            var expectedActionResult =
+                new ActionResult<IngestionTracking>(expectedBadRequestObjectResult);
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RemoveIngestionTrackingByIdAsync(someId))
+                    .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<IngestionTracking> actualActionResult =
+                await this.ingestionTrackingsController.DeleteIngestionTrackingByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RemoveIngestionTrackingByIdAsync(someId),
+                    Times.Once);
+
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions;
 using Xeptions;
 
@@ -37,6 +38,19 @@ namespace LHDS.Core.Services.Orchestrations.ResolvedAddresses
                     "please correct the errors and try again.",
                 (Rule: IsInvalidInputStream(input), Parameter: nameof(input)),
                 (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+        }
+
+        private static void ValidateNewResolvedAddress(ResolvedAddress maybeResolvedAddress)
+        {
+            if (maybeResolvedAddress is null)
+            {
+                var nullResolvedAddressOrchestrationException =
+                    new NullResolvedAddressOrchestrationException(
+                        message: "Null Resolved Address orchestration exception, " +
+                            "please correct the errors and try again.");
+
+                throw nullResolvedAddressOrchestrationException;
+            }
         }
 
         private static dynamic IsInvalidInputStream(Stream? stream) => new

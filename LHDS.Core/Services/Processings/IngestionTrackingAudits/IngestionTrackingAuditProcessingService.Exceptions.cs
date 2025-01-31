@@ -31,16 +31,19 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             catch (InvalidArgumentIngestionTrackingAuditProcessingException
                 invalidArgumentIngestionTrackingAuditProcessingException)
             {
-                throw await CreateAndLogValidationExceptionAsync(invalidArgumentIngestionTrackingAuditProcessingException);
+                throw await CreateAndLogValidationExceptionAsync(
+                    invalidArgumentIngestionTrackingAuditProcessingException);
             }
             catch (IngestionTrackingAuditValidationException ingestionTrackingAuditProcessingValidationException)
             {
-                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingAuditProcessingValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    ingestionTrackingAuditProcessingValidationException);
             }
             catch (IngestionTrackingAuditDependencyValidationException
                 ingestionTrackingAuditDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingAuditDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    ingestionTrackingAuditDependencyValidationException);
             }
             catch (IngestionTrackingAuditDependencyException ingestionTrackingAuditDependencyException)
             {
@@ -54,7 +57,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             {
                 var failedIngestionTrackingAuditProcessingServiceException =
                     new FailedIngestionTrackingAuditProcessingServiceException(
-                        message: "Failed IngestionTrackingAudit processing service error occurred, please contact support.",
+                        message: "Failed IngestionTrackingAudit processing service error occurred, " +
+                            "please contact support.",
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(failedIngestionTrackingAuditProcessingServiceException);
@@ -75,7 +79,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             catch (IngestionTrackingAuditDependencyValidationException
                 ingestionTrackingAuditDependencyValidationException)
             {
-                throw await CreateAndLogDependencyValidationExceptionAsync(ingestionTrackingAuditDependencyValidationException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(
+                    ingestionTrackingAuditDependencyValidationException);
             }
             catch (IngestionTrackingAuditDependencyException ingestionTrackingAuditDependencyException)
             {
@@ -89,14 +94,16 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             {
                 var failedIngestionTrackingAuditProcessingServiceException =
                     new FailedIngestionTrackingAuditProcessingServiceException(
-                        message: "Failed IngestionTrackingAudit processing service error occurred, please contact support.",
+                        message: "Failed IngestionTrackingAudit processing service error occurred, " +
+                            "please contact support.",
                         innerException: exception);
 
                 throw await CreateAndLogServiceExceptionAsync(failedIngestionTrackingAuditProcessingServiceException);
             }
         }
 
-        private async ValueTask<IngestionTrackingAuditProcessingValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
+        private async ValueTask<IngestionTrackingAuditProcessingValidationException> 
+            CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var ingestionTrackingAuditProcessingValidationExceptionn =
                 new IngestionTrackingAuditProcessingValidationException(
@@ -108,12 +115,13 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             return ingestionTrackingAuditProcessingValidationExceptionn;
         }
 
-        private async ValueTask<IngestionTrackingAuditProcessingDependencyValidationException> 
+        private async ValueTask<IngestionTrackingAuditProcessingDependencyValidationException>
             CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
         {
             var ingestionTrackingAuditProcessingDependencyValidationException =
                 new IngestionTrackingAuditProcessingDependencyValidationException(
-                    message: "IngestionTrackingAudit processing dependency validation error occurred, please try again.",
+                    message: "IngestionTrackingAudit processing dependency validation error occurred, " +
+                        "please try again.",
                     innerException: exception.InnerException as Xeption);
 
             await this.loggingBroker.LogErrorAsync(ingestionTrackingAuditProcessingDependencyValidationException);
@@ -121,7 +129,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             return ingestionTrackingAuditProcessingDependencyValidationException;
         }
 
-        private async ValueTask<IngestionTrackingAuditProcessingDependencyException> CreateAndLogDependencyExceptionAsync(Xeption exception)
+        private async ValueTask<IngestionTrackingAuditProcessingDependencyException> 
+            CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var ingestionTrackingAuditProcessingDependencyException =
                 new IngestionTrackingAuditProcessingDependencyException(
@@ -133,7 +142,8 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             throw ingestionTrackingAuditProcessingDependencyException;
         }
 
-        private async ValueTask<IngestionTrackingAuditProcessingServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
+        private async ValueTask<IngestionTrackingAuditProcessingServiceException> 
+            CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var ingestionTrackingAuditProcessingServiceException = new
                 IngestionTrackingAuditProcessingServiceException(

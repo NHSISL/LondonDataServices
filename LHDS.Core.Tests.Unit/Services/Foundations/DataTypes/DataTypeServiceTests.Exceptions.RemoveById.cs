@@ -76,6 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         {
             // given
             Guid someDataTypeId = Guid.NewGuid();
+            DataType randomDataType = CreateRandomDataType();
 
             var databaseUpdateConcurrencyException =
                 new DbUpdateConcurrencyException();
@@ -116,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.DeleteDataTypeAsync(someDataTypeId),
+                broker.DeleteDataTypeAsync(randomDataType),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

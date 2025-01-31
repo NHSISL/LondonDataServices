@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                     message: "Address processing validation error occurred, please try again.",
                     innerException: nullAddressProcessingException);
 
-            // LogErrorAsync(
+            //when
             ValueTask<Address> AddAddressTask =
                 this.addressProcessingService.AddAddressAsync(nullAddress);
 

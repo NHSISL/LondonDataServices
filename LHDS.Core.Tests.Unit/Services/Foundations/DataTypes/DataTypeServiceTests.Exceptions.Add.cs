@@ -55,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertDataTypeAsync(It.IsAny<DataType>()),
+                broker.InsertDataTypeAsync(someDataType),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -110,7 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertDataTypeAsync(It.IsAny<DataType>()),
+                broker.InsertDataTypeAsync(alreadyExistsDataType),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -218,7 +218,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertDataTypeAsync(It.IsAny<DataType>()),
+                broker.InsertDataTypeAsync(someDataType),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -269,7 +269,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertDataTypeAsync(It.IsAny<DataType>()),
+                broker.InsertDataTypeAsync(someDataType),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>

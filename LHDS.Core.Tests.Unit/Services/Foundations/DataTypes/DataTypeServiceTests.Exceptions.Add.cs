@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         }
 
         [Fact]
-        public async Task ShouldThrowDependencyValidationExceptionOnAddIfDataTypeAlreadyExsitsAndLogItAsync()
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfDataTypeAlreadyExistsAndLogItAsync()
         {
             // given
             DataType randomDataType = CreateRandomDataType();

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +38,47 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
 
             var expectedActionResult =
                 new ActionResult<IngestionTracking>(expectedBadRequestObjectResult);
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.ModifyIngestionTrackingAsync(someIngestionTracking))
+                    .ThrowsAsync(IngestionTrackingValidationException);
+
+            // when
+            ActionResult<IngestionTracking> actualActionResult =
+                await this.ingestionTrackingsController.PutIngestionTrackingAsync(someIngestionTracking);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAsync(someIngestionTracking),
+                    Times.Once);
+
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnNotFoundOnPutIfItemDoesNotExistAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            string someMessage = GetRandomString();
+            IngestionTracking someIngestionTracking = CreateRandomIngestionTracking();
+
+            var notFoundIngestionTrackingException =
+                new NotFoundIngestionTrackingException(
+                    ingestionTrackingId: someId);
+
+            var IngestionTrackingValidationException =
+                new IngestionTrackingValidationException(
+                    message: someMessage,
+                    innerException: notFoundIngestionTrackingException);
+
+            NotFoundObjectResult expectedNotFoundObjectResult =
+                NotFound(notFoundIngestionTrackingException);
+
+            var expectedActionResult =
+                new ActionResult<IngestionTracking>(expectedNotFoundObjectResult);
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.ModifyIngestionTrackingAsync(someIngestionTracking))

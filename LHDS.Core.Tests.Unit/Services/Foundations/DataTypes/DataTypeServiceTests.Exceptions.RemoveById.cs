@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.DeleteDataTypeAsync(It.IsAny<DataType>()),
+                broker.DeleteDataTypeAsync(randomDataType),
                     Times.Never);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: lockedDataTypeException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectDataTypeByIdAsync(It.IsAny<Guid>()))
+                broker.SelectDataTypeByIdAsync(someDataTypeId))
                     .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
@@ -107,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 .BeEquivalentTo(expectedDataTypeDependencyValidationException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectDataTypeByIdAsync(It.IsAny<Guid>()),
+                broker.SelectDataTypeByIdAsync(someDataTypeId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -116,7 +116,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.DeleteDataTypeAsync(It.IsAny<DataType>()),
+                broker.DeleteDataTypeAsync(someDataTypeId),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -142,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: failedDataTypeStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectDataTypeByIdAsync(It.IsAny<Guid>()))
+                broker.SelectDataTypeByIdAsync(someDataTypeId))
                     .ThrowsAsync(sqlException);
 
             // when
@@ -158,7 +158,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 .BeEquivalentTo(expectedDataTypeDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectDataTypeByIdAsync(It.IsAny<Guid>()),
+                broker.SelectDataTypeByIdAsync(someDataTypeId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -189,7 +189,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     innerException: failedDataTypeServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectDataTypeByIdAsync(It.IsAny<Guid>()))
+                broker.SelectDataTypeByIdAsync(someDataTypeId))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -205,7 +205,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 .BeEquivalentTo(expectedDataTypeServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectDataTypeByIdAsync(It.IsAny<Guid>()),
+                broker.SelectDataTypeByIdAsync(someDataTypeId),
                         Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

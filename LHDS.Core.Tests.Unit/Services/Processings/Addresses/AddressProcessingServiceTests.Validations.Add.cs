@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                     message: "Address processing validation error occurred, please try again.",
                     innerException: nullAddressProcessingException);
 
-            // when
+            //when
             ValueTask<Address> AddAddressTask =
                 this.addressProcessingService.AddAddressAsync(nullAddress);
 
@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                 .BeEquivalentTo(expectedAddressProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressProcessingValidationException))),
                         Times.Once);
 

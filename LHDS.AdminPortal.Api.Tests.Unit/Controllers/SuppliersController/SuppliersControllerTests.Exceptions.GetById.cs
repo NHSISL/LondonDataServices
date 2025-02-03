@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using LHDS.Core.Models.Foundations.Suppliers;
-using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;

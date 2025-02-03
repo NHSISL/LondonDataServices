@@ -61,7 +61,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
 
             var notFoundIngestionTrackingAuditException =
                 new NotFoundIngestionTrackingAuditException(
-                    ingestionTrackingAuditId: someId);
+                    message: $"Couldn't find IngestionTrackingAudit with Id: {someId}.");
 
             var IngestionTrackingAuditValidationException =
                 new IngestionTrackingAuditValidationException(

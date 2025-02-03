@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -74,6 +75,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Suppliers
             this.supplierServiceMock.Setup(service =>
                 service.AddSupplierAsync(It.IsAny<Supplier>()))
                     .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<Supplier> actualActionResult =
+                await this.suppliersController.PostSupplierAsync(someSupplier);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.supplierServiceMock.Verify(service =>
+                service.AddSupplierAsync(It.IsAny<Supplier>()),
+                    Times.Once);
+
+            this.supplierServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnConflictOnPostIfAlreadyExistsSupplierErrorOccurredAsync()
+        {
+            // given
+            Supplier someSupplier = CreateRandomSupplier();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var alreadyExistsSupplierException =
+                new AlreadyExistsSupplierException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var SupplierDependencyValidationException =
+                new SupplierDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsSupplierException);
+
+            ConflictObjectResult expectedConflictObjectResult =
+                Conflict(alreadyExistsSupplierException);
+
+            var expectedActionResult =
+                new ActionResult<Supplier>(expectedConflictObjectResult);
+
+            this.supplierServiceMock.Setup(service =>
+                service.AddSupplierAsync(It.IsAny<Supplier>()))
+                    .ThrowsAsync(SupplierDependencyValidationException);
 
             // when
             ActionResult<Supplier> actualActionResult =

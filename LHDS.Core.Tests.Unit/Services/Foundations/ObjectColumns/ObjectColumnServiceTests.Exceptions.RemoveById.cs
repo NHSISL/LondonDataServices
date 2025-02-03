@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectObjectColumnByIdAsync(randomObjectColumn.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<ObjectColumn> addObjectColumnTask =

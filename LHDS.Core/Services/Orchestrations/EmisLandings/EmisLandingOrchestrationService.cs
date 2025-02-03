@@ -103,7 +103,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     }
                     catch (Exception ex)
                     {
-                        this.loggingBroker.LogError(ex);
+                        await this.loggingBroker.LogErrorAsync(ex);
                         Console.WriteLine($"Unable to download document: {fileName}");
                         exceptions.Add(ex);
                     }
@@ -123,7 +123,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 {
                     item.FileDeleted = true;
                     item.UpdatedDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
                     await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(item);
                 }
 

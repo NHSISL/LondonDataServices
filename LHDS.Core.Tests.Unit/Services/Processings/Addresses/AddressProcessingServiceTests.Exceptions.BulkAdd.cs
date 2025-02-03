@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             this.addressServiceMock.Setup(service =>
                 service.BulkAddAddressesAsync(inputAddresses, someFileName))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask addressAddTask = this.addressProcessingService
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedAddressProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             this.addressServiceMock.Setup(service =>
                 service.BulkAddAddressesAsync(inputAddresses, someFileName))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask addressAddTask = this.addressProcessingService
@@ -93,7 +93,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedAddressProcessingDependencyException))),
                          Times.Once);
 
@@ -123,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             this.addressServiceMock.Setup(service =>
                 service.BulkAddAddressesAsync(inputAddresses, someFileName))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask addressAddTask = this.addressProcessingService
@@ -140,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedAddressProcessingServiveException))),
                          Times.Once);
 

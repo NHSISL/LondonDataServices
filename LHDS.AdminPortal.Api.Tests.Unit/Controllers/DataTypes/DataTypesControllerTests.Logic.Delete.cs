@@ -34,7 +34,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataTypes
                 new ActionResult<DataType>(expectedObjectResult);
 
             this.dataTypeServiceMock.Setup(service =>
-                service.RemoveDataTypeByIdAsync(It.IsAny<Guid>()))
+                service.RemoveDataTypeByIdAsync(inputId))
                     .ReturnsAsync(storageDataType);
 
             // when
@@ -45,8 +45,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataTypes
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.dataTypeServiceMock.Verify(service =>
-                service.RemoveDataTypeByIdAsync(It.IsAny<Guid>()),
-                   Times.Once);
+                service.RemoveDataTypeByIdAsync(inputId),
+                    Times.Once);
 
             this.dataTypeServiceMock.VerifyNoOtherCalls();
         }

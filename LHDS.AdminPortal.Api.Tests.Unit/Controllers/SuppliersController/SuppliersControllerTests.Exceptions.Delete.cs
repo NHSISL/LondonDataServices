@@ -15,6 +15,8 @@ using Moq;
 using RESTFulSense.Clients.Extensions;
 using Xeptions;
 using Xunit;
+using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
+using RESTFulSense.Models;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Suppliers
 {
@@ -76,6 +78,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Suppliers
             this.supplierServiceMock.Setup(service =>
                 service.RemoveSupplierByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(SupplierValidationException);
+
+            // when
+            ActionResult<Supplier> actualActionResult =
+                await this.suppliersController.DeleteSupplierByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.supplierServiceMock.Verify(service =>
+                service.RemoveSupplierByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.supplierServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnLockedOnDeleteIfLockedSupplierAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+
+            var lockedSupplierException =
+                new LockedSupplierException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var SupplierDependencyValidationException =
+                new SupplierDependencyValidationException(
+                    message: someMessage,
+                    innerException: lockedSupplierException);
+
+            LockedObjectResult expectedBadRequestObjectResult =
+                Locked(SupplierDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<Supplier>(expectedBadRequestObjectResult);
+
+            this.supplierServiceMock.Setup(service =>
+                service.RemoveSupplierByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(SupplierDependencyValidationException);
 
             // when
             ActionResult<Supplier> actualActionResult =

@@ -15,7 +15,6 @@ using Moq;
 using RESTFulSense.Clients.Extensions;
 using Xeptions;
 using Xunit;
-using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using RESTFulSense.Models;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Suppliers

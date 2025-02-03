@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.DeleteDataTypeAsync(randomDataType),
+                broker.DeleteDataTypeAsync(It.IsAny<DataType>()),
                     Times.Never);
 
             this.dateTimeBrokerMock.Verify(broker =>

@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Orchestrations.ResolvedAddresses.Exceptions
 {
-    public class NullUPRNResolvedAddressOrchestrationException : Xeption
+    public class NullResolvedAddressOrchestrationException : Xeption
     {
-        public NullUPRNResolvedAddressOrchestrationException(string message)
+        public NullResolvedAddressOrchestrationException(string message)
             : base(message)
         { }
     }

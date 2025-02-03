@@ -7,13 +7,12 @@ using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.PdsAudits;
-using Xunit;
 
 namespace LHDS.Core.Tests.Integration.Pds
 {
     public partial class PdsTests
     {
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldRetrieveMessagesFromMeshAndUpdateStorageAsync()
         {
             // Given

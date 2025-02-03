@@ -134,5 +134,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Suppliers
 
             this.supplierServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnDeleteIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
+
+            var expectedActionResult =
+                new ActionResult<Supplier>(expectedBadRequestObjectResult);
+
+            this.supplierServiceMock.Setup(service =>
+                service.RemoveSupplierByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<Supplier> actualActionResult =
+                await this.suppliersController.DeleteSupplierByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.supplierServiceMock.Verify(service =>
+                service.RemoveSupplierByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.supplierServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

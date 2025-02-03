@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -84,6 +85,46 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Suppliers
             this.supplierServiceMock.Verify(service =>
                 service.RetrieveSupplierByIdAsync(It.IsAny<Guid>()),
                     Times.Once());
+
+            this.supplierServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnNotFoundOnGetByIdIfItemDoesNotExistAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            string someMessage = GetRandomString();
+
+            var notFoundSupplierException =
+                new NotFoundSupplierException(
+                    supplierId: someId);
+
+            var SupplierValidationException =
+                new SupplierValidationException(
+                    message: someMessage,
+                    innerException: notFoundSupplierException);
+
+            NotFoundObjectResult expectedNotFoundObjectResult =
+                NotFound(notFoundSupplierException);
+
+            var expectedActionResult =
+                new ActionResult<Supplier>(expectedNotFoundObjectResult);
+
+            this.supplierServiceMock.Setup(service =>
+                service.RetrieveSupplierByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(SupplierValidationException);
+
+            // when
+            ActionResult<Supplier> actualActionResult =
+                await this.suppliersController.GetSupplierByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.supplierServiceMock.Verify(service =>
+                service.RetrieveSupplierByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
 
             this.supplierServiceMock.VerifyNoOtherCalls();
         }

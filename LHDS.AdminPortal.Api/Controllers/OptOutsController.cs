@@ -165,7 +165,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
         [HttpDelete("{optOutId}")]
-        public async ValueTask<ActionResult<PdsAudit>> DeleteOptOutByIdAsync(Guid optOutId)
+        public async ValueTask<ActionResult<OptOut>> DeleteOptOutByIdAsync(Guid optOutId)
         {
             try
             {

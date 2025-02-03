@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         }
 
         [Fact]
-        public async Task ShouldThrowDependencyValidationExceptionOnAddIfDataTypeAlreadyExsitsAndLogItAsync()
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfDataTypeAlreadyExistsAndLogItAsync()
         {
             // given
             DataType randomDataType = CreateRandomDataType();
@@ -170,7 +170,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertDataTypeAsync(someDataType),
+                broker.InsertDataTypeAsync(It.IsAny<DataType>()),
                     Times.Never());
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

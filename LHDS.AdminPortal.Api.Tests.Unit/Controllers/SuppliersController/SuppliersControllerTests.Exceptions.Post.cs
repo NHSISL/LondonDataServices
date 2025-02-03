@@ -12,6 +12,7 @@ using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 using Xunit;
 
@@ -41,6 +42,38 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Suppliers
             this.supplierServiceMock.Setup(service =>
                 service.AddSupplierAsync(It.IsAny<Supplier>()))
                     .ThrowsAsync(SupplierValidationException);
+
+            // when
+            ActionResult<Supplier> actualActionResult =
+                await this.suppliersController.PostSupplierAsync(someSupplier);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.supplierServiceMock.Verify(service =>
+                service.AddSupplierAsync(It.IsAny<Supplier>()),
+                    Times.Once);
+
+            this.supplierServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnPostIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            Supplier someSupplier = CreateRandomSupplier();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
+
+            var expectedActionResult =
+                new ActionResult<Supplier>(expectedBadRequestObjectResult);
+
+            this.supplierServiceMock.Setup(service =>
+                service.AddSupplierAsync(It.IsAny<Supplier>()))
+                    .ThrowsAsync(validationException);
 
             // when
             ActionResult<Supplier> actualActionResult =

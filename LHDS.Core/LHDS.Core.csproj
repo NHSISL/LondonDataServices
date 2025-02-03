@@ -13,7 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="FluentAssertions" Version="7.0.0" />
+		<PackageReference Include="FluentAssertions" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.1" />
 		<PackageReference Include="NHSISL.CsvHelperClient" Version="1.0.0.1" />
 		<PackageReference Include="SshKeyGenerator" Version="1.1.51" />

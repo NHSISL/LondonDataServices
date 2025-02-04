@@ -28,6 +28,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.OptOuts
 
             var OptOutValidationException =
                 new OptOutProcessingValidationException(
+                    message: someMessage,
                     innerException: someInnerException);
 
             BadRequestObjectResult expectedBadRequestObjectResult =
@@ -101,6 +102,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.OptOuts
 
             var optOutProcessingDependencyValidationException =
                 new OptOutProcessingDependencyValidationException(
+                    message: someMessage,
                     innerException: alreadyExistsOptOutException);
 
             ConflictObjectResult expectedConflictObjectResult =

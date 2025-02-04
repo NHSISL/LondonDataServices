@@ -64,9 +64,11 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.OptOuts
             return new TheoryData<Xeption>
             {
                 new OptOutProcessingDependencyException(
+                    message : someMessage,
                     innerException: someInnerException),
 
                 new OptOutProcessingServiceException(
+                    message : someMessage,
                     innerException: someInnerException)
             };
         }
@@ -79,9 +81,11 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.OptOuts
             return new TheoryData<Xeption>
             {
                 new OptOutProcessingValidationException(
+                    message : someMessage,
                     innerException: someInnerException),
 
                 new OptOutProcessingDependencyValidationException(
+                    message : someMessage,
                     innerException: someInnerException)
             };
         }

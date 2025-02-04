@@ -567,7 +567,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     message: "Opt out processing dependency error occurred, please contact support.",
                     innerException),
 
-                new OptOutProcessingServiceException(innerException),
+                new OptOutProcessingServiceException(
+                    message: "Opt out processing service error occurred, please contact support.",
+                    innerException),
 
                 new DocumentProcessingDependencyException(
                     message: "Document processing dependency error occurred, please try again.",

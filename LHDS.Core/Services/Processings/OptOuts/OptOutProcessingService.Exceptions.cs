@@ -178,7 +178,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
         private async ValueTask<OptOutProcessingServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var optOutProcessingServiceException = new
-                OptOutProcessingServiceException(exception);
+                OptOutProcessingServiceException(
+                message: "Opt out processing service error occurred, please contact support.",
+                innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(optOutProcessingServiceException);
 

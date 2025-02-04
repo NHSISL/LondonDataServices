@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
-using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;

@@ -139,5 +139,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyArtifacts
 
             this.terminologyArtifactsServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnPutIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            TerminologyArtifact someTerminologyArtifact = CreateRandomTerminologyArtifact();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
+
+            var expectedActionResult =
+                new ActionResult<TerminologyArtifact>(expectedBadRequestObjectResult);
+
+            this.terminologyArtifactsServiceMock.Setup(service =>
+                service.ModifyTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()))
+                    .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<TerminologyArtifact> actualActionResult =
+                await this.terminologyArtifactsController.PutTerminologyArtifactAsync(someTerminologyArtifact);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.terminologyArtifactsServiceMock.Verify(service =>
+                service.ModifyTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()),
+                    Times.Once);
+
+            this.terminologyArtifactsServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -31,7 +31,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 values: "Opt out list is required");
 
             var expectedOptOutProcessingValidationException =
-                new OptOutProcessingValidationException(innerException: invalidArgumentOptOutProcessingException);
+                new OptOutProcessingValidationException(
+                    message: "OptOut processing validation errors occured, please try again",
+                    innerException: invalidArgumentOptOutProcessingException);
 
             // when
             ValueTask<List<OptOut>> ConsolidateChangesOptOutTask =
@@ -72,6 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             var expectedOptOutProcessingValidationException =
                 new OptOutProcessingValidationException(
+                    message: "OptOut processing validation errors occured, please try again",
                     innerException: invalidArgumentOptOutProcessingException);
 
             // when

@@ -501,7 +501,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return new TheoryData<Xeption>
             {
                 new OptOutProcessingValidationException(innerException),
-                new OptOutProcessingDependencyValidationException(innerException),
+
+                new OptOutProcessingDependencyValidationException(
+                    message: "Opt out processing dependency validation occurred, please try again.",
+                    innerException),
 
                 new DocumentProcessingValidationException(
                     message: "Document processing validation errors occured, please try again",

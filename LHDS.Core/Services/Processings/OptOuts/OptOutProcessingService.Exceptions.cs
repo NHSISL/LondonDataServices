@@ -165,7 +165,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
             CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var optOutProcessingDependencyException =
-                new OptOutProcessingDependencyException(exception.InnerException as Xeption);
+                new OptOutProcessingDependencyException(
+                    message: "Opt out processing dependency error occurred, please contact support.",
+                    innerException: exception.InnerException as Xeption);
 
             await this.loggingBroker.LogErrorAsync(optOutProcessingDependencyException);
 

@@ -80,6 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             var expectedOptOutProcessingDependencyException =
                 new OptOutProcessingDependencyException(
+                    message: "Opt out processing dependency error occurred, please contact support.",
                     dependencyException.InnerException as Xeption);
 
             this.dateTimeBrokerMock.Setup(broker =>

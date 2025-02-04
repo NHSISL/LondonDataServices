@@ -108,6 +108,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             var expectedOptOutProcessingDependencyException =
                 new OptOutProcessingDependencyException(
+                    message: "Opt out processing dependency error occurred, please contact support.",
                     dependencyValidationException.InnerException as Xeption);
 
             this.optOutServiceMock.Setup(service =>
@@ -154,6 +155,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             var expectedOptOutProcessingDependencyException =
                 new OptOutProcessingDependencyException(
+                    message: "Opt out processing dependency error occurred, please contact support.",
                     dependencyValidationException.InnerException as Xeption);
 
             this.optOutServiceMock.Setup(service =>

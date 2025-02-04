@@ -23,7 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             List<string> randomStringList = RandomStringList(randomNumber);
 
             var invalidArgumentOptOutProcessingException =
-                new InvalidArgumentOptOutProcessingException();
+                new InvalidArgumentOptOutProcessingException(
+                    message: "Invalid opt out processing argument. Please correct the errors and try again.");
 
             invalidArgumentOptOutProcessingException.AddData(
                 key: "OptOutList",
@@ -62,7 +63,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             List<string> nullStringList = null;
 
             var invalidArgumentOptOutProcessingException =
-                new InvalidArgumentOptOutProcessingException();
+                new InvalidArgumentOptOutProcessingException(
+                    message: "Invalid opt out processing argument. Please correct the errors and try again.");
 
             invalidArgumentOptOutProcessingException.AddData(
                 key: "ConsentedItemsList",

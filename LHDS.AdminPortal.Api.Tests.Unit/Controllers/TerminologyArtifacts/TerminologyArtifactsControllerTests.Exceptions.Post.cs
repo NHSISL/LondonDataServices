@@ -3,11 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -113,6 +109,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyArtifacts
 
             var expectedActionResult =
                 new ActionResult<TerminologyArtifact>(expectedConflictObjectResult);
+
+            this.terminologyArtifactsServiceMock.Setup(service =>
+                service.AddTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()))
+                    .ThrowsAsync(TerminologyArtifactDependencyValidationException);
+
+            // when
+            ActionResult<TerminologyArtifact> actualActionResult =
+                await this.terminologyArtifactsController.PostTerminologyArtifactAsync(someTerminologyArtifact);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.terminologyArtifactsServiceMock.Verify(service =>
+                service.AddTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()),
+                    Times.Once);
+
+            this.terminologyArtifactsServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnFailedDependencyOnPostIfInvalidTerminologyArtifactReferenceAsync()
+        {
+            // given
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+            TerminologyArtifact someTerminologyArtifact = CreateRandomTerminologyArtifact();
+
+            var alreadyExistsTerminologyArtifactException =
+                new InvalidTerminologyArtifactReferenceException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var TerminologyArtifactDependencyValidationException =
+                new TerminologyArtifactDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsTerminologyArtifactException);
+
+            FailedDependencyObjectResult expectedBadRequestObjectResult =
+                FailedDependency(TerminologyArtifactDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<TerminologyArtifact>(expectedBadRequestObjectResult);
 
             this.terminologyArtifactsServiceMock.Setup(service =>
                 service.AddTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()))

@@ -24,7 +24,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     message: "Opt out processing is Null");
 
             var expectedOptOutProcessingValidationException =
-                new OptOutProcessingValidationException(nullOptOutProcessingException);
+                new OptOutProcessingValidationException(
+                    message: "OptOut processing validation errors occured, please try again",
+                    innerException: nullOptOutProcessingException);
 
             // when
             ValueTask<OptOut> RetrieveOrAddOptOutTask =

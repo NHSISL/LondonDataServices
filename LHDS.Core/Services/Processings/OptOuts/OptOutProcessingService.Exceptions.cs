@@ -142,7 +142,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
             Xeption exception)
         {
             var optOutProcessingValidationException =
-                new OptOutProcessingValidationException(exception);
+                new OptOutProcessingValidationException(
+                    message: "OptOut processing validation errors occured, please try again", 
+                    innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(optOutProcessingValidationException);
 

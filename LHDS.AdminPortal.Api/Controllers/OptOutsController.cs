@@ -153,11 +153,11 @@ namespace LHDS.AdminPortal.Api.Controllers
             {
                 return Conflict(optOutProcessingDependencyValidationException.InnerException);
             }
-            catch (OptOutDependencyException optOutDependencyException)
+            catch (OptOutProcessingDependencyException optOutProcessingDependencyException)
             {
-                return InternalServerError(optOutDependencyException);
+                return InternalServerError(optOutProcessingDependencyException);
             }
-            catch (OptOutServiceException optOutProcessingServiceException)
+            catch (OptOutProcessingServiceException optOutProcessingServiceException)
             {
                 return InternalServerError(optOutProcessingServiceException);
             }

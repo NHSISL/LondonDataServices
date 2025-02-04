@@ -12,6 +12,7 @@ using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 using Xunit;
 
@@ -52,6 +53,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyArtifacts
             this.terminologyArtifactsServiceMock.Verify(service =>
                 service.RetrieveTerminologyArtifactByIdAsync(someId),
                     Times.Once);
+
+            this.terminologyArtifactsServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnGetByIdIfServerErrorOccurredAsync(Xeption serverException)
+        {
+            // given 
+            Guid someId = Guid.NewGuid();
+
+            InternalServerErrorObjectResult expectedInternalServerErrorObjectResult =
+                InternalServerError(serverException);
+
+            var expectedActionResult =
+                new ActionResult<TerminologyArtifact>(expectedInternalServerErrorObjectResult);
+
+            this.terminologyArtifactsServiceMock.Setup(service =>
+                service.RetrieveTerminologyArtifactByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serverException);
+
+            // when
+            ActionResult<TerminologyArtifact> actualActionResult =
+                await this.terminologyArtifactsController.GetTerminologyArtifactByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.terminologyArtifactsServiceMock.Verify(service =>
+                service.RetrieveTerminologyArtifactByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
 
             this.terminologyArtifactsServiceMock.VerifyNoOtherCalls();
         }

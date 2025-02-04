@@ -22,7 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             int inputOlderThanDays = invalidInput;
 
             var invalidArgumentOptOutProcessingException =
-                new InvalidArgumentOptOutProcessingException();
+                new InvalidArgumentOptOutProcessingException(
+                    message: "Invalid opt out processing argument. Please correct the errors and try again.");
 
             invalidArgumentOptOutProcessingException.AddData(
                 key: "OlderThanDays",
@@ -30,6 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             var expectedOptOutProcessingValidationException =
                 new OptOutProcessingValidationException(
+                    message: "OptOut processing validation errors occured, please try again",
                     innerException: invalidArgumentOptOutProcessingException);
 
             // when

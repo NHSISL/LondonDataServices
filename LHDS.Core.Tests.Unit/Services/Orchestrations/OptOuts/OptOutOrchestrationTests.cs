@@ -560,7 +560,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             return new TheoryData<Xeption>
             {
-                new OptOutProcessingDependencyException(innerException),
+                new OptOutProcessingDependencyException(
+                    innerException),
                 new OptOutProcessingServiceException(innerException),
 
                 new DocumentProcessingDependencyException(

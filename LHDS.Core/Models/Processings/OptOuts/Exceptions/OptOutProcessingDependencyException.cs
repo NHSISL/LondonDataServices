@@ -8,8 +8,8 @@ namespace LHDS.Core.Models.Processings.OptOuts.Exceptions
 {
     public class OptOutProcessingDependencyException : Xeption
     {
-        public OptOutProcessingDependencyException(Xeption? innerException) :
-            base(message: "Opt out processing dependency error occurred, please contact support.", innerException)
+        public OptOutProcessingDependencyException(string message, Xeption? innerException) :
+            base(message, innerException)
         { }
     }
 }

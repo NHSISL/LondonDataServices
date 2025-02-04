@@ -561,7 +561,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return new TheoryData<Xeption>
             {
                 new OptOutProcessingDependencyException(
+                    message: "Opt out processing dependency error occurred, please contact support.",
                     innerException),
+
                 new OptOutProcessingServiceException(innerException),
 
                 new DocumentProcessingDependencyException(

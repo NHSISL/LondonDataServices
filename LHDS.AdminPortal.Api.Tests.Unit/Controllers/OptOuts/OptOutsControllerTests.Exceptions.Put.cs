@@ -108,20 +108,20 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.OptOuts
                     message: someMessage,
                     innerException: someInnerException);
 
-            var OptOutDependencyValidationException =
-                new OptOutDependencyValidationException(
+            var optOutProcessingDependencyValidationException =
+                new OptOutProcessingDependencyValidationException(
                     message: someMessage,
                     innerException: alreadyExistsOptOutException);
 
             FailedDependencyObjectResult expectedBadRequestObjectResult =
-                FailedDependency(OptOutDependencyValidationException.InnerException);
+                FailedDependency(optOutProcessingDependencyValidationException.InnerException);
 
             var expectedActionResult =
                 new ActionResult<OptOut>(expectedBadRequestObjectResult);
 
             this.optOutProcessingServiceMock.Setup(service =>
                 service.AddOrModifyOptOutAsync(It.IsAny<OptOut>()))
-                    .ThrowsAsync(OptOutDependencyValidationException);
+                    .ThrowsAsync(optOutProcessingDependencyValidationException);
 
             // when
             ActionResult<OptOut> actualActionResult =

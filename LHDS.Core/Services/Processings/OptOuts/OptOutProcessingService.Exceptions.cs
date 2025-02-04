@@ -154,7 +154,8 @@ namespace LHDS.Core.Services.Processings.OptOuts
         {
             var optOutProcessingDependencyValidationException =
                 new OptOutProcessingDependencyValidationException(
-                    exception?.InnerException as Xeption);
+                    message: "Opt out processing dependency validation error occurred, please contact support.",
+                    innerException: exception?.InnerException as Xeption);
 
             await this.loggingBroker.LogErrorAsync(optOutProcessingDependencyValidationException);
 

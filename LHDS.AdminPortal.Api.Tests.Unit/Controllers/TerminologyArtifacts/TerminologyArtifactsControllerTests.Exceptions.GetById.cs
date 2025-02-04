@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -84,6 +85,46 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyArtifacts
             this.terminologyArtifactsServiceMock.Verify(service =>
                 service.RetrieveTerminologyArtifactByIdAsync(It.IsAny<Guid>()),
                     Times.Once());
+
+            this.terminologyArtifactsServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnNotFoundOnGetByIdIfItemDoesNotExistAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            string someMessage = GetRandomString();
+
+            var notFoundTerminologyArtifactException =
+                new NotFoundTerminologyArtifactException(
+                    terminologyArtifactId: someId);
+
+            var TerminologyArtifactValidationException =
+                new TerminologyArtifactValidationException(
+                    message: someMessage,
+                    innerException: notFoundTerminologyArtifactException);
+
+            NotFoundObjectResult expectedNotFoundObjectResult =
+                NotFound(notFoundTerminologyArtifactException);
+
+            var expectedActionResult =
+                new ActionResult<TerminologyArtifact>(expectedNotFoundObjectResult);
+
+            this.terminologyArtifactsServiceMock.Setup(service =>
+                service.RetrieveTerminologyArtifactByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(TerminologyArtifactValidationException);
+
+            // when
+            ActionResult<TerminologyArtifact> actualActionResult =
+                await this.terminologyArtifactsController.GetTerminologyArtifactByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.terminologyArtifactsServiceMock.Verify(service =>
+                service.RetrieveTerminologyArtifactByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
 
             this.terminologyArtifactsServiceMock.VerifyNoOtherCalls();
         }

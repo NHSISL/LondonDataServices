@@ -113,6 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             var expectedOptOutProcessingServiveException =
                 new OptOutProcessingServiceException(
+                    message: "Opt out processing service error occurred, please contact support.",
                     failedOptOutProcessingServiceException);
 
             this.optOutServiceMock.Setup(service =>

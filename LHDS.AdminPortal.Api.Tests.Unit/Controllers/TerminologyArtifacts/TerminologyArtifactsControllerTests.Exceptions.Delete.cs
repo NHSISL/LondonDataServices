@@ -15,7 +15,6 @@ using Moq;
 using RESTFulSense.Clients.Extensions;
 using Xeptions;
 using Xunit;
-using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using RESTFulSense.Models;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyArtifacts
@@ -120,6 +119,38 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyArtifacts
             this.terminologyArtifactsServiceMock.Setup(service =>
                 service.RemoveTerminologyArtifactByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(TerminologyArtifactDependencyValidationException);
+
+            // when
+            ActionResult<TerminologyArtifact> actualActionResult =
+                await this.terminologyArtifactsController.DeleteTerminologyArtifactByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.terminologyArtifactsServiceMock.Verify(service =>
+                service.RemoveTerminologyArtifactByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.terminologyArtifactsServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnDeleteIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
+
+            var expectedActionResult =
+                new ActionResult<TerminologyArtifact>(expectedBadRequestObjectResult);
+
+            this.terminologyArtifactsServiceMock.Setup(service =>
+                service.RemoveTerminologyArtifactByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(validationException);
 
             // when
             ActionResult<TerminologyArtifact> actualActionResult =

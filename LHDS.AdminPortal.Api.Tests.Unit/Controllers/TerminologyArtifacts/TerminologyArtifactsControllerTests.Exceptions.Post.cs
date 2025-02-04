@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -74,6 +75,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyArtifacts
             this.terminologyArtifactsServiceMock.Setup(service =>
                 service.AddTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()))
                     .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<TerminologyArtifact> actualActionResult =
+                await this.terminologyArtifactsController.PostTerminologyArtifactAsync(someTerminologyArtifact);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.terminologyArtifactsServiceMock.Verify(service =>
+                service.AddTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()),
+                    Times.Once);
+
+            this.terminologyArtifactsServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnConflictOnPostIfAlreadyExistsTerminologyArtifactErrorOccurredAsync()
+        {
+            // given
+            TerminologyArtifact someTerminologyArtifact = CreateRandomTerminologyArtifact();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var alreadyExistsTerminologyArtifactException =
+                new AlreadyExistsTerminologyArtifactException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var TerminologyArtifactDependencyValidationException =
+                new TerminologyArtifactDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsTerminologyArtifactException);
+
+            ConflictObjectResult expectedConflictObjectResult =
+                Conflict(alreadyExistsTerminologyArtifactException);
+
+            var expectedActionResult =
+                new ActionResult<TerminologyArtifact>(expectedConflictObjectResult);
+
+            this.terminologyArtifactsServiceMock.Setup(service =>
+                service.AddTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()))
+                    .ThrowsAsync(TerminologyArtifactDependencyValidationException);
 
             // when
             ActionResult<TerminologyArtifact> actualActionResult =

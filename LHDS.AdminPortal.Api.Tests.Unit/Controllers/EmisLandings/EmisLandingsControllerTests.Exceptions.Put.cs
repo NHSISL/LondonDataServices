@@ -130,5 +130,43 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
             this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
         }
 
+        [Fact]
+        public async Task ShouldReturnConflictOnPutIfAlreadyExistsErrorOccurredAsync()
+        {
+            // given
+            Guid someIngestionTrackingId = Guid.NewGuid();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var alreadyExistsException =
+                new AlreadyExistsIngestionTrackingException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var ingestionTrackingDependencyValidationException =
+                new IngestionTrackingDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsException);
+
+            ConflictObjectResult expectedConflictObjectResult =
+                Conflict(alreadyExistsException);
+
+            this.emisLandingCoordinationServiceMock.Setup(service =>
+                service.RedecryptDocumentByIngestionIdAsync(someIngestionTrackingId))
+                    .ThrowsAsync(ingestionTrackingDependencyValidationException);
+
+            // when
+            ActionResult actualActionResult =
+                await this.emisLandingsController.RedecryptDocumentByIngestionTrackingIdAsync(someIngestionTrackingId);
+
+            // then
+            actualActionResult.Should().BeEquivalentTo(expectedConflictObjectResult);
+
+            this.emisLandingCoordinationServiceMock.Verify(service =>
+                service.RedecryptDocumentByIngestionIdAsync(someIngestionTrackingId),
+                    Times.Once);
+
+            this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

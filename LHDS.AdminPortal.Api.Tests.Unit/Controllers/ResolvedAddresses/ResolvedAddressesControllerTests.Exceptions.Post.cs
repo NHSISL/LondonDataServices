@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.ResolvedAddresss.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -74,6 +75,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
             this.resolvedAddressServiceMock.Setup(service =>
                 service.AddResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
                     .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<ResolvedAddress> actualActionResult =
+                await this.resolvedAddressesController.PostResolvedAddressAsync(someResolvedAddress);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.resolvedAddressServiceMock.Verify(service =>
+                service.AddResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                    Times.Once);
+
+            this.resolvedAddressServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnConflictOnPostIfAlreadyExistsResolvedAddressErrorOccurredAsync()
+        {
+            // given
+            ResolvedAddress someResolvedAddress = CreateRandomResolvedAddress();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var alreadyExistsResolvedAddressException =
+                new AlreadyExistsResolvedAddressException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var ResolvedAddressDependencyValidationException =
+                new ResolvedAddressDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsResolvedAddressException);
+
+            ConflictObjectResult expectedConflictObjectResult =
+                Conflict(alreadyExistsResolvedAddressException);
+
+            var expectedActionResult =
+                new ActionResult<ResolvedAddress>(expectedConflictObjectResult);
+
+            this.resolvedAddressServiceMock.Setup(service =>
+                service.AddResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
+                    .ThrowsAsync(ResolvedAddressDependencyValidationException);
 
             // when
             ActionResult<ResolvedAddress> actualActionResult =

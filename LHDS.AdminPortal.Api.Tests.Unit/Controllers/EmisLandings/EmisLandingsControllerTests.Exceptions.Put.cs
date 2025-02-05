@@ -20,6 +20,38 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 {
     public partial class EmisLandingsControllerTests
     {
-        
+        [Fact]
+        public async Task ShouldReturnBadRequestOnPutIfValidationErrorOccurredAsync()
+        {
+            // given
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+            Guid someIngestionTrackingId = Guid.NewGuid();
+
+            var ingestionTrackingValidationException =
+                new IngestionTrackingValidationException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            BadRequestObjectResult expectedBadRequestObjectResult =
+                BadRequest(ingestionTrackingValidationException.InnerException);
+
+            this.emisLandingCoordinationServiceMock.Setup(service =>
+                service.RedecryptDocumentByIngestionIdAsync(someIngestionTrackingId))
+                    .ThrowsAsync(ingestionTrackingValidationException);
+
+            // when
+            ActionResult actualActionResult =
+                await this.emisLandingsController.RedecryptDocumentByIngestionTrackingIdAsync(someIngestionTrackingId);
+
+            // then
+            actualActionResult.Should().BeEquivalentTo(expectedBadRequestObjectResult);
+
+            this.emisLandingCoordinationServiceMock.Verify(service =>
+                service.RedecryptDocumentByIngestionIdAsync(someIngestionTrackingId),
+                    Times.Once);
+
+            this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

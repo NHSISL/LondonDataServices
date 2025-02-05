@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Attrify.Attributes;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Services.Coordinations.EmisLandings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -53,6 +54,14 @@ namespace LHDS.AdminPortal.Api.Controllers
             catch (DownloadServiceException downloadServiceException)
             {
                 return InternalServerError(downloadServiceException);
+            }
+            catch (EmisLandingOrchestrationDependencyException orchestrationDependencyException)
+            {
+                return InternalServerError(orchestrationDependencyException);
+            }
+            catch (EmisLandingOrchestrationServiceException orchestrationServiceException)
+            {
+                return InternalServerError(orchestrationServiceException);
             }
         }
 

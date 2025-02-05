@@ -14,6 +14,7 @@ using Moq;
 using RESTFulSense.Clients.Extensions;
 using Xeptions;
 using Xunit;
+using RESTFulSense.Models;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
 {
@@ -75,6 +76,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
             this.resolvedAddressServiceMock.Setup(service =>
                 service.RemoveResolvedAddressByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(ResolvedAddressValidationException);
+
+            // when
+            ActionResult<ResolvedAddress> actualActionResult =
+                await this.resolvedAddressesController.DeleteResolvedAddressByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.resolvedAddressServiceMock.Verify(service =>
+                service.RemoveResolvedAddressByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.resolvedAddressServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnLockedOnDeleteIfLockedResolvedAddressAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+
+            var lockedResolvedAddressException =
+                new LockedResolvedAddressException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var ResolvedAddressDependencyValidationException =
+                new ResolvedAddressDependencyValidationException(
+                    message: someMessage,
+                    innerException: lockedResolvedAddressException);
+
+            LockedObjectResult expectedBadRequestObjectResult =
+                Locked(ResolvedAddressDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<ResolvedAddress>(expectedBadRequestObjectResult);
+
+            this.resolvedAddressServiceMock.Setup(service =>
+                service.RemoveResolvedAddressByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(ResolvedAddressDependencyValidationException);
 
             // when
             ActionResult<ResolvedAddress> actualActionResult =

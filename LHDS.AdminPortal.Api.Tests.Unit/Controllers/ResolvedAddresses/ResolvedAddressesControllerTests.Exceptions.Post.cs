@@ -130,5 +130,47 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
 
             this.resolvedAddressServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnFailedDependencyOnPostIfInvalidResolvedAddressReferenceAsync()
+        {
+            // given
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+            ResolvedAddress someResolvedAddress = CreateRandomResolvedAddress();
+
+            var alreadyExistsResolvedAddressException =
+                new InvalidResolvedAddressReferenceException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var ResolvedAddressDependencyValidationException =
+                new ResolvedAddressDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsResolvedAddressException);
+
+            FailedDependencyObjectResult expectedBadRequestObjectResult =
+                FailedDependency(ResolvedAddressDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<ResolvedAddress>(expectedBadRequestObjectResult);
+
+            this.resolvedAddressServiceMock.Setup(service =>
+                service.AddResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
+                    .ThrowsAsync(ResolvedAddressDependencyValidationException);
+
+            // when
+            ActionResult<ResolvedAddress> actualActionResult =
+                await this.resolvedAddressesController.PostResolvedAddressAsync(someResolvedAddress);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.resolvedAddressServiceMock.Verify(service =>
+                service.AddResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                    Times.Once);
+
+            this.resolvedAddressServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -55,5 +55,46 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
 
             this.resolvedAddressServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnNotFoundOnPutIfItemDoesNotExistAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            string someMessage = GetRandomString();
+            ResolvedAddress someResolvedAddress = CreateRandomResolvedAddress();
+
+            var notFoundResolvedAddressException =
+                new NotFoundResolvedAddressException(
+                    resolvedAddressId: someId);
+
+            var ResolvedAddressValidationException =
+                new ResolvedAddressValidationException(
+                    message: someMessage,
+                    innerException: notFoundResolvedAddressException);
+
+            NotFoundObjectResult expectedNotFoundObjectResult =
+                NotFound(notFoundResolvedAddressException);
+
+            var expectedActionResult =
+                new ActionResult<ResolvedAddress>(expectedNotFoundObjectResult);
+
+            this.resolvedAddressServiceMock.Setup(service =>
+                service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
+                    .ThrowsAsync(ResolvedAddressValidationException);
+
+            // when
+            ActionResult<ResolvedAddress> actualActionResult =
+                await this.resolvedAddressesController.PutResolvedAddressAsync(someResolvedAddress);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.resolvedAddressServiceMock.Verify(service =>
+                service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                    Times.Once);
+
+            this.resolvedAddressServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

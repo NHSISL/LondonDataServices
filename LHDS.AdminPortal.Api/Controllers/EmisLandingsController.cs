@@ -93,6 +93,10 @@ namespace LHDS.AdminPortal.Api.Controllers
             {
                 return InternalServerError(ingestionTrackingServiceException);
             }
+            catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
+            {
+                return FailedDependency(ingestionTrackingDependencyValidationException.InnerException);
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 using Xunit;
 
@@ -89,5 +90,45 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 
             this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnFailedDependencyOnPutIfInvalidReferenceAsync()
+        {
+            // given
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+            Guid someIngestionTrackingId = Guid.NewGuid();
+
+            var invalidReferenceException =
+                new InvalidIngestionTrackingReferenceException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var ingestionTrackingDependencyValidationException =
+                new IngestionTrackingDependencyValidationException(
+                    message: someMessage,
+                    innerException: invalidReferenceException);
+
+            FailedDependencyObjectResult expectedFailedDependencyObjectResult =
+                FailedDependency(ingestionTrackingDependencyValidationException.InnerException);
+
+            this.emisLandingCoordinationServiceMock.Setup(service =>
+                service.RedecryptDocumentByIngestionIdAsync(someIngestionTrackingId))
+                    .ThrowsAsync(ingestionTrackingDependencyValidationException);
+
+            // when
+            ActionResult actualActionResult =
+                await this.emisLandingsController.RedecryptDocumentByIngestionTrackingIdAsync(someIngestionTrackingId);
+
+            // then
+            actualActionResult.Should().BeEquivalentTo(expectedFailedDependencyObjectResult);
+
+            this.emisLandingCoordinationServiceMock.Verify(service =>
+                service.RedecryptDocumentByIngestionIdAsync(someIngestionTrackingId),
+                    Times.Once);
+
+            this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
+        }
+
     }
 }

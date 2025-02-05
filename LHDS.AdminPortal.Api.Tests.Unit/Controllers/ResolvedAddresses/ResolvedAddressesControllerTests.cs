@@ -9,13 +9,14 @@ using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Foundations.ResolvedAddresses;
 using Moq;
+using RESTFulSense.Controllers;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
 {
-    public partial class ResolvedAddressesControllerTests
+    public partial class ResolvedAddressesControllerTests : RESTFulController
     {
         private readonly Mock<IResolvedAddressService> resolvedAddressServiceMock;
         private readonly ResolvedAddressesController resolvedAddressesController;

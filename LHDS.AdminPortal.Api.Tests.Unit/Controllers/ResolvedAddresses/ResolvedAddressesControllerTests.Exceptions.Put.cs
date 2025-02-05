@@ -139,5 +139,47 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
 
             this.resolvedAddressServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnConflictOnPutIfAlreadyExistsResolvedAddressErrorOccurredAsync()
+        {
+            // given
+            ResolvedAddress someResolvedAddress = CreateRandomResolvedAddress();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var alreadyExistsResolvedAddressException =
+                new AlreadyExistsResolvedAddressException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var ResolvedAddressDependencyValidationException =
+                new ResolvedAddressDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsResolvedAddressException);
+
+            ConflictObjectResult expectedConflictObjectResult =
+                Conflict(alreadyExistsResolvedAddressException);
+
+            var expectedActionResult =
+                new ActionResult<ResolvedAddress>(expectedConflictObjectResult);
+
+            this.resolvedAddressServiceMock.Setup(service =>
+                service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()))
+                    .ThrowsAsync(ResolvedAddressDependencyValidationException);
+
+            // when
+            ActionResult<ResolvedAddress> actualActionResult =
+                await this.resolvedAddressesController.PutResolvedAddressAsync(someResolvedAddress);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.resolvedAddressServiceMock.Verify(service =>
+                service.ModifyResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                    Times.Once);
+
+            this.resolvedAddressServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

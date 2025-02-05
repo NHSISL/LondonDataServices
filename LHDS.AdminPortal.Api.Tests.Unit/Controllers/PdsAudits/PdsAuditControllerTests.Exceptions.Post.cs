@@ -10,7 +10,6 @@ using LHDS.Core.Models.Foundations.PdsAudits;
 using RESTFulSense.Models;
 using Xunit;
 using LHDS.Core.Models.Foundations.PdsAudits.Exceptions;
-using RESTFulSense.Models;
 using System;
 using Xeptions;
 

@@ -53,5 +53,41 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 
             this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldReturnNotFoundOnPutIfItemDoesNotExistAsync()
+        {
+            // given
+            Guid someIngestionTrackingId = Guid.NewGuid();
+            string someMessage = GetRandomString();
+
+            var notFoundIngestionTrackingException =
+                new NotFoundIngestionTrackingException(someIngestionTrackingId);
+
+            var ingestionTrackingValidationException =
+                new IngestionTrackingValidationException(
+                    message: someMessage,
+                    innerException: notFoundIngestionTrackingException);
+
+            NotFoundObjectResult expectedNotFoundObjectResult =
+                NotFound(notFoundIngestionTrackingException);
+
+            this.emisLandingCoordinationServiceMock.Setup(service =>
+                service.RedecryptDocumentByIngestionIdAsync(someIngestionTrackingId))
+                    .ThrowsAsync(ingestionTrackingValidationException);
+
+            // when
+            ActionResult actualActionResult =
+                await this.emisLandingsController.RedecryptDocumentByIngestionTrackingIdAsync(someIngestionTrackingId);
+
+            // then
+            actualActionResult.Should().BeEquivalentTo(expectedNotFoundObjectResult);
+
+            this.emisLandingCoordinationServiceMock.Verify(service =>
+                service.RedecryptDocumentByIngestionIdAsync(someIngestionTrackingId),
+                    Times.Once);
+
+            this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

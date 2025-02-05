@@ -168,5 +168,33 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 
             this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnPutIfServerErrorOccurredAsync(Xeption serverException)
+        {
+            // given
+            Guid someIngestionTrackingId = Guid.NewGuid();
+
+            InternalServerErrorObjectResult expectedInternalServerErrorObjectResult =
+                InternalServerError(serverException);
+
+            this.emisLandingCoordinationServiceMock.Setup(service =>
+                service.RedecryptDocumentByIngestionIdAsync(someIngestionTrackingId))
+                    .ThrowsAsync(serverException);
+
+            // when
+            ActionResult actualActionResult =
+                await this.emisLandingsController.RedecryptDocumentByIngestionTrackingIdAsync(someIngestionTrackingId);
+
+            // then
+            actualActionResult.Should().BeEquivalentTo(expectedInternalServerErrorObjectResult);
+
+            this.emisLandingCoordinationServiceMock.Verify(service =>
+                service.RedecryptDocumentByIngestionIdAsync(someIngestionTrackingId),
+                    Times.Once);
+
+            this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

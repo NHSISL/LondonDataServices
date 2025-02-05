@@ -102,6 +102,14 @@ namespace LHDS.AdminPortal.Api.Controllers
             {
                 return FailedDependency(ingestionTrackingDependencyValidationException.InnerException);
             }
+            catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
+            {
+                return InternalServerError(emisLandingOrchestrationDependencyException);
+            }
+            catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)
+            {
+                return InternalServerError(emisLandingOrchestrationServiceException);
+            }
         }
     }
 }

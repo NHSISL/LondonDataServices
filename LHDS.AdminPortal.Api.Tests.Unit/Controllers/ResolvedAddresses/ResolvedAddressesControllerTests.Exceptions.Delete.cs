@@ -132,5 +132,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
 
             this.resolvedAddressServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnDeleteIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
+
+            var expectedActionResult =
+                new ActionResult<ResolvedAddress>(expectedBadRequestObjectResult);
+
+            this.resolvedAddressServiceMock.Setup(service =>
+                service.RemoveResolvedAddressByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<ResolvedAddress> actualActionResult =
+                await this.resolvedAddressesController.DeleteResolvedAddressByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.resolvedAddressServiceMock.Verify(service =>
+                service.RemoveResolvedAddressByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.resolvedAddressServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

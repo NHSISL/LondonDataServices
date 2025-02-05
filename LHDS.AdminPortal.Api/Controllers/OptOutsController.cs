@@ -47,13 +47,13 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok(retrievedOptOuts);
             }
-            catch (OptOutDependencyException optOutDependencyException)
+            catch (OptOutProcessingDependencyException optOutProcessingDependencyException)
             {
-                return InternalServerError(optOutDependencyException);
+                return InternalServerError(optOutProcessingDependencyException);
             }
-            catch (OptOutServiceException optOutServiceException)
+            catch (OptOutProcessingServiceException optOutProcessingServiceException)
             {
-                return InternalServerError(optOutServiceException);
+                return InternalServerError(optOutProcessingServiceException);
             }
         }
 

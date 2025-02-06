@@ -142,7 +142,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
             Xeption exception)
         {
             var optOutProcessingValidationException =
-                new OptOutProcessingValidationException(exception);
+                new OptOutProcessingValidationException(
+                    message: "OptOut processing validation errors occured, please try again", 
+                    innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(optOutProcessingValidationException);
 
@@ -154,7 +156,8 @@ namespace LHDS.Core.Services.Processings.OptOuts
         {
             var optOutProcessingDependencyValidationException =
                 new OptOutProcessingDependencyValidationException(
-                    exception?.InnerException as Xeption);
+                    message: "Opt out processing dependency validation error occurred, please contact support.",
+                    innerException: exception?.InnerException as Xeption);
 
             await this.loggingBroker.LogErrorAsync(optOutProcessingDependencyValidationException);
 
@@ -165,7 +168,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
             CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var optOutProcessingDependencyException =
-                new OptOutProcessingDependencyException(exception.InnerException as Xeption);
+                new OptOutProcessingDependencyException(
+                    message: "Opt out processing dependency error occurred, please contact support.",
+                    innerException: exception.InnerException as Xeption);
 
             await this.loggingBroker.LogErrorAsync(optOutProcessingDependencyException);
 
@@ -175,7 +180,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
         private async ValueTask<OptOutProcessingServiceException> CreateAndLogServiceExceptionAsync(Xeption exception)
         {
             var optOutProcessingServiceException = new
-                OptOutProcessingServiceException(exception);
+                OptOutProcessingServiceException(
+                message: "Opt out processing service error occurred, please contact support.",
+                innerException: exception);
 
             await this.loggingBroker.LogErrorAsync(optOutProcessingServiceException);
 

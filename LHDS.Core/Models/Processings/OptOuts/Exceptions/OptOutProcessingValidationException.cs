@@ -8,10 +8,9 @@ namespace LHDS.Core.Models.Processings.OptOuts.Exceptions
 {
     public class OptOutProcessingValidationException : Xeption
     {
-        public OptOutProcessingValidationException(Xeption innerException)
+        public OptOutProcessingValidationException(string message, Xeption innerException)
             : base(
-                message: "OptOut processing validation errors occured, please try again",
-                innerException)
+                message,innerException)
         { }
     }
 }

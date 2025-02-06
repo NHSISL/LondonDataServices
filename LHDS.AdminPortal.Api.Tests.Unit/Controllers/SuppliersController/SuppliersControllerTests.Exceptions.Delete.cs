@@ -29,7 +29,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Suppliers
             Guid someId = Guid.NewGuid();
 
             BadRequestObjectResult expectedBadRequestObjectResult =
-                BadRequest(validationException.InnerException ?? validationException);
+                BadRequest(validationException.InnerException);
 
             var expectedActionResult =
                 new ActionResult<Supplier>(expectedBadRequestObjectResult);

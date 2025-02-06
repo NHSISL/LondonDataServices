@@ -189,7 +189,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
             catch (SpecificationObjectDependencyValidationException specificationObjectDependencyValidationException)
             {
-                return BadRequest(specificationObjectDependencyValidationException);
+                return BadRequest(specificationObjectDependencyValidationException.InnerException);
             }
             catch (SpecificationObjectDependencyException specificationObjectDependencyException)
             {

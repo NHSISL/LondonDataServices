@@ -29,7 +29,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyArtifacts
             Guid someId = Guid.NewGuid();
 
             BadRequestObjectResult expectedBadRequestObjectResult =
-                BadRequest(validationException.InnerException ?? validationException);
+                BadRequest(validationException.InnerException);
 
             var expectedActionResult =
                 new ActionResult<TerminologyArtifact>(expectedBadRequestObjectResult);

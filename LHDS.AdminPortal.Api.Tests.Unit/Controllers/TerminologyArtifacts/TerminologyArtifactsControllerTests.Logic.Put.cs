@@ -20,33 +20,33 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyArtifacts
     public partial class TerminologyArtifactsControllerTests
     {
         [Fact]
-        public async Task ShouldReturnCreatedOnPostAsync()
+        public async Task ShouldReturnOkOnPutAsync()
         {
             // given
             TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact();
             TerminologyArtifact inputTerminologyArtifact = randomTerminologyArtifact;
-            TerminologyArtifact addedTerminologyArtifact = inputTerminologyArtifact.DeepClone();
-            TerminologyArtifact expectedTerminologyArtifact = addedTerminologyArtifact.DeepClone();
+            TerminologyArtifact storageTerminologyArtifact = inputTerminologyArtifact.DeepClone();
+            TerminologyArtifact expectedTerminologyArtifact = storageTerminologyArtifact.DeepClone();
 
             var expectedObjectResult =
-                new CreatedObjectResult(expectedTerminologyArtifact);
+                new OkObjectResult(expectedTerminologyArtifact);
 
             var expectedActionResult =
                 new ActionResult<TerminologyArtifact>(expectedObjectResult);
 
             this.terminologyArtifactsServiceMock.Setup(service =>
-                service.AddTerminologyArtifactAsync(inputTerminologyArtifact))
-                    .ReturnsAsync(addedTerminologyArtifact);
+                service.ModifyTerminologyArtifactAsync(inputTerminologyArtifact))
+                    .ReturnsAsync(storageTerminologyArtifact);
 
             // when
             ActionResult<TerminologyArtifact> actualActionResult =
-                await this.terminologyArtifactsController.PostTerminologyArtifactAsync(inputTerminologyArtifact);
+                await this.terminologyArtifactsController.PutTerminologyArtifactAsync(inputTerminologyArtifact);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
             this.terminologyArtifactsServiceMock.Verify(service =>
-                service.AddTerminologyArtifactAsync(inputTerminologyArtifact),
+                service.ModifyTerminologyArtifactAsync(inputTerminologyArtifact),
                    Times.Once);
 
             this.terminologyArtifactsServiceMock.VerifyNoOtherCalls();

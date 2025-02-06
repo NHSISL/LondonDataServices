@@ -12,10 +12,11 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
+using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudits
 {
-    public partial class PdsAuditControllerTests
+    public partial class PdsAuditControllerTests : RESTFulController
     {
         private readonly Mock<IPdsAuditService> pdsAuditServiceMock;
         private readonly PdsAuditsController pdsAuditsController;

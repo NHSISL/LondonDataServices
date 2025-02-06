@@ -85,22 +85,25 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok();
             }
-            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
-                when (ingestionTrackingValidationException.InnerException is NotFoundIngestionTrackingException)
+            catch (InvalidArgumentEmisLandingCoordinationException ex)
             {
-                return NotFound(ingestionTrackingValidationException.InnerException);
+                return BadRequest(ex);
             }
-            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+            catch (EmisLandingCoordinationValidationException ex)
             {
-                return BadRequest(ingestionTrackingValidationException.InnerException);
+                return BadRequest(ex);
             }
-            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            catch (EmisLandingCoordinationDependencyValidationException ex)
             {
-                return InternalServerError(ingestionTrackingDependencyException);
+                return FailedDependency(ex);
             }
-            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            catch (EmisLandingCoordinationDependencyException ex)
             {
-                return InternalServerError(ingestionTrackingServiceException);
+                return InternalServerError(ex);
+            }
+            catch (EmisLandingCoordinationServiceException ex)
+            {
+                return InternalServerError(ex);
             }
         }
     }

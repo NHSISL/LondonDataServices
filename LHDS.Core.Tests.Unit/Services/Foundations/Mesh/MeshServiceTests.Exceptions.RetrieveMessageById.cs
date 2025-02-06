@@ -17,7 +17,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldThrowMeshServiceDependencyValidationExceptionOnRetrieveMessageByIdIfValidationFailsAndLogItAsync()
+        public async Task 
+            ShouldThrowMeshServiceDependencyValidationExceptionOnRetrieveMessageByIdIfValidationFailsAndLogItAsync()
         {
             // given
             string messageId = GetRandomString();
@@ -55,8 +56,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(expectedDependencyValidationException))),
-                   Times.Once);
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDependencyValidationException))),
+                    Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -97,8 +98,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(expectedDependencyException))),
-                   Times.Once);
+                broker.LogErrorAsync(It.Is(SameExceptionAs(expectedDependencyException))),
+                    Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -142,9 +143,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedMeshServiceException))),
-                       Times.Once);
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
+                    expectedMeshServiceException))),
+                        Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

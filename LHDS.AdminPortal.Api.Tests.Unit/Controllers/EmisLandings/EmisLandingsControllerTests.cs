@@ -13,6 +13,7 @@ using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
+using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 {
@@ -40,11 +41,25 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 
             return new TheoryData<Xeption>
             {
-                new EmisLandingOrchestrationDependencyException(
+                new InvalidArgumentEmisLandingCoordinationException(someMessage),
+
+                new EmisLandingCoordinationValidationException(
                     message: someMessage,
                     innerException: someInnerException),
 
-                new EmisLandingOrchestrationServiceException(
+                new EmisLandingCoordinationDependencyValidationException(
+                    message: someMessage,
+                    innerException: someInnerException),
+
+                new EmisLandingCoordinationDependencyException(
+                    message: someMessage,
+                    innerException: someInnerException),
+
+                new EmisLandingCoordinationServiceException(
+                    message: someMessage,
+                    innerException: someInnerException),
+
+                new FailedEmisLandingCoordinationServiceException(
                     message: someMessage,
                     innerException: someInnerException)
             };

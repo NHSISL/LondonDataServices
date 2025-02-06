@@ -45,6 +45,5 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 
             this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
         }
-
     }
 }

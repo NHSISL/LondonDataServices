@@ -25,7 +25,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
         {
             if (optOut is null)
             {
-                throw new NullOptOutProcessingException();
+                throw new NullOptOutProcessingException(message: "Opt out processing is Null");
             }
         }
 
@@ -82,7 +82,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidArgumentOptOutProcessingException = new InvalidArgumentOptOutProcessingException();
+            var invalidArgumentOptOutProcessingException = 
+                new InvalidArgumentOptOutProcessingException(
+                    message: "Invalid opt out processing argument. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

@@ -72,13 +72,23 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 
             return new TheoryData<Xeption>
             {
-                new EmisLandingOrchestrationValidationException(
-                    message: someMessage,
-                    innerException: someInnerException),
+                new InvalidArgumentEmisLandingCoordinationException(someMessage),
 
-                new EmisLandingOrchestrationDependencyValidationException(
+                new EmisLandingCoordinationValidationException(
                     message: someMessage,
                     innerException: someInnerException)
+            };
+        }
+
+        public static TheoryData<Xeption> FailedDependencyExceptions()
+        {
+            string someMessage = GetRandomString();
+
+            return new TheoryData<Xeption>
+            {
+                new EmisLandingCoordinationDependencyValidationException(
+                    message: someMessage,
+                    innerException: new Xeption())
             };
         }
     }

@@ -49,5 +49,36 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 
             this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(ValidationExceptions))]
+        public async Task ShouldReturnBadRequestOnGetIfValidationErrorOccurredAsync(Xeption validationException)
+        {
+            // given 
+            Guid someSubscriberAgreementId = Guid.NewGuid();
+
+            BadRequestObjectResult expectedBadRequestObjectResult =
+                BadRequest(validationException);
+
+            var expectedActionResult =
+                new ActionResult<List<string>>(expectedBadRequestObjectResult);
+
+            this.emisLandingCoordinationServiceMock.Setup(service =>
+                service.RetrieveListOfDocumentsToProcessAsync(someSubscriberAgreementId))
+                    .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<List<string>> actualActionResult =
+                await this.emisLandingsController.Get(someSubscriberAgreementId);
+
+            // then
+            actualActionResult.Should().BeEquivalentTo(expectedActionResult);
+
+            this.emisLandingCoordinationServiceMock.Verify(service =>
+                service.RetrieveListOfDocumentsToProcessAsync(someSubscriberAgreementId),
+                    Times.Once());
+
+            this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

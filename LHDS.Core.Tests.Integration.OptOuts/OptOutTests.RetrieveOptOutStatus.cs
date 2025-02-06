@@ -2,41 +2,47 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.IO;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.OptOuts
 {
     public partial class OptOutTests
     {
-        [ReleaseCandidateFact(Skip = "Needs to be fixed.")]
+        //[ReleaseCandidateFact(Skip = "Needs to be fixed.")]
+        [Fact]
         public async Task ShouldRetreiveOptOutStatusAsync()
         {
             // GIVEN
-            //string encryptedFileContainer = "emislanding";
+            string encryptedFileContainer = "emislanding";
 
-            //byte[] fileBytes =
-            //    File.ReadAllBytes(@"Resources\EmisNDOOExtract_2D2DB402-CD53-4523-9D84-BDC23A562C3D_20230516T144214.csv");
+            byte[] fileBytes =
+                File.ReadAllBytes(@"Resources\EmisNDOOExtract_2D2DB402-CD53-4523-9D84-BDC23A562C3D_20230516T144214.csv");
 
-            //FileInfo fi =
-            //    new FileInfo(@"Resources\EmisNDOOExtract_2D2DB402-CD53-4523-9D84-BDC23A562C3D_20230516T144214.csv");
+            Stream fileStream = new MemoryStream(fileBytes);
+            Stream expectedFileStream = new MemoryStream();
 
-            //var fileName = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
+            FileInfo fi =
+                new FileInfo(@"Resources\EmisNDOOExtract_2D2DB402-CD53-4523-9D84-BDC23A562C3D_20230516T144214.csv");
+
+            var fileName = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
 
             //// WHEN
-            //string DocumentFileName = await optOutClient
-            //    .RetrieveOptOutStatusAsync(input: fileBytes, fileName: fileName);
+            string documentFileName = await optOutClient
+                .RetrieveOptOutStatusAsync(input: fileStream, fileName: fileName);
 
             // THEN
-            //DocumentFileName.Should().NotBeNullOrWhiteSpace();
+            documentFileName.Should().NotBeNullOrWhiteSpace();
 
-            //Document retreiveDocument =
-            //    await documentService
-            //    .RetrieveDocumentByFileNameAsync(DocumentFileName, encryptedFileContainer);
+            await documentService
+                    .RetrieveDocumentByFileNameAsync(expectedFileStream, documentFileName, encryptedFileContainer);
 
-            //retreiveDocument.DocumentData.Should().NotBeNull();
+            expectedFileStream.Should().NotBeNull();
 
-            //await documentService
-            //    .RemoveDocumentByFileNameAsync(DocumentFileName, encryptedFileContainer);
+            await documentService
+                .RemoveDocumentByFileNameAsync(documentFileName, encryptedFileContainer);
 
             await Task.CompletedTask;
         }

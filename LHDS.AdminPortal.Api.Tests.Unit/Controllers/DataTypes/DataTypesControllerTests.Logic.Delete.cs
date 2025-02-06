@@ -46,7 +46,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataTypes
 
             this.dataTypeServiceMock.Verify(service =>
                 service.RemoveDataTypeByIdAsync(inputId),
-                   Times.Once);
+                    Times.Once);
 
             this.dataTypeServiceMock.VerifyNoOtherCalls();
         }

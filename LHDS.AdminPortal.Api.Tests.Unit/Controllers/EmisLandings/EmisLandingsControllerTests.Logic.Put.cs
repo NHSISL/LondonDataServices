@@ -21,15 +21,13 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
         {
             // given
             var ingestionTrackingId = Guid.NewGuid();
-            var expectedObjectResult = Ok();
-            var expectedActionResult = (ActionResult)expectedObjectResult;
 
             this.emisLandingCoordinationServiceMock.Setup(service =>
                 service.RedecryptDocumentByIngestionIdAsync(ingestionTrackingId))
-                    .Returns(ValueTask.CompletedTask);
+                    .Returns(new ValueTask());
 
             // when
-            ActionResult actualActionResult =
+            var actualActionResult =
                 await this.emisLandingsController.RedecryptDocumentByIngestionTrackingIdAsync(ingestionTrackingId);
 
             // then

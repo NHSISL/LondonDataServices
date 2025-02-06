@@ -23,7 +23,9 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
         {
             // given 
             IQueryable<IngestionTrackingAudit> randomIngestionTrackingAudit = CreateRandomIngestionTrackingAudits();
-            IQueryable<IngestionTrackingAudit> storageIngestionTrackingAudit = randomIngestionTrackingAudit.DeepClone();
+            
+            IQueryable<IngestionTrackingAudit> storageIngestionTrackingAudit = 
+                randomIngestionTrackingAudit.DeepClone();
             
             IQueryable<IngestionTrackingAudit> expectedIngestionTrackingAudit = 
                 storageIngestionTrackingAudit.DeepClone();

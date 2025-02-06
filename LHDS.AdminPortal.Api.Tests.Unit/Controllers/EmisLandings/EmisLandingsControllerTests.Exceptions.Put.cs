@@ -48,5 +48,34 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 
             this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(FailedDependencyExceptions))]
+        public async Task ShouldReturnFailedDependencyOnPutIfDependencyErrorOccurredAsync(Xeption dependencyValidationException)
+        {
+            // given
+            Guid someIngestionTrackingId = Guid.NewGuid();
+
+            FailedDependencyObjectResult expectedFailedDependencyObjectResult =
+                FailedDependency(dependencyValidationException);
+
+            this.emisLandingCoordinationServiceMock.Setup(service =>
+                service.RedecryptDocumentByIngestionIdAsync(someIngestionTrackingId))
+                    .ThrowsAsync(dependencyValidationException);
+
+            // when
+            ActionResult actualActionResult =
+                await this.emisLandingsController.RedecryptDocumentByIngestionTrackingIdAsync(someIngestionTrackingId);
+
+            // then
+            actualActionResult.Should().BeEquivalentTo(expectedFailedDependencyObjectResult);
+
+            this.emisLandingCoordinationServiceMock.Verify(service =>
+                service.RedecryptDocumentByIngestionIdAsync(someIngestionTrackingId),
+                    Times.Once());
+
+            this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
+        }
+
     }
 }

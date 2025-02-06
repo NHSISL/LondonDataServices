@@ -21,7 +21,7 @@ using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
 {
-    public partial class SpecificationsObjectsControllerTests
+    public partial class SpecificationObjectsControllerTests
     {
         [Fact]
         public async Task ShouldReturnCreatedOnPostAsync()
@@ -38,7 +38,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
             var expectedActionResult =
                 new ActionResult<SpecificationObject>(expectedObjectResult);
 
-            this.specificationObjectServiceMock.Setup(service =>
+            this..Setup(service =>
                 service.AddSpecificationObjectAsync(inputSpecificationObject))
                     .ReturnsAsync(addedSpecificationObject);
 

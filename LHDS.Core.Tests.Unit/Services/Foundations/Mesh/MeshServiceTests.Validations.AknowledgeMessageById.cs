@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedMeshValidationException))),
                         Times.Once);
 

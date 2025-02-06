@@ -28,7 +28,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.ResolvedAddresses
             Guid someId = Guid.NewGuid();
 
             BadRequestObjectResult expectedBadRequestObjectResult =
-                BadRequest(validationException.InnerException ?? validationException);
+                BadRequest(validationException.InnerException);
 
             var expectedActionResult =
                 new ActionResult<ResolvedAddress>(expectedBadRequestObjectResult);

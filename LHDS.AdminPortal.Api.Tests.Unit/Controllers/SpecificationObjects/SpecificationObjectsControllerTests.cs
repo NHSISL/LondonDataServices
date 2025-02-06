@@ -9,13 +9,14 @@ using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
 using Moq;
+using RESTFulSense.Controllers;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
 {
-    public partial class SpecificationObjectsControllerTests
+    public partial class SpecificationObjectsControllerTests : RESTFulController
     {
         private readonly Mock<ISpecificationObjectService> specificationObjectServiceMock;
         private readonly SpecificationObjectsController specificationObjectsController;

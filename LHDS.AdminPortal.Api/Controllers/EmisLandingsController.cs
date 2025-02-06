@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Attrify.Attributes;
+using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
@@ -47,21 +48,29 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok(retrieveFileList);
             }
-            catch (DownloadDependencyException downloadDependencyException)
+            catch (InvalidArgumentEmisLandingCoordinationException ex)
             {
-                return InternalServerError(downloadDependencyException);
+                return BadRequest(ex);
             }
-            catch (DownloadServiceException downloadServiceException)
+            catch (EmisLandingCoordinationValidationException ex)
             {
-                return InternalServerError(downloadServiceException);
+                return BadRequest(ex);
             }
-            catch (EmisLandingOrchestrationDependencyException orchestrationDependencyException)
+            catch (EmisLandingCoordinationDependencyValidationException ex)
             {
-                return InternalServerError(orchestrationDependencyException);
+                return FailedDependency(ex);
             }
-            catch (EmisLandingOrchestrationServiceException orchestrationServiceException)
+            catch (EmisLandingCoordinationDependencyException ex)
             {
-                return InternalServerError(orchestrationServiceException);
+                return InternalServerError(ex);
+            }
+            catch (EmisLandingCoordinationServiceException ex)
+            {
+                return InternalServerError(ex);
+            }
+            catch (FailedEmisLandingCoordinationServiceException ex)
+            {
+                return InternalServerError(ex);
             }
         }
 
@@ -92,23 +101,6 @@ namespace LHDS.AdminPortal.Api.Controllers
             catch (IngestionTrackingServiceException ingestionTrackingServiceException)
             {
                 return InternalServerError(ingestionTrackingServiceException);
-            }
-            catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
-                when (ingestionTrackingDependencyValidationException.InnerException is AlreadyExistsIngestionTrackingException)
-            {
-                return Conflict(ingestionTrackingDependencyValidationException.InnerException);
-            }
-            catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
-            {
-                return FailedDependency(ingestionTrackingDependencyValidationException.InnerException);
-            }
-            catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
-            {
-                return InternalServerError(emisLandingOrchestrationDependencyException);
-            }
-            catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)
-            {
-                return InternalServerError(emisLandingOrchestrationServiceException);
             }
         }
     }

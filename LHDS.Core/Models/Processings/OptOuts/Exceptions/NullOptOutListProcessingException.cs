@@ -8,8 +8,8 @@ namespace LHDS.Core.Models.Processings.OptOuts.Exceptions
 {
     public class NullOptOutListProcessingException : Xeption
     {
-        public NullOptOutListProcessingException()
-            : base(message: $"Opt out list processing is Null")
+        public NullOptOutListProcessingException(string message)
+            : base(message)
         { }
     }
 }

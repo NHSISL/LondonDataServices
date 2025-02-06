@@ -80,5 +80,36 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.EmisLandings
 
             this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(FailedDependencyExceptions))]
+        public async Task ShouldReturnFailedDependencyOnGetIfDependencyErrorOccurredAsync(Xeption dependencyValidationException)
+        {
+            // given 
+            Guid someSubscriberAgreementId = Guid.NewGuid();
+
+            FailedDependencyObjectResult expectedFailedDependencyObjectResult =
+                FailedDependency(dependencyValidationException);
+
+            var expectedActionResult =
+                new ActionResult<List<string>>(expectedFailedDependencyObjectResult);
+
+            this.emisLandingCoordinationServiceMock.Setup(service =>
+                service.RetrieveListOfDocumentsToProcessAsync(someSubscriberAgreementId))
+                    .ThrowsAsync(dependencyValidationException);
+
+            // when
+            ActionResult<List<string>> actualActionResult =
+                await this.emisLandingsController.Get(someSubscriberAgreementId);
+
+            // then
+            actualActionResult.Should().BeEquivalentTo(expectedActionResult);
+
+            this.emisLandingCoordinationServiceMock.Verify(service =>
+                service.RetrieveListOfDocumentsToProcessAsync(someSubscriberAgreementId),
+                    Times.Once());
+
+            this.emisLandingCoordinationServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

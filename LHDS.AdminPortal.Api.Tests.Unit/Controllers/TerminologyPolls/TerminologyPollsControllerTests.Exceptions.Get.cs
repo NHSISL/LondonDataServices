@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -84,6 +85,46 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
             this.terminologyPollsServiceMock.Verify(service =>
                 service.RetrieveTerminologyPollByIdAsync(It.IsAny<Guid>()),
                     Times.Once());
+
+            this.terminologyPollsServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnNotFoundOnGetByIdIfItemDoesNotExistAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            string someMessage = GetRandomString();
+
+            var notFoundTerminologyPollException =
+                new NotFoundTerminologyPollException(
+                    terminologyPollId: someId);
+
+            var TerminologyPollValidationException =
+                new TerminologyPollValidationException(
+                    message: someMessage,
+                    innerException: notFoundTerminologyPollException);
+
+            NotFoundObjectResult expectedNotFoundObjectResult =
+                NotFound(notFoundTerminologyPollException);
+
+            var expectedActionResult =
+                new ActionResult<TerminologyPoll>(expectedNotFoundObjectResult);
+
+            this.terminologyPollsServiceMock.Setup(service =>
+                service.RetrieveTerminologyPollByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(TerminologyPollValidationException);
+
+            // when
+            ActionResult<TerminologyPoll> actualActionResult =
+                await this.terminologyPollsController.GetTerminologyPollByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.terminologyPollsServiceMock.Verify(service =>
+                service.RetrieveTerminologyPollByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
 
             this.terminologyPollsServiceMock.VerifyNoOtherCalls();
         }

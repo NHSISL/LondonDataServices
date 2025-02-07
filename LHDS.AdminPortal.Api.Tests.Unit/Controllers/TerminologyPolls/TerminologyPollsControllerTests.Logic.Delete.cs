@@ -1,0 +1,54 @@
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using RESTFulSense.Clients.Extensions;
+using Xunit;
+
+namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
+{
+    public partial class TerminologyPollsControllerTests
+    {
+        [Fact]
+        public async Task ShouldReturnOkOnDeleteAsync()
+        {
+            // given
+            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll();
+            Guid inputId = randomTerminologyPoll.Id;
+            TerminologyPoll storageTerminologyPoll = randomTerminologyPoll.DeepClone();
+            TerminologyPoll expectedTerminologyPoll = storageTerminologyPoll.DeepClone();
+
+            var expectedObjectResult =
+                new OkObjectResult(expectedTerminologyPoll);
+
+            var expectedActionResult =
+                new ActionResult<TerminologyPoll>(expectedObjectResult);
+
+            this.dataTypeServiceMock.Setup(service =>
+                service.RemoveTerminologyPollByIdAsync(inputId))
+                    .ReturnsAsync(storageTerminologyPoll);
+
+            // when
+            ActionResult<TerminologyPoll> actualActionResult =
+                await this.dataTypesController.DeleteTerminologyPollByIdAsync(inputId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.dataTypeServiceMock.Verify(service =>
+                service.RemoveTerminologyPollByIdAsync(inputId),
+                    Times.Once);
+
+            this.dataTypeServiceMock.VerifyNoOtherCalls();
+        }
+    }
+}

@@ -12,6 +12,7 @@ using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 using Xunit;
 
@@ -52,6 +53,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
             this.terminologyPollsServiceMock.Verify(service =>
                 service.RetrieveTerminologyPollByIdAsync(someId),
                     Times.Once);
+
+            this.terminologyPollsServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnGetByIdIfServerErrorOccurredAsync(Xeption serverException)
+        {
+            // given 
+            Guid someId = Guid.NewGuid();
+
+            InternalServerErrorObjectResult expectedInternalServerErrorObjectResult =
+                InternalServerError(serverException);
+
+            var expectedActionResult =
+                new ActionResult<TerminologyPoll>(expectedInternalServerErrorObjectResult);
+
+            this.terminologyPollsServiceMock.Setup(service =>
+                service.RetrieveTerminologyPollByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serverException);
+
+            // when
+            ActionResult<TerminologyPoll> actualActionResult =
+                await this.terminologyPollsController.GetTerminologyPollByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.terminologyPollsServiceMock.Verify(service =>
+                service.RetrieveTerminologyPollByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
 
             this.terminologyPollsServiceMock.VerifyNoOtherCalls();
         }

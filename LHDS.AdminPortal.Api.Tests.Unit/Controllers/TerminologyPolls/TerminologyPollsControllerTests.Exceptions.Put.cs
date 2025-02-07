@@ -17,6 +17,7 @@ using Xeptions;
 using Xunit;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using RESTFulSense.Models;
+using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
 {
@@ -123,6 +124,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
 
             var expectedActionResult =
                 new ActionResult<TerminologyPoll>(expectedBadRequestObjectResult);
+
+            this.terminologyPollsServiceMock.Setup(service =>
+                service.ModifyTerminologyPollAsync(It.IsAny<TerminologyPoll>()))
+                    .ThrowsAsync(TerminologyPollDependencyValidationException);
+
+            // when
+            ActionResult<TerminologyPoll> actualActionResult =
+                await this.terminologyPollsController.PutTerminologyPollAsync(someTerminologyPoll);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.terminologyPollsServiceMock.Verify(service =>
+                service.ModifyTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
+                    Times.Once);
+
+            this.terminologyPollsServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnConflictOnPutIfAlreadyExistsTerminologyPollErrorOccurredAsync()
+        {
+            // given
+            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var alreadyExistsTerminologyPollException =
+                new AlreadyExistsTerminologyPollException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var TerminologyPollDependencyValidationException =
+                new TerminologyPollDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsTerminologyPollException);
+
+            ConflictObjectResult expectedConflictObjectResult =
+                Conflict(alreadyExistsTerminologyPollException);
+
+            var expectedActionResult =
+                new ActionResult<TerminologyPoll>(expectedConflictObjectResult);
 
             this.terminologyPollsServiceMock.Setup(service =>
                 service.ModifyTerminologyPollAsync(It.IsAny<TerminologyPoll>()))

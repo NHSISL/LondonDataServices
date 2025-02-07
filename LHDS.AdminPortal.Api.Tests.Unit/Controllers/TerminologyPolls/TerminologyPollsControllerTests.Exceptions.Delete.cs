@@ -3,20 +3,16 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
+using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RESTFulSense.Clients.Extensions;
+using RESTFulSense.Models;
 using Xeptions;
 using Xunit;
-using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
-using RESTFulSense.Models;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
 {

@@ -134,5 +134,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
 
             this.terminologyPollsServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnDeleteIfServerErrorOccurredAsync(
+            Xeption validationException)
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
+                InternalServerError(validationException);
+
+            var expectedActionResult =
+                new ActionResult<TerminologyPoll>(expectedBadRequestObjectResult);
+
+            this.terminologyPollsServiceMock.Setup(service =>
+                service.RemoveTerminologyPollByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<TerminologyPoll> actualActionResult =
+                await this.terminologyPollsController.DeleteTerminologyPollByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.terminologyPollsServiceMock.Verify(service =>
+                service.RemoveTerminologyPollByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.terminologyPollsServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

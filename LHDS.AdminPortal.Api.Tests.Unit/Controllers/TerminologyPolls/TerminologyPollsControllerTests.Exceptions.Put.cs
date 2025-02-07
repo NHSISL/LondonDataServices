@@ -15,6 +15,8 @@ using Moq;
 using RESTFulSense.Clients.Extensions;
 using Xeptions;
 using Xunit;
+using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
+using RESTFulSense.Models;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
 {
@@ -83,6 +85,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
             this.terminologyPollsServiceMock.Setup(service =>
                 service.ModifyTerminologyPollAsync(It.IsAny<TerminologyPoll>()))
                     .ThrowsAsync(TerminologyPollValidationException);
+
+            // when
+            ActionResult<TerminologyPoll> actualActionResult =
+                await this.terminologyPollsController.PutTerminologyPollAsync(someTerminologyPoll);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.terminologyPollsServiceMock.Verify(service =>
+                service.ModifyTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
+                    Times.Once);
+
+            this.terminologyPollsServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnFailedDependencyOnPutIfInvalidTerminologyPollReferenceAsync()
+        {
+            // given
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll();
+
+            var alreadyExistsTerminologyPollException =
+                new InvalidTerminologyPollReferenceException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var TerminologyPollDependencyValidationException =
+                new TerminologyPollDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsTerminologyPollException);
+
+            FailedDependencyObjectResult expectedBadRequestObjectResult =
+                FailedDependency(TerminologyPollDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<TerminologyPoll>(expectedBadRequestObjectResult);
+
+            this.terminologyPollsServiceMock.Setup(service =>
+                service.ModifyTerminologyPollAsync(It.IsAny<TerminologyPoll>()))
+                    .ThrowsAsync(TerminologyPollDependencyValidationException);
 
             // when
             ActionResult<TerminologyPoll> actualActionResult =

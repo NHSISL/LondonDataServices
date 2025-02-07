@@ -15,6 +15,8 @@ using Moq;
 using RESTFulSense.Clients.Extensions;
 using Xeptions;
 using Xunit;
+using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
+using RESTFulSense.Models;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
 {
@@ -76,6 +78,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
             this.terminologyPollsServiceMock.Setup(service =>
                 service.RemoveTerminologyPollByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(TerminologyPollValidationException);
+
+            // when
+            ActionResult<TerminologyPoll> actualActionResult =
+                await this.terminologyPollsController.DeleteTerminologyPollByIdAsync(someId);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.terminologyPollsServiceMock.Verify(service =>
+                service.RemoveTerminologyPollByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.terminologyPollsServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnLockedOnDeleteIfLockedTerminologyPollAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var someInnerException = new Xeption();
+            string someMessage = GetRandomString();
+
+            var lockedTerminologyPollException =
+                new LockedTerminologyPollException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var TerminologyPollDependencyValidationException =
+                new TerminologyPollDependencyValidationException(
+                    message: someMessage,
+                    innerException: lockedTerminologyPollException);
+
+            LockedObjectResult expectedBadRequestObjectResult =
+                Locked(TerminologyPollDependencyValidationException.InnerException);
+
+            var expectedActionResult =
+                new ActionResult<TerminologyPoll>(expectedBadRequestObjectResult);
+
+            this.terminologyPollsServiceMock.Setup(service =>
+                service.RemoveTerminologyPollByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(TerminologyPollDependencyValidationException);
 
             // when
             ActionResult<TerminologyPoll> actualActionResult =

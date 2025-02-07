@@ -18,13 +18,13 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
 {
     public partial class TerminologyPollsControllerTests : RESTFulController
     {
-        private readonly Mock<ITerminologyPollService> dataTypeServiceMock;
-        private readonly TerminologyPollsController dataTypesController;
+        private readonly Mock<ITerminologyPollService> terminologyPollsServiceMock;
+        private readonly TerminologyPollsController terminologyPollsController;
 
         public TerminologyPollsControllerTests()
         {
-            this.dataTypeServiceMock = new Mock<ITerminologyPollService>();
-            this.dataTypesController = new TerminologyPollsController(this.dataTypeServiceMock.Object);
+            this.terminologyPollsServiceMock = new Mock<ITerminologyPollService>();
+            this.terminologyPollsController = new TerminologyPollsController(this.terminologyPollsServiceMock.Object);
         }
 
         private static string GetRandomString() =>

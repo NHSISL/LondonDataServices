@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -74,6 +75,48 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.TerminologyPolls
             this.terminologyPollsServiceMock.Setup(service =>
                 service.AddTerminologyPollAsync(It.IsAny<TerminologyPoll>()))
                     .ThrowsAsync(validationException);
+
+            // when
+            ActionResult<TerminologyPoll> actualActionResult =
+                await this.terminologyPollsController.PostTerminologyPollAsync(someTerminologyPoll);
+
+            // then
+            actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
+
+            this.terminologyPollsServiceMock.Verify(service =>
+                service.AddTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
+                    Times.Once);
+
+            this.terminologyPollsServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldReturnConflictOnPostIfAlreadyExistsTerminologyPollErrorOccurredAsync()
+        {
+            // given
+            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll();
+            var someInnerException = new Exception();
+            string someMessage = GetRandomString();
+
+            var alreadyExistsTerminologyPollException =
+                new AlreadyExistsTerminologyPollException(
+                    message: someMessage,
+                    innerException: someInnerException);
+
+            var TerminologyPollDependencyValidationException =
+                new TerminologyPollDependencyValidationException(
+                    message: someMessage,
+                    innerException: alreadyExistsTerminologyPollException);
+
+            ConflictObjectResult expectedConflictObjectResult =
+                Conflict(alreadyExistsTerminologyPollException);
+
+            var expectedActionResult =
+                new ActionResult<TerminologyPoll>(expectedConflictObjectResult);
+
+            this.terminologyPollsServiceMock.Setup(service =>
+                service.AddTerminologyPollAsync(It.IsAny<TerminologyPoll>()))
+                    .ThrowsAsync(TerminologyPollDependencyValidationException);
 
             // when
             ActionResult<TerminologyPoll> actualActionResult =

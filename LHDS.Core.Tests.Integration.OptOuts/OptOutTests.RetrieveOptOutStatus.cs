@@ -5,14 +5,12 @@
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Xunit;
 
 namespace LHDS.Core.Tests.Integration.OptOuts
 {
     public partial class OptOutTests
     {
-        //[ReleaseCandidateFact(Skip = "Needs to be fixed.")]
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldRetreiveOptOutStatusAsync()
         {
             // GIVEN

@@ -96,10 +96,6 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberCredentials
                 new SubscriberCredentialValidationOrchestrationException(
                     message: someMessage,
                     innerException: someInnerException),
-
-                new SubscriberCredentialOrchestrationDependencyValidationException(
-                    message: someMessage,
-                    innerException: someInnerException)
             };
         }
     }

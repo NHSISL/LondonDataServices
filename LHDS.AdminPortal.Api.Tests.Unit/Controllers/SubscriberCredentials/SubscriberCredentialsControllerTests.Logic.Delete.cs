@@ -24,11 +24,11 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberCredentials
             SubscriberCredential storageSubscriberCredential = randomSubscriberCredential.DeepClone();
             SubscriberCredential expectedSubscriberCredential = storageSubscriberCredential.DeepClone();
 
-            var expectedObjectResult =
-                new OkObjectResult(expectedSubscriberCredential);
+            var expectedResult =
+                new OkResult();
 
             var expectedActionResult =
-                new ActionResult<SubscriberCredential>(expectedObjectResult);
+                new ActionResult<SubscriberCredential>(expectedResult);
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
                 service.RemoveSubscriberCredentialByIdAsync(It.IsAny<Guid>()));

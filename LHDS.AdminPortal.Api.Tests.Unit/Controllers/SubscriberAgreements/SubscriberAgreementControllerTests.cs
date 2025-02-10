@@ -18,15 +18,15 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
 {
     public partial class SubscriberAgreementControllerTests : RESTFulController
     {
-        private readonly Mock<ISubscriberAgreementService> subscriberAgreementsServiceMock;
+        private readonly Mock<ISubscriberAgreementService> subscriberAgreementServiceMock;
         private readonly SubscriberAgreementsController subscriberAgreementsController;
 
         public SubscriberAgreementControllerTests()
         {
-            this.subscriberAgreementsServiceMock = new Mock<ISubscriberAgreementService>();
+            this.subscriberAgreementServiceMock = new Mock<ISubscriberAgreementService>();
 
             this.subscriberAgreementsController = new SubscriberAgreementsController(
-                this.subscriberAgreementsServiceMock.Object);
+                this.subscriberAgreementServiceMock.Object);
         }
 
         private static string GetRandomString() =>

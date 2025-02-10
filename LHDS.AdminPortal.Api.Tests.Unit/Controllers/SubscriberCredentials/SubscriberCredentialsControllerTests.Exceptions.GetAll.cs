@@ -2,40 +2,36 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Attrify.Attributes;
 using FluentAssertions;
-using Force.DeepCloner;
-using LHDS.AdminPortal.Api.Controllers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using RESTFulSense.Models;
+using Xeptions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberCredentials
 {
     public partial class SubscriberCredentialsControllerTests
     {
-        [Fact]
-        public async Task ShouldReturnSubscriberCredentialesOnGetAsync()
+        [Theory]
+        [MemberData(nameof(ServerExceptions))]
+        public async Task ShouldReturnInternalServerErrorOnGetIfServerErrorOccurredAsync(Xeption serverException)
         {
             // given 
-            IQueryable<SubscriberCredential> randomSubscriberCredentiales = CreateRandomSubscriberCredentiales();
-            IQueryable<SubscriberCredential> storageSubscriberCredentiales = randomSubscriberCredentiales.DeepClone();
-            IQueryable<SubscriberCredential> expectedSubscriberCredentiales = storageSubscriberCredentiales.DeepClone();
-            var expectedObjectResult = new OkObjectResult(expectedSubscriberCredentiales);
+            IQueryable<SubscriberCredential> someSubscriberCredentials = CreateRandomSubscriberCredentials();
+
+            InternalServerErrorObjectResult expectedInternalServerErrorObjectResult =
+                InternalServerError(serverException);
 
             var expectedActionResult =
-                new ActionResult<IQueryable<SubscriberCredential>>(expectedObjectResult);
+                new ActionResult<IQueryable<SubscriberCredential>>(expectedInternalServerErrorObjectResult);
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
                 service.RetrieveAllSubscriberCredentialsAsync())
-                    .ReturnsAsync(expectedSubscriberCredentiales);
+                    .ThrowsAsync(serverException);
 
             // when
             ActionResult<IQueryable<SubscriberCredential>> actualActionResult =

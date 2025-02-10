@@ -3,18 +3,12 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Attrify.Attributes;
-using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.AdminPortal.Api.Controllers;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using RESTFulSense.Clients.Extensions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberCredentials
@@ -37,8 +31,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberCredentials
                 new ActionResult<SubscriberCredential>(expectedObjectResult);
 
             this.subscriberCredentialOrchestrationMock.Setup(service =>
-                service.RemoveSubscriberCredentialByIdAsync(It.IsAny<Guid>()))
-                    .ReturnsAsync(storageSubscriberCredential);
+                service.RemoveSubscriberCredentialByIdAsync(It.IsAny<Guid>()));
 
             // when
             ActionResult<SubscriberCredential> actualActionResult =

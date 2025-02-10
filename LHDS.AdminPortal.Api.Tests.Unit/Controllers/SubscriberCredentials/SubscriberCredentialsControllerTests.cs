@@ -7,7 +7,6 @@ using System.Linq;
 using LHDS.AdminPortal.Api.Controllers;
 using LHDS.Core.Models.Orchestrations.SubscriberCredentials.Exceptions;
 using LHDS.Core.Models.Processings.SubscriberCredentials;
-using LHDS.Core.Models.Processings.SubscriberCredentials.Exceptions;
 using LHDS.Core.Services.Orchestrations.SubscriberCredentials;
 using Moq;
 using RESTFulSense.Controllers;
@@ -45,7 +44,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberCredentials
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static IQueryable<SubscriberCredential> CreateRandomSubscriberCredentiales()
+        private static IQueryable<SubscriberCredential> CreateRandomSubscriberCredentials()
         {
             return CreateSubscriberCredentialFiller()
                 .Create(count: GetRandomNumber())

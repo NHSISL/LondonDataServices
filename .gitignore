@@ -368,6 +368,7 @@ FodyWeavers.xsd
 # Local Settings
 local.settings.json
 local.appsettings.json
+appsettings.local.json
 */local.settings.json
 */local.appsettings.json
 /LHDS.Core/appsettings.Development.json

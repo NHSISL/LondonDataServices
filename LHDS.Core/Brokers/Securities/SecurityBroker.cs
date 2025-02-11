@@ -69,6 +69,7 @@ namespace LHDS.Core.Brokers.Securities
         public async ValueTask<bool> IsInRoleAsync(string roleName)
         {
             var roles = user.FindAll(ClaimTypes.Role).Select(role => role.Value).ToList();
+
             return roles.Contains(roleName);
         }
 
@@ -79,10 +80,9 @@ namespace LHDS.Core.Brokers.Securities
         public async ValueTask<EntraUser> GetCurrentUserAsync()
         {
             var entraUserIdString = user.FindFirst("oid")?.Value
-                          ?? user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
+                ?? user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
 
-            var entraUserId = Guid.TryParse(entraUserIdString, out var parsedGuid) ? parsedGuid : Guid.Empty;
-
+            var entraUserId = entraUserIdString;
             var givenName = user.FindFirst(ClaimTypes.GivenName)?.Value;
             var surname = user.FindFirst(ClaimTypes.Surname)?.Value;
             var displayName = user.FindFirst("displayName")?.Value;
@@ -111,8 +111,8 @@ namespace LHDS.Core.Brokers.Securities
         {
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);
-
             var identity = new ClaimsIdentity(jwtToken.Claims, "jwt");
+
             return new ClaimsPrincipal(identity);
         }
     }

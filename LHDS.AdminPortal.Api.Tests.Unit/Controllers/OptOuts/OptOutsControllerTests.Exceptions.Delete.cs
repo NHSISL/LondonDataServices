@@ -27,7 +27,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.OptOuts
             Guid someId = Guid.NewGuid();
 
             BadRequestObjectResult expectedBadRequestObjectResult =
-                BadRequest(validationException.InnerException ?? validationException);
+                BadRequest(validationException.InnerException);
 
             var expectedActionResult =
                 new ActionResult<OptOut>(expectedBadRequestObjectResult);

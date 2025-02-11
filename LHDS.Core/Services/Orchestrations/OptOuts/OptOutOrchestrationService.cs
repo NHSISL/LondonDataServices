@@ -86,7 +86,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     await this.csvHelperBroker
                         .MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader);
 
-                List<OptOut> processedOptOuts = new List<OptOut>();
+                List<OptOutIdentifier> processedOptOutIdentifiers = new List<OptOutIdentifier>();
                 var exceptions = new List<Exception>();
 
                 foreach (var optOut in mappedOptOuts)
@@ -116,7 +116,15 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                             return item;
                         });
 
-                        processedOptOuts.Add(processedOptOut);
+                        OptOutIdentifier processedOptOutIdentifier = new OptOutIdentifier
+                        {
+                            NhsNumber = processedOptOut.NhsNumber,
+                            UniqueReference = processedOptOut.UniqueReference,
+                            Status = processedOptOut.Status,
+                            StatusChangedDateTime = processedOptOut.CacheTime
+                        };
+
+                        processedOptOutIdentifiers.Add(processedOptOutIdentifier);
                     }
                     catch (Exception ex)
                     {
@@ -131,7 +139,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 }
 
                 string processedData = await this.csvHelperBroker
-                    .MapObjectToCsvAsync(processedOptOuts, withHeader, fieldMappings, shouldAddTrailingComma);
+                    .MapObjectToCsvAsync(processedOptOutIdentifiers, withHeader, fieldMappings, shouldAddTrailingComma);
 
                 byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
 
@@ -174,7 +182,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     csvExpiredOptOutIdentifiers.AppendLine($"{item.NhsNumber},");
                 }
 
-                DateTimeOffset batchReferenceDateTime = 
+                DateTimeOffset batchReferenceDateTime =
                     await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
                 string batchReference = batchReferenceDateTime.ToString("yyyyMMddHHmmss");

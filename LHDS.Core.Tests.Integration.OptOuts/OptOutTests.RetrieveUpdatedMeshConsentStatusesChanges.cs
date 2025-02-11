@@ -4,67 +4,76 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
+using Xunit;
 
 namespace LHDS.Core.Tests.Integration.OptOuts
 {
     public partial class OptOutTests
     {
-        [ReleaseCandidateFact(Skip = "Need to fix.")]
+        [ReleaseCandidateFact]
         public async Task RetrieveUpdatedMeshConsentStatusesChanges()
         {
-            //try
-            //{
-            //    // given
-            //    string optOutFileContainer = "optout";
-            //    string batchReference = Guid.NewGuid().ToString();
-            //    var dbItems = await SetupTestNhsNumbersForRetrieveUpdatedMesh(batchReference);
-            //    List<string> idsFromMesh = dbItems.AsQueryable().Take(2).Select(x => x.NhsNumber).ToList();
-            //    string content = await SetupSimulatedMeshMessage(batchReference, idsFromMesh);
+            try
+            {
+                // given
+                string optOutFileContainer = "optout";
+                string batchReference = Guid.NewGuid().ToString();
+                var dbItems = await SetupTestNhsNumbersForRetrieveUpdatedMesh(batchReference);
+                List<string> idsFromMesh = dbItems.AsQueryable().Take(2).Select(x => x.NhsNumber).ToList();
+                string content = await SetupSimulatedMeshMessage(batchReference, idsFromMesh);
 
-            //    List<OptOutIdentifier> expectedContent = ConvertNhsListToOptOutIdentifierList(content, dbItems)
-            //        .OrderBy(item => item.NhsNumber).ToList();
+                List<OptOutIdentifier> expectedContent = ConvertNhsListToOptOutIdentifierList(content, dbItems)
+                    .OrderBy(item => item.NhsNumber).ToList();
 
-            //    // when
-            //    List<MeshMessage> messages = await this.optOutClient.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+                //Stream fileStream = new MemoryStream(fileBytes);
+                Stream expectedFileStream = new MemoryStream();
 
-            //    // then
-            //    foreach (MeshMessage message in messages)
-            //    {
-            //        string filepath =
-            //            $"{optOutConfiguration.OutputFolder}/{GetHeaderValue(message, "mex-localid")}"
-            //            + "_deltaresponse.csv";
+                // when
+                List<MeshMessage> messages = await this.optOutClient.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
-            //        Document document = await this.documentService
-            //            .RetrieveDocumentByFileNameAsync(fileName: filepath, container: optOutFileContainer);
+                // then
+                foreach (MeshMessage message in messages)
+                {
+                    string filepath =
+                        $"{optOutConfiguration.OutputFolder}/{GetHeaderValue(message, "mex-localid")}"
+                        + "_deltaresponse.csv";
 
-            //        document.Should().NotBeNull();
+                    await this.documentService
+                        .RetrieveDocumentByFileNameAsync(output: expectedFileStream, fileName: filepath, container: optOutFileContainer);
 
-            //        List<OptOutIdentifier> actualContent =
-            //            ConvertToOptOutIdentifierList(Encoding.ASCII.GetString(document.DocumentData), true)
-            //                .OrderBy(item => item.NhsNumber).ToList();
+                    expectedFileStream.Should().NotBeNull();
+                    StreamReader reader = new StreamReader(expectedFileStream);
+                    string fileText = reader.ReadToEnd();
+
+                    List<OptOutIdentifier> actualContent =
+                        ConvertToOptOutIdentifierList(fileText, true)
+                            .OrderBy(item => item.NhsNumber).ToList();
 
 
-            //        foreach (var actualItem in actualContent)
-            //        {
-            //            var expectedItem = expectedContent
-            //                .FirstOrDefault(item => item.NhsNumber == actualItem.NhsNumber);
+                    foreach (var actualItem in actualContent)
+                    {
+                        var expectedItem = expectedContent
+                            .FirstOrDefault(item => item.NhsNumber == actualItem.NhsNumber);
 
 
-            //            actualItem.UniqueReference.Should().BeEquivalentTo(expectedItem.UniqueReference);
-            //            actualItem.Status.Should().BeEquivalentTo(expectedItem.Status);
-            //        }
+                        actualItem.UniqueReference.Should().BeEquivalentTo(expectedItem.UniqueReference);
+                        actualItem.Status.Should().BeEquivalentTo(expectedItem.Status);
+                    }
 
-            //        await this.documentService
-            //            .RemoveDocumentByFileNameAsync(filename: filepath, container: optOutFileContainer);
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    Assert.Fail($"{ex.Message} {ex?.InnerException?.Message} {ex.StackTrace}");
-            //}
+                    await this.documentService
+                        .RemoveDocumentByFileNameAsync(filename: filepath, container: optOutFileContainer);
+                }
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"{ex.Message} {ex?.InnerException?.Message} {ex.StackTrace}");
+            }
             await Task.CompletedTask;
         }
 

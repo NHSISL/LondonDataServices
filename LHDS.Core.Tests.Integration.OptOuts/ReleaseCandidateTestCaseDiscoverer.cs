@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
             configuration = configurationBuilder.Build();

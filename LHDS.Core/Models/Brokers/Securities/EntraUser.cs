@@ -11,7 +11,7 @@ namespace LHDS.Core.Models.Brokers.Securities
     public class EntraUser
     {
         public EntraUser(
-            Guid entraUserId,
+            string entraUserId,
             string givenName,
             string surname,
             string displayName,

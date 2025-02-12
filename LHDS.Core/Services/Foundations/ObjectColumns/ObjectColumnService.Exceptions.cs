@@ -27,11 +27,11 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             }
             catch (NullObjectColumnException nullObjectColumnException)
             {
-                throw CreateAndLogValidationException(nullObjectColumnException);
+                throw await CreateAndLogValidationExceptionAsync(nullObjectColumnException);
             }
             catch (InvalidObjectColumnException invalidObjectColumnException)
             {
-                throw CreateAndLogValidationException(invalidObjectColumnException);
+                throw await CreateAndLogValidationExceptionAsync(invalidObjectColumnException);
             }
             catch (SqlException sqlException)
             {
@@ -40,11 +40,11 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                         message: "Failed objectColumn storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedObjectColumnStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedObjectColumnStorageException);
             }
             catch (NotFoundObjectColumnException notFoundObjectColumnException)
             {
-                throw CreateAndLogValidationException(notFoundObjectColumnException);
+                throw await CreateAndLogValidationExceptionAsync(notFoundObjectColumnException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                         message: "ObjectColumn with the same Id already exists.",
                         innerException: duplicateKeyException);
 
-                throw CreateAndLogDependencyValidationException(alreadyExistsObjectColumnException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(alreadyExistsObjectColumnException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -62,7 +62,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                         message: "Invalid objectColumn reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
-                throw CreateAndLogDependencyValidationException(invalidObjectColumnReferenceException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(invalidObjectColumnReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -71,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                         message: "Locked objectColumn record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
 
-                throw CreateAndLogDependencyValidationException(lockedObjectColumnException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(lockedObjectColumnException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
@@ -80,7 +80,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                         message: "Failed objectColumn storage error occurred, please contact support.",
                         innerException: databaseUpdateException);
 
-                throw CreateAndLogDependencyException(failedObjectColumnStorageException);
+                throw await CreateAndLogDependencyExceptionAsync(failedObjectColumnStorageException);
             }
             catch (Exception exception)
             {
@@ -89,7 +89,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                         message: "Failed objectColumn service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedObjectColumnServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedObjectColumnServiceException);
             }
         }
 
@@ -107,7 +107,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                         message: "Failed objectColumn storage error occurred, please contact support.",
                         innerException: sqlException);
 
-                throw CreateAndLogCriticalDependencyException(failedObjectColumnStorageException);
+                throw await CreateAndLogCriticalDependencyExceptionAsync(failedObjectColumnStorageException);
             }
             catch (Exception exception)
             {
@@ -116,47 +116,23 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                         message: "Failed objectColumn service error occurred, please contact support.",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedObjectColumnServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedObjectColumnServiceException);
             }
         }
 
-        private ObjectColumnValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<ObjectColumnValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var objectColumnValidationException =
                 new ObjectColumnValidationException(
                     message: "ObjectColumn validation errors occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(objectColumnValidationException);
+            await this.loggingBroker.LogErrorAsync(objectColumnValidationException);
 
             return objectColumnValidationException;
         }
 
-        private ObjectColumnDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
-        {
-            var objectColumnDependencyException =
-                new ObjectColumnDependencyException(
-                    message: "ObjectColumn dependency error occurred, please contact support.",
-                    innerException: exception);
-
-            this.loggingBroker.LogCritical(objectColumnDependencyException);
-
-            return objectColumnDependencyException;
-        }
-
-        private ObjectColumnDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
-        {
-            var objectColumnDependencyValidationException =
-                new ObjectColumnDependencyValidationException(
-                    message: "ObjectColumn dependency validation occurred, please try again.",
-                    innerException: exception);
-
-            this.loggingBroker.LogError(objectColumnDependencyValidationException);
-
-            return objectColumnDependencyValidationException;
-        }
-
-        private ObjectColumnDependencyException CreateAndLogDependencyException(
+        private async ValueTask<ObjectColumnDependencyException> CreateAndLogCriticalDependencyExceptionAsync(
             Xeption exception)
         {
             var objectColumnDependencyException =
@@ -164,12 +140,38 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     message: "ObjectColumn dependency error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(objectColumnDependencyException);
+            await this.loggingBroker.LogCriticalAsync(objectColumnDependencyException);
 
             return objectColumnDependencyException;
         }
 
-        private ObjectColumnServiceException CreateAndLogServiceException(
+        private async ValueTask<ObjectColumnDependencyValidationException> 
+            CreateAndLogDependencyValidationExceptionAsync(Xeption exception)
+        {
+            var objectColumnDependencyValidationException =
+                new ObjectColumnDependencyValidationException(
+                    message: "ObjectColumn dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(objectColumnDependencyValidationException);
+
+            return objectColumnDependencyValidationException;
+        }
+
+        private async ValueTask<ObjectColumnDependencyException> CreateAndLogDependencyExceptionAsync(
+            Xeption exception)
+        {
+            var objectColumnDependencyException =
+                new ObjectColumnDependencyException(
+                    message: "ObjectColumn dependency error occurred, please contact support.",
+                    innerException: exception);
+
+            await this.loggingBroker.LogErrorAsync(objectColumnDependencyException);
+
+            return objectColumnDependencyException;
+        }
+
+        private async ValueTask<ObjectColumnServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var objectColumnServiceException =
@@ -177,7 +179,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     message: "ObjectColumn service error occurred, please contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(objectColumnServiceException);
+            await this.loggingBroker.LogErrorAsync(objectColumnServiceException);
 
             return objectColumnServiceException;
         }

@@ -46,7 +46,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
-            List<OptOut> processedOptOuts = new List<OptOut>();
+            List<OptOutIdentifier> expectedProcessedOptOutIdentifiers = new List<OptOutIdentifier>();
+            List<OptOutIdentifier> actualProcessedOptOutIdentifiers = new List<OptOutIdentifier>();
 
             foreach (var optOut in outputOptOuts)
             {
@@ -69,7 +70,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     service.RetrieveOrAddOptOutAsync(It.Is(SameOptOutAs(inputOptOut))))
                         .ReturnsAsync(storageOptOut);
 
-                processedOptOuts.Add(storageOptOut);
+                OptOutIdentifier processedOptOutIdentifier = new OptOutIdentifier
+                {
+                    NhsNumber = inputOptOut.NhsNumber,
+                    UniqueReference = inputOptOut.UniqueReference,
+                    Status = inputOptOut.Status,
+                    StatusChangedDateTime = inputOptOut.CacheTime
+                };
+
+                expectedProcessedOptOutIdentifiers.Add(processedOptOutIdentifier);
             }
 
             var randomOptOutData = GetRandomString();
@@ -77,7 +86,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.csvHelperBrokerMock.Setup(processings =>
                 processings.MapObjectToCsvAsync(
-                    It.Is(SameOptOutListAs(processedOptOuts)),
+                    It.Is(SameOptOutIdentifierListAs(expectedProcessedOptOutIdentifiers)),
                     withHeader,
                     fieldMappings,
                     shouldAddTrailingComma))
@@ -128,13 +137,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     UpdatedBy = "System"
                 };
 
-                var storageOptOut = inputOptOut;
+                OptOutIdentifier processedOptOutIdentifier = new OptOutIdentifier
+                {
+                    NhsNumber = inputOptOut.NhsNumber,
+                    UniqueReference = inputOptOut.UniqueReference,
+                    Status = inputOptOut.Status,
+                    StatusChangedDateTime = inputOptOut.CacheTime
+                };
 
                 this.optOutProcessingServiceMock.Verify(service =>
                     service.RetrieveOrAddOptOutAsync(It.Is(SameOptOutAs(inputOptOut))),
                         Times.Exactly(outputOptOuts.Count));
 
-                processedOptOuts.Add(storageOptOut);
+                actualProcessedOptOutIdentifiers.Add(processedOptOutIdentifier);
             }
 
             this.identifierBrokerMock.Verify(processing =>
@@ -147,7 +162,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.csvHelperBrokerMock.Verify(processings =>
                 processings.MapObjectToCsvAsync(
-                    It.IsAny<List<OptOut>>(),
+                    It.Is(SameOptOutIdentifierListAs(actualProcessedOptOutIdentifiers)),
                     withHeader,
                     fieldMappings,
                     shouldAddTrailingComma),

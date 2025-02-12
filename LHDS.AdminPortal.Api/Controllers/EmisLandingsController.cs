@@ -48,29 +48,30 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok(retrieveFileList);
             }
-            catch (InvalidArgumentEmisLandingCoordinationException ex)
+            catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
             {
-                return BadRequest(ex);
+                return BadRequest(invalidArgumentEmisLandingCoordinationException);
             }
-            catch (EmisLandingCoordinationValidationException ex)
+            catch (EmisLandingCoordinationValidationException emisLandingCoordinationValidationException)
             {
-                return BadRequest(ex);
+                return BadRequest(emisLandingCoordinationValidationException);
             }
-            catch (EmisLandingCoordinationDependencyValidationException ex)
+            catch (EmisLandingCoordinationDependencyValidationException 
+                    emisLandingCoordinationDependencyValidationException)
             {
-                return FailedDependency(ex);
+                return FailedDependency(emisLandingCoordinationDependencyValidationException);
             }
-            catch (EmisLandingCoordinationDependencyException ex)
+            catch (EmisLandingCoordinationDependencyException emisLandingCoordinationDependencyException)
             {
-                return InternalServerError(ex);
+                return InternalServerError(emisLandingCoordinationDependencyException);
             }
-            catch (EmisLandingCoordinationServiceException ex)
+            catch (EmisLandingCoordinationServiceException emisLandingCoordinationServiceException)
             {
-                return InternalServerError(ex);
+                return InternalServerError(emisLandingCoordinationServiceException);
             }
-            catch (FailedEmisLandingCoordinationServiceException ex)
+            catch (FailedEmisLandingCoordinationServiceException failedEmisLandingCoordinationServiceException)
             {
-                return InternalServerError(ex);
+                return InternalServerError(failedEmisLandingCoordinationServiceException);
             }
         }
 
@@ -85,25 +86,26 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok();
             }
-            catch (InvalidArgumentEmisLandingCoordinationException ex)
+            catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
             {
-                return BadRequest(ex);
+                return BadRequest(invalidArgumentEmisLandingCoordinationException);
             }
-            catch (EmisLandingCoordinationValidationException ex)
+            catch (EmisLandingCoordinationValidationException emisLandingCoordinationValidationException)
             {
-                return BadRequest(ex);
+                return BadRequest(emisLandingCoordinationValidationException);
             }
-            catch (EmisLandingCoordinationDependencyValidationException ex)
+            catch (EmisLandingCoordinationDependencyValidationException 
+                    emisLandingCoordinationDependencyValidationException)
             {
-                return FailedDependency(ex);
+                return FailedDependency(emisLandingCoordinationDependencyValidationException);
             }
-            catch (EmisLandingCoordinationDependencyException ex)
+            catch (EmisLandingCoordinationDependencyException emisLandingCoordinationDependencyException)
             {
-                return InternalServerError(ex);
+                return InternalServerError(emisLandingCoordinationDependencyException);
             }
-            catch (EmisLandingCoordinationServiceException ex)
+            catch (EmisLandingCoordinationServiceException emisLandingCoordinationServiceException)
             {
-                return InternalServerError(ex);
+                return InternalServerError(emisLandingCoordinationServiceException);
             }
         }
     }

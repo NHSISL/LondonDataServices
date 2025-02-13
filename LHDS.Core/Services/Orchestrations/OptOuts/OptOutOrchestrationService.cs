@@ -143,8 +143,13 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 byte[] processedBytes = Encoding.UTF8.GetBytes(processedData);
 
+                DateTimeOffset currentDateTimeOffset =
+                    await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                string timeStamp = currentDateTimeOffset.ToString("yyyyMMddHHmmss");
+
                 string csvFileName = $"{optOutConfiguration.OutputFolder}/" +
-                    $"{Path.GetFileNameWithoutExtension(fileName)}_Response.csv";
+                    $"{Path.GetFileNameWithoutExtension(fileName)}_{timeStamp}_Response.csv";
 
                 using (Stream processed = new MemoryStream(processedBytes))
                 {
@@ -228,7 +233,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                             {
                                 MeshMessage returnedMessage = await TryCatch(async () =>
                                 {
-                                    MeshMessage message = await meshProcessingService.RetrieveMessageByIdAsync(messageId);
+                                    MeshMessage message = await meshProcessingService
+                                        .RetrieveMessageByIdAsync(messageId);
 
                                     if (GetKeyStringValue("mex-workflowid", message.Headers) !=
                                         this.optOutConfiguration.WorkflowId)
@@ -251,7 +257,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                         .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
 
                                     List<OptOut> delta = await this.optOutProcessingService
-                                        .ConsolidateOptOutChangesAndReturnChangesOnly(originalBatch, consentedIdentifiers);
+                                        .ConsolidateOptOutChangesAndReturnChangesOnly(
+                                            originalBatch,
+                                            consentedIdentifiers);
 
                                     if (delta?.Count > 0)
                                     {
@@ -270,7 +278,16 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                                 addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
                                                 shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
 
-                                        string fileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
+                                        string messageFilename = GetHeaderValue(message, "mex-filename");
+
+                                        DateTimeOffset currentDateTimeOffset =
+                                            await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+
+                                        string timeStamp = currentDateTimeOffset.ToString("yyyyMMddHHmmss");
+
+                                        string fileName = $"{optOutConfiguration.OutputFolder}/" +
+                                            $"{messageFilename}_{timeStamp}_Response.csv";
+
                                         ValidateDocumentRequirements(csvDifferences, fileName);
                                         byte[] csvDifferencesBytes = Encoding.UTF8.GetBytes(csvDifferences);
 

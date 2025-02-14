@@ -27,7 +27,7 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.9.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.1" />
-		<PackageReference Include="Microsoft.Identity.Web" Version="3.6.2" />
+		<PackageReference Include="Microsoft.Identity.Web" Version="3.7.0" />
 		<PackageReference Include="RESTFulSense" Version="3.1.0" />
 		<PackageReference Include="SshKeyGenerator" Version="1.1.51" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />

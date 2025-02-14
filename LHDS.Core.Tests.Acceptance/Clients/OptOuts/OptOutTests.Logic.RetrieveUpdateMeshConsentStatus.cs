@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,11 +23,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         public async Task ShouldRetrieveUpdateMeshConsentStatusAsync()
         {
             //Given
+            DateTimeOffset currentDateTimeOffset = DateTimeOffset.UtcNow;
+            string timestamp = currentDateTimeOffset.ToString("yyyyMMddHHmmss");
             string messageId = GetRandomString();
             List<string> messageIds = new List<string> { messageId };
             string mexWorkflowId = this.optOutConfiguration.WorkflowId;
             string mexLocalId = GetRandomString();
-            string fileName = $"{optOutConfiguration.OutputFolder}/{mexLocalId}_deltaresponse.csv";
+            string fileName = $"{optOutConfiguration.OutputFolder}/{mexLocalId}_{timestamp}_Response.csv";
             string mexTo = this.optOutConfiguration.To;
             string batchReference = GetRandomString();
             bool withHeader = this.optOutConfiguration.OptOutFileHasHeader;
@@ -34,7 +37,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
             List<OptOut> randomOptOutList = CreateRandomOptOutsList(
                 count: GetRandomNumber(),
-                await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync(),
+                currentDateTimeOffset,
                 batchReference);
 
             var csvOptOutList = new StringBuilder();

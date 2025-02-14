@@ -367,9 +367,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 var message = CreateRandomMessage();
                 message.MessageId = item;
                 message.Headers["mex-localid"] = new List<string> { GetRandomString() };
+                message.Headers["mex-filename"] = new List<string> { GetRandomString() };
                 message.FileContent = Encoding.UTF8.GetBytes(sb.ToString());
                 message.Headers["mex-workflowid"] = new List<string> { workflowId };
-
                 messageList.Add(message);
             }
 

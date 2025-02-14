@@ -21,17 +21,21 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         {
             //Given
             Guid identifier = Guid.NewGuid();
+            DateTimeOffset currentDateTimeOffset = DateTimeOffset.UtcNow;
+            string timestamp = currentDateTimeOffset.ToString("yyyyMMddHHmmss");
             List<OptOutIdentifier> optOutIdentifiers = CreateRandomOptOutIdentifiersList();
             bool hasHeaderRecord = optOutConfiguration.OptOutFileHasHeader;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             string csvData = GenerateCsv(optOutIdentifiers, hasHeaderRecord, shouldAddTrailingComma);
-
             byte[] optOutFile = Encoding.ASCII.GetBytes(csvData);
             Stream optOutStream = new MemoryStream(optOutFile);
             string fileName = GetRandomString();
-
             Stream stream = new MemoryStream(optOutFile);
-            string expectedString = $"/out/{fileName}_Response.csv";
+            string expectedString = $"/out/{fileName}_{timestamp}_Response.csv";
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(currentDateTimeOffset);
 
             //When
             var actualString = await this.optOutClient.RetrieveOptOutStatusAsync(input: optOutStream, fileName);

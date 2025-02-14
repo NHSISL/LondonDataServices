@@ -84,7 +84,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 List<OptOutIdentifier> mappedOptOuts =
                     await this.csvHelperBroker
-                        .MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader);
+                        .MapCsvToObjectAsync<OptOutIdentifier>(
+                            data: inputString,
+                            hasHeaderRecord: withHeader,
+                            fieldMappings: null,
+                            headerValidated: false);
 
                 List<OptOutIdentifier> processedOptOutIdentifiers = new List<OptOutIdentifier>();
                 var exceptions = new List<Exception>();

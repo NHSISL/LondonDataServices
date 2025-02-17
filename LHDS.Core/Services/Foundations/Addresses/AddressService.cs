@@ -10,6 +10,7 @@ using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
@@ -20,6 +21,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly IAuditBroker auditBroker;
@@ -27,12 +29,14 @@ namespace LHDS.Core.Services.Foundations.Addresses
         public AddressService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
+            ISecurityBroker securityBroker,
             IIdentifierBroker identifierBroker,
             ILoggingBroker loggingBroker,
             IAuditBroker auditBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.securityBroker = securityBroker;
             this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
             this.auditBroker = auditBroker;

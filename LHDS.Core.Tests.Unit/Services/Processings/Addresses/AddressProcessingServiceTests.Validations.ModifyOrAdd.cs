@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                 .BeEquivalentTo(expectedAddressProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressProcessingValidationException))),
                         Times.Once);
 
@@ -78,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                 .BeEquivalentTo(expectedAddressProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressProcessingValidationException))),
                         Times.Once);
 

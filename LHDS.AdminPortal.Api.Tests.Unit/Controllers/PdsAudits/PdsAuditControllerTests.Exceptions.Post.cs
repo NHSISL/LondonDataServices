@@ -13,9 +13,6 @@ using RESTFulSense.Clients.Extensions;
 using RESTFulSense.Models;
 using Xeptions;
 using Xunit;
-using LHDS.Core.Models.Foundations.PdsAudits.Exceptions;
-using System;
-using Xeptions;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudits
 {
@@ -66,7 +63,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudits
             // given
             PdsAudit somePdsAudit = CreateRandomPdsAudit();
 
-            InternalServerErrorObjectResult expectedBadRequestObjectResult = 
+            InternalServerErrorObjectResult expectedBadRequestObjectResult =
                 InternalServerError(validationException);
 
             var expectedActionResult =

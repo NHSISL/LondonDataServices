@@ -187,7 +187,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
             catch (PdsAuditDependencyValidationException pdsAuditDependencyValidationException)
             {
-                return BadRequest(pdsAuditDependencyValidationException);
+                return BadRequest(pdsAuditDependencyValidationException.InnerException);
             }
             catch (PdsAuditDependencyException pdsAuditDependencyException)
             {

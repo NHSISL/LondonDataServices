@@ -15,6 +15,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
@@ -99,6 +100,7 @@ namespace LHDS.AdminPortal.Api
         {
             builder.Services.AddRazorPages();
             builder.Services.AddLogging();
+            builder.Services.AddHttpContextAccessor();
 
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -215,7 +217,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
-            services.AddTransient<ISecureDataService, SecureDataService>();
+            services.AddTransient<ISecurityBroker, SecurityBroker>();
         }
 
         private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)
@@ -235,14 +237,14 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IDataSetService, DataSetService>();
             services.AddTransient<ITerminologyArtifactService, TerminologyArtifactService>();
             services.AddTransient<ITerminologyPollService, TerminologyPollService>();
+            services.AddTransient<ISecureDataService, SecureDataService>();
 
+            var blobStorageSettings = configuration.GetSection("blobStorage")
+                .Get<BlobStorageSettings>();
 
-            var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
             ValidateBlobContainers(blobStorageSettings.BlobContainers);
-
             services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
-
 
             var blobServiceClientOptions = new BlobClientOptions()
             {

@@ -45,6 +45,9 @@ namespace LHDS.Core.Services.Foundations.Addresses
         public ValueTask<Address> AddAddressAsync(Address address) =>
             TryCatch(async () =>
             {
+                Address addressWithAddAuditApplied =
+                    await ApplyAddAuditAsync(address);
+
                 await ValidateAddressOnAddAsync(address);
 
                 return await this.storageBroker.InsertAddressAsync(address);
@@ -204,5 +207,19 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
                 return matchedAddresses;
             });
+
+        virtual internal async ValueTask<Address> ApplyAddAuditAsync(
+            Address csvIdentificationRequest)
+        {
+            ValidateAddressIsNotNull(csvIdentificationRequest);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            csvIdentificationRequest.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            csvIdentificationRequest.CreatedDate = auditDateTimeOffset;
+            csvIdentificationRequest.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            csvIdentificationRequest.UpdatedDate = auditDateTimeOffset;
+
+            return csvIdentificationRequest;
+        }
     }
 }

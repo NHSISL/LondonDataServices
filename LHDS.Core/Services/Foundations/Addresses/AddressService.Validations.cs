@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 
@@ -15,6 +16,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
         private async ValueTask ValidateAddressOnAddAsync(Address address)
         {
             ValidateAddressIsNotNull(address);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(address.Id), Parameter: nameof(Address.Id)),
@@ -22,6 +24,11 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 (Rule: IsInvalid(address.CreatedBy), Parameter: nameof(Address.CreatedBy)),
                 (Rule: IsInvalid(address.UpdatedDate), Parameter: nameof(Address.UpdatedDate)),
                 (Rule: IsInvalid(address.UpdatedBy), Parameter: nameof(Address.UpdatedBy)),
+
+                //(Rule: IsNotSame(
+                //    first: currentUser.EntraUserId,
+                //    second: address.CreatedBy),
+                //Parameter: nameof(Address.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: address.UpdatedDate,
@@ -141,6 +148,14 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
             };
+
+        private static dynamic IsNotSame(
+           string first,
+           string second) => new
+           {
+               Condition = first != second,
+               Message = $"Expected value to be '{first}' but found '{second}'."
+           };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

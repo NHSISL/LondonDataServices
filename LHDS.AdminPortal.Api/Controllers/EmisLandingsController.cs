@@ -6,8 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Attrify.Attributes;
+using LHDS.Core.Models.Coordinations.EmisLandings.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Services.Coordinations.EmisLandings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -46,13 +48,30 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok(retrieveFileList);
             }
-            catch (DownloadDependencyException downloadDependencyException)
+            catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
             {
-                return InternalServerError(downloadDependencyException);
+                return BadRequest(invalidArgumentEmisLandingCoordinationException);
             }
-            catch (DownloadServiceException downloadServiceException)
+            catch (EmisLandingCoordinationValidationException emisLandingCoordinationValidationException)
             {
-                return InternalServerError(downloadServiceException);
+                return BadRequest(emisLandingCoordinationValidationException);
+            }
+            catch (EmisLandingCoordinationDependencyValidationException 
+                    emisLandingCoordinationDependencyValidationException)
+            {
+                return FailedDependency(emisLandingCoordinationDependencyValidationException);
+            }
+            catch (EmisLandingCoordinationDependencyException emisLandingCoordinationDependencyException)
+            {
+                return InternalServerError(emisLandingCoordinationDependencyException);
+            }
+            catch (EmisLandingCoordinationServiceException emisLandingCoordinationServiceException)
+            {
+                return InternalServerError(emisLandingCoordinationServiceException);
+            }
+            catch (FailedEmisLandingCoordinationServiceException failedEmisLandingCoordinationServiceException)
+            {
+                return InternalServerError(failedEmisLandingCoordinationServiceException);
             }
         }
 
@@ -67,22 +86,26 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok();
             }
-            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
-                when (ingestionTrackingValidationException.InnerException is NotFoundIngestionTrackingException)
+            catch (InvalidArgumentEmisLandingCoordinationException invalidArgumentEmisLandingCoordinationException)
             {
-                return NotFound(ingestionTrackingValidationException.InnerException);
+                return BadRequest(invalidArgumentEmisLandingCoordinationException);
             }
-            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+            catch (EmisLandingCoordinationValidationException emisLandingCoordinationValidationException)
             {
-                return BadRequest(ingestionTrackingValidationException.InnerException);
+                return BadRequest(emisLandingCoordinationValidationException);
             }
-            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            catch (EmisLandingCoordinationDependencyValidationException 
+                    emisLandingCoordinationDependencyValidationException)
             {
-                return InternalServerError(ingestionTrackingDependencyException);
+                return FailedDependency(emisLandingCoordinationDependencyValidationException);
             }
-            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            catch (EmisLandingCoordinationDependencyException emisLandingCoordinationDependencyException)
             {
-                return InternalServerError(ingestionTrackingServiceException);
+                return InternalServerError(emisLandingCoordinationDependencyException);
+            }
+            catch (EmisLandingCoordinationServiceException emisLandingCoordinationServiceException)
+            {
+                return InternalServerError(emisLandingCoordinationServiceException);
             }
         }
     }

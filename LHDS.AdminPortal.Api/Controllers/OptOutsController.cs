@@ -47,13 +47,13 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok(retrievedOptOuts);
             }
-            catch (OptOutDependencyException optOutDependencyException)
+            catch (OptOutProcessingDependencyException optOutProcessingDependencyException)
             {
-                return InternalServerError(optOutDependencyException);
+                return InternalServerError(optOutProcessingDependencyException);
             }
-            catch (OptOutServiceException optOutServiceException)
+            catch (OptOutProcessingServiceException optOutProcessingServiceException)
             {
-                return InternalServerError(optOutServiceException);
+                return InternalServerError(optOutProcessingServiceException);
             }
         }
 
@@ -83,11 +83,11 @@ namespace LHDS.AdminPortal.Api.Controllers
             {
                 return Conflict(optOutProcessingDependencyValidationException.InnerException);
             }
-            catch (OptOutDependencyException optOutDependencyException)
+            catch (OptOutProcessingDependencyException optOutProcessingDependencyException)
             {
-                return InternalServerError(optOutDependencyException);
+                return InternalServerError(optOutProcessingDependencyException);
             }
-            catch (OptOutServiceException optOutProcessingServiceException)
+            catch (OptOutProcessingServiceException optOutProcessingServiceException)
             {
                 return InternalServerError(optOutProcessingServiceException);
             }
@@ -153,11 +153,11 @@ namespace LHDS.AdminPortal.Api.Controllers
             {
                 return Conflict(optOutProcessingDependencyValidationException.InnerException);
             }
-            catch (OptOutDependencyException optOutDependencyException)
+            catch (OptOutProcessingDependencyException optOutProcessingDependencyException)
             {
-                return InternalServerError(optOutDependencyException);
+                return InternalServerError(optOutProcessingDependencyException);
             }
-            catch (OptOutServiceException optOutProcessingServiceException)
+            catch (OptOutProcessingServiceException optOutProcessingServiceException)
             {
                 return InternalServerError(optOutProcessingServiceException);
             }
@@ -165,7 +165,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
         [HttpDelete("{optOutId}")]
-        public async ValueTask<ActionResult<PdsAudit>> DeleteOptOutByIdAsync(Guid optOutId)
+        public async ValueTask<ActionResult<OptOut>> DeleteOptOutByIdAsync(Guid optOutId)
         {
             try
             {
@@ -174,31 +174,31 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok(deletedOptout);
             }
-            catch (OptOutValidationException optOutValidationException)
-                 when (optOutValidationException.InnerException is NotFoundOptOutException)
+            catch (OptOutProcessingValidationException optOutProcessingValidationException)
+                 when (optOutProcessingValidationException.InnerException is NotFoundOptOutException)
             {
-                return NotFound(optOutValidationException.InnerException);
+                return NotFound(optOutProcessingValidationException.InnerException);
             }
-            catch (OptOutValidationException optOutValidationException)
+            catch (OptOutProcessingValidationException optOutProcessingValidationException)
             {
-                return BadRequest(optOutValidationException.InnerException);
+                return BadRequest(optOutProcessingValidationException.InnerException);
             }
-            catch (OptOutDependencyValidationException optOutDependencyValidationException)
-                when (optOutDependencyValidationException.InnerException is LockedOptOutException)
+            catch (OptOutProcessingDependencyValidationException optOutProcessingDependencyValidationException)
+                when (optOutProcessingDependencyValidationException.InnerException is LockedOptOutException)
             {
-                return Locked(optOutDependencyValidationException.InnerException);
+                return Locked(optOutProcessingDependencyValidationException.InnerException);
             }
-            catch (OptOutDependencyValidationException optOutDependencyValidationException)
+            catch (OptOutProcessingDependencyValidationException optOutProcessingDependencyValidationException)
             {
-                return BadRequest(optOutDependencyValidationException);
+                return BadRequest(optOutProcessingDependencyValidationException);
             }
-            catch (OptOutDependencyException optOutDependencyException)
+            catch (OptOutProcessingDependencyException optOutProcessingDependencyException)
             {
-                return InternalServerError(optOutDependencyException);
+                return InternalServerError(optOutProcessingDependencyException);
             }
-            catch (OptOutServiceException optOutServiceException)
+            catch (OptOutProcessingServiceException optOutProcessingServiceException)
             {
-                return InternalServerError(optOutServiceException);
+                return InternalServerError(optOutProcessingServiceException);
             }
         }
     }

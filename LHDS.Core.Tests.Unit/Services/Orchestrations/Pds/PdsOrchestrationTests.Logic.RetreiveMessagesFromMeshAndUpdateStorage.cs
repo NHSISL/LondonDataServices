@@ -152,6 +152,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.AddPdsAuditAsync(It.Is(SamePdsAuditAs(pdsAudit))),
                         Times.Once);
 
+                this.meshServiceMock.Verify(service =>
+                    service.AcknowledgeMessageByIdAsync(message.MessageId),
+                        Times.Exactly(1));
+
                 pdsAuditsList.Add(pdsAudit);
             };
 
@@ -184,7 +188,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId))
                         .ReturnsAsync(message);
 
-                if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId || 
+                if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId ||
                     message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.ReturnWorkflowId)
                 {
                     continue;

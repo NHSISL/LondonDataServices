@@ -76,6 +76,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                     broker.InsertFileAsync(It.IsAny<Stream>(), fileNameReturn, pdsFileContainer),
                         Times.Once());
 
+                this.meshBrokerMock.Verify(broker =>
+                    broker.AcknowledgeMessageByIdAsync(item.MessageId),
+                        Times.Once);
+
                 await this.pdsAuditService.RemovePdsAuditByIdAsync(item.Id);
             }
 

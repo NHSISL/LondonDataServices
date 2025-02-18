@@ -80,6 +80,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                 await this.optOutService.RemoveOptOutByIdAsync(optOut.Id);
             }
 
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
     }

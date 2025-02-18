@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         public async Task ShouldRetrieveUpdateMeshConsentStatusAsync()
         {
             //Given
-            DateTimeOffset currentDateTimeOffset = DateTimeOffset.UtcNow;
+            DateTimeOffset currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             string timestamp = currentDateTimeOffset.ToString("yyyyMMddHHmmss");
             string messageId = GetRandomString();
             List<string> messageIds = new List<string> { messageId };

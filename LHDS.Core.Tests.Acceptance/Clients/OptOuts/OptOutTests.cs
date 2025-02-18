@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         private readonly ICsvHelperBroker csvHelperBroker;
         private readonly MeshConfiguration meshConfiguration;
         private readonly OptOutConfiguration optOutConfiguration;
-        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly IDateTimeBroker dateTimeBroker;
         private readonly ISecurityBroker securityBroker;
         private readonly IOptOutService optOutService;
 
@@ -47,7 +47,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             this.dependencyBroker = dependencyBroker;
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.meshBrokerMock = new Mock<IMeshBroker>();
-            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging(builder =>
@@ -62,15 +61,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
             serviceCollection
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
-                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
-                .AddTransient<IDateTimeBroker>(serviceProvider => dateTimeBrokerMock.Object);
+                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
 
             serviceCollection.AddOptOutClientForAcceptance(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
             this.meshConfiguration = serviceProvider.GetService<MeshConfiguration>();
             this.csvHelperBroker = serviceProvider.GetService<ICsvHelperBroker>();
-            this.securityBroker = serviceProvider.GetService<ISecurityBroker>();
+            this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             this.optOutService = serviceProvider.GetService<IOptOutService>();
             optOutClient = serviceProvider.GetService<IOptOutClient>();
         }

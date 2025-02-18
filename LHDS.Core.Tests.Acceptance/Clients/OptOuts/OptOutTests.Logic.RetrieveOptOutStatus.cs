@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.OptOuts;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
@@ -79,6 +80,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             {
                 await this.optOutService.RemoveOptOutByIdAsync(optOut.Id);
             }
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.InsertFileAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()),
+                    Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.meshBrokerMock.VerifyNoOtherCalls();

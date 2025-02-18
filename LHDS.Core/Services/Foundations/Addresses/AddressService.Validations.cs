@@ -25,10 +25,10 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 (Rule: IsInvalid(address.UpdatedDate), Parameter: nameof(Address.UpdatedDate)),
                 (Rule: IsInvalid(address.UpdatedBy), Parameter: nameof(Address.UpdatedBy)),
 
-                //(Rule: IsNotSame(
-                //    first: currentUser.EntraUserId,
-                //    second: address.CreatedBy),
-                //Parameter: nameof(Address.CreatedBy)),
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: address.CreatedBy),
+                Parameter: nameof(Address.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: address.UpdatedDate,

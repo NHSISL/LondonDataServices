@@ -83,7 +83,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                storageBrokerMock.Object,
                dateTimeBrokerMock.Object,
                securityBrokerMock.Object,
-               loggingBrokerMock.Object)
+               identifierBrokerMock.Object,
+               loggingBrokerMock.Object,
+               auditBrokerMock.Object)
             {
                 CallBase = true
             };
@@ -110,11 +112,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             invalidAddressException.AddData(
                 key: nameof(Address.CreatedDate),
-                values: "Date is required");
+                values:
+                [
+                    "Date is required",
+                    $"Date is not recent"
+                ]);
 
             invalidAddressException.AddData(
                 key: nameof(Address.CreatedBy),
-                values: "Text is required");
+                values:
+                [
+                    "Text is required",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' " +
+                    $"but found '{invalidAddress.CreatedBy}'."
+                ]);
 
             invalidAddressException.AddData(
                 key: nameof(Address.UpdatedDate),
@@ -123,6 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             invalidAddressException.AddData(
                 key: nameof(Address.UpdatedBy),
                 values: "Text is required");
+
 
             var expectedAddressValidationException =
                 new AddressValidationException(
@@ -144,9 +156,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -160,7 +172,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]

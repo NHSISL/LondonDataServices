@@ -9,7 +9,6 @@ using System.Text;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Mesh;
-using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -39,7 +38,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         private readonly MeshConfiguration meshConfiguration;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ISecurityBroker securityBroker;
         private readonly IOptOutService optOutService;
 
         public OptOutTests(DependencyBroker dependencyBroker)

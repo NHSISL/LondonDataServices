@@ -5,11 +5,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.OptOuts;
-using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
@@ -17,37 +18,68 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
     public partial class OptOutTests
     {
         [Fact]
-        public async Task ShouldRetrieveOptOutStatusAsyncAsync()
+        public async Task ShouldRetrieveOptOutStatusAsync()
         {
             //Given
             Guid identifier = Guid.NewGuid();
             DateTimeOffset currentDateTimeOffset = DateTimeOffset.UtcNow;
             string timestamp = currentDateTimeOffset.ToString("yyyyMMddHHmmss");
-            List<OptOutIdentifier> optOutIdentifiers = CreateRandomOptOutIdentifiersList();
+
+            List<OptOut> optOutsStatusUnknown = CreateRandomOptOutsList(
+                GetRandomNumber(),
+                currentDateTimeOffset,
+                timestamp,
+                "Unknown");
+
+            List<OptOut> optOutsStatusOptIn = CreateRandomOptOutsList(
+                GetRandomNumber(),
+                currentDateTimeOffset,
+                timestamp,
+                "Opt-In");
+
+            List<OptOut> optOutsStatusOptOut = CreateRandomOptOutsList(
+                GetRandomNumber(),
+                currentDateTimeOffset,
+                timestamp,
+                "Opt-Out");
+
+            List<OptOut> existingOptOuts = [.. optOutsStatusOptIn, .. optOutsStatusOptOut];
+            List<OptOut> inputOptOuts = [.. existingOptOuts, .. optOutsStatusUnknown];
+            List<OptOut> expectedOptOuts = inputOptOuts.DeepClone();
+
+            var expectedStatusList = expectedOptOuts.Select(optOut =>
+                new { optOut.UniqueReference, optOut.NhsNumber, optOut.Status }).ToList();
+
             bool hasHeaderRecord = optOutConfiguration.OptOutFileHasHeader;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
-            string csvData = GenerateCsv(optOutIdentifiers, hasHeaderRecord, shouldAddTrailingComma);
+            string csvData = GenerateCsv(inputOptOuts, hasHeaderRecord, shouldAddTrailingComma);
             byte[] optOutFile = Encoding.ASCII.GetBytes(csvData);
             Stream optOutStream = new MemoryStream(optOutFile);
             string fileName = GetRandomString();
             Stream stream = new MemoryStream(optOutFile);
-            string expectedString = $"/out/{fileName}_{timestamp}_Response.csv";
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(currentDateTimeOffset);
+            foreach (OptOut optOut in existingOptOuts)
+            {
+                await this.optOutService.AddOptOutAsync(optOut);
+            }
 
             //When
-            var actualString = await this.optOutClient.RetrieveOptOutStatusAsync(input: optOutStream, fileName);
+            await this.optOutClient.RetrieveOptOutStatusAsync(input: optOutStream, fileName);
 
             //Then
-            actualString.Should().Be(expectedString);
+            IQueryable<OptOut> actualOptOuts = await this.optOutService.RetrieveAllOptOutsAsync();
+            List<OptOut> actualOptOutsList = actualOptOuts.ToList();
 
-            this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(It.IsAny<Stream>(), expectedString, It.IsAny<string>()),
-                    Times.Once);
+            var actualStatusList = actualOptOutsList.Select(optOut =>
+                new { optOut.UniqueReference, optOut.NhsNumber, optOut.Status }).ToList();
 
-            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            actualStatusList.Should().Contain(expectedStatusList);
+
+            foreach (OptOut optOut in actualOptOutsList)
+            {
+                await this.optOutService.RemoveOptOutByIdAsync(optOut.Id);
+            }
+
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
     }

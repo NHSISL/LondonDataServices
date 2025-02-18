@@ -9,6 +9,7 @@ using System.Text;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Mesh;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -38,6 +39,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         private readonly MeshConfiguration meshConfiguration;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly ISecurityBroker securityBroker;
         private readonly IOptOutService optOutService;
 
         public OptOutTests(DependencyBroker dependencyBroker)
@@ -68,6 +70,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
             this.meshConfiguration = serviceProvider.GetService<MeshConfiguration>();
             this.csvHelperBroker = serviceProvider.GetService<ICsvHelperBroker>();
+            this.securityBroker = serviceProvider.GetService<ISecurityBroker>();
             this.optOutService = serviceProvider.GetService<IOptOutService>();
             optOutClient = serviceProvider.GetService<IOptOutClient>();
         }
@@ -146,6 +149,25 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             return optOuts;
         }
 
+        private static List<OptOut> CreateRandomOptOutsList(
+            int count,
+            DateTimeOffset dateTimeOffset,
+            string batchReference,
+            string status
+            )
+        {
+            var optOuts = new List<OptOut>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var optOut = CreateOptOutFiller(dateTimeOffset, status).Create();
+                optOut.BatchReference = batchReference;
+                optOuts.Add(optOut);
+            }
+
+            return optOuts;
+        }
+
         private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
@@ -156,6 +178,22 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
                 .OnProperty(optOut => optOut.Status).Use("Unknown")
+                .OnProperty(optOut => optOut.CreatedBy).Use(user)
+                .OnProperty(optOut => optOut.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset, string status)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<OptOut>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
+                .OnProperty(optOut => optOut.Status).Use(status)
                 .OnProperty(optOut => optOut.CreatedBy).Use(user)
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
 
@@ -207,7 +245,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         }
 
         public static string GenerateCsv(
-            List<OptOutIdentifier> optOutIdentifiers,
+            List<OptOut> optOuts,
             bool hasHeaderRecord,
             bool shouldAddTrailingComma)
         {
@@ -215,22 +253,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
             if (hasHeaderRecord)
             {
-                csvBuilder.AppendLine("UniqueReference,NHSNo,Status,StatusChangedDateTime");
+                csvBuilder.AppendLine("UniqueReference,NHSNo");
             }
 
-            foreach (var optOutIdentifier in optOutIdentifiers)
+            foreach (var optOut in optOuts)
             {
-                csvBuilder.Append($"{optOutIdentifier.UniqueReference},");
-                csvBuilder.Append($"{optOutIdentifier.NhsNumber},");
-                csvBuilder.Append($"{optOutIdentifier.Status},");
-                string statusChangedDateTime = $"{optOutIdentifier.StatusChangedDateTime}";
+                csvBuilder.Append($"{optOut.UniqueReference},");
+                string nhsNumber = $"{optOut.NhsNumber}";
 
                 if (shouldAddTrailingComma)
                 {
-                    statusChangedDateTime += ",";
+                    nhsNumber += ",";
                 }
 
-                csvBuilder.AppendLine(statusChangedDateTime);
+                csvBuilder.AppendLine(nhsNumber);
             }
 
             return csvBuilder.ToString();

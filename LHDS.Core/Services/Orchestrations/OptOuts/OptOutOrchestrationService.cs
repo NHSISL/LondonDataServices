@@ -32,7 +32,6 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         private readonly BlobContainers blobContainers;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
-        //private readonly ISecurityBroker securityBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly MeshConfiguration meshConfiguration;
@@ -45,7 +44,6 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             ICsvHelperBroker csvHelperBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
-            //ISecurityBroker securityBroker,
             ILoggingBroker loggingBroker,
             OptOutConfiguration optOutConfiguration,
             MeshConfiguration meshConfiguration)
@@ -57,7 +55,6 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             this.csvHelperBroker = csvHelperBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
-            //this.securityBroker = securityBroker;
             this.loggingBroker = loggingBroker;
             this.optOutConfiguration = optOutConfiguration;
             this.meshConfiguration = meshConfiguration;
@@ -103,7 +100,6 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         OptOut processedOptOut = await TryCatch(async () =>
                         {
                             DateTimeOffset timeStamp = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                            //EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
                             var expirationDate = timeStamp.AddDays(-optOutConfiguration.ExpiredAfterDays);
 
                             OptOut item = await this.optOutProcessingService

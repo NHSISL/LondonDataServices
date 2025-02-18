@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         public async Task ShouldPushExpiredOptOutToMeshForRenewalAsync()
         {
             //Given
-            DateTimeOffset currentDateTimeOffset = DateTimeOffset.UtcNow;
+            DateTimeOffset currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
             string timestamp = currentDateTimeOffset.ToString("yyyyMMddHHmmss");
             string messageId = GetRandomString();
             int randomNumber = GetRandomNumber();

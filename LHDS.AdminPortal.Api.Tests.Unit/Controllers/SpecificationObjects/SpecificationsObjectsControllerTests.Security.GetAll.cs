@@ -13,24 +13,24 @@ using LHDS.AdminPortal.Api.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Xunit;
 
-namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreement
+namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
 {
-    public partial class SubscriberAgreementControllerTests
+    public partial class SpecificationsObjectsControllerTests
     {
         [Fact]
         public void GetAllShouldHaveRoleAttributeWithRoles()
         {
-            // given 
-            var controllerType = typeof(SubscriberAgreementsController);
+            // given
+            var controllerType = typeof(SpecificationObjectsController);
             var methodInfo = controllerType.GetMethod("Get");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
-            List<string> expectedAttributeValues = new List<string>()
+            List<string> expectedAttributeValues = new List<string>
             {
                 "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.Configurations",
-                "ISL.LDS.AdminSpa.ReadOnly"
+                "ISL.LDS.AdminSpa.ReadOnly",
+                "ISL.LDS.AdminSpa.SpecificationObjects"
             };
 
             // when
@@ -64,7 +64,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreement
         public void GetAllShouldNotHaveInvisibleApiAttribute()
         {
             // given
-            var controllerType = typeof(SubscriberAgreementsController);
+            var controllerType = typeof(SpecificationObjectsController);
             var methodInfo = controllerType.GetMethod("Get");
             Type attributeType = typeof(InvisibleApiAttribute);
 

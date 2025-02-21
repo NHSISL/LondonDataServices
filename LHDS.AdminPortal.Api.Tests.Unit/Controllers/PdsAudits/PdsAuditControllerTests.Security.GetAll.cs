@@ -13,24 +13,24 @@ using LHDS.AdminPortal.Api.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Xunit;
 
-namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudit
+namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudits
 {
     public partial class PdsAuditControllerTests
     {
         [Fact]
-        public void GetByIdShouldHaveRoleAttributeWithRoles()
+        public void GetAllShouldHaveRoleAttributeWithRoles()
         {
             // given
             var controllerType = typeof(PdsAuditsController);
-            var methodInfo = controllerType.GetMethod("GetPdsAuditByIdAsync");
+            var methodInfo = controllerType.GetMethod("Get");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
             List<string> expectedAttributeValues = new List<string>
             {
                 "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.Pds",
-                "ISL.LDS.AdminSpa.ReadOnly"
+                "ISL.LDS.AdminSpa.ReadOnly",
+                "ISL.LDS.AdminSpa.Pds"
             };
 
             // when
@@ -61,11 +61,11 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudit
         }
 
         [Fact]
-        public void GetByIdShouldNotHaveInvisibleApiAttribute()
+        public void GetAllShouldNotHaveInvisibleApiAttribute()
         {
             // given
             var controllerType = typeof(PdsAuditsController);
-            var methodInfo = controllerType.GetMethod("GetPdsAuditByIdAsync");
+            var methodInfo = controllerType.GetMethod("Get");
             Type attributeType = typeof(InvisibleApiAttribute);
 
             // when

@@ -21,15 +21,17 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         public async Task ShouldPushExpiredOptOutToMeshForRenewalAsync()
         {
             //Given
+            DateTimeOffset currentDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            string timestamp = currentDateTimeOffset.ToString("yyyyMMddHHmmss");
             string messageId = GetRandomString();
             int randomNumber = GetRandomNumber();
             List<string> messageIds = new List<string> { messageId };
 
             List<OptOut> outputOptOuts =
-                CreateRandomOptOuts(randomNumber, await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync());
+                CreateRandomOptOuts(randomNumber, currentDateTimeOffset);
 
             string mexWorkflowId = this.optOutConfiguration.WorkflowId;
-            DateTimeOffset batchReferenceDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            DateTimeOffset batchReferenceDateTime = currentDateTimeOffset;
             string batchReference = batchReferenceDateTime.ToString("yyyyMMddHHmmss");
             string mexTo = this.optOutConfiguration.To;
             var optOutStringList = new StringBuilder();

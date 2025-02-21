@@ -12,7 +12,8 @@ namespace LHDS.Core.Brokers.CsvHelpers
         ValueTask<List<T>> MapCsvToObjectAsync<T>(
             string data,
             bool hasHeaderRecord,
-            Dictionary<string, int>? fieldMappings = null);
+            Dictionary<string, int>? fieldMappings = null,
+            bool headerValidated = true);
 
         ValueTask<string> MapObjectToCsvAsync<T>(
             List<T> @object,

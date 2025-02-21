@@ -13,23 +13,23 @@ using LHDS.AdminPortal.Api.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Xunit;
 
-namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudit
+namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
 {
-    public partial class PdsAuditControllerTests
+    public partial class SubscriberAgreementControllerTests
     {
         [Fact]
         public void DeleteShouldHaveRoleAttributeWithRoles()
         {
-            // given
-            var controllerType = typeof(PdsAuditsController);
-            var methodInfo = controllerType.GetMethod("DeletePdsAuditByIdAsync");
+            // given 
+            var controllerType = typeof(SubscriberAgreementsController);
+            var methodInfo = controllerType.GetMethod("DeleteSubscriberAgreementByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
-            List<string> expectedAttributeValues = new List<string>
+            List<string> expectedAttributeValues = new List<string>()
             {
                 "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.Pds"
+                "ISL.LDS.AdminSpa.Configurations"
             };
 
             // when
@@ -63,8 +63,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudit
         public void DeleteShouldNotHaveInvisibleApiAttribute()
         {
             // given
-            var controllerType = typeof(PdsAuditsController);
-            var methodInfo = controllerType.GetMethod("DeletePdsAuditByIdAsync");
+            var controllerType = typeof(SubscriberAgreementsController);
+            var methodInfo = controllerType.GetMethod("DeleteSubscriberAgreementByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 
             // when

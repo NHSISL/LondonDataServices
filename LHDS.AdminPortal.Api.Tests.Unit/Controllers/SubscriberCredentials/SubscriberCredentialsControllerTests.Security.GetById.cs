@@ -15,7 +15,7 @@ using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberCredentials
 {
-    public partial class SubscriberCredentialsTests
+    public partial class SubscriberCredentialsControllerTests
     {
         [Fact]
         public void GetByIdShouldHaveRoleAttributeWithRoles()

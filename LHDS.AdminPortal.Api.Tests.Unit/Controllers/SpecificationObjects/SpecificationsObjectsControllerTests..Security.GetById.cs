@@ -15,14 +15,14 @@ using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
 {
-    public partial class SpecificationObjectsControllerTests
+    public partial class SpecificationsObjectsControllerTests
     {
         [Fact]
-        public void GetAllShouldHaveRoleAttributeWithRoles()
+        public void GetByIdShouldHaveRoleAttributeWithRoles()
         {
             // given
             var controllerType = typeof(SpecificationObjectsController);
-            var methodInfo = controllerType.GetMethod("Get");
+            var methodInfo = controllerType.GetMethod("GetSpecificationObjectByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
@@ -61,11 +61,11 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
         }
 
         [Fact]
-        public void GetAllShouldNotHaveInvisibleApiAttribute()
+        public void GetByIdShouldNotHaveInvisibleApiAttribute()
         {
             // given
             var controllerType = typeof(SpecificationObjectsController);
-            var methodInfo = controllerType.GetMethod("Get");
+            var methodInfo = controllerType.GetMethod("GetSpecificationObjectByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 
             // when

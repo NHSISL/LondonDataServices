@@ -15,21 +15,20 @@ using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
 {
-    public partial class SpecificationObjectsControllerTests
+    public partial class SpecificationsObjectsControllerTests
     {
         [Fact]
-        public void GetAllShouldHaveRoleAttributeWithRoles()
+        public void DeleteShouldHaveRoleAttributeWithRoles()
         {
             // given
             var controllerType = typeof(SpecificationObjectsController);
-            var methodInfo = controllerType.GetMethod("Get");
+            var methodInfo = controllerType.GetMethod("DeleteSpecificationObjectByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
             List<string> expectedAttributeValues = new List<string>
             {
                 "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.ReadOnly",
                 "ISL.LDS.AdminSpa.SpecificationObjects"
             };
 
@@ -61,11 +60,11 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
         }
 
         [Fact]
-        public void GetAllShouldNotHaveInvisibleApiAttribute()
+        public void DeleteShouldNotHaveInvisibleApiAttribute()
         {
             // given
             var controllerType = typeof(SpecificationObjectsController);
-            var methodInfo = controllerType.GetMethod("Get");
+            var methodInfo = controllerType.GetMethod("DeleteSpecificationObjectByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 
             // when

@@ -15,7 +15,7 @@ using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
 {
-    public partial class SpecificationObjectsControllerTests
+    public partial class SpecificationsObjectsControllerTests
     {
         [Fact]
         public void GetAllShouldHaveRoleAttributeWithRoles()

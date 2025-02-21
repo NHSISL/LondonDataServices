@@ -45,9 +45,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
         public ValueTask<Address> AddAddressAsync(Address address) =>
             TryCatch(async () =>
             {
-                Address addressWithAddAuditApplied =
-                    await ApplyAddAuditAsync(address);
-
+                Address addressWithAddAuditApplied = await ApplyAddAuditAsync(address);
                 await ValidateAddressOnAddAsync(address);
 
                 return await this.storageBroker.InsertAddressAsync(address);

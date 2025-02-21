@@ -30,6 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             Dictionary<string, int> fieldMappings = null;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            string timeStamp = randomDateTimeOffset.ToString("yyyyMMddHHmmss");
             List<string> outputMessageIds = GetRandomStrings(count: GetRandomNumber());
             List<string> randomConsentedIdentifiers = CreateRandomListOfConsentedIdentifiers(count: GetRandomNumber());
             string randomWorkflowId = this.optOutConfiguration.WorkflowId;
@@ -57,6 +58,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ReturnsAsync(outputMessageIds)
                     .ReturnsAsync(new List<string>());
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
             List<MeshMessage> meshMessageList = new List<MeshMessage>();
             List<KeyValuePair<Stream, Stream>> streamAssertions = new List<KeyValuePair<Stream, Stream>>();
 
@@ -71,6 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 meshMessageList.Add(testMessage);
 
                 string batchReference = GetHeaderValue(testMessage, "mex-localid");
+                string messageFilename = GetHeaderValue(testMessage, "mex-filename");
 
                 optOutProcessingServiceMock.Setup(processings =>
                     processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference))
@@ -107,7 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 Stream actualStream = new MemoryStream();
                 streamAssertions.Add(new KeyValuePair<Stream, Stream>(inputStream, actualStream));
 
-                string inputFileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
+                string inputFileName = $"{optOutConfiguration.OutputFolder}/{messageFilename}_{timeStamp}_Response.csv";
 
                 documentProcessingServiceMock
                     .Setup(processings => processings.AddDocumentAsync(
@@ -151,6 +157,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 meshMessageList.Add(message);
 
                 string batchReference = GetHeaderValue(message, "mex-localid");
+                string messageFilename = GetHeaderValue(message, "mex-filename");
 
                 optOutProcessingServiceMock.Verify(processings =>
                     processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference),
@@ -183,11 +190,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         shouldAddTrailingComma),
                             Times.Exactly(outputMessageIds.Count));
 
-                string inputFileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
+                string inputFileName = $"{optOutConfiguration.OutputFolder}/{messageFilename}_{timeStamp}_Response.csv";
 
                 documentProcessingServiceMock.Verify(processings =>
                     processings.AddDocumentAsync(It.IsAny<Stream>(), inputFileName, inputContainer),
                         Times.Once());
+
+                this.dateTimeBrokerMock.Verify(broker =>
+                    broker.GetCurrentDateTimeOffsetAsync(),
+                        Times.Exactly(outputMessageIds.Count));
 
                 this.meshProcessingServiceMock.Verify(processings =>
                     processings.AcknowledgeMessageByIdAsync(messageId),

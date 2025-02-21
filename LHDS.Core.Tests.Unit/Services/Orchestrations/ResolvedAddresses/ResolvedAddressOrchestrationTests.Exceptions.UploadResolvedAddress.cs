@@ -35,7 +35,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()))
                         .ThrowsAsync(dependencyValidationException);
 
             var expectedResolvedAddressOrchestrationDependencyValidationException =
@@ -61,7 +62,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -94,7 +96,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()))
                         .ThrowsAsync(dependencyException);
 
             var expectedResolvedAddressOrchestrationDependencyException =
@@ -122,7 +125,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -153,7 +157,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()))
                         .ThrowsAsync(serviceException);
 
             var failedResolvedAddressOrchestrationServiceException =
@@ -183,7 +188,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

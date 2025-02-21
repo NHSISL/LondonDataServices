@@ -13,24 +13,23 @@ using LHDS.AdminPortal.Api.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Xunit;
 
-namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
+namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
 {
-    public partial class SpecificationObjectsControllerTests
+    public partial class SubscriberAgreementControllerTests
     {
         [Fact]
-        public void GetAllShouldHaveRoleAttributeWithRoles()
+        public void PutShouldHaveRoleAttributeWithRoles()
         {
-            // given
-            var controllerType = typeof(SpecificationObjectsController);
-            var methodInfo = controllerType.GetMethod("Get");
+            // given 
+            var controllerType = typeof(SubscriberAgreementsController);
+            var methodInfo = controllerType.GetMethod("PutSubscriberAgreementAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
-            List<string> expectedAttributeValues = new List<string>
+            List<string> expectedAttributeValues = new List<string>()
             {
                 "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.ReadOnly",
-                "ISL.LDS.AdminSpa.SpecificationObjects"
+                "ISL.LDS.AdminSpa.Configurations"
             };
 
             // when
@@ -61,11 +60,11 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
         }
 
         [Fact]
-        public void GetAllShouldNotHaveInvisibleApiAttribute()
+        public void PutShouldNotHaveInvisibleApiAttribute()
         {
             // given
-            var controllerType = typeof(SpecificationObjectsController);
-            var methodInfo = controllerType.GetMethod("Get");
+            var controllerType = typeof(SubscriberAgreementsController);
+            var methodInfo = controllerType.GetMethod("PutSubscriberAgreementAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 
             // when

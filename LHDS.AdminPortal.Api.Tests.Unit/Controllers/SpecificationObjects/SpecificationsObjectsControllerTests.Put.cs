@@ -5,8 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Attrify.Attributes;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Controllers;
@@ -15,7 +13,7 @@ using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
 {
-    public partial class SpecificationsObjectsControllerTests
+    public partial class SpecificationObjectsControllerTests
     {
         [Fact]
         public void PutShouldHaveRoleAttributeWithRoles()

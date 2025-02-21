@@ -51,7 +51,8 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackingAudits
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(accessAudit => accessAudit.CreatedBy).Use(user)
-                .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user);
+                .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user)
+                .OnProperty(accessAudit => accessAudit.IngestionTracking).IgnoreIt();
 
             return filler;
         }

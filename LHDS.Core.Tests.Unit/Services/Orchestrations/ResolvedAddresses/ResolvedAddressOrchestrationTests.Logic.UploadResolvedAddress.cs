@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 };
 
             this.csvHelperBrokerMock.Setup(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(inputContent, true, fieldMappings))
+                service.MapCsvToObjectAsync<ResolvedAddress>(inputContent, true, fieldMappings, true))
                     .ReturnsAsync(mappedResolvedAddresses);
 
             this.resolvedAddressProcessingServiceMock.Setup(service =>
@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
             // Then
 
             this.csvHelperBrokerMock.Verify(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(inputContent, true, fieldMappings),
+                service.MapCsvToObjectAsync<ResolvedAddress>(inputContent, true, fieldMappings, true),
                     Times.Once);
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>

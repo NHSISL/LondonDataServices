@@ -30,22 +30,22 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
             var expectedActionResult =
                 new ActionResult<SubscriberAgreement>(expectedObjectResult);
 
-            this.addressServiceMock.Setup(service =>
+            this.subscriberAgreementServiceMock.Setup(service =>
                 service.ModifySubscriberAgreementAsync(inputSubscriberAgreement))
                     .ReturnsAsync(storageSubscriberAgreement);
 
             // when
             ActionResult<SubscriberAgreement> actualActionResult =
-                await this.addressesController.PutSubscriberAgreementAsync(inputSubscriberAgreement);
+                await this.subscriberAgreementsController.PutSubscriberAgreementAsync(inputSubscriberAgreement);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.addressServiceMock.Verify(service =>
+            this.subscriberAgreementServiceMock.Verify(service =>
                 service.ModifySubscriberAgreementAsync(inputSubscriberAgreement),
                    Times.Once);
 
-            this.addressServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
         }
     }
 }

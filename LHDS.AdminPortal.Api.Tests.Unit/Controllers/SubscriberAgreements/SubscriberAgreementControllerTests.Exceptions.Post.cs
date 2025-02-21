@@ -5,7 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Addresses.Exceptions;
+using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -24,10 +24,10 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
             // given
             var someInnerException = new Xeption();
             string someMessage = GetRandomString();
-            Address someAddress = CreateRandomAddress();
+            SubscriberAgreement someSubscriberAgreement = CreateRandomSubscriberAgreement();
 
             var addressValidationException =
-                new AddressValidationException(
+                new SubscriberAgreementValidationException(
                     message: someMessage,
                     innerException: someInnerException);
 
@@ -35,24 +35,24 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
                 BadRequest(addressValidationException.InnerException);
 
             var expectedActionResult =
-                new ActionResult<Address>(expectedBadRequestObjectResult);
+                new ActionResult<SubscriberAgreement>(expectedBadRequestObjectResult);
 
-            this.addressServiceMock.Setup(service =>
-                service.AddAddressAsync(It.IsAny<Address>()))
+            this.subscriberAgreementServiceMock.Setup(service =>
+                service.AddSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()))
                     .ThrowsAsync(addressValidationException);
 
             // when
-            ActionResult<Address> actualActionResult =
-                await this.addressesController.PostAddressAsync(someAddress);
+            ActionResult<SubscriberAgreement> actualActionResult =
+                await this.subscriberAgreementsController.PostSubscriberAgreementAsync(someSubscriberAgreement);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.addressServiceMock.Verify(service =>
-                service.AddAddressAsync(It.IsAny<Address>()),
+            this.subscriberAgreementServiceMock.Verify(service =>
+                service.AddSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
                     Times.Once);
 
-            this.addressServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -61,114 +61,114 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
             Xeption validationException)
         {
             // given
-            Address someAddress = CreateRandomAddress();
+            SubscriberAgreement someSubscriberAgreement = CreateRandomSubscriberAgreement();
 
             InternalServerErrorObjectResult expectedBadRequestObjectResult =
                 InternalServerError(validationException);
 
             var expectedActionResult =
-                new ActionResult<Address>(expectedBadRequestObjectResult);
+                new ActionResult<SubscriberAgreement>(expectedBadRequestObjectResult);
 
-            this.addressServiceMock.Setup(service =>
-                service.AddAddressAsync(It.IsAny<Address>()))
+            this.subscriberAgreementServiceMock.Setup(service =>
+                service.AddSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()))
                     .ThrowsAsync(validationException);
 
             // when
-            ActionResult<Address> actualActionResult =
-                await this.addressesController.PostAddressAsync(someAddress);
+            ActionResult<SubscriberAgreement> actualActionResult =
+                await this.subscriberAgreementsController.PostSubscriberAgreementAsync(someSubscriberAgreement);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.addressServiceMock.Verify(service =>
-                service.AddAddressAsync(It.IsAny<Address>()),
+            this.subscriberAgreementServiceMock.Verify(service =>
+                service.AddSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
                     Times.Once);
 
-            this.addressServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldReturnConflictOnPostIfAlreadyExistsAddressErrorOccurredAsync()
+        public async Task ShouldReturnConflictOnPostIfAlreadyExistsSubscriberAgreementErrorOccurredAsync()
         {
             // given
-            Address someAddress = CreateRandomAddress();
+            SubscriberAgreement someSubscriberAgreement = CreateRandomSubscriberAgreement();
             var someInnerException = new Exception();
             string someMessage = GetRandomString();
 
-            var alreadyExistsAddressException =
-                new AlreadyExistsAddressException(
+            var alreadyExistsSubscriberAgreementException =
+                new AlreadyExistsSubscriberAgreementException(
                     message: someMessage,
                     innerException: someInnerException);
 
             var addressDependencyValidationException =
-                new AddressDependencyValidationException(
+                new SubscriberAgreementDependencyValidationException(
                     message: someMessage,
-                    innerException: alreadyExistsAddressException);
+                    innerException: alreadyExistsSubscriberAgreementException);
 
             ConflictObjectResult expectedConflictObjectResult =
-                Conflict(alreadyExistsAddressException);
+                Conflict(alreadyExistsSubscriberAgreementException);
 
             var expectedActionResult =
-                new ActionResult<Address>(expectedConflictObjectResult);
+                new ActionResult<SubscriberAgreement>(expectedConflictObjectResult);
 
-            this.addressServiceMock.Setup(service =>
-                service.AddAddressAsync(It.IsAny<Address>()))
+            this.subscriberAgreementServiceMock.Setup(service =>
+                service.AddSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()))
                     .ThrowsAsync(addressDependencyValidationException);
 
             // when
-            ActionResult<Address> actualActionResult =
-                await this.addressesController.PostAddressAsync(someAddress);
+            ActionResult<SubscriberAgreement> actualActionResult =
+                await this.subscriberAgreementsController.PostSubscriberAgreementAsync(someSubscriberAgreement);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.addressServiceMock.Verify(service =>
-                service.AddAddressAsync(It.IsAny<Address>()),
+            this.subscriberAgreementServiceMock.Verify(service =>
+                service.AddSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
                     Times.Once);
 
-            this.addressServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldReturnFailedDependencyOnPostIfInvalidAddressReferenceAsync()
+        public async Task ShouldReturnFailedDependencyOnPostIfInvalidSubscriberAgreementReferenceAsync()
         {
             // given
             var someInnerException = new Xeption();
             string someMessage = GetRandomString();
-            Address someAddress = CreateRandomAddress();
+            SubscriberAgreement someSubscriberAgreement = CreateRandomSubscriberAgreement();
 
-            var alreadyExistsAddressException =
-                new InvalidAddressReferenceException(
+            var alreadyExistsSubscriberAgreementException =
+                new InvalidSubscriberAgreementReferenceException(
                     message: someMessage,
                     innerException: someInnerException);
 
             var addressDependencyValidationException =
-                new AddressDependencyValidationException(
+                new SubscriberAgreementDependencyValidationException(
                     message: someMessage,
-                    innerException: alreadyExistsAddressException);
+                    innerException: alreadyExistsSubscriberAgreementException);
 
             FailedDependencyObjectResult expectedBadRequestObjectResult =
                 FailedDependency(addressDependencyValidationException.InnerException);
 
             var expectedActionResult =
-                new ActionResult<Address>(expectedBadRequestObjectResult);
+                new ActionResult<SubscriberAgreement>(expectedBadRequestObjectResult);
 
-            this.addressServiceMock.Setup(service =>
-                service.AddAddressAsync(It.IsAny<Address>()))
+            this.subscriberAgreementServiceMock.Setup(service =>
+                service.AddSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()))
                     .ThrowsAsync(addressDependencyValidationException);
 
             // when
-            ActionResult<Address> actualActionResult =
-                await this.addressesController.PostAddressAsync(someAddress);
+            ActionResult<SubscriberAgreement> actualActionResult =
+                await this.subscriberAgreementsController.PostSubscriberAgreementAsync(someSubscriberAgreement);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.addressServiceMock.Verify(service =>
-                service.AddAddressAsync(It.IsAny<Address>()),
+            this.subscriberAgreementServiceMock.Verify(service =>
+                service.AddSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
                     Times.Once);
 
-            this.addressServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -23,30 +23,30 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
         public async Task ShouldReturnInternalServerErrorOnGetIfServerErrorOccurredAsync(Xeption serverException)
         {
             // given 
-            IQueryable<Address> someAddresses = CreateRandomAddresses();
+            IQueryable<SubscriberAgreement> someSubscriberAgreements = CreateRandomSubscriberAgreements();
 
             InternalServerErrorObjectResult expectedInternalServerErrorObjectResult =
                 InternalServerError(serverException);
 
             var expectedActionResult =
-                new ActionResult<IQueryable<Address>>(expectedInternalServerErrorObjectResult);
+                new ActionResult<IQueryable<SubscriberAgreement>>(expectedInternalServerErrorObjectResult);
 
-            this.addressServiceMock.Setup(service =>
-                service.RetrieveAllAddressesAsync())
+            this.subscriberAgreementServiceMock.Setup(service =>
+                service.RetrieveAllSubscriberAgreementsAsync())
                     .ThrowsAsync(serverException);
 
             // when
-            ActionResult<IQueryable<Address>> actualActionResult =
-                await this.addressesController.GetAllAddressesAsync();
+            ActionResult<IQueryable<SubscriberAgreement>> actualActionResult =
+                await this.subscriberAgreementsController.Get();
 
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);
 
-            this.addressServiceMock.Verify(service =>
-                service.RetrieveAllAddressesAsync(),
+            this.subscriberAgreementServiceMock.Verify(service =>
+                service.RetrieveAllSubscriberAgreementsAsync(),
                     Times.Once());
 
-            this.addressServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
         }
     }
 }

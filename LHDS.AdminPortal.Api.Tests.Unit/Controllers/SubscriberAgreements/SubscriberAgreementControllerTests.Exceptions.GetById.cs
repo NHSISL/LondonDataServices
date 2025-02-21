@@ -5,7 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Addresses.Exceptions;
+using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -27,7 +27,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
             string someMessage = GetRandomString();
 
             var addressValidationException =
-                new AddressValidationException(
+                new SubscriberAgreementValidationException(
                     message: someMessage,
                     innerException: someInnerException);
 
@@ -35,24 +35,24 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
                 BadRequest(addressValidationException.InnerException);
 
             var expectedActionResult =
-                new ActionResult<Address>(expectedBadRequestObjectResult);
+                new ActionResult<SubscriberAgreement>(expectedBadRequestObjectResult);
 
-            this.addressServiceMock.Setup(service =>
-                service.RetrieveAddressByIdAsync(someId))
+            this.subscriberAgreementServiceMock.Setup(service =>
+                service.RetrieveSubscriberAgreementByIdAsync(someId))
                     .ThrowsAsync(addressValidationException);
 
             // when
-            ActionResult<Address> actualActionResult =
-                await this.addressesController.GetAddressByIdAsync(someId);
+            ActionResult<SubscriberAgreement> actualActionResult =
+                await this.subscriberAgreementsController.GetSubscriberAgreementByIdAsync(someId);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.addressServiceMock.Verify(service =>
-                service.RetrieveAddressByIdAsync(someId),
+            this.subscriberAgreementServiceMock.Verify(service =>
+                service.RetrieveSubscriberAgreementByIdAsync(someId),
                     Times.Once);
 
-            this.addressServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -66,24 +66,24 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
                 InternalServerError(serverException);
 
             var expectedActionResult =
-                new ActionResult<Address>(expectedInternalServerErrorObjectResult);
+                new ActionResult<SubscriberAgreement>(expectedInternalServerErrorObjectResult);
 
-            this.addressServiceMock.Setup(service =>
-                service.RetrieveAddressByIdAsync(It.IsAny<Guid>()))
+            this.subscriberAgreementServiceMock.Setup(service =>
+                service.RetrieveSubscriberAgreementByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(serverException);
 
             // when
-            ActionResult<Address> actualActionResult =
-                await this.addressesController.GetAddressByIdAsync(someId);
+            ActionResult<SubscriberAgreement> actualActionResult =
+                await this.subscriberAgreementsController.GetSubscriberAgreementByIdAsync(someId);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.addressServiceMock.Verify(service =>
-                service.RetrieveAddressByIdAsync(It.IsAny<Guid>()),
+            this.subscriberAgreementServiceMock.Verify(service =>
+                service.RetrieveSubscriberAgreementByIdAsync(It.IsAny<Guid>()),
                     Times.Once());
 
-            this.addressServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -93,37 +93,37 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
             Guid someId = Guid.NewGuid();
             string someMessage = GetRandomString();
 
-            var notFoundAddressException =
-                new NotFoundAddressException(
-                    addressId: someId);
+            var notFoundSubscriberAgreementException =
+                new NotFoundSubscriberAgreementException(
+                    subscriberAgreementId: someId);
 
             var addressValidationException =
-                new AddressValidationException(
+                new SubscriberAgreementValidationException(
                     message: someMessage,
-                    innerException: notFoundAddressException);
+                    innerException: notFoundSubscriberAgreementException);
 
             NotFoundObjectResult expectedNotFoundObjectResult =
-                NotFound(notFoundAddressException);
+                NotFound(notFoundSubscriberAgreementException);
 
             var expectedActionResult =
-                new ActionResult<Address>(expectedNotFoundObjectResult);
+                new ActionResult<SubscriberAgreement>(expectedNotFoundObjectResult);
 
-            this.addressServiceMock.Setup(service =>
-                service.RetrieveAddressByIdAsync(It.IsAny<Guid>()))
+            this.subscriberAgreementServiceMock.Setup(service =>
+                service.RetrieveSubscriberAgreementByIdAsync(It.IsAny<Guid>()))
                     .ThrowsAsync(addressValidationException);
 
             // when
-            ActionResult<Address> actualActionResult =
-                await this.addressesController.GetAddressByIdAsync(someId);
+            ActionResult<SubscriberAgreement> actualActionResult =
+                await this.subscriberAgreementsController.GetSubscriberAgreementByIdAsync(someId);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.addressServiceMock.Verify(service =>
-                service.RetrieveAddressByIdAsync(It.IsAny<Guid>()),
+            this.subscriberAgreementServiceMock.Verify(service =>
+                service.RetrieveSubscriberAgreementByIdAsync(It.IsAny<Guid>()),
                     Times.Once);
 
-            this.addressServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
         }
     }
 }

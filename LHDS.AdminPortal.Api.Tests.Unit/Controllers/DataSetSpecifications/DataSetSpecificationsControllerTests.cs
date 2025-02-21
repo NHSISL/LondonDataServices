@@ -2,17 +2,17 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Linq;
 using System;
+using System.Linq;
 using LHDS.AdminPortal.Api.Controllers;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using Moq;
 using RESTFulSense.Controllers;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
-using LHDS.Core.Models.Foundations.DataSetSpecifications;
-using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
 {
@@ -53,7 +53,11 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSetSpecifications
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(accessAudit => accessAudit.CreatedBy).Use(user)
-                .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user);
+                .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user)
+                .OnProperty(accessAudit => accessAudit.DataSet).IgnoreIt()
+                .OnProperty(accessAudit => accessAudit.SpecificationObjects).IgnoreIt()
+                .OnProperty(accessAudit => accessAudit.SupersededBy).IgnoreIt()
+                .OnProperty(accessAudit => accessAudit.PresededBy).IgnoreIt();
 
             return filler;
         }

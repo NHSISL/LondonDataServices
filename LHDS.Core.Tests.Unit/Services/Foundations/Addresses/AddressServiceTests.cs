@@ -110,6 +110,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             return randomAddress;
         }
 
+        private static Address CreateRandomModifyAddress(DateTimeOffset dateTimeOffset, string userId)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            Address randomAddress = CreateRandomAddress(dateTimeOffset, userId);
+
+            randomAddress.CreatedDate =
+                randomAddress.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomAddress;
+        }
+
         private static IQueryable<Address> CreateRandomAddresses()
         {
             return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())

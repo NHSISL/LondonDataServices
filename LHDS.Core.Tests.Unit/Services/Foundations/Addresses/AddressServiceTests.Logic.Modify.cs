@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Addresses;
 using Moq;
 using Xunit;
@@ -19,7 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Address randomAddress = CreateRandomModifyAddress(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            Address randomAddress = CreateRandomModifyAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
             Address inputAddress = randomAddress;
             Address storageAddress = inputAddress.DeepClone();
             storageAddress.UpdatedDate = randomAddress.CreatedDate;
@@ -30,6 +32,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAddressByIdAsync(addressId))
@@ -48,6 +54,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(brokers =>
+                brokers.GetCurrentUserAsync(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

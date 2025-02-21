@@ -183,7 +183,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
             catch (SubscriberAgreementDependencyValidationException subscriberAgreementDependencyValidationException)
             {
-                return BadRequest(subscriberAgreementDependencyValidationException);
+                return BadRequest(subscriberAgreementDependencyValidationException.InnerException);
             }
             catch (SubscriberAgreementDependencyException subscriberAgreementDependencyException)
             {

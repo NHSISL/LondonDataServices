@@ -35,7 +35,7 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
 
             // when
             ActionResult<IQueryable<SubscriberAgreement>> actualActionResult =
-                await this.subscriberAgreementsController.GetAllSubscriberAgreementsAsync();
+                await this.subscriberAgreementsController.Get();
 
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);

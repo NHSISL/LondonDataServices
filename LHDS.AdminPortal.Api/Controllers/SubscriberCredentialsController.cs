@@ -33,7 +33,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                return Ok(await this.subscriberCredentialOrchestration
+                return Created(await this.subscriberCredentialOrchestration
                     .ModifyOrAddSubscriberCredentialAsync(
                         subscriberCredential,
                         regenerateKeys: false,

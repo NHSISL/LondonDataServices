@@ -5,7 +5,6 @@
 using System;
 using System.Linq;
 using LHDS.AdminPortal.Api.Controllers;
-using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using LHDS.Core.Services.Foundations.DataSets;
@@ -50,7 +49,9 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.DataSets
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(accessAudit => accessAudit.CreatedBy).Use(user)
-                .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user);
+                .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user)
+                .OnProperty(accessAudit => accessAudit.Supplier).IgnoreIt()
+                .OnProperty(accessAudit => accessAudit.DataSetSpecifications).IgnoreIt();
 
             return filler;
         }

@@ -50,8 +50,10 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.IngestionTrackings
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(accessAudit => accessAudit.CreatedBy).Use(user)
-                .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user);
+                .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
+                .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
 
             return filler;
         }

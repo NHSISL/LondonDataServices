@@ -18,33 +18,33 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
     public partial class SubscriberAgreementControllerTests
     {
         [Fact]
-        public async Task ShouldReturnAddressesOnGetAsync()
+        public async Task ShouldReturnSubscriberAgreementsOnGetAsync()
         {
             // given 
-            IQueryable<Address> randomAddresses = CreateRandomAddresses();
-            IQueryable<Address> storageAddresses = randomAddresses.DeepClone();
-            IQueryable<Address> expectedAddresses = storageAddresses.DeepClone();
-            var expectedObjectResult = new OkObjectResult(expectedAddresses);
+            IQueryable<SubscriberAgreement> randomSubscriberAgreements = CreateRandomSubscriberAgreements();
+            IQueryable<SubscriberAgreement> storageSubscriberAgreements = randomSubscriberAgreements.DeepClone();
+            IQueryable<SubscriberAgreement> expectedSubscriberAgreements = storageSubscriberAgreements.DeepClone();
+            var expectedObjectResult = new OkObjectResult(expectedSubscriberAgreements);
 
             var expectedActionResult =
-                new ActionResult<IQueryable<Address>>(expectedObjectResult);
+                new ActionResult<IQueryable<SubscriberAgreement>>(expectedObjectResult);
 
-            this.addressServiceMock.Setup(service =>
-                service.RetrieveAllAddressesAsync())
-                    .ReturnsAsync(expectedAddresses);
+            this.subscriberAgreementServiceMock.Setup(service =>
+                service.RetrieveAllSubscriberAgreementsAsync())
+                    .ReturnsAsync(expectedSubscriberAgreements);
 
             // when
-            ActionResult<IQueryable<Address>> actualActionResult =
-                await this.addressesController.GetAllAddressesAsync();
+            ActionResult<IQueryable<SubscriberAgreement>> actualActionResult =
+                await this.subscriberAgreementsController.GetAllSubscriberAgreementsAsync();
 
             // then
             actualActionResult.Should().BeEquivalentTo(expectedActionResult);
 
-            this.addressServiceMock.Verify(service =>
-                service.RetrieveAllAddressesAsync(),
+            this.subscriberAgreementServiceMock.Verify(service =>
+                service.RetrieveAllSubscriberAgreementsAsync(),
                     Times.Once());
 
-            this.addressServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
         }
     }
 }

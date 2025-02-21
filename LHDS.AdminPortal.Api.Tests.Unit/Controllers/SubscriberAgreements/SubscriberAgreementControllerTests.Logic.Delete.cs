@@ -20,33 +20,33 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
         public async Task ShouldReturnOkOnDeleteAsync()
         {
             // given
-            Address randomAddress = CreateRandomAddress();
-            Guid inputId = randomAddress.Id;
-            Address storageAddress = randomAddress.DeepClone();
-            Address expectedAddress = storageAddress.DeepClone();
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement();
+            Guid inputId = randomSubscriberAgreement.Id;
+            SubscriberAgreement storageSubscriberAgreement = randomSubscriberAgreement.DeepClone();
+            SubscriberAgreement expectedSubscriberAgreement = storageSubscriberAgreement.DeepClone();
 
             var expectedObjectResult =
-                new OkObjectResult(expectedAddress);
+                new OkObjectResult(expectedSubscriberAgreement);
 
             var expectedActionResult =
-                new ActionResult<Address>(expectedObjectResult);
+                new ActionResult<SubscriberAgreement>(expectedObjectResult);
 
-            this.addressServiceMock.Setup(service =>
-                service.RemoveAddressByIdAsync(It.IsAny<Guid>()))
-                    .ReturnsAsync(storageAddress);
+            this.subscriberAgreementServiceMock.Setup(service =>
+                service.RemoveSubscriberAgreementByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(storageSubscriberAgreement);
 
             // when
-            ActionResult<Address> actualActionResult =
-                await this.addressesController.DeleteAddressByIdAsync(inputId);
+            ActionResult<SubscriberAgreement> actualActionResult =
+                await this.subscriberAgreementsController.DeleteSubscriberAgreementByIdAsync(inputId);
 
             // then
             actualActionResult.ShouldBeEquivalentTo(expectedActionResult);
 
-            this.addressServiceMock.Verify(service =>
-                service.RemoveAddressByIdAsync(It.IsAny<Guid>()),
+            this.subscriberAgreementServiceMock.Verify(service =>
+                service.RemoveSubscriberAgreementByIdAsync(It.IsAny<Guid>()),
                    Times.Once);
 
-            this.addressServiceMock.VerifyNoOtherCalls();
+            this.subscriberAgreementServiceMock.VerifyNoOtherCalls();
         }
     }
 }

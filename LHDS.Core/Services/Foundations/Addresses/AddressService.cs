@@ -12,6 +12,7 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 
@@ -115,11 +116,11 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 try
                 {
+                    EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
                     var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
                     address.Id = await this.identifierBroker.GetIdentifierAsync();
                     address.CreatedDate = currentDateTime;
-                    address.CreatedBy = "System";
+                    address.CreatedBy = currentUser.EntraUserId;
                     address.UpdatedDate = address.CreatedDate;
                     address.UpdatedBy = address.CreatedBy;
                     await ValidateAddressOnAddAsync(address);

@@ -2,8 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Linq;
 using System;
+using System.Linq;
+using LHDS.AdminPortal.Api.Controllers;
+using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using LHDS.Core.Services.Foundations.Suppliers;
 using Moq;
@@ -11,8 +13,6 @@ using RESTFulSense.Controllers;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
-using LHDS.Core.Models.Foundations.Suppliers;
-using LHDS.AdminPortal.Api.Controllers;
 
 namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Suppliers
 {
@@ -49,7 +49,10 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.Suppliers
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(accessAudit => accessAudit.CreatedBy).Use(user)
-                .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user);
+                .OnProperty(accessAudit => accessAudit.UpdatedBy).Use(user)
+                .OnProperty(accessAudit => accessAudit.IngestionTrackings).IgnoreIt()
+                .OnProperty(accessAudit => accessAudit.DataSets).IgnoreIt();
+            ;
 
             return filler;
         }

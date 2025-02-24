@@ -66,12 +66,6 @@ namespace LHDS.Core.Services.Foundations.DataSets
                     secondDateName: nameof(DataSet.CreatedDate)),
                 Parameter: nameof(DataSet.UpdatedDate)),
 
-                (Rule: IsNotSame(
-                    first: dataSet.UpdatedBy,
-                    second: dataSet.CreatedBy,
-                    secondName: nameof(DataSet.CreatedBy)),
-                Parameter: nameof(DataSet.UpdatedBy)),
-
                 (Rule: await IsNotRecentAsync(dataSet.CreatedDate), Parameter: nameof(DataSet.CreatedDate)));
         }
 

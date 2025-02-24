@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
-            DataSet randomDataSet = CreateRandomDataSet(randomDateTimeOffset);
+            DataSet randomDataSet = CreateRandomDataSet(randomDateTimeOffset, randomEntraUser.EntraUserId);
             DataSet inputDataSet = randomDataSet;
             DataSet storageDataSet = inputDataSet;
             DataSet expectedDataSet = storageDataSet.DeepClone();
@@ -39,15 +39,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     .ReturnsAsync(storageDataSet);
 
             // when
-            DataSet actualDataSet = await this.dataSetService
-                .AddDataSetAsync(inputDataSet);
+            DataSet actualDataSet = await this.dataSetService.AddDataSetAsync(inputDataSet);
 
             // then
             actualDataSet.Should().BeEquivalentTo(expectedDataSet);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Exactly(2));
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),

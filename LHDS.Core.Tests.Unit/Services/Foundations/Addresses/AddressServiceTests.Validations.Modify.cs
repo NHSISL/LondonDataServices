@@ -6,9 +6,12 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
+using LHDS.Core.Services.Foundations.Addresses;
 using Moq;
+using Org.BouncyCastle.Pqc.Crypto.Lms;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
@@ -64,6 +67,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         public async Task ShouldThrowValidationExceptionOnModifyIfAddressIsInvalidAndLogItAsync(string invalidText)
         {
             // given 
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
             var invalidAddress = new Address
             {
                 UPRN = invalidText,
@@ -80,6 +86,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 PostTown = invalidText,
                 PostCode = invalidText,
             };
+
+            var addressServiceMock = new Mock<AddressService>(
+               securityBrokerMock.Object,
+               dateTimeBrokerMock.Object,
+               securityBrokerMock.Object,
+               loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            addressServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidAddress))
+            .ReturnsAsync(invalidAddress);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidAddressException =
                 new InvalidAddressException(
@@ -116,7 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             // when
             ValueTask<Address> modifyAddressTask =
-                this.addressService.ModifyAddressAsync(invalidAddress);
+                addressServiceMock.Object.ModifyAddressAsync(invalidAddress);
 
             AddressValidationException actualAddressValidationException =
                 await Assert.ThrowsAsync<AddressValidationException>(
@@ -128,6 +155,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

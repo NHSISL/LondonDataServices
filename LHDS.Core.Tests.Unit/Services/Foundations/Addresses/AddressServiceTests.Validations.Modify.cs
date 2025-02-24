@@ -85,13 +85,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 DependentLocality = invalidText,
                 PostTown = invalidText,
                 PostCode = invalidText,
+                CreatedBy = invalidText,
+                UpdatedBy = invalidText,
             };
 
             var addressServiceMock = new Mock<AddressService>(
-               securityBrokerMock.Object,
+               storageBrokerMock.Object,
                dateTimeBrokerMock.Object,
                securityBrokerMock.Object,
-               loggingBrokerMock.Object)
+               identifierBrokerMock.Object,
+               loggingBrokerMock.Object,
+               auditBrokerMock.Object)
             {
                 CallBase = true
             };
@@ -129,12 +133,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 values:
                 new[] {
                     "Date is required",
-                    $"Date is the same as {nameof(Address.CreatedDate)}"
+                    $"Date is the same as {nameof(Address.CreatedDate)}",
+                    "Date is not recent"
                 });
 
             invalidAddressException.AddData(
                 key: nameof(Address.UpdatedBy),
-                values: "Text is required");
+                values:
+                    [
+                        "Text is required",
+                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidText}'."
+                    ]);
 
             var expectedAddressValidationException =
                 new AddressValidationException(

@@ -70,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                         Times.Once);
 
             this.csvHelperBrokerMock.Verify(service =>
-                service.MapCsvToObjectAsync<ResolvedAddress>(It.IsAny<string>(), true, fieldMappings),
+                service.MapCsvToObjectAsync<ResolvedAddress>(It.IsAny<string>(), true, fieldMappings, true),
                     Times.Never);
 
             this.resolvedAddressProcessingServiceMock.Verify(service =>

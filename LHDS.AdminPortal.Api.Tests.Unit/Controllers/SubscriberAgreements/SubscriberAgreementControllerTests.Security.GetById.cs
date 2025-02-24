@@ -13,7 +13,7 @@ using LHDS.AdminPortal.Api.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Xunit;
 
-namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreement
+namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SubscriberAgreements
 {
     public partial class SubscriberAgreementControllerTests
     {

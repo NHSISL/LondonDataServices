@@ -26,6 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Given
             List<Exception> exceptions = new List<Exception>();
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+            bool headerValidated = false;
             Dictionary<string, int> fieldMappings = null;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             var randomString = GetRandomString();
@@ -39,8 +40,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<OptOutIdentifier> outputOptOuts = randomOptOuts;
 
             this.csvHelperBrokerMock.Setup(processing =>
-                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))
-                    .ReturnsAsync(outputOptOuts);
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(
+                    inputString,
+                    withHeader,
+                    fieldMappings,
+                    headerValidated))
+                        .ReturnsAsync(outputOptOuts);
 
             foreach (var optOut in outputOptOuts)
             {
@@ -85,7 +90,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedOptOutOrchestrationServiceException);
 
             this.csvHelperBrokerMock.Verify(processing =>
-                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings),
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(
+                    inputString,
+                    withHeader,
+                    fieldMappings,
+                    headerValidated),
                         Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -126,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<Exception> exceptions = new List<Exception>();
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
             Dictionary<string, int> fieldMappings = null;
+            bool headerValidated = false;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             var randomString = GetRandomString();
             var inputString = randomString;
@@ -138,8 +148,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<OptOutIdentifier> outputOptOuts = randomOptOuts;
 
             this.csvHelperBrokerMock.Setup(processing =>
-                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))
-                    .ReturnsAsync(outputOptOuts);
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(
+                    inputString,
+                    withHeader,
+                    fieldMappings,
+                    headerValidated))
+                        .ReturnsAsync(outputOptOuts);
 
             foreach (var optOut in outputOptOuts)
             {
@@ -184,7 +198,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedOptOutOrchestrationServiceException);
 
             this.csvHelperBrokerMock.Verify(processing =>
-                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings),
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(
+                    inputString,
+                    withHeader,
+                    fieldMappings,
+                    headerValidated),
                         Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -223,6 +241,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<Exception> exceptions = new List<Exception>();
             var serviceException = new Exception();
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+            bool headerValidated = false;
             Dictionary<string, int> fieldMappings = null;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             var randomString = GetRandomString();
@@ -236,8 +255,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<OptOutIdentifier> outputOptOuts = randomOptOuts;
 
             this.csvHelperBrokerMock.Setup(processing =>
-                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings))
-                    .ReturnsAsync(outputOptOuts);
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(
+                    inputString,
+                    withHeader,
+                    fieldMappings,
+                    headerValidated))
+                        .ReturnsAsync(outputOptOuts);
 
             var innerFailedOptOutOrchestrationServiceException =
                 new FailedOptOutOrchestrationServiceException(
@@ -286,7 +309,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedOptOutOrchestrationServiceException);
 
             this.csvHelperBrokerMock.Verify(processing =>
-                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader, fieldMappings),
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(
+                    inputString,
+                    withHeader,
+                    fieldMappings,
+                    headerValidated),
                         Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -329,7 +356,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.csvHelperBrokerMock.Setup(processing =>
-                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), false, null))
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), false, null, false))
                     .ThrowsAsync(dependancyValidationException);
 
             // when
@@ -345,7 +372,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedDependencyException);
 
             this.csvHelperBrokerMock.Verify(processing =>
-                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), false, null),
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), false, null, false),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -382,7 +409,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()))
                     .ThrowsAsync(dependancyException);
 
             // when
@@ -400,7 +428,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -441,7 +470,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -459,7 +489,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     {
                         var batch = addresses.Skip(i).Take(batchSize).ToList();
 
-                        List<Address> validatedAddresses = 
+                        List<Address> validatedAddresses =
                             await ExtractValidAddressesAndAssignIdAndAuditAsync(batch, fileName);
 
                         var batchUPRNs = batch.Select(validatedAddress => validatedAddress.UPRN).ToList();
@@ -152,7 +152,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
         }
 
         public ValueTask<IQueryable<Address>> RetrieveAllAddressesAsync() =>
-            TryCatch(async() => await this.storageBroker.SelectAllAddressesAsync());
+            TryCatch(async () => await this.storageBroker.SelectAllAddressesAsync());
 
         public ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId) =>
             TryCatch(async () =>
@@ -170,11 +170,9 @@ namespace LHDS.Core.Services.Foundations.Addresses
         public ValueTask<Address> ModifyAddressAsync(Address address) =>
             TryCatch(async () =>
             {
+                Address addressWithModifyAuditApplied = await ApplyModifyAuditAsync(address);
                 await ValidateAddressOnModifyAsync(address);
-
-                Address maybeAddress =
-                    await this.storageBroker.SelectAddressByIdAsync(address.Id);
-
+                Address maybeAddress = await this.storageBroker.SelectAddressByIdAsync(address.Id);
                 ValidateStorageAddress(maybeAddress, address.Id);
                 ValidateAgainstStorageAddressOnModify(inputAddress: address, storageAddress: maybeAddress);
 
@@ -219,6 +217,18 @@ namespace LHDS.Core.Services.Foundations.Addresses
             csvIdentificationRequest.UpdatedDate = auditDateTimeOffset;
 
             return csvIdentificationRequest;
+        }
+
+        virtual internal async ValueTask<Address> ApplyModifyAuditAsync(
+            Address address)
+        {
+            ValidateAddressIsNotNull(address);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            address.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            address.UpdatedDate = auditDateTimeOffset;
+
+            return address;
         }
     }
 }

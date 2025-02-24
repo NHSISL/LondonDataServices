@@ -13,23 +13,23 @@ using LHDS.AdminPortal.Api.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Xunit;
 
-namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudit
+namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.SpecificationObjects
 {
-    public partial class PdsAuditControllerTests
+    public partial class SpecificationsObjectsControllerTests
     {
         [Fact]
-        public void PutShouldHaveRoleAttributeWithRoles()
+        public void DeleteShouldHaveRoleAttributeWithRoles()
         {
             // given
-            var controllerType = typeof(PdsAuditsController);
-            var methodInfo = controllerType.GetMethod("PutPdsAuditAsync");
+            var controllerType = typeof(SpecificationObjectsController);
+            var methodInfo = controllerType.GetMethod("DeleteSpecificationObjectByIdAsync");
             Type attributeType = typeof(AuthorizeAttribute);
             string attributeProperty = "Roles";
 
             List<string> expectedAttributeValues = new List<string>
             {
                 "ISL.LDS.AdminSpa.Administrators",
-                "ISL.LDS.AdminSpa.Pds",
+                "ISL.LDS.AdminSpa.SpecificationObjects"
             };
 
             // when
@@ -60,11 +60,11 @@ namespace LHDS.AdminPortal.Api.Tests.Unit.Controllers.PdsAudit
         }
 
         [Fact]
-        public void PutShouldNotHaveInvisibleApiAttribute()
+        public void DeleteShouldNotHaveInvisibleApiAttribute()
         {
             // given
-            var controllerType = typeof(PdsAuditsController);
-            var methodInfo = controllerType.GetMethod("PutPdsAuditAsync");
+            var controllerType = typeof(SpecificationObjectsController);
+            var methodInfo = controllerType.GetMethod("DeleteSpecificationObjectByIdAsync");
             Type attributeType = typeof(InvisibleApiAttribute);
 
             // when

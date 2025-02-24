@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 
@@ -14,6 +15,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
         private async ValueTask ValidateDataSetOnAddAsync(DataSet dataSet)
         {
             ValidateDataSetIsNotNull(dataSet);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(dataSet.Id), Parameter: nameof(DataSet.Id)),

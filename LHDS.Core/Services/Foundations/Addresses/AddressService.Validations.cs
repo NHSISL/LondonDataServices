@@ -55,6 +55,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
         private async ValueTask ValidateAddressOnModifyAsync(Address address)
         {
             ValidateAddressIsNotNull(address);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(address.Id), Parameter: nameof(Address.Id)),
@@ -62,6 +63,11 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 (Rule: IsInvalid(address.CreatedBy), Parameter: nameof(Address.CreatedBy)),
                 (Rule: IsInvalid(address.UpdatedDate), Parameter: nameof(Address.UpdatedDate)),
                 (Rule: IsInvalid(address.UpdatedBy), Parameter: nameof(Address.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: address.UpdatedBy),
+                Parameter: nameof(Address.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: address.UpdatedDate,

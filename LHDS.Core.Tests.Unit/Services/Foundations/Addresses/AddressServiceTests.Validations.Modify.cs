@@ -188,9 +188,33 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
         {
             // given
+            EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Address randomAddress = CreateRandomAddress(randomDateTimeOffset);
+            Address randomAddress = CreateRandomAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
             Address invalidAddress = randomAddress;
+
+            var addressServiceMock = new Mock<AddressService>(
+               storageBrokerMock.Object,
+               dateTimeBrokerMock.Object,
+               securityBrokerMock.Object,
+               identifierBrokerMock.Object,
+               loggingBrokerMock.Object,
+               auditBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            addressServiceMock.Setup(service =>
+                service.ApplyModifyAuditAsync(invalidAddress))
+                    .ReturnsAsync(invalidAddress);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidAddressException =
                 new InvalidAddressException(
@@ -205,13 +229,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     message: "Address validation errors occurred, please try again.",
                     innerException: invalidAddressException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
             // when
             ValueTask<Address> modifyAddressTask =
-                this.addressService.ModifyAddressAsync(invalidAddress);
+                addressServiceMock.Object.ModifyAddressAsync(invalidAddress);
 
             AddressValidationException actualAddressValidationException =
                 await Assert.ThrowsAsync<AddressValidationException>(
@@ -223,6 +243,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataSets;
 using Moq;
 using Xunit;
@@ -18,9 +19,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
         public async Task ShouldAddDataSetAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset =
-                GetRandomDateTimeOffset();
-
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
             DataSet randomDataSet = CreateRandomDataSet(randomDateTimeOffset);
             DataSet inputDataSet = randomDataSet;
             DataSet storageDataSet = inputDataSet;
@@ -29,6 +29,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertDataSetAsync(inputDataSet))
@@ -45,11 +49,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertDataSetAsync(inputDataSet),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

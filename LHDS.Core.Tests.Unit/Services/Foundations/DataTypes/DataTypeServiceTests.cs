@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataTypes;
@@ -25,6 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IDataTypeService dataTypeService;
 
@@ -32,11 +34,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.dataTypeService = new DataTypeService(
                 storageBroker: this.storageBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 

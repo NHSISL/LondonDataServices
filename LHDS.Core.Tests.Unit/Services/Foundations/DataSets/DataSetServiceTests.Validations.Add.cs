@@ -130,11 +130,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.CreatedDate),
-                values: "Date is required");
+                 values:
+                [
+                    "Date is required",
+                    "Date is not recent"
+                ]);
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.CreatedBy),
-                values: "Text is required");
+                values:
+                [
+                    "Text is required",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidDataSet.CreatedBy}'."
+                ]);
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.UpdatedDate),
@@ -218,7 +226,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.CreatedBy),
-                values: "Text is exceeding max length");
+                [
+                    "Text is exceeding max length",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidDataSet.CreatedBy}'."
+                ]);
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.UpdatedBy),
@@ -410,7 +421,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             // when
             ValueTask<DataSet> addDataSetTask =
-                this.dataSetService.AddDataSetAsync(invalidDataSet);
+                dataSetServiceMock.Object.AddDataSetAsync(invalidDataSet);
 
             DataSetValidationException actualDataSetValidationException =
                 await Assert.ThrowsAsync<DataSetValidationException>(addDataSetTask.AsTask);
@@ -455,7 +466,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             DateTimeOffset invalidDateTime =
                 randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
 
-
             var invalidDataSetException =
                 new InvalidDataSetException(
                     message: "Invalid dataSet. Please correct the errors and try again.");
@@ -484,7 +494,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
+                    .ReturnsAsync(invalidDateTime);
 
             this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())

@@ -66,6 +66,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 Name = invalidText
             };
 
+            var dataTypeServiceMock = new Mock<DataTypeService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            dataTypeServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidDataType))
+                    .ReturnsAsync(invalidDataType);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             var invalidDataTypeException =
                 new InvalidDataTypeException(
                     message: "Invalid dataType. Please correct the errors and try again.");
@@ -106,27 +127,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 new DataTypeValidationException(
                     message: "DataType validation errors occurred, please try again.",
                     innerException: invalidDataTypeException);
-
-            var dataTypeServiceMock = new Mock<DataTypeService>(
-                storageBrokerMock.Object,
-                dateTimeBrokerMock.Object,
-                securityBrokerMock.Object,
-                loggingBrokerMock.Object)
-            {
-                CallBase = true
-            };
-
-            dataTypeServiceMock.Setup(service =>
-                service.ApplyAddAuditAsync(invalidDataType))
-                    .ReturnsAsync(invalidDataType);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
-            this.securityBrokerMock.Setup(broker =>
-                broker.GetCurrentUserAsync())
-                    .ReturnsAsync(randomEntraUser);
 
             // when
             ValueTask<DataType> addDataTypeTask =

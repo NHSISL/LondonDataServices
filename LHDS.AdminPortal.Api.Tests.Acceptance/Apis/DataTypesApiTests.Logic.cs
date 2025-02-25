@@ -26,7 +26,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
             DataType actualDataType = await this.apiBroker.PostDataTypeAsync(inputDataType);
 
             // Then
-            actualDataType.Should().BeEquivalentTo(expectedDataType);
+            actualDataType.Should().BeEquivalentTo(expectedDataType, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteDataTypeByIdAsync(inputDataType.Id);
@@ -91,7 +95,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
             DataType actualDataType = await this.apiBroker.GetDataTypeByIdAsync(inputDataType.Id);
 
             // Then
-            actualDataType.Should().BeEquivalentTo(modifiedDataType);
+            actualDataType.Should().BeEquivalentTo(modifiedDataType, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteDataTypeByIdAsync(inputDataType.Id);

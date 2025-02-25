@@ -70,6 +70,7 @@ steps:
     inputs:
       version: 9.x
       performMultiLevelLookup: true
+      includePreviewVersions: true # Required for preview versions
 
   - task: UseNode@1
     displayName: "Install Node.js"

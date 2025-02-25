@@ -8,6 +8,7 @@ using FluentAssertions;
 using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
+using LHDS.Core.Services.Foundations.DataTypes;
 using Moq;
 using Xunit;
 
@@ -79,11 +80,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             invalidDataTypeException.AddData(
                 key: nameof(DataType.CreatedDate),
-                values: "Date is required");
+                values:
+                [
+                    "Date is required",
+                    "Date is not recent"
+                ]);
 
             invalidDataTypeException.AddData(
                 key: nameof(DataType.CreatedBy),
-                values: "Text is required");
+                values:
+                [
+                    "Text is required",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidDataType.CreatedBy}'."
+                ]);
 
             invalidDataTypeException.AddData(
                 key: nameof(DataType.UpdatedDate),
@@ -98,9 +107,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     message: "DataType validation errors occurred, please try again.",
                     innerException: invalidDataTypeException);
 
+            var dataTypeServiceMock = new Mock<DataTypeService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            dataTypeServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidDataType))
+                    .ReturnsAsync(invalidDataType);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<DataType> addDataTypeTask =
-                this.dataTypeService.AddDataTypeAsync(invalidDataType);
+                dataTypeServiceMock.Object.AddDataTypeAsync(invalidDataType);
 
             DataTypeValidationException actualDataTypeValidationException =
                 await Assert.ThrowsAsync<DataTypeValidationException>(addDataTypeTask.AsTask);
@@ -111,6 +141,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

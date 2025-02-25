@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertDataTypeAsync(inputDataType),

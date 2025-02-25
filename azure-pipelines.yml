@@ -70,7 +70,6 @@ steps:
     inputs:
       version: 9.x
       performMultiLevelLookup: true
-      includePreviewVersions: true # Required for preview versions
 
   - task: UseNode@1
     displayName: "Install Node.js"
@@ -112,9 +111,6 @@ steps:
         
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo
         apt-key add -
-        
-        sudo add-apt-repository "deb [arch=amd64]
-        https://download.docker.com/linux/ubuntu bionic stable"
         
         sudo add-apt-repository "deb [arch=amd64]
         https://download.docker.com/linux/ubuntu bionic stable"

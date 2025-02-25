@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using Moq;
@@ -56,6 +57,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         public async Task ShouldThrowValidationExceptionOnAddIfDataTypeIsInvalidAndLogItAsync(string invalidText)
         {
             // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
             var invalidDataType = new DataType
             {
                 Name = invalidText
@@ -118,9 +122,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.InsertDataTypeAsync(It.IsAny<DataType>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]

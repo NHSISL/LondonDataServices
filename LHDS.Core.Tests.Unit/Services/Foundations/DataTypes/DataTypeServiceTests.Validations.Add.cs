@@ -167,7 +167,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DataType randomDataType = CreateRandomDataType(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DataType randomDataType = CreateRandomDataType(randomDateTimeOffset, randomEntraUser.EntraUserId);
             randomDataType.Name = GetRandomString(51);
             var invalidDataType = randomDataType;
 
@@ -188,6 +189,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<DataType> addDataTypeTask =
                 this.dataTypeService.AddDataTypeAsync(invalidDataType);
@@ -201,6 +206,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

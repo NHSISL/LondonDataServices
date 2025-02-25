@@ -60,11 +60,9 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         public ValueTask<DataType> ModifyDataTypeAsync(DataType dataType) =>
             TryCatch(async () =>
             {
-                await ValidateDataTypeOnModifyAsync(dataType);
-
-                DataType maybeDataType =
-                    await this.storageBroker.SelectDataTypeByIdAsync(dataType.Id);
-
+                DataType dataTypeWithModifyAuditApplied = await ApplyModifyAuditAsync(dataType);
+                await ValidateDataTypeOnModifyAsync(dataTypeWithModifyAuditApplied);
+                DataType maybeDataType = await this.storageBroker.SelectDataTypeByIdAsync(dataType.Id);
                 ValidateStorageDataType(maybeDataType, dataType.Id);
                 ValidateAgainstStorageDataTypeOnModify(inputDataType: dataType, storageDataType: maybeDataType);
 
@@ -91,6 +89,17 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             dataType.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             dataType.CreatedDate = auditDateTimeOffset;
+            dataType.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            dataType.UpdatedDate = auditDateTimeOffset;
+
+            return dataType;
+        }
+
+        virtual internal async ValueTask<DataType> ApplyModifyAuditAsync(DataType dataType)
+        {
+            ValidateDataTypeIsNotNull(dataType);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
             dataType.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             dataType.UpdatedDate = auditDateTimeOffset;
 

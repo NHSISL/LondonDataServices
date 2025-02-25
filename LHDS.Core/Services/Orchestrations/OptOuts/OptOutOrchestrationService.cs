@@ -282,7 +282,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                                 addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
                                                 shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
 
-                                        string messageFilename = GetHeaderValue(message, "mex-filename");
+                                        string messageId = GetHeaderValue(message, "mex-messageid");
 
                                         DateTimeOffset currentDateTimeOffset =
                                             await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
@@ -290,7 +290,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                         string timeStamp = currentDateTimeOffset.ToString("yyyyMMddHHmmss");
 
                                         string fileName = $"{optOutConfiguration.OutputFolder}/" +
-                                            $"{messageFilename}_{timeStamp}_Response.csv";
+                                            $"{messageId}_{timeStamp}_Response.csv";
 
                                         ValidateDocumentRequirements(csvDifferences, fileName);
                                         byte[] csvDifferencesBytes = Encoding.UTF8.GetBytes(csvDifferences);

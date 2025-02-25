@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -66,7 +67,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
                 .AddTransient<ICsvHelperBroker, CsvHelperBroker>()
                 .AddTransient<IAddressService, AddressService>()
                 .AddTransient<IDocumentService, DocumentService>()
-                .AddSingleton<IStorageBroker, StorageBroker>();
+                .AddSingleton<IStorageBroker, StorageBroker>()
+                .AddSingleton<ISecurityBroker, SecurityBroker>();
 
             serviceCollection.AddLogging(builder =>
             {

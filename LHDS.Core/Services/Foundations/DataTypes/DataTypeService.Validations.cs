@@ -51,6 +51,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         private async ValueTask ValidateDataTypeOnModifyAsync(DataType dataType)
         {
             ValidateDataTypeIsNotNull(dataType);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(dataType.Id), Parameter: nameof(DataType.Id)),
@@ -62,6 +63,11 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 (Rule: IsEqualOrSmallerThan(
                     dataType.Name, 50), Parameter: nameof(DataType.Name)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: dataType.UpdatedBy),
+                Parameter: nameof(DataType.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: dataType.UpdatedDate,

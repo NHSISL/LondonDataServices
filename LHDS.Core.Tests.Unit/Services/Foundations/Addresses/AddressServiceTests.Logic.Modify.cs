@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.securityBrokerMock.Verify(brokers =>
                 brokers.GetCurrentUserAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectAddressByIdAsync(inputAddress.Id),

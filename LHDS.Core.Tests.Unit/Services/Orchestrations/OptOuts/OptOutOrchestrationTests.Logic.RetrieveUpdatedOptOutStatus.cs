@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 meshMessageList.Add(testMessage);
 
                 string batchReference = GetHeaderValue(testMessage, "mex-localid");
-                string messageFilename = GetHeaderValue(testMessage, "mex-filename");
+                string meshMessageId = GetHeaderValue(testMessage, "mex-messageid");
 
                 optOutProcessingServiceMock.Setup(processings =>
                     processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference))
@@ -113,7 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 Stream actualStream = new MemoryStream();
                 streamAssertions.Add(new KeyValuePair<Stream, Stream>(inputStream, actualStream));
 
-                string inputFileName = $"{optOutConfiguration.OutputFolder}/{messageFilename}_{timeStamp}_Response.csv";
+                string inputFileName = $"{optOutConfiguration.OutputFolder}/{meshMessageId}_{timeStamp}_Response.csv";
 
                 documentProcessingServiceMock
                     .Setup(processings => processings.AddDocumentAsync(
@@ -157,7 +157,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 meshMessageList.Add(message);
 
                 string batchReference = GetHeaderValue(message, "mex-localid");
-                string messageFilename = GetHeaderValue(message, "mex-filename");
+                string meshMessageId = GetHeaderValue(message, "mex-messageid");
 
                 optOutProcessingServiceMock.Verify(processings =>
                     processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference),
@@ -190,7 +190,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         shouldAddTrailingComma),
                             Times.Exactly(outputMessageIds.Count));
 
-                string inputFileName = $"{optOutConfiguration.OutputFolder}/{messageFilename}_{timeStamp}_Response.csv";
+                string inputFileName = $"{optOutConfiguration.OutputFolder}/{meshMessageId}_{timeStamp}_Response.csv";
 
                 documentProcessingServiceMock.Verify(processings =>
                     processings.AddDocumentAsync(It.IsAny<Stream>(), inputFileName, inputContainer),

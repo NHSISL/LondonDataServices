@@ -122,6 +122,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             return filler;
         }
 
+        private static DataType CreateRandomDataType(
+            DateTimeOffset dateTimeOffset,
+            string userId) =>
+            CreateDataTypeFiller(dateTimeOffset, userId).Create();
+
+        private static Filler<DataType> CreateDataTypeFiller(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            var filler = new Filler<DataType>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(dataType => dataType.CreatedBy).Use(userId)
+                .OnProperty(dataType => dataType.UpdatedBy).Use(userId);
+
+            return filler;
+        }
+
         private EntraUser CreateRandomEntraUser(string entraUserId = "")
         {
             var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;

@@ -33,6 +33,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
         private static void AddConfigurations(ModelBuilder modelBuilder)
         {
+            AddAuditConfigurations(modelBuilder);
             AddAddressConfigurations(modelBuilder);
             AddDataSetConfigurations(modelBuilder);
             AddDataSetSpecificationConfigurations(modelBuilder);

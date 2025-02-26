@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         [MemberData(nameof(DependencyValidationExceptions))]
         public async Task
             ShouldThrowAggregateDependencyValidationExceptionOnProcessResolvedAddressesIfErrorsInLoopAndLogItAsync(
-            Xeption dependencyValidationException)
+                Xeption dependencyValidationException)
         {
             // Given
             string randomFileName = GetRandomString();
@@ -35,7 +35,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()))
                         .ThrowsAsync(dependencyValidationException);
 
             var expectedResolvedAddressOrchestrationDependencyValidationException =
@@ -61,11 +62,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedResolvedAddressOrchestrationDependencyValidationException))),
                         Times.Once);
 
@@ -81,7 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
         [MemberData(nameof(DependencyExceptions))]
         public async Task
             ShouldThrowAggregateDependencyExceptionOnProcessResolvedAddressesIfErrorsInLoopAndLogItAsync(
-            Xeption dependencyException)
+                Xeption dependencyException)
         {
             // Given
             string randomFileName = GetRandomString();
@@ -94,7 +96,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()))
                         .ThrowsAsync(dependencyException);
 
             var expectedResolvedAddressOrchestrationDependencyException =
@@ -111,8 +114,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             ResolvedAddressOrchestrationDependencyException
                 actualResolvedAddressOrchestrationDependencyException =
-                    await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyException>(async () =>
-                        await uploadResolvedAddressTask);
+                    await Assert.ThrowsAsync<ResolvedAddressOrchestrationDependencyException>(
+                        uploadResolvedAddressTask.AsTask);
 
             // Then
             actualResolvedAddressOrchestrationDependencyException.Should()
@@ -122,11 +125,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedResolvedAddressOrchestrationDependencyException))),
                         Times.Once);
 
@@ -153,7 +157,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()))
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()))
                         .ThrowsAsync(serviceException);
 
             var failedResolvedAddressOrchestrationServiceException =
@@ -172,8 +177,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
 
             ResolvedAddressOrchestrationServiceException
                 actualResolvedAddressOrchestrationServiceException =
-                    await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(async () =>
-                        await uploadResolvedAddressTask);
+                    await Assert.ThrowsAsync<ResolvedAddressOrchestrationServiceException>(
+                        uploadResolvedAddressTask.AsTask);
 
             // Then
             actualResolvedAddressOrchestrationServiceException.Should()
@@ -183,11 +188,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.ResolvedAddresses
                 service.MapCsvToObjectAsync<ResolvedAddress>(
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
-                    It.IsAny<Dictionary<string, int>>()),
+                    It.IsAny<Dictionary<string, int>>(),
+                    It.IsAny<bool>()),
                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedResolvedAddressOrchestrationServiceException))),
                         Times.Once);
 

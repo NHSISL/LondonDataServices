@@ -10,6 +10,7 @@ using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 using LHDS.Core.Services.Processings.OptOuts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
@@ -21,6 +22,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
     public class OptOutsController : RESTFulController
     {
         private readonly IOptOutProcessingService optOutProcessingService;
@@ -28,15 +30,13 @@ namespace LHDS.AdminPortal.Api.Controllers
         public OptOutsController(IOptOutProcessingService optOutProcessingService) =>
             this.optOutProcessingService = optOutProcessingService;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.OptOut,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet]
 #if !DEBUG
         [EnableQuery(PageSize = 50)]
 #endif
 #if DEBUG
         [EnableQuery(PageSize = 5000)]
-#endif
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.OptOut, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public async ValueTask<ActionResult<IQueryable<OptOut>>> Get()
         {
@@ -47,20 +47,18 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok(retrievedOptOuts);
             }
-            catch (OptOutDependencyException optOutDependencyException)
+            catch (OptOutProcessingDependencyException optOutProcessingDependencyException)
             {
-                return InternalServerError(optOutDependencyException);
+                return InternalServerError(optOutProcessingDependencyException);
             }
-            catch (OptOutServiceException optOutServiceException)
+            catch (OptOutProcessingServiceException optOutProcessingServiceException)
             {
-                return InternalServerError(optOutServiceException);
+                return InternalServerError(optOutProcessingServiceException);
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
         [HttpPost]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
-#endif
         public async ValueTask<ActionResult<OptOut>> PostOptOutAsync(
             OptOut optOut)
         {
@@ -85,20 +83,18 @@ namespace LHDS.AdminPortal.Api.Controllers
             {
                 return Conflict(optOutProcessingDependencyValidationException.InnerException);
             }
-            catch (OptOutDependencyException optOutDependencyException)
+            catch (OptOutProcessingDependencyException optOutProcessingDependencyException)
             {
-                return InternalServerError(optOutDependencyException);
+                return InternalServerError(optOutProcessingDependencyException);
             }
-            catch (OptOutServiceException optOutProcessingServiceException)
+            catch (OptOutProcessingServiceException optOutProcessingServiceException)
             {
                 return InternalServerError(optOutProcessingServiceException);
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.OptOut,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{nhsNumber}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut, ISL.LDS.AdminApi.ReadOnly")]
-#endif
         public async ValueTask<ActionResult<OptOut>> GetOptOutByNhsNumberAsync(string nhsNumber)
         {
             try
@@ -127,10 +123,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
         [HttpPut]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
-#endif
         public async ValueTask<ActionResult<OptOut>> PutOptOutAsync(OptOut optOut)
         {
             try
@@ -159,21 +153,19 @@ namespace LHDS.AdminPortal.Api.Controllers
             {
                 return Conflict(optOutProcessingDependencyValidationException.InnerException);
             }
-            catch (OptOutDependencyException optOutDependencyException)
+            catch (OptOutProcessingDependencyException optOutProcessingDependencyException)
             {
-                return InternalServerError(optOutDependencyException);
+                return InternalServerError(optOutProcessingDependencyException);
             }
-            catch (OptOutServiceException optOutProcessingServiceException)
+            catch (OptOutProcessingServiceException optOutProcessingServiceException)
             {
                 return InternalServerError(optOutProcessingServiceException);
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Administrators, ISL.LDS.AdminSpa.OptOut")]
         [HttpDelete("{optOutId}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
-#endif
-        public async ValueTask<ActionResult<PdsAudit>> DeleteOptOutByIdAsync(Guid optOutId)
+        public async ValueTask<ActionResult<OptOut>> DeleteOptOutByIdAsync(Guid optOutId)
         {
             try
             {
@@ -182,31 +174,31 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok(deletedOptout);
             }
-            catch (OptOutValidationException optOutValidationException)
-                 when (optOutValidationException.InnerException is NotFoundOptOutException)
+            catch (OptOutProcessingValidationException optOutProcessingValidationException)
+                 when (optOutProcessingValidationException.InnerException is NotFoundOptOutException)
             {
-                return NotFound(optOutValidationException.InnerException);
+                return NotFound(optOutProcessingValidationException.InnerException);
             }
-            catch (OptOutValidationException optOutValidationException)
+            catch (OptOutProcessingValidationException optOutProcessingValidationException)
             {
-                return BadRequest(optOutValidationException.InnerException);
+                return BadRequest(optOutProcessingValidationException.InnerException);
             }
-            catch (OptOutDependencyValidationException optOutDependencyValidationException)
-                when (optOutDependencyValidationException.InnerException is LockedOptOutException)
+            catch (OptOutProcessingDependencyValidationException optOutProcessingDependencyValidationException)
+                when (optOutProcessingDependencyValidationException.InnerException is LockedOptOutException)
             {
-                return Locked(optOutDependencyValidationException.InnerException);
+                return Locked(optOutProcessingDependencyValidationException.InnerException);
             }
-            catch (OptOutDependencyValidationException optOutDependencyValidationException)
+            catch (OptOutProcessingDependencyValidationException optOutProcessingDependencyValidationException)
             {
-                return BadRequest(optOutDependencyValidationException);
+                return BadRequest(optOutProcessingDependencyValidationException);
             }
-            catch (OptOutDependencyException optOutDependencyException)
+            catch (OptOutProcessingDependencyException optOutProcessingDependencyException)
             {
-                return InternalServerError(optOutDependencyException);
+                return InternalServerError(optOutProcessingDependencyException);
             }
-            catch (OptOutServiceException optOutServiceException)
+            catch (OptOutProcessingServiceException optOutProcessingServiceException)
             {
-                return InternalServerError(optOutServiceException);
+                return InternalServerError(optOutProcessingServiceException);
             }
         }
     }

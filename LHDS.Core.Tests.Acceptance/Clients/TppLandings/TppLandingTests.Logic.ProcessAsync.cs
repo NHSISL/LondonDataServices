@@ -53,9 +53,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             IngestionTracking ingestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
-            List<IngestionTrackingAudit> audits =
-                this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
+            IQueryable<IngestionTrackingAudit> allAudits =
+                await this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync();
+
+            List<IngestionTrackingAudit> audits = allAudits
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
 
             foreach (var audit in audits)
             {
@@ -115,9 +117,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             IngestionTracking ingestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
-            List<IngestionTrackingAudit> audits =
-                this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
+            IQueryable<IngestionTrackingAudit> allAudits =
+                await this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync();
+
+            List<IngestionTrackingAudit> audits = allAudits
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
 
             foreach (var audit in audits)
             {
@@ -176,9 +180,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             IngestionTracking ingestionTracking =
                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
-            List<IngestionTrackingAudit> audits =
-                this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
+            IQueryable<IngestionTrackingAudit> allAudits =
+                await this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAuditsAsync();
+
+            List<IngestionTrackingAudit> audits = allAudits
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id).ToList();
 
             foreach (var audit in audits)
             {

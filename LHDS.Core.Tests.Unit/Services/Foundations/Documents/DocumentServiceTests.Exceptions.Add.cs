@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.InsertFileAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
-                   .Throws(duplicateKeyException);
+                   .ThrowsAsync(duplicateKeyException);
 
             // when
             ValueTask uploadFileTask = this.documentService
@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDocumentDependencyValidationException))),
                          Times.Once);
 
@@ -106,7 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.Setup(broker =>
                  broker.InsertFileAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
-                    .Throws(requestFailedException);
+                    .ThrowsAsync(requestFailedException);
 
             // when
             ValueTask uploadFileTask = this.documentService
@@ -126,7 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDependencyException))),
                          Times.Once);
 
@@ -163,7 +163,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.Setup(broker =>
                  broker.InsertFileAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
-                     .Throws(serviceException);
+                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask uploadFileTask = this.documentService
@@ -183,7 +183,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedDocumentServiceException))),
                          Times.Once);
 

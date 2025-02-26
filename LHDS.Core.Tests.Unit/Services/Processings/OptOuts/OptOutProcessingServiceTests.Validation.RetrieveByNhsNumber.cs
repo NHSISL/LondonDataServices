@@ -23,7 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             string invalidOptOutNhsNumber = invalidInput;
 
             var invalidArgumentOptOutProcessingException =
-                new InvalidArgumentOptOutProcessingException();
+                new InvalidArgumentOptOutProcessingException(
+                    message: "Invalid opt out processing argument. Please correct the errors and try again.");
 
             invalidArgumentOptOutProcessingException.AddData(
                 key: nameof(OptOut.NhsNumber),
@@ -31,6 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             var expectedOptOutProcessingValidationException =
                 new OptOutProcessingValidationException(
+                    message: "OptOut processing validation errors occured, please try again",
                     innerException: invalidArgumentOptOutProcessingException);
 
             // when
@@ -49,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     Times.Never());
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedOptOutProcessingValidationException))),
                         Times.Once);
 

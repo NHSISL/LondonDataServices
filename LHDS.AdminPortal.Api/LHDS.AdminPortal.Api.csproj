@@ -10,28 +10,30 @@
 	<PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
 	<PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
 	<ItemGroup>
+		<PackageReference Include="Attrify" Version="0.0.0.2" />
 		<PackageReference Include="Azure.Storage.Blobs" Version="12.23.0" />
 		<PackageReference Include="Azure.Storage.Queues" Version="12.21.0" />
 		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.21.0" />
-		<PackageReference Include="EFxceptions" Version="0.4.5" />
-		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
+		<PackageReference Include="EFxceptions" Version="1.0.3" />
+		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
 		<PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.OData" Version="9.1.1" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.OData" Version="9.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.2">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.9.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
-		<PackageReference Include="Microsoft.Identity.Web" Version="3.5.0" />
+		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.10.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.2" />
+		<PackageReference Include="Microsoft.Identity.Web" Version="3.7.1" />
 		<PackageReference Include="RESTFulSense" Version="3.1.0" />
 		<PackageReference Include="SshKeyGenerator" Version="1.1.51" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.9" />
 		<PackageReference Include="Xeption" Version="2.8.0" />
-		<PackageReference Include="xunit.extensibility.core" Version="2.9.2" />
+		<PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
 	</ItemGroup>
 
 	<ItemGroup>

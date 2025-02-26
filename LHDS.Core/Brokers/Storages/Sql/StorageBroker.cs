@@ -56,9 +56,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
             optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             string connectionString = this.configuration.GetConnectionString(name: "DefaultConnection");
             optionsBuilder.UseSqlServer(connectionString);
-
-            optionsBuilder.ConfigureWarnings(warnings =>
-                warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
         }
 
         private IQueryable<T> SelectAll<T>() where T : class => this.Set<T>();

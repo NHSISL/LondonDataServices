@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedException))),
                          Times.Once);
 
@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedException))),
                          Times.Once);
 
@@ -135,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SpecificationObjects
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedException))),
                          Times.Once);
 

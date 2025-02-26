@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             this.meshServiceMock.Setup(service =>
               service.ValidateMailboxAccessAsync())
-                  .Throws(dependencyValidationException);
+                  .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<bool> validateMailboxAccessTask =
@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedMeshProcessingDependencyValidationException))),
                          Times.Once);
 
@@ -65,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             this.meshServiceMock.Setup(service =>
                 service.ValidateMailboxAccessAsync())
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<bool> meshAddTask =
@@ -82,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedMeshProcessingDependencyException))),
                          Times.Once);
 
@@ -107,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             this.meshServiceMock.Setup(service =>
                 service.ValidateMailboxAccessAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<bool> addValidateAccessTask =
@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
+                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                      expectedMeshProcessingServiveException))),
                          Times.Once);
 

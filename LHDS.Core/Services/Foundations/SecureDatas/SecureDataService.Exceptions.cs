@@ -24,15 +24,15 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             }
             catch (NullSecureDataException nullSecureDataException)
             {
-                throw CreateAndLogValidationException(nullSecureDataException);
+                throw await CreateAndLogValidationExceptionAsync(nullSecureDataException);
             }
             catch (InvalidSecureDataException invalidSecureDataException)
             {
-                throw CreateAndLogValidationException(invalidSecureDataException);
+                throw await CreateAndLogValidationExceptionAsync(invalidSecureDataException);
             }
             catch (InvalidArgumentSecureDataException invalidArgumentSecureDataException)
             {
-                throw CreateAndLogValidationException(invalidArgumentSecureDataException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentSecureDataException);
             }
             catch (ArgumentException argumentException)
             {
@@ -41,7 +41,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                         message: "Failed secure data error occurred, please contact support.",
                         innerException: argumentException);
 
-                throw CreateAndLogDependencyValidationException(failedSecureDataException);
+                throw await CreateAndLogDependencyValidationExceptionAsync(failedSecureDataException);
             }
             catch (RequestFailedException requestFailedException)
             {
@@ -50,7 +50,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                         message: "Failed secure data error occurred, please contact support.",
                         innerException: requestFailedException);
 
-                throw CreateAndLogDependencyException(failedSecureDataException);
+                throw await CreateAndLogDependencyExceptionAsync(failedSecureDataException);
             }
             catch (Exception exception)
             {
@@ -58,7 +58,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                     message: "Failed secure data service error occurred, please contact support.",
                     innerException: exception);
 
-                throw CreateAndLogServiceException(failedSecureDataServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSecureDataServiceException);
             }
         }
 
@@ -70,7 +70,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             }
             catch (InvalidArgumentSecureDataException invalidArgumentSecureDataException)
             {
-                throw CreateAndLogValidationException(invalidArgumentSecureDataException);
+                throw await CreateAndLogValidationExceptionAsync(invalidArgumentSecureDataException);
             }
             catch (RequestFailedException requestFailedException)
             {
@@ -79,7 +79,7 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                         message: "Failed secure data error occurred, please contact support.",
                         innerException: requestFailedException);
 
-                throw CreateAndLogDependencyException(failedSecureDataException);
+                throw await CreateAndLogDependencyExceptionAsync(failedSecureDataException);
             }
             catch (Exception exception)
             {
@@ -87,51 +87,52 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
                     message: "Failed secure data service error occurred, please contact support.",
                     innerException: exception);
 
-                throw CreateAndLogServiceException(failedSecureDataServiceException);
+                throw await CreateAndLogServiceExceptionAsync(failedSecureDataServiceException);
             }
         }
 
-        private SecureDataValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<SecureDataValidationException> CreateAndLogValidationExceptionAsync(Xeption exception)
         {
             var secureDataValidationException = new SecureDataValidationException(
                 message: "Secure data validation errors occurred, please try again.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(secureDataValidationException);
+            await this.loggingBroker.LogErrorAsync(secureDataValidationException);
 
             return secureDataValidationException;
         }
 
-        private SecureDataDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private async ValueTask<SecureDataDependencyValidationException> CreateAndLogDependencyValidationExceptionAsync(
+            Xeption exception)
         {
             var secureDataDependencyValidationException = new SecureDataDependencyValidationException(
                 message: "Secure data dependency validation errors occurred, fix the errors and try again.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(secureDataDependencyValidationException);
+            await this.loggingBroker.LogErrorAsync(secureDataDependencyValidationException);
 
             return secureDataDependencyValidationException;
         }
 
-        private SecureDataDependencyException CreateAndLogDependencyException(Xeption exception)
+        private async ValueTask<SecureDataDependencyException> CreateAndLogDependencyExceptionAsync(Xeption exception)
         {
             var secureDataDependencyException = new SecureDataDependencyException(
                 message: "Secure data dependency errors occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(secureDataDependencyException);
+            await this.loggingBroker.LogErrorAsync(secureDataDependencyException);
 
             return secureDataDependencyException;
         }
 
-        private SecureDataServiceException CreateAndLogServiceException(
+        private async ValueTask<SecureDataServiceException> CreateAndLogServiceExceptionAsync(
             Xeption exception)
         {
             var secureDataServiceException = new SecureDataServiceException(
                 message: "Secure data service error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(secureDataServiceException);
+            await this.loggingBroker.LogErrorAsync(secureDataServiceException);
 
             return secureDataServiceException;
         }

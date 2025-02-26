@@ -28,19 +28,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                     innerException: nullSubscriberAgreementProcessingException);
 
             // when
-            ValueTask<SubscriberAgreement> AddSubscriberAgreementTask =
+            ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
                 this.subscriberAgreementProcessingService.AddSubscriberAgreementAsync(nullSubscriberAgreement);
 
             SubscriberAgreementProcessingValidationException actualSubscriberAgreementProcessingValidationException =
                 await Assert.ThrowsAsync<SubscriberAgreementProcessingValidationException>(
-                    AddSubscriberAgreementTask.AsTask);
+                    addSubscriberAgreementTask.AsTask);
 
             //then
             actualSubscriberAgreementProcessingValidationException.Should()
                 .BeEquivalentTo(expectedSubscriberAgreementProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSubscriberAgreementProcessingValidationException))),
                         Times.Once);
 

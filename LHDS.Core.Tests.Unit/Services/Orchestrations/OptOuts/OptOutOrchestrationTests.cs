@@ -367,9 +367,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 var message = CreateRandomMessage();
                 message.MessageId = item;
                 message.Headers["mex-localid"] = new List<string> { GetRandomString() };
+                message.Headers["mex-filename"] = new List<string> { GetRandomString() };
                 message.FileContent = Encoding.UTF8.GetBytes(sb.ToString());
                 message.Headers["mex-workflowid"] = new List<string> { workflowId };
-
                 messageList.Add(message);
             }
 
@@ -500,8 +500,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             return new TheoryData<Xeption>
             {
-                new OptOutProcessingValidationException(innerException),
-                new OptOutProcessingDependencyValidationException(innerException),
+                new OptOutProcessingValidationException(
+                    message: "OptOut processing validation errors occured, please try again",
+                    innerException),
+
+                new OptOutProcessingDependencyValidationException(
+                    message: "Opt out processing dependency validation occurred, please try again.",
+                    innerException),
 
                 new DocumentProcessingValidationException(
                     message: "Document processing validation errors occured, please try again",
@@ -560,8 +565,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             return new TheoryData<Xeption>
             {
-                new OptOutProcessingDependencyException(innerException),
-                new OptOutProcessingServiceException(innerException),
+                new OptOutProcessingDependencyException(
+                    message: "Opt out processing dependency error occurred, please contact support.",
+                    innerException),
+
+                new OptOutProcessingServiceException(
+                    message: "Opt out processing service error occurred, please contact support.",
+                    innerException),
 
                 new DocumentProcessingDependencyException(
                     message: "Document processing dependency error occurred, please try again.",

@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
@@ -79,11 +78,16 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
 
         private async ValueTask<List<ObjectColumn>> CreateRandomObjectColumns()
         {
-            var result = await Task.WhenAll(
-                Enumerable.Range(start: 1, count: GetRandomNumber())
-                    .Select(async _ => await CreateRandomObjectColumnAsync()));
+            List<ObjectColumn> objectColumns = new List<ObjectColumn>();
+            int count = GetRandomNumber();
 
-            return result.ToList();
+            for (int i = 0; i < count; i++)
+            {
+                ObjectColumn column = await CreateRandomObjectColumnAsync();
+                objectColumns.Add(column);
+            }
+
+            return objectColumns;
         }
 
         private async ValueTask CleanupTask(ObjectColumn objectColumn, bool isObjectColumnDeleted = false)

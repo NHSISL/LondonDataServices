@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Services.Foundations.Addresses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AddressesController : RESTFulController
@@ -22,6 +24,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         public AddressesController(IAddressService addressService) =>
             this.addressService = addressService;
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators")]
         [HttpPost]
         public async ValueTask<ActionResult<Address>> PostAddressAsync(Address address)
         {
@@ -56,6 +59,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet]
         public async ValueTask<ActionResult<IQueryable<Address>>> GetAllAddressesAsync()
         {
@@ -76,6 +80,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators,ISL.LDS.AdminSpa.ReadOnly")]
         [HttpGet("{addressId}")]
         public async ValueTask<ActionResult<Address>> GetAddressByIdAsync(Guid addressId)
         {
@@ -104,6 +109,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators")]
         [HttpPut]
         public async ValueTask<ActionResult<Address>> PutAddressAsync(Address address)
         {
@@ -143,6 +149,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "ISL.LDS.AdminSpa.Addresses,ISL.LDS.AdminSpa.Administrators")]
         [HttpDelete("{addressId}")]
         public async ValueTask<ActionResult<Address>> DeleteAddressByIdAsync(Guid addressId)
         {
@@ -169,7 +176,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
             catch (AddressDependencyValidationException addressDependencyValidationException)
             {
-                return BadRequest(addressDependencyValidationException);
+                return BadRequest(addressDependencyValidationException.InnerException);
             }
             catch (AddressDependencyException addressDependencyException)
             {

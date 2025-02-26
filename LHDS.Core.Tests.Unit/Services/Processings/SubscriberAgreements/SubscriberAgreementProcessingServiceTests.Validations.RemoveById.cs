@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.SubscriberAgreements
                 .BeEquivalentTo(expectedSubscriberAgreementProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
+                broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSubscriberAgreementProcessingValidationException))),
                         Times.Once);
 

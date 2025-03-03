@@ -27,7 +27,7 @@ namespace LHDS.Functions.Pds
         [Function("HandShakeFunction")]
         public async Task Run([TimerTrigger("0 0 23 * * *")] MyInformation myTimer)
         {
-            this.loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
+            await this.loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
@@ -35,11 +35,11 @@ namespace LHDS.Functions.Pds
             }
             catch (Exception ex)
             {
-                this.loggingBroker.LogErrorAsync(ex);
+                await this.loggingBroker.LogErrorAsync(ex);
                 throw;
             }
 
-            this.loggingBroker.LogInformationAsync($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
+            await this.loggingBroker.LogInformationAsync($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
         }
     }
 }

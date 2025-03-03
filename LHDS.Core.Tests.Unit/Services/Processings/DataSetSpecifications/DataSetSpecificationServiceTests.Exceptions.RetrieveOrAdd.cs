@@ -122,7 +122,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             this.dataSetSpecificationServiceMock.Setup(service =>
                 service.RetrieveDataSetSpecificationByIdAsync(inputDataSetSpecification.Id))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<DataSetSpecification> addDataSetSpecificationTask =

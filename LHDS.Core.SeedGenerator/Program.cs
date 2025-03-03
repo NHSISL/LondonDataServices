@@ -71,7 +71,7 @@ namespace LHDS.Core.SeedGenerator
             catch (Exception ex)
             {
                 ILoggingBroker logger = (ILoggingBroker)serviceProvider.GetService(typeof(ILoggingBroker));
-                logger?.LogError(ex);
+                logger?.LogErrorAsync(ex);
                 Console.WriteLine(ex.Message);
             }
         }

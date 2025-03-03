@@ -28,10 +28,10 @@ namespace LHDS.Functions.OptOut
         public async Task Run(
             [BlobTrigger("optout/in/{name}", Connection = "BlobStorage")] Stream myBlob, string name)
         {
-            this.loggingBroker
-                .LogInformation(
-                    $"C# Blob trigger function Processing blob\n " +
-                    $"Name: optout/in/{{name}}");
+            await this.loggingBroker
+                  .LogInformationAsync(
+                      $"C# Blob trigger function Processing blob\n " +
+                      $"Name: optout/in/{{name}}");
 
             try
             {
@@ -39,7 +39,7 @@ namespace LHDS.Functions.OptOut
             }
             catch (Exception ex)
             {
-                this.loggingBroker.LogError(ex);
+                await this.loggingBroker.LogErrorAsync(ex);
                 throw;
             }
         }

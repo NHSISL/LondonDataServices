@@ -27,7 +27,7 @@ namespace LHDS.Functions.OptOut
         [Function("HandshakeFunction")]
         public async Task Run([TimerTrigger("0 0 23 * * *")] MyInformation myTimer)
         {
-            this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+            await this.loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
@@ -35,11 +35,11 @@ namespace LHDS.Functions.OptOut
             }
             catch (Exception ex)
             {
-                this.loggingBroker.LogError(ex);
+                await this.loggingBroker.LogErrorAsync(ex);
                 throw;
             }
 
-            this.loggingBroker.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
+            await this.loggingBroker.LogInformationAsync($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
         }
     }
 }

@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSupplierByIdAsync(randomSupplier.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<Supplier> addSupplierTask =

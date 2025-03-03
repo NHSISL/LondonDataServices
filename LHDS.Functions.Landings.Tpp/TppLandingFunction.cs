@@ -34,10 +34,10 @@ namespace LHDS.Functions.Landings.Tpp
         {
             try
             {
-                this.loggingBroker
-                    .LogInformationAsync(
-                        $"C# Blob trigger function Processing document\n " +
-                        $"Name: FileName: {name}");
+                await this.loggingBroker
+                      .LogInformationAsync(
+                          $"C# Blob trigger function Processing document\n " +
+                          $"Name: FileName: {name}");
 
                 await tppLandingClient.ProcessAsync(
                     input: myBlob,
@@ -46,7 +46,7 @@ namespace LHDS.Functions.Landings.Tpp
             }
             catch (Exception ex)
             {
-                this.loggingBroker.LogErrorAsync(ex);
+                await this.loggingBroker.LogErrorAsync(ex);
                 throw;
             }
         }

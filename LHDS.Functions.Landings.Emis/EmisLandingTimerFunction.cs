@@ -35,7 +35,7 @@ namespace LHDS.Functions.Landings.Emis
         [Function("EmisLandingTimerFunction")]
         public async Task Run([TimerTrigger("0 */15 * * * *")] MyInfo myTimer)
         {
-            this.loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
+            await this.loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
@@ -43,11 +43,11 @@ namespace LHDS.Functions.Landings.Emis
             }
             catch (Exception ex)
             {
-                this.loggingBroker.LogErrorAsync(ex);
+                await this.loggingBroker.LogErrorAsync(ex);
                 throw;
             }
 
-            this.loggingBroker.LogInformationAsync($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
+            await this.loggingBroker.LogInformationAsync($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
         }
     }
 }

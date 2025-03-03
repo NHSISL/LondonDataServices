@@ -42,10 +42,13 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 {
                     string filepath =
                         $"{optOutConfiguration.OutputFolder}/{GetHeaderValue(message, "mex-localid")}"
-                        + "_deltaresponse.csv";
+                        + "_DeltaResponse.csv";
 
                     await this.documentService
-                        .RetrieveDocumentByFileNameAsync(output: expectedFileStream, fileName: filepath, container: optOutFileContainer);
+                        .RetrieveDocumentByFileNameAsync(
+                            output: expectedFileStream,
+                            fileName: filepath,
+                            container: optOutFileContainer);
 
                     expectedFileStream.Should().NotBeNull();
                     StreamReader reader = new StreamReader(expectedFileStream);

@@ -27,7 +27,7 @@ namespace LHDS.Functions.Terminology
         [Function("TerminologyMetadataFunction")]
         public async Task Run([TimerTrigger("0 0 23 * * *")] MyInformation myTimer)
         {
-            loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+            loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
@@ -35,11 +35,11 @@ namespace LHDS.Functions.Terminology
             }
             catch (Exception ex)
             {
-                loggingBroker.LogError(ex);
+                loggingBroker.LogErrorAsync(ex);
                 throw;
             }
 
-            loggingBroker.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
+            loggingBroker.LogInformationAsync($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
         }
     }
 }

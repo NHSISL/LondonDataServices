@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
             }
             catch (Exception ex)
             {
-                loggingBroker.LogError(ex);
+                loggingBroker.LogErrorAsync(ex);
                 Console.WriteLine(ex.Message);
                 Assert.Fail($"{ex.Message}, {ex?.InnerException?.Message}");
             }

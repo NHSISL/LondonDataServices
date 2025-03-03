@@ -39,7 +39,7 @@ namespace LHDS.Functions.Landings.Emis
             [BlobTrigger("emislanding/poc/input/{name}", Connection = "BlobStorage")] Stream myBlob, string name)
         {
             this.loggingBroker
-                .LogInformation(
+                .LogInformationAsync(
                     $"C# Blob trigger function Processing blob\n " +
                     $"Name: emislanding/poc/input/{name}");
 
@@ -81,7 +81,7 @@ namespace LHDS.Functions.Landings.Emis
                     }
 
                     this.loggingBroker
-                        .LogInformation(
+                        .LogInformationAsync(
                             $"Encrypted file:  emislanding/poc/encrypted/encrypted_{name}");
 
                     // Decrypt the encrypted file directly to another file
@@ -108,7 +108,7 @@ namespace LHDS.Functions.Landings.Emis
                     }
 
                     this.loggingBroker
-                        .LogInformation(
+                        .LogInformationAsync(
                             $"Encrypted file:  emislanding/poc/decrypted/decrypted_{name}");
                 }
                 finally
@@ -120,7 +120,7 @@ namespace LHDS.Functions.Landings.Emis
             }
             catch (Exception ex)
             {
-                this.loggingBroker.LogError(ex);
+                this.loggingBroker.LogErrorAsync(ex);
                 throw;
             }
         }

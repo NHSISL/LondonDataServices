@@ -49,7 +49,7 @@ namespace LHDS.Core.SeedGenerator.Services
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                this.loggingBroker.LogError(ex);
+                this.loggingBroker.LogErrorAsync(ex);
             }
         }
 
@@ -68,7 +68,7 @@ namespace LHDS.Core.SeedGenerator.Services
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.ToString());
-                        this.loggingBroker.LogError(ex);
+                        this.loggingBroker.LogErrorAsync(ex);
                     }
                 }
 
@@ -97,7 +97,7 @@ namespace LHDS.Core.SeedGenerator.Services
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.ToString());
-                        this.loggingBroker.LogError(ex);
+                        this.loggingBroker.LogErrorAsync(ex);
                     }
                 }
 
@@ -126,7 +126,7 @@ namespace LHDS.Core.SeedGenerator.Services
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.ToString());
-                        this.loggingBroker.LogError(ex);
+                        this.loggingBroker.LogErrorAsync(ex);
                     }
                 }
 

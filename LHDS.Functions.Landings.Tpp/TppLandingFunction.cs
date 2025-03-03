@@ -35,7 +35,7 @@ namespace LHDS.Functions.Landings.Tpp
             try
             {
                 this.loggingBroker
-                    .LogInformation(
+                    .LogInformationAsync(
                         $"C# Blob trigger function Processing document\n " +
                         $"Name: FileName: {name}");
 
@@ -46,7 +46,7 @@ namespace LHDS.Functions.Landings.Tpp
             }
             catch (Exception ex)
             {
-                this.loggingBroker.LogError(ex);
+                this.loggingBroker.LogErrorAsync(ex);
                 throw;
             }
         }

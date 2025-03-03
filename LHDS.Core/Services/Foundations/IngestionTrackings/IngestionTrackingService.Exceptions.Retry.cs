@@ -28,7 +28,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     if (ex is ForeignKeyConstraintConflictException)
                     {
                         this.loggingBroker
-                            .LogInformation(
+                            .LogInformationAsync(
                                 $"Error found. Retry attempt {attempts}/{3}. " +
                                     $"Exception: {ex.Message}");
 

@@ -29,7 +29,7 @@ namespace LHDS.Functions.Addresses
             [BlobTrigger("addresses/ordinance/in/{name}", Connection = "BlobStorage")] Stream myBlob, string name)
         {
             loggingBroker
-                .LogInformation(
+                .LogInformationAsync(
                     $"C# Blob trigger function Processing blob\n " +
                     $"Name: address/in/{{name}}");
 
@@ -39,7 +39,7 @@ namespace LHDS.Functions.Addresses
             }
             catch (Exception ex)
             {
-                loggingBroker.LogError(ex);
+                loggingBroker.LogErrorAsync(ex);
                 throw;
             }
         }

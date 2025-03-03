@@ -221,7 +221,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             });
 
         public ValueTask<List<MeshMessage>> RetrieveUpdatedMeshConsentStatusesChangesAsync() =>
-                TryCatch(async () =>
+            TryCatch(async () =>
                 {
                     ValidateConfigurationSettings();
                     bool withHeader = this.optOutConfiguration.OptOutFileHasHeader;
@@ -280,17 +280,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                             .MapObjectToCsvAsync(
                                                 @object: differentIdentifiers,
                                                 addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
-                                                shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
-
-                                        string messageFilename = GetHeaderValue(message, "mex-filename");
-
-                                        DateTimeOffset currentDateTimeOffset =
-                                            await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-
-                                        string timeStamp = currentDateTimeOffset.ToString("yyyyMMddHHmmss");
+                                                shouldAddTrailingComma: this.optOutConfiguration
+                                                    .OptOutFileRequireTrailingComma);
 
                                         string fileName = $"{optOutConfiguration.OutputFolder}/" +
-                                            $"{messageFilename}_{timeStamp}_Response.csv";
+                                            $"{batchReference}_DeltaResponse.csv";
 
                                         ValidateDocumentRequirements(csvDifferences, fileName);
                                         byte[] csvDifferencesBytes = Encoding.UTF8.GetBytes(csvDifferences);

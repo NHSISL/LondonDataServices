@@ -28,8 +28,8 @@ namespace LHDS.Functions.Landings.Emis
         public async Task Run(
             [BlobTrigger("emislanding/encrypted/{name}", Connection = "BlobStorage")] string myBlob, string name)
         {
-            this.loggingBroker
-                .LogInformation(
+            await this.loggingBroker
+                .LogInformationAsync(
                     $"C# Blob trigger function Processing blob\n " +
                     $"Name: emislanding/encrypted/{name}");
 
@@ -47,7 +47,7 @@ namespace LHDS.Functions.Landings.Emis
             }
             catch (Exception ex)
             {
-                this.loggingBroker.LogError(ex);
+                await this.loggingBroker.LogErrorAsync(ex);
                 throw;
             }
         }

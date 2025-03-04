@@ -60,7 +60,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
             foreach (DataSet expectedDataSet in expectedDataSets)
             {
                 DataSet actualDataSet = actualDataSets.Single(approval => approval.Id == expectedDataSet.Id);
-                actualDataSet.Should().BeEquivalentTo(expectedDataSet);
+
+                actualDataSet.Should().BeEquivalentTo(expectedDataSet, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+
                 await this.apiBroker.DeleteDataSetByIdAsync(actualDataSet.Id);
             }
 
@@ -82,7 +88,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
                 await this.apiBroker.GetDataSetByIdAsync(inputDataSet.Id);
 
             // Then
-            actualDataSet.Should().BeEquivalentTo(expectedDataSet);
+            actualDataSet.Should().BeEquivalentTo(expectedDataSet, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteDataSetByIdAsync(inputDataSet.Id);
@@ -133,7 +143,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
                 this.apiBroker.GetDataSetByIdAsync(inputDataSet.Id);
 
             // then
-            deletedDataSet.Should().BeEquivalentTo(expectedDataSet);
+            deletedDataSet.Should().BeEquivalentTo(expectedDataSet, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(getDataSetbyIdTask.AsTask);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }

@@ -48,6 +48,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private readonly IAddressClient addressClient;
         private readonly ICompareLogic compareLogic;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly AddressConfiguration addressConfiguration;
         private readonly BlobContainers blobContainers;
         private readonly WireMockServer wireMockServer;
@@ -100,6 +101,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             this.addressConfiguration = serviceProvider.GetService<AddressConfiguration>();
             this.blobContainers = serviceProvider.GetService<BlobContainers>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
+            this.securityBroker = serviceProvider.GetService<ISecurityBroker>();
             addressClient = serviceProvider.GetService<IAddressClient>();
         }
 

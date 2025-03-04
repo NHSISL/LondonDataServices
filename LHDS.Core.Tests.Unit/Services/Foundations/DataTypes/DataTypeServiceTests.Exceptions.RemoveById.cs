@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataTypeByIdAsync(randomDataType.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<DataType> addDataTypeTask =

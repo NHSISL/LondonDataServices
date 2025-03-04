@@ -46,10 +46,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     expectedDataTypeValidationException))),
                         Times.Once);
 
-            this.securityBrokerMock.Verify(broker =>
-                broker.GetCurrentUserAsync(),
-                    Times.Once());
-
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);

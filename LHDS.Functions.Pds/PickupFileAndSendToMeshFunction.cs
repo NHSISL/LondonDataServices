@@ -28,10 +28,10 @@ namespace LHDS.Functions.Pds
         public async Task Run(
             [BlobTrigger("pds/in/{name}", Connection = "BlobStorage")] string myBlob, string name)
         {
-            this.loggingBroker
-                .LogInformation(
-                    $"C# Blob trigger function Processing blob\n " +
-                    $"Name: pds/in/{{name}} \n Data: {myBlob}");
+            await this.loggingBroker
+                  .LogInformationAsync(
+                      $"C# Blob trigger function Processing blob\n " +
+                      $"Name: pds/in/{{name}} \n Data: {myBlob}");
 
             try
             {
@@ -40,7 +40,7 @@ namespace LHDS.Functions.Pds
             }
             catch (Exception ex)
             {
-                this.loggingBroker.LogError(ex);
+                await this.loggingBroker.LogErrorAsync(ex);
                 throw;
             }
         }

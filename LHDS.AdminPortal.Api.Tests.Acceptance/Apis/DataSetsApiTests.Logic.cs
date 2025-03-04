@@ -28,7 +28,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
             DataSet actualDataSet = await this.apiBroker.PostDataSetAsync(inputDataSet);
 
             // Then
-            actualDataSet.Should().BeEquivalentTo(expectedDataSet);
+            actualDataSet.Should().BeEquivalentTo(expectedDataSet, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteDataSetByIdAsync(inputDataSet.Id);
@@ -100,7 +104,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
             DataSet actualDataSet = await this.apiBroker.GetDataSetByIdAsync(inputDataSet.Id);
 
             // Then
-            actualDataSet.Should().BeEquivalentTo(modifiedDataSet);
+            actualDataSet.Should().BeEquivalentTo(modifiedDataSet, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteDataSetByIdAsync(inputDataSet.Id);

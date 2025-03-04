@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSubscriberAgreementByIdAsync(randomSubscriberAgreement.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<SubscriberAgreement> addSubscriberAgreementTask =

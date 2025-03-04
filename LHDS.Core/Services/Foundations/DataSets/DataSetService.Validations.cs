@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 
@@ -146,6 +147,37 @@ namespace LHDS.Core.Services.Foundations.DataSets
                     secondDate: storageDataSet.UpdatedDate,
                     secondDateName: nameof(DataSet.UpdatedDate)),
                 Parameter: nameof(DataSet.UpdatedDate)));
+        }
+
+        private async ValueTask ValidateAgainstStorageDataSetOnDeleteAsync(DataSet dataSet,DataSet maybeDataSet)
+        {
+            EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsNotSame(
+                    dataSet.CreatedDate,
+                    maybeDataSet.CreatedDate,
+                    nameof(maybeDataSet.CreatedDate)),
+                 Parameter: nameof(DataSet.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    dataSet.CreatedBy,
+                    maybeDataSet.CreatedBy,
+                    nameof(maybeDataSet.CreatedBy)),
+                 Parameter: nameof(DataSet.CreatedBy)),
+
+                (Rule: IsNotSame(
+                    maybeDataSet.UpdatedDate,
+                    dataSet.UpdatedDate,
+                    nameof(DataSet.UpdatedDate)),
+                 Parameter: nameof(DataSet.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    auditUser.EntraUserId.ToString(),
+                    dataSet.UpdatedBy,
+                    nameof(DataSet.UpdatedBy)),
+                 Parameter: nameof(DataSet.UpdatedBy))
+            );
         }
 
         private static dynamic IsInvalid(Guid id) => new

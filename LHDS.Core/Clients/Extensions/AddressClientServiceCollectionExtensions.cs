@@ -154,8 +154,13 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
             services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
+<<<<<<< HEAD
             var securityBroker = new SecurityBroker(claimsPrincipal);
             services.AddTransient<ISecurityBroker>(_ => securityBroker);
+=======
+            services.AddTransient<ISecurityBroker, SecurityBroker>();
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+>>>>>>> 4c7091f3e272049b371973f4213f4a46507f5aef
         }
 
         private static void AddServices(IServiceCollection services)

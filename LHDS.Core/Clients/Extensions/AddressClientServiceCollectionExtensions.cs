@@ -138,6 +138,7 @@ namespace LHDS.Core.Clients.Extensions
                         options: blobServiceClientOptions));
             }
 
+            var claimsPrincipal = new ClaimsPrincipal();
             services.AddTransient<IAddressClient, AddressClient>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             services.AddTransient<IAuditClient, AuditClient>();

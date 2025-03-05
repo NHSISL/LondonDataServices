@@ -72,7 +72,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.Specificat
 
             this.specificationObjectServiceMock.Setup(service =>
                 service.RetrieveAllSpecificationObjectsAsync())
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<IQueryable<SpecificationObject>> retrieveObjectsTask =
@@ -118,7 +118,7 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Processings.Specificat
 
             this.specificationObjectServiceMock.Setup(service =>
                 service.RetrieveAllSpecificationObjectsAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<IQueryable<SpecificationObject>> retrieveObjectsTask =

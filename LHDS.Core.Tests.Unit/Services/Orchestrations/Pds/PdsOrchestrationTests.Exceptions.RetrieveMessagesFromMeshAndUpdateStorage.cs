@@ -303,7 +303,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Setup(service =>
               service.RetrieveMessageIdsFromInboxAsync())
-                .Throws(dependancyValidationException);
+                .ThrowsAsync(dependancyValidationException);
 
             //when
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
@@ -347,7 +347,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Setup(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
-                    .Throws(dependancyException);
+                    .ThrowsAsync(dependancyException);
 
             // when
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =
@@ -396,7 +396,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Setup(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<PdsAudit>> retreiveMessagesFromMeshAndUpdateStorageTask =

@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataSetSpecificationByIdAsync(randomDataSetSpecification.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<DataSetSpecification> addDataSetSpecificationTask =

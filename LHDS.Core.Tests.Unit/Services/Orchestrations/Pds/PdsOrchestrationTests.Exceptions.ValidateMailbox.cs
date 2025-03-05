@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Setup(service =>
               service.ValidateMailboxAccessAsync())
-                    .Throws(dependancyValidationException);
+                    .ThrowsAsync(dependancyValidationException);
 
             //when
             ValueTask<bool> validateMailboxAccessTask =
@@ -70,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Setup(service =>
                 service.ValidateMailboxAccessAsync())
-                   .Throws(dependancyException);
+                   .ThrowsAsync(dependancyException);
 
             // when
             ValueTask<bool> validateMailboxAccessTask =

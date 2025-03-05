@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     contentType,
                     contentEncoding,
                     accept))
-                        .Throws(dependencyValidationException);
+                        .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<MeshMessage> retrieveSendMessageTask =
@@ -129,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     contentType,
                     contentEncoding,
                     accept))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<MeshMessage> retrieveMessageAndAcknowledgeTask =
@@ -213,7 +213,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     contentType,
                     contentEncoding,
                     accept))
-                        .Throws(serviceException);
+                        .ThrowsAsync(serviceException);
 
             // when
             ValueTask<MeshMessage> retrieveSendMessageTask =

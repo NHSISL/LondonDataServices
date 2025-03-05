@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
@@ -76,7 +77,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             });
 
             this.dependencyBroker.Configuration["assignConfiguration:apiUrl"] = this.wireMockServer.Url;
-            serviceCollection.AddAddressClient(this.dependencyBroker.Configuration);
+            var claimsPrincipal = new ClaimsPrincipal();
+
+            serviceCollection.AddAddressClient(this.dependencyBroker.Configuration, claimsPrincipal);
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
             this.addressOrchestrationService =

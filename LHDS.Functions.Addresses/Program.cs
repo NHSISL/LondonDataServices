@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Security.Claims;
 using Azure.Core;
 using Azure.Identity;
 using LHDS.Core.Brokers.Securities;
@@ -36,6 +37,7 @@ var host = new HostBuilder()
         AccessToken accessToken = credential.GetTokenAsync(tokenRequestContext).Result;
         SecurityBroker securityBroker = new SecurityBroker(accessToken.Token);
         services.AddTransient<ISecurityBroker>(broker => securityBroker);
+        var claimsPrincipal = new ClaimsPrincipal();
 
         services
             .AddLogging(setup =>
@@ -43,7 +45,7 @@ var host = new HostBuilder()
                 setup.AddApplicationInsights();
                 setup.AddConsole();
             })
-           .AddAddressClient(context.Configuration);
+           .AddAddressClient(context.Configuration, claimsPrincipal);
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .ConfigureFunctionsWorkerDefaults()

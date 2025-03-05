@@ -27,7 +27,7 @@ namespace LHDS.Functions.Addresses
         [Function("ResolvedAddressExporterTimerFunction")]
         public async Task Run([TimerTrigger("0 */15 * * * *")] MyInformation myTimer)
         {
-            loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+            await loggingBroker.LogInformationAsync($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
@@ -35,11 +35,11 @@ namespace LHDS.Functions.Addresses
             }
             catch (Exception ex)
             {
-                loggingBroker.LogError(ex);
+                await loggingBroker.LogErrorAsync(ex);
                 throw;
             }
 
-            loggingBroker.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
+            await loggingBroker.LogInformationAsync($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
         }
     }
 }

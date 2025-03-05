@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -37,6 +38,7 @@ namespace LHDS.Core.Tests.Integration.Addresses
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
+            var claimsPrincipal = new ClaimsPrincipal();
 
             //setup our DI
             var serviceProvider = new ServiceCollection()
@@ -45,7 +47,7 @@ namespace LHDS.Core.Tests.Integration.Addresses
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddAddressClient(configuration)
+                .AddAddressClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 
             this.resolvedAddressService = serviceProvider.GetService<IResolvedAddressService>();

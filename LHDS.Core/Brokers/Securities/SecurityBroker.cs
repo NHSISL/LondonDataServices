@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -28,6 +27,14 @@ namespace LHDS.Core.Brokers.Securities
         /// <param name="httpContextAccessor">Provides access to the current HTTP context.</param>
         public SecurityBroker(IHttpContextAccessor httpContextAccessor) =>
             user = httpContextAccessor.HttpContext?.User ?? new ClaimsPrincipal();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SecurityBroker"/> class using a <see cref="ClaimsPrincipal"/>.
+        /// This constructor is intended for Azure Functions or non-REST API usage.
+        /// </summary>
+        /// <param name="claimsPrincipal">A <see cref="ClaimsPrincipal"/> containing user claims.</param>
+        public SecurityBroker(ClaimsPrincipal claimsPrincipal) =>
+            user = claimsPrincipal;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SecurityBroker"/> class using an access token.

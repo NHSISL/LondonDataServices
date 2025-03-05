@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectTerminologyArtifactByIdAsync(randomTerminologyArtifact.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<TerminologyArtifact> addTerminologyArtifactTask =

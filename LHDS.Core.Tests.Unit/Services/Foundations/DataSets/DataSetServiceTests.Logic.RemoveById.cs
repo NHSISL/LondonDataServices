@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     .ReturnsAsync(storageDataSet);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.UpdateDataSetAsync(It.IsAny<DataSet>()))
+                broker.UpdateDataSetAsync(randomDataSet))
                     .ReturnsAsync(updatedDataSet);
 
             this.storageBrokerMock.Setup(broker =>
@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
-                broker.UpdateDataSetAsync(It.IsAny<DataSet>()),
+                broker.UpdateDataSetAsync(randomDataSet),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

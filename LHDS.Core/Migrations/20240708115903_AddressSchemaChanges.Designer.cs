@@ -1136,7 +1136,7 @@ namespace LHDS.Core.Migrations
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<bool>("canRelandIngestionTracking")
+                    b.Property<bool>("CanRelandIngestionTracking")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");

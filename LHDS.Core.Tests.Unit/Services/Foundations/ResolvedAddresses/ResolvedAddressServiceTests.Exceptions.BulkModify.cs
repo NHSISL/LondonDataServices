@@ -243,7 +243,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             resolvedAddressServiceMock
                 .Setup(service =>
                     service.BulkUpdateBatch(It.IsAny<List<ResolvedAddress>>(), It.IsAny<int>()))
-                .Throws(serviceException);
+                .ThrowsAsync(serviceException);
 
             ResolvedAddressService addressService = resolvedAddressServiceMock.Object;
 

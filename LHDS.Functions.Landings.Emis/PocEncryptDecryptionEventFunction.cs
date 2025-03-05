@@ -38,10 +38,10 @@ namespace LHDS.Functions.Landings.Emis
         public async Task Run(
             [BlobTrigger("emislanding/poc/input/{name}", Connection = "BlobStorage")] Stream myBlob, string name)
         {
-            this.loggingBroker
-                .LogInformation(
-                    $"C# Blob trigger function Processing blob\n " +
-                    $"Name: emislanding/poc/input/{name}");
+            await this.loggingBroker
+                  .LogInformationAsync(
+                      $"C# Blob trigger function Processing blob\n " +
+                      $"Name: emislanding/poc/input/{name}");
 
             try
             {
@@ -80,9 +80,9 @@ namespace LHDS.Functions.Landings.Emis
                             container: "emislanding");
                     }
 
-                    this.loggingBroker
-                        .LogInformation(
-                            $"Encrypted file:  emislanding/poc/encrypted/encrypted_{name}");
+                     await this.loggingBroker
+                           .LogInformationAsync(
+                             $"Encrypted file:  emislanding/poc/encrypted/encrypted_{name}");
 
                     // Decrypt the encrypted file directly to another file
                     using (FileStream encryptedFileStream =
@@ -107,9 +107,9 @@ namespace LHDS.Functions.Landings.Emis
                             container: "emislanding");
                     }
 
-                    this.loggingBroker
-                        .LogInformation(
-                            $"Encrypted file:  emislanding/poc/decrypted/decrypted_{name}");
+                    await this.loggingBroker
+                          .LogInformationAsync(
+                              $"Encrypted file:  emislanding/poc/decrypted/decrypted_{name}");
                 }
                 finally
                 {
@@ -120,7 +120,7 @@ namespace LHDS.Functions.Landings.Emis
             }
             catch (Exception ex)
             {
-                this.loggingBroker.LogError(ex);
+                await this.loggingBroker.LogErrorAsync(ex);
                 throw;
             }
         }

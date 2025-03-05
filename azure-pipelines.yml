@@ -42,7 +42,6 @@ steps:
         cat LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
         cat LHDS.ConfigImportExportTool.Tests.Acceptance/appsettings.ContinuousIntegration.json
 
-
   - task: AzureCLI@2
     displayName: "Add Service Connection to Environment"
     inputs:
@@ -112,9 +111,6 @@ steps:
         
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo
         apt-key add -
-        
-        sudo add-apt-repository "deb [arch=amd64]
-        https://download.docker.com/linux/ubuntu bionic stable"
         
         sudo add-apt-repository "deb [arch=amd64]
         https://download.docker.com/linux/ubuntu bionic stable"
@@ -279,12 +275,6 @@ steps:
       command: 'build'
       projects: '**/LHDS.Functions.Terminology.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_terminology_func --configuration Release
-
-  #- task: DotNetCoreCLI@2
-  #  displayName: C# Integration Tests
-  #  inputs:
-  #    command: 'test'
-  #    projects: '**/*.Tests.Integration.*.csproj'
       
   - task: Npm@1 
     displayName: Run Code linting
@@ -302,7 +292,7 @@ steps:
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Publish Frontend (Development)"
-    condition: ne(variables['Build.Reason'], 'PullRequest')
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     inputs:
       command: "publish"
       publishWebProjects: false
@@ -313,7 +303,7 @@ steps:
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Publish Frontend (idev)"
-    condition: ne(variables['Build.Reason'], 'PullRequest')
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     inputs:
       command: "publish"
       publishWebProjects: false
@@ -324,7 +314,7 @@ steps:
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Publish Frontend (odev)"
-    condition: ne(variables['Build.Reason'], 'PullRequest')
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     inputs:
       command: "publish"
       publishWebProjects: false
@@ -335,7 +325,7 @@ steps:
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Publish Frontend (Test)"
-    condition: ne(variables['Build.Reason'], 'PullRequest')
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     inputs:
       command: "publish"
       publishWebProjects: false
@@ -346,7 +336,7 @@ steps:
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Publish Frontend (Production)"
-    condition: ne(variables['Build.Reason'], 'PullRequest')
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     inputs:
       command: "publish"
       publishWebProjects: false
@@ -357,7 +347,7 @@ steps:
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Publish API"
-    condition: ne(variables['Build.Reason'], 'PullRequest')
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     inputs:
       command: "publish"
       publishWebProjects: false
@@ -366,58 +356,8 @@ steps:
       zipAfterPublish: true
       modifyOutputPath: false
 
-  #- task: DotNetCoreCLI@2
-  #  displayName: "Dotnet Publish (Acceptance)"
-  #  condition: ne(variables['Build.Reason'], 'PullRequest')
-  #  inputs:
-  #    command: "publish"
-  #    publishWebProjects: true
-  #    projects: "**/*.csproj"
-  #    arguments: "-o $(Build.ArtifactStagingDirectory)/acceptance --configuration Acceptance"
-  #    zipAfterPublish: true
-  #    modifyOutputPath: true
-
-  #- task: DotNetCoreCLI@2
-  #  displayName: "Dotnet Publish (Release)"
-  #  condition: ne(variables['Build.Reason'], 'PullRequest')
-  #  inputs:
-  #    command: "publish"
-  #    publishWebProjects: true
-  #    projects: "**/*.csproj"
-  #    arguments: "-o $(Build.ArtifactStagingDirectory)/release --configuration Release"
-  #    zipAfterPublish: true
-  #    modifyOutputPath: true
-
-  #- task: PublishBuildArtifacts@1
-  #  condition: ne(variables['Build.Reason'], 'PullRequest')
-  #  displayName: "Publish Build Artifacts"
-  #  inputs:
-  #    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-  #    ArtifactName: 'drop'
-  #    publishLocation: 'Container'
-
-  #- task: ArchiveFiles@2
-  #  condition: ne(variables['Build.Reason'], 'PullRequest')  
-  #  displayName: 'Archive files - API'
-  #  inputs:
-  #    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_website_api'
-  #    includeRootFolder: false
-  #    archiveType: zip
-  #    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_api.zip
-  #    replaceExistingArchive: true
-
-  #- task: ArchiveFiles@2
-  #  condition: ne(variables['Build.Reason'], 'PullRequest')  
-  #  displayName: 'Archive files - Frontend'
-  #  inputs:
-  #    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_development_frontend_website/LHDS.AdminPortal.Web'
-  #    includeRootFolder: false
-  #    archiveType: zip
-  #    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_development_website_frontend.zip
-  #    replaceExistingArchive: true
-
   - task: ArchiveFiles@2
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Archive files - Emis Function'
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_emis_func'
@@ -427,7 +367,7 @@ steps:
       replaceExistingArchive: true
 
   - task: ArchiveFiles@2
-    condition: ne(variables['Build.Reason'], 'PullRequest')
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     displayName: 'Archive files - OptOut Function'
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_optout_func'
@@ -437,7 +377,7 @@ steps:
       replaceExistingArchive: true
 
   - task: ArchiveFiles@2
-    condition: ne(variables['Build.Reason'], 'PullRequest')
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     displayName: 'Archive files - Pds Function'
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_pds_func'
@@ -447,7 +387,7 @@ steps:
       replaceExistingArchive: true
 
   - task: ArchiveFiles@2
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Archive files - Tpp Function'
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_tpp_func'
@@ -457,7 +397,7 @@ steps:
       replaceExistingArchive: true
 
   - task: ArchiveFiles@2
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Archive files - Addresses Function'
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_addresses_func'
@@ -467,7 +407,7 @@ steps:
       replaceExistingArchive: true
 
   - task: ArchiveFiles@2
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Archive files - Terminology Function'
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_terminology_func'
@@ -477,61 +417,61 @@ steps:
       replaceExistingArchive: true
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_api_website
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - API'
     artifact: drop-api
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_development_frontend_website
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - Frontend (Development)'
     artifact: drop-frontend-development
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_idev_frontend_website
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - Frontend (idev)'
     artifact: drop-frontend-idev
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_odev_frontend_website
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - Frontend (odev)'
     artifact: drop-frontend-odev
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_test_frontend_website
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - Frontend (Test)'
     artifact: drop-frontend-test
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_production_frontend_website
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - Frontend (Production)'
     artifact: drop-frontend-production
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_emis_func.zip
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - Emis Function'
     artifact: drop-emis-func
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_optout_func.zip
-    condition: ne(variables['Build.Reason'], 'PullRequest')
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     displayName: 'Publish Artifact - Opt-Out Function'
     artifact: drop-optout-func
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_pds_func.zip
-    condition: ne(variables['Build.Reason'], 'PullRequest')
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     displayName: 'Publish Artifact - PDS Function'
     artifact: drop-pds-func
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_tpp_func.zip
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - Tpp Function'
     artifact: drop-tpp-func
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_addresses_func.zip
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - Addresses Function'
     artifact: drop-addresses-func
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_terminology_func.zip
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
     displayName: 'Publish Artifact - Terminology Function'
     artifact: drop-terminology-func

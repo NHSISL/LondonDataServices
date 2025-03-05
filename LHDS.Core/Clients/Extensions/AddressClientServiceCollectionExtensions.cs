@@ -36,6 +36,7 @@ using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.Assigns;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -116,6 +117,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAuditBroker, AuditBroker>();
             services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
             services.AddTransient<ISecurityBroker, SecurityBroker>();
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         private static void AddServices(IServiceCollection services)

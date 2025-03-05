@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataSetByIdAsync(randomDataSet.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<DataSet> addDataSetTask =

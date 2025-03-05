@@ -19,6 +19,7 @@ using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -131,6 +132,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
+            services.AddTransient<ISecurityBroker, SecurityBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
 

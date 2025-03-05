@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.optOutServiceMock.Setup(service =>
                 service.RemoveOptOutByIdAsync(inputOptOut.Id))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<OptOut> optOutRemoveTask =
@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.optOutServiceMock.Setup(service =>
                 service.RemoveOptOutByIdAsync(inputOptOut.Id))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<OptOut> optOutRemoveTask =
@@ -118,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.optOutServiceMock.Setup(service =>
                 service.RemoveOptOutByIdAsync(inputOptOut.Id))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<OptOut> optOutRemoveTask =

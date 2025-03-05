@@ -126,7 +126,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
                 message: "IngestionTrackingAudit validation errors occurred, please try again.",
                 exception);
 
-            this.loggingBroker.LogError(ingestionTrackingAuditValidationException);
+            this.loggingBroker.LogErrorAsync(ingestionTrackingAuditValidationException);
 
             return ingestionTrackingAuditValidationException;
         }
@@ -136,7 +136,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
             var ingestionTrackingAuditDependencyException = new IngestionTrackingAuditDependencyException(
                 message: "IngestionTrackingAudit dependency error occurred, please contact support.",
                 innerException: exception);
-            this.loggingBroker.LogCritical(ingestionTrackingAuditDependencyException);
+            this.loggingBroker.LogCriticalAsync(ingestionTrackingAuditDependencyException);
 
             return ingestionTrackingAuditDependencyException;
         }
@@ -149,7 +149,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
                     message: "IngestionTrackingAudit dependency validation occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(ingestionTrackingAuditDependencyValidationException);
+            this.loggingBroker.LogErrorAsync(ingestionTrackingAuditDependencyValidationException);
 
             return ingestionTrackingAuditDependencyValidationException;
         }
@@ -161,7 +161,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
                 message: "IngestionTrackingAudit dependency error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(ingestionTrackingAuditDependencyException);
+            this.loggingBroker.LogErrorAsync(ingestionTrackingAuditDependencyException);
 
             return ingestionTrackingAuditDependencyException;
         }
@@ -173,7 +173,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackingAudits
                 message: "IngestionTrackingAudit service error occurred, please contact support.",
                 innerException: exception);
 
-            this.loggingBroker.LogError(ingestionTrackingAuditServiceException);
+            this.loggingBroker.LogErrorAsync(ingestionTrackingAuditServiceException);
 
             return ingestionTrackingAuditServiceException;
         }

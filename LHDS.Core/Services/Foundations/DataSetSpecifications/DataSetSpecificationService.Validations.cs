@@ -265,21 +265,34 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 Message = $"Date is not the same as {secondName}"
             };
 
-        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
+        private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date)
         {
-            Condition = await IsDateNotRecentAsync(date),
-            Message = "Date is not recent"
-        };
+            var (isNotRecent, startDate, endDate) = await IsDateNotRecentAsync(date);
 
-        private async ValueTask<bool> IsDateNotRecentAsync(DateTimeOffset date)
+            return new
+            {
+                Condition = isNotRecent,
+                Message = $"Date is not recent. Expected a value between {startDate} and {endDate} but found {date}"
+            };
+        }
+
+        private async ValueTask<(bool IsNotRecent, DateTimeOffset StartDate, DateTimeOffset EndDate)>
+            IsDateNotRecentAsync(DateTimeOffset date)
         {
-            DateTimeOffset currentDateTime =
-               await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            int pastThreshold = 90;
+            int futureThreshold = 0;
+            DateTimeOffset currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
 
-            TimeSpan timeDifference = currentDateTime.Subtract(date);
-            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+            if (currentDateTime == default)
+            {
+                return (false, default, default);
+            }
 
-            return timeDifference.Duration() > oneMinute;
+            DateTimeOffset startDate = currentDateTime.AddSeconds(-pastThreshold);
+            DateTimeOffset endDate = currentDateTime.AddSeconds(futureThreshold);
+            bool isNotRecent = date < startDate || date > endDate;
+
+            return (isNotRecent, startDate, endDate);
         }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

@@ -140,12 +140,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             var failedDataSetSpecificationStorageException =
                 new FailedDataSetSpecificationStorageException(
-                    message: "Failed dataSetSpecification storage error occurred, contact support.",
+                    message: "Failed dataSetSpecification storage error occurred, please contact support.",
                     innerException: databaseUpdateException);
 
             var expectedDataSetSpecificationDependencyException =
                 new DataSetSpecificationDependencyException(
-                    message: "DataSetSpecification dependency error occurred, contact support.",
+                    message: "DataSetSpecification dependency error occurred, please contact support.",
                     innerException: failedDataSetSpecificationStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>

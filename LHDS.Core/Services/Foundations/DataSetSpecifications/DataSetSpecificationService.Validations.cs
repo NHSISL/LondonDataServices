@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
 
@@ -14,6 +15,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
         private async ValueTask ValidateDataSetSpecificationOnAddAsync(DataSetSpecification dataSetSpecification)
         {
             ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(dataSetSpecification.Id), Parameter: nameof(DataSetSpecification.Id)),
@@ -36,22 +38,21 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 (Rule: IsInvalid(dataSetSpecification.UpdatedBy), Parameter: nameof(DataSetSpecification.UpdatedBy)),
 
                 (Rule: IsEqualOrSmallerThan(dataSetSpecification.SupplierSpecificationVersion, 10),
-                    Parameter: nameof(dataSetSpecification.SupplierSpecificationVersion)),
+                    Parameter: nameof(DataSetSpecification.SupplierSpecificationVersion)),
 
                 (Rule: IsEqualOrSmallerThan(dataSetSpecification.OurSpecificationVersion, 10),
-                    Parameter: nameof(dataSetSpecification.OurSpecificationVersion)),
+                    Parameter: nameof(DataSetSpecification.OurSpecificationVersion)),
 
                 (Rule: IsEqualOrSmallerThan(dataSetSpecification.CreatedBy, 255),
-                    Parameter: nameof(dataSetSpecification.CreatedBy)),
+                    Parameter: nameof(DataSetSpecification.CreatedBy)),
 
                 (Rule: IsEqualOrSmallerThan(dataSetSpecification.UpdatedBy, 255),
-                    Parameter: nameof(dataSetSpecification.UpdatedBy)),
+                    Parameter: nameof(DataSetSpecification.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    firstDate: dataSetSpecification.UpdatedDate,
-                    secondDate: dataSetSpecification.CreatedDate,
-                    secondDateName: nameof(DataSetSpecification.CreatedDate)),
-                Parameter: nameof(DataSetSpecification.UpdatedDate)),
+                    first: currentUser.EntraUserId,
+                    second: dataSetSpecification.CreatedBy),
+                    Parameter: nameof(DataSetSpecification.CreatedBy)),
 
                 (Rule: IsNotSame(
                     first: dataSetSpecification.UpdatedBy,
@@ -59,13 +60,21 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                     secondName: nameof(DataSetSpecification.CreatedBy)),
                 Parameter: nameof(DataSetSpecification.UpdatedBy)),
 
+                (Rule: IsNotSame(
+                    first: dataSetSpecification.UpdatedDate,
+                    second: dataSetSpecification.CreatedDate,
+                    secondName: nameof(DataSetSpecification.CreatedDate)),
+                Parameter: nameof(DataSetSpecification.UpdatedDate)),
+
                 (Rule: await IsNotRecentAsync(dataSetSpecification.CreatedDate),
-                    Parameter: nameof(DataSetSpecification.CreatedDate)));
+                    Parameter: nameof(DataSetSpecification.CreatedDate))
+            );
         }
 
         private async ValueTask ValidateDataSetSpecificationOnModifyAsync(DataSetSpecification dataSetSpecification)
         {
             ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(dataSetSpecification.Id), Parameter: nameof(DataSetSpecification.Id)),
@@ -88,26 +97,59 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 (Rule: IsInvalid(dataSetSpecification.UpdatedBy), Parameter: nameof(DataSetSpecification.UpdatedBy)),
 
                 (Rule: IsEqualOrSmallerThan(dataSetSpecification.SupplierSpecificationVersion, 10),
-                    Parameter: nameof(dataSetSpecification.SupplierSpecificationVersion)),
+                    Parameter: nameof(DataSetSpecification.SupplierSpecificationVersion)),
 
                 (Rule: IsEqualOrSmallerThan(dataSetSpecification.OurSpecificationVersion, 10),
-                    Parameter: nameof(dataSetSpecification.OurSpecificationVersion)),
+                    Parameter: nameof(DataSetSpecification.OurSpecificationVersion)),
 
                 (Rule: IsEqualOrSmallerThan(dataSetSpecification.CreatedBy, 255),
-                    Parameter: nameof(dataSetSpecification.CreatedBy)),
+                    Parameter: nameof(DataSetSpecification.CreatedBy)),
 
                 (Rule: IsEqualOrSmallerThan(dataSetSpecification.UpdatedBy, 255),
-                    Parameter: nameof(dataSetSpecification.UpdatedBy)),
+                    Parameter: nameof(DataSetSpecification.UpdatedBy)),
 
-                (Rule: IsSame(
-                    firstDate: dataSetSpecification.UpdatedDate,
-                    secondDate: dataSetSpecification.CreatedDate,
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: dataSetSpecification.UpdatedBy),
+                Parameter: nameof(DataSetSpecification.UpdatedBy)),
+
+                (Rule: IsSameAs(
+                    firstDate: dataSetSpecification.CreatedDate,
+                    secondDate: dataSetSpecification.UpdatedDate,
                     secondDateName: nameof(DataSetSpecification.CreatedDate)),
-                        Parameter: nameof(DataSetSpecification.UpdatedDate)),
+                Parameter: nameof(DataSetSpecification.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(dataSetSpecification.UpdatedDate),
-                    Parameter: nameof(dataSetSpecification.UpdatedDate)));
+                    Parameter: nameof(DataSetSpecification.UpdatedDate))
+            );
         }
+
+        private static void ValidateAgainstStorageDataSetSpecificationOnDelete(
+            DataSetSpecification storageDataSetSpecification,
+            string currentUserId)
+                {
+                    Validate(
+                        (Rule: IsInvalid(
+                            storageDataSetSpecification.CreatedBy), 
+                            Parameter: nameof(DataSetSpecification.CreatedBy)),
+
+                        (Rule: IsInvalid(
+                            storageDataSetSpecification.CreatedDate), 
+                            Parameter: nameof(DataSetSpecification.CreatedDate)),
+
+                        (Rule: IsNotSame(
+                            first: currentUserId,
+                            second: storageDataSetSpecification.UpdatedBy,
+                            secondName: nameof(DataSetSpecification.UpdatedBy)),
+                        Parameter: nameof(DataSetSpecification.UpdatedBy)),
+
+                        (Rule: IsNotSame(
+                            storageDataSetSpecification.UpdatedDate,
+                            storageDataSetSpecification.CreatedDate, 
+                            nameof(DataSetSpecification.CreatedDate)),
+                        Parameter: nameof(DataSetSpecification.UpdatedDate))
+                    );
+                }
 
         public void ValidateDataSetSpecificationId(Guid dataSetSpecificationId) =>
             Validate((Rule: IsInvalid(dataSetSpecificationId), Parameter: nameof(DataSetSpecification.Id)));
@@ -133,26 +175,31 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
         private static void ValidateAgainstStorageDataSetSpecificationOnModify(
             DataSetSpecification inputDataSetSpecification,
             DataSetSpecification storageDataSetSpecification)
-        {
-            Validate(
-                (Rule: IsNotSame(
-                    firstDate: inputDataSetSpecification.CreatedDate,
-                    secondDate: storageDataSetSpecification.CreatedDate,
-                    secondDateName: nameof(DataSetSpecification.CreatedDate)),
-                Parameter: nameof(DataSetSpecification.CreatedDate)),
+        { }
 
-                (Rule: IsNotSame(
-                    first: inputDataSetSpecification.CreatedBy,
-                    second: storageDataSetSpecification.CreatedBy,
-                    secondName: nameof(DataSetSpecification.CreatedBy)),
-                Parameter: nameof(DataSetSpecification.CreatedBy)),
+        /*private static void ValidateAgainstStorageDataSetSpecificationOnModify(
+            DataSetSpecification inputDataSetSpecification,
+            DataSetSpecification storageDataSetSpecification)
+                {
+                    Validate(
+                        (Rule: IsNotSame(
+                            first: inputDataSetSpecification.CreatedBy,
+                            second: storageDataSetSpecification.CreatedBy,
+                            secondName: nameof(DataSetSpecification.CreatedBy)),
+                        Parameter: nameof(DataSetSpecification.CreatedBy)),
 
-                (Rule: IsSame(
-                    firstDate: inputDataSetSpecification.UpdatedDate,
-                    secondDate: storageDataSetSpecification.UpdatedDate,
-                    secondDateName: nameof(DataSetSpecification.UpdatedDate)),
-                Parameter: nameof(DataSetSpecification.UpdatedDate)));
-        }
+                        (Rule: IsNotSame(
+                            firstDate: inputDataSetSpecification.CreatedDate,
+                            secondDate: storageDataSetSpecification.CreatedDate,
+                            secondDateName: nameof(DataSetSpecification.CreatedDate)),
+                        Parameter: nameof(DataSetSpecification.CreatedDate)),
+
+                        (Rule: IsSameAs(
+                            firstDate: inputDataSetSpecification.UpdatedDate,
+                            secondDate: storageDataSetSpecification.UpdatedDate,
+                            secondDateName: nameof(DataSetSpecification.UpdatedDate)),
+                        Parameter: nameof(DataSetSpecification.UpdatedDate)));
+                }*/
 
         private static dynamic IsInvalid(Guid id) => new
         {
@@ -183,7 +230,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             return (text ?? string.Empty).Length > maxLength;
         }
 
-        private static dynamic IsSame(
+        private static dynamic IsSameAs(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
             string secondDateName) => new
@@ -193,31 +240,30 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             };
 
         private static dynamic IsNotSame(
-            DateTimeOffset firstDate,
-            DateTimeOffset secondDate,
-            string secondDateName) => new
+            string first,
+            string second) => new
             {
-                Condition = firstDate != secondDate,
-                Message = $"Date is not the same as {secondDateName}"
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(
-            Guid firstId,
-            Guid secondId,
-            string secondIdName) => new
+            string first,
+            string second,
+            string secondName) => new
             {
-                Condition = firstId != secondId,
-                Message = $"Id is not the same as {secondIdName}"
+                Condition = first != second,
+                Message = $"Text is not the same as {secondName}"
             };
 
         private static dynamic IsNotSame(
-           string first,
-           string second,
-           string secondName) => new
-           {
-               Condition = first != second,
-               Message = $"Text is not the same as {secondName}"
-           };
+            DateTimeOffset first,
+            DateTimeOffset second,
+            string secondName) => new
+            {
+                Condition = first != second,
+                Message = $"Date is not the same as {secondName}"
+            };
 
         private async ValueTask<dynamic> IsNotRecentAsync(DateTimeOffset date) => new
         {

@@ -82,6 +82,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     blobContainers.Ingress),
                         Times.Once);
 
+            this.documentProcessingServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(
+                    batchReadyFileName,
+                    blobContainers.Ingress),
+                        Times.Once);
+
             this.auditBrokerMock.Verify(service => service.LogInformationAsync(
                 "BatchComplete",
                 "Unable to generate BatchReady.txt",

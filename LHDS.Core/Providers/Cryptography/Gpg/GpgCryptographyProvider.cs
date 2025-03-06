@@ -103,7 +103,7 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
                 {
                     PgpLiteralData literalData = (PgpLiteralData)pgpObject;
                     Stream literalStream = literalData.GetInputStream();
-                    await literalStream.CopyToAsync(output);
+                    await literalStream.CopyToAsync(output, bufferSize: 4 * 1024 * 1024);
                 }
             }
         }

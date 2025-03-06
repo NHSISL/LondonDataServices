@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 service.AddDocumentAsync(
                     It.IsAny<Stream>(),
                     batchIncompleteFileName,
-                    storageIngestionTracking.Container),
+                    blobContainers.Ingress),
                         Times.Once);
 
             this.auditBrokerMock.Verify(service => service.LogInformationAsync(
@@ -147,7 +147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 .Setup(service => service.AddDocumentAsync(
                     It.Is(SameStreamAs(batchReadyStream)),
                     batchReadyFileName,
-                    storageIngestionTracking.Container))
+                    blobContainers.Ingress))
                 .Callback<Stream, string, string>((output, fileName, container) =>
                 {
                     batchReadyStream.Position = 0;
@@ -175,13 +175,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 service.AddDocumentAsync(
                     It.IsAny<Stream>(),
                     batchReadyFileName,
-                    storageIngestionTracking.Container),
+                    blobContainers.Ingress),
                         Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
                 service.RemoveDocumentByFileNameAsync(
                     batchIncompleteFileName,
-                    storageIngestionTracking.Container),
+                    blobContainers.Ingress),
                         Times.Once);
 
             this.auditBrokerMock.Verify(service => service.LogInformationAsync(

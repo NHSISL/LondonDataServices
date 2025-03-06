@@ -102,7 +102,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     {
                         Id = randomGuid,
                         SupplierId = supplierId,
-                        Container = blobContainers.Ingress,
                         FileName = filename,
                         SourceFolderPath = sourceFolderPath,
                         BatchReadyFolderPath = baseFolder,
@@ -266,7 +265,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
                     {
                         Id = randomGuid,
                         SupplierId = supplierId,
-                        Container = blobContainers.Ingress,
                         FileName = filename,
                         SourceFolderPath = sourceFolderPath,
                         BatchReadyFolderPath = baseFolder,

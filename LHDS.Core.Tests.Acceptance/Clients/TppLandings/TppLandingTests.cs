@@ -165,7 +165,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
-                .OnProperty(ingestionTracking => ingestionTracking.Container).Use("ingress")
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 

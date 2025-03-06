@@ -223,7 +223,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                   {
                       Id = await this.identifierBroker.GetIdentifierAsync(),
                       SupplierId = supplierId,
-                      Container = blobContainers.Ingress,
+                      //Container = blobContainers.Ingress,
                       FileName = filename,
                       SourceFolderPath = sourceFolderPath,
                       BatchReadyFolderPath = baseFolder,

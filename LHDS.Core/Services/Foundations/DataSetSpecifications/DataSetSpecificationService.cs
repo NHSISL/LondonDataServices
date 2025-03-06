@@ -39,6 +39,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             {
                 DataSetSpecification dataSetSpecificationWithAuditApplied = 
                     await ApplyAddAuditAsync(dataSetSpecification);
+
                     await ValidateDataSetSpecificationOnAddAsync(dataSetSpecificationWithAuditApplied);
 
                 return await this.storageBroker.InsertDataSetSpecificationAsync(dataSetSpecificationWithAuditApplied);
@@ -66,17 +67,18 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             {
                 DataSetSpecification dataSetSpecificationWithAuditApplied = 
                     await ApplyModifyAuditAsync(dataSetSpecification);
+
                     await ValidateDataSetSpecificationOnModifyAsync(dataSetSpecificationWithAuditApplied);
 
-                DataSetSpecification storageDataSet =
+                DataSetSpecification maybeStorageDataSet =
                     await this.storageBroker.SelectDataSetSpecificationByIdAsync(
                         dataSetSpecificationWithAuditApplied.Id);
 
-                ValidateStorageDataSetSpecification(storageDataSet, dataSetSpecificationWithAuditApplied.Id);
+                ValidateStorageDataSetSpecification(maybeStorageDataSet, dataSetSpecificationWithAuditApplied.Id);
 
                 ValidateAgainstStorageDataSetSpecificationOnModify(
                     inputDataSetSpecification: dataSetSpecificationWithAuditApplied,
-                    storageDataSetSpecification: storageDataSet);
+                    storageDataSetSpecification: maybeStorageDataSet);
 
                 return await this.storageBroker.UpdateDataSetSpecificationAsync(dataSetSpecificationWithAuditApplied);
             });
@@ -106,13 +108,13 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 {
                     ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
 
-                    DateTimeOffset auditDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                    EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+                    var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    var auditUser = await this.securityBroker.GetCurrentUserAsync();
 
-                    dataSetSpecification.CreatedBy = auditUser.EntraUserId;
-                    dataSetSpecification.CreatedDate = auditDate;
-                    dataSetSpecification.UpdatedBy = auditUser.EntraUserId;
-                    dataSetSpecification.UpdatedDate = auditDate;
+                    dataSetSpecification.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+                    dataSetSpecification.CreatedDate = auditDateTimeOffset;
+                    dataSetSpecification.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+                    dataSetSpecification.UpdatedDate = auditDateTimeOffset;
 
                     return dataSetSpecification;
                 }
@@ -122,25 +124,25 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 {
                     ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
 
-                    DateTimeOffset auditDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                    EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+                    var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    var auditUser = await this.securityBroker.GetCurrentUserAsync();
 
-                    dataSetSpecification.UpdatedBy = auditUser.EntraUserId;
-                    dataSetSpecification.UpdatedDate = auditDate;
+                    dataSetSpecification.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+                    dataSetSpecification.UpdatedDate = auditDateTimeOffset;
 
                     return dataSetSpecification;
-                }
+        }
 
         internal async ValueTask<DataSetSpecification> ApplyDeleteAuditAsync(
             DataSetSpecification dataSetSpecification)
                 {
                     ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
 
-                    DateTimeOffset auditDate = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
-                    EntraUser auditUser = await this.securityBroker.GetCurrentUserAsync();
+                    var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+                    var auditUser = await this.securityBroker.GetCurrentUserAsync();
 
-                    dataSetSpecification.UpdatedBy = auditUser.EntraUserId;
-                    dataSetSpecification.UpdatedDate = auditDate;
+                    dataSetSpecification.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+                    dataSetSpecification.UpdatedDate = auditDateTimeOffset;
 
                     return dataSetSpecification;
                 }

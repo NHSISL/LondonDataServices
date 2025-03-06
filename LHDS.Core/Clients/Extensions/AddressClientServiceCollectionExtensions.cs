@@ -63,8 +63,6 @@ namespace LHDS.Core.Clients.Extensions
             return services;
         }
 
-        var claimsPrincipal = new ClaimsPrincipal();
-
         public static IServiceCollection AddAddressClient(
             this IServiceCollection services,
             IConfiguration configuration,

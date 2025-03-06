@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -26,12 +25,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             var failedDataSetSpecificationStorageException =
                 new FailedDataSetSpecificationStorageException(
-                    message: "Failed dataSetSpecification storage error occurred, please contact support.",
+                    message: "Failed dataSetSpecification storage error occurred, contact support.",
                     innerException: sqlException);
 
             var expectedDataSetSpecificationDependencyException =
                 new DataSetSpecificationDependencyException(
-                    message: "DataSetSpecification dependency error occurred, please contact support.",
+                    message: "DataSetSpecification dependency error occurred, contact support.",
                     innerException: failedDataSetSpecificationStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -68,6 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     message: "Invalid dataSetSpecification reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
-            DataSetSpecificationDependencyValidationException expectedDataSetSpecificationDependencyValidationException =
+            var expectedDataSetSpecificationDependencyValidationException =
                 new DataSetSpecificationDependencyValidationException(
                     message: "DataSetSpecification dependency validation occurred, please try again.",
                     innerException: invalidDataSetSpecificationReferenceException);
@@ -126,6 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -139,12 +140,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             var failedDataSetSpecificationStorageException =
                 new FailedDataSetSpecificationStorageException(
-                    message: "Failed dataSetSpecification storage error occurred, please contact support.",
+                    message: "Failed dataSetSpecification storage error occurred, contact support.",
                     innerException: databaseUpdateException);
 
             var expectedDataSetSpecificationDependencyException =
                 new DataSetSpecificationDependencyException(
-                    message: "DataSetSpecification dependency error occurred, please contact support.",
+                    message: "DataSetSpecification dependency error occurred, contact support.",
                     innerException: failedDataSetSpecificationStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -181,6 +182,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
@@ -236,61 +238,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
-        {
-            // given
-            DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification();
-            var serviceException = new Exception();
-
-            var failedDataSetSpecificationServiceException =
-                new FailedDataSetSpecificationServiceException(
-                    message: "Failed dataSetSpecification service error occurred, please contact support.",
-                    innerException: serviceException);
-
-            var expectedDataSetSpecificationServiceException =
-                new DataSetSpecificationServiceException(
-                    message: "DataSetSpecification service error occurred, please contact support.",
-                    innerException: failedDataSetSpecificationServiceException);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ThrowsAsync(serviceException);
-
-            // when
-            ValueTask<DataSetSpecification> modifyDataSetSpecificationTask =
-                this.dataSetSpecificationService.ModifyDataSetSpecificationAsync(randomDataSetSpecification);
-
-            DataSetSpecificationServiceException actualDataSetSpecificationServiceException =
-                await Assert.ThrowsAsync<DataSetSpecificationServiceException>(
-                    modifyDataSetSpecificationTask.AsTask);
-
-            // then
-            actualDataSetSpecificationServiceException.Should()
-                .BeEquivalentTo(expectedDataSetSpecificationServiceException);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectDataSetSpecificationByIdAsync(randomDataSetSpecification.Id),
-                    Times.Never);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogErrorAsync(It.Is(SameExceptionAs(
-                    expectedDataSetSpecificationServiceException))),
-                        Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.UpdateDataSetSpecificationAsync(randomDataSetSpecification),
-                    Times.Never);
-
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using Moq;
 using Xunit;
@@ -19,17 +20,29 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DataSetSpecification randomDataSetSpecification = CreateRandomModifyDataSetSpecification(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            DataSetSpecification randomDataSetSpecification = CreateRandomModifyDataSetSpecification(
+                randomDateTimeOffset,
+                dataSetSpecificationId: randomEntraUser.EntraUserId);
+
             DataSetSpecification inputDataSetSpecification = randomDataSetSpecification;
             DataSetSpecification storageDataSetSpecification = inputDataSetSpecification.DeepClone();
-            storageDataSetSpecification.UpdatedDate = randomDataSetSpecification.CreatedDate;
+
+            storageDataSetSpecification.UpdatedBy = randomEntraUser.EntraUserId;
+
             DataSetSpecification updatedDataSetSpecification = inputDataSetSpecification;
             DataSetSpecification expectedDataSetSpecification = updatedDataSetSpecification.DeepClone();
+
             Guid dataSetSpecificationId = inputDataSetSpecification.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataSetSpecificationByIdAsync(dataSetSpecificationId))
@@ -48,7 +61,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2)); // CreatedDate & UpdatedDate both validated
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2)); // CreatedBy & UpdatedBy both validated
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectDataSetSpecificationByIdAsync(inputDataSetSpecification.Id),
@@ -58,9 +75,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 broker.UpdateDataSetSpecificationAsync(inputDataSetSpecification),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -103,16 +103,16 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     fileName: batchCompleteFileName,
                     container: this.blobContainers.Ingress);
 
-                await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                    batchIncompleteFileName,
-                    this.blobContainers.Ingress);
-
                 await this.auditBroker.LogInformationAsync(
                     auditType: "BatchComplete",
                     title: "BatchReady.txt generated",
                     message: batchComplete,
                     fileName: batchCompleteFileName,
                     correlationId: ingestionTracking.Batch);
+
+                await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                    batchIncompleteFileName,
+                    this.blobContainers.Ingress);
             }
             else
             {
@@ -138,6 +138,10 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     message: batchIncomplete,
                     fileName: batchCompleteFileName,
                     correlationId: ingestionTracking.Batch);
+
+                await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                    batchCompleteFileName,
+                    this.blobContainers.Ingress);
             }
         });
     }

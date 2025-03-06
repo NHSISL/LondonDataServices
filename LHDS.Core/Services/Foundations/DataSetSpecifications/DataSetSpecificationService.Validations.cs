@@ -172,34 +172,35 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             }
         }
 
+/*        private static void ValidateAgainstStorageDataSetSpecificationOnModify(
+            DataSetSpecification inputDataSetSpecification,
+            DataSetSpecification storageDataSetSpecification)
+        { }*/
+
         private static void ValidateAgainstStorageDataSetSpecificationOnModify(
-            DataSetSpecification inputDataSetSpecification,
-            DataSetSpecification storageDataSetSpecification)
-        { }
+        DataSetSpecification inputDataSetSpecification,
+        DataSetSpecification storageDataSetSpecification)
+            {
+                Validate(
+                    (Rule: IsNotSame(
+                        first: inputDataSetSpecification.CreatedBy,
+                        second: storageDataSetSpecification.CreatedBy,
+                        secondName: nameof(DataSetSpecification.CreatedBy)),
+                    Parameter: nameof(DataSetSpecification.CreatedBy)),
 
-        /*private static void ValidateAgainstStorageDataSetSpecificationOnModify(
-            DataSetSpecification inputDataSetSpecification,
-            DataSetSpecification storageDataSetSpecification)
-                {
-                    Validate(
-                        (Rule: IsNotSame(
-                            first: inputDataSetSpecification.CreatedBy,
-                            second: storageDataSetSpecification.CreatedBy,
-                            secondName: nameof(DataSetSpecification.CreatedBy)),
-                        Parameter: nameof(DataSetSpecification.CreatedBy)),
+                    (Rule: IsNotSame(
+                        first: inputDataSetSpecification.CreatedDate,
+                        second: storageDataSetSpecification.CreatedDate,
+                        secondName: nameof(DataSetSpecification.CreatedDate)),
+                    Parameter: nameof(DataSetSpecification.CreatedDate)),
 
-                        (Rule: IsNotSame(
-                            firstDate: inputDataSetSpecification.CreatedDate,
-                            secondDate: storageDataSetSpecification.CreatedDate,
-                            secondDateName: nameof(DataSetSpecification.CreatedDate)),
-                        Parameter: nameof(DataSetSpecification.CreatedDate)),
+                    (Rule: IsSameAs(
+                        firstDate: inputDataSetSpecification.UpdatedDate,
+                        secondDate: storageDataSetSpecification.UpdatedDate,
+                        secondDateName: nameof(DataSetSpecification.UpdatedDate)),
+                    Parameter: nameof(DataSetSpecification.UpdatedDate)));
+            }
 
-                        (Rule: IsSameAs(
-                            firstDate: inputDataSetSpecification.UpdatedDate,
-                            secondDate: storageDataSetSpecification.UpdatedDate,
-                            secondDateName: nameof(DataSetSpecification.UpdatedDate)),
-                        Parameter: nameof(DataSetSpecification.UpdatedDate)));
-                }*/
 
         private static dynamic IsInvalid(Guid id) => new
         {

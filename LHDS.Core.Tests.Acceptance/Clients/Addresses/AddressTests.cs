@@ -60,6 +60,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             this.dependencyBroker = dependencyBroker;
             this.compareLogic = new CompareLogic();
             var serviceCollection = new ServiceCollection();
+            var claimsPrincipal = new ClaimsPrincipal();
 
             serviceCollection
                 .AddTransient<IAddressOrchestrationService, AddressOrchestrationService>()
@@ -77,8 +78,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             });
 
             this.dependencyBroker.Configuration["assignConfiguration:apiUrl"] = this.wireMockServer.Url;
-            var claimsPrincipal = new ClaimsPrincipal();
-
             serviceCollection.AddAddressClient(this.dependencyBroker.Configuration, claimsPrincipal);
             var serviceProvider = serviceCollection.BuildServiceProvider();
 

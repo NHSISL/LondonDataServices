@@ -52,7 +52,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 (Rule: IsNotSame(
                     first: currentUser.EntraUserId,
                     second: dataSetSpecification.CreatedBy),
-                    Parameter: nameof(DataSetSpecification.CreatedBy)),
+                Parameter: nameof(DataSetSpecification.CreatedBy)),
 
                 (Rule: IsNotSame(
                     first: dataSetSpecification.UpdatedBy,
@@ -172,11 +172,6 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             }
         }
 
-/*        private static void ValidateAgainstStorageDataSetSpecificationOnModify(
-            DataSetSpecification inputDataSetSpecification,
-            DataSetSpecification storageDataSetSpecification)
-        { }*/
-
         private static void ValidateAgainstStorageDataSetSpecificationOnModify(
         DataSetSpecification inputDataSetSpecification,
         DataSetSpecification storageDataSetSpecification)
@@ -200,7 +195,6 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                         secondDateName: nameof(DataSetSpecification.UpdatedDate)),
                     Parameter: nameof(DataSetSpecification.UpdatedDate)));
             }
-
 
         private static dynamic IsInvalid(Guid id) => new
         {

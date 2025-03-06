@@ -110,9 +110,15 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     fileName: batchCompleteFileName,
                     correlationId: ingestionTracking.Batch);
 
-                await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                    batchIncompleteFileName,
-                    this.blobContainers.Ingress);
+                try
+                {
+                    await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                        batchIncompleteFileName,
+                        this.blobContainers.Ingress);
+                }
+                catch (Exception ex)
+                {
+                }
             }
             else
             {
@@ -139,9 +145,15 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     fileName: batchCompleteFileName,
                     correlationId: ingestionTracking.Batch);
 
-                await this.documentProcessingService.RemoveDocumentByFileNameAsync(
-                    batchCompleteFileName,
-                    this.blobContainers.Ingress);
+                try
+                {
+                    await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                        batchCompleteFileName,
+                        this.blobContainers.Ingress);
+                }
+                catch (Exception ex)
+                {
+                }
             }
         });
     }

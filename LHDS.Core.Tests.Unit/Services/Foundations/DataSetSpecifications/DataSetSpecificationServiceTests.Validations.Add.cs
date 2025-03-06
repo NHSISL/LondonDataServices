@@ -141,12 +141,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DataSetSpecification invalidDataSetSpecification = CreateRandomDataSetSpecification(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            DataSetSpecification invalidDataSetSpecification =
+                CreateRandomDataSetSpecification(randomDateTimeOffset);
+
             invalidDataSetSpecification.SupplierSpecificationVersion = GetRandomString(11);
             invalidDataSetSpecification.OurSpecificationVersion = GetRandomString(11);
-            invalidDataSetSpecification.CreatedBy = GetRandomString(256);
-            invalidDataSetSpecification.UpdatedBy = invalidDataSetSpecification.CreatedBy;
 
+            // CreatedBy and UpdatedBy are now populated by audit, so you don't set them manually anymore.
             var invalidDataSetSpecificationException =
                 new InvalidDataSetSpecificationException(
                     message: "Invalid dataSetSpecification. Please correct the errors and try again.");
@@ -159,14 +162,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 key: nameof(DataSetSpecification.OurSpecificationVersion),
                 values: "Text is exceeding max length");
 
-            invalidDataSetSpecificationException.AddData(
-                key: nameof(DataSetSpecification.CreatedBy),
-                values: "Text is exceeding max length");
-
-            invalidDataSetSpecificationException.AddData(
-                key: nameof(DataSetSpecification.UpdatedBy),
-                values: "Text is exceeding max length");
-
             var expectedDataSetSpecificationValidationException =
                 new DataSetSpecificationValidationException(
                     message: "DataSetSpecification validation errors occurred, please try again.",
@@ -175,6 +170,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             // when
             ValueTask<DataSetSpecification> addDataSetSpecificationTask =
@@ -189,7 +188,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Exactly(2)); // CreatedDate & UpdatedDate both come from here
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2)); // CreatedBy & UpdatedBy both come from here
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -200,9 +203,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 broker.InsertDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
                     Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]

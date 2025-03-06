@@ -103,7 +103,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 return await this.storageBroker.DeleteDataSetSpecificationAsync(dataSetSpecificationWithAuditApplied);
             });
 
-        internal async ValueTask<DataSetSpecification> ApplyAddAuditAsync(
+        virtual internal async ValueTask<DataSetSpecification> ApplyAddAuditAsync(
             DataSetSpecification dataSetSpecification)
                 {
                     ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
@@ -119,7 +119,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                     return dataSetSpecification;
                 }
 
-        internal async ValueTask<DataSetSpecification> ApplyModifyAuditAsync(
+        virtual internal async ValueTask<DataSetSpecification> ApplyModifyAuditAsync(
             DataSetSpecification dataSetSpecification)
                 {
                     ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
@@ -133,7 +133,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                     return dataSetSpecification;
         }
 
-        internal async ValueTask<DataSetSpecification> ApplyDeleteAuditAsync(
+        virtual internal async ValueTask<DataSetSpecification> ApplyDeleteAuditAsync(
             DataSetSpecification dataSetSpecification)
                 {
                     ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
@@ -147,4 +147,4 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                     return dataSetSpecification;
                 }
     }
-}
+} 

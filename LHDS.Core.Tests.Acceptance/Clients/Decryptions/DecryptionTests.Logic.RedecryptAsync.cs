@@ -53,7 +53,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 encryptedFileName,
                 decryptedFileName,
                 supplierId: supplierId,
-                Guid.NewGuid());
+                Guid.NewGuid(),
+                blobContainers.Ingress);
 
             ingestionTracking.IsDownloaded = true;
             ingestionTracking.Decrypted = false;

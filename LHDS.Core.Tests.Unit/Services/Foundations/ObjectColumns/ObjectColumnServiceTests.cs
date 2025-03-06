@@ -104,6 +104,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         private static ObjectColumn CreateRandomObjectColumn(DateTimeOffset dateTimeOffset) =>
             CreateObjectColumnFiller(dateTimeOffset).Create();
 
+        private static ObjectColumn CreateRandomObjectColumn(
+            DateTimeOffset dateTimeOffset,
+            string userId) =>
+            CreateObjectColumnFiller(dateTimeOffset, userId).Create();
+
         private static Filler<ObjectColumn> CreateObjectColumnFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
@@ -114,6 +119,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
                 .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Filler<ObjectColumn> CreateObjectColumnFiller(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            var filler = new Filler<ObjectColumn>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(objectColumn => objectColumn.CreatedBy).Use(userId)
+                .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(userId);
 
             return filler;
         }

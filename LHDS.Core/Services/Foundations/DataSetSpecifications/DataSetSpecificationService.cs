@@ -96,9 +96,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 DataSetSpecification dataSetSpecificationWithAuditApplied =
                     await ApplyDeleteAuditAsync(storageDataSetSpecification);
 
-                ValidateAgainstStorageDataSetSpecificationOnDelete(
-                    dataSetSpecificationWithAuditApplied,
-                    dataSetSpecificationWithAuditApplied.UpdatedBy);
+                await ValidateDataSetSpecificationOnDeleteAsync(dataSetSpecificationWithAuditApplied);
 
                 return await this.storageBroker.DeleteDataSetSpecificationAsync(dataSetSpecificationWithAuditApplied);
             });

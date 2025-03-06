@@ -124,6 +124,28 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             );
         }
 
+        private async ValueTask ValidateDataSetSpecificationOnDeleteAsync(DataSetSpecification dataSetSpecification)
+        {
+            ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
+
+            Validate(
+                (Rule: IsInvalid(dataSetSpecification.Id),
+                    Parameter: nameof(DataSetSpecification.Id)),
+
+                (Rule: IsInvalid(dataSetSpecification.UpdatedDate),
+                    Parameter: nameof(DataSetSpecification.UpdatedDate)),
+
+                (Rule: IsInvalid(dataSetSpecification.UpdatedBy),
+                    Parameter: nameof(DataSetSpecification.UpdatedBy)),
+
+                (Rule: IsNotSame(currentUser.EntraUserId, dataSetSpecification.UpdatedBy),
+                    Parameter: nameof(DataSetSpecification.UpdatedBy)),
+
+                (Rule: await IsNotRecentAsync(dataSetSpecification.UpdatedDate),
+                    Parameter: nameof(DataSetSpecification.UpdatedDate)));
+        }
+
         private static void ValidateAgainstStorageDataSetSpecificationOnDelete(
             DataSetSpecification storageDataSetSpecification,
             string currentUserId)

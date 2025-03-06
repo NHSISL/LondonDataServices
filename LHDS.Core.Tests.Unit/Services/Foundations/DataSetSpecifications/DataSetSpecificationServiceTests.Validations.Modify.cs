@@ -168,7 +168,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             invalidDataSetSpecification.SupplierSpecificationVersion = GetRandomString(11);
             invalidDataSetSpecification.OurSpecificationVersion = GetRandomString(11);
             invalidDataSetSpecification.CreatedBy = GetRandomString(256);
-            invalidDataSetSpecification.UpdatedBy = GetRandomString(256);
 
             var invalidDataSetSpecificationException =
                 new InvalidDataSetSpecificationException(
@@ -176,19 +175,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             invalidDataSetSpecificationException.AddData(
                 key: nameof(DataSetSpecification.SupplierSpecificationVersion),
-                values: "Text exceeds max length");
+                values: "Text is exceeding max length");
 
             invalidDataSetSpecificationException.AddData(
                 key: nameof(DataSetSpecification.OurSpecificationVersion),
-                values: "Text exceeds max length");
+                values: "Text is exceeding max length");
 
             invalidDataSetSpecificationException.AddData(
                 key: nameof(DataSetSpecification.CreatedBy),
-                values: "Text exceeds max length");
-
-            invalidDataSetSpecificationException.AddData(
-                key: nameof(DataSetSpecification.UpdatedBy),
-                values: "Text exceeds max length");
+                values: "Text is exceeding max length");
 
             var expectedDataSetSpecificationValidationException =
                 new DataSetSpecificationValidationException(
@@ -217,11 +212,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(

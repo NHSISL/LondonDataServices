@@ -80,6 +80,10 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                 $"{ingestionTracking.BatchReadyFolderPath}/BatchReady.txt"
                 .Replace("\\", "/");
 
+            string batchIncompleteFileName =
+                $"{ingestionTracking.BatchReadyFolderPath}/BatchNotReady.txt"
+                .Replace("\\", "/");
+
             if (isBatchComplete)
             {
                 string batchComplete =
@@ -94,6 +98,10 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     input: data,
                     fileName: batchCompleteFileName,
                     container: ingestionTracking.Container);
+
+                await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                    batchIncompleteFileName,
+                    ingestionTracking.Container);
 
                 await this.auditBroker.LogInformationAsync(
                     auditType: "BatchComplete",
@@ -112,6 +120,13 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     $"Missing specification object Id's: {string.Join(", ", missingSpecificationObjectIds)} " +
                     Environment.NewLine +
                     $"as defined by Dataset Specification Id: {ingestionTracking.DataSetSpecificationId}";
+
+                Stream data = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(batchIncomplete));
+
+                await this.documentProcessingService.AddDocumentAsync(
+                    input: data,
+                    fileName: batchIncompleteFileName,
+                    container: ingestionTracking.Container);
 
                 await this.auditBroker.LogInformationAsync(
                     auditType: "BatchComplete",

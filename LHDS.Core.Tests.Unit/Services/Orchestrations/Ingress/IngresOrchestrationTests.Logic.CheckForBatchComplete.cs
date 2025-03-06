@@ -104,6 +104,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             string batchReadyFileName =
                 $"{randomIngestionTracking.BatchReadyFolderPath}/BatchReady.txt";
 
+            string batchIncompleteFileName =
+                $"{randomIngestionTracking.BatchReadyFolderPath}/BatchNotReady.txt";
+
             IngestionTracking storageIngestionTracking = randomIngestionTracking.DeepClone();
             Guid ingestionTrackingId = randomIngestionTracking.Id;
             string batchReference = randomIngestionTracking.Batch;
@@ -169,6 +172,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 service.AddDocumentAsync(
                     It.IsAny<Stream>(),
                     batchReadyFileName,
+                    storageIngestionTracking.Container),
+                        Times.Once);
+
+            this.documentProcessingServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(
+                    batchIncompleteFileName,
                     storageIngestionTracking.Container),
                         Times.Once);
 

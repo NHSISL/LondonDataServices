@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Ingres.Exceptions;
 using LHDS.Core.Services.Processings.Documents;
@@ -21,6 +22,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
         private readonly IIngestionTrackingProcessingService ingestionTrackingProcessingService;
         private readonly ISpecificationObjectProcessingService specificationObjectProcessingService;
         private readonly IDocumentProcessingService documentProcessingService;
+        private readonly BlobContainers blobContainers;
         private readonly ILoggingBroker loggingBroker;
         private readonly IAuditBroker auditBroker;
 
@@ -28,12 +30,14 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             IIngestionTrackingProcessingService ingestionTrackingProcessingService,
             ISpecificationObjectProcessingService specificationObjectProcessingService,
             IDocumentProcessingService documentProcessingService,
+            BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
             IAuditBroker auditBroker)
         {
             this.ingestionTrackingProcessingService = ingestionTrackingProcessingService;
             this.specificationObjectProcessingService = specificationObjectProcessingService;
             this.documentProcessingService = documentProcessingService;
+            this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
             this.auditBroker = auditBroker;
         }
@@ -97,11 +101,11 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                 await this.documentProcessingService.AddDocumentAsync(
                     input: data,
                     fileName: batchCompleteFileName,
-                    container: ingestionTracking.Container);
+                    container: this.blobContainers.Ingress);
 
                 await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                     batchIncompleteFileName,
-                    ingestionTracking.Container);
+                    this.blobContainers.Ingress);
 
                 await this.auditBroker.LogInformationAsync(
                     auditType: "BatchComplete",
@@ -126,7 +130,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                 await this.documentProcessingService.AddDocumentAsync(
                     input: data,
                     fileName: batchIncompleteFileName,
-                    container: ingestionTracking.Container);
+                    container: this.blobContainers.Ingress);
 
                 await this.auditBroker.LogInformationAsync(
                     auditType: "BatchComplete",

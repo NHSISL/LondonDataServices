@@ -35,6 +35,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             string batchReadyFileName =
                 $"{randomIngestionTracking.BatchReadyFolderPath}/BatchReady.txt";
 
+            string batchIncompleteFileName =
+                $"{randomIngestionTracking.BatchReadyFolderPath}/BatchNotReady.txt";
+
             string message =
                     $"Unable to generate '{batchReadyFileName}' for batch: {randomIngestionTracking.Batch}.  " +
                     Environment.NewLine +
@@ -73,11 +76,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
-            service.AddDocumentAsync(
-                It.IsAny<Stream>(),
-                It.IsAny<string>(),
-                It.IsAny<string>()),
-                    Times.Never);
+                service.AddDocumentAsync(
+                    It.IsAny<Stream>(),
+                    batchIncompleteFileName,
+                    storageIngestionTracking.Container),
+                        Times.Once);
 
             this.auditBrokerMock.Verify(service => service.LogInformationAsync(
                 "BatchComplete",

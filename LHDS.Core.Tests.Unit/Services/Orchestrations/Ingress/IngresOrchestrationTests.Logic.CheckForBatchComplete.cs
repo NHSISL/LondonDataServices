@@ -35,6 +35,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             string batchReadyFileName =
                 $"{randomIngestionTracking.BatchReadyFolderPath}/BatchReady.txt";
 
+            string batchIncompleteFileName =
+                $"{randomIngestionTracking.BatchReadyFolderPath}/BatchNotReady.txt";
+
             string message =
                     $"Unable to generate '{batchReadyFileName}' for batch: {randomIngestionTracking.Batch}.  " +
                     Environment.NewLine +
@@ -73,11 +76,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
-            service.AddDocumentAsync(
-                It.IsAny<Stream>(),
-                It.IsAny<string>(),
-                It.IsAny<string>()),
-                    Times.Never);
+                service.AddDocumentAsync(
+                    It.IsAny<Stream>(),
+                    batchIncompleteFileName,
+                    blobContainers.Ingress),
+                        Times.Once);
 
             this.auditBrokerMock.Verify(service => service.LogInformationAsync(
                 "BatchComplete",
@@ -103,6 +106,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
 
             string batchReadyFileName =
                 $"{randomIngestionTracking.BatchReadyFolderPath}/BatchReady.txt";
+
+            string batchIncompleteFileName =
+                $"{randomIngestionTracking.BatchReadyFolderPath}/BatchNotReady.txt";
 
             IngestionTracking storageIngestionTracking = randomIngestionTracking.DeepClone();
             Guid ingestionTrackingId = randomIngestionTracking.Id;
@@ -141,7 +147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 .Setup(service => service.AddDocumentAsync(
                     It.Is(SameStreamAs(batchReadyStream)),
                     batchReadyFileName,
-                    storageIngestionTracking.Container))
+                    blobContainers.Ingress))
                 .Callback<Stream, string, string>((output, fileName, container) =>
                 {
                     batchReadyStream.Position = 0;
@@ -169,7 +175,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 service.AddDocumentAsync(
                     It.IsAny<Stream>(),
                     batchReadyFileName,
-                    storageIngestionTracking.Container),
+                    blobContainers.Ingress),
+                        Times.Once);
+
+            this.documentProcessingServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(
+                    batchIncompleteFileName,
+                    blobContainers.Ingress),
                         Times.Once);
 
             this.auditBrokerMock.Verify(service => service.LogInformationAsync(

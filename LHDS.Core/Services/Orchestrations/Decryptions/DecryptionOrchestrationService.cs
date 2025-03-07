@@ -124,6 +124,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
                 IngestionTracking item = allIngestionTrackings
+                    .OrderBy(ingestionTrackingItem => ingestionTrackingItem.CreatedDate)
                     .FirstOrDefault(ingestionTrackingItem =>
                         ingestionTrackingItem.IsDownloaded == true
                         && ingestionTrackingItem.Decrypted == false

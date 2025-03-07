@@ -20,7 +20,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         {
             // Given
             string batchReference = GetRandomString();
-
             List<IngestionTracking> randomIngestionTrackings = CreateRandomIngestionTrackings();
 
             randomIngestionTrackings.ForEach(ingestionTracking =>
@@ -63,7 +62,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
         {
             // Given
             string batchReference = GetRandomString();
-
             List<IngestionTracking> randomDecryptedIngestionTrackings = CreateRandomIngestionTrackings();
 
             randomDecryptedIngestionTrackings.ForEach(ingestionTracking =>

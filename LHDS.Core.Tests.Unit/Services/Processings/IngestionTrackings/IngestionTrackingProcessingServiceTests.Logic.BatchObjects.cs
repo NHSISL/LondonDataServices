@@ -15,8 +15,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 {
     public partial class IngestionTrackingProcessingServiceTests
     {
-        private IEnumerable<object> randomIngestionTrackings;
-
         [Fact]
         public async Task ShouldRetrieveObjectsInBatchByBatchReferenceAsync()
         {

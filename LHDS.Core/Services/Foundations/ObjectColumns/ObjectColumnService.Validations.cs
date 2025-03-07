@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 
@@ -14,6 +15,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         private async ValueTask ValidateObjectColumnOnAddAsync(ObjectColumn objectColumn)
         {
             ValidateObjectColumnIsNotNull(objectColumn);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),

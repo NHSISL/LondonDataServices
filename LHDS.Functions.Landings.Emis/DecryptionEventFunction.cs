@@ -26,7 +26,7 @@ namespace LHDS.Functions.Landings.Emis
 
         [Function("DecryptionEventFunction")]
         public async Task Run(
-            [BlobTrigger("emislanding/encrypted/{name}", Connection = "BlobStorage")] string myBlob, string name)
+            [BlobTrigger("emislanding/encrypted/{name}", Connection = "BlobStorage")] Stream myBlob, string name)
         {
             await this.loggingBroker
                 .LogInformationAsync(

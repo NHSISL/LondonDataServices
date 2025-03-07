@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     .ReturnsAsync(dataSetSpecificationObjects);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveObjectsInBatchByBatchReference(batchReference))
+                service.RetrieveObjectsInBatchByBatchReference(batchReference, true))
                     .ReturnsAsync(ingestionTrackingObjects);
 
             // when
@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveObjectsInBatchByBatchReference(batchReference),
+                service.RetrieveObjectsInBatchByBatchReference(batchReference, true),
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
@@ -146,7 +146,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     .ReturnsAsync(dataSetSpecificationObjects);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveObjectsInBatchByBatchReference(batchReference))
+                service.RetrieveObjectsInBatchByBatchReference(batchReference, true))
                     .ReturnsAsync(ingestionTrackingObjects);
 
             this.documentProcessingServiceMock
@@ -174,7 +174,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveObjectsInBatchByBatchReference(batchReference),
+                service.RetrieveObjectsInBatchByBatchReference(batchReference, true),
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>

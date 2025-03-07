@@ -3,12 +3,14 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 
 namespace LHDS.Core.Services.Foundations.ObjectColumns
@@ -35,7 +37,8 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         public ValueTask<ObjectColumn> AddObjectColumnAsync(ObjectColumn objectColumn) =>
             TryCatch(async () =>
             {
-                await ValidateObjectColumnOnAddAsync(objectColumn);
+                ObjectColumn objectColumnWithAddAuditApplied = await ApplyAddObjectColumnAsync(objectColumn);
+                await ValidateObjectColumnOnAddAsync(objectColumnWithAddAuditApplied);
 
                 return await this.storageBroker.InsertObjectColumnAsync(objectColumn);
             });
@@ -82,5 +85,18 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
                 return await this.storageBroker.DeleteObjectColumnAsync(maybeObjectColumn);
             });
+
+        virtual internal async ValueTask<ObjectColumn> ApplyAddObjectColumnAsync(ObjectColumn objectColumn)
+        {
+            ValidateObjectColumnIsNotNull(objectColumn);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            objectColumn.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            objectColumn.CreatedDate = auditDateTimeOffset;
+            objectColumn.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            objectColumn.UpdatedDate = auditDateTimeOffset;
+
+            return objectColumn;
+        }
     }
 }

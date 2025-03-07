@@ -47,17 +47,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Exactly(2));
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Once());
+                    Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertObjectColumnAsync(inputObjectColumn),
                     Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

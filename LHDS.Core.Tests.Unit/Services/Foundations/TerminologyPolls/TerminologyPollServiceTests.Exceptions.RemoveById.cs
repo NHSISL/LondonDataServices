@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectTerminologyPollByIdAsync(randomTerminologyPoll.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<TerminologyPoll> addTerminologyPollTask =

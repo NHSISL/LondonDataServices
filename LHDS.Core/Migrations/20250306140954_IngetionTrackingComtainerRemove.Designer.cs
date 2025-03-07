@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LHDS.Core.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    [Migration("20240604162738_AddressRemovedUniqueConstraintOnUprn")]
-    partial class AddressRemovedUniqueConstraintOnUprn
+    [Migration("20250306140954_IngetionTrackingComtainerRemove")]
+    partial class IngetionTrackingComtainerRemove
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.5")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -63,14 +63,11 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<bool>("IsErrored")
+                    b.Property<bool>("IsProcessing")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsNormalised")
+                    b.Property<bool>("IsSynced")
                         .HasColumnType("bit");
-
-                    b.Property<string>("JsonPostalAddress")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OrganisationName")
                         .HasMaxLength(255)
@@ -83,9 +80,6 @@ namespace LHDS.Core.Migrations
                     b.Property<string>("PostTown")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("PostalAddress")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubBuildingName")
                         .HasMaxLength(255)
@@ -113,9 +107,17 @@ namespace LHDS.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UPRN");
+                    b.HasIndex("IsProcessing");
 
-                    b.ToTable("Address", "UPRN");
+                    b.HasIndex("IsSynced");
+
+                    b.HasIndex("PostCode");
+
+                    b.HasIndex("UPRN")
+                        .IsUnique()
+                        .HasFilter("[UPRN] IS NOT NULL");
+
+                    b.ToTable("Address", "Addresses");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.Audits.Audit", b =>
@@ -126,41 +128,53 @@ namespace LHDS.Core.Migrations
 
                     b.Property<string>("AuditType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<Guid?>("CorrelationId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("CorrelationId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("LogLevel")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Audits");
+                    b.HasIndex("AuditType");
+
+                    b.HasIndex("CorrelationId");
+
+                    b.HasIndex("LogLevel");
+
+                    b.ToTable("Audits", "Audit");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification", b =>
@@ -196,7 +210,6 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("EntityChangeSynchronisation")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -215,7 +228,6 @@ namespace LHDS.Core.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OurSpecificationVersion")
@@ -254,11 +266,15 @@ namespace LHDS.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DataSetId");
-
                     b.HasIndex("PresededById");
 
                     b.HasIndex("SupersededById");
+
+                    b.HasIndex("DataSetId", "OurSpecificationVersion")
+                        .IsUnique();
+
+                    b.HasIndex("DataSetId", "SupplierSpecificationVersion")
+                        .IsUnique();
 
                     b.ToTable("DataSetSpecifications", "Configuration");
 
@@ -272,28 +288,6 @@ namespace LHDS.Core.Migrations
                                     .HasPeriodEnd("PeriodEnd")
                                     .HasColumnName("PeriodEnd");
                             }));
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("e8ebce80-e619-40ca-b45f-9c3ac0328143"),
-                            ActiveFrom = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            ActiveTo = new DateTimeOffset(new DateTime(2123, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "System",
-                            CreatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            DataSetId = new Guid("6a62313a-7442-462e-b6e8-dec541ddd0ba"),
-                            DateImplemented = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            DateReleased = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            EntityChangeSynchronisation = "",
-                            IsActive = true,
-                            IsMultiAuthorPerBatch = true,
-                            IsPublished = true,
-                            Notes = "This is a test dataset specification",
-                            OurSpecificationVersion = "1.0",
-                            SupplierSpecificationVersion = "7.0",
-                            UpdatedBy = "System",
-                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        });
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSets.DataSet", b =>
@@ -384,6 +378,9 @@ namespace LHDS.Core.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DataSetName")
+                        .IsUnique();
+
                     b.HasIndex("SupplierId");
 
                     b.ToTable("DataSets", "Configuration");
@@ -398,28 +395,6 @@ namespace LHDS.Core.Migrations
                                     .HasPeriodEnd("PeriodEnd")
                                     .HasColumnName("PeriodEnd");
                             }));
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("6a62313a-7442-462e-b6e8-dec541ddd0ba"),
-                            ActiveFrom = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            ActiveTo = new DateTimeOffset(new DateTime(2123, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CollectedBy = "EMIS",
-                            CreatedBy = "System",
-                            CreatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            DataSetAliases = "PrimaryCareEMISDEV",
-                            DataSetAuthor = "EMISDEV",
-                            DataSetName = "PrimaryCareEMISDEV",
-                            DataSourceType = "PrimaryCareEMISDEV",
-                            IsActive = true,
-                            IsNationallyCollected = false,
-                            IsNationallySpecified = false,
-                            SpecifiedBy = "EMIS",
-                            SupplierId = new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"),
-                            UpdatedBy = "System",
-                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        });
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataTypes.DataType", b =>
@@ -494,7 +469,6 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Message")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
@@ -518,6 +492,12 @@ namespace LHDS.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Batch")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BatchReadyFolderPath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -525,6 +505,9 @@ namespace LHDS.Core.Migrations
 
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("DataSetSpecificationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Decrypted")
                         .HasColumnType("bit");
@@ -539,8 +522,8 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
-                    b.Property<int>("DecryptedFileSize")
-                        .HasColumnType("int");
+                    b.Property<long>("DecryptedFileSize")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("EncryptedFileName")
                         .IsRequired()
@@ -552,8 +535,8 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
-                    b.Property<int>("EncryptedFileSize")
-                        .HasColumnType("int");
+                    b.Property<long>("EncryptedFileSize")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("FileDeleted")
                         .HasColumnType("bit");
@@ -563,11 +546,29 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("IsDownloaded")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsProcessing")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("LastAttempt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<DateTimeOffset>("LastSeen")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int>("RecordCount")
+                    b.Property<string>("ObjectName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("RecordCount")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("RetryCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("SourceFolderPath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("SupplierId")
                         .HasColumnType("uniqueidentifier");
@@ -616,9 +617,19 @@ namespace LHDS.Core.Migrations
                     b.Property<Guid>("DataTypeId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("DeleteCondition")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("FhirDataType")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("ForeignKeyColumnName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ForeignKeyTableName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAuthorCode")
                         .ValueGeneratedOnAdd()
@@ -630,12 +641,32 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<bool>("IsCaseSensitive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsDeleteFlag")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<bool>("IsForeignKey")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsNumeric")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsPersonConfidentialData")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsPostcode")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
@@ -794,7 +825,6 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("UniqueReference")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
@@ -833,11 +863,9 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Message")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MessageId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
@@ -859,8 +887,28 @@ namespace LHDS.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("AddressFormatQuality")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Algorithm")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<Guid?>("BatchReference")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BuildingName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("BuildingNumber")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Classification")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -870,73 +918,80 @@ namespace LHDS.Core.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<bool>("IsMatched")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsProcessed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("JsonPostalAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MatchAlgorithmEnum")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MatchedBuildingName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MatchedBuildingNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MatchedDepartmentName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MatchedDependentLocality")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MatchedDependentThoroughfare")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MatchedDoubleDependentLocality")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MatchedJsonPostalAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MatchedOrganisationName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MatchedPostCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MatchedPostTown")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MatchedPostalAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MatchedSubBuildingName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MatchedThoroughfare")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MatchedUPRN")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<string>("MatchedUPSN")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<string>("PostCode")
-                        .IsRequired()
+                    b.Property<string>("DepartmentName")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("PostalAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("DependentLocality")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("DependentThoroughfare")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("DoubleDependentLocality")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsExported")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsProcessed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsProcessing")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MatchPattern")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("MatchedWithAssign")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("OrganisationName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("PostCode")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("PostCodeQuality")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("PostTown")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Qualifier")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubBuildingName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Thoroughfare")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UPRN")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("UPSN")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<Guid>("UniqueReference")
                         .HasColumnType("uniqueidentifier");
@@ -955,7 +1010,7 @@ namespace LHDS.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ResolvedAddress", "UPRN");
+                    b.ToTable("ResolvedAddress", "Addresses");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.SpecificationObjects.SpecificationObject", b =>
@@ -979,9 +1034,22 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<Guid?>("FileFormatId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("InterchangeProtocol")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsCdmMasked")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsCdmPcd")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsPulledByUs")
                         .ValueGeneratedOnAdd()
@@ -1121,10 +1189,19 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("CanDecryptIngestionTracking")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("CanDownloadIngestionTracking")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("CanRelandIngestionTracking")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -1135,7 +1212,6 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FriendlyName")
@@ -1156,28 +1232,12 @@ namespace LHDS.Core.Migrations
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<bool>("CanRelandIngestionTracking")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Suppliers", "Configuration");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"),
-                            CanDecryptIngestionTracking = false,
-                            CanDownloadIngestionTracking = false,
-                            CreatedBy = "System",
-                            CreatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Description = "Emis Supplier",
-                            FriendlyName = "EMIS",
-                            Name = "EMIS",
-                            UpdatedBy = "System",
-                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CanRelandIngestionTracking = false
-                        });
+                    b.ToTable("Suppliers", "Configuration");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.TerminologyArtifacts.TerminologyArtifact", b =>

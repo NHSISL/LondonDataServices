@@ -1159,7 +1159,7 @@ namespace LHDS.Core.Migrations
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<bool>("canRelandIngestionTracking")
+                    b.Property<bool>("CanRelandIngestionTracking")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
@@ -1179,7 +1179,7 @@ namespace LHDS.Core.Migrations
                             Name = "EMIS",
                             UpdatedBy = "System",
                             UpdatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            canRelandIngestionTracking = false
+                            CanRelandIngestionTracking = false
                         });
                 });
 

@@ -49,8 +49,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(randomDataSet.Id);
             await this.dataSetService.AddDataSetAsync(randomDataSet);
             await this.dataSetSpecificationService.AddDataSetSpecificationAsync(randomDataSetSpecification);
-            
-            List<SpecificationObject> randomSpecificationObject = 
+
+            List<SpecificationObject> randomSpecificationObject =
                 CreateRandomSpecificationObjects(randomDataSetSpecification.Id);
 
             foreach (var item in randomSpecificationObject)
@@ -70,7 +70,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 encryptedFileName,
                 decryptedFileName,
                 supplierId: supplierId,
-                randomDataSetSpecification.Id);
+                randomDataSetSpecification.Id,
+                blobContainers.Ingress);
 
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 
@@ -91,7 +92,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             IngestionTracking decryptedIngestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-            IQueryable<IngestionTrackingAudit> allAudits = 
+            IQueryable<IngestionTrackingAudit> allAudits =
                 await this.auditService.RetrieveAllIngestionTrackingAuditsAsync();
 
             var audits = allAudits
@@ -117,7 +118,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             List<SpecificationObject> specificationObjectList = retrievedSpecificationObjects
                 .Include(specificationObject => specificationObject.ObjectColumns)
-                .Where(specificationObject => specificationObject.DataSetSpecificationId == randomDataSetSpecification.Id).ToList();
+                .Where(specificationObject =>
+                    specificationObject.DataSetSpecificationId == randomDataSetSpecification.Id).ToList();
 
             foreach (var specificationObject in specificationObjectList)
             {

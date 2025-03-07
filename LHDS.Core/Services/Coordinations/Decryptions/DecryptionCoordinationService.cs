@@ -51,7 +51,8 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                 {
                     try
                     {
-                        await DecryptFileAsync(encryptedFileName);
+                        (string decryptedFileName, Guid ingestionTrackingId) = await DecryptFileAsync(encryptedFileName);
+                        await this.ingressOrchestrationService.CheckForBatchCompleteAsync(ingestionTrackingId);
                     }
                     catch (Exception exception)
                     {

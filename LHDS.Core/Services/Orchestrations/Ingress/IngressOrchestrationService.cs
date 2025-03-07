@@ -116,9 +116,8 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                         batchIncompleteFileName,
                         this.blobContainers.Ingress);
                 }
-                catch (Exception ex)
-                {
-                }
+                catch (Exception)
+                { }
             }
             else
             {
@@ -151,9 +150,8 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                         batchCompleteFileName,
                         this.blobContainers.Ingress);
                 }
-                catch (Exception ex)
-                {
-                }
+                catch (Exception)
+                { }
             }
         });
     }

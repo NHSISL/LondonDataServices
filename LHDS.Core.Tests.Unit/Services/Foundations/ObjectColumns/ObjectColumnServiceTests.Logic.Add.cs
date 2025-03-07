@@ -30,6 +30,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertObjectColumnAsync(inputObjectColumn))
                     .ReturnsAsync(storageObjectColumn);
@@ -43,6 +47,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.storageBrokerMock.Verify(broker =>

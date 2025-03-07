@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectOptOutByIdAsync(randomOptOut.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<OptOut> addOptOutTask =

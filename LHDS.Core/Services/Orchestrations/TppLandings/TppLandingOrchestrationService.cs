@@ -124,7 +124,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         {
                             Id = await this.identifierBroker.GetIdentifierAsync(),
                             SupplierId = supplierId,
-                            Container = blobContainers.TppLanding,
                             FileName = filename,
                             SourceFolderPath = sourceFolderPath,
                             BatchReadyFolderPath = baseFolder,

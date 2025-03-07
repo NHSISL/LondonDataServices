@@ -159,7 +159,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
                 {
                     Id = randomGuid,
                     SupplierId = randomSupplierId,
-                    Container = blobContainers.TppLanding,
                     FileName = inputFileName,
                     SourceFolderPath = sourceFolderPath,
                     BatchReadyFolderPath = basePath,

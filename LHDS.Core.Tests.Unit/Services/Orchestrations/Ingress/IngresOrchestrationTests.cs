@@ -11,6 +11,7 @@ using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
@@ -35,6 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IAuditBroker> auditBrokerMock;
+        private readonly BlobContainers blobContainers;
         private readonly IIngressOrchestrationService ingressOrchestrationService;
         private readonly ITestOutputHelper output;
 
@@ -47,10 +49,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.auditBrokerMock = new Mock<IAuditBroker>();
 
+            blobContainers = new BlobContainers
+            {
+                EmisLanding = "emislanding",
+                Versioner = "versioner",
+                Ingress = "ingress",
+                OptOut = "optout",
+                Pds = "pds",
+                TppLanding = "tpplanding"
+            };
+
             this.ingressOrchestrationService = new IngressOrchestrationService(
                 ingestionTrackingProcessingService: this.ingestionTrackingProcessingServiceMock.Object,
                 specificationObjectProcessingService: this.specificationObjectProcessingServiceMock.Object,
                 documentProcessingService: this.documentProcessingServiceMock.Object,
+                blobContainers: this.blobContainers,
                 loggingBroker: this.loggingBrokerMock.Object,
                 auditBroker: this.auditBrokerMock.Object);
         }

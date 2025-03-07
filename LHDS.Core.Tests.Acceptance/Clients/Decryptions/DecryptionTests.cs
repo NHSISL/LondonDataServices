@@ -149,14 +149,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
            string encryptedFileName,
            string decryptedFileName,
            Guid supplierId,
-           Guid dataSetSpecificationId)
+           Guid dataSetSpecificationId,
+           string container)
         {
             IngestionTracking ingestionTracking = CreateIngestionTrackingFiller(
                 dateTimeOffset,
                 encryptedFileName,
                 decryptedFileName,
                 supplierId,
-                dataSetSpecificationId)
+                dataSetSpecificationId,
+                container)
                     .Create();
 
             return ingestionTracking;
@@ -167,7 +169,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             string encryptedFileName,
             string decryptedFileName,
             Guid supplierId,
-            Guid dataSetSpecificationId)
+            Guid dataSetSpecificationId,
+            string container)
         {
             string user = "System";
             var filler = new Filler<IngestionTracking>();

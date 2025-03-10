@@ -128,8 +128,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             DataSetSpecification inputDataSetSpecification = randomDataSetSpecification;
             await this.apiBroker.PostDataSetSpecificationAsync(inputDataSetSpecification);
 
+            DataSetSpecification storedDataSetSpecification =
+            await this.apiBroker.GetDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
+
             DataSetSpecification modifiedDataSetSpecification =
-                UpdateDataSetSpecificationWithRandomValues(inputDataSetSpecification);
+                UpdateDataSetSpecificationWithRandomValues(storedDataSetSpecification);
 
             // When
             await this.apiBroker.PutDataSetSpecificationAsync(modifiedDataSetSpecification);

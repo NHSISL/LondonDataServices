@@ -16,46 +16,48 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
     {
         public async ValueTask EncryptAsync(Stream input, Stream output, SubscriberCredential subscriberCredential)
         {
-            var publicKeyDecoded = Convert.FromBase64String(subscriberCredential.GpgPublicKey ?? "");
+            byte[] publicKeyBytes = Convert.FromBase64String(subscriberCredential.GpgPublicKey ?? "");
+            int bufferSize = 65536;
 
-            using (Stream publicKeyFileStream = new MemoryStream(publicKeyDecoded))
+            using (Stream publicKeyStream = new MemoryStream(publicKeyBytes))
             {
-                PgpPublicKey publicKey = ReadPublicKey(publicKeyFileStream);
+                PgpPublicKey publicKey = ReadPublicKey(publicKeyStream);
 
-                PgpEncryptedDataGenerator encryptedDataGenerator =
-                    new PgpEncryptedDataGenerator(SymmetricKeyAlgorithmTag.Cast5, true, new SecureRandom());
+                var encryptedDataGenerator = new PgpEncryptedDataGenerator(
+                        encAlgorithm: SymmetricKeyAlgorithmTag.Cast5,
+                        withIntegrityPacket: true,
+                        random: new SecureRandom());
 
                 encryptedDataGenerator.AddMethod(publicKey);
-                Stream encryptedStream = encryptedDataGenerator.Open(output, new byte[1 << 16]);
 
-                PgpCompressedDataGenerator compressedDataGenerator =
-                    new PgpCompressedDataGenerator(CompressionAlgorithmTag.Zip);
+                using (Stream encryptedStream = encryptedDataGenerator.Open(output, new byte[bufferSize]))
+                {
+                    var compressedDataGenerator = new PgpCompressedDataGenerator(CompressionAlgorithmTag.Zip);
+                    Stream compressedStream = compressedDataGenerator.Open(encryptedStream);
 
-                Stream compressedStream = compressedDataGenerator.Open(encryptedStream);
-                PgpLiteralDataGenerator literalDataGenerator = new PgpLiteralDataGenerator();
-                input.Position = 0;
-
-                Stream literalStream = literalDataGenerator
-                    .Open(
+                    var literalDataGenerator = new PgpLiteralDataGenerator();
+                    Stream literalStream = literalDataGenerator.Open(
                         outStr: compressedStream,
                         format: PgpLiteralData.Binary,
-                        name: string.Empty,
+                        name: "",
                         length: input.Length,
                         modificationTime: DateTime.UtcNow);
 
-                await input.CopyToAsync(literalStream);
-                literalStream.Close();
-                compressedStream.Close();
-                encryptedStream.Close();
+                    input.Position = 0;
+                    await input.CopyToAsync(literalStream, bufferSize);
+
+                    literalStream.Close();
+                    compressedStream.Close();
+                }
             }
         }
 
         public async ValueTask DecryptAsync(Stream input, Stream output, SubscriberCredential subscriberCredential)
         {
-            var privateKeyDecoded = Convert.FromBase64String(subscriberCredential.GpgPrivateKey ?? "");
+            byte[] privateKeyBytes = Convert.FromBase64String(subscriberCredential.GpgPrivateKey ?? "");
             char[] privateKeyPassphrase = subscriberCredential?.GpgPassPhrase?.ToCharArray() ?? Array.Empty<char>();
 
-            using (Stream privateKeyFileStream = new MemoryStream(privateKeyDecoded))
+            using (Stream privateKeyStream = new MemoryStream(privateKeyBytes))
             {
                 input.Position = 0;
                 PgpObjectFactory pgpFactory = new PgpObjectFactory(PgpUtilities.GetDecoderStream(input));
@@ -67,7 +69,7 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
                 foreach (PgpPublicKeyEncryptedData encryptedDataItem in encryptedDataList.GetEncryptedDataObjects())
                 {
                     privateKey = FindPrivateKey(
-                        privateKeyStream: privateKeyFileStream,
+                        privateKeyStream: privateKeyStream,
                         keyId: encryptedDataItem.KeyId,
                         passphrase: privateKeyPassphrase);
 
@@ -78,32 +80,30 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
                     }
                 }
 
-                if (privateKey == null)
-                {
-                    throw new ArgumentException("Private key not found in the key file");
-                }
+                if (privateKey == null) throw new ArgumentException("Private key not found in the key file");
+                if (encryptedData == null) throw new ArgumentException("No encrypted data found in the message");
 
-                if (encryptedData == null)
+                using (Stream decryptedStream = encryptedData.GetDataStream(privateKey))
                 {
-                    throw new ArgumentException("No encrypted data found in the message");
-                }
+                    PgpObjectFactory decryptedFactory = new PgpObjectFactory(decryptedStream);
+                    PgpObject pgpObject = decryptedFactory.NextPgpObject();
 
-                Stream decryptedStream = encryptedData.GetDataStream(privateKey);
-                PgpObjectFactory decryptedFactory = new PgpObjectFactory(inputStream: decryptedStream);
-                PgpObject pgpObject = decryptedFactory.NextPgpObject();
+                    if (pgpObject is PgpCompressedData compressedData)
+                    {
+                        using (Stream compressedStream = compressedData.GetDataStream())
+                        {
+                            PgpObjectFactory compressedFactory = new PgpObjectFactory(compressedStream);
+                            pgpObject = compressedFactory.NextPgpObject();
+                        }
+                    }
 
-                if (pgpObject is PgpCompressedData)
-                {
-                    PgpCompressedData compressedData = (PgpCompressedData)pgpObject;
-                    PgpObjectFactory compressedFactory = new PgpObjectFactory(compressedData.GetDataStream());
-                    pgpObject = compressedFactory.NextPgpObject();
-                }
-
-                if (pgpObject is PgpLiteralData)
-                {
-                    PgpLiteralData literalData = (PgpLiteralData)pgpObject;
-                    Stream literalStream = literalData.GetInputStream();
-                    await literalStream.CopyToAsync(output);
+                    if (pgpObject is PgpLiteralData literalData)
+                    {
+                        using (Stream literalStream = literalData.GetInputStream())
+                        {
+                            await literalStream.CopyToAsync(output, 65536); // 64KB buffer
+                        }
+                    }
                 }
             }
         }

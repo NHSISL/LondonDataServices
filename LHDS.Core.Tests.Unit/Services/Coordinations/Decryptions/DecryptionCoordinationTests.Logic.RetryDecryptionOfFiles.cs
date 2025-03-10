@@ -57,6 +57,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     service.DecryptAsync(filePath, randomActiveSubscriberCredential),
                         Times.Once);
 
+            this.ingressOrchestrationServiceMock.Verify(service =>
+                service.CheckForBatchCompleteAsync(randomIngestionTrackingId),
+                    Times.Once);
+
             this.subscriberCredentialOrchestrationMock.VerifyNoOtherCalls();
             this.decryptionOrchestrationServiceMock.VerifyNoOtherCalls();
             this.ingressOrchestrationServiceMock.VerifyNoOtherCalls();

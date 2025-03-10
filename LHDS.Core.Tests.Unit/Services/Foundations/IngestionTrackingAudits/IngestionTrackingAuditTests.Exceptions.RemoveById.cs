@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectIngestionTrackingAuditByIdAsync(randomIngestionTrackingAudit.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<IngestionTrackingAudit> removeIngestionTrackingAuditTask =

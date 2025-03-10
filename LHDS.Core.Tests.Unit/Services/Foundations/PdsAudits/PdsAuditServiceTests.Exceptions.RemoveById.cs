@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectPdsAuditByIdAsync(randomPdsAudit.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<PdsAudit> addPdsAuditTask =

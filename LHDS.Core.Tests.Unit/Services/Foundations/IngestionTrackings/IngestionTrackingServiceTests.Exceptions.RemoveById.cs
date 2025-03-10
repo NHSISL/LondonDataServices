@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.Id))
-                    .Throws(sqlException);
+                    .ThrowsAsync(sqlException);
 
             // when
             ValueTask<IngestionTracking> addIngestionTrackingTask =

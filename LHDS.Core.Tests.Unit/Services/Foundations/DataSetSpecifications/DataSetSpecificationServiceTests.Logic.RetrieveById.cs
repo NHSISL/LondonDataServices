@@ -38,7 +38,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     inputDataSetSpecification.Id);
 
             // then
-            actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
+            actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification, options =>
+                options.Excluding(spec => spec.CreatedBy)
+                       .Excluding(spec => spec.CreatedDate)
+                       .Excluding(spec => spec.UpdatedBy)
+                       .Excluding(spec => spec.UpdatedDate));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectDataSetSpecificationByIdAsync(inputDataSetSpecification.Id),

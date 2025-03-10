@@ -489,11 +489,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset invalidDateTime = randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
 
-            DateTimeOffset invalidDateTime =
-                randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
+            ObjectColumn randomObjectColumn = 
+                CreateRandomObjectColumn(invalidDateTime, randomEntraUser.EntraUserId);
 
-            ObjectColumn randomObjectColumn = CreateRandomObjectColumn(invalidDateTime);
             ObjectColumn invalidObjectColumn = randomObjectColumn;
 
             var invalidObjectColumnException =

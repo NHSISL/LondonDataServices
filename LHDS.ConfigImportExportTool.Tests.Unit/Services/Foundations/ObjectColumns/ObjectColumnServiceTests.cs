@@ -109,24 +109,5 @@ namespace LHDS.ConfigImportExportTool.Tests.Unit.Services.Foundations.ObjectColu
 
             return filler;
         }
-
-        private EntraUser CreateRandomEntraUser(string entraUserId = "")
-        {
-            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
-
-            return new EntraUser(
-                entraUserId: userId,
-                givenName: GetRandomString(),
-                surname: GetRandomString(),
-                displayName: GetRandomString(),
-                email: GetRandomString(),
-                jobTitle: GetRandomString(),
-                roles: new List<string> { GetRandomString() },
-
-                claims: new List<System.Security.Claims.Claim>
-                {
-                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
-                });
-        }
     }
 }

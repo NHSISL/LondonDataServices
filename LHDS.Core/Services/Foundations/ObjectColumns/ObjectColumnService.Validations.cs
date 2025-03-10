@@ -70,6 +70,11 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     objectColumn.UpdatedBy, 255), Parameter: nameof(objectColumn.UpdatedBy)),
 
                 (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: objectColumn.CreatedBy),
+                Parameter: nameof(ObjectColumn.CreatedBy)),
+
+                (Rule: IsNotSame(
                     firstDate: objectColumn.UpdatedDate,
                     secondDate: objectColumn.CreatedDate,
                     secondDateName: nameof(ObjectColumn.CreatedDate)),
@@ -223,6 +228,13 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 Message = $"Date is the same as {secondDateName}"
             };
 
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
+            };
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,

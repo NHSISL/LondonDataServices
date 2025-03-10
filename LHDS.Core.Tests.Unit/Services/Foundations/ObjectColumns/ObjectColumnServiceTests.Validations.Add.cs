@@ -186,8 +186,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
-            ObjectColumn invalidObjectColumn = CreateRandomObjectColumn(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
+
+            ObjectColumn invalidObjectColumn = 
+                CreateRandomObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
+            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
             invalidObjectColumn.SupplierColumnName = GetRandomString(256);
             invalidObjectColumn.OurColumnName = GetRandomString(256);
             invalidObjectColumn.ColumnDescription = GetRandomString(501);
@@ -199,8 +203,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             invalidObjectColumn.MaskingMethod = GetRandomString(256);
             invalidObjectColumn.CodeSystem = GetRandomString(256);
             invalidObjectColumn.PartitionColumnLevel = GetRandomString(256);
-            invalidObjectColumn.CreatedBy = GetRandomString(256);
-            invalidObjectColumn.UpdatedBy = invalidObjectColumn.CreatedBy;
+            invalidObjectColumn.CreatedBy = inputCreatedByUpdatedByString;
+            invalidObjectColumn.UpdatedBy = inputCreatedByUpdatedByString;
 
             var invalidObjectColumnException =
                 new InvalidObjectColumnException(

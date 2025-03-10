@@ -119,12 +119,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 values: "Text is required");
 
             invalidObjectColumnException.AddData(
-                key: nameof(ObjectColumn.CreatedDate),
-                values: "Date is required");
+                 key: nameof(ObjectColumn.CreatedDate),
+                 values:
+                 [
+                    "Date is required",
+                    $"Date is not recent"
+                 ]);
 
             invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.CreatedBy),
-                values: "Text is required");
+                values:
+                [
+                    "Text is required",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidObjectColumn.CreatedBy}'."
+                ]);
 
             invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.UpdatedDate),
@@ -270,7 +278,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDataTimeOffset);
+                    .ReturnsAsync(randomDateTimeOffset);
 
             this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())

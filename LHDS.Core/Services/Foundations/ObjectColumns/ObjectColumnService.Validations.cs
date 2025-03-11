@@ -144,6 +144,11 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 (Rule: IsEqualOrSmallerThan(
                     objectColumn.UpdatedBy, 255), Parameter: nameof(objectColumn.UpdatedBy)),
 
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: objectColumn.UpdatedBy),
+                Parameter: nameof(ObjectColumn.UpdatedBy)),
+
                 (Rule: IsSame(
                     firstDate: objectColumn.UpdatedDate,
                     secondDate: objectColumn.CreatedDate,

@@ -67,6 +67,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         public async Task ShouldThrowValidationExceptionOnModifyIfObjectColumnIsInvalidAndLogItAsync(string invalidText)
         {
             // given 
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
             var invalidObjectColumn = new ObjectColumn
             {
                 SupplierColumnName = invalidText,
@@ -88,7 +91,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 service.ApplyModifyAuditAsync(invalidObjectColumn))
                     .ReturnsAsync(invalidObjectColumn);
 
-   
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             var invalidObjectColumnException =
                 new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again.");
@@ -128,14 +138,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.UpdatedDate),
                 values:
-                new[] {
-                    "Date is required",
-                    $"Date is the same as {nameof(ObjectColumn.CreatedDate)}"
-                });
+                    [
+                        "Date is required",
+                        "Date is the same as CreatedDate",
+                        $"Date is not recent"
+                    ]);
 
             invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.UpdatedBy),
-                values: "Text is required");
+                values:
+                    [
+                        "Text is required",
+                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
+                        $"'{invalidObjectColumn.UpdatedBy}'."
+                    ]);
 
             var expectedObjectColumnValidationException =
                 new ObjectColumnValidationException(

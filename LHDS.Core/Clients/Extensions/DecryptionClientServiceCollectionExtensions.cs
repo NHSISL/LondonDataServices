@@ -67,7 +67,7 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            return AddDecryptionClient(services, configuration, acceptanceTest: false);
+            return AddDecryptionClient(services, configuration, null, acceptanceTest: false);
         }
 
         public static IServiceCollection AddDecryptionClient(
@@ -187,8 +187,8 @@ namespace LHDS.Core.Clients.Extensions
         }
 
         private static void AddBrokers(
-            IServiceCollection services, 
-            IConfiguration configuration, 
+            IServiceCollection services,
+            IConfiguration configuration,
             ClaimsPrincipal claimsPrincipal,
             bool acceptanceTest)
         {
@@ -246,8 +246,15 @@ namespace LHDS.Core.Clients.Extensions
                 services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             }
 
-            var securityBroker = new SecurityBroker(claimsPrincipal);
-            services.AddTransient<ISecurityBroker>(_ => securityBroker);
+            if (claimsPrincipal != null)
+            {
+                var securityBroker = new SecurityBroker(claimsPrincipal);
+                services.AddTransient<ISecurityBroker>(_ => securityBroker);
+            }
+            else
+            {
+                services.AddTransient<ISecurityBroker, SecurityBroker>();
+            }
         }
 
         private static void AddServices(IServiceCollection services)

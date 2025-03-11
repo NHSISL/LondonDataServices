@@ -53,6 +53,21 @@ namespace LHDS.Core.Clients.Extensions
     {
         public static IServiceCollection AddTppLandingClient(
             this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
+            AddBrokers(services, configuration, null);
+            AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddCoordinations(services);
+            AddClients(services);
+
+            return services;
+        }
+
+        public static IServiceCollection AddTppLandingClient(
+            this IServiceCollection services,
             IConfiguration configuration,
             IHttpContextAccessor httpContextAccessor)
         {
@@ -66,6 +81,7 @@ namespace LHDS.Core.Clients.Extensions
 
             return services;
         }
+
         public static IServiceCollection AddTppLandingClient(
             this IServiceCollection services,
             IConfiguration configuration,
@@ -98,8 +114,8 @@ namespace LHDS.Core.Clients.Extensions
         }
 
         private static void AddBrokers(
-            IServiceCollection services, 
-            IConfiguration configuration, 
+            IServiceCollection services,
+            IConfiguration configuration,
             ClaimsPrincipal claimsPrincipal)
         {
             services.AddTransient<ILoggingBroker, LoggingBroker>();
@@ -141,8 +157,16 @@ namespace LHDS.Core.Clients.Extensions
                     options: blobServiceClientOptions));
 
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
-            var securityBroker = new SecurityBroker(claimsPrincipal);
-            services.AddTransient<ISecurityBroker>(_ => securityBroker);
+
+            if (claimsPrincipal != null)
+            {
+                var securityBroker = new SecurityBroker(claimsPrincipal);
+                services.AddTransient<ISecurityBroker>(_ => securityBroker);
+            }
+            else
+            {
+                services.AddTransient<ISecurityBroker, SecurityBroker>();
+            }
         }
 
         private static void AddServices(IServiceCollection services)

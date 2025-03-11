@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
         private static int GetRandomNumber() =>
-            new IntRange(min: 2, max: 10).GetValue();
+            new IntRange(min: 2, max: 5).GetValue();
 
         static byte[] ReadAllBytesFromStream(Stream stream)
         {

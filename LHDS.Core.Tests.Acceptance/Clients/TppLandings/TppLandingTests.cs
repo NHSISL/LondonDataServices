@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -65,8 +66,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 builder.AddConsole();
             });
 
-            serviceCollection.AddTppLandingClient(this.dependencyBroker.Configuration);
-            serviceCollection.AddTppLandingClient(this.dependencyBroker.Configuration);
+            var claimsPrincipal = new ClaimsPrincipal();
+            serviceCollection.AddTppLandingClient(this.dependencyBroker.Configuration, claimsPrincipal);
             serviceCollection.AddSingleton<IStorageBroker, StorageBroker>();
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();

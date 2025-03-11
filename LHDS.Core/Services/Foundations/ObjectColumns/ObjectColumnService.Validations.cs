@@ -14,7 +14,6 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
     {
         private async ValueTask ValidateObjectColumnOnAddAsync(ObjectColumn objectColumn)
         {
-            ValidateObjectColumnIsNotNull(objectColumn);
             EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
@@ -91,7 +90,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
         private async ValueTask ValidateObjectColumnOnModifyAsync(ObjectColumn objectColumn)
         {
-            ValidateObjectColumnIsNotNull(objectColumn);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),

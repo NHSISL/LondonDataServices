@@ -428,13 +428,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
-            ObjectColumn randomObjectColumn = CreateRandomObjectColumn(randomDateTimeOffset);
+
+            ObjectColumn randomObjectColumn = 
+                CreateRandomObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             ObjectColumn invalidObjectColumn = randomObjectColumn;
-            invalidObjectColumn.UpdatedBy = Guid.NewGuid().ToString();
+            invalidObjectColumn.CreatedBy = GetRandomString();
+            invalidObjectColumn.UpdatedBy = GetRandomString();
 
             var invalidObjectColumnException =
                 new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again.");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.CreatedBy),
+                values: $"Expected value to be '{randomEntraUser.EntraUserId}' " +
+                    $"but found '{invalidObjectColumn.CreatedBy}'.");
 
             invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.UpdatedBy),

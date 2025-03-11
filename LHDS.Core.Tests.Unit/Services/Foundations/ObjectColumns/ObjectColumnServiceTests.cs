@@ -95,6 +95,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             return randomObjectColumn;
         }
 
+        private static ObjectColumn CreateRandomModifyObjectColumn(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            ObjectColumn randomObjectColumn = CreateRandomObjectColumn(dateTimeOffset, userId);
+
+            randomObjectColumn.CreatedDate =
+                randomObjectColumn.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomObjectColumn;
+        }
+
         private static IQueryable<ObjectColumn> CreateRandomObjectColumns()
         {
             return CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset())

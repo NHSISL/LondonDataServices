@@ -6,7 +6,6 @@ using System;
 using System.IO;
 using Azure.Core;
 using Azure.Identity;
-using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Providers.Cryptography.Extensions;
 using LHDS.Core.Providers.Downloads.Extensions;

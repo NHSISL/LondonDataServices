@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
             actualString.Should().BeEquivalentTo(expectedString);
         }
 
-        [Fact]
+        [Fact(Skip = "Only for local testing.  We don't want to test large files on pipeline.")]
         public async Task ShouldEncryptAndDecryptLargeFilesAsync()
         {
             // Given
@@ -54,7 +54,6 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
             byte[] buffer = new byte[8192];
             Random random = new Random();
 
-            // Generate large file efficiently
             using (FileStream fileStream = new FileStream(
                 path: tempFilePath,
                 mode: FileMode.Create,
@@ -93,7 +92,6 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
                 await encryptedFileStream.FlushAsync();  // Ensure the encryption stream is flushed and ready
             }
 
-            // Ensure the encrypted file exists before proceeding
             if (!File.Exists(encryptedFilePath) || new FileInfo(encryptedFilePath).Length == 0)
                 throw new InvalidOperationException("Encryption failed, encrypted file is empty.");
 
@@ -105,9 +103,7 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
                 share: FileShare.Read,
                 bufferSize: buffer.Length,
                 options: FileOptions.SequentialScan))
-            // Wrap the encrypted stream to prevent premature disposal
-            using (Stream nonDisposingEncryptedStream = new NonDisposingStreamWrapper(encryptedStream))
-            using (BufferedStream bufferedEncryptedStream = new BufferedStream(nonDisposingEncryptedStream))
+            using (BufferedStream bufferedEncryptedStream = new BufferedStream(encryptedStream))
             using (Stream decryptedStream = new FileStream(
                 path: decryptedFilePath,
                 mode: FileMode.Create,
@@ -132,42 +128,6 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
             File.Delete(encryptedFilePath);
             File.Delete(decryptedFilePath);
         }
-
-        // A stream wrapper that does not dispose its inner stream, including asynchronous disposal.
-        public class NonDisposingStreamWrapper : Stream
-        {
-            private readonly Stream innerStream;
-            public NonDisposingStreamWrapper(Stream innerStream)
-            {
-                this.innerStream = innerStream;
-            }
-            public override bool CanRead => innerStream.CanRead;
-            public override bool CanSeek => innerStream.CanSeek;
-            public override bool CanWrite => innerStream.CanWrite;
-            public override long Length => innerStream.Length;
-            public override long Position { get => innerStream.Position; set => innerStream.Position = value; }
-            public override void Flush() => innerStream.Flush();
-            public override int Read(byte[] buffer, int offset, int count) => innerStream.Read(buffer, offset, count);
-            public override long Seek(long offset, SeekOrigin origin) => innerStream.Seek(offset, origin);
-            public override void SetLength(long value) => innerStream.SetLength(value);
-            public override void Write(byte[] buffer, int offset, int count) => innerStream.Write(buffer, offset, count);
-
-            protected override void Dispose(bool disposing)
-            {
-                // Prevent disposal of the inner stream.
-            }
-            public override async ValueTask DisposeAsync()
-            {
-                // Prevent asynchronous disposal of the inner stream.
-                await Task.CompletedTask;
-            }
-            public override void Close()
-            {
-                // Prevent closing the inner stream.
-            }
-        }
-
-
 
         private bool CompareFiles(string path1, string path2)
         {

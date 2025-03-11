@@ -4,6 +4,7 @@
 
 using System.Net.Http;
 using Attrify.InvisibleApi.Models;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Foundations.Documents;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +19,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         private readonly HttpClient httpClient;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
         internal readonly IDocumentService documentService;
+        internal readonly ISecurityBroker securityBroker;
         internal IConfiguration configuration;
         internal LandingConfiguration landingConfiguration;
         internal readonly InvisibleApiKey invisibleApiKey;
@@ -32,6 +34,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             this.configuration = this.acceptanceTestApplicationFactory.Services.GetService<IConfiguration>();
             this.landingConfiguration = this.acceptanceTestApplicationFactory.Services.GetService<LandingConfiguration>();
             this.documentService = this.acceptanceTestApplicationFactory.Services.GetService<IDocumentService>();
+            this.securityBroker = this.acceptanceTestApplicationFactory.Services.GetService<ISecurityBroker>();
         }
     }
 }

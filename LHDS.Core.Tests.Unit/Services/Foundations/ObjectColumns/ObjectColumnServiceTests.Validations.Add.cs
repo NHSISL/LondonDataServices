@@ -334,23 +334,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 CreateRandomObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             ObjectColumn invalidObjectColumn = randomObjectColumn;
-
-            invalidObjectColumn.UpdatedDate =
-                invalidObjectColumn.CreatedDate.AddDays(randomNumber);
+            invalidObjectColumn.CreatedDate = GetRandomDateTimeOffset();
+            invalidObjectColumn.UpdatedDate = GetRandomDateTimeOffset();
 
             var invalidObjectColumnException =
                 new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again.");
-
-            invalidObjectColumnException.AddData(
-                key: nameof(ObjectColumn.CreatedBy),
-                values:
-                    $"Expected value to be '{randomEntraUser.EntraUserId}' " +
-                    $"but found '{invalidObjectColumn.CreatedBy}'.");
-
-            invalidObjectColumnException.AddData(
-                key: nameof(ObjectColumn.UpdatedBy),
-                values: $"Text is not the same as {nameof(ObjectColumn.CreatedBy)}");
 
             invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.UpdatedDate),
@@ -358,9 +347,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.CreatedDate),
-                values:
-                    $"Date is not recent");
-
+                values: $"Date is not recent");
 
             var expectedObjectColumnValidationException =
                 new ObjectColumnValidationException(

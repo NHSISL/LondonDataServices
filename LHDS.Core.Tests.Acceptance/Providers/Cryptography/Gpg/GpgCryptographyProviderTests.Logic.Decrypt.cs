@@ -44,11 +44,11 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
             actualString.Should().BeEquivalentTo(expectedString);
         }
 
-        [Fact]
+        [Fact(Skip = "Do not want to run this on the pipeline")]
         public async Task ShouldEncryptAndDecryptLargeFilesAsync()
         {
             // Given
-            double sizeInGb = 1.5; // GetRandomNumber();
+            double sizeInGb = GetRandomNumber();
             output.WriteLine($"File size generated: {sizeInGb}Gb ");
             double fileSize = sizeInGb * 1024L * 1024L * 1024L;
             string tempFilePath = Path.GetTempFileName();

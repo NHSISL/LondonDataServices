@@ -347,7 +347,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
             ObjectColumn randomObjectColumn =
-                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             ObjectColumn invalidObjectColumn = randomObjectColumn;
 
@@ -384,10 +384,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 new ObjectColumnValidationException(
                     message: "ObjectColumn validation errors occurred, please try again.",
                     innerException: invalidObjectColumnException);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =

@@ -5,7 +5,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Core.Tests.Integration.Decryptions
@@ -34,7 +33,7 @@ namespace LHDS.Core.Tests.Integration.Decryptions
             // when
             await decryptionClient.RetryDecryptAsync();
 
-            then
+            //then
             IQueryable<IngestionTracking> postIngestionTrackings =
                await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 

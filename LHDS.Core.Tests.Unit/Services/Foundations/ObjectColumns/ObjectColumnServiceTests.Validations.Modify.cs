@@ -429,7 +429,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
             ObjectColumn invalidObjectColumn =
-                CreateRandomModifyObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
+                CreateRandomObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
             invalidObjectColumn.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
@@ -600,19 +600,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             storageObjectColumn.CreatedDate = storageObjectColumn.CreatedDate.AddMinutes(randomMinutes);
             storageObjectColumn.UpdatedDate = storageObjectColumn.UpdatedDate.AddMinutes(randomMinutes);
 
-            var invalidObjectColumnException =
-                new InvalidObjectColumnException(
-                    message: "Invalid objectColumn. Please correct the errors and try again.");
-
-            invalidObjectColumnException.AddData(
-                key: nameof(ObjectColumn.CreatedDate),
-                values: $"Date is not the same as {nameof(ObjectColumn.CreatedDate)}");
-
-            var expectedObjectColumnValidationException =
-                new ObjectColumnValidationException(
-                    message: "ObjectColumn validation errors occurred, please try again.",
-                    innerException: invalidObjectColumnException);
-
             var objectColumnServiceMock = new Mock<ObjectColumnService>(
                 storageBrokerMock.Object,
                 dateTimeBrokerMock.Object,
@@ -634,6 +621,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.GetCurrentUserAsync())
                     .ReturnsAsync(randomEntraUser);
 
+            var invalidObjectColumnException =
+                new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again.");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.CreatedDate),
+                values: $"Date is not the same as {nameof(ObjectColumn.CreatedDate)}");
+
+            var expectedObjectColumnValidationException =
+                new ObjectColumnValidationException(
+                    message: "ObjectColumn validation errors occurred, please try again.",
+                    innerException: invalidObjectColumnException);
+            
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id))
+                    .ReturnsAsync(storageObjectColumn);
+
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
                 objectColumnServiceMock.Object.ModifyObjectColumnAsync(invalidObjectColumn);
@@ -646,16 +650,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             actualObjectColumnValidationException.Should()
                 .BeEquivalentTo(expectedObjectColumnValidationException);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id),
-                    Times.Once);
-
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -665,8 +669,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]

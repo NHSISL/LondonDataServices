@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 
@@ -16,15 +17,18 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public SpecificationObjectService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
+            ISecurityBroker securityBroker,
             ILoggingBroker loggingBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.securityBroker = securityBroker;
             this.loggingBroker = loggingBroker;
         }
 
@@ -61,7 +65,10 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                     await storageBroker.SelectSpecificationObjectByIdAsync(specificationObject.Id);
 
                 ValidateStorageSpecificationObject(maybeSpecificationObject, specificationObject.Id);
-                ValidateAgainstStorageSpecificationObjectOnModify(inputSpecificationObject: specificationObject, storageSpecificationObject: maybeSpecificationObject);
+
+                ValidateAgainstStorageSpecificationObjectOnModify(
+                    inputSpecificationObject: specificationObject, 
+                    storageSpecificationObject: maybeSpecificationObject);
 
                 return await storageBroker.UpdateSpecificationObjectAsync(specificationObject);
             });
@@ -78,5 +85,19 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
 
                 return await storageBroker.DeleteSpecificationObjectAsync(maybeSpecificationObject);
             });
+
+        virtual internal async ValueTask<SpecificationObject> 
+            ApplyAddAuditAsync(SpecificationObject specificationObject)
+        {
+            ValidateSpecificationObjectIsNotNull(specificationObject);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            specificationObject.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            specificationObject.CreatedDate = auditDateTimeOffset;
+            specificationObject.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            specificationObject.UpdatedDate = auditDateTimeOffset;
+
+            return specificationObject;
+        }
     }
 }

@@ -722,6 +722,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.GetCurrentUserAsync())
                     .ReturnsAsync(randomEntraUser);
 
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id))
+                    .ReturnsAsync(storageObjectColumn);
+
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =
                 objectColumnServiceMock.Object.ModifyObjectColumnAsync(invalidObjectColumn);
@@ -733,17 +737,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             // then
             actualObjectColumnValidationException.Should().BeEquivalentTo(expectedObjectColumnValidationException);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id),
-                    Times.Once);
-
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
 
             this.securityBrokerMock.Verify(broker =>
                 broker.GetCurrentUserAsync(),
-                    Times.Once);        
+                    Times.Once); 
+            
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -768,6 +772,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             ObjectColumn invalidObjectColumn = randomObjectColumn;
             ObjectColumn storageObjectColumn = randomObjectColumn.DeepClone();
+            invalidObjectColumn.UpdatedDate = storageObjectColumn.UpdatedDate;
 
             var invalidObjectColumnException =
                 new InvalidObjectColumnException(
@@ -803,8 +808,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.GetCurrentUserAsync())
                     .ReturnsAsync(randomEntraUser);
 
+            this.storageBrokerMock.Setup(broker => 
+                broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id))
+                    .ReturnsAsync(storageObjectColumn);
+
             // when
-            ValueTask<ObjectColumn> modifyObjectColumnTask =
+            ValueTask <ObjectColumn> modifyObjectColumnTask =
                 objectColumnServiceMock.Object.ModifyObjectColumnAsync(invalidObjectColumn);
 
             // then

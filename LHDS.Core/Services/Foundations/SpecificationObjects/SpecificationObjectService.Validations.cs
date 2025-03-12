@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 
@@ -13,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
     {
         private async ValueTask ValidateSpecificationObjectOnAddAsync(SpecificationObject specificationObject)
         {
-            ValidateSpecificationObjectIsNotNull(specificationObject);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(specificationObject.Id), Parameter: nameof(SpecificationObject.Id)),

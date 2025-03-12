@@ -35,7 +35,10 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
         public ValueTask<SpecificationObject> AddSpecificationObjectAsync(SpecificationObject specificationObject) =>
             TryCatch(async () =>
             {
-                await ValidateSpecificationObjectOnAddAsync(specificationObject);
+                SpecificationObject specificationObjectWithAddAuditApplied = 
+                    await ApplyAddAuditAsync(specificationObject);
+
+                await ValidateSpecificationObjectOnAddAsync(specificationObjectWithAddAuditApplied);
 
                 return await storageBroker.InsertSpecificationObjectAsync(specificationObject);
             });

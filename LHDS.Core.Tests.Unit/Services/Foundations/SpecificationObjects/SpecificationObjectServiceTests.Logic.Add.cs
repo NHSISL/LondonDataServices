@@ -22,7 +22,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
 
-            SpecificationObject randomSpecificationObject = CreateRandomSpecificationObject(randomDateTimeOffset);
+            SpecificationObject randomSpecificationObject = 
+                CreateRandomSpecificationObject(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             SpecificationObject inputSpecificationObject = randomSpecificationObject;
             SpecificationObject storageSpecificationObject = inputSpecificationObject;
             SpecificationObject expectedSpecificationObject = storageSpecificationObject.DeepClone();
@@ -30,6 +32,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertSpecificationObjectAsync(inputSpecificationObject))
@@ -44,7 +50,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once());
+                    Times.Exactly(2));
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertSpecificationObjectAsync(inputSpecificationObject),

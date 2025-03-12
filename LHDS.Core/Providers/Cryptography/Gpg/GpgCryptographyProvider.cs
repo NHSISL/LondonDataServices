@@ -53,7 +53,6 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
         public async ValueTask DecryptAsync(Stream input, Stream output, SubscriberCredential subscriberCredential)
         {
             using var bufferedInput = new BufferedStream(input);
-
             var privateKeyDecoded = Convert.FromBase64String(subscriberCredential.GpgPrivateKey ?? "");
             char[] privateKeyPassphrase = subscriberCredential?.GpgPassPhrase?.ToCharArray() ?? Array.Empty<char>();
 

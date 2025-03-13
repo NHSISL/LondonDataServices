@@ -38,11 +38,14 @@ namespace LHDS.Core.Services.Foundations.Documents
             }
             catch (RequestFailedException requestFailedException)
             {
-                var failedRequestException = new FailedDocumentRequestException(
-                    message: "Failed document request occurred, please contact support.",
-                    innerException: requestFailedException);
+                if (requestFailedException.Status != 404)
+                {
+                    var failedRequestException = new FailedDocumentRequestException(
+                        message: "Failed document request occurred, please contact support.",
+                        innerException: requestFailedException);
 
-                throw await CreateAndLogDependencyExceptionAsync(failedRequestException);
+                    throw await CreateAndLogDependencyExceptionAsync(failedRequestException);
+                }
             }
             catch (DuplicateKeyException duplicateKeyException)
             {

@@ -21,7 +21,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             TerminologyArtifact randomTerminologyArtifacts = CreateRandomTerminologyArtifact();
             TerminologyArtifact storageTerminologyArtifacts = randomTerminologyArtifacts;
-            
             TerminologyArtifact modifiedTerminologyArtifact = storageTerminologyArtifacts.DeepClone();
             modifiedTerminologyArtifact.UpdatedDate = randomDateTimeOffset;
             TerminologyArtifact updatedTerminologyArtifacts = modifiedTerminologyArtifact.DeepClone();

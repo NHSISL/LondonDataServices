@@ -240,6 +240,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset startDate = randomDateTimeOffset.AddSeconds(-90);
+            DateTimeOffset endDate = randomDateTimeOffset.AddSeconds(0);
 
             DataSetSpecification randomDataSetSpecification = CreateRandomModifyDataSetSpecification(
                 randomDateTimeOffset,
@@ -273,7 +275,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             invalidDataSetSpecificationException.AddData(
                 key: nameof(DataSetSpecification.UpdatedDate),
-                values: $"Date is the same as {nameof(DataSetSpecification.CreatedDate)}");
+                values: [
+                    $"Date is the same as {nameof(DataSetSpecification.CreatedDate)}",
+                    $"Date is not recent. Expected a value between {startDate} and {endDate} but found {randomDataSetSpecification.UpdatedDate}",
+                ]);
 
             var expectedDataSetSpecificationValidationException =
                 new DataSetSpecificationValidationException(

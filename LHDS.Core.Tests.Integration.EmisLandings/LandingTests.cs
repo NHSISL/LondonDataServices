@@ -29,6 +29,7 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
     {
         private readonly ITestOutputHelper output;
         private readonly IEmisLandingClient landingClient;
+        private readonly IDecryptionClient decryptionClient;
         private readonly ILoggingBroker loggingBroker;
         private readonly IBlobStorageBroker blobStorageBroker;
         private readonly LandingConfiguration landingConfiguration;
@@ -61,6 +62,7 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
                     builder.AddApplicationInsights();
                 })
                 .AddEmisLandingClient(configuration)
+                .AddDecryptionClient(configuration)
                 .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider())
                 .BuildServiceProvider();
 
@@ -75,6 +77,7 @@ namespace LHDS.Core.Tests.Integration.EmisLandings
             dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
             subscriberAgreementService = serviceProvider.GetService<ISubscriberAgreementService>();
             landingClient = serviceProvider.GetService<IEmisLandingClient>();
+            decryptionClient = serviceProvider.GetService<IDecryptionClient>();
         }
 
         private async ValueTask<Supplier> GetEmisSupplierAsync()

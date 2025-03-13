@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
@@ -66,7 +67,21 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 builder.AddConsole();
             });
 
-            serviceCollection.AddDecryptionClient(this.dependencyBroker.Configuration);
+            var claimsPrincipal = new ClaimsPrincipal();
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            {
+                new Claim("oid", Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.GivenName, "GivenName"),
+                new Claim(ClaimTypes.Surname, "Surname"),
+                new Claim("displayName", "DisplayName"),
+                new Claim(ClaimTypes.Email, "some@email.com"),
+                new Claim("jobTitle", "job title"),
+                new Claim(ClaimTypes.Name, "TestUser"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Administrators"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Configurations")
+            }));
+
+            serviceCollection.AddDecryptionClient(this.dependencyBroker.Configuration, claimsPrincipal);
             serviceCollection.AddTransient<IDataSetService, DataSetService>();
             serviceCollection.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
             serviceCollection.AddTransient<ISpecificationObjectService, SpecificationObjectService>();

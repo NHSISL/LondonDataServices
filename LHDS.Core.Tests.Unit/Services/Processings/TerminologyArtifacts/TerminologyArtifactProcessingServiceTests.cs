@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
@@ -25,12 +26,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ITerminologyArtifactProcessingService terminologyArtifactProcessingService;
+        private readonly ICompareLogic compareLogic;
 
         public TerminologyArtifactProcessingServiceTests()
         {
             this.terminologyArtifactServiceMock = new Mock<ITerminologyArtifactService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            compareLogic = new CompareLogic();
 
             this.terminologyArtifactProcessingService = new TerminologyArtifactProcessingService(
                 terminologyArtifactService: this.terminologyArtifactServiceMock.Object,
@@ -52,6 +55,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             return CreateTerminologyArtifactFiller()
                 .Create(count: GetRandomNumber())
                     .ToList();
+        }
+
+        private Expression<Func<TerminologyArtifact, bool>> SameTerminologyArtifactAs(
+            TerminologyArtifact expectedTerminologyArtifact)
+        {
+            return actualTerminologyArtifact =>
+                this.compareLogic.Compare(expectedTerminologyArtifact, actualTerminologyArtifact)
+                    .AreEqual;
         }
 
         private static TerminologyArtifact CreateRandomTerminologyArtifact() =>

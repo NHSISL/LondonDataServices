@@ -62,7 +62,10 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
         public ValueTask<SpecificationObject> ModifySpecificationObjectAsync(SpecificationObject specificationObject) =>
             TryCatch(async () =>
             {
-                await ValidateSpecificationObjectOnModifyAsync(specificationObject);
+                SpecificationObject specificationObjectWithModifyAuditApplied = 
+                    await ApplyModifyAuditAsync(specificationObject);
+
+                await ValidateSpecificationObjectOnModifyAsync(specificationObjectWithModifyAuditApplied);
 
                 SpecificationObject maybeSpecificationObject =
                     await storageBroker.SelectSpecificationObjectByIdAsync(specificationObject.Id);
@@ -97,6 +100,18 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             var auditUser = await this.securityBroker.GetCurrentUserAsync();
             specificationObject.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             specificationObject.CreatedDate = auditDateTimeOffset;
+            specificationObject.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            specificationObject.UpdatedDate = auditDateTimeOffset;
+
+            return specificationObject;
+        }
+
+        virtual internal async ValueTask<SpecificationObject> 
+            ApplyModifyAuditAsync(SpecificationObject specificationObject)
+        {
+            ValidateSpecificationObjectIsNotNull(specificationObject);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
             specificationObject.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             specificationObject.UpdatedDate = auditDateTimeOffset;
 

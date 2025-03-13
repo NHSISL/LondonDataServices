@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             // When
             List<string> actualIngestionTracking =
                 await this.ingestionTrackingProcessingService
-                    .RetrieveObjectsInBatchByBatchReference(batchReference);
+                    .RetrieveObjectsInBatchByBatchReferenceAsync(batchReference);
 
             // Then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
@@ -99,7 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             // When
             List<string> actualIngestionTracking =
                 await this.ingestionTrackingProcessingService
-                    .RetrieveObjectsInBatchByBatchReference(batchReference, decrypted);
+                    .RetrieveObjectsInBatchByBatchReferenceAsync(batchReference, decrypted);
 
             // Then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);

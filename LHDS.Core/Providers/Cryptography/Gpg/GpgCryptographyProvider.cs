@@ -52,13 +52,14 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
 
         public async ValueTask DecryptAsync(Stream input, Stream output, SubscriberCredential subscriberCredential)
         {
+            using var bufferedInput = new BufferedStream(input);
             var privateKeyDecoded = Convert.FromBase64String(subscriberCredential.GpgPrivateKey ?? "");
             char[] privateKeyPassphrase = subscriberCredential?.GpgPassPhrase?.ToCharArray() ?? Array.Empty<char>();
 
-            if (input.CanSeek)
-                input.Position = 0;
+            if (bufferedInput.CanSeek)
+                bufferedInput.Position = 0;
 
-            using var decoderStream = PgpUtilities.GetDecoderStream(input);
+            using var decoderStream = PgpUtilities.GetDecoderStream(bufferedInput);
             PgpObjectFactory pgpFactory = new PgpObjectFactory(decoderStream);
 
             PgpEncryptedDataList? encryptedDataList = null;
@@ -136,8 +137,6 @@ namespace LHDS.Core.Providers.Cryptography.Gpg
 
             throw new ArgumentException("No valid literal data found in decrypted content.");
         }
-
-
 
         private static PgpPublicKey ReadPublicKey(Stream inputStream)
         {

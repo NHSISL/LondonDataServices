@@ -26,7 +26,6 @@ namespace LHDS.Core.Tests.Integration.Decryptions
         public DecryptionTests(ITestOutputHelper output)
         {
             this.output = output;
-
             var environmentName = "Production";
 
             var configurationBuilder = new ConfigurationBuilder()

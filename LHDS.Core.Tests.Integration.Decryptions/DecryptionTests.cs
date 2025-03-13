@@ -26,8 +26,7 @@ namespace LHDS.Core.Tests.Integration.Decryptions
         public DecryptionTests(ITestOutputHelper output)
         {
             this.output = output;
-
-            var environmentName = "Development";
+            var environmentName = "Production";
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)

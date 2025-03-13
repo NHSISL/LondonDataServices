@@ -7,6 +7,7 @@ using LHDS.Core.Models.Processings.SubscriberCredentials;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
 using Tynamix.ObjectFiller;
+using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
 {
@@ -14,9 +15,12 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
     {
         private readonly SubscriberCredential subscriberCredential;
         private readonly ICryptographyProvider cryptographyProvider;
+        private readonly ITestOutputHelper output;
 
-        public GpgCryptographyProviderTests()
+        public GpgCryptographyProviderTests(ITestOutputHelper output)
         {
+            this.output = output;
+
             subscriberCredential = new SubscriberCredential
             {
                 GpgPrivateKey = "LS0tLS1CRUdJTiBQR1AgUFJJVkFURSBLRVkgQkxPQ0stLS0tLQoKbElZRVkrSk45eFlKS3dZQkJBSGFSdzhCQVFkQWRaTWxIckpvckQyUmgyZUxhTUQyTlBTVHlvZmM0V1Z1NkdRYQp3TTVneXVmK0J3TUNNVHFudHJ0ajY0ZkhKZWpuTFZnaVlJQjJkOGFuZTNsRmtCS0ZVNkZQaUN5Y0JYbzFmemVCClFkTXFDbkVmdHFzWUdxUXM4QzRhVW5OZUF2c252dkFKeXl5a2VFL0JQNXhvbnREcC8yQW5ZTFFXVEVoRVV5QTgKZEdWemRFQnNhR1J6TG14dlkyRnNQb2lUQkJNV0NnQTdGaUVFRURHNVBEYWtZSHZ5a1FocVZYWm00eGdpZzZVRgpBbVBpVGZjQ0d3TUZDd2tJQndJQ0lnSUdGUW9KQ0FzQ0JCWUNBd0VDSGdjQ0Y0QUFDZ2tRVlhabTR4Z2lnNlZXClhnRC9VVTdWUWJCWTBpcHFkRFE2SFltYjAvNS9ibE9oZEcrZTFBVXBKb3UrSUZnQS9qd0VLcGxXYUtrTm1GZ3kKNUI5Q09zMXNOYUg5Q0RscjBnK2VyR25IdHVZQW5Jc0VZK0pOOXhJS0t3WUJCQUdYVlFFRkFRRUhRQUZESzJqRwpIZ3NzZjQ0WDgyK0dxTnJrdXlhVWM3bitrdzJSSEpHQWkvRVZBd0VJQi80SEF3SnZGc2doaUQ3NkJzY1BWd2ovCkEvTjFZMC9ZTnFIMHJIdnpjcDZVNmk3M205Rjh6ZU1SMXgrajhWU3FmTHBjRUR6UjVNaVF0RzRHSUt2T043engKWmhPNzdTOElES2QzMENYRTVFSk9TL3hQaUhnRUdCWUtBQ0FXSVFRUU1iazhOcVJnZS9LUkNHcFZkbWJqR0NLRApwUVVDWStKTjl3SWJEQUFLQ1JCVmRtYmpHQ0tEcFRUWUFRQ3hrV0hCS09GOHF5SCtXWWZFY25UTUZvMU5wbi9mCmR5bUdkVDRsOXYvMnBnRC9VTVdiR2JJOVRkakxkRGVxTXBPejlrUXk1Q05GQSttMFVVaWdrbGFoeFFRPQo9YVBKdwotLS0tLUVORCBQR1AgUFJJVkFURSBLRVkgQkxPQ0stLS0tLQo=",

@@ -40,37 +40,41 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             DataSetSpecification inputDataSetSpecification)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
+
             var filler = new Filler<DataSetSpecification>();
 
             filler.Setup()
-                .OnType<DateTimeOffset?>().Use(now)
+                .OnType<DateTimeOffset?>().Use(() => now)
+                .OnType<DateTimeOffset>().Use(() => now)
                 .OnProperty(dataSetSpecification => dataSetSpecification.Id).Use(inputDataSetSpecification.Id)
 
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.DataSetId).Use(inputDataSetSpecification.DataSetId)
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy)
+                    .Use(inputDataSetSpecification.CreatedBy)
 
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.CreatedBy).Use(inputDataSetSpecification.CreatedBy)
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedDate)
+                    .Use(inputDataSetSpecification.CreatedDate)
 
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.CreatedDate).Use(inputDataSetSpecification.CreatedDate)
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId)
+                    .Use(inputDataSetSpecification.DataSetId)
 
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededById)
+                    .Use(inputDataSetSpecification.PresededById)
 
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById)
+                    .Use(inputDataSetSpecification.SupersededById)
 
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.PresededById).Use(inputDataSetSpecification.PresededById)
+                .OnProperty(dataSetSpecification => dataSetSpecification.OurSpecificationVersion)
+                    .Use(GetRandomString(10))
 
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.SupersededById).Use(inputDataSetSpecification.SupersededById)
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupplierSpecificationVersion)
+                    .Use(GetRandomString(10))
 
-                .OnProperty(DataSet => DataSet.UpdatedDate).Use(now)
-                .OnType<DateTimeOffset>().Use(GetRandomDateTime());
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(GetRandomString(10))
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedDate).Use(now);
 
-            return filler.Create();
+            var modifiedDataSetSpecification = filler.Create();
+
+            return modifiedDataSetSpecification;
         }
 
         private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(Guid dataSetId)
@@ -86,27 +90,25 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
         private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(Guid dataSetId)
         {
             string user = GetRandomString(255);
-            var filler = new Filler<DataSetSpecification>();
             var now = DateTimeOffset.UtcNow;
+            var filler = new Filler<DataSetSpecification>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(now)
-                .OnType<DateTimeOffset?>().Use(now)
+                .OnType<DateTimeOffset?>().Use(() => now)
+                .OnType<DateTimeOffset>().Use(() => now)
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId).Use(dataSetId)
 
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.DataSetId).Use(dataSetId)
-
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))
-
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
+                .OnProperty(dataSetSpecification => dataSetSpecification.OurSpecificationVersion)
+                    .Use(GetRandomString(10))
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupplierSpecificationVersion)
+                    .Use(GetRandomString(10))
 
                 .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
-                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
-                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedDate).Use(now)
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedDate).Use(now);
 
             return filler;
         }

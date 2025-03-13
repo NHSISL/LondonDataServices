@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Integration.Decryptions
             // given
             DateTimeOffset olderThanDateTimeOffset = DateTimeOffset.UtcNow.AddMinutes(-15);
 
-            IQueryable<IngestionTracking> allIngestionTrackings = 
+            IQueryable<IngestionTracking> allIngestionTrackings =
                 await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
             var itemsThatRequireDecryption = allIngestionTrackings
@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Integration.Decryptions
             // when
             await decryptionClient.RetryDecryptAsync();
 
-            // then
+            //then
             IQueryable<IngestionTracking> postIngestionTrackings =
                await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 

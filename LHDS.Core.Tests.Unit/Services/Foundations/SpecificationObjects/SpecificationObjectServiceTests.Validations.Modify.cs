@@ -181,18 +181,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            EntraUser randomEntraUser = CreateRandomEntraUser();
+            EntraUser randomEntraUser = CreateRandomEntraUser(entraUserId: GetRandomStringWithLengthOf(256));
 
             SpecificationObject invalidSpecificationObject = 
                 CreateRandomModifySpecificationObject(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
+            var inputCreatedByUpdatedByString = randomEntraUser.EntraUserId;
             invalidSpecificationObject.SupplierObjectName = GetRandomString(256);
             invalidSpecificationObject.OurObjectName = GetRandomString(256);
             invalidSpecificationObject.ObjectDescription = GetRandomString(501);
             invalidSpecificationObject.InterchangeProtocol = GetRandomString(256);
             invalidSpecificationObject.DeletionHandling = GetRandomString(256);
-            invalidSpecificationObject.CreatedBy = GetRandomString(256);
-            invalidSpecificationObject.UpdatedBy = invalidSpecificationObject.CreatedBy;
+            invalidSpecificationObject.CreatedBy = inputCreatedByUpdatedByString;
+            invalidSpecificationObject.UpdatedBy = inputCreatedByUpdatedByString;
 
             var specificationObjectServiceMock = new Mock<SpecificationObjectService>(
                 storageBrokerMock.Object,
@@ -251,10 +252,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 new SpecificationObjectValidationException(
                     message: "SpecificationObject validation errors occurred, please try again.",
                     innerException: invalidSpecificationObjectException);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
 
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
@@ -683,7 +680,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                this.specificationObjectService.ModifySpecificationObjectAsync(invalidSpecificationObject);
+                specificationObjectServiceMock.Object.ModifySpecificationObjectAsync(invalidSpecificationObject);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
                 await Assert.ThrowsAsync<SpecificationObjectValidationException>(
@@ -766,13 +763,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.SelectSpecificationObjectByIdAsync(invalidSpecificationObject.Id))
                 .ReturnsAsync(storageSpecificationObject);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
-
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                this.specificationObjectService.ModifySpecificationObjectAsync(invalidSpecificationObject);
+                specificationObjectServiceMock.Object.ModifySpecificationObjectAsync(invalidSpecificationObject);
 
             // then
             await Assert.ThrowsAsync<SpecificationObjectValidationException>(

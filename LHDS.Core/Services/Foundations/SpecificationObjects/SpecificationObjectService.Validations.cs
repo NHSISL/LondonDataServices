@@ -102,6 +102,11 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                 (Rule: IsEqualOrSmallerThan(
                     specificationObject.UpdatedBy, 255), Parameter: nameof(specificationObject.UpdatedBy)),
 
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: specificationObject.UpdatedBy),
+                Parameter: nameof(SpecificationObject.UpdatedBy)),
+
                 (Rule: IsSame(
                     firstDate: specificationObject.UpdatedDate,
                     secondDate: specificationObject.CreatedDate,

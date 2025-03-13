@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using Moq;
 using Xunit;
@@ -18,9 +19,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
         public async Task ShouldAddSubscriberAgreementAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset =
-                GetRandomDateTimeOffset();
-
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser(randomDateTimeOffset);
             SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset);
             SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
             SubscriberAgreement storageSubscriberAgreement = inputSubscriberAgreement;

@@ -110,11 +110,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             invalidSpecificationObjectException.AddData(
                 key: nameof(SpecificationObject.CreatedDate),
-                values: "Date is required");
+                values: 
+                [
+                    "Date is required",
+                    $"Date is not recent"
+                ]);
 
             invalidSpecificationObjectException.AddData(
                 key: nameof(SpecificationObject.CreatedBy),
-                values: "Text is required");
+                values:
+                [
+                    "Text is required",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}'" +
+                    $" but found '{invalidSpecificationObject.CreatedBy}'."
+                ]);
 
             invalidSpecificationObjectException.AddData(
                 key: nameof(SpecificationObject.UpdatedDate),
@@ -142,6 +151,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -224,7 +237,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             invalidSpecificationObjectException.AddData(
                 key: nameof(SpecificationObject.CreatedBy),
-                values: "Text is exceeding max length");
+                values:
+                [
+                    "Text is exceeding max length",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}'" +
+                    $" but found '{invalidSpecificationObject.CreatedBy}'."
+                ]);
 
             invalidSpecificationObjectException.AddData(
                 key: nameof(SpecificationObject.UpdatedBy),
@@ -248,6 +266,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -334,6 +356,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSpecificationObjectValidationException))),
@@ -411,6 +437,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(), 
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedSpecificationObjectValidationException))),
@@ -459,7 +489,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
+                    .ReturnsAsync(invalidDateTime);
 
             this.securityBrokerMock.Setup(broker =>
                 broker.GetCurrentUserAsync())
@@ -491,6 +521,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

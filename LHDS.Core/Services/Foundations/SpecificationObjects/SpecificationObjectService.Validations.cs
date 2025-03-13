@@ -48,6 +48,11 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
                     specificationObject.UpdatedBy, 255), Parameter: nameof(specificationObject.UpdatedBy)),
 
                 (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: specificationObject.CreatedBy),
+                Parameter: nameof(SpecificationObject.CreatedBy)),
+
+                (Rule: IsNotSame(
                     firstDate: specificationObject.UpdatedDate,
                     secondDate: specificationObject.CreatedDate,
                     secondDateName: nameof(SpecificationObject.CreatedDate)),
@@ -178,6 +183,14 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             {
                 Condition = firstDate == secondDate,
                 Message = $"Date is the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

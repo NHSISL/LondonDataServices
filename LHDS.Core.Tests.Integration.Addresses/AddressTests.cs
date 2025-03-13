@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims; // Added this line
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -37,6 +38,12 @@ namespace LHDS.Core.Tests.Integration.Addresses
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
+
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, "TestUser"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Administrators")
+            }, "TestAuthType"));
 
             //setup our DI
             var serviceProvider = new ServiceCollection()

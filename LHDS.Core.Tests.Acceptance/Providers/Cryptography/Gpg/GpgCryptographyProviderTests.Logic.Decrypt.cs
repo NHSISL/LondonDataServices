@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,8 +12,10 @@ using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
 {
-    public partial class GpgCryptographyProviderTests
+    public partial class GpgCryptographyProviderTests : IDisposable
     {
+        private readonly List<string> tempFiles = new();
+
         [Fact]
         public async Task ShouldEncryptAndDecryptStringAsync()
         {
@@ -41,15 +44,20 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
             actualString.Should().BeEquivalentTo(expectedString);
         }
 
-        [Fact(Skip = "Only for local testing.  We don't want to test large files on pipeline.")]
+        [Fact(Skip = "Do not want to run this on the pipeline")]
         public async Task ShouldEncryptAndDecryptLargeFilesAsync()
         {
             // Given
-            int sizeInGb = GetRandomNumber();
-            long fileSize = sizeInGb * 1024L * 1024L * 1024L;
+            double sizeInGb = GetRandomNumber();
+            output.WriteLine($"File size generated: {sizeInGb}Gb ");
+            double fileSize = sizeInGb * 1024L * 1024L * 1024L;
             string tempFilePath = Path.GetTempFileName();
             string encryptedFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".enc");
             string decryptedFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".dec");
+
+            tempFiles.Add(tempFilePath);
+            tempFiles.Add(encryptedFilePath);
+            tempFiles.Add(decryptedFilePath);
 
             byte[] buffer = new byte[8192];
             Random random = new Random();
@@ -62,11 +70,11 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
                 bufferSize: buffer.Length,
                 options: FileOptions.SequentialScan))
             {
-                long bytesWritten = 0;
+                double bytesWritten = 0;
                 while (bytesWritten < fileSize)
                 {
                     random.NextBytes(buffer);
-                    long bytesToWrite = Math.Min(buffer.Length, fileSize - bytesWritten);
+                    double bytesToWrite = Math.Min(buffer.Length, fileSize - bytesWritten);
                     await fileStream.WriteAsync(buffer.AsMemory(0, (int)bytesToWrite));
                     bytesWritten += bytesToWrite;
                 }
@@ -113,7 +121,7 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
                 options: FileOptions.SequentialScan))
             {
                 await this.cryptographyProvider.DecryptAsync(bufferedEncryptedStream, decryptedStream, subscriberCredential);
-                await decryptedStream.FlushAsync();  // Ensure the decrypted stream is flushed and ready
+                await decryptedStream.FlushAsync();
             }
 
             // Then
@@ -122,11 +130,6 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
 
             bool filesMatch = CompareFiles(tempFilePath, decryptedFilePath);
             filesMatch.Should().BeTrue();
-
-            // Cleanup
-            File.Delete(tempFilePath);
-            File.Delete(encryptedFilePath);
-            File.Delete(decryptedFilePath);
         }
 
         private bool CompareFiles(string path1, string path2)
@@ -146,6 +149,18 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
                         return false;
                 }
                 return true;
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (string file in tempFiles)
+            {
+                if (File.Exists(file))
+                {
+                    File.Delete(file);
+                    output.WriteLine($"Deleted: {file}");
+                }
             }
         }
     }

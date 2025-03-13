@@ -5,7 +5,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
@@ -53,6 +55,7 @@ using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.SecureDatas;
 using LHDS.Core.Services.Processings.SpecificationObjects;
 using LHDS.Core.Services.Processings.SubscriberAgreements;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -64,24 +67,84 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            return AddDecryptionClient(services, configuration, acceptanceTest: false);
+            return AddDecryptionClient(services, configuration, null, acceptanceTest: false);
+        }
+
+        public static IServiceCollection AddDecryptionClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor)
+        {
+            var claimsPrincipal = httpContextAccessor.HttpContext.User;
+
+            return AddDecryptionClient(services, configuration, claimsPrincipal, acceptanceTest: false);
+        }
+
+        public static IServiceCollection AddDecryptionClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            string accessToken)
+        {
+            var claimsPrincipal = GetClaimsPrincipalFromToken(accessToken);
+
+            return AddDecryptionClient(services, configuration, claimsPrincipal, acceptanceTest: false);
+        }
+
+        public static IServiceCollection AddDecryptionClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            return AddDecryptionClient(services, configuration, claimsPrincipal, acceptanceTest: false);
         }
 
         internal static IServiceCollection AddDecryptionClientForAcceptance(
             this IServiceCollection services,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor)
         {
             if (configuration == null)
             {
                 new Exception("No configuration found");
             }
 
-            return AddDecryptionClient(services, configuration, acceptanceTest: true);
+            var claimsPrincipal = httpContextAccessor.HttpContext.User;
+
+            return AddDecryptionClient(services, configuration, claimsPrincipal, acceptanceTest: true);
+        }
+
+        internal static IServiceCollection AddDecryptionClientForAcceptance(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            string accessToken)
+        {
+            if (configuration == null)
+            {
+                new Exception("No configuration found");
+            }
+
+            var claimsPrincipal = GetClaimsPrincipalFromToken(accessToken);
+
+            return AddDecryptionClient(services, configuration, claimsPrincipal, acceptanceTest: true);
+        }
+
+        internal static IServiceCollection AddDecryptionClientForAcceptance(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            if (configuration == null)
+            {
+                new Exception("No configuration found");
+            }
+
+            return AddDecryptionClient(services, configuration, claimsPrincipal, acceptanceTest: true);
         }
 
         private static IServiceCollection AddDecryptionClient(
             this IServiceCollection services,
             IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal,
             bool acceptanceTest)
         {
             services.AddSingleton(_ => configuration);
@@ -94,7 +157,7 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             AddProviders(services, configuration);
-            AddBrokers(services, configuration, acceptanceTest);
+            AddBrokers(services, configuration, claimsPrincipal, acceptanceTest);
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
@@ -123,7 +186,11 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDownloadProvider, FtpDownloadProvider>();
         }
 
-        private static void AddBrokers(IServiceCollection services, IConfiguration configuration, bool acceptanceTest)
+        private static void AddBrokers(
+            IServiceCollection services,
+            IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal,
+            bool acceptanceTest)
         {
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<ICryptographyBroker, CryptographyBroker>();
@@ -178,6 +245,16 @@ namespace LHDS.Core.Clients.Extensions
                 }
 
                 services.AddTransient<IAzureBlobClient, AzureBlobClient>();
+            }
+
+            if (claimsPrincipal != null)
+            {
+                var securityBroker = new SecurityBroker(claimsPrincipal);
+                services.AddTransient<ISecurityBroker>(_ => securityBroker);
+            }
+            else
+            {
+                services.AddTransient<ISecurityBroker, SecurityBroker>();
             }
         }
 
@@ -330,6 +407,20 @@ namespace LHDS.Core.Clients.Extensions
                 data: errors);
 
             invalidConfigurationException.ThrowIfContainsErrors();
+        }
+
+        /// <summary>
+        /// Extracts a <see cref="ClaimsPrincipal"/> from a given JWT token.
+        /// </summary>
+        /// <param name="token">The JWT token.</param>
+        /// <returns>A <see cref="ClaimsPrincipal"/> containing claims from the token.</returns>
+        private static ClaimsPrincipal GetClaimsPrincipalFromToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var identity = new ClaimsIdentity(jwtToken.Claims, "jwt");
+
+            return new ClaimsPrincipal(identity);
         }
     }
 }

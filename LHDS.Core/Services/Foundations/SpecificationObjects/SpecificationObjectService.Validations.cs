@@ -69,7 +69,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
 
         private async ValueTask ValidateSpecificationObjectOnModifyAsync(SpecificationObject specificationObject)
         {
-            ValidateSpecificationObjectIsNotNull(specificationObject);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(specificationObject.Id), Parameter: nameof(SpecificationObject.Id)),

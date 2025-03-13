@@ -95,6 +95,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             return randomSpecificationObject;
         }
 
+        private static SpecificationObject CreateRandomModifySpecificationObject(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            SpecificationObject randomSpecificationObject = CreateRandomSpecificationObject(dateTimeOffset, userId);
+
+            randomSpecificationObject.CreatedDate =
+                randomSpecificationObject.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomSpecificationObject;
+        }
+
         private static IQueryable<SpecificationObject> CreateRandomSpecificationObjects()
         {
             return CreateSpecificationObjectFiller(dateTimeOffset: GetRandomDateTimeOffset())

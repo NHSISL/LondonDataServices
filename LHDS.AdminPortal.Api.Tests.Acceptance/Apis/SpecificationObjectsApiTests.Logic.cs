@@ -38,7 +38,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
                 await this.apiBroker.PostSpecificationObjectAsync(inputSpecificationObject);
 
             // Then
-            actualSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject);
+            actualSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteSpecificationObjectByIdAsync(inputSpecificationObject.Id);
@@ -176,7 +180,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
                 await this.apiBroker.GetSpecificationObjectByIdAsync(inputSpecificationObject.Id);
 
             // Then
-            actualSpecificationObject.Should().BeEquivalentTo(modifiedSpecificationObject);
+            actualSpecificationObject.Should().BeEquivalentTo(modifiedSpecificationObject, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteSpecificationObjectByIdAsync(actualSpecificationObject.Id);

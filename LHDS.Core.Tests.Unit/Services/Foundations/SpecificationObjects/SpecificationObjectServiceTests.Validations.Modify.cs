@@ -129,12 +129,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 values:
                 new[] {
                     "Date is required",
-                    $"Date is the same as {nameof(SpecificationObject.CreatedDate)}"
+                    $"Date is the same as {nameof(SpecificationObject.CreatedDate)}",
+                    "Date is not recent"
                 });
 
             invalidSpecificationObjectException.AddData(
                 key: nameof(SpecificationObject.UpdatedBy),
-                values: "Text is required");
+                 values:
+                    [
+                        "Text is required",
+                        $"Expected value to be '{randomEntraUser.EntraUserId}' but found " +
+                            $"'{invalidSpecificationObject.UpdatedBy}'."
+                    ]);
 
             var expectedSpecificationObjectValidationException =
                 new SpecificationObjectValidationException(

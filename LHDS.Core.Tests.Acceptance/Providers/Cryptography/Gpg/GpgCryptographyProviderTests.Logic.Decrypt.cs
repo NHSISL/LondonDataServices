@@ -121,7 +121,7 @@ namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
                 options: FileOptions.SequentialScan))
             {
                 await this.cryptographyProvider.DecryptAsync(bufferedEncryptedStream, decryptedStream, subscriberCredential);
-                await decryptedStream.FlushAsync();  // Ensure the decrypted stream is flushed and ready
+                await decryptedStream.FlushAsync();
             }
 
             // Then

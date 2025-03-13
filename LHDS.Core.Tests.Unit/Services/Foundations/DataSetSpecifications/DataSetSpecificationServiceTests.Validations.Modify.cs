@@ -234,7 +234,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        /*[Fact]
+        [Fact]
         public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
         {
             // given
@@ -307,7 +307,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-        }*/
+        }
 
         [Theory]
         [MemberData(nameof(MinutesBeforeOrAfter))]
@@ -468,7 +468,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             // given
             int randomNumber = GetRandomNegativeNumber();
             int randomMinutes = randomNumber;
-
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
 

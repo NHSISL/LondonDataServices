@@ -68,6 +68,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             });
 
             var claimsPrincipal = new ClaimsPrincipal();
+            
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim("oid", Guid.NewGuid().ToString()),

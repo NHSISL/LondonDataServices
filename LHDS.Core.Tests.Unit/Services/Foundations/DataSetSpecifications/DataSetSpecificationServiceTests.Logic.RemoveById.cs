@@ -21,7 +21,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
-
             Guid randomId = Guid.NewGuid();
             Guid inputDataSetSpecificationId = randomId;
 

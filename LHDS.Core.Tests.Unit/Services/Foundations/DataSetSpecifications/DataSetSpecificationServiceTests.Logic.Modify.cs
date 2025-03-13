@@ -29,7 +29,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             DataSetSpecification inputDataSetSpecification = randomDataSetSpecification;
             DataSetSpecification storageDataSetSpecification = inputDataSetSpecification.DeepClone();
             storageDataSetSpecification.UpdatedDate = randomDataSetSpecification.CreatedDate;
-
             DataSetSpecification updatedDataSetSpecification = inputDataSetSpecification;
             DataSetSpecification expectedDataSetSpecification = updatedDataSetSpecification.DeepClone();
             Guid dataSetSpecificationId = inputDataSetSpecification.Id;

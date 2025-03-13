@@ -89,7 +89,7 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
                 return await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTrackingId);
             });
 
-        public ValueTask<List<string>> RetrieveObjectsInBatchByBatchReference(
+        public ValueTask<List<string>> RetrieveObjectsInBatchByBatchReferenceAsync(
             string bacthReference,
             bool? decrypted = null) =>
             TryCatch(async () =>

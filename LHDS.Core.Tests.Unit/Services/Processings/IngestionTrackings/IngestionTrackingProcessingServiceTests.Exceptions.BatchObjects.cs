@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             // when
             ValueTask<List<string>> retrieveObjectsTask =
                 this.ingestionTrackingProcessingService
-                    .RetrieveObjectsInBatchByBatchReference(someBatchReference);
+                    .RetrieveObjectsInBatchByBatchReferenceAsync(someBatchReference);
 
             IngestionTrackingProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyValidationException>(
@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             // when
             ValueTask<List<string>> retrieveObjectsTask =
                 this.ingestionTrackingProcessingService
-                    .RetrieveObjectsInBatchByBatchReference(someBatchReference);
+                    .RetrieveObjectsInBatchByBatchReferenceAsync(someBatchReference);
 
             IngestionTrackingProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyException>(
@@ -123,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             // when
             ValueTask<List<string>> retrieveObjectsTask =
                 this.ingestionTrackingProcessingService
-                    .RetrieveObjectsInBatchByBatchReference(someBatchReference);
+                    .RetrieveObjectsInBatchByBatchReferenceAsync(someBatchReference);
 
             IngestionTrackingProcessingServiceException actualException =
                 await Assert.ThrowsAsync<IngestionTrackingProcessingServiceException>(

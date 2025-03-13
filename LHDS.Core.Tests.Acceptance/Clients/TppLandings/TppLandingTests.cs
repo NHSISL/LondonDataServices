@@ -67,6 +67,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             });
 
             var claimsPrincipal = new ClaimsPrincipal();
+            
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim("oid", Guid.NewGuid().ToString()),

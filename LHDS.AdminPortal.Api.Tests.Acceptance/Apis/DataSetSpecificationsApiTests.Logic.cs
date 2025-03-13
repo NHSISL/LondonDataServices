@@ -35,11 +35,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 await this.apiBroker.PostDataSetSpecificationAsync(inputDataSetSpecification);
 
             // Then
-            actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification, options =>
-            options.Excluding(spec => spec.CreatedBy)
-                   .Excluding(spec => spec.CreatedDate)
-                   .Excluding(spec => spec.UpdatedBy)
-                   .Excluding(spec => spec.UpdatedDate));
+            actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification, options => options.Excluding(spec => spec.CreatedBy)
+                .Excluding(spec => spec.CreatedDate)
+                .Excluding(spec => spec.UpdatedBy)
+                .Excluding(spec => spec.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
@@ -103,11 +102,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
 
             // Then
 
-            actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification, options =>
-            options.Excluding(spec => spec.CreatedBy)
-                   .Excluding(spec => spec.CreatedDate)
-                   .Excluding(spec => spec.UpdatedBy)
-                   .Excluding(spec => spec.UpdatedDate));
+            actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification, options => options
+                .Excluding(spec => spec.CreatedBy)
+                .Excluding(spec => spec.CreatedDate)
+                .Excluding(spec => spec.UpdatedBy)
+                .Excluding(spec => spec.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
@@ -141,11 +140,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 await this.apiBroker.GetDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
 
             // Then
-            actualDataSetSpecification.Should().BeEquivalentTo(modifiedDataSetSpecification, options =>
-            options.Excluding(spec => spec.CreatedBy)
-                   .Excluding(spec => spec.CreatedDate)
-                   .Excluding(spec => spec.UpdatedBy)
-                   .Excluding(spec => spec.UpdatedDate));
+            actualDataSetSpecification.Should().BeEquivalentTo(modifiedDataSetSpecification, options => options
+                .Excluding(spec => spec.CreatedBy)
+                .Excluding(spec => spec.CreatedDate)
+                .Excluding(spec => spec.UpdatedBy)
+                .Excluding(spec => spec.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(actualDataSetSpecification.Id);
@@ -176,15 +175,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
 
             // then
 
-            deletedDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification, options =>
-            options.Excluding(spec => spec.CreatedBy)
-                   .Excluding(spec => spec.CreatedDate)
-                   .Excluding(spec => spec.UpdatedBy)
-                   .Excluding(spec => spec.UpdatedDate));
+            deletedDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification, options => options
+                .Excluding(spec => spec.CreatedBy)
+                .Excluding(spec => spec.CreatedDate)
+                .Excluding(spec => spec.UpdatedBy)
+                .Excluding(spec => spec.UpdatedDate));
 
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
-
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(getDataSetSpecificationbyIdTask.AsTask);
         }
     }

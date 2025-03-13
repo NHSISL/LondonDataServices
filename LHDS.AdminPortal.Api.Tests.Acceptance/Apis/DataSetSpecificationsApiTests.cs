@@ -105,10 +105,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
 
                 .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
                 .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
-
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedDate).Use(now)
-
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedDate).Use(now);
 

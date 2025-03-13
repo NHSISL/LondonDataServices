@@ -97,6 +97,7 @@ namespace LHDS.Core.Clients.Extensions
 
             return services;
         }
+        
         public static IServiceCollection AddTppLandingClient(
             this IServiceCollection services,
             IConfiguration configuration,

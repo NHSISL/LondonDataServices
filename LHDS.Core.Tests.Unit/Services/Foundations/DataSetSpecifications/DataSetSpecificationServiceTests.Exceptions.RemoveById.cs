@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -20,7 +21,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         public async Task ShouldThrowCriticalDependencyExceptionOnRemoveIfSqlErrorOccursAndLogItAsync()
         {
             // given
-            DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+
+            DataSetSpecification randomDataSetSpecification =
+                CreateRandomDataSetSpecification(randomDateTimeOffset, randomEntraUser.EntraUserId);
+
             SqlException sqlException = GetSqlException();
 
             var failedDataSetSpecificationStorageException =
@@ -36,6 +42,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataSetSpecificationByIdAsync(randomDataSetSpecification.Id))
                     .ThrowsAsync(sqlException);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             // when
             ValueTask<DataSetSpecification> addDataSetSpecificationTask =
@@ -66,9 +76,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -119,9 +130,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 broker.DeleteDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -166,9 +178,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     expectedDataSetSpecificationDependencyException))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -213,9 +226,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     expectedDataSetSpecificationServiceException))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

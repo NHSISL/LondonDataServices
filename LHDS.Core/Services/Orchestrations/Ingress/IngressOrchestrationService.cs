@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.Loggings;
@@ -65,19 +66,15 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                     $"{ingestionTracking.DataSetSpecificationId}");
             }
 
-            List<string> ingestiontrackingObject = await this.ingestionTrackingProcessingService
-                .RetrieveObjectsInBatchByBatchReference(ingestionTracking.Batch);
+            List<string> decryptedIngestiontrackingObjects = await this.ingestionTrackingProcessingService
+                .RetrieveObjectsInBatchByBatchReferenceAsync(bacthReference: ingestionTracking.Batch, decrypted: true);
 
-            List<string> missingSpecificationObjectIds = new List<string>();
+            List<string> missingSpecificationObjectIds = specificationObjectIds
+                .Except(decryptedIngestiontrackingObjects).ToList();
 
-            foreach (string specificationObjectId in specificationObjectIds)
+            if (missingSpecificationObjectIds.Any())
             {
-                if (!ingestiontrackingObject.Contains(specificationObjectId))
-                {
-                    isBatchComplete = false;
-                    missingSpecificationObjectIds.Add(specificationObjectId);
-                    break;
-                }
+                isBatchComplete = false;
             }
 
             string batchCompleteFileName =

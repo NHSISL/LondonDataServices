@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
             // when
             ValueTask<List<string>> RetrieveIngestionTrackingTask =
-                this.ingestionTrackingProcessingService.RetrieveObjectsInBatchByBatchReference(invalidBatchReference);
+                this.ingestionTrackingProcessingService.RetrieveObjectsInBatchByBatchReferenceAsync(invalidBatchReference);
 
             IngestionTrackingProcessingValidationException actualIngestionTrackingProcessingValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingProcessingValidationException>(

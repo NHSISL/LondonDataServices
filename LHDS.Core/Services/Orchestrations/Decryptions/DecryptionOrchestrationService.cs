@@ -69,31 +69,72 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 string decryptedFileSha256Hash = string.Empty;
                 long fileSize = 0;
+                string encryptedTempFile = Path.GetTempFileName();
+                string decryptedTempFile = Path.GetTempFileName();
 
-                using (Stream encryptedDocument = new MemoryStream())
-                using (Stream decryptedDocument = new MemoryStream())
+                try
                 {
-                    await this.documentService.RetrieveDocumentByFileNameAsync(
-                        output: encryptedDocument,
-                        fileName: ingestionTracking?.EncryptedFileName ?? string.Empty,
-                        container: blobContainers.EmisLanding);
+                    using (Stream encryptedDocument = new FileStream(
+                        encryptedTempFile,
+                        FileMode.Create,
+                        FileAccess.Write,
+                        FileShare.None))
+                    {
+                        await this.documentService.RetrieveDocumentByFileNameAsync(
+                            output: encryptedDocument,
+                            fileName: ingestionTracking?.EncryptedFileName ?? string.Empty,
+                            container: blobContainers.EmisLanding);
+                    }
 
-                    ValidateStorageDocumentIsNotNull(stream: encryptedDocument, encryptedFileName);
+                    using (var encryptedTempFileStream = new FileStream(
+                        encryptedTempFile,
+                        FileMode.Open,
+                        FileAccess.Read,
+                        FileShare.Read))
+                    {
+                        ValidateStorageDocumentIsNotNull(
+                            stream: encryptedTempFileStream,
+                            encryptedFileName);
+                    }
 
-                    await this.cryptographyService.DecryptAsync(
-                        input: encryptedDocument,
-                        output: decryptedDocument,
-                        subscriberCredential);
+                    using (Stream encryptedDocument = new FileStream(
+                        encryptedTempFile,
+                        FileMode.Open,
+                        FileAccess.Read,
+                        FileShare.Read))
+                    using (Stream decryptedDocument = new FileStream(
+                        decryptedTempFile,
+                        FileMode.Create,
+                        FileAccess.Write,
+                        FileShare.None))
+                    {
+                        await this.cryptographyService.DecryptAsync(
+                             input: encryptedDocument,
+                             output: decryptedDocument,
+                             subscriberCredential);
+                    }
 
-                    decryptedFileSha256Hash =
-                        await this.hashBroker.GenerateSha256HashAsync(decryptedDocument);
+                    using (Stream decryptedDocument = new FileStream(
+                        decryptedTempFile,
+                        FileMode.Open,
+                        FileAccess.Read,
+                        FileShare.Read))
+                    {
+                        decryptedFileSha256Hash =
+                            await this.hashBroker.GenerateSha256HashAsync(decryptedDocument);
 
-                    fileSize = decryptedDocument?.Length ?? 0;
+                        fileSize = decryptedDocument.Length;
 
-                    await this.documentService.AddDocumentAsync(
-                        input: decryptedDocument,
-                        fileName: ingestionTracking.DecryptedFileName,
-                        container: blobContainers.Ingress);
+                        await this.documentService.AddDocumentAsync(
+                            input: decryptedDocument,
+                            fileName: ingestionTracking.DecryptedFileName,
+                            container: blobContainers.Ingress);
+                    }
+                }
+                finally
+                {
+                    if (File.Exists(encryptedTempFile)) File.Delete(encryptedTempFile);
+                    if (File.Exists(decryptedTempFile)) File.Delete(decryptedTempFile);
                 }
 
                 var currentDateTime = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
@@ -124,6 +165,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     await this.ingestionTrackingService.RetrieveAllIngestionTrackingsAsync();
 
                 IngestionTracking item = allIngestionTrackings
+                    .OrderBy(ingestionTrackingItem => ingestionTrackingItem.CreatedDate)
                     .FirstOrDefault(ingestionTrackingItem =>
                         ingestionTrackingItem.IsDownloaded == true
                         && ingestionTrackingItem.Decrypted == false

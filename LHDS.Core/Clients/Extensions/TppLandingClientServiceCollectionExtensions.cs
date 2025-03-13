@@ -5,7 +5,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
@@ -41,6 +43,7 @@ using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.OptOuts;
 using LHDS.Core.Services.Processings.SpecificationObjects;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -53,7 +56,7 @@ namespace LHDS.Core.Clients.Extensions
             IConfiguration configuration)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-            AddBrokers(services, configuration);
+            AddBrokers(services, configuration, null);
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
@@ -63,7 +66,58 @@ namespace LHDS.Core.Clients.Extensions
             return services;
         }
 
-        private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddTppLandingClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
+            AddBrokers(services, configuration, httpContextAccessor.HttpContext.User);
+            AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddCoordinations(services);
+            AddClients(services);
+
+            return services;
+        }
+
+        public static IServiceCollection AddTppLandingClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            string accessToken)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
+            AddBrokers(services, configuration, GetClaimsPrincipalFromToken(accessToken));
+            AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddCoordinations(services);
+            AddClients(services);
+
+            return services;
+        }
+        
+        public static IServiceCollection AddTppLandingClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
+            AddBrokers(services, configuration, claimsPrincipal);
+            AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddCoordinations(services);
+            AddClients(services);
+
+            return services;
+        }
+
+        private static void AddBrokers(
+            IServiceCollection services,
+            IConfiguration configuration,
+            ClaimsPrincipal claimsPrincipal)
         {
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
@@ -105,6 +159,16 @@ namespace LHDS.Core.Clients.Extensions
                     options: blobServiceClientOptions));
 
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
+
+            if (claimsPrincipal != null)
+            {
+                var securityBroker = new SecurityBroker(claimsPrincipal);
+                services.AddTransient<ISecurityBroker>(_ => securityBroker);
+            }
+            else
+            {
+                services.AddTransient<ISecurityBroker, SecurityBroker>();
+            }
         }
 
         private static void AddServices(IServiceCollection services)
@@ -218,6 +282,20 @@ namespace LHDS.Core.Clients.Extensions
                 data: errors);
 
             invalidConfigurationException.ThrowIfContainsErrors();
+        }
+
+        /// <summary>
+        /// Extracts a <see cref="ClaimsPrincipal"/> from a given JWT token.
+        /// </summary>
+        /// <param name="token">The JWT token.</param>
+        /// <returns>A <see cref="ClaimsPrincipal"/> containing claims from the token.</returns>
+        private static ClaimsPrincipal GetClaimsPrincipalFromToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var identity = new ClaimsIdentity(jwtToken.Claims, "jwt");
+
+            return new ClaimsPrincipal(identity);
         }
     }
 }

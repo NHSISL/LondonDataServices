@@ -60,8 +60,6 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             SubscriberCredential subscriberCredential) =>
             TryCatch(async () =>
             {
-                //TODO: Add logic to set IsProcessing = false on any error...
-
                 ValidateBlobContainersIsNotNull();
                 ValidateFileNameIsNotNull(encryptedFileName);
                 ValidateSubscriberCredentials(subscriberCredential);

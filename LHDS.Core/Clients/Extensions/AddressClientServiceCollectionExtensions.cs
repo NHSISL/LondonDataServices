@@ -50,7 +50,7 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            return AddAddressClient(services, configuration, claimsPrincipal: null, acceptanceTest: false);
+            return AddAddressClient(services, configuration, claimsPrincipal: null);
         }
 
         public static IServiceCollection AddAddressClient(

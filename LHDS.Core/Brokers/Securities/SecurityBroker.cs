@@ -45,14 +45,6 @@ namespace LHDS.Core.Brokers.Securities
             user = GetClaimsPrincipalFromToken(accessToken);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SecurityBroker"/> class using a <see cref="ClaimsPrincipal"/>.
-        /// This constructor is intended for Azure Functions or non-REST API usage.
-        /// </summary>
-        /// <param name="claimsPrincipal">A <see cref="ClaimsPrincipal"/> containing user claims.</param>
-        public SecurityBroker(ClaimsPrincipal claimsPrincipal) =>
-            user = claimsPrincipal;
-
-        /// <summary>
         /// Checks whether the current user has a specific claim with a given value.
         /// </summary>
         /// <param name="claimType">The type of the claim.</param>

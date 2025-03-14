@@ -48,11 +48,17 @@ namespace LHDS.Core.Clients.Extensions
     {
         public static IServiceCollection AddAddressClient(
             this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            return AddAddressClient(services, configuration, claimsPrincipal: null, acceptanceTest: false);
+        }
+
+        public static IServiceCollection AddAddressClient(
+            this IServiceCollection services,
             IConfiguration configuration,
             IHttpContextAccessor httpContextAccessor)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-
             AddClients(services, configuration);
             AddBrokers(services, httpContextAccessor.HttpContext.User);
             AddServices(services);
@@ -69,7 +75,6 @@ namespace LHDS.Core.Clients.Extensions
             string accessToken)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-
             AddClients(services, configuration);
             AddBrokers(services, GetClaimsPrincipalFromToken(accessToken));
             AddServices(services);
@@ -86,7 +91,6 @@ namespace LHDS.Core.Clients.Extensions
             ClaimsPrincipal claimsPrincipal)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-
             AddClients(services, configuration);
             AddBrokers(services, claimsPrincipal);
             AddServices(services);
@@ -96,7 +100,6 @@ namespace LHDS.Core.Clients.Extensions
 
             return services;
         }
-
 
         private static void AddClients(
             IServiceCollection services,
@@ -154,8 +157,16 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
             services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
-            var securityBroker = new SecurityBroker(claimsPrincipal);
-            services.AddTransient<ISecurityBroker>(_ => securityBroker);
+            
+            if (claimsPrincipal != null)
+            {
+                var securityBroker = new SecurityBroker(claimsPrincipal);
+                services.AddTransient<ISecurityBroker>(_ => securityBroker);
+            }
+            else
+            {
+                services.AddTransient<ISecurityBroker, SecurityBroker>();
+            }
         }
 
         private static void AddServices(IServiceCollection services)

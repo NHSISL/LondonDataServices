@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Integration.Addresses
             IConfiguration configuration = configurationBuilder.Build();
             var claimsPrincipal = new ClaimsPrincipal();
 
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.Name, "TestUser"),
                 new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Administrators")

@@ -118,6 +118,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             return filler;
         }
 
+        private static SubscriberAgreement CreateRandomSubscriberAgreement(
+            DateTimeOffset dateTimeOffset,
+            string userId) =>
+            CreateSubscriberAgreementFiller(dateTimeOffset, userId).Create();
+
+        private static Filler<SubscriberAgreement> CreateSubscriberAgreementFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<SubscriberAgreement>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(subscriberAgreement => subscriberAgreement.CreatedBy).Use(user)
+                .OnProperty(subscriberAgreement => subscriberAgreement.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
         private EntraUser CreateRandomEntraUser(string entraUserId = "")
         {
             var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;

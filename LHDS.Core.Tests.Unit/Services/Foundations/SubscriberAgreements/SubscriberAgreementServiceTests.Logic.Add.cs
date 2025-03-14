@@ -21,7 +21,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
-            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset);
+
+            SubscriberAgreement randomSubscriberAgreement = 
+                CreateRandomSubscriberAgreement(randomDateTimeOffset);
+
             SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
             SubscriberAgreement storageSubscriberAgreement = inputSubscriberAgreement;
             SubscriberAgreement expectedSubscriberAgreement = storageSubscriberAgreement.DeepClone();

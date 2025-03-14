@@ -62,6 +62,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             var serviceCollection = new ServiceCollection();
             var claimsPrincipal = new ClaimsPrincipal();
 
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            {
+                new Claim("oid", Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.GivenName, "GivenName"),
+                new Claim(ClaimTypes.Surname, "Surname"),
+                new Claim("displayName", "DisplayName"),
+                new Claim(ClaimTypes.Email, "some@email.com"),
+                new Claim("jobTitle", "job title"),
+                new Claim(ClaimTypes.Name, "TestUser"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Administrators"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Configurations")
+            }));
+
             serviceCollection
                 .AddTransient<IAddressOrchestrationService, AddressOrchestrationService>()
                 .AddTransient<IResolvedAddressOrchestrationService, ResolvedAddressOrchestrationService>()

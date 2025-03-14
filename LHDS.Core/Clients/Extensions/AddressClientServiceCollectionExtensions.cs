@@ -50,7 +50,7 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            return AddAddressClient(services, configuration, claimsPrincipal: null, acceptanceTest: false);
+            return AddAddressClient(services, configuration, claimsPrincipal: null);
         }
 
         public static IServiceCollection AddAddressClient(
@@ -157,7 +157,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IAuditBroker, AuditBroker>();
             services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
-            
+
             if (claimsPrincipal != null)
             {
                 var securityBroker = new SecurityBroker(claimsPrincipal);

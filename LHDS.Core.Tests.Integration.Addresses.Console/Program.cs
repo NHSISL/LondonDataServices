@@ -4,6 +4,7 @@
 
 using System;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -26,7 +27,8 @@ namespace LHDS.Core.Tests.Integration.Addresses.Console
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
-            var claimsPrincipal = new ClaimsPrincipal();
+            var windowsIdentity = WindowsIdentity.GetCurrent();
+            var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
 
             var serviceProvider = new ServiceCollection()
                 .AddLogging(builder =>

@@ -19,7 +19,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         public async Task ShouldAddAddressAsync()
         {
             // given
-
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
             Address randomAddress = CreateRandomAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);

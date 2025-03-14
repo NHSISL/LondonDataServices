@@ -12,7 +12,9 @@ using LHDS.Core.Brokers.Audits;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.Addresses;
 using Microsoft.Data.SqlClient;
@@ -27,6 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ISecurityBroker> securityBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IAuditBroker> auditBrokerMock;
@@ -38,6 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             this.compareLogic = new CompareLogic();
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.securityBrokerMock = new Mock<ISecurityBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.auditBrokerMock = new Mock<IAuditBroker>();
@@ -45,6 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             this.addressService = new AddressService(
                 storageBroker: this.storageBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
+                securityBroker: this.securityBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 auditBroker: this.auditBrokerMock.Object);
@@ -62,6 +67,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
 
         public static TheoryData<int> MinutesBeforeOrAfter()
         {
@@ -98,6 +110,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             return randomAddress;
         }
 
+        private static Address CreateRandomModifyAddress(DateTimeOffset dateTimeOffset, string userId)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            Address randomAddress = CreateRandomAddress(dateTimeOffset, userId);
+
+            randomAddress.CreatedDate =
+                randomAddress.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomAddress;
+        }
+
         private static IQueryable<Address> CreateRandomAddresses()
         {
             return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
@@ -122,6 +145,44 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 .OnProperty(address => address.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private static Address CreateRandomAddress(
+            DateTimeOffset dateTimeOffset,
+            string userId) =>
+            CreateAddressFiller(dateTimeOffset, userId).Create();
+
+        private static Filler<Address> CreateAddressFiller(
+            DateTimeOffset dateTimeOffset,
+            string userId)
+        {
+            var filler = new Filler<Address>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(address => address.CreatedBy).Use(userId)
+                .OnProperty(address => address.UpdatedBy).Use(userId);
+
+            return filler;
+        }
+
+        private EntraUser CreateRandomEntraUser(string entraUserId = "")
+        {
+            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+
+            return new EntraUser(
+                entraUserId: userId,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
         }
     }
 }

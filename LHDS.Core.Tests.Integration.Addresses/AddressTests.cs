@@ -40,6 +40,12 @@ namespace LHDS.Core.Tests.Integration.Addresses
             IConfiguration configuration = configurationBuilder.Build();
             var claimsPrincipal = new ClaimsPrincipal();
 
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, "TestUser"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Administrators")
+            }, "TestAuthType"));
+
             //setup our DI
             var serviceProvider = new ServiceCollection()
                 .AddLogging(builder =>

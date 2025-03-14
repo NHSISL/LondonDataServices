@@ -39,8 +39,13 @@ namespace LHDS.Core.Tests.Integration.Addresses
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
-            var windowsIdentity = WindowsIdentity.GetCurrent();
-            var claimsPrincipal = new ClaimsPrincipal(windowsIdentity);
+            var claimsPrincipal = new ClaimsPrincipal();
+
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, "TestUser"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Administrators")
+            }, "TestAuthType"));
 
             //setup our DI
             var serviceProvider = new ServiceCollection()

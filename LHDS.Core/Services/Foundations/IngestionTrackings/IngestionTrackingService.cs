@@ -35,7 +35,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         public ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             TryCatch(async () =>
             {
-                await ValidateIngestionTrackingOnAddAsync(ingestionTracking);
+                IngestionTracking ingestionTrackingWithAddAuditApplied = await ApplyAddAuditAsync(ingestionTracking);
+                await ValidateIngestionTrackingOnAddAsync(ingestionTrackingWithAddAuditApplied);
 
                 return await this.storageBroker.InsertIngestionTrackingAsync(ingestionTracking);
             });
@@ -117,5 +118,18 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     return await this.storageBroker.DeleteIngestionTrackingAsync(maybeIngestionTracking);
                 });
             });
+
+        virtual internal async ValueTask<IngestionTracking> ApplyAddAuditAsync(IngestionTracking ingestionTracking)
+        {
+            ValidateIngestionTrackingIsNotNull(ingestionTracking);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            ingestionTracking.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            ingestionTracking.CreatedDate = auditDateTimeOffset;
+            ingestionTracking.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            ingestionTracking.UpdatedDate = auditDateTimeOffset;
+
+            return ingestionTracking;
+        }
     }
 }

@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 
@@ -13,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
     {
         private async ValueTask ValidateIngestionTrackingOnAddAsync(IngestionTracking ingestionTracking)
         {
-            ValidateIngestionTrackingIsNotNull(ingestionTracking);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),

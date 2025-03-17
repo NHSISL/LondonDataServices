@@ -34,11 +34,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
             var filler = new Filler<DataType>();
 
             filler.Setup()
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
                 .OnProperty(DataType => DataType.Id).Use(inputDataType.Id)
                 .OnProperty(DataType => DataType.CreatedBy).Use(inputDataType.CreatedBy)
                 .OnProperty(DataType => DataType.CreatedDate).Use(inputDataType.CreatedDate)
-                .OnProperty(DataType => DataType.UpdatedDate).Use(now)
-                .OnType<DateTimeOffset>().Use(GetRandomDateTime());
+                .OnProperty(DataType => DataType.UpdatedDate).Use(now);
 
             return filler.Create();
         }

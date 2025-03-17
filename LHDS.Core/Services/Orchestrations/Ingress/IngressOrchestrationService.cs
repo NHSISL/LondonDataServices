@@ -151,5 +151,8 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                 { }
             }
         });
+
+        public ValueTask RollbackIngestionTrackingItem(string encryptedFileName) =>
+            throw new NotImplementedException();
     }
 }

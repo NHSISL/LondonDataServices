@@ -10,8 +10,8 @@ using System.Linq.Expressions;
 using FluentAssertions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Audits;
-using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -40,10 +40,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
         private readonly BlobContainers blobContainers;
         private readonly IIngressOrchestrationService ingressOrchestrationService;
         private readonly ITestOutputHelper output;
+        private readonly ICompareLogic compareLogic;
 
         public IngressOrchestrationTests(ITestOutputHelper output)
         {
             this.output = output;
+            this.compareLogic = new CompareLogic();
             this.ingestionTrackingProcessingServiceMock = new Mock<IIngestionTrackingProcessingService>();
             this.specificationObjectProcessingServiceMock = new Mock<ISpecificationObjectProcessingService>();
             this.documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
@@ -96,6 +98,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             }
 
             return new CompareLogic().Compare(expectedBytes, actualBytes).AreEqual;
+        }
+
+        private Expression<Func<IngestionTracking, bool>> SameIngestionTrackingAs(
+            IngestionTracking expectedIngestionTracking)
+        {
+            return actualIngestionTracking =>
+                this.compareLogic.Compare(expectedIngestionTracking, actualIngestionTracking)
+                    .AreEqual;
         }
 
         public static TheoryData<Xeption> IngressDependencyValidationExceptions()
@@ -217,6 +227,32 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
                 .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt();
 
             return filler;
+        }
+
+        private static string GetRandomStringWithLengthOf(int length)
+        {
+            string result = new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
+            return result.Length > length ? result.Substring(0, length) : result;
+        }
+
+        private EntraUser CreateRandomEntraUser(string entraUserId = "")
+        {
+            var userId = string.IsNullOrWhiteSpace(entraUserId) ? GetRandomStringWithLengthOf(255) : entraUserId;
+
+            return new EntraUser(
+                entraUserId: userId,
+                givenName: GetRandomString(),
+                surname: GetRandomString(),
+                displayName: GetRandomString(),
+                email: GetRandomString(),
+                jobTitle: GetRandomString(),
+                roles: new List<string> { GetRandomString() },
+
+                claims: new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim(type: GetRandomString(), value: GetRandomString())
+                });
         }
     }
 }

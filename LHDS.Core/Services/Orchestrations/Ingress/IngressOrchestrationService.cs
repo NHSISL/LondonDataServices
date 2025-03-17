@@ -44,7 +44,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
         }
 
         public ValueTask CheckForBatchCompleteAsync(Guid ingestionTrackingId) =>
-            TryCatch(async () =>
+        TryCatch(async () =>
         {
             ValidateOnCheckForBatchComplete(ingestionTrackingId);
 
@@ -152,7 +152,17 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             }
         });
 
-        public ValueTask RollbackIngestionTrackingItem(string encryptedFileName) =>
-            throw new NotImplementedException();
+        public ValueTask RollbackIngestionTrackingItemAsync(string encryptedFileName) =>
+        TryCatch(async () =>
+        {
+            var query = await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
+
+            IngestionTracking maybeIngestionTracking =
+                query.FirstOrDefault(ingestionTracking => ingestionTracking.EncryptedFileName == encryptedFileName);
+
+            maybeIngestionTracking.IsProcessing = false;
+
+            await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
+        });
     }
 }

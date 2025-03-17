@@ -239,6 +239,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 Condition = first != second,
                 Message = $"Expected value to be '{first}' but found '{second}'."
             };
+            
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,

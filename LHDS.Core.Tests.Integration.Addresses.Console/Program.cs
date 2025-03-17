@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -25,6 +27,13 @@ namespace LHDS.Core.Tests.Integration.Addresses.Console
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
+            var claimsPrincipal = new ClaimsPrincipal();
+
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, "TestUser"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Administrators")
+            }, "TestAuthType"));
 
             var serviceProvider = new ServiceCollection()
                 .AddLogging(builder =>
@@ -32,7 +41,7 @@ namespace LHDS.Core.Tests.Integration.Addresses.Console
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddAddressClient(configuration)
+                .AddAddressClient(configuration, claimsPrincipal)
                 .BuildServiceProvider();
 
             var addressClient =

@@ -27,7 +27,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
                 await this.apiBroker.PostObjectColumnAsync(objectColumn: inputObjectColumn);
 
             // Then
-            actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
+            actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await CleanupTask(objectColumn: actualObjectColumn);
@@ -56,7 +60,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
                 ObjectColumn actualObjectColumn =
                     actualObjectColumns.Single(approval => approval.Id == expectedObjectColumn.Id);
 
-                actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
+                actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+
                 await CleanupTask(objectColumn: actualObjectColumn);
             }
         }
@@ -75,7 +84,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
                 await this.apiBroker.GetObjectColumnByIdAsync(inputObjectColumn.Id);
 
             // Then
-            actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
+            actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await CleanupTask(objectColumn: actualObjectColumn);
@@ -97,7 +110,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
                 await this.apiBroker.PutObjectColumnAsync(modifiedObjectColumn);
 
             // Then
-            actualObjectColumn.Should().BeEquivalentTo(modifiedObjectColumn);
+            actualObjectColumn.Should().BeEquivalentTo(modifiedObjectColumn, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await CleanupTask(objectColumn: actualObjectColumn);
@@ -120,7 +137,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
                 this.apiBroker.GetObjectColumnByIdAsync(objectColumnId: inputObjectColumn.Id);
 
             // then
-            deletedObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
+            deletedObjectColumn.Should().BeEquivalentTo(expectedObjectColumn, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(getObjectColumnbyIdTask.AsTask);
 
             // Cleanup

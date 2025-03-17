@@ -97,8 +97,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
             // Given
             DataType randomDataType = CreateRandomDataType();
             DataType inputDataType = randomDataType;
-            await this.apiBroker.PostDataTypeAsync(inputDataType);
-            DataType modifiedDataType = UpdateDataTypeWithRandomValues(inputDataType);
+            DataType storageDataType = await this.apiBroker.PostDataTypeAsync(inputDataType);
+            DataType modifiedDataType = UpdateDataTypeWithRandomValues(storageDataType);
 
             // When
             await this.apiBroker.PutDataTypeAsync(modifiedDataType);

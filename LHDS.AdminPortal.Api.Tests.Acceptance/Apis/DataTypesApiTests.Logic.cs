@@ -58,10 +58,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
                 DataType actualDataType = actualDataTypes.Single(approval => approval.Id == expectedDataType.Id);
                 
                 actualDataType.Should().BeEquivalentTo(expectedDataType, options => options
-                .Excluding(property => property.CreatedBy)
-                .Excluding(property => property.CreatedDate)
-                .Excluding(property => property.UpdatedBy)
-                .Excluding(property => property.UpdatedDate));
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
 
                 await this.apiBroker.DeleteDataTypeByIdAsync(actualDataType.Id);
             }

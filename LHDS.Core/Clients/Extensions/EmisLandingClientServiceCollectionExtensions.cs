@@ -65,17 +65,7 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.AddSingleton<IConfiguration>(_ => configuration);
-
-            AddProviders(services);
-            AddBrokers(services, configuration, null);
-            AddServices(services);
-            AddProcessingServices(services);
-            AddOrchestrations(services);
-            AddCoordinations(services);
-            AddClients(services);
-
-            return services;
+            return AddEmisLandingClient(services, configuration, claimsPrincipal: null);
         }
 
         public static IServiceCollection AddEmisLandingClient(
@@ -84,7 +74,6 @@ namespace LHDS.Core.Clients.Extensions
             IHttpContextAccessor httpContextAccessor)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-
             AddProviders(services);
             AddBrokers(services, configuration, httpContextAccessor.HttpContext.User);
             AddServices(services);
@@ -102,7 +91,6 @@ namespace LHDS.Core.Clients.Extensions
             string accessToken)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-
             AddProviders(services);
             AddBrokers(services, configuration, GetClaimsPrincipalFromToken(accessToken));
             AddServices(services);
@@ -113,14 +101,13 @@ namespace LHDS.Core.Clients.Extensions
 
             return services;
         }
-        
+
         public static IServiceCollection AddEmisLandingClient(
             this IServiceCollection services,
             IConfiguration configuration,
             ClaimsPrincipal claimsPrincipal)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-
             AddProviders(services);
             AddBrokers(services, configuration, claimsPrincipal);
             AddServices(services);

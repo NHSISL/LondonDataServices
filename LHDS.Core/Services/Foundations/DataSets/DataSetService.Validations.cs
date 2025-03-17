@@ -15,6 +15,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
         private async ValueTask ValidateDataSetOnAddAsync(DataSet dataSet)
         {
             ValidateDataSetIsNotNull(dataSet);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(dataSet.Id), Parameter: nameof(DataSet.Id)),
@@ -49,16 +50,21 @@ namespace LHDS.Core.Services.Foundations.DataSets
                     dataSet.UpdatedBy, 255), Parameter: nameof(dataSet.UpdatedBy)),
 
                 (Rule: IsNotSame(
-                    firstDate: dataSet.UpdatedDate,
-                    secondDate: dataSet.CreatedDate,
-                    secondDateName: nameof(DataSet.CreatedDate)),
-                Parameter: nameof(DataSet.UpdatedDate)),
+                    first: currentUser.EntraUserId,
+                    second: dataSet.CreatedBy),
+                Parameter: nameof(DataSet.CreatedBy)),
 
                 (Rule: IsNotSame(
                     first: dataSet.UpdatedBy,
                     second: dataSet.CreatedBy,
                     secondName: nameof(DataSet.CreatedBy)),
                 Parameter: nameof(DataSet.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    firstDate: dataSet.UpdatedDate,
+                    secondDate: dataSet.CreatedDate,
+                    secondDateName: nameof(DataSet.CreatedDate)),
+                Parameter: nameof(DataSet.UpdatedDate)),
 
                 (Rule: await IsNotRecentAsync(dataSet.CreatedDate), Parameter: nameof(DataSet.CreatedDate)));
         }
@@ -220,6 +226,14 @@ namespace LHDS.Core.Services.Foundations.DataSets
             {
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
             };
 
         private static dynamic IsNotSame(

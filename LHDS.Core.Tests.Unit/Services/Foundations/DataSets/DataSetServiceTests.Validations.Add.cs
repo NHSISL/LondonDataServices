@@ -5,8 +5,10 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
+using LHDS.Core.Services.Foundations.DataSets;
 using Moq;
 using Xunit;
 
@@ -57,6 +59,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
         public async Task ShouldThrowValidationExceptionOnAddIfDataSetIsInvalidAndLogItAsync(string invalidText)
         {
             // given
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
             var invalidDataSet = new DataSet
             {
                 DataSetName = invalidText,
@@ -66,6 +71,27 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 CollectedBy = invalidText,
                 DataSourceType = invalidText,
             };
+
+            var dataSetServiceMock = new Mock<DataSetService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            dataSetServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidDataSet))
+                    .ReturnsAsync(invalidDataSet);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             var invalidDataSetException =
                 new InvalidDataSetException(
@@ -105,11 +131,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.CreatedDate),
-                values: "Date is required");
+                 values:
+                [
+                    "Date is required",
+                    "Date is not recent"
+                ]);
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.CreatedBy),
-                values: "Text is required");
+                values:
+                [
+                    "Text is required",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidDataSet.CreatedBy}'."
+                ]);
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.UpdatedDate),
@@ -126,7 +160,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             // when
             ValueTask<DataSet> addDataSetTask =
-                this.dataSetService.AddDataSetAsync(invalidDataSet);
+                dataSetServiceMock.Object.AddDataSetAsync(invalidDataSet);
 
             DataSetValidationException actualDataSetValidationException =
                 await Assert.ThrowsAsync<DataSetValidationException>(addDataSetTask.AsTask);
@@ -137,6 +171,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -158,8 +196,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
         public async Task ShouldThrowValidationExceptionOnAddIfDataSetIsInvalidLengthAndLogItAsync()
         {
             // given 
+            EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DataSet invalidDataSet = CreateRandomDataSet(randomDateTimeOffset);
+            DataSet invalidDataSet = CreateRandomDataSet(randomDateTimeOffset, randomEntraUser.EntraUserId);
             invalidDataSet.DataSetName = GetRandomString(151);
             invalidDataSet.DataSetAliases = GetRandomString(251);
             invalidDataSet.DataSetAuthor = GetRandomString(151);
@@ -189,7 +228,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.CreatedBy),
-                values: "Text is exceeding max length");
+                [
+                    "Text is exceeding max length",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' but found '{invalidDataSet.CreatedBy}'."
+                ]);
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.UpdatedBy),
@@ -200,13 +242,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     message: "DataSet validation errors occurred, please try again.",
                     innerException: invalidDataSetException);
 
+            var dataSetServiceMock = new Mock<DataSetService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            dataSetServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidDataSet))
+                    .ReturnsAsync(invalidDataSet);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<DataSet> addDataSetTask =
-                this.dataSetService.AddDataSetAsync(invalidDataSet);
+                dataSetServiceMock.Object.AddDataSetAsync(invalidDataSet);
 
             DataSetValidationException actualDataSetValidationException =
                 await Assert.ThrowsAsync<DataSetValidationException>(
@@ -219,6 +278,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once);
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
@@ -240,8 +303,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
         {
             // given
             int randomNumber = GetRandomNumber();
+            EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DataSet randomDataSet = CreateRandomDataSet(randomDateTimeOffset);
+            DataSet randomDataSet = CreateRandomDataSet(randomDateTimeOffset, randomEntraUser.EntraUserId);
             DataSet invalidDataSet = randomDataSet;
 
             invalidDataSet.UpdatedDate =
@@ -260,13 +324,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     message: "DataSet validation errors occurred, please try again.",
                     innerException: invalidDataSetException);
 
+            var dataSetServiceMock = new Mock<DataSetService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            dataSetServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidDataSet))
+                    .ReturnsAsync(invalidDataSet);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<DataSet> addDataSetTask =
-                this.dataSetService.AddDataSetAsync(invalidDataSet);
+                dataSetServiceMock.Object.AddDataSetAsync(invalidDataSet);
 
             DataSetValidationException actualDataSetValidationException =
                 await Assert.ThrowsAsync<DataSetValidationException>(addDataSetTask.AsTask);
@@ -277,6 +358,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -298,8 +383,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
         public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUsersIsNotSameAndLogItAsync()
         {
             // given
+            EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DataSet randomDataSet = CreateRandomDataSet(randomDateTimeOffset);
+            DataSet randomDataSet = CreateRandomDataSet(randomDateTimeOffset, randomEntraUser.EntraUserId);
             DataSet invalidDataSet = randomDataSet;
             invalidDataSet.UpdatedBy = Guid.NewGuid().ToString();
 
@@ -316,13 +402,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     message: "DataSet validation errors occurred, please try again.",
                     innerException: invalidDataSetException);
 
+            var dataSetServiceMock = new Mock<DataSetService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            dataSetServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidDataSet))
+                    .ReturnsAsync(invalidDataSet);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<DataSet> addDataSetTask =
-                this.dataSetService.AddDataSetAsync(invalidDataSet);
+                dataSetServiceMock.Object.AddDataSetAsync(invalidDataSet);
 
             DataSetValidationException actualDataSetValidationException =
                 await Assert.ThrowsAsync<DataSetValidationException>(addDataSetTask.AsTask);
@@ -333,6 +436,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -356,13 +463,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             int minutesBeforeOrAfter)
         {
             // given
+            EntraUser randomEntraUser = CreateRandomEntraUser();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataSet randomDataSet = CreateRandomDataSet(randomDateTimeOffset, randomEntraUser.EntraUserId);
+            DataSet invalidDataSet = randomDataSet;
 
             DateTimeOffset invalidDateTime =
                 randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
-
-            DataSet randomDataSet = CreateRandomDataSet(invalidDateTime);
-            DataSet invalidDataSet = randomDataSet;
 
             var invalidDataSetException =
                 new InvalidDataSetException(
@@ -377,13 +484,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     message: "DataSet validation errors occurred, please try again.",
                     innerException: invalidDataSetException);
 
+            var dataSetServiceMock = new Mock<DataSetService>(
+                storageBrokerMock.Object,
+                dateTimeBrokerMock.Object,
+                securityBrokerMock.Object,
+                loggingBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            dataSetServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidDataSet))
+                    .ReturnsAsync(invalidDataSet);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
-                    .ReturnsAsync(randomDateTimeOffset);
+                    .ReturnsAsync(invalidDateTime);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
 
             // when
             ValueTask<DataSet> addDataSetTask =
-                this.dataSetService.AddDataSetAsync(invalidDataSet);
+                dataSetServiceMock.Object.AddDataSetAsync(invalidDataSet);
 
             DataSetValidationException actualDataSetValidationException =
                 await Assert.ThrowsAsync<DataSetValidationException>(addDataSetTask.AsTask);
@@ -394,6 +518,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
+                    Times.Once());
+
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

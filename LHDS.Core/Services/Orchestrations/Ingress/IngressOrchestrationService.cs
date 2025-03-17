@@ -155,6 +155,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
         public ValueTask RollbackIngestionTrackingItemAsync(string encryptedFileName) =>
         TryCatch(async () =>
         {
+            ValidateOnRollbackIngestionTrackingItem(encryptedFileName);
             var query = await this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackingsAsync();
 
             IngestionTracking maybeIngestionTracking =

@@ -76,12 +76,20 @@ namespace LHDS.Core.Services.Foundations.DataSets
             {
                 ValidateDataSetId(dataSetId);
 
-                DataSet maybeDataSet = await this.storageBroker
-                    .SelectDataSetByIdAsync(dataSetId);
+                DataSet maybeDataSet = await this.storageBroker.SelectDataSetByIdAsync(dataSetId);
 
                 ValidateStorageDataSet(maybeDataSet, dataSetId);
 
-                return await this.storageBroker.DeleteDataSetAsync(maybeDataSet);
+                DataSet dataSetWithDeleteAuditApplied = await ApplyDeleteAuditAsync(maybeDataSet);
+
+                DataSet updatedDataSet = 
+                    await this.storageBroker.UpdateDataSetAsync(dataSetWithDeleteAuditApplied);
+
+                await ValidateAgainstStorageDataSetOnDeleteAsync(
+                    updatedDataSet, 
+                    dataSetWithDeleteAuditApplied);
+
+                return await this.storageBroker.DeleteDataSetAsync(updatedDataSet);
             });
 
         virtual internal async ValueTask<DataSet> ApplyAddAuditAsync(

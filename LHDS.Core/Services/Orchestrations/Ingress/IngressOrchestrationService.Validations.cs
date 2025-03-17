@@ -22,12 +22,26 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
                 Parameter: nameof(IngestionTracking.EncryptedFileName)));
         }
 
-        private static void ValidateStorageIngestionTracking(IngestionTracking ingestionTracking, Guid ingestionTrackingId)
+        private static void ValidateStorageIngestionTracking(
+            IngestionTracking ingestionTracking,
+            Guid ingestionTrackingId)
         {
             if (ingestionTracking is null)
             {
                 throw new NotFoundIngressOrchestrationException(
                     $"Couldn't find ingestion tracking with Id: {ingestionTrackingId}.");
+            }
+        }
+
+        private static void ValidateStorageIngestionTracking(
+            IngestionTracking ingestionTracking,
+            string encryptedFileName)
+        {
+            if (ingestionTracking is null)
+            {
+                throw new NotFoundIngressOrchestrationException(
+                    $"Couldn't find ingestion tracking with {nameof(IngestionTracking.EncryptedFileName)}: " +
+                        $"{encryptedFileName}.");
             }
         }
 

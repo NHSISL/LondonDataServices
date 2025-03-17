@@ -161,6 +161,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             IngestionTracking maybeIngestionTracking =
                 query.FirstOrDefault(ingestionTracking => ingestionTracking.EncryptedFileName == encryptedFileName);
 
+            ValidateStorageIngestionTracking(maybeIngestionTracking, encryptedFileName);
             maybeIngestionTracking.IsProcessing = false;
 
             await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);

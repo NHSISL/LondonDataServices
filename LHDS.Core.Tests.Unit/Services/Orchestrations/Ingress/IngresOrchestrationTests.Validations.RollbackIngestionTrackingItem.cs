@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -68,9 +69,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Ingress
             // given
             string randomEncryptedFileName = GetRandomString();
 
+            IQueryable<IngestionTracking> emptyStorageIngestionTrackings =
+                new List<IngestionTracking>().AsQueryable();
+
             this.ingestionTrackingProcessingServiceMock
                 .Setup(service => service.RetrieveAllIngestionTrackingsAsync())
-                    .ReturnsAsync(null as IQueryable<IngestionTracking>);
+                    .ReturnsAsync(emptyStorageIngestionTrackings);
 
             var notFoundIngressOrchestrationException =
                 new NotFoundIngressOrchestrationException(

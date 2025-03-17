@@ -106,8 +106,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
             Supplier randomSupplier = await PostRandomSupplierAsync();
             DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
             DataSet inputDataSet = randomDataSet;
-            await this.apiBroker.PostDataSetAsync(inputDataSet);
-            DataSet modifiedDataSet = UpdateDataSetWithRandomValues(inputDataSet);
+            DataSet storageDataSet = await this.apiBroker.PostDataSetAsync(inputDataSet);
+            DataSet modifiedDataSet = UpdateDataSetWithRandomValues(storageDataSet);
 
             // When
             await this.apiBroker.PutDataSetAsync(modifiedDataSet);

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.DataTypes;
 
@@ -16,22 +17,26 @@ namespace LHDS.Core.Services.Foundations.DataTypes
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public DataTypeService(
             IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
+            ISecurityBroker securityBroker,
             ILoggingBroker loggingBroker)
         {
             this.storageBroker = storageBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.securityBroker = securityBroker;
             this.loggingBroker = loggingBroker;
         }
 
         public ValueTask<DataType> AddDataTypeAsync(DataType dataType) =>
             TryCatch(async () =>
             {
-                await ValidateDataTypeOnAddAsync(dataType);
+                DataType dataTypeWithAddAuditApplied = await ApplyAddAuditAsync(dataType);
+                await ValidateDataTypeOnAddAsync(dataTypeWithAddAuditApplied);
 
                 return await this.storageBroker.InsertDataTypeAsync(dataType);
             });
@@ -55,11 +60,9 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         public ValueTask<DataType> ModifyDataTypeAsync(DataType dataType) =>
             TryCatch(async () =>
             {
-                await ValidateDataTypeOnModifyAsync(dataType);
-
-                DataType maybeDataType =
-                    await this.storageBroker.SelectDataTypeByIdAsync(dataType.Id);
-
+                DataType dataTypeWithModifyAuditApplied = await ApplyModifyAuditAsync(dataType);
+                await ValidateDataTypeOnModifyAsync(dataTypeWithModifyAuditApplied);
+                DataType maybeDataType = await this.storageBroker.SelectDataTypeByIdAsync(dataType.Id);
                 ValidateStorageDataType(maybeDataType, dataType.Id);
                 ValidateAgainstStorageDataTypeOnModify(inputDataType: dataType, storageDataType: maybeDataType);
 
@@ -78,5 +81,29 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 return await this.storageBroker.DeleteDataTypeAsync(maybeDataType);
             });
+
+        virtual internal async ValueTask<DataType> ApplyAddAuditAsync(DataType dataType)
+        {
+            ValidateDataTypeIsNotNull(dataType);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            dataType.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            dataType.CreatedDate = auditDateTimeOffset;
+            dataType.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            dataType.UpdatedDate = auditDateTimeOffset;
+
+            return dataType;
+        }
+
+        virtual internal async ValueTask<DataType> ApplyModifyAuditAsync(DataType dataType)
+        {
+            ValidateDataTypeIsNotNull(dataType);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            dataType.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            dataType.UpdatedDate = auditDateTimeOffset;
+
+            return dataType;
+        }
     }
 }

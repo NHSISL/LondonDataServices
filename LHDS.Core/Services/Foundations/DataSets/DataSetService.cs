@@ -105,5 +105,14 @@ namespace LHDS.Core.Services.Foundations.DataSets
 
             return dataSet;
         }
+        virtual internal async ValueTask<DataSet> ApplyDeleteAuditAsync(DataSet dataSet)
+        {
+            ValidateDataSetIsNotNull(dataSet);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            dataSet.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            dataSet.UpdatedDate = auditDateTimeOffset;
+            return dataSet;
+        }
     }
 }

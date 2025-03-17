@@ -38,7 +38,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
                 await this.apiBroker.PostSpecificationObjectAsync(inputSpecificationObject);
 
             // Then
-            actualSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject);
+            actualSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteSpecificationObjectByIdAsync(inputSpecificationObject.Id);
@@ -72,7 +76,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
                 this.apiBroker.GetSpecificationObjectByIdAsync(inputSpecificationObject.Id);
 
             // then
-            deletedSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject);
+            deletedSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
+
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
@@ -110,7 +119,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
                 SpecificationObject actualSpecificationObject =
                     actualSpecificationObjects.Single(approval => approval.Id == expectedSpecificationObject.Id);
 
-                actualSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject);
+                actualSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject, options => options
+                    .Excluding(property => property.CreatedBy)
+                    .Excluding(property => property.CreatedDate)
+                    .Excluding(property => property.UpdatedBy)
+                    .Excluding(property => property.UpdatedDate));
+
                 await this.apiBroker.DeleteSpecificationObjectByIdAsync(actualSpecificationObject.Id);
             }
 
@@ -141,7 +155,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
                 await this.apiBroker.GetSpecificationObjectByIdAsync(inputSpecificationObject.Id);
 
             // Then
-            actualSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject);
+            actualSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteSpecificationObjectByIdAsync(inputSpecificationObject.Id);
@@ -164,10 +182,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
                 CreateRandomSpecificationObject(dataSetSpecificationId: randomDataSetSpecification.Id);
 
             SpecificationObject inputSpecificationObject = randomSpecificationObject;
-            await this.apiBroker.PostSpecificationObjectAsync(inputSpecificationObject);
+
+            SpecificationObject storageSpecificationObject = 
+                await this.apiBroker.PostSpecificationObjectAsync(inputSpecificationObject);
 
             SpecificationObject modifiedSpecificationObject =
-                UpdateSpecificationObjectWithRandomValues(inputSpecificationObject);
+                UpdateSpecificationObjectWithRandomValues(storageSpecificationObject);
 
             // When
             await this.apiBroker.PutSpecificationObjectAsync(modifiedSpecificationObject);
@@ -176,7 +196,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
                 await this.apiBroker.GetSpecificationObjectByIdAsync(inputSpecificationObject.Id);
 
             // Then
-            actualSpecificationObject.Should().BeEquivalentTo(modifiedSpecificationObject);
+            actualSpecificationObject.Should().BeEquivalentTo(modifiedSpecificationObject, options => options
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteSpecificationObjectByIdAsync(actualSpecificationObject.Id);

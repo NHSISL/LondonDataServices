@@ -55,15 +55,7 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.AddSingleton<IConfiguration>(_ => configuration);
-            AddBrokers(services, configuration, null);
-            AddServices(services);
-            AddProcessingServices(services);
-            AddOrchestrations(services);
-            AddCoordinations(services);
-            AddClients(services);
-
-            return services;
+            return AddTppLandingClient(services, configuration, claimsPrincipal: null);
         }
 
         public static IServiceCollection AddTppLandingClient(
@@ -97,7 +89,7 @@ namespace LHDS.Core.Clients.Extensions
 
             return services;
         }
-        
+
         public static IServiceCollection AddTppLandingClient(
             this IServiceCollection services,
             IConfiguration configuration,

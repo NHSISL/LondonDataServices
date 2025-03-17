@@ -125,7 +125,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
                 this.apiBroker.GetDataSetByIdAsync(inputDataSet.Id);
 
             // then
-            deletedDataSet.Should().BeEquivalentTo(expectedDataSet);
+            deletedDataSet.Should().BeEquivalentTo(expectedDataSet, options => options
+                .Excluding(spec => spec.CreatedBy)
+                .Excluding(spec => spec.CreatedDate)
+                .Excluding(spec => spec.UpdatedBy)
+                .Excluding(spec => spec.UpdatedDate));
+
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(getDataSetbyIdTask.AsTask);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }

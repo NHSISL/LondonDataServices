@@ -156,10 +156,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
 
             // Then
             actualSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject, options => options
-                    .Excluding(property => property.CreatedBy)
-                    .Excluding(property => property.CreatedDate)
-                    .Excluding(property => property.UpdatedBy)
-                    .Excluding(property => property.UpdatedDate));
+                .Excluding(property => property.CreatedBy)
+                .Excluding(property => property.CreatedDate)
+                .Excluding(property => property.UpdatedBy)
+                .Excluding(property => property.UpdatedDate));
 
             // Cleanup
             await this.apiBroker.DeleteSpecificationObjectByIdAsync(inputSpecificationObject.Id);

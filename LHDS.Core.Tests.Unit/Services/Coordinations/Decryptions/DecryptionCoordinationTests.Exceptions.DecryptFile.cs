@@ -144,6 +144,10 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                 service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
                     .ThrowsAsync(serviceException);
 
+            var rollBackException = new RollbackDecryptionCoordinationException(
+                message: $"Failed to decrypt file. Rollback encrypted file: {encryptedFileName}",
+                innerException: serviceException as Xeption);
+
             var failedDecryptionCoordinationServiceException =
                 new FailedDecryptionCoordinationServiceException(
                     message: "Failed decryption coordination service error occurred, please contact support.",
@@ -168,6 +172,15 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
             this.subscriberCredentialOrchestrationMock.Verify(service =>
                 service.RetrieveSubscriberCredentialByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()),
                     Times.Once);
+
+            this.ingressOrchestrationServiceMock.Verify(service =>
+                service.RollbackIngestionTrackingItem(It.IsAny<string>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogErrorAsync(It.Is(IsSameExceptionAs(
+                     rollBackException))),
+                         Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogErrorAsync(It.Is(IsSameExceptionAs(

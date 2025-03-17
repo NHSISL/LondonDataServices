@@ -100,10 +100,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
             // Given
             ObjectColumn randomObjectColumn = await CreateRandomObjectColumnAsync();
             ObjectColumn inputObjectColumn = randomObjectColumn;
-            await this.apiBroker.PostObjectColumnAsync(objectColumn: inputObjectColumn);
-
-            ObjectColumn modifiedObjectColumn =
-                UpdateObjectColumnWithRandomValues(inputObjectColumn);
+            ObjectColumn storageObjectColumn =  await this.apiBroker.PostObjectColumnAsync(objectColumn: inputObjectColumn);
+            ObjectColumn modifiedObjectColumn = UpdateObjectColumnWithRandomValues(storageObjectColumn);
 
             // When
             ObjectColumn actualObjectColumn =

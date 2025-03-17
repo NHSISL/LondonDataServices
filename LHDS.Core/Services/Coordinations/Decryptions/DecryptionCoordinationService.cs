@@ -51,7 +51,7 @@ namespace LHDS.Core.Services.Coordinations.Decryptions
                             innerException: exception as Xeption);
 
                     await this.loggingBroker.LogErrorAsync(rollBackException);
-                    await this.ingressOrchestrationService.RollbackIngestionTrackingItem(encryptedFileName);
+                    await this.ingressOrchestrationService.RollbackIngestionTrackingItemAsync(encryptedFileName);
                     throw;
                 }
             });

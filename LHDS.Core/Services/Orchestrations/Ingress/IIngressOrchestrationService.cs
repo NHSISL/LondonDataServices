@@ -10,6 +10,6 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
     public interface IIngressOrchestrationService
     {
         ValueTask CheckForBatchCompleteAsync(Guid ingestionTrackingId);
-        ValueTask RollbackIngestionTrackingItem(string encryptedFileName);
+        ValueTask RollbackIngestionTrackingItemAsync(string encryptedFileName);
     }
 }

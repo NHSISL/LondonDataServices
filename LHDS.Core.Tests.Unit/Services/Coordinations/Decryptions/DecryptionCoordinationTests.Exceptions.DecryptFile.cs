@@ -55,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     Times.Once);
 
             this.ingressOrchestrationServiceMock.Verify(service =>
-                service.RollbackIngestionTrackingItem(It.IsAny<string>()),
+                service.RollbackIngestionTrackingItemAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -112,7 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     Times.Once);
 
             this.ingressOrchestrationServiceMock.Verify(service =>
-                service.RollbackIngestionTrackingItem(It.IsAny<string>()),
+                service.RollbackIngestionTrackingItemAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -174,7 +174,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.Decryptions
                     Times.Once);
 
             this.ingressOrchestrationServiceMock.Verify(service =>
-                service.RollbackIngestionTrackingItem(It.IsAny<string>()),
+                service.RollbackIngestionTrackingItemAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

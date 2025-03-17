@@ -517,10 +517,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 CreateRandomModifyObjectColumn(randomDateTimeOffset, randomEntraUser.EntraUserId); 
             
             ObjectColumn nonExistObjectColumn = invalidObjectColumn;
-            ObjectColumn nullObjectColumn = null;
-
-            var notFoundObjectColumnException =
-                new NotFoundObjectColumnException(nonExistObjectColumn.Id);
+            var notFoundObjectColumnException = new NotFoundObjectColumnException(nonExistObjectColumn.Id);
 
             var expectedObjectColumnValidationException =
                 new ObjectColumnValidationException(

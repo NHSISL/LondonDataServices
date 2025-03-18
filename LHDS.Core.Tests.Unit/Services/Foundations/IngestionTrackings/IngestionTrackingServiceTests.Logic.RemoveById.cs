@@ -21,15 +21,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             EntraUser randomEntraUser = CreateRandomEntraUser();
-            Guid randomId = Guid.NewGuid();
-            Guid inputIngestionTrackingId = randomId;
 
             IngestionTracking randomIngestionTracking = 
                 CreateRandomIngestionTracking(randomDateTimeOffset, randomEntraUser.EntraUserId);
 
+            Guid inputIngestionTrackingId = randomIngestionTracking.Id;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
-            IngestionTracking expectedInputIngestionTracking = storageIngestionTracking;
-            IngestionTracking deletedIngestionTracking = expectedInputIngestionTracking;
+            IngestionTracking ingestionTrackingWithDeleteAuditApplied = storageIngestionTracking.DeepClone();
+            ingestionTrackingWithDeleteAuditApplied.UpdatedBy = randomEntraUser.EntraUserId.ToString();
+            ingestionTrackingWithDeleteAuditApplied.UpdatedDate = randomDateTimeOffset;
+            IngestionTracking updatedIngestionTracking = storageIngestionTracking;
+            IngestionTracking deletedIngestionTracking = updatedIngestionTracking;
             IngestionTracking expectedIngestionTracking = deletedIngestionTracking.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -45,7 +47,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     .ReturnsAsync(storageIngestionTracking);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.DeleteIngestionTrackingAsync(expectedInputIngestionTracking))
+                broker.UpdateIngestionTrackingAsync(randomIngestionTracking))
+                    .ReturnsAsync(updatedIngestionTracking);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.DeleteIngestionTrackingAsync(updatedIngestionTracking))
                     .ReturnsAsync(deletedIngestionTracking);
 
             // when
@@ -68,12 +74,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
-                broker.DeleteIngestionTrackingAsync(expectedInputIngestionTracking),
+                broker.DeleteIngestionTrackingAsync(updatedIngestionTracking),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

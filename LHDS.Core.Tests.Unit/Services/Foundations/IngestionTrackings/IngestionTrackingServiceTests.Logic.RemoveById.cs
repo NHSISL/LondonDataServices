@@ -74,6 +74,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     Times.Exactly(2));
 
             this.storageBrokerMock.Verify(broker =>
+                broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.DeleteIngestionTrackingAsync(updatedIngestionTracking),
                     Times.Once);
 

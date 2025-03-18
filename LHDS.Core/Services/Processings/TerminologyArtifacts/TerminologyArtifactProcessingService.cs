@@ -53,8 +53,8 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 
                 if (maybeTerminologyArtifact != null)
                 {
-                    if(terminologyArtifact.Version == maybeTerminologyArtifact.Version)
-                        return maybeTerminologyArtifact;
+                    //if(terminologyArtifact.Version == maybeTerminologyArtifact.Version)
+                    //    return maybeTerminologyArtifact;
 
                     terminologyArtifact.Id = maybeTerminologyArtifact.Id;
                     terminologyArtifact.CreatedDate = maybeTerminologyArtifact.CreatedDate;

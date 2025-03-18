@@ -67,7 +67,7 @@ namespace LHDS.Core.Services.Orchestrations.Ingress
             }
 
             List<string> decryptedIngestiontrackingObjects = await this.ingestionTrackingProcessingService
-                .RetrieveObjectsInBatchByBatchReference(bacthReference: ingestionTracking.Batch, decrypted: true);
+                .RetrieveObjectsInBatchByBatchReferenceAsync(bacthReference: ingestionTracking.Batch, decrypted: true);
 
             List<string> missingSpecificationObjectIds = specificationObjectIds
                 .Except(decryptedIngestiontrackingObjects).ToList();

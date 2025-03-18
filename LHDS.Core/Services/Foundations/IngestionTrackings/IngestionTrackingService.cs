@@ -122,6 +122,10 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     IngestionTracking updatedIngestionTracking =
                         await this.storageBroker.UpdateIngestionTrackingAsync(ingestionTrackingWithDeleteAuditApplied);
 
+                    await ValidateAgainstStorageIngestionTrackingOnDeleteAsync(
+                        ingestionTracking: updatedIngestionTracking,
+                        maybeIngestionTracking: ingestionTrackingWithDeleteAuditApplied);
+
                     return await this.storageBroker.DeleteIngestionTrackingAsync(updatedIngestionTracking);
                 });
             });

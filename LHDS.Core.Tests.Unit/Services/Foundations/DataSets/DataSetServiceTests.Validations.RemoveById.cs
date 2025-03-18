@@ -54,9 +54,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 broker.DeleteDataSetAsync(It.IsAny<DataSet>()),
                     Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

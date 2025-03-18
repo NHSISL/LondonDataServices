@@ -6,10 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.CsvHelpers;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Securities;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -47,6 +49,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
         private readonly IAddressClient addressClient;
         private readonly ICompareLogic compareLogic;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ISecurityBroker securityBroker;
         private readonly AddressConfiguration addressConfiguration;
         private readonly BlobContainers blobContainers;
         private readonly WireMockServer wireMockServer;
@@ -57,6 +60,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             this.dependencyBroker = dependencyBroker;
             this.compareLogic = new CompareLogic();
             var serviceCollection = new ServiceCollection();
+            var claimsPrincipal = new ClaimsPrincipal();
+
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            {
+                new Claim("oid", Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.GivenName, "GivenName"),
+                new Claim(ClaimTypes.Surname, "Surname"),
+                new Claim("displayName", "DisplayName"),
+                new Claim(ClaimTypes.Email, "some@email.com"),
+                new Claim("jobTitle", "job title"),
+                new Claim(ClaimTypes.Name, "TestUser"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Administrators"),
+                new Claim(ClaimTypes.Role, "ISL.LDS.AdminSpa.Configurations")
+            }));
 
             serviceCollection
                 .AddTransient<IAddressOrchestrationService, AddressOrchestrationService>()
@@ -74,7 +91,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             });
 
             this.dependencyBroker.Configuration["assignConfiguration:apiUrl"] = this.wireMockServer.Url;
-            serviceCollection.AddAddressClient(this.dependencyBroker.Configuration);
+            serviceCollection.AddAddressClient(this.dependencyBroker.Configuration, claimsPrincipal);
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
             this.addressOrchestrationService =
@@ -98,6 +115,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Addresses
             this.addressConfiguration = serviceProvider.GetService<AddressConfiguration>();
             this.blobContainers = serviceProvider.GetService<BlobContainers>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
+            this.securityBroker = serviceProvider.GetService<ISecurityBroker>();
             addressClient = serviceProvider.GetService<IAddressClient>();
         }
 

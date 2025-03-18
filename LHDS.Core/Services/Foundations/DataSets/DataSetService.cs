@@ -35,7 +35,8 @@ namespace LHDS.Core.Services.Foundations.DataSets
         public ValueTask<DataSet> AddDataSetAsync(DataSet dataSet) =>
             TryCatch(async () =>
             {
-                await ValidateDataSetOnAddAsync(dataSet);
+                DataSet dataSetWithAddAuditApplied = await ApplyAddAuditAsync(dataSet);
+                await ValidateDataSetOnAddAsync(dataSetWithAddAuditApplied);
 
                 return await this.storageBroker.InsertDataSetAsync(dataSet);
             });
@@ -91,6 +92,19 @@ namespace LHDS.Core.Services.Foundations.DataSets
                 return await this.storageBroker.DeleteDataSetAsync(updatedDataSet);
             });
 
+        virtual internal async ValueTask<DataSet> ApplyAddAuditAsync(
+            DataSet dataSet)
+        {
+            ValidateDataSetIsNotNull(dataSet);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            dataSet.CreatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            dataSet.CreatedDate = auditDateTimeOffset;
+            dataSet.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            dataSet.UpdatedDate = auditDateTimeOffset;
+
+            return dataSet;
+        }
         virtual internal async ValueTask<DataSet> ApplyDeleteAuditAsync(DataSet dataSet)
         {
             ValidateDataSetIsNotNull(dataSet);

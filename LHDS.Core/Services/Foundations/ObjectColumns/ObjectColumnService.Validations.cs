@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 
@@ -13,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
     {
         private async ValueTask ValidateObjectColumnOnAddAsync(ObjectColumn objectColumn)
         {
-            ValidateObjectColumnIsNotNull(objectColumn);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
@@ -66,6 +67,11 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
                 (Rule: IsEqualOrSmallerThan(
                     objectColumn.UpdatedBy, 255), Parameter: nameof(objectColumn.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: objectColumn.CreatedBy),
+                Parameter: nameof(ObjectColumn.CreatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: objectColumn.UpdatedDate,
@@ -84,7 +90,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
         private async ValueTask ValidateObjectColumnOnModifyAsync(ObjectColumn objectColumn)
         {
-            ValidateObjectColumnIsNotNull(objectColumn);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
@@ -137,6 +143,11 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
                 (Rule: IsEqualOrSmallerThan(
                     objectColumn.UpdatedBy, 255), Parameter: nameof(objectColumn.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    first: currentUser.EntraUserId,
+                    second: objectColumn.UpdatedBy),
+                Parameter: nameof(ObjectColumn.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: objectColumn.UpdatedDate,
@@ -221,6 +232,14 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 Message = $"Date is the same as {secondDateName}"
             };
 
+        private static dynamic IsNotSame(
+            string first,
+            string second) => new
+            {
+                Condition = first != second,
+                Message = $"Expected value to be '{first}' but found '{second}'."
+            };
+            
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,

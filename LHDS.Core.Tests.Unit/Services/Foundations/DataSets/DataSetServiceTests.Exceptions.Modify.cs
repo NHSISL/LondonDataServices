@@ -67,9 +67,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 broker.UpdateDataSetAsync(randomDataSet),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -125,9 +126,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 broker.UpdateDataSetAsync(someDataSet),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -180,9 +182,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 broker.UpdateDataSetAsync(randomDataSet),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -235,9 +238,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 broker.UpdateDataSetAsync(randomDataSet),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -290,9 +294,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 broker.UpdateDataSetAsync(randomDataSet),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

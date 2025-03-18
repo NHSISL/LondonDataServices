@@ -51,7 +51,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
         private async ValueTask ValidateIngestionTrackingOnModifyAsync(IngestionTracking ingestionTracking)
         {
-            ValidateIngestionTrackingIsNotNull(ingestionTracking);
+            EntraUser currentUser = await this.securityBroker.GetCurrentUserAsync();
 
             Validate(
                 (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),

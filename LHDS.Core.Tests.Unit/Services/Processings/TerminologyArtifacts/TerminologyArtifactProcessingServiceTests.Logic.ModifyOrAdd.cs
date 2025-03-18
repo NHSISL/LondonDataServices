@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             // then
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Exactly(2));
+                     Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>
                 service.RetrieveAllTerminologyArtifactsAsync(),

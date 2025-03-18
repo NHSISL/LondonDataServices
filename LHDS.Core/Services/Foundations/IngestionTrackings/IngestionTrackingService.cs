@@ -116,7 +116,13 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
                     ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTrackingId);
 
-                    return await this.storageBroker.DeleteIngestionTrackingAsync(maybeIngestionTracking);
+                    IngestionTracking ingestionTrackingWithDeleteAuditApplied = 
+                        await ApplyDeleteAuditAsync(maybeIngestionTracking);
+
+                    IngestionTracking updatedIngestionTracking =
+                        await this.storageBroker.UpdateIngestionTrackingAsync(ingestionTrackingWithDeleteAuditApplied);
+
+                    return await this.storageBroker.DeleteIngestionTrackingAsync(updatedIngestionTracking);
                 });
             });
 
@@ -141,6 +147,16 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             ingestionTracking.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
             ingestionTracking.UpdatedDate = auditDateTimeOffset;
 
+            return ingestionTracking;
+        }
+
+        virtual internal async ValueTask<IngestionTracking> ApplyDeleteAuditAsync(IngestionTracking ingestionTracking)
+        {
+            ValidateIngestionTrackingIsNotNull(ingestionTracking);
+            var auditDateTimeOffset = await this.dateTimeBroker.GetCurrentDateTimeOffsetAsync();
+            var auditUser = await this.securityBroker.GetCurrentUserAsync();
+            ingestionTracking.UpdatedBy = auditUser?.EntraUserId.ToString() ?? string.Empty;
+            ingestionTracking.UpdatedDate = auditDateTimeOffset;
             return ingestionTracking;
         }
     }

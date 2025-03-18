@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminology
 {
     public partial class TerminologyTests
     {
-        [Fact(Skip = "DH Test")]
+        [Fact]
         public async Task ShouldRetrieveArtifactDetailsAsync()
         {
             //Given

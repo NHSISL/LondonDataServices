@@ -23,6 +23,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             TerminologyArtifact storageTerminologyArtifacts = randomTerminologyArtifacts;
             TerminologyArtifact modifiedTerminologyArtifact = storageTerminologyArtifacts.DeepClone();
             modifiedTerminologyArtifact.UpdatedDate = randomDateTimeOffset;
+            modifiedTerminologyArtifact.Name = modifiedTerminologyArtifact.Name + "Modified";
+            modifiedTerminologyArtifact.IsDownloaded = false;
+            storageTerminologyArtifacts.Name = storageTerminologyArtifacts.Name + "Modified";
             TerminologyArtifact updatedTerminologyArtifacts = modifiedTerminologyArtifact.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -57,6 +60,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                 service.ModifyTerminologyArtifactAsync(It.Is(SameTerminologyArtifactAs(
                      modifiedTerminologyArtifact))),
                          Times.Once);
+
+            //this.terminologyArtifactServiceMock.Verify(service =>
+            //    service.ModifyTerminologyArtifactAsync(
+            //         modifiedTerminologyArtifact),
+            //             Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>
                 service.AddTerminologyArtifactAsync(modifiedTerminologyArtifact),

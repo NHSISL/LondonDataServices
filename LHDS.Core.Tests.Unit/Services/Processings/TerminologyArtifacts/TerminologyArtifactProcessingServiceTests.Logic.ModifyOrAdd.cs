@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             TerminologyArtifact modifiedTerminologyArtifact = storageTerminologyArtifacts.DeepClone();
             modifiedTerminologyArtifact.UpdatedDate = randomDateTimeOffset;
             modifiedTerminologyArtifact.Name = modifiedTerminologyArtifact.Name + "Modified";
-            modifiedTerminologyArtifact.Name = modifiedTerminologyArtifact.Version + "Modified";
+            modifiedTerminologyArtifact.Version = modifiedTerminologyArtifact.Version + "Modified";
             modifiedTerminologyArtifact.IsDownloaded = false;
             storageTerminologyArtifacts.Name = storageTerminologyArtifacts.Name + "Modified";
             TerminologyArtifact updatedTerminologyArtifacts = modifiedTerminologyArtifact.DeepClone();

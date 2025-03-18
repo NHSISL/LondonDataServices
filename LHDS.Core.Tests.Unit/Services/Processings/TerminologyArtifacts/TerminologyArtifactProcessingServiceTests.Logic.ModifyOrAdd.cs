@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Moq;
@@ -50,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             // then
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffsetAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.terminologyArtifactServiceMock.Verify(service =>
                 service.RetrieveAllTerminologyArtifactsAsync(),
@@ -60,11 +61,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                 service.ModifyTerminologyArtifactAsync(It.Is(SameTerminologyArtifactAs(
                      modifiedTerminologyArtifact))),
                          Times.Once);
-
-            //this.terminologyArtifactServiceMock.Verify(service =>
-            //    service.ModifyTerminologyArtifactAsync(
-            //         modifiedTerminologyArtifact),
-            //             Times.Once);
 
             this.terminologyArtifactServiceMock.Verify(service =>
                 service.AddTerminologyArtifactAsync(modifiedTerminologyArtifact),

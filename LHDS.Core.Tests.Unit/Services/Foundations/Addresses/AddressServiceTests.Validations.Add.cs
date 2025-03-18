@@ -5,8 +5,10 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Brokers.Securities;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
+using LHDS.Core.Services.Foundations.Addresses;
 using Moq;
 using Xunit;
 
@@ -44,8 +46,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     expectedAddressValidationException))),
                         Times.Once);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -56,6 +59,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         public async Task ShouldThrowValidationExceptionOnAddIfAddressIsInvalidAndLogItAsync(string invalidText)
         {
             // given
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
             var invalidAddress = new Address
             {
                 UPRN = invalidText,
@@ -73,6 +79,29 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 PostCode = invalidText,
             };
 
+            var addressServiceMock = new Mock<AddressService>(
+               storageBrokerMock.Object,
+               dateTimeBrokerMock.Object,
+               securityBrokerMock.Object,
+               identifierBrokerMock.Object,
+               loggingBrokerMock.Object,
+               auditBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            addressServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidAddress))
+                    .ReturnsAsync(invalidAddress);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffsetAsync())
+                    .ReturnsAsync(randomDateTimeOffset);
+
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
@@ -83,11 +112,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             invalidAddressException.AddData(
                 key: nameof(Address.CreatedDate),
-                values: "Date is required");
+                values:
+                [
+                    "Date is required",
+                    $"Date is not recent"
+                ]);
 
             invalidAddressException.AddData(
                 key: nameof(Address.CreatedBy),
-                values: "Text is required");
+                values:
+                [
+                    "Text is required",
+                    $"Expected value to be '{randomEntraUser.EntraUserId}' " +
+                    $"but found '{invalidAddress.CreatedBy}'."
+                ]);
 
             invalidAddressException.AddData(
                 key: nameof(Address.UpdatedDate),
@@ -97,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 key: nameof(Address.UpdatedBy),
                 values: "Text is required");
 
+
             var expectedAddressValidationException =
                 new AddressValidationException(
                     message: "Address validation errors occurred, please try again.",
@@ -104,7 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             // when
             ValueTask<Address> addAddressTask =
-                this.addressService.AddAddressAsync(invalidAddress);
+                addressServiceMock.Object.AddAddressAsync(invalidAddress);
 
             AddressValidationException actualAddressValidationException =
                 await Assert.ThrowsAsync<AddressValidationException>(addAddressTask.AsTask);
@@ -117,6 +156,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressValidationException))),
@@ -126,9 +169,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 broker.InsertAddressAsync(It.IsAny<Address>()),
                     Times.Never);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.auditBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -137,7 +183,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             // given
             int randomNumber = GetRandomNumber();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Address randomAddress = CreateRandomAddress(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            Address randomAddress = CreateRandomAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
             Address invalidAddress = randomAddress;
 
             invalidAddress.UpdatedDate =
@@ -156,13 +203,32 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     message: "Address validation errors occurred, please try again.",
                     innerException: invalidAddressException);
 
+            var addressServiceMock = new Mock<AddressService>(
+              storageBrokerMock.Object,
+              dateTimeBrokerMock.Object,
+              securityBrokerMock.Object,
+              identifierBrokerMock.Object,
+              loggingBrokerMock.Object,
+              auditBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            addressServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidAddress))
+                    .ReturnsAsync(invalidAddress);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<Address> addAddressTask =
-                this.addressService.AddAddressAsync(invalidAddress);
+                addressServiceMock.Object.AddAddressAsync(invalidAddress);
 
             AddressValidationException actualAddressValidationException =
                 await Assert.ThrowsAsync<AddressValidationException>(addAddressTask.AsTask);
@@ -175,6 +241,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressValidationException))),
@@ -185,6 +255,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -194,7 +265,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Address randomAddress = CreateRandomAddress(randomDateTimeOffset);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            Address randomAddress = CreateRandomAddress(randomDateTimeOffset, randomEntraUser.EntraUserId);
             Address invalidAddress = randomAddress;
             invalidAddress.UpdatedBy = Guid.NewGuid().ToString();
 
@@ -211,13 +283,32 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     message: "Address validation errors occurred, please try again.",
                     innerException: invalidAddressException);
 
+            var addressServiceMock = new Mock<AddressService>(
+              storageBrokerMock.Object,
+              dateTimeBrokerMock.Object,
+              securityBrokerMock.Object,
+              identifierBrokerMock.Object,
+              loggingBrokerMock.Object,
+              auditBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            addressServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidAddress))
+                    .ReturnsAsync(invalidAddress);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<Address> addAddressTask =
-                this.addressService.AddAddressAsync(invalidAddress);
+                addressServiceMock.Object.AddAddressAsync(invalidAddress);
 
             AddressValidationException actualAddressValidationException =
                 await Assert.ThrowsAsync<AddressValidationException>(addAddressTask.AsTask);
@@ -230,6 +321,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressValidationException))),
@@ -239,9 +334,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 broker.InsertAddressAsync(It.IsAny<Address>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -251,11 +347,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-
-            DateTimeOffset invalidDateTime =
-                randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
-
-            Address randomAddress = CreateRandomAddress(invalidDateTime);
+            EntraUser randomEntraUser = CreateRandomEntraUser();
+            DateTimeOffset invalidDateTime = randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
+            Address randomAddress = CreateRandomAddress(invalidDateTime, randomEntraUser.EntraUserId);
             Address invalidAddress = randomAddress;
 
             var invalidAddressException =
@@ -271,13 +365,32 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     message: "Address validation errors occurred, please try again.",
                     innerException: invalidAddressException);
 
+            var addressServiceMock = new Mock<AddressService>(
+              storageBrokerMock.Object,
+              dateTimeBrokerMock.Object,
+              securityBrokerMock.Object,
+              identifierBrokerMock.Object,
+              loggingBrokerMock.Object,
+              auditBrokerMock.Object)
+            {
+                CallBase = true
+            };
+
+            addressServiceMock.Setup(service =>
+                service.ApplyAddAuditAsync(invalidAddress))
+                    .ReturnsAsync(invalidAddress);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffsetAsync())
                     .ReturnsAsync(randomDateTimeOffset);
 
+            this.securityBrokerMock.Setup(broker =>
+                broker.GetCurrentUserAsync())
+                    .ReturnsAsync(randomEntraUser);
+
             // when
             ValueTask<Address> addAddressTask =
-                this.addressService.AddAddressAsync(invalidAddress);
+                addressServiceMock.Object.AddAddressAsync(invalidAddress);
 
             AddressValidationException actualAddressValidationException =
                 await Assert.ThrowsAsync<AddressValidationException>(addAddressTask.AsTask);
@@ -290,6 +403,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 broker.GetCurrentDateTimeOffsetAsync(),
                     Times.Once());
 
+            this.securityBrokerMock.Verify(broker =>
+                broker.GetCurrentUserAsync(),
+                    Times.Once());
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogErrorAsync(It.Is(SameExceptionAs(
                     expectedAddressValidationException))),
@@ -300,6 +417,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.securityBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }

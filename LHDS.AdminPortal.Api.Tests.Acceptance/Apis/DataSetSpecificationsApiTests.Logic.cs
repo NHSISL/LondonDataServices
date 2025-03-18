@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,7 +34,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 await this.apiBroker.PostDataSetSpecificationAsync(inputDataSetSpecification);
 
             // Then
-            actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification, options => options.Excluding(spec => spec.CreatedBy)
+            actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification, options => options
+                .Excluding(spec => spec.CreatedBy)
                 .Excluding(spec => spec.CreatedDate)
                 .Excluding(spec => spec.UpdatedBy)
                 .Excluding(spec => spec.UpdatedDate));
